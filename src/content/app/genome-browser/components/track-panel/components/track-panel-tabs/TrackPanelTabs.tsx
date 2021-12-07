@@ -20,16 +20,16 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { TrackSet } from '../../trackPanelConfig';
 
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
 import {
   getSelectedTrackPanelTab,
   getIsTrackPanelModalOpened,
   getIsTrackPanelOpened
-} from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import {
   selectTrackPanelTab,
   toggleTrackPanel
-} from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';

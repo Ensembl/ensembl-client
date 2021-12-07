@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { defaultTrackPanelStateForGenome } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
 import { RootState } from 'src/store';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
-import { defaultTrackPanelStateForGenome } from './trackPanelState';
 
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);

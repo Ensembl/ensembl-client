@@ -21,7 +21,7 @@ import { ReactComponent as navigateDownIcon } from 'static/img/browser/navigate-
 import { ReactComponent as navigateLeftIcon } from 'static/img/browser/navigate-left.svg';
 import { ReactComponent as navigateRightIcon } from 'static/img/browser/navigate-right.svg';
 
-import { BrowserNavAction } from 'src/content/app/genome-browser/state/browserState';
+import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
 export type BrowserNavItem = {
   description: string;

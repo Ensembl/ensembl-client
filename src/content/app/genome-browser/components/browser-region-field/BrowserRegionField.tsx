@@ -20,13 +20,17 @@ import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import { toggleRegionFieldActive } from 'src/content/app/genome-browser/state/browserActions';
 import {
-  getBrowserActiveGenomeId,
+  ChrLocation,
+  toggleRegionFieldActive
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+
+import {
   getChrLocation,
   getRegionEditorActive,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 
 import {
   getChrLocationFromStr,
@@ -38,8 +42,6 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
 
 import applyIcon from 'static/img/shared/apply.svg';
 

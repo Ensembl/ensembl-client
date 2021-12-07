@@ -21,11 +21,12 @@ import {
   BrowserTrackStates,
   GenomeTrackStates
 } from '../components/track-panel/trackPanelConfig';
-import { ChrLocation } from '../state/browserState';
+
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
 import {
   TrackPanelState,
   TrackPanelStateForGenome
-} from 'src/content/app/genome-browser/components/track-panel/state/trackPanelState';
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',

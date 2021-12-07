@@ -28,7 +28,7 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelState';
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (

@@ -24,7 +24,7 @@ import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import * as browserActions from 'src/content/app/genome-browser/state/browserActions';
+import * as browserLocationActions from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
 
@@ -71,7 +71,7 @@ jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 describe('<BrowserRegionEditor />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.spyOn(browserActions, 'toggleRegionEditorActive');
+    jest.spyOn(browserLocationActions, 'toggleRegionEditorActive');
   });
 
   describe('rendering', () => {
@@ -105,7 +105,9 @@ describe('<BrowserRegionEditor />', () => {
       const form = container.querySelector('form') as HTMLFormElement;
       fireEvent.focus(form);
 
-      expect(browserActions.toggleRegionEditorActive).toHaveBeenCalledTimes(1);
+      expect(
+        browserLocationActions.toggleRegionEditorActive
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('validates region input on submit', () => {

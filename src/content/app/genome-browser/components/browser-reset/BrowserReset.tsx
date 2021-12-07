@@ -19,10 +19,8 @@ import { useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import {
-  getBrowserActiveEnsObjectId,
-  isFocusObjectPositionDefault
-} from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveEnsObjectId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { isFocusObjectPositionDefault } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';

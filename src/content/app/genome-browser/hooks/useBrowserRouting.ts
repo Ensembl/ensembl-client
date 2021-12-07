@@ -38,13 +38,14 @@ import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave
-} from '../state/browserActions';
+} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectIds,
-  getAllChrLocations
-} from '../state/browserSelectors';
+  getBrowserActiveEnsObjectIds
+} from '../state/browser-entity/browserEntitySelectors';
+
+import { getAllChrLocations } from '../state/browser-location/browserLocationSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:

@@ -20,9 +20,8 @@ import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browserActions';
-
-import { getActualChrLocation } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
 import styles from './BrowserLocationIndicator.scss';
 

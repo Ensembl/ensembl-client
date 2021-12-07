@@ -26,13 +26,18 @@ import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+
 import {
-  getBrowserActiveGenomeId,
   getChrLocation,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
-import { toggleRegionEditorActive } from 'src/content/app/genome-browser/state/browserActions';
+import {
+  toggleRegionEditorActive,
+  ChrLocation
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
 
 import {
   getCommaSeparatedNumber,
@@ -45,7 +50,6 @@ import {
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 

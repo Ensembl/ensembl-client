@@ -27,14 +27,13 @@ import useGenomeBrowser from './hooks/useGenomeBrowser';
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 
-import { toggleTrackPanel } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import {
-  getBrowserNavOpenState,
-  getBrowserActiveGenomeId
-} from './state/browserSelectors';
-import { getIsTrackPanelOpened } from './components/track-panel/state/trackPanelSelectors';
+import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
+import { getBrowserActiveGenomeId } from './state/browser-entity/browserEntitySelectors';
+
+import { getIsTrackPanelOpened } from './state/track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 

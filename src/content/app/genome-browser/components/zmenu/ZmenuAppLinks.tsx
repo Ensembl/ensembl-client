@@ -21,7 +21,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';

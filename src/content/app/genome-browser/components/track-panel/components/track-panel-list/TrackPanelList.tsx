@@ -23,8 +23,8 @@ import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getBrowserActiveEnsObject,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browserSelectors';
-import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';

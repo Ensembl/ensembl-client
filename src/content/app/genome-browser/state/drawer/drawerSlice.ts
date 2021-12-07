@@ -21,7 +21,7 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
 
 import type { DrawerView } from './types';
 import type { RootState } from 'src/store';

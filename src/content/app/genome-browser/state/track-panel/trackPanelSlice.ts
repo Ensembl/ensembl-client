@@ -14,43 +14,93 @@
  * limitations under the License.
  */
 
-import { createAction } from 'typesafe-actions';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
+import { createSlice } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import uniq from 'lodash/uniq';
+import pick from 'lodash/pick';
+import pickBy from 'lodash/pickBy';
 
-import trackPanelStorageService from '../services/track-panel-storage-service';
+import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
 
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
 import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
-import {
-  pickPersistentTrackPanelProperties,
-  TrackPanelStateForGenome
-} from './trackPanelState';
 
+import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
+import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { RootState } from 'src/store';
-import { TrackSet } from '../trackPanelConfig';
 
-export const updateTrackPanelForGenome = createAction(
-  'track-panel/update-track-panel',
-  (payload: {
-    activeGenomeId: string;
-    data: Partial<TrackPanelStateForGenome>;
-  }) => {
-    const { activeGenomeId, data } = payload;
-    const persistentTrackProperties = pickPersistentTrackPanelProperties(data);
-    browserStorageService.updateTrackPanels({
-      [activeGenomeId]: persistentTrackProperties
-    });
-    return { activeGenomeId, data };
-  }
-)();
+export type PreviouslyViewedObject = {
+  genome_id: string;
+  object_id: string;
+  type: string;
+  label: string | string[];
+};
+
+export type PreviouslyViewedObjects = {
+  [genomeId: string]: PreviouslyViewedObject[];
+};
+
+export type TrackPanelStateForGenome = Readonly<{
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
+  selectedTrackPanelTab: TrackSet;
+  trackPanelModalView: string;
+  bookmarks: PreviouslyViewedObject[];
+  previouslyViewedObjects: PreviouslyViewedObject[];
+  highlightedTrackId: string;
+  collapsedTrackIds: string[];
+}>;
+
+export type TrackPanelState = Readonly<{
+  [genomeId: string]: TrackPanelStateForGenome;
+}>;
+
+export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
+  isTrackPanelModalOpened: false,
+  bookmarks: [],
+  previouslyViewedObjects: [],
+  selectedTrackPanelTab: TrackSet.GENOMIC,
+  trackPanelModalView: '',
+  highlightedTrackId: '',
+  isTrackPanelOpened: true,
+  collapsedTrackIds: []
+};
+
+export const getTrackPanelState = (): TrackPanelState => {
+  const genomeId = browserStorageService.getActiveGenomeId();
+  return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
+};
+
+export const getTrackPanelStateForGenome = (
+  genomeId: string
+): TrackPanelStateForGenome => {
+  return genomeId
+    ? {
+        ...defaultTrackPanelStateForGenome,
+        ...getPersistentTrackPanelStateForGenome(genomeId)
+      }
+    : defaultTrackPanelStateForGenome;
+};
+
+export const getPersistentTrackPanelStateForGenome = (
+  genomeId: string
+): Partial<TrackPanelStateForGenome> =>
+  browserStorageService.getTrackPanels()[genomeId] || {};
+
+export const pickPersistentTrackPanelProperties = (
+  trackPanel: Partial<TrackPanelStateForGenome>
+) => {
+  const persistentProperties = ['collapsedTrackIds', 'previouslyViewedObjects'];
+  return pick(trackPanel, persistentProperties);
+};
 
 export const toggleTrackPanel =
   (isTrackPanelOpened: boolean): ThunkAction<void, any, null, Action<string>> =>
@@ -284,3 +334,46 @@ export const updateCollapsedTrackIds =
       })
     );
   };
+
+const browserTrackPanelSlice = createSlice({
+  name: 'genome-browser-track-panel',
+  initialState: getTrackPanelState() as TrackPanelState,
+  reducers: {
+    setTrackPanelDataFromUrl(state, action: PayloadAction<ParsedUrlPayload>) {
+      const { activeGenomeId } = action.payload;
+      if (!state[activeGenomeId]) {
+        state.activeGenomeId = getTrackPanelStateForGenome(activeGenomeId);
+      }
+    },
+    updateTrackPanelForGenome(
+      state,
+      action: PayloadAction<{
+        activeGenomeId: string;
+        data: Partial<TrackPanelStateForGenome>;
+      }>
+    ) {
+      const { activeGenomeId, data } = action.payload;
+      const persistentTrackProperties =
+        pickPersistentTrackPanelProperties(data);
+      browserStorageService.updateTrackPanels({
+        [activeGenomeId]: persistentTrackProperties
+      });
+
+      state[activeGenomeId] = {
+        ...state[activeGenomeId],
+        ...action.payload.data
+      };
+    },
+    deleteGenomeTrackPanelData(state, action: PayloadAction<string>) {
+      state = pickBy(state, (value, key) => key !== action.payload);
+    }
+  }
+});
+
+export const {
+  setTrackPanelDataFromUrl,
+  updateTrackPanelForGenome,
+  deleteGenomeTrackPanelData
+} = browserTrackPanelSlice.actions;
+
+export default browserTrackPanelSlice.reducer;

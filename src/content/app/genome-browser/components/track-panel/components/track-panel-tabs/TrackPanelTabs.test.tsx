@@ -23,7 +23,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import * as trackPanelActions from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { TrackPanelTabs } from './TrackPanelTabs';

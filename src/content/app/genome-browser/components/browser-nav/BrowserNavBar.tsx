@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import BrowserNavBarControls from './BrowserNavBarControls';
 import BrowserNavBarMain from './BrowserNavBarMain';
 
-import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 
 import styles from './BrowserNavBar.scss';
 

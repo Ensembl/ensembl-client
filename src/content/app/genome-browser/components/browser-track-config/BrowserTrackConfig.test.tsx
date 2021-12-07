@@ -23,7 +23,7 @@ import thunk from 'redux-thunk';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import * as browserActions from 'src/content/app/genome-browser/state/browserActions';
+import * as trackConfigActions from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 import { BrowserTrackConfig } from './BrowserTrackConfig';
 
@@ -67,10 +67,10 @@ describe('<BrowserTrackConfig />', () => {
       const allTracksInputElement = allTracksLabel?.querySelector(
         'input'
       ) as HTMLElement;
-      jest.spyOn(browserActions, 'updateApplyToAll');
+      jest.spyOn(trackConfigActions, 'updateApplyToAll');
       userEvent.click(allTracksInputElement);
 
-      expect(browserActions.updateApplyToAll).toHaveBeenCalledTimes(1);
+      expect(trackConfigActions.updateApplyToAll).toHaveBeenCalledTimes(1);
     });
 
     it('toggles track name', () => {
@@ -79,15 +79,17 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(browserActions, 'updateTrackConfigNames');
+      jest.spyOn(trackConfigActions, 'updateTrackConfigNames');
 
       userEvent.click(toggle);
 
-      expect(browserActions.updateTrackConfigNames).toHaveBeenCalledTimes(1);
-      expect(browserActions.updateTrackConfigNames).toHaveBeenCalledWith(
-        mockState.browser.trackConfig.selectedCog,
-        false
+      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledTimes(
+        1
       );
+      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledWith({
+        isTrackNameShown: false,
+        selectedCog: mockState.browser.trackConfig.selectedCog
+      });
     });
 
     it('toggles feature labels on the track', () => {
@@ -96,14 +98,16 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(browserActions, 'updateTrackConfigLabel');
+      jest.spyOn(trackConfigActions, 'updateTrackConfigLabel');
       userEvent.click(toggle);
 
-      expect(browserActions.updateTrackConfigLabel).toHaveBeenCalledTimes(1);
-      expect(browserActions.updateTrackConfigLabel).toHaveBeenCalledWith(
-        mockState.browser.trackConfig.selectedCog,
-        false
+      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledTimes(
+        1
       );
+      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledWith({
+        isTrackLabelShown: false,
+        selectedCog: mockState.browser.trackConfig.selectedCog
+      });
     });
   });
 });

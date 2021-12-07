@@ -30,20 +30,18 @@ import { ZmenuController } from 'src/content/app/genome-browser/components/zmenu
 import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
+import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
+
 import {
-  getBrowserNavOpenState,
   getRegionEditorActive,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browserSelectors';
-
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 import {
-  setChrLocation,
-  setActualChrLocation
-} from 'src/content/app/genome-browser/state/browserActions';
-
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
-
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
+  setActualChrLocation,
+  ChrLocation,
+  setChrLocation
+} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import styles from './BrowserImage.scss';
 

@@ -17,7 +17,6 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-import { getType } from 'typesafe-actions';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
@@ -26,7 +25,7 @@ import set from 'lodash/fp/set';
 import { TrackPanelBar } from './TrackPanelBar';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import * as trackPanelActions from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
@@ -97,7 +96,7 @@ describe('<TrackPanelBar />', () => {
         .getActions()
         .find(
           (action) =>
-            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+            action.type === trackPanelActions.updateTrackPanelForGenome.type
         );
 
       const expectedPayload = {
@@ -129,7 +128,7 @@ describe('<TrackPanelBar />', () => {
         .getActions()
         .find(
           (action) =>
-            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+            action.type === trackPanelActions.updateTrackPanelForGenome.type
         );
 
       const expectedPayload = {
@@ -155,7 +154,7 @@ describe('<TrackPanelBar />', () => {
         .getActions()
         .find(
           (action) =>
-            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+            action.type === trackPanelActions.updateTrackPanelForGenome.type
         );
 
       const expectedPayload = {

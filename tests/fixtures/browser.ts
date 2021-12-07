@@ -15,6 +15,11 @@
  */
 
 import faker from 'faker';
+import {
+  ZmenuContentFeature,
+  Markup,
+  ZmenuFeatureType
+} from 'ensembl-genome-browser';
 
 import {
   getChrLocationStr,
@@ -26,20 +31,13 @@ import {
 } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-import {
-  CogList,
-  ChrLocation
-} from 'src/content/app/genome-browser/state/browserState';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { CogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import {
-  ZmenuContentFeature,
-  Markup,
-  ZmenuFeatureType
-} from 'ensembl-genome-browser';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),

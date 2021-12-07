@@ -17,21 +17,20 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import {
-  getChrLocation,
-  getBrowserActiveEnsObject
-} from 'src/content/app/genome-browser/state/browserSelectors';
-import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
+import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
+import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
 
 import styles from './BrowserBar.scss';
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
 export type BrowserBarProps = {
   chrLocation: ChrLocation | null;
