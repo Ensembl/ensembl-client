@@ -335,7 +335,7 @@ export const updateCollapsedTrackIds =
     );
   };
 
-const browserTrackPanelSlice = createSlice({
+const trackPanelSlice = createSlice({
   name: 'genome-browser-track-panel',
   initialState: getTrackPanelState() as TrackPanelState,
   reducers: {
@@ -374,6 +374,6 @@ export const {
   setTrackPanelDataFromUrl,
   updateTrackPanelForGenome,
   deleteGenomeTrackPanelData
-} = browserTrackPanelSlice.actions;
+} = trackPanelSlice.actions;
 
-export default browserTrackPanelSlice.reducer;
+export default trackPanelSlice.reducer;

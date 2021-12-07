@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { createStore } from 'redux';
 import faker from 'faker';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import {
+import trackPanelSlice, {
   pickPersistentTrackPanelProperties,
   TrackPanelStateForGenome,
   updateTrackPanelForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import { TrackSet } from '../../components/track-panel/trackPanelConfig';
-
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
 
 const trackPanelProperties: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: faker.datatype.boolean(),
@@ -52,7 +48,7 @@ describe('track panel actions', () => {
 
   describe('updateTrackPanelForGenome', () => {
     it('saves a subset of track panel properties every time it‘s called', async () => {
-      const store = mockStore({});
+      const store = createStore(trackPanelSlice);
       const genomeId = faker.random.word();
 
       store.dispatch(

@@ -22,6 +22,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import * as trackConfigActions from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
@@ -41,8 +42,6 @@ const renderComponent = () => {
     </Provider>
   );
 };
-
-import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 
