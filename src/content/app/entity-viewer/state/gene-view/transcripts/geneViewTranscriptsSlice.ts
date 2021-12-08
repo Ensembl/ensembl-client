@@ -188,13 +188,16 @@ export const toggleTranscriptInfo =
       expandedIds.delete(transcriptId);
     } else {
       expandedIds.add(transcriptId);
+      expandedIds.delete('noselection');
     }
 
     dispatch(
       transcriptsSlice.actions.updateExpandedTranscripts({
         activeGenomeId,
         activeEntityId,
-        expandedIds: [...expandedIds.values()]
+        expandedIds: [...expandedIds.values()].length
+          ? [...expandedIds.values()]
+          : ['noselection']
       })
     );
   };
