@@ -292,32 +292,42 @@ type UpdateFilterPanelPayload = {
   filterPanelOpen: boolean;
 };
 
-const initialGeneViewTranscriptsState = {};
+export const restoreTranscriptsFiltersAndSorting =
+  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
+    const storedFiltersAndSortingData =
+      entityViewerStorageService.getGeneViewTranscriptsState();
+
+    if (!storedFiltersAndSortingData) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.loadInitialState(storedFiltersAndSortingData)
+    );
+  };
 
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
-  initialState: initialGeneViewTranscriptsState as GeneViewTranscriptsState,
+  initialState: {} as GeneViewTranscriptsState,
   reducers: {
-    restoreTranscriptsFiltersAndSorting(state) {
-      const storedFiltersAndSortingData =
-        entityViewerStorageService.getGeneViewTranscriptsState();
-
-      if (storedFiltersAndSortingData) {
-        Object.keys(storedFiltersAndSortingData).forEach((genomeId) => {
-          const entitiesPerGenome = storedFiltersAndSortingData[genomeId];
-          Object.keys(entitiesPerGenome).forEach((entityId) => {
-            ensureGenePresence(state, {
-              activeGenomeId: genomeId,
-              activeEntityId: entityId
-            });
-
-            state[genomeId][entityId] = {
-              ...state[genomeId][entityId],
-              ...storedFiltersAndSortingData[genomeId][entityId]
-            };
+    loadInitialState(
+      state,
+      action: PayloadAction<StoredGeneViewTranscriptsState>
+    ) {
+      const storedFiltersAndSortingData = action.payload;
+      Object.keys(storedFiltersAndSortingData).forEach((genomeId) => {
+        const entitiesPerGenome = storedFiltersAndSortingData[genomeId];
+        Object.keys(entitiesPerGenome).forEach((entityId) => {
+          ensureGenePresence(state, {
+            activeGenomeId: genomeId,
+            activeEntityId: entityId
           });
+
+          state[genomeId][entityId] = {
+            ...state[genomeId][entityId],
+            ...storedFiltersAndSortingData[genomeId][entityId]
+          };
         });
-      }
+      });
     },
     updateExpandedTranscripts(
       state,
@@ -356,9 +366,6 @@ const transcriptsSlice = createSlice({
   }
 });
 
-export const {
-  updateExpandedTranscripts,
-  restoreTranscriptsFiltersAndSorting
-} = transcriptsSlice.actions;
+export const { updateExpandedTranscripts } = transcriptsSlice.actions;
 
 export default transcriptsSlice.reducer;
