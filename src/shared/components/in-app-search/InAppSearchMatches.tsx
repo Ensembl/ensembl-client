@@ -21,7 +21,7 @@ import upperFirst from 'lodash/upperFirst';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import analyticsTracking from 'src/services/analytics-service';

@@ -23,12 +23,12 @@ import pickBy from 'lodash/pickBy';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from '../helpers/browserHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import browserStorageService from '../services/browser-storage-service';
 import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
 
-import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
+import { fetchEnsObject } from 'src/shared/state/focus-object/focusObjectSlice';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import {
   getBrowserActiveGenomeId,

@@ -21,7 +21,7 @@ import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberForm
 import {
   parseEnsObjectId,
   buildEnsObjectId
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 
 import JSONValue from 'src/shared/types/JSON';
 import { ChrLocation } from '../state/browserState';

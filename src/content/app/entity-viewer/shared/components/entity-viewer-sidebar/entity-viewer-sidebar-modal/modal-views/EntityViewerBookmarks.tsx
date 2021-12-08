@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId

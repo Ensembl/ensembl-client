@@ -20,7 +20,7 @@ type BookmarksDrawerView = {
 
 export type GeneDrawerView = {
   name: 'gene_summary';
-  geneId: string; // in ensObjectId format
+  geneId: string; // in focusObjectId format
 };
 
 export type TranscriptDrawerView = {

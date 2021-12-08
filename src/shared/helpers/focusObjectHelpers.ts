@@ -18,7 +18,7 @@ import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/br
 import {
   EnsObjectRegion,
   EnsObjectGene
-} from 'src/shared/state/ens-object/ensObjectTypes';
+} from 'src/shared/state/focus-object/focusObjectTypes';
 
 export type EnsObjectIdConstituents = {
   genomeId: string;
@@ -109,5 +109,5 @@ export const buildRegionObject = (
   };
 };
 
-export const getDisplayStableId = (ensObject: Partial<EnsObjectGene>) =>
-  ensObject.versioned_stable_id || ensObject.stable_id || '';
+export const getDisplayStableId = (focusObject: Partial<EnsObjectGene>) =>
+  focusObject.versioned_stable_id || focusObject.stable_id || '';

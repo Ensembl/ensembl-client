@@ -17,6 +17,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { Environment, isEnvironment } from 'src/shared/helpers/environment';
+
 import {
   getChrLocation,
   getBrowserActiveEnsObject
@@ -27,27 +29,26 @@ import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
+import { EnsObject } from 'src/shared/state/focus-object/focusObjectTypes';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './BrowserBar.scss';
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
 export type BrowserBarProps = {
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
-  ensObject: EnsObject | null;
+  focusObject: EnsObject | null;
 };
 
 export const BrowserBar = () => {
   const chrLocation = useSelector(getChrLocation);
-  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const focusObject = useSelector(getBrowserActiveEnsObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
-  if (!(chrLocation && ensObject)) {
+  if (!(chrLocation && focusObject)) {
     return <div />;
   }
 
@@ -56,8 +57,11 @@ export const BrowserBar = () => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      {ensObject && (
-        <FeatureSummaryStrip ensObject={ensObject} isGhosted={isDrawerOpened} />
+      {focusObject && (
+        <FeatureSummaryStrip
+          focusObject={focusObject}
+          isGhosted={isDrawerOpened}
+        />
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator

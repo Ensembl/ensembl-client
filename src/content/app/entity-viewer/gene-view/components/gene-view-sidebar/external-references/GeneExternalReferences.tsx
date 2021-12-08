@@ -20,7 +20,7 @@ import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
 import { Pick2 } from 'ts-multipick';
 
-import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';

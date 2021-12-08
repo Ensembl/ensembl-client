@@ -20,7 +20,7 @@ import { ThunkAction } from 'redux-thunk';
 import {
   buildEnsObjectId,
   parseFocusIdFromUrl
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 

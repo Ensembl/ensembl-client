@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
-import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/focus-object/focusObjectTypes';
 import {
   getBrowserActiveEnsObject,
   getBrowserActiveGenomeId
@@ -65,7 +65,7 @@ export const TrackPanelList = () => {
       activeEnsObject.stable_id ? (
         <section className="mainTrackItem">
           <TrackPanelGene
-            ensObjectId={activeEnsObject.object_id}
+            focusObjectId={activeEnsObject.object_id}
             genomeId={activeGenomeId}
             geneId={activeEnsObject.stable_id}
           />

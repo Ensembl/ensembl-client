@@ -100,7 +100,7 @@ const mockState = {
       drawerView: null
     }
   },
-  ensObjects: {
+  focusObjects: {
     [geneObjectId]: {
       data: {
         description: 'Heat shock protein 101',

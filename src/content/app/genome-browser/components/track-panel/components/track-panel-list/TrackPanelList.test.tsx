@@ -68,7 +68,7 @@ describe('<TrackPanelList />', () => {
       )[activeGenomeId];
       const { container } = renderComponent(
         set(
-          `ensObjects.${activeEnsObjectId}.data`,
+          `focusObjects.${activeEnsObjectId}.data`,
           createEnsObject('region'),
           mockState
         )

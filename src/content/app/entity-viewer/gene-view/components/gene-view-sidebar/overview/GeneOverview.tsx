@@ -18,7 +18,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 
-import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';

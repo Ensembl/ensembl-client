@@ -21,7 +21,7 @@ import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/com
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { sampleData } from '../../sample-data';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 export enum SpeciesStatsSection {

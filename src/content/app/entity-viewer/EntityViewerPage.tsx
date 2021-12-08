@@ -22,7 +22,7 @@ import loadable from '@loadable/component';
 import {
   parseEnsObjectId,
   parseFocusIdFromUrl
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 

@@ -19,7 +19,7 @@ import faker from 'faker';
 import {
   EnsObject,
   EnsObjectType
-} from 'src/shared/state/ens-object/ensObjectTypes';
+} from 'src/shared/state/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/thoas/strand';
 
 export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {

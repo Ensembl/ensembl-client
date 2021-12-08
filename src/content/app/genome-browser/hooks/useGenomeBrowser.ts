@@ -28,7 +28,7 @@ import browserStorageService from 'src/content/app/genome-browser/services/brows
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
 
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import {
   getApplyToAllConfig,

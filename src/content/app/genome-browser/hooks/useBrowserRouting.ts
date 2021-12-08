@@ -32,7 +32,7 @@ import {
   parseFocusIdFromUrl,
   buildEnsObjectId,
   parseEnsObjectId
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {

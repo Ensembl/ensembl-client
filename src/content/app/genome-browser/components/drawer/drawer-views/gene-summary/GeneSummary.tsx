@@ -29,7 +29,7 @@ import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helper
 import {
   buildFocusIdForUrl,
   getDisplayStableId
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browserSelectors';
 
@@ -39,7 +39,7 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/focus-object/focusObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
@@ -105,14 +105,16 @@ type Gene = Pick<
   };
 
 const GeneSummary = () => {
-  const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const focusObjectGene = useSelector(
+    getBrowserActiveEnsObject
+  ) as EnsObjectGene;
   const [shouldShowDownload, showDownload] = useState(false);
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {
-      geneId: ensObjectGene.stable_id,
-      genomeId: ensObjectGene.genome_id
+      geneId: focusObjectGene.stable_id,
+      genomeId: focusObjectGene.genome_id
     },
-    skip: !ensObjectGene.stable_id
+    skip: !focusObjectGene.stable_id
   });
 
   if (loading || !data?.gene) {
@@ -132,7 +134,7 @@ const GeneSummary = () => {
     objectId: gene.unversioned_stable_id
   });
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: ensObjectGene.genome_id,
+    genomeId: focusObjectGene.genome_id,
     entityId: focusId
   });
 
@@ -162,7 +164,7 @@ const GeneSummary = () => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(ensObjectGene.location)}</span>
+              <span>{getFormattedLocation(focusObjectGene.location)}</span>
             </div>
           </div>
         </div>
@@ -208,7 +210,7 @@ const GeneSummary = () => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene
-                genomeId={ensObjectGene.genome_id}
+                genomeId={focusObjectGene.genome_id}
                 gene={{
                   id: gene.stable_id,
                   isProteinCoding: isProteinCodingGene(gene)

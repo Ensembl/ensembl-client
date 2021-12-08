@@ -19,11 +19,11 @@ import classNames from 'classnames';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
-import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/focus-object/focusObjectTypes';
 
 import styles from './FeatureSummaryStrip.scss';
 

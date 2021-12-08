@@ -23,7 +23,7 @@ import {
   getEntityViewerActiveGenomeId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectId } from 'src/shared/helpers/focusObjectHelpers';
 import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';

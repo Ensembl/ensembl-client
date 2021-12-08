@@ -22,7 +22,7 @@ import { useParams } from 'react-router-dom';
 
 import { client } from 'src/gql-client';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import {

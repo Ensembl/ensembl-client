@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';

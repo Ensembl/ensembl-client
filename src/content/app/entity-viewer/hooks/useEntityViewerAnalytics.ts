@@ -19,7 +19,7 @@ import snakeCase from 'lodash/snakeCase';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import {
   getEntityViewerActiveGenomeId,

@@ -31,7 +31,7 @@ jest.mock('../feature-summary-strip', () => ({
 
 describe('<FeatureSummaryStrip />', () => {
   const defaultProps = {
-    ensObject: createEnsObject(),
+    focusObject: createEnsObject(),
     isGhosted: false
   };
 
@@ -46,7 +46,7 @@ describe('<FeatureSummaryStrip />', () => {
 
     it('contains GeneSummaryStrip if focus object is gene', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ ensObject: createEnsObject('gene') })
+        renderFeatureSummaryStrip({ focusObject: createEnsObject('gene') })
       );
 
       expect(container.textContent).toBe('Gene Summary Strip'); // text from the mocked module
@@ -54,7 +54,7 @@ describe('<FeatureSummaryStrip />', () => {
 
     it('contains RegionSummaryStrip if focus object is region', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ ensObject: createEnsObject('region') })
+        renderFeatureSummaryStrip({ focusObject: createEnsObject('region') })
       );
       expect(container.textContent).toBe('Region Summary Strip'); // text from the mocked module
     });

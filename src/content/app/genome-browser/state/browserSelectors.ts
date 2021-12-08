@@ -18,7 +18,7 @@ import { RootState } from 'src/store';
 import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
 
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
-import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { getEnsObjectById } from 'src/shared/state/focus-object/focusObjectSelectors';
 
 import { Status } from 'src/shared/types/status';
 

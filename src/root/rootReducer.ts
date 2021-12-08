@@ -24,7 +24,7 @@ import genome from '../shared/state/genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
-import ensObjects from '../shared/state/ens-object/ensObjectReducer';
+import focusObjects from '../shared/state/focus-object/focusObjectSlice';
 import inAppSearch from '../shared/state/in-app-search/inAppSearchSlice';
 import communication from '../shared/state/communication/communicationSlice';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorSlice';
@@ -37,7 +37,7 @@ const createRootReducer = (history: any) =>
     drawer, // TODO: this should be moved in the browser reducer
     customDownload,
     communication,
-    ensObjects,
+    focusObjects,
     inAppSearch,
     genome,
     global,

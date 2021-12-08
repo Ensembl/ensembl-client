@@ -255,7 +255,7 @@ export const createMockBrowserState = () => {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
     },
-    ensObjects: {
+    focusObjects: {
       'fake_genome_id_1:gene:fake_gene_stable_id_1': {
         data: {
           type: 'gene',

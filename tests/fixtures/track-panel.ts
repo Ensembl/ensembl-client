@@ -18,7 +18,7 @@ import faker from 'faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/focus-object/focusObjectTypes';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   fake_genome_id_1: {

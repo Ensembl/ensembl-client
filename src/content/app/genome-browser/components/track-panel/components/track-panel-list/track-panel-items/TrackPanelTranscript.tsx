@@ -40,18 +40,18 @@ import styles from './TrackPanelItem.scss';
 type Props = {
   transcript: TrackPanelTranscriptType;
   genomeId: string;
-  ensObjectId: string;
+  focusObjectId: string;
   trackId: string;
   onChangeVisibility: (status: TrackActivityStatus) => void;
 };
 
 const TrackPanelTranscript = (props: Props) => {
-  const { genomeId, transcript, ensObjectId, trackId } = props;
+  const { genomeId, transcript, focusObjectId, trackId } = props;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const trackVisibilityStatus = useSelector((state: RootState) =>
     getBrowserTrackState(state, {
       genomeId,
-      objectId: ensObjectId,
+      objectId: focusObjectId,
       tracksGroup: 'objectTracks',
       categoryName: 'main',
       trackId
