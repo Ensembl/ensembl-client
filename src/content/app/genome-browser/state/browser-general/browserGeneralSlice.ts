@@ -67,28 +67,6 @@ export type BrowserGeneralState = Readonly<{
   isObjectInDefaultPosition: boolean;
 }>;
 
-const isServer = typeof window === 'undefined';
-
-const activeGenomeId = !isServer
-  ? browserStorageService.getActiveGenomeId()
-  : null;
-const activeEnsObjectIds = !isServer
-  ? browserStorageService.getActiveEnsObjectIds()
-  : [];
-const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
-const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
-
-export const defaultBrowserGeneralState: BrowserGeneralState = {
-  activeGenomeId,
-  activeEnsObjectIds,
-  trackStates,
-  chrLocations,
-  actualChrLocations: {},
-  regionEditorActive: false,
-  regionFieldActive: false,
-  isObjectInDefaultPosition: false
-};
-
 export type ParsedUrlPayload = {
   activeGenomeId: string;
   activeEnsObjectId: string | null;
@@ -215,10 +193,32 @@ export const deleteSpeciesInGenomeBrowser = (
   };
 };
 
+export const defaultBrowserGeneralState: BrowserGeneralState = {
+  activeGenomeId: null,
+  activeEnsObjectIds: {},
+  trackStates: {},
+  chrLocations: {},
+  actualChrLocations: {},
+  regionEditorActive: false,
+  regionFieldActive: false,
+  isObjectInDefaultPosition: false
+};
+
 const browserGeneralSlice = createSlice({
   name: 'genome-browser-general',
-  initialState: defaultBrowserGeneralState,
+  initialState: defaultBrowserGeneralState as BrowserGeneralState,
   reducers: {
+    loadBrowserGeneralState(state) {
+      const activeGenomeId = browserStorageService.getActiveGenomeId();
+      const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
+      const trackStates = browserStorageService.getTrackStates();
+      const chrLocations = browserStorageService.getChrLocation();
+
+      state.activeGenomeId = activeGenomeId;
+      state.activeEnsObjectIds = activeEnsObjectIds;
+      state.trackStates = trackStates;
+      state.chrLocations = chrLocations;
+    },
     setActiveGenomeId(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
       state.activeGenomeId = genomeId;
@@ -284,6 +284,7 @@ const browserGeneralSlice = createSlice({
 });
 
 export const {
+  loadBrowserGeneralState,
   setActiveGenomeId,
   setGeneralDataFromUrl,
   updateTrackStates,

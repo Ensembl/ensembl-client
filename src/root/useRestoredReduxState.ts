@@ -21,6 +21,7 @@ import { loadStoredSpecies } from 'src/content/app/species-selector/state/specie
 import { loadPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import { restoreUI as restoreSpeciesPageUI } from 'src/content/app/species/state/general/speciesGeneralSlice';
 import { loadInitialState as loadEntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
+import { loadBrowserGeneralState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 // load redux state from browser storage once when the application mounts
 const useRestoredReduxState = () => {
@@ -32,6 +33,9 @@ const useRestoredReduxState = () => {
 
     // Species Page
     dispatch(restoreSpeciesPageUI());
+
+    // Genome browser
+    dispatch(loadBrowserGeneralState());
 
     // Entity Viewer
     dispatch(loadPreviouslyViewedEntities());

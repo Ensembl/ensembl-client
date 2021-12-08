@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import {
-  defaultTrackPanelStateForGenome,
-  TrackPanelState,
-  TrackPanelStateForGenome
-} from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { defaultTrackPanelStateForGenome } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import { RootState } from 'src/store';
-
-const isServer = typeof window === 'undefined';
 
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -65,32 +58,4 @@ export const getHighlightedTrackId = (state: RootState) =>
 export const isTrackCollapsed = (state: RootState, trackId: string) => {
   const trackPanel = getActiveTrackPanel(state);
   return trackPanel.collapsedTrackIds.includes(trackId);
-};
-
-export const getTrackPanelState = (): TrackPanelState => {
-  if (isServer) {
-    return {};
-  }
-  const genomeId = browserStorageService.getActiveGenomeId();
-  return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
-};
-
-export const getTrackPanelStateForGenome = (
-  genomeId: string
-): TrackPanelStateForGenome => {
-  return genomeId
-    ? {
-        ...defaultTrackPanelStateForGenome,
-        ...getPersistentTrackPanelStateForGenome(genomeId)
-      }
-    : defaultTrackPanelStateForGenome;
-};
-
-export const getPersistentTrackPanelStateForGenome = (
-  genomeId: string
-): Partial<TrackPanelStateForGenome> => {
-  if (isServer) {
-    return {};
-  }
-  return browserStorageService.getTrackPanels()[genomeId] || {};
 };
