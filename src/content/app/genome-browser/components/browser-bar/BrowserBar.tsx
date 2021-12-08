@@ -25,10 +25,10 @@ import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocat
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserBar.scss';
 

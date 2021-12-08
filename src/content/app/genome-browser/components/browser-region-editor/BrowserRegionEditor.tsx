@@ -31,13 +31,13 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 import {
   getChrLocation,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import {
   toggleRegionEditorActive,
   ChrLocation
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import {
   getCommaSeparatedNumber,

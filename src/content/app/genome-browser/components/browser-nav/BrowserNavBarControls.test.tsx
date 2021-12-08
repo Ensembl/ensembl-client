@@ -62,7 +62,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
     const { container } = renderComponent(
-      set('browser.browserLocation.regionEditorActive', true, mockState)
+      set('browser.browserGeneral.regionEditorActive', true, mockState)
     );
     expect(container.querySelector('.overlay')).toBeTruthy();
   });

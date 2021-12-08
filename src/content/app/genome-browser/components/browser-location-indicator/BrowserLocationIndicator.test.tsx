@@ -27,7 +27,7 @@ import { BrowserLocationIndicator } from './BrowserLocationIndicator';
 
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 jest.mock(
   'src/content/app/genome-browser/state/browser-nav/browserNavSlice.ts',
@@ -43,12 +43,10 @@ const endPosition =
 
 const mockState = {
   browser: {
-    browserLocation: {
+    browserGeneral: {
       actualChrLocations: {
         human: [chrName, startPosition, endPosition] as ChrLocation
-      }
-    },
-    browserGeneral: {
+      },
       activeGenomeId: 'human'
     }
   }

@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
 import styles from './BrowserLocationIndicator.scss';

@@ -22,16 +22,14 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 import pickBy from 'lodash/pickBy';
+import { replace } from 'connected-react-router';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import {
-  ChrLocation,
-  deleteGenomeLocationData,
-  setLocationDataFromUrl
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+
 import {
   deleteGenomeTrackPanelData,
   setInitialTrackPanelDataForGenome
@@ -39,7 +37,9 @@ import {
 import {
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
-  getBrowserActiveGenomeId
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId,
+  getChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
@@ -48,11 +48,23 @@ import {
   TrackActivityStatus
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { RootState } from 'src/store';
+import isEqual from 'lodash/isEqual';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-export type BrowserEntityState = Readonly<{
+export type ChrLocation = [string, number, number];
+
+export type ChrLocations = { [genomeId: string]: ChrLocation };
+
+export type BrowserGeneralState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };
   trackStates: BrowserTrackStates;
+  chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
+  actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  isObjectInDefaultPosition: boolean;
 }>;
 
 const isServer = typeof window === 'undefined';
@@ -64,11 +76,17 @@ const activeEnsObjectIds = !isServer
   ? browserStorageService.getActiveEnsObjectIds()
   : [];
 const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
+const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
 
-export const defaultBrowserEntityState: BrowserEntityState = {
+export const defaultBrowserGeneralState: BrowserGeneralState = {
   activeGenomeId,
   activeEnsObjectIds,
-  trackStates
+  trackStates,
+  chrLocations,
+  actualChrLocations: {},
+  regionEditorActive: false,
+  regionFieldActive: false,
+  isObjectInDefaultPosition: false
 };
 
 export type ParsedUrlPayload = {
@@ -105,7 +123,7 @@ export const updateTrackStatesAndSave: ActionCreator<
 export const setDataFromUrlAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (payload: ParsedUrlPayload) => (dispatch) => {
-  dispatch(setEntityDataFromUrl(payload));
+  dispatch(setGeneralDataFromUrl(payload));
   dispatch(setLocationDataFromUrl(payload));
   dispatch(setInitialTrackPanelDataForGenome(payload));
 
@@ -145,14 +163,44 @@ export const updateBrowserActiveEnsObjectIdsAndSave = (
   };
 };
 
+export const setChrLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+
+    if (!activeGenomeId || !activeEnsObjectId) {
+      return;
+    }
+    const savedChrLocation = getChrLocation(state);
+
+    const payload = {
+      [activeGenomeId]: chrLocation
+    };
+
+    dispatch(updateChrLocation(payload));
+    browserStorageService.updateChrLocation(payload);
+
+    if (!isEqual(chrLocation, savedChrLocation)) {
+      const newUrl = urlFor.browser({
+        genomeId: activeGenomeId,
+        focus: buildFocusIdForUrl(activeEnsObjectId),
+        location: getChrLocationStr(chrLocation)
+      });
+      dispatch(replace(newUrl));
+    }
+  };
+};
+
 export const deleteSpeciesInGenomeBrowser = (
   genomeIdToRemove: string
 ): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
 
-    dispatch(deleteGenomeEntityData(genomeIdToRemove));
-    dispatch(deleteGenomeLocationData(genomeIdToRemove));
+    dispatch(deleteGenomeGeneralData(genomeIdToRemove));
     dispatch(deleteGenomeTrackPanelData(genomeIdToRemove));
 
     const updatedActiveEnsObjectIds = pickBy(
@@ -168,14 +216,14 @@ export const deleteSpeciesInGenomeBrowser = (
 };
 
 const browserGeneralSlice = createSlice({
-  name: 'genome-browser-entity',
-  initialState: defaultBrowserEntityState,
+  name: 'genome-browser-general',
+  initialState: defaultBrowserGeneralState,
   reducers: {
     setActiveGenomeId(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
       state.activeGenomeId = genomeId;
     },
-    setEntityDataFromUrl(state, action: PayloadAction<ParsedUrlPayload>) {
+    setGeneralDataFromUrl(state, action: PayloadAction<ParsedUrlPayload>) {
       const { activeGenomeId, activeEnsObjectId } = action.payload;
 
       state.activeGenomeId = activeGenomeId;
@@ -192,24 +240,61 @@ const browserGeneralSlice = createSlice({
     updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
       state.trackStates = Object.assign(state.trackStates, action.payload);
     },
-    deleteGenomeEntityData(state, action: PayloadAction<string>) {
+    deleteGenomeGeneralData(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;
       const activeGenomeId = state.activeGenomeId;
+
+      delete state.chrLocations[genomeIdToRemove];
+      delete state.actualChrLocations[genomeIdToRemove];
 
       if (activeGenomeId === genomeIdToRemove) {
         state.activeGenomeId = null;
         delete state.activeEnsObjectIds[activeGenomeId];
       }
+    },
+    setLocationDataFromUrl(state, action: PayloadAction<ParsedUrlPayload>) {
+      const { activeGenomeId, chrLocation } = action.payload;
+      if (chrLocation) {
+        state.chrLocations[activeGenomeId] = chrLocation;
+      } else {
+        delete state.chrLocations[activeGenomeId];
+      }
+    },
+    updateChrLocation(state, action: PayloadAction<ChrLocations>) {
+      state.chrLocations = Object.assign(state.chrLocations, action.payload);
+    },
+    updateActualChrLocation(state, action: PayloadAction<ChrLocation>) {
+      const activeGenomeId = state.activeGenomeId;
+      if (activeGenomeId) {
+        state.actualChrLocations = Object.assign(state.actualChrLocations, {
+          [activeGenomeId]: action.payload
+        });
+      }
+    },
+    toggleRegionEditorActive(state, action: PayloadAction<boolean>) {
+      state.regionEditorActive = action.payload;
+    },
+    toggleRegionFieldActive(state, action: PayloadAction<boolean>) {
+      state.regionFieldActive = action.payload;
+    },
+    updateDefaultPositionFlag(state, action: PayloadAction<boolean>) {
+      state.isObjectInDefaultPosition = action.payload;
     }
   }
 });
 
 export const {
   setActiveGenomeId,
-  setEntityDataFromUrl,
+  setGeneralDataFromUrl,
   updateTrackStates,
   updateBrowserActiveEnsObjectIds,
-  deleteGenomeEntityData
+  deleteGenomeGeneralData,
+  setLocationDataFromUrl,
+  updateChrLocation,
+  updateActualChrLocation,
+  toggleRegionEditorActive,
+  toggleRegionFieldActive,
+  updateDefaultPositionFlag
 } = browserGeneralSlice.actions;
 
 export default browserGeneralSlice.reducer;

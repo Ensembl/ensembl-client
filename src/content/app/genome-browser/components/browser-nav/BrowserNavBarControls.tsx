@@ -23,7 +23,7 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 import {
   getRegionEditorActive,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getBrowserNavIconStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import {

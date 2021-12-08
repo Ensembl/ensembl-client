@@ -24,6 +24,8 @@ import {
 
 import { RootState } from 'src/store';
 
+const isServer = typeof window === 'undefined';
+
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeTrackPanel =
@@ -66,6 +68,9 @@ export const isTrackCollapsed = (state: RootState, trackId: string) => {
 };
 
 export const getTrackPanelState = (): TrackPanelState => {
+  if (isServer) {
+    return {};
+  }
   const genomeId = browserStorageService.getActiveGenomeId();
   return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
 };
@@ -83,5 +88,9 @@ export const getTrackPanelStateForGenome = (
 
 export const getPersistentTrackPanelStateForGenome = (
   genomeId: string
-): Partial<TrackPanelStateForGenome> =>
-  browserStorageService.getTrackPanels()[genomeId] || {};
+): Partial<TrackPanelStateForGenome> => {
+  if (isServer) {
+    return {};
+  }
+  return browserStorageService.getTrackPanels()[genomeId] || {};
+};

@@ -41,7 +41,7 @@ import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-b
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();

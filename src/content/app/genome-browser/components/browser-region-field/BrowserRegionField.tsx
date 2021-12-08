@@ -23,14 +23,14 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import {
   ChrLocation,
   toggleRegionFieldActive
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   getChrLocation,
   getRegionEditorActive,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   getChrLocationFromStr,

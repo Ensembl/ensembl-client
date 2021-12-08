@@ -45,7 +45,7 @@ import {
   getBrowserActiveEnsObjectIds
 } from '../state/browser-general/browserGeneralSelectors';
 
-import { getAllChrLocations } from '../state/browser-location/browserLocationSelectors';
+import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:

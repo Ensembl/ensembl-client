@@ -77,9 +77,7 @@ const mockState = {
       activeGenomeId: 'human',
       activeEnsObjectIds: {
         human: 'human:gene:ENSG00000139618'
-      }
-    },
-    browserLocation: {
+      },
       chrLocations: {
         human: ['13', 100, 200]
       }
@@ -312,7 +310,7 @@ describe('useBrowserRouting', () => {
           mockState
         );
         updatedState = set(
-          'browser.browserLocation.chrLocations.wheat',
+          'browser.browserGeneral.chrLocations.wheat',
           ['3D', 1000, 1100],
           updatedState
         );

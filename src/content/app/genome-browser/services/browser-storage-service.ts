@@ -22,7 +22,7 @@ import {
   GenomeTrackStates
 } from '../components/track-panel/trackPanelConfig';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import {
   TrackPanelState,
   TrackPanelStateForGenome

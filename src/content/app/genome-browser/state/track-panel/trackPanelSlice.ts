@@ -32,9 +32,9 @@ import {
 import {
   getActiveGenomePreviouslyViewedObjects,
   getTrackPanelState,
-  getTrackPanelStateForGenome
+  getTrackPanelStateForGenome,
+  getActiveTrackPanel
 } from './trackPanelSelectors';
-import { getActiveTrackPanel } from './trackPanelSelectors';
 
 import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
@@ -342,9 +342,11 @@ export const updateCollapsedTrackIds =
     );
   };
 
+const initialTrackPanelState = getTrackPanelState() as TrackPanelState;
+
 const trackPanelSlice = createSlice({
   name: 'genome-browser-track-panel',
-  initialState: getTrackPanelState() as TrackPanelState,
+  initialState: initialTrackPanelState,
   reducers: {
     setInitialTrackPanelDataForGenome(
       state,

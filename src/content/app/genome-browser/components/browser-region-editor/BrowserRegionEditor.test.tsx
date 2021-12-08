@@ -24,7 +24,7 @@ import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import * as browserLocationActions from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
 
@@ -71,7 +71,7 @@ jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 describe('<BrowserRegionEditor />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.spyOn(browserLocationActions, 'toggleRegionEditorActive');
+    jest.spyOn(browserGeneralActions, 'toggleRegionEditorActive');
   });
 
   describe('rendering', () => {
@@ -92,7 +92,7 @@ describe('<BrowserRegionEditor />', () => {
 
     it('has an overlay on top when disabled', () => {
       const { container } = renderComponent(
-        set('browser.browserLocation.regionFieldActive', true, mockState)
+        set('browser.browserGeneral.regionFieldActive', true, mockState)
       );
 
       expect(container.querySelector('.overlay')).toBeTruthy();
@@ -106,13 +106,13 @@ describe('<BrowserRegionEditor />', () => {
       fireEvent.focus(form);
 
       expect(
-        browserLocationActions.toggleRegionEditorActive
+        browserGeneralActions.toggleRegionEditorActive
       ).toHaveBeenCalledTimes(1);
     });
 
     it('validates region input on submit', () => {
       const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
-      const [stick] = (mockState.browser.browserLocation.chrLocations as any)[
+      const [stick] = (mockState.browser.browserGeneral.chrLocations as any)[
         activeGenomeId
       ];
       const locationStartInput = getCommaSeparatedNumber(

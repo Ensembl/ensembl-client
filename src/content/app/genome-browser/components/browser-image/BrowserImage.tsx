@@ -35,12 +35,12 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/b
 import {
   getRegionEditorActive,
   getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
-  setActualChrLocation,
+  updateActualChrLocation,
   ChrLocation,
   setChrLocation
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import styles from './BrowserImage.scss';
@@ -66,7 +66,7 @@ export const BrowserImage = () => {
       if (action.type === IncomingActionType.CURRENT_POSITION) {
         const { stick, start, end } = action.payload;
         const chromosome = stick.split(':')[1];
-        dispatch(setActualChrLocation([chromosome, start, end]));
+        dispatch(updateActualChrLocation([chromosome, start, end]));
       } else if (action.type === IncomingActionType.TARGET_POSITION) {
         const { stick, start, end } = action.payload;
         const chromosome = stick.split(':')[1];

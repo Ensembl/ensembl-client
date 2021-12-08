@@ -31,7 +31,7 @@ import {
 } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { CogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
@@ -188,9 +188,7 @@ export const createMockBrowserState = () => {
         activeEnsObjectIds: {
           fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
         },
-        trackStates: createTrackStates()
-      },
-      browserLocation: {
+        trackStates: createTrackStates(),
         chrLocations: {
           fake_genome_id_1: ['13', 32304804, 32384454]
         },

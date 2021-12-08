@@ -69,8 +69,8 @@ const browserNavSlice = createSlice({
       }>
     ) {
       const { activeGenomeId } = action.payload;
-      const isBrowserNavOpenState = state.browserNavOpenState[activeGenomeId];
-      state.browserNavOpenState[activeGenomeId] = !isBrowserNavOpenState;
+      state.browserNavOpenState[activeGenomeId] =
+        !state.browserNavOpenState[activeGenomeId];
     },
 
     updateBrowserNavIconStates(

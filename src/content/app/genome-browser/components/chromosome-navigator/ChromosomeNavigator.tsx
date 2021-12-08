@@ -28,7 +28,7 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 import {
   getActualChrLocation,
   getDefaultChrLocation
-} from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { getKaryotypeItemLength } from 'src/shared/state/genome/genomeSelectors';
 

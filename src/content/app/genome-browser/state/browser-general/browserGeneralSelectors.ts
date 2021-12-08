@@ -19,6 +19,7 @@ import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors
 
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserGeneral.activeGenomeId;
@@ -85,3 +86,39 @@ export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
     ? state.browser.browserGeneral.trackStates[activeGenomeId]
     : null;
 };
+
+export const getAllChrLocations = (state: RootState) =>
+  state.browser.browserGeneral.chrLocations;
+
+export const getChrLocation = (state: RootState) => {
+  const chrLocations = getAllChrLocations(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId ? chrLocations[activeGenomeId] : null;
+};
+
+export const getActualChrLocation = (state: RootState) => {
+  const locations = state.browser.browserGeneral.actualChrLocations;
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId ? locations[activeGenomeId] : null;
+};
+
+export const getDefaultChrLocation = (state: RootState) => {
+  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+  const activeEnsObject =
+    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
+  if (!activeEnsObject) {
+    return null;
+  }
+  const { chromosome, start, end } = activeEnsObject.location;
+
+  return [chromosome, start, end] as ChrLocation;
+};
+
+export const getRegionEditorActive = (state: RootState) =>
+  state.browser.browserGeneral.regionEditorActive;
+
+export const getRegionFieldActive = (state: RootState) =>
+  state.browser.browserGeneral.regionFieldActive;
+
+export const isFocusObjectPositionDefault = (state: RootState) =>
+  state.browser.browserGeneral.isObjectInDefaultPosition;
