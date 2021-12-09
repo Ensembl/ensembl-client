@@ -24,10 +24,10 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { closeTrackPanelModal } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import { closeTrackPanelModal } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 

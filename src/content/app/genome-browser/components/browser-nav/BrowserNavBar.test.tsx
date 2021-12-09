@@ -48,7 +48,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 describe('<BrowserNavBar />', () => {
   describe('rendering', () => {
     it('correctly interprets the "expanded" prop', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
       let { container } = renderComponent(
         set(
           `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,

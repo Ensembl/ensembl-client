@@ -22,9 +22,9 @@ import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browserActions';
+import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 

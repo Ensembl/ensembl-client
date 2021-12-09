@@ -22,7 +22,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import * as browserActions from 'src/content/app/genome-browser/state/browserActions';
+import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { BrowserNavBarRegionSwitcher } from './BrowserNavBarRegionSwitcher';
 
@@ -78,15 +78,23 @@ describe('BrowserNavBarRegionSwitcher', () => {
   it('calls cleanup functions on unmount', () => {
     const { unmount } = renderComponent();
 
-    jest.spyOn(browserActions, 'toggleRegionEditorActive');
-    jest.spyOn(browserActions, 'toggleRegionFieldActive');
+    jest.spyOn(browserGeneralActions, 'toggleRegionEditorActive');
+    jest.spyOn(browserGeneralActions, 'toggleRegionFieldActive');
 
-    expect(browserActions.toggleRegionEditorActive).not.toHaveBeenCalled();
-    expect(browserActions.toggleRegionFieldActive).not.toHaveBeenCalled();
+    expect(
+      browserGeneralActions.toggleRegionEditorActive
+    ).not.toHaveBeenCalled();
+    expect(
+      browserGeneralActions.toggleRegionFieldActive
+    ).not.toHaveBeenCalled();
 
     unmount();
 
-    expect(browserActions.toggleRegionEditorActive).toHaveBeenCalledWith(false);
-    expect(browserActions.toggleRegionFieldActive).toHaveBeenCalledWith(false);
+    expect(browserGeneralActions.toggleRegionEditorActive).toHaveBeenCalledWith(
+      false
+    );
+    expect(browserGeneralActions.toggleRegionFieldActive).toHaveBeenCalledWith(
+      false
+    );
   });
 });

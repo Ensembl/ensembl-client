@@ -21,7 +21,7 @@ import { pickBy } from 'lodash';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import {
   Toolbox,

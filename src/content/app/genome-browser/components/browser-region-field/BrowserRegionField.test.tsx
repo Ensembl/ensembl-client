@@ -31,7 +31,7 @@ import {
 } from 'tests/fixtures/browser';
 
 import * as browserHelper from 'src/content/app/genome-browser/helpers/browserHelper';
-import * as browserActions from 'src/content/app/genome-browser/state/browserActions';
+import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 jest.mock('src/content/app/genome-browser/helpers/browserHelper', () => {
   const originalModule = jest.requireActual(
@@ -70,12 +70,12 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
 describe('<BrowserRegionField />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.spyOn(browserActions, 'toggleRegionFieldActive');
+    jest.spyOn(browserGeneralActions, 'toggleRegionFieldActive');
   });
 
   describe('rendering', () => {
@@ -98,7 +98,9 @@ describe('<BrowserRegionField />', () => {
       fireEvent.focus(input);
 
       // the activateForm function which fires on focus should call toggleRegionFieldActive
-      expect(browserActions.toggleRegionFieldActive).toHaveBeenCalledWith(true);
+      expect(
+        browserGeneralActions.toggleRegionFieldActive
+      ).toHaveBeenCalledWith(true);
     });
 
     it('validates region input on submit', () => {

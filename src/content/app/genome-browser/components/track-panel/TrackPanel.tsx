@@ -21,11 +21,11 @@ import TrackPanelList from './components/track-panel-list/TrackPanelList';
 import TrackPanelModal from './components/track-panel-modal/TrackPanelModal';
 import { SidebarLoader } from 'src/shared/components/loader';
 
-import { getIsTrackPanelModalOpened } from './state/trackPanelSelectors';
+import { getIsTrackPanelModalOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 

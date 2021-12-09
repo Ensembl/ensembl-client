@@ -27,7 +27,7 @@ import {
 
 import Zmenu from './Zmenu';
 
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
