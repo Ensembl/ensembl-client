@@ -62,9 +62,9 @@ describe('<TrackPanelList />', () => {
     });
 
     it('does not render main track if the focus feature is a region', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
       const activeEnsObjectId = (
-        mockState.browser.browserEntity.activeEnsObjectIds as any
+        mockState.browser.browserGeneral.activeEnsObjectIds as any
       )[activeGenomeId];
       const { container } = renderComponent(
         set(

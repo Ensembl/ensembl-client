@@ -24,13 +24,17 @@ import configureMockStore from 'redux-mock-store';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { BrowserLocationIndicator } from './BrowserLocationIndicator';
-import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browserActions';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
+import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
-jest.mock('src/content/app/genome-browser/state/browserActions.ts', () => ({
-  toggleBrowserNav: jest.fn(() => ({ type: 'toggle-browser-nav' }))
-}));
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+
+jest.mock(
+  'src/content/app/genome-browser/state/browser-nav/browserNavSlice.ts',
+  () => ({
+    toggleBrowserNav: jest.fn(() => ({ type: 'toggle-browser-nav' }))
+  })
+);
 
 const chrName = faker.lorem.word();
 const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
@@ -39,12 +43,10 @@ const endPosition =
 
 const mockState = {
   browser: {
-    browserLocation: {
+    browserGeneral: {
       actualChrLocations: {
         human: [chrName, startPosition, endPosition] as ChrLocation
-      }
-    },
-    browserEntity: {
+      },
       activeGenomeId: 'human'
     }
   }

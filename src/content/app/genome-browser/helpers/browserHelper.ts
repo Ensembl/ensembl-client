@@ -24,7 +24,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import JSONValue from 'src/shared/types/JSON';
-import { ChrLocation } from '../state/browserState';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 type GenomeBrowserFocusIdConstituents = {
   genomeId: string;

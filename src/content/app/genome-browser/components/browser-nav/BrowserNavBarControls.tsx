@@ -21,15 +21,15 @@ import BrowserNavIcon from './BrowserNavIcon';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import {
+  getRegionEditorActive,
+  getRegionFieldActive
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserNavIconStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
+
+import {
   browserNavConfig,
   BrowserNavItem
 } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
-import {
-  getBrowserNavIconStates,
-  getRegionEditorActive,
-  getRegionFieldActive
-} from 'src/content/app/genome-browser/state/browserSelectors';
-
 import styles from './BrowserNavBarControls.scss';
 
 export const BrowserNavBarControls = () => {

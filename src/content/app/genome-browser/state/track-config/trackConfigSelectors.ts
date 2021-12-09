@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-import { RefObject, ReactEventHandler } from 'react';
+import { RootState } from 'src/store';
 
-import * as browserActions from './content/app/genome-browser/state/browserActions';
-import * as customDownloadActions from './content/app/custom-download/state/customDownloadActions';
-import * as trackPanelActions from './content/app/genome-browser/components/track-panel/state/trackPanelActions';
+export const getBrowserCogList = (state: RootState) =>
+  state.browser.trackConfig.browserCogList;
 
-export type ReactRefs = {
-  [key: string]: RefObject<HTMLElement>;
-};
+export const getBrowserCogTrackList = (state: RootState) =>
+  state.browser.trackConfig.browserCogTrackList;
 
-export type EventHandlers = {
-  [key: string]: ReactEventHandler;
-};
+export const getBrowserSelectedCog = (state: RootState) =>
+  state.browser.trackConfig.selectedCog;
 
-export type RootAction =
-  | typeof browserActions
-  | typeof customDownloadActions
-  | typeof trackPanelActions;
+export const getTrackConfigNames = (state: RootState) =>
+  state.browser.trackConfig.trackConfigNames;
+
+export const getTrackConfigLabel = (state: RootState) =>
+  state.browser.trackConfig.trackConfigLabel;
+
+export const getApplyToAllConfig = (state: RootState) =>
+  state.browser.trackConfig.applyToAllConfig;

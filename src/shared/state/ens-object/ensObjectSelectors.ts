@@ -19,7 +19,7 @@ import get from 'lodash/get';
 import { buildEnsObjectId, EnsObjectIdConstituents } from './ensObjectHelpers';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import { RootState } from 'src/store';

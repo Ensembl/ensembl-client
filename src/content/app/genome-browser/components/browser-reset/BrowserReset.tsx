@@ -19,10 +19,7 @@ import { useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import {
-  getBrowserActiveEnsObjectId,
-  isFocusObjectPositionDefault
-} from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveEnsObjectId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -33,12 +30,9 @@ import { Status } from 'src/shared/types/status';
 import styles from './BrowserReset.scss';
 
 export const BrowserReset = () => {
-  const isFocusObjectInDefaultPosition = useSelector(
-    isFocusObjectPositionDefault
-  );
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const focusObjectId = useSelector(getBrowserActiveEnsObjectId);
-  const isActive = !isFocusObjectInDefaultPosition && !isDrawerOpened;
+  const isActive = !isDrawerOpened;
 
   const { changeFocusObject } = useGenomeBrowser();
 

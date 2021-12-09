@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { defaultDrawerStateForGenome } from './drawerSlice';
 
 import type { RootState } from 'src/store';
 
 export const getActiveDrawer = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeDrawer = activeGenomeId && state.drawer[activeGenomeId];
+  const activeDrawer = activeGenomeId && state.browser.drawer[activeGenomeId];
 
   return activeDrawer || defaultDrawerStateForGenome;
 };

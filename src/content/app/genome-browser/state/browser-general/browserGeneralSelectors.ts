@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
-import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
-
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import { Status } from 'src/shared/types/status';
+import { RootState } from 'src/store';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
-  state.browser.browserEntity.activeGenomeId;
+  state.browser.browserGeneral.activeGenomeId;
 
 export const getBrowserActiveGenomeInfo = (state: RootState) => {
   const allGenomesInfo = getGenomeInfo(state);
@@ -32,7 +31,7 @@ export const getBrowserActiveGenomeInfo = (state: RootState) => {
 };
 
 export const getBrowserActiveEnsObjectIds = (state: RootState) =>
-  state.browser.browserEntity.activeEnsObjectIds;
+  state.browser.browserGeneral.activeEnsObjectIds;
 
 export const getBrowserActiveEnsObjectId = (state: RootState) => {
   const activeEnsObjectIds = getBrowserActiveEnsObjectIds(state);
@@ -49,7 +48,7 @@ export const getBrowserActiveEnsObject = (state: RootState) => {
 };
 
 export const getBrowserTrackStates = (state: RootState) =>
-  state.browser.browserEntity.trackStates;
+  state.browser.browserGeneral.trackStates;
 
 export const getBrowserTrackState = (
   state: RootState,
@@ -84,28 +83,12 @@ export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
   return activeGenomeId
-    ? state.browser.browserEntity.trackStates[activeGenomeId]
+    ? state.browser.browserGeneral.trackStates[activeGenomeId]
     : null;
 };
 
-export const getBrowserNavOpenState = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  if (!activeGenomeId) {
-    return false;
-  }
-
-  return state.browser.browserNav.browserNavOpenState[activeGenomeId] || false;
-};
-
-export const getBrowserNavIconStates = (state: RootState) => {
-  return (
-    state.browser.browserNav.browserNavIconStates || defaultBrowserNavIconsState
-  );
-};
-
 export const getAllChrLocations = (state: RootState) =>
-  state.browser.browserLocation.chrLocations;
+  state.browser.browserGeneral.chrLocations;
 
 export const getChrLocation = (state: RootState) => {
   const chrLocations = getAllChrLocations(state);
@@ -114,7 +97,7 @@ export const getChrLocation = (state: RootState) => {
 };
 
 export const getActualChrLocation = (state: RootState) => {
-  const locations = state.browser.browserLocation.actualChrLocations;
+  const locations = state.browser.browserGeneral.actualChrLocations;
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId ? locations[activeGenomeId] : null;
 };
@@ -132,28 +115,7 @@ export const getDefaultChrLocation = (state: RootState) => {
 };
 
 export const getRegionEditorActive = (state: RootState) =>
-  state.browser.browserLocation.regionEditorActive;
+  state.browser.browserGeneral.regionEditorActive;
 
 export const getRegionFieldActive = (state: RootState) =>
-  state.browser.browserLocation.regionFieldActive;
-
-export const getBrowserCogList = (state: RootState) =>
-  state.browser.trackConfig.browserCogList;
-
-export const getBrowserCogTrackList = (state: RootState) =>
-  state.browser.trackConfig.browserCogTrackList;
-
-export const getBrowserSelectedCog = (state: RootState) =>
-  state.browser.trackConfig.selectedCog;
-
-export const getTrackConfigNames = (state: RootState) =>
-  state.browser.trackConfig.trackConfigNames;
-
-export const getTrackConfigLabel = (state: RootState) =>
-  state.browser.trackConfig.trackConfigLabel;
-
-export const getApplyToAllConfig = (state: RootState) =>
-  state.browser.trackConfig.applyToAllConfig;
-
-export const isFocusObjectPositionDefault = (state: RootState) =>
-  state.browser.browserLocation.isObjectInDefaultPosition;
+  state.browser.browserGeneral.regionFieldActive;
