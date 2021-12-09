@@ -119,6 +119,3 @@ export const getRegionEditorActive = (state: RootState) =>
 
 export const getRegionFieldActive = (state: RootState) =>
   state.browser.browserGeneral.regionFieldActive;
-
-export const isFocusObjectPositionDefault = (state: RootState) =>
-  state.browser.browserGeneral.isObjectInDefaultPosition;

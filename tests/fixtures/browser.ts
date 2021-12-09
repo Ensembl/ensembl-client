@@ -194,8 +194,7 @@ export const createMockBrowserState = () => {
         },
         actualChrLocations: {},
         regionEditorActive: false,
-        regionFieldActive: false,
-        isObjectInDefaultPosition: false
+        regionFieldActive: false
       },
       browserNav: {
         browserNavOpenState: {},
