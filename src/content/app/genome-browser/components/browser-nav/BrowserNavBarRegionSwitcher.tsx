@@ -25,7 +25,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import {
   toggleRegionEditorActive,
   toggleRegionFieldActive
-} from 'src/content/app/genome-browser/state/browserActions';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 

@@ -38,13 +38,14 @@ import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave
-} from '../state/browserActions';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectIds,
-  getAllChrLocations
-} from '../state/browserSelectors';
+  getBrowserActiveEnsObjectIds
+} from '../state/browser-general/browserGeneralSelectors';
+
+import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -123,16 +124,17 @@ const useBrowserRouting = () => {
        before it gets changed by setDataFromUrlAndSave
       */
       changeFocusObject(newFocusId);
-    } else if (newFocusId && chrLocation) {
+    } else if (focus && chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
       if (genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
-          changeFocusObject(newFocusId);
+          const { objectId } = parseFocusIdFromUrl(focus);
+
           changeBrowserLocation({
             genomeId,
-            ensObjectId: newFocusId,
+            focusId: objectId,
             chrLocation
           });
 

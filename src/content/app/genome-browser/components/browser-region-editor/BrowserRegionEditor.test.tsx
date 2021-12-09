@@ -24,7 +24,7 @@ import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import * as browserActions from 'src/content/app/genome-browser/state/browserActions';
+import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
 
@@ -71,7 +71,7 @@ jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 describe('<BrowserRegionEditor />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
-    jest.spyOn(browserActions, 'toggleRegionEditorActive');
+    jest.spyOn(browserGeneralActions, 'toggleRegionEditorActive');
   });
 
   describe('rendering', () => {
@@ -92,7 +92,7 @@ describe('<BrowserRegionEditor />', () => {
 
     it('has an overlay on top when disabled', () => {
       const { container } = renderComponent(
-        set('browser.browserLocation.regionFieldActive', true, mockState)
+        set('browser.browserGeneral.regionFieldActive', true, mockState)
       );
 
       expect(container.querySelector('.overlay')).toBeTruthy();
@@ -105,12 +105,14 @@ describe('<BrowserRegionEditor />', () => {
       const form = container.querySelector('form') as HTMLFormElement;
       fireEvent.focus(form);
 
-      expect(browserActions.toggleRegionEditorActive).toHaveBeenCalledTimes(1);
+      expect(
+        browserGeneralActions.toggleRegionEditorActive
+      ).toHaveBeenCalledTimes(1);
     });
 
     it('validates region input on submit', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
-      const [stick] = (mockState.browser.browserLocation.chrLocations as any)[
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
+      const [stick] = (mockState.browser.browserGeneral.chrLocations as any)[
         activeGenomeId
       ];
       const locationStartInput = getCommaSeparatedNumber(
@@ -134,7 +136,7 @@ describe('<BrowserRegionEditor />', () => {
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
-        genomeId: mockState.browser.browserEntity.activeGenomeId,
+        genomeId: mockState.browser.browserGeneral.activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });
@@ -268,10 +270,8 @@ describe('<BrowserRegionEditor />', () => {
         userEvent.click(submitButton);
         expect(mockChangeBrowserLocation).toHaveBeenCalled();
 
-        const { ensObjectId, chrLocation } =
-          mockChangeBrowserLocation.mock.calls[0][0];
+        const { chrLocation } = mockChangeBrowserLocation.mock.calls[0][0];
         const [, start, end] = chrLocation;
-        expect(ensObjectId).toBe(null);
         expect(start).toBe(getNumberWithoutCommas(locationStartInput));
         expect(end).toBe(getNumberWithoutCommas(locationEndInput));
       });

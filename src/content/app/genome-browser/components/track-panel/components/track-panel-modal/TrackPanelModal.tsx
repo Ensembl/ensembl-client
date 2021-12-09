@@ -17,8 +17,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getTrackPanelModalView } from '../../state/trackPanelSelectors';
-import { closeTrackPanelModal } from '../../state/trackPanelActions';
+import { getTrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { closeTrackPanelModal } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';

@@ -24,7 +24,7 @@ import {
   updateApplyToAll,
   updateApplyToAllTrackLabels,
   updateApplyToAllTrackNames
-} from 'src/content/app/genome-browser/state/browserActions';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 import {
   getTrackConfigNames,
@@ -32,7 +32,7 @@ import {
   getApplyToAllConfig,
   getBrowserCogTrackList,
   getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -72,11 +72,13 @@ export const BrowserTrackConfig = () => {
       dispatch(updateApplyToAllTrackNames(isTrackNameShown));
 
       Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(updateTrackConfigNames(name, isTrackNameShown));
+        dispatch(
+          updateTrackConfigNames({ selectedCog: name, isTrackNameShown })
+        );
         tracksToUpdate.push(name);
       });
     } else {
-      dispatch(updateTrackConfigNames(selectedCog, isTrackNameShown));
+      dispatch(updateTrackConfigNames({ selectedCog, isTrackNameShown }));
       tracksToUpdate.push(selectedCog);
     }
 
@@ -104,33 +106,35 @@ export const BrowserTrackConfig = () => {
   };
 
   const updateLabel = (options: {
-    isTrackLabelsShown: boolean;
+    isTrackLabelShown: boolean;
     applyToAll: boolean;
   }) => {
-    const { isTrackLabelsShown, applyToAll } = options;
+    const { isTrackLabelShown, applyToAll } = options;
 
     const tracksToUpdate = [];
 
     if (applyToAll) {
-      dispatch(updateApplyToAllTrackLabels(isTrackLabelsShown));
+      dispatch(updateApplyToAllTrackLabels(isTrackLabelShown));
 
       Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(updateTrackConfigLabel(name, isTrackLabelsShown));
+        dispatch(
+          updateTrackConfigLabel({ selectedCog: name, isTrackLabelShown })
+        );
         tracksToUpdate.push(name);
       });
     } else {
-      dispatch(updateTrackConfigLabel(selectedCog, isTrackLabelsShown));
+      dispatch(updateTrackConfigLabel({ selectedCog, isTrackLabelShown }));
       tracksToUpdate.push(selectedCog);
     }
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'feature_label_' + (isTrackLabelsShown ? 'on' : 'off')
+      action: 'feature_label_' + (isTrackLabelShown ? 'on' : 'off')
     });
 
     genomeBrowser?.send({
-      type: isTrackLabelsShown
+      type: isTrackLabelShown
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {
@@ -141,7 +145,7 @@ export const BrowserTrackConfig = () => {
 
   const toggleLabel = () => {
     updateLabel({
-      isTrackLabelsShown: !shouldShowTrackLabels,
+      isTrackLabelShown: !shouldShowTrackLabels,
       applyToAll: applyToAllConfig.isSelected
     });
   };
@@ -156,7 +160,7 @@ export const BrowserTrackConfig = () => {
       applyToAll: shouldApplyToAll
     });
     updateLabel({
-      isTrackLabelsShown: shouldShowTrackLabels,
+      isTrackLabelShown: shouldShowTrackLabels,
       applyToAll: shouldApplyToAll
     });
 

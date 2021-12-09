@@ -20,15 +20,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getIsTrackPanelOpened,
   getTrackPanelModalView
-} from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   toggleTrackPanel,
   closeTrackPanelModal,
   openTrackPanelModal
-} from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 

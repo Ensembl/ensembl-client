@@ -23,11 +23,12 @@ import * as constants from './chromosomeNavigatorConstants';
 
 import { calculateStyles } from './chromosomeNavigatorHelper';
 
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
 import {
-  getBrowserActiveGenomeId,
   getActualChrLocation,
   getDefaultChrLocation
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { getKaryotypeItemLength } from 'src/shared/state/genome/genomeSelectors';
 

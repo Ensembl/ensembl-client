@@ -20,13 +20,14 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
-
-import { BrowserCogList } from './BrowserCogList';
-import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
-
 import { IncomingActionType } from 'ensembl-genome-browser';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+import { BrowserCogList } from './BrowserCogList';
+
 import { createMockBrowserState } from 'tests/fixtures/browser';
+import { updateCogTrackList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
@@ -104,7 +105,7 @@ describe('<BrowserCogList />', () => {
       const dispatchedActions = store.getActions();
 
       const updateCogTrackListAction = dispatchedActions.find(
-        (action) => action.type === 'browser/update-cog-track-list'
+        (action) => action.type === updateCogTrackList.type
       );
 
       expect(updateCogTrackListAction.payload).toEqual({

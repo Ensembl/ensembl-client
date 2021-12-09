@@ -23,7 +23,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import * as trackPanelActions from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
+import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { TrackPanelTabs } from './TrackPanelTabs';
@@ -31,7 +31,7 @@ import { TrackPanelTabs } from './TrackPanelTabs';
 import { TrackSet } from '../../trackPanelConfig';
 
 const mockState = createMockBrowserState();
-const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
 const mockStore = configureMockStore([thunk]);
 
@@ -110,7 +110,11 @@ describe('<TrackPanelTabs />', () => {
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
         container = renderComponent(
-          set(`drawer.${activeGenomeId}.isDrawerOpened`, true, mockState)
+          set(
+            `browser.drawer.${activeGenomeId}.isDrawerOpened`,
+            true,
+            mockState
+          )
         ).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 

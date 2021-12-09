@@ -19,9 +19,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browserActions';
+import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';

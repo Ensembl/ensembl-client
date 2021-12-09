@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { defaultDrawerStateForGenome } from './drawerSlice';
+import { RootState } from 'src/store';
 
-import type { RootState } from 'src/store';
+export const getBrowserCogList = (state: RootState) =>
+  state.browser.trackConfig.browserCogList;
 
-export const getActiveDrawer = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeDrawer = activeGenomeId && state.browser.drawer[activeGenomeId];
+export const getBrowserCogTrackList = (state: RootState) =>
+  state.browser.trackConfig.browserCogTrackList;
 
-  return activeDrawer || defaultDrawerStateForGenome;
-};
+export const getBrowserSelectedCog = (state: RootState) =>
+  state.browser.trackConfig.selectedCog;
 
-export const getActiveDrawerView = (state: RootState) =>
-  getActiveDrawer(state).drawerView;
+export const getTrackConfigNames = (state: RootState) =>
+  state.browser.trackConfig.trackConfigNames;
 
-export const getIsDrawerOpened = (state: RootState) =>
-  getActiveDrawer(state).drawerView !== null;
+export const getTrackConfigLabel = (state: RootState) =>
+  state.browser.trackConfig.trackConfigLabel;
+
+export const getApplyToAllConfig = (state: RootState) =>
+  state.browser.trackConfig.applyToAllConfig;

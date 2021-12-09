@@ -23,7 +23,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';

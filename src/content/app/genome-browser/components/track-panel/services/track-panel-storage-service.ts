@@ -17,7 +17,8 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { PreviouslyViewedObject } from '../state/trackPanelState';
+
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 export enum StorageKeys {
   BOOKMARKS = 'trackPanel.bookmarks',

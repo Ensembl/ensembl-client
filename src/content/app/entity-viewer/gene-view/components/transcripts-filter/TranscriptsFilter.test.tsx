@@ -58,9 +58,6 @@ const mockState = {
       human: {
         status: Status.OPEN
       }
-    },
-    bookmarks: {
-      previouslyViewed: {}
     }
   }
 };
