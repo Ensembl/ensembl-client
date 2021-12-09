@@ -36,7 +36,7 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -45,7 +45,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
-import { EnsObjectGene } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObjectGene } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
@@ -165,8 +165,8 @@ type Props = {
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const focusObjectGene = useSelector(
-    getBrowserActiveEnsObject
-  ) as EnsObjectGene;
+    getBrowserActiveFocusObject
+  ) as FocusObjectGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({

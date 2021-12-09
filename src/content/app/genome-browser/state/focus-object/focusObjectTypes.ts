@@ -16,23 +16,23 @@
 
 import { Strand } from 'src/shared/types/thoas/strand';
 
-export type EnsObjectLocation = {
+export type FocusObjectLocation = {
   chromosome: string;
   end: number;
   start: number;
 };
 
-export type EnsObjectType = 'gene' | 'region';
+export type FocusObjectType = 'gene' | 'region';
 
-type BasicEnsObject = {
+type BasicFocusObject = {
   object_id: string;
   genome_id: string;
   label: string;
-  location: EnsObjectLocation;
-  type: EnsObjectType;
+  location: FocusObjectLocation;
+  type: FocusObjectType;
 };
 
-export type EnsObjectGene = BasicEnsObject & {
+export type FocusObjectGene = BasicFocusObject & {
   type: 'gene';
   stable_id: string;
   versioned_stable_id: string;
@@ -40,15 +40,15 @@ export type EnsObjectGene = BasicEnsObject & {
   strand: Strand;
 };
 
-export type EnsObjectRegion = BasicEnsObject & {
+export type FocusObjectRegion = BasicFocusObject & {
   type: 'region';
 };
 
-export type EnsObject = EnsObjectGene | EnsObjectRegion;
+export type FocusObject = FocusObjectGene | FocusObjectRegion;
 
-export type EnsObjectTrack = {
+export type FocusObjectTrack = {
   additional_info?: string;
-  child_tracks?: EnsObjectTrack[];
+  child_tracks?: FocusObjectTrack[];
   colour?: string;
   label: string;
   ensembl_object_id?: string;
@@ -58,4 +58,4 @@ export type EnsObjectTrack = {
   description: string | null;
 };
 
-export type EnsObjectResponse = EnsObjectGene;
+export type FocusObjectResponse = FocusObjectGene;

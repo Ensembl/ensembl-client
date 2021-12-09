@@ -31,7 +31,7 @@ import {
   getDisplayStableId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
@@ -39,7 +39,7 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { EnsObjectGene } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObjectGene } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
@@ -106,8 +106,8 @@ type Gene = Pick<
 
 const GeneSummary = () => {
   const focusObjectGene = useSelector(
-    getBrowserActiveEnsObject
-  ) as EnsObjectGene;
+    getBrowserActiveFocusObject
+  ) as FocusObjectGene;
   const [shouldShowDownload, showDownload] = useState(false);
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {

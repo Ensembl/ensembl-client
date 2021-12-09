@@ -19,9 +19,9 @@ import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
-import { EnsObjectTrack } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObjectTrack } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 import {
-  getBrowserActiveEnsObject,
+  getBrowserActiveFocusObject,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
@@ -41,7 +41,7 @@ import styles from './TrackPanelList.scss';
 
 export const TrackPanelList = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
+  const activeFocusObject = useSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const genomeTrackCategories = useSelector(getGenomeTrackCategoriesById);
 
@@ -60,14 +60,14 @@ export const TrackPanelList = () => {
 
   return (
     <div className={styles.trackPanelList}>
-      {activeEnsObject?.type === 'gene' &&
+      {activeFocusObject?.type === 'gene' &&
       activeGenomeId &&
-      activeEnsObject.stable_id ? (
+      activeFocusObject.stable_id ? (
         <section className="mainTrackItem">
           <TrackPanelGene
-            focusObjectId={activeEnsObject.object_id}
+            focusObjectId={activeFocusObject.object_id}
             genomeId={activeGenomeId}
-            geneId={activeEnsObject.stable_id}
+            geneId={activeFocusObject.stable_id}
           />
         </section>
       ) : null}
@@ -106,7 +106,7 @@ export const TrackPanelList = () => {
                   className={styles.trackPanelAccordionItemContent}
                 >
                   <dl>
-                    {category.track_list.map((track: EnsObjectTrack) => (
+                    {category.track_list.map((track: FocusObjectTrack) => (
                       <TrackPanelRegularItem
                         {...track}
                         genomeId={activeGenomeId}

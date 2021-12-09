@@ -28,15 +28,15 @@ import browserStorageService from 'src/content/app/genome-browser/services/brows
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
 
-import { parseEnsObjectId } from 'src/shared/helpers/focusObjectHelpers';
+import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getApplyToAllConfig } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
-  getBrowserActiveEnsObjectId,
+  getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateBrowserActiveFocusObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
@@ -46,7 +46,7 @@ import { ChrLocation } from 'src/content/app/genome-browser/state/browser-genera
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
 
-  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
+  const activeFocusObjectId = useSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const { allTrackLabelsOn, allTrackNamesOn } =
     useSelector(getApplyToAllConfig);
@@ -78,10 +78,10 @@ const useGenomeBrowser = () => {
       return;
     }
 
-    const { genomeId, objectId } = parseEnsObjectId(focusObjectId);
+    const { genomeId, objectId } = parseFocusObjectId(focusObjectId);
 
     dispatch(updatePreviouslyViewedObjectsAndSave());
-    dispatch(updateBrowserActiveEnsObjectIdsAndSave(focusObjectId));
+    dispatch(updateBrowserActiveFocusObjectIdsAndSave(focusObjectId));
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
@@ -102,7 +102,7 @@ const useGenomeBrowser = () => {
   };
 
   const restoreBrowserTrackStates = () => {
-    if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
+    if (!activeGenomeId || !activeFocusObjectId || !genomeBrowser) {
       return;
     }
 
@@ -110,7 +110,7 @@ const useGenomeBrowser = () => {
     const mergedTrackStates = {
       ...get(
         trackStatesFromStorage,
-        `${activeGenomeId}.objectTracks.${activeEnsObjectId}`
+        `${activeGenomeId}.objectTracks.${activeFocusObjectId}`
       ),
       ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
     } as TrackStates;

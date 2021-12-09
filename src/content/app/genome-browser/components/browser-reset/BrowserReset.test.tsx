@@ -62,7 +62,7 @@ describe('<BrowserReset />', () => {
 
     it('renders nothing when focus feature does not exist', () => {
       const { container } = renderComponent(
-        set('browser.browserGeneral.activeEnsObjectIds', {}, mockState)
+        set('browser.browserGeneral.activeFocusObjectIds', {}, mockState)
       );
 
       expect(container.firstChild).toBeFalsy();
@@ -76,7 +76,7 @@ describe('<BrowserReset />', () => {
       userEvent.click(button);
 
       expect(mockChangeFocusObject).toHaveBeenCalledWith(
-        (mockState.browser.browserGeneral.activeEnsObjectIds as any)[
+        (mockState.browser.browserGeneral.activeFocusObjectIds as any)[
           mockState.browser.browserGeneral.activeGenomeId
         ]
       );

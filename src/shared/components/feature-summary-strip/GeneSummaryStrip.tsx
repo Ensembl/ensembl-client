@@ -23,7 +23,7 @@ import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { EnsObjectGene } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObjectGene } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -43,7 +43,7 @@ type GeneFields =
   | 'stable_id'
   | 'strand'
   | 'location';
-type Gene = Pick<EnsObjectGene, GeneFields>;
+type Gene = Pick<FocusObjectGene, GeneFields>;
 
 type Props = {
   gene: Gene;

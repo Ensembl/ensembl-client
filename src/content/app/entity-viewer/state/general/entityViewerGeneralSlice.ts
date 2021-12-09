@@ -18,7 +18,7 @@ import { createSlice, PayloadAction, Action } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 
 import {
-  buildEnsObjectId,
+  buildFocusObjectId,
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
@@ -76,7 +76,7 @@ export const setDataFromUrl =
     }
 
     const entityId = params.entityId
-      ? buildEnsObjectId({
+      ? buildFocusObjectId({
           genomeId: genomeIdFromUrl as string,
           ...parseFocusIdFromUrl(params.entityId)
         })

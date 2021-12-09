@@ -16,19 +16,18 @@
 
 import get from 'lodash/get';
 
-import {
-  buildEnsObjectId,
-  EnsObjectIdConstituents
-} from '../../helpers/focusObjectHelpers';
-
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
+import { FocusObject } from './focusObjectTypes';
+import {
+  buildFocusObjectId,
+  FocusObjectIdConstituents
+} from 'src/shared/helpers/focusObjectHelpers';
 import { RootState } from 'src/store';
-import { EnsObject } from './focusObjectTypes';
 
-export const getEnsObjectLoadingStatus = (
+export const getFocusObjectLoadingStatus = (
   state: RootState,
   objectId: string
 ): LoadingState =>
@@ -38,22 +37,22 @@ export const getEnsObjectLoadingStatus = (
     LoadingState.NOT_REQUESTED
   );
 
-export const getEnsObjectById = (
+export const getFocusObjectById = (
   state: RootState,
   objectId: string
-): EnsObject | null => {
+): FocusObject | null => {
   return get(state, `focusObjects.${objectId}.data`, null);
 };
 
-export const getEnsObjectByParams = (
+export const getFocusObjectByParams = (
   state: RootState,
-  params: EnsObjectIdConstituents
-): EnsObject | null => {
-  const focusObjectId = buildEnsObjectId(params);
-  return getEnsObjectById(state, focusObjectId);
+  params: FocusObjectIdConstituents
+): FocusObject | null => {
+  const focusObjectId = buildFocusObjectId(params);
+  return getFocusObjectById(state, focusObjectId);
 };
 
-export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
+export const getExampleFocusObjects = (state: RootState): FocusObject[] => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   if (!activeGenomeId) {
     return [];
@@ -61,16 +60,18 @@ export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
   const exampleObjects = getGenomeExampleFocusObjects(state, activeGenomeId);
   return exampleObjects
     .map(({ id, type }) => {
-      const focusObjectId = buildEnsObjectId({
+      const focusObjectId = buildFocusObjectId({
         genomeId: activeGenomeId,
         type,
         objectId: id
       });
-      return state.focusObjects[focusObjectId]?.data;
+      return state.browser.focusObjects[focusObjectId]?.data;
     })
-    .filter(Boolean) as EnsObject[]; // make sure there are no undefineds in the returned array;
+    .filter(Boolean) as FocusObject[]; // make sure there are no undefineds in the returned array;
 };
 
-export const getExampleGenes = (state: RootState): EnsObject[] => {
-  return getExampleEnsObjects(state).filter((entity) => entity.type === 'gene');
+export const getExampleGenes = (state: RootState): FocusObject[] => {
+  return getExampleFocusObjects(state).filter(
+    (entity) => entity.type === 'gene'
+  );
 };

@@ -24,10 +24,10 @@ import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/Fea
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { EnsObject } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserBar.scss';
@@ -36,12 +36,12 @@ export type BrowserBarProps = {
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
-  focusObject: EnsObject | null;
+  focusObject: FocusObject | null;
 };
 
 export const BrowserBar = () => {
   const chrLocation = useSelector(getChrLocation);
-  const focusObject = useSelector(getBrowserActiveEnsObject);
+  const focusObject = useSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout

@@ -23,7 +23,6 @@ import genome from 'src/shared/state/genome/genomeReducer';
 import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
 import global from 'src/global/globalReducer';
 import header from 'src/header/headerReducer';
-import focusObjects from 'src/shared/state/focus-object/focusObjectSlice';
 import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
@@ -35,7 +34,6 @@ const createRootReducer = (history: any) =>
     browser,
     customDownload,
     communication,
-    focusObjects,
     inAppSearch,
     genome,
     global,

@@ -21,7 +21,7 @@ import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType
 } from 'src/shared/state/genome/genomeTypes';
-import { EnsObjectTrack } from 'src/shared/state/focus-object/focusObjectTypes';
+import { FocusObjectTrack } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
@@ -44,7 +44,7 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
   }
 ];
 
-const createTrack = (): EnsObjectTrack => {
+const createTrack = (): FocusObjectTrack => {
   return {
     additional_info: faker.lorem.words(),
     colour: 'DARK_GREY',

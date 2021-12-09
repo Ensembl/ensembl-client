@@ -82,7 +82,7 @@ const mockState = {
   browser: {
     browserGeneral: {
       activeGenomeId: genomeId,
-      activeEnsObjectIds: {
+      activeFocusObjectIds: {
         [genomeId]: geneObjectId
       }
     },

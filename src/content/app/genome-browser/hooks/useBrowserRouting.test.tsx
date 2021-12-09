@@ -75,7 +75,7 @@ const mockState = {
   browser: {
     browserGeneral: {
       activeGenomeId: 'human',
-      activeEnsObjectIds: {
+      activeFocusObjectIds: {
         human: 'human:gene:ENSG00000139618'
       },
       chrLocations: {
@@ -183,7 +183,7 @@ describe('useBrowserRouting', () => {
 
       expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
         activeGenomeId: 'human',
-        activeEnsObjectId: null,
+        activeFocusObjectId: null,
         chrLocation: null
       });
     });
@@ -211,7 +211,7 @@ describe('useBrowserRouting', () => {
 
       expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
         activeGenomeId: 'human',
-        activeEnsObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
+        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
         chrLocation: null
       });
 
@@ -240,7 +240,7 @@ describe('useBrowserRouting', () => {
 
       expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
         activeGenomeId: 'human',
-        activeEnsObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
+        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
         chrLocation: ['13', 100, 200]
       });
 
@@ -280,7 +280,7 @@ describe('useBrowserRouting', () => {
 
       it('redirects to correct url when only focus id for new genome is available', () => {
         const updatedState = set(
-          'browser.browserGeneral.activeEnsObjectIds.wheat',
+          'browser.browserGeneral.activeFocusObjectIds.wheat',
           'wheat:gene:TraesCS3D02G273600',
           mockState
         );
@@ -302,7 +302,7 @@ describe('useBrowserRouting', () => {
 
       it('redirects to correct url when both focus id and location for new genome are available', () => {
         let updatedState = set(
-          'browser.browserGeneral.activeEnsObjectIds.wheat',
+          'browser.browserGeneral.activeFocusObjectIds.wheat',
           'wheat:gene:TraesCS3D02G273600',
           mockState
         );

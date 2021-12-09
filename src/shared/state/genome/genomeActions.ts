@@ -25,7 +25,7 @@ import {
   GenomeKaryotypeItem
 } from './genomeTypes';
 
-import { fetchExampleEnsObjects } from 'src/shared/state/focus-object/focusObjectSlice';
+import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import {
   getGenomeInfoById,
@@ -52,7 +52,7 @@ export const fetchGenomeData =
 
     dispatch(ensureSpeciesIsCommitted(genomeId));
 
-    dispatch(fetchExampleEnsObjects(genomeId));
+    dispatch(fetchExampleFocusObjects(genomeId));
   };
 
 export const fetchGenomeInfo: ActionCreator<

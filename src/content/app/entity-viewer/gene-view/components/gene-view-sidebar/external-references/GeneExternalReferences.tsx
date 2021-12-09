@@ -20,7 +20,7 @@ import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
 import { Pick2 } from 'ts-multipick';
 
-import { parseEnsObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
+import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
@@ -122,7 +122,9 @@ type Gene = {
 const GeneExternalReferences = () => {
   const params: EntityViewerParams = useParams();
   const { entityId, genomeId } = params;
-  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+  const stableId = entityId
+    ? parseFocusObjectIdFromUrl(entityId).objectId
+    : null;
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 

@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { TrackSet } from '../../trackPanelConfig';
 
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getSelectedTrackPanelTab,
   getIsTrackPanelModalOpened,
@@ -37,7 +37,7 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 import styles from './TrackPanelTabs.scss';
 
 export const TrackPanelTabs = () => {
-  const focusObject = useSelector(getBrowserActiveEnsObject);
+  const focusObject = useSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);

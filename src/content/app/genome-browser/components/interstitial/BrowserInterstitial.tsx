@@ -19,10 +19,10 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getExampleGenes } from 'src/shared/state/focus-object/focusObjectSelectors';
+import { getExampleGenes } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import {
-  parseEnsObjectId,
+  parseFocusObjectId,
   buildFocusIdForUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -58,8 +58,8 @@ const ExampleLinks = () => {
   const focusObjects = useSelector(getExampleGenes);
 
   const links = focusObjects.map((exampleObject) => {
-    const parsedEnsObjectId = parseEnsObjectId(exampleObject.object_id);
-    const focusId = buildFocusIdForUrl(parsedEnsObjectId);
+    const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
+    const focusId = buildFocusIdForUrl(parsedFocusObjectId);
     const path = urlFor.browser({
       genomeId: activeGenomeId,
       focus: focusId

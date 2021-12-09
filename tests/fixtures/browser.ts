@@ -185,7 +185,7 @@ export const createMockBrowserState = () => {
     browser: {
       browserGeneral: {
         activeGenomeId: 'fake_genome_id_1',
-        activeEnsObjectIds: {
+        activeFocusObjectIds: {
           fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
         },
         trackStates: createTrackStates(),

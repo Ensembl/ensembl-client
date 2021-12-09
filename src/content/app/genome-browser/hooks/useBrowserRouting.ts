@@ -30,8 +30,8 @@ import {
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
-  buildEnsObjectId,
-  parseEnsObjectId
+  buildFocusObjectId,
+  parseFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
@@ -42,7 +42,7 @@ import {
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectIds
+  getBrowserActiveFocusObjectIds
 } from '../state/browser-general/browserGeneralSelectors';
 
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
@@ -75,9 +75,11 @@ const useBrowserRouting = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
-  const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
-  const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
-  const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
+  const allActiveFocusObjectIds = useSelector(getBrowserActiveFocusObjectIds);
+  const activeFocusObjectId = genomeId
+    ? allActiveFocusObjectIds[genomeId]
+    : null;
+  const newFocusId = focus ? buildNewFocusObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
     useGenomeBrowser();
@@ -101,7 +103,7 @@ const useBrowserRouting = () => {
 
     const payload = {
       activeGenomeId: genomeId,
-      activeEnsObjectId: newFocusId,
+      activeFocusObjectId: newFocusId,
       chrLocation
     };
 
@@ -114,8 +116,10 @@ const useBrowserRouting = () => {
       dispatch(setActiveGenomeId(genomeId));
     }
 
-    if (!focus && activeEnsObjectId) {
-      const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
+    if (!focus && activeFocusObjectId) {
+      const newFocus = buildFocusIdForUrl(
+        parseFocusObjectId(activeFocusObjectId)
+      );
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
     } else if (newFocusId && !chrLocation) {
       /*
@@ -154,9 +158,9 @@ const useBrowserRouting = () => {
   const changeGenomeId = useCallback(
     (genomeId: string) => {
       const chrLocation = allChrLocations[genomeId];
-      const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
-      const focusIdForUrl = activeEnsObjectId
-        ? buildFocusIdForUrl(activeEnsObjectId)
+      const activeFocusObjectId = allActiveFocusObjectIds[genomeId];
+      const focusIdForUrl = activeFocusObjectId
+        ? buildFocusIdForUrl(activeFocusObjectId)
         : null;
 
       const nextUrlParams = {
@@ -189,9 +193,9 @@ const useBrowserRouting = () => {
   };
 };
 
-const buildNewEnsObjectId = (genomeId: string, focusFromUrl: string) => {
+const buildNewFocusObjectId = (genomeId: string, focusFromUrl: string) => {
   const parsedFocus = parseFocusIdFromUrl(focusFromUrl);
-  return buildEnsObjectId({ genomeId, ...parsedFocus });
+  return buildFocusObjectId({ genomeId, ...parsedFocus });
 };
 
 export default useBrowserRouting;

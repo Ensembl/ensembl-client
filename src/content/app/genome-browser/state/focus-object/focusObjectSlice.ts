@@ -25,22 +25,22 @@ import { getTrackPanelGene } from 'src/content/app/genome-browser/state/genomeBr
 import { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
-  buildEnsObjectId,
+  buildFocusObjectId,
   buildRegionObject,
-  EnsObjectIdConstituents,
-  parseEnsObjectId
+  FocusObjectIdConstituents,
+  parseFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
-import { getEnsObjectLoadingStatus } from 'src/shared/state/focus-object/focusObjectSelectors';
+import { getFocusObjectLoadingStatus } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import { RootState } from 'src/store';
-import { EnsObject, EnsObjectGene } from './focusObjectTypes';
+import { FocusObject, FocusObjectGene } from './focusObjectTypes';
 
-export type EnsObjectsState = Readonly<{
+export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
     loadingStatus: LoadingState;
-    data: EnsObject | null;
+    data: FocusObject | null;
   };
 }>;
 
@@ -53,7 +53,7 @@ type BuildGeneObjectParams = {
 // FIXME: many fields here are unnecessary for an focusObject
 export const buildGeneObject = (
   params: BuildGeneObjectParams
-): EnsObjectGene => {
+): FocusObjectGene => {
   const {
     slice: {
       location: { start, end },
@@ -86,36 +86,36 @@ const buildLoadingObject = (id: string) => ({
   }
 });
 
-const buildLoadedObject = (payload: { id: string; data: EnsObject }) => ({
+const buildLoadedObject = (payload: { id: string; data: FocusObject }) => ({
   [payload.id]: {
     data: payload.data,
     loadingStatus: LoadingState.SUCCESS
   }
 });
 
-export const fetchExampleEnsObjects =
+export const fetchExampleFocusObjects =
   (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
   async (dispatch, getState: () => RootState) => {
     const state = getState();
     const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);
 
     exampleFocusObjects.forEach(({ id, type }) => {
-      dispatch(fetchEnsObject({ genomeId, type, objectId: id }));
+      dispatch(fetchFocusObject({ genomeId, type, objectId: id }));
     });
   };
 
-export const fetchEnsObject = createAsyncThunk(
+export const fetchFocusObject = createAsyncThunk(
   'genome-browser/fetch-focus-object',
-  async (payload: string | EnsObjectIdConstituents, thunkAPI) => {
+  async (payload: string | FocusObjectIdConstituents, thunkAPI) => {
     const state = thunkAPI.getState() as RootState;
     const dispatch = thunkAPI.dispatch;
 
     if (typeof payload === 'string') {
-      payload = parseEnsObjectId(payload);
+      payload = parseFocusObjectId(payload);
     }
     const { genomeId, objectId } = payload;
-    const focusObjectId = buildEnsObjectId(payload);
-    const focusObjectLoadingStatus = getEnsObjectLoadingStatus(
+    const focusObjectId = buildFocusObjectId(payload);
+    const focusObjectLoadingStatus = getFocusObjectLoadingStatus(
       state,
       focusObjectId
     );
@@ -144,7 +144,7 @@ export const fetchEnsObject = createAsyncThunk(
       const result = await dispatchedPromise;
       dispatchedPromise.unsubscribe();
 
-      const geneEnsObject = buildGeneObject({
+      const geneFocusObject = buildGeneObject({
         objectId: focusObjectId,
         genomeId,
         gene: result.data?.gene as TrackPanelGene
@@ -152,7 +152,7 @@ export const fetchEnsObject = createAsyncThunk(
 
       return buildLoadedObject({
         id: focusObjectId,
-        data: geneEnsObject
+        data: geneFocusObject
       });
     } catch (error) {
       thunkAPI.rejectWithValue(error as Error);
@@ -162,10 +162,10 @@ export const fetchEnsObject = createAsyncThunk(
 
 const focusObjectSlice = createSlice({
   name: 'genome-browser-focus-object',
-  initialState: {} as EnsObjectsState,
+  initialState: {} as FocusObjectsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchEnsObject.fulfilled, (state, action) => {
+    builder.addCase(fetchFocusObject.fulfilled, (state, action) => {
       state = Object.assign(state, action.payload);
     });
   }
