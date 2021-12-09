@@ -16,7 +16,6 @@
 
 import React, { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
   UpdateTrackSummaryAction,
   IncomingActionType,
@@ -26,19 +25,18 @@ import {
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
+import BrowserCog from './BrowserCog';
+
 import {
   getBrowserCogList,
   getBrowserCogTrackList,
   getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
-  updateSelectedCog,
-  updateCogTrackList
-} from 'src/content/app/genome-browser/state/browserActions';
-
-import BrowserCog from './BrowserCog';
-
-import { CogList } from 'src/content/app/genome-browser/state/browserState';
+  CogList,
+  updateCogTrackList,
+  updateSelectedCog
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 import styles from './BrowserCogList.scss';
 

@@ -86,7 +86,7 @@ const renderComponent = (
 };
 
 describe('<Browser />', () => {
-  const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+  const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -95,7 +95,7 @@ describe('<Browser />', () => {
   describe('rendering', () => {
     it('renders an interstitial if no species is selected', () => {
       const { container } = renderComponent({
-        state: set('browser.browserEntity.activeGenomeId', null, mockState),
+        state: set('browser.browserGeneral.activeGenomeId', null, mockState),
         url: '/'
       });
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();

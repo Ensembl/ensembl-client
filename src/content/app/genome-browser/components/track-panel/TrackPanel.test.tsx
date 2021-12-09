@@ -79,7 +79,7 @@ describe('<TrackPanel />', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
       const { container } = renderComponent(
-        set('browser.browserEntity.activeGenomeId', null, mockState)
+        set('browser.browserGeneral.activeGenomeId', null, mockState)
       );
       expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
@@ -91,7 +91,7 @@ describe('<TrackPanel />', () => {
     });
 
     it('renders track panel modal when necessary requirements are satisfied', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
       const { container } = renderComponent(
         set(

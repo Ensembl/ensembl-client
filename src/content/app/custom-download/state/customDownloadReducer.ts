@@ -16,7 +16,6 @@
 
 import { ActionType, getType } from 'typesafe-actions';
 
-import { RootAction } from 'src/objects';
 import * as customDownloadActions from './customDownloadActions';
 import {
   CustomDownloadState,
@@ -61,7 +60,7 @@ export function customDownload(
 
 function result(
   state: ResultState = defaultResultState,
-  action: ActionType<RootAction>
+  action: ActionType<typeof customDownloadActions>
 ): ResultState {
   switch (action.type) {
     case getType(customDownloadActions.setIsLoadingResult):
@@ -82,7 +81,7 @@ function result(
 function activeConfigurations(
   state: CustomDownloadActiveConfigurations = getInitialCustomDownloadState()
     .activeConfigurations,
-  action: ActionType<RootAction>
+  action: ActionType<typeof customDownloadActions>
 ): CustomDownloadActiveConfigurations {
   switch (action.type) {
     case getType(customDownloadActions.updateActiveConfigurationForGenome):

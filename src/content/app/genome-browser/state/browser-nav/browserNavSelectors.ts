@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useSelector } from 'react-redux';
-
+import { defaultBrowserNavIconsState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import { RootState } from 'src/store';
 
-const TrackPanelSearch = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+export const getBrowserNavOpenState = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
-  return (
-    <section className="trackPanelSearch">
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="genomeBrowser"
-            genomeId={activeGenomeId}
-            mode="sidebar"
-          />
-        )}
-      </div>
-    </section>
-  );
+  if (!activeGenomeId) {
+    return false;
+  }
+
+  return state.browser.browserNav.browserNavOpenState[activeGenomeId] || false;
 };
 
-export default TrackPanelSearch;
+export const getBrowserNavIconStates = (state: RootState) => {
+  return (
+    state.browser.browserNav.browserNavIconStates || defaultBrowserNavIconsState
+  );
+};

@@ -15,6 +15,11 @@
  */
 
 import faker from 'faker';
+import {
+  ZmenuContentFeature,
+  Markup,
+  ZmenuFeatureType
+} from 'ensembl-genome-browser';
 
 import {
   getChrLocationStr,
@@ -26,20 +31,13 @@ import {
 } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-import {
-  CogList,
-  ChrLocation
-} from 'src/content/app/genome-browser/state/browserState';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { CogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import {
-  ZmenuContentFeature,
-  Markup,
-  ZmenuFeatureType
-} from 'ensembl-genome-browser';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -185,21 +183,18 @@ export const createChrLocationValues = () => {
 export const createMockBrowserState = () => {
   return {
     browser: {
-      browserEntity: {
+      browserGeneral: {
         activeGenomeId: 'fake_genome_id_1',
         activeEnsObjectIds: {
           fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
         },
-        trackStates: createTrackStates()
-      },
-      browserLocation: {
+        trackStates: createTrackStates(),
         chrLocations: {
           fake_genome_id_1: ['13', 32304804, 32384454]
         },
         actualChrLocations: {},
         regionEditorActive: false,
-        regionFieldActive: false,
-        isObjectInDefaultPosition: false
+        regionFieldActive: false
       },
       browserNav: {
         browserNavOpenState: {},
@@ -242,14 +237,14 @@ export const createMockBrowserState = () => {
           isTrackPanelOpened: true,
           collapsedTrackIds: []
         }
-      }
-    },
-    drawer: {
-      isDrawerOpened: {
-        fake_genome_id_1: false
       },
-      drawerView: {},
-      activeDrawerTrackIds: {}
+      drawer: {
+        isDrawerOpened: {
+          fake_genome_id_1: false
+        },
+        drawerView: {},
+        activeDrawerTrackIds: {}
+      }
     },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,

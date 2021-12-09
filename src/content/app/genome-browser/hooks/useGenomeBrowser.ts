@@ -30,18 +30,18 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/b
 
 import { parseEnsObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
+import { getApplyToAllConfig } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
-  getApplyToAllConfig,
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browserSelectors';
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/components/track-panel/state/trackPanelActions';
-import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-browser/state/browserActions';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();

@@ -17,24 +17,22 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
-import browser from '../content/app/genome-browser/state/browserReducer';
-import { genomeBrowserApiSlice } from '../content/app/genome-browser/state/genomeBrowserApiSlice';
-import drawer from '../content/app/genome-browser/state/drawer/drawerSlice';
-import genome from '../shared/state/genome/genomeReducer';
-import customDownload from '../content/app/custom-download/state/customDownloadReducer';
-import global from '../global/globalReducer';
-import header from '../header/headerReducer';
-import focusObjects from '../shared/state/focus-object/focusObjectSlice';
-import inAppSearch from '../shared/state/in-app-search/inAppSearchSlice';
-import communication from '../shared/state/communication/communicationSlice';
-import speciesSelector from '../content/app/species-selector/state/speciesSelectorSlice';
+import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
+import { genomeBrowserApiSlice } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
+import genome from 'src/shared/state/genome/genomeReducer';
+import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
+import global from 'src/global/globalReducer';
+import header from 'src/header/headerReducer';
+import focusObjects from 'src/shared/state/focus-object/focusObjectSlice';
+import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
+import communication from 'src/shared/state/communication/communicationSlice';
+import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 
 const createRootReducer = (history: any) =>
   combineReducers({
     browser,
-    drawer, // TODO: this should be moved in the browser reducer
     customDownload,
     communication,
     focusObjects,

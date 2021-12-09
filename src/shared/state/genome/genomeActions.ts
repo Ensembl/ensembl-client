@@ -33,7 +33,7 @@ import {
   getGenomeKaryotype
 } from 'src/shared/state/genome/genomeSelectors';
 import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_request',

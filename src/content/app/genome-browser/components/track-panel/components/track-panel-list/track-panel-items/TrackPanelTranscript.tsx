@@ -22,7 +22,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import {
   getBrowserActiveGenomeId,
   getBrowserTrackState
-} from 'src/content/app/genome-browser/state/browserSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 

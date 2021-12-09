@@ -31,7 +31,7 @@ import {
   getDisplayStableId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browserSelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';

@@ -25,7 +25,7 @@ import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserNavBarControls } from './BrowserNavBarControls';
 
-import { BrowserNavAction } from 'src/content/app/genome-browser/state/browserState';
+import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
 
 jest.mock(
@@ -62,7 +62,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
     const { container } = renderComponent(
-      set('browser.browserLocation.regionEditorActive', true, mockState)
+      set('browser.browserGeneral.regionEditorActive', true, mockState)
     );
     expect(container.querySelector('.overlay')).toBeTruthy();
   });
