@@ -26,16 +26,20 @@ import { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
   buildFocusObjectId,
-  buildRegionObject,
-  FocusObjectIdConstituents,
   parseFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { getFocusObjectLoadingStatus } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import { LoadingState } from 'src/shared/types/loading-state';
+import {
+  FocusObject,
+  FocusObjectGene,
+  FocusObjectIdConstituents,
+  FocusObjectRegion
+} from 'src/shared/types/focus-object/focusObjectTypes';
 import { RootState } from 'src/store';
-import { FocusObject, FocusObjectGene } from './focusObjectTypes';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -93,6 +97,25 @@ const buildLoadedObject = (payload: { id: string; data: FocusObject }) => ({
   }
 });
 
+const buildRegionObject = (
+  payload: FocusObjectIdConstituents
+): FocusObjectRegion => {
+  const { genomeId, objectId: regionId } = payload;
+  const [chromosome, start, end] = getChrLocationFromStr(regionId);
+
+  return {
+    type: 'region',
+    genome_id: genomeId,
+    object_id: buildFocusObjectId(payload),
+    label: regionId,
+    location: {
+      chromosome,
+      start,
+      end
+    }
+  };
+};
+
 export const fetchExampleFocusObjects =
   (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
   async (dispatch, getState: () => RootState) => {
@@ -125,10 +148,10 @@ export const fetchFocusObject = createAsyncThunk(
 
     if (payload.type === 'region') {
       const regionObject = buildRegionObject(payload);
-      return {
+      return buildLoadedObject({
         id: focusObjectId,
         data: regionObject
-      };
+      });
     }
 
     try {

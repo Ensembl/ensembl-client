@@ -59,3 +59,14 @@ export type FocusObjectTrack = {
 };
 
 export type FocusObjectResponse = FocusObjectGene;
+
+export type FocusObjectIdConstituents = {
+  genomeId: string;
+  type: string;
+  objectId: string;
+};
+
+export type UrlFocusIdConstituents = {
+  type: string;
+  objectId: string;
+};

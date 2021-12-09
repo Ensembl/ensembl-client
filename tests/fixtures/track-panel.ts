@@ -18,7 +18,7 @@ import faker from 'faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { FocusObjectTrack } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   fake_genome_id_1: {

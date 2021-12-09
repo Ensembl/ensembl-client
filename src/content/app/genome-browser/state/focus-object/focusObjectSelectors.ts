@@ -20,11 +20,11 @@ import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSele
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { FocusObject } from './focusObjectTypes';
 import {
-  buildFocusObjectId,
+  FocusObject,
   FocusObjectIdConstituents
-} from 'src/shared/helpers/focusObjectHelpers';
+} from 'src/shared/types/focus-object/focusObjectTypes';
+import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 import { RootState } from 'src/store';
 
 export const getFocusObjectLoadingStatus = (
@@ -33,7 +33,7 @@ export const getFocusObjectLoadingStatus = (
 ): LoadingState =>
   get(
     state,
-    `focusObjects.${objectId}.loadingStatus`,
+    `browser.focusObjects.${objectId}.loadingStatus`,
     LoadingState.NOT_REQUESTED
   );
 
@@ -41,7 +41,7 @@ export const getFocusObjectById = (
   state: RootState,
   objectId: string
 ): FocusObject | null => {
-  return get(state, `focusObjects.${objectId}.data`, null);
+  return get(state, `browser.focusObjects.${objectId}.data`, null);
 };
 
 export const getFocusObjectByParams = (

@@ -39,7 +39,7 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { FocusObjectGene } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObjectGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';

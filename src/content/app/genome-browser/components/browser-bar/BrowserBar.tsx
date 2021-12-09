@@ -27,7 +27,7 @@ import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/d
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { FocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserBar.scss';

@@ -21,7 +21,7 @@ import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType
 } from 'src/shared/state/genome/genomeTypes';
-import { FocusObjectTrack } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {

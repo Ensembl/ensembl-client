@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
-  FocusObjectRegion,
-  FocusObjectGene
-} from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
-
-export type FocusObjectIdConstituents = {
-  genomeId: string;
-  type: string;
-  objectId: string;
-};
-
-export type UrlFocusIdConstituents = {
-  type: string;
-  objectId: string;
-};
+  FocusObjectGene,
+  FocusObjectIdConstituents,
+  UrlFocusIdConstituents
+} from 'src/shared/types/focus-object/focusObjectTypes';
 
 // NOTE: it's possible that we will prefer to omit type from the id
 // if focus objects of different type are saved into different slots in the state
@@ -89,25 +78,6 @@ export const parseFocusObjectIdFromUrl = (
   return {
     type,
     objectId
-  };
-};
-
-export const buildRegionObject = (
-  payload: FocusObjectIdConstituents
-): FocusObjectRegion => {
-  const { genomeId, objectId: regionId } = payload;
-  const [chromosome, start, end] = getChrLocationFromStr(regionId);
-
-  return {
-    type: 'region',
-    genome_id: genomeId,
-    object_id: buildFocusObjectId(payload),
-    label: regionId,
-    location: {
-      chromosome,
-      start,
-      end
-    }
   };
 };
 

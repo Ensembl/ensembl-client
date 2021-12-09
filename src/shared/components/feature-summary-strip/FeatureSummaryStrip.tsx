@@ -18,7 +18,7 @@ import React from 'react';
 
 import { GeneSummaryStrip, RegionSummaryStrip } from '../feature-summary-strip';
 
-import { FocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export type FeatureSummaryStripProps = {
   focusObject: FocusObject;

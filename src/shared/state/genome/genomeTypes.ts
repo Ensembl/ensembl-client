@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FocusObjectTrack } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 export type ExampleFocusObject = {

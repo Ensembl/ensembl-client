@@ -30,8 +30,8 @@ import {
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
-  buildFocusObjectId,
-  parseFocusObjectId
+  parseFocusObjectId,
+  buildFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';

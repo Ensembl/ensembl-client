@@ -16,7 +16,7 @@
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { FocusObjectLocation } from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const getFormattedLocation = (location: FocusObjectLocation) => {
   const start = getCommaSeparatedNumber(location.start);

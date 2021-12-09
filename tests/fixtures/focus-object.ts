@@ -19,7 +19,7 @@ import faker from 'faker';
 import {
   FocusObject,
   FocusObjectType
-} from 'src/content/app/genome-browser/state/focus-object/focusObjectTypes';
+} from 'src/shared/types/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/thoas/strand';
 
 export const createFocusObject = (
