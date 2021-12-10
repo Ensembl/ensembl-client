@@ -244,31 +244,31 @@ export const createMockBrowserState = () => {
         },
         drawerView: {},
         activeDrawerTrackIds: {}
+      },
+      focusObjects: {
+        'fake_genome_id_1:gene:fake_gene_stable_id_1': {
+          data: {
+            type: 'gene',
+            object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_1',
+            genome_id: 'fake_genome_id_1',
+            label: 'BRCA2',
+            location: {
+              chromosome: '13',
+              start: 32315086,
+              end: 32400268
+            },
+            stable_id: 'fake_gene_stable_id',
+            versioned_stable_id: 'fake_gene_stable_id.17',
+            bio_type: 'Protein coding',
+            strand: Strand.FORWARD
+          },
+          loadingStatus: LoadingState.SUCCESS
+        }
       }
     },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
-    },
-    focusObjects: {
-      'fake_genome_id_1:gene:fake_gene_stable_id_1': {
-        data: {
-          type: 'gene',
-          object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_1',
-          genome_id: 'fake_genome_id_1',
-          label: 'BRCA2',
-          location: {
-            chromosome: '13',
-            start: 32315086,
-            end: 32400268
-          },
-          stable_id: 'fake_gene_stable_id',
-          versioned_stable_id: 'fake_gene_stable_id.17',
-          bio_type: 'Protein coding',
-          strand: Strand.FORWARD
-        },
-        loadingStatus: LoadingState.SUCCESS
-      }
     },
     genome: {
       genomeKaryotype: {

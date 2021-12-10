@@ -68,7 +68,7 @@ describe('<TrackPanelList />', () => {
       )[activeGenomeId];
       const { container } = renderComponent(
         set(
-          `focusObjects.${activeFocusObjectId}.data`,
+          `browser.focusObjects.${activeFocusObjectId}.data`,
           createFocusObject('region'),
           mockState
         )

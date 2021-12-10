@@ -73,7 +73,7 @@ describe('<BrowserBar />', () => {
 
     it('does not contain FeatureSummaryStrip when focusObject is null', () => {
       const { container } = renderComponent(
-        set('focusObjects', null, mockState)
+        set('browser.focusObjects', null, mockState)
       );
       expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
