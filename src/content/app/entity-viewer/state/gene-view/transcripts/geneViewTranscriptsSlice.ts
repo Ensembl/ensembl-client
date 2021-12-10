@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import cloneDeep from 'lodash/cloneDeep';
@@ -268,6 +268,34 @@ const ensureGenePresence = (
   }
 };
 
+export const restoreGeneViewTranscripts = createAsyncThunk(
+  'entity-viewer/restore-gene-view-transcripts',
+  () => {
+    const storedData = entityViewerStorageService.getGeneViewTranscriptsState();
+
+    if (!storedData) {
+      return {};
+    }
+    const stateToRestore = {} as GeneViewTranscriptsState;
+    Object.keys(storedData).forEach((genomeId) => {
+      const entitiesPerGenome = storedData[genomeId];
+      Object.keys(entitiesPerGenome).forEach((entityId) => {
+        ensureGenePresence(stateToRestore, {
+          activeGenomeId: genomeId,
+          activeEntityId: entityId
+        });
+
+        stateToRestore[genomeId][entityId] = {
+          ...stateToRestore[genomeId][entityId],
+          ...storedData[genomeId][entityId]
+        };
+      });
+    });
+
+    return stateToRestore;
+  }
+);
+
 type ExpandedIdsPayload = {
   activeGenomeId: string;
   activeEntityId: string;
@@ -292,43 +320,10 @@ type UpdateFilterPanelPayload = {
   filterPanelOpen: boolean;
 };
 
-export const restoreTranscriptsFiltersAndSorting =
-  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
-    const storedFiltersAndSortingData =
-      entityViewerStorageService.getGeneViewTranscriptsState();
-
-    if (!storedFiltersAndSortingData) {
-      return;
-    }
-    dispatch(
-      transcriptsSlice.actions.loadInitialState(storedFiltersAndSortingData)
-    );
-  };
-
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
   reducers: {
-    loadInitialState(
-      state,
-      action: PayloadAction<StoredGeneViewTranscriptsState>
-    ) {
-      const storedFiltersAndSortingData = action.payload;
-      Object.keys(storedFiltersAndSortingData).forEach((genomeId) => {
-        const entitiesPerGenome = storedFiltersAndSortingData[genomeId];
-        Object.keys(entitiesPerGenome).forEach((entityId) => {
-          ensureGenePresence(state, {
-            activeGenomeId: genomeId,
-            activeEntityId: entityId
-          });
-
-          state[genomeId][entityId] = {
-            ...state[genomeId][entityId],
-            ...storedFiltersAndSortingData[genomeId][entityId]
-          };
-        });
-      });
-    },
     updateExpandedTranscripts(
       state,
       action: PayloadAction<ExpandedIdsPayload>
@@ -363,6 +358,11 @@ const transcriptsSlice = createSlice({
       ensureGenePresence(state, action.payload);
       state[activeGenomeId][activeEntityId].sortingRule = sortingRule;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(restoreGeneViewTranscripts.fulfilled, (state, action) => {
+      state = action.payload;
+    });
   }
 });
 

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import merge from 'lodash/merge';
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  ThunkAction,
+  Action
+} from '@reduxjs/toolkit';
 
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
@@ -59,9 +64,27 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
       genomeId
     );
 
-    const alreadySavedGene = previouslyViewedEntities.find(
+    const isCurrentEntityPreviouslyViewed = previouslyViewedEntities?.some(
       (entity) => entity.entity_id === gene.unversioned_stable_id
     );
+
+    if (isCurrentEntityPreviouslyViewed) {
+      return {
+        genomeId,
+        updatedEntities: previouslyViewedEntities
+      };
+    }
+
+    // clear the stored data for the oldest previously viewed entity
+    if (previouslyViewedEntities.length === 20) {
+      const oldestPreviouslyViewedEntity =
+        previouslyViewedEntities[previouslyViewedEntities.length - 1];
+
+      entityViewerStorageService.clearGeneViewTranscriptsState({
+        genomeId,
+        entityId: oldestPreviouslyViewedEntity.entity_id
+      });
+    }
 
     const newPreviouslyViewedEntity = {
       entity_id: gene.unversioned_stable_id,
@@ -69,9 +92,10 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
       type: 'gene' as const
     };
 
-    const updatedEntities = alreadySavedGene
-      ? previouslyViewedEntities
-      : [newPreviouslyViewedEntity, ...previouslyViewedEntities];
+    const updatedEntities = [
+      newPreviouslyViewedEntity,
+      ...previouslyViewedEntities
+    ];
 
     // side effect
     entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
@@ -85,38 +109,14 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
   }
 );
 
-export const updatePreviouslyViewedEntity = createAsyncThunk(
-  'entity-viewer/updatePreviouslyViewedEntity',
-  (
-    params: {
-      genomeId: string;
-      previouslyViewedEntityId: string;
-      fragment: Partial<PreviouslyViewedEntity>;
-    },
-    thunkAPI
-  ) => {
-    const { genomeId, previouslyViewedEntityId, fragment } = params;
-    const state = thunkAPI.getState() as RootState;
-    const updatedEntities = getPreviouslyViewedEntities(state, genomeId).map(
-      (entity) => {
-        if (entity.entity_id === previouslyViewedEntityId) {
-          return merge({}, entity, fragment);
-        }
-        return entity;
-      }
+export const loadPreviouslyViewedEntities =
+  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
+    dispatch(
+      bookmarksSlice.actions.setInitialPreviouslyViewedEntities(
+        entityViewerBookmarksStorageService.getPreviouslyViewedEntities()
+      )
     );
-
-    // side effect
-    entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-      [genomeId]: updatedEntities
-    });
-
-    return {
-      genomeId,
-      updatedEntities
-    };
-  }
-);
+  };
 
 const initialState: EntityViewerBookmarksState = {
   previouslyViewed: {}
@@ -126,50 +126,11 @@ const bookmarksSlice = createSlice({
   name: 'entity-viewer-bookmarks',
   initialState,
   reducers: {
-    loadPreviouslyViewedEntities(state) {
-      state.previouslyViewed =
-        entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
-    },
-    updatePreviouslyViewedEntities(
+    setInitialPreviouslyViewedEntities(
       state,
-      action: PayloadAction<UpdatePreviouslyViewedPayload>
+      action: PayloadAction<PreviouslyViewedEntities>
     ) {
-      const { genomeId, gene } = action.payload;
-
-      const previouslyViewedEntities = state.previouslyViewed[genomeId] || [];
-
-      const isCurrentEntityPreviouslyViewed = previouslyViewedEntities?.some(
-        (entity) => entity.entity_id === gene.unversioned_stable_id
-      );
-
-      if (!isCurrentEntityPreviouslyViewed) {
-        const newEntity = {
-          entity_id: gene.unversioned_stable_id,
-          label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
-          type: 'gene' as const
-        };
-
-        // clear the stored data for the oldest previously viewed entity
-        if (previouslyViewedEntities.length === 20) {
-          const oldestPreviouslyViewedEntity =
-            previouslyViewedEntities[previouslyViewedEntities.length - 1];
-
-          entityViewerStorageService.clearGeneViewTranscriptsState({
-            genomeId,
-            entityId: oldestPreviouslyViewedEntity.entity_id
-          });
-        }
-
-        const updatedEntites = [newEntity, ...previouslyViewedEntities].slice(
-          0,
-          21
-        );
-        state.previouslyViewed[genomeId] = updatedEntites;
-
-        entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-          [genomeId]: updatedEntites
-        });
-      }
+      state.previouslyViewed = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -179,17 +140,8 @@ const bookmarksSlice = createSlice({
         const { genomeId, updatedEntities } = action.payload;
         state.previouslyViewed[genomeId] = updatedEntities;
       }
-    ),
-      builder.addCase(
-        updatePreviouslyViewedEntity.fulfilled,
-        (state, action) => {
-          const { genomeId, updatedEntities } = action.payload;
-          state.previouslyViewed[genomeId] = updatedEntities;
-        }
-      );
+    );
   }
 });
-
-export const { loadPreviouslyViewedEntities } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;
