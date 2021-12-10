@@ -211,7 +211,7 @@ describe('useBrowserRouting', () => {
 
       expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
         activeGenomeId: 'human',
-        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
+        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in focus object id
         chrLocation: null
       });
 
@@ -240,7 +240,7 @@ describe('useBrowserRouting', () => {
 
       expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
         activeGenomeId: 'human',
-        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in ens object id
+        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in focus object id
         chrLocation: ['13', 100, 200]
       });
 
