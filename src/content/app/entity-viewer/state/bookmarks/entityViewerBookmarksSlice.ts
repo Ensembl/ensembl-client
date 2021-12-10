@@ -16,15 +16,17 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
-
+import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+
+import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
 import { RootState } from 'src/store';
 
 type PreviouslyViewedEntity = {
   entity_id: string;
+  unversioned_stable_id: string;
   label: string | string[];
   type: 'gene';
 };
@@ -59,7 +61,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     );
 
     const isCurrentEntityPreviouslyViewed = previouslyViewedEntities?.some(
-      (entity) => entity.entity_id === gene.unversioned_stable_id
+      (entity) => entity.unversioned_stable_id === gene.unversioned_stable_id
     );
 
     if (isCurrentEntityPreviouslyViewed) {
@@ -79,9 +81,15 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
         entityId: oldestPreviouslyViewedEntity.entity_id
       });
     }
+    const entityId = buildEnsObjectId({
+      genomeId,
+      type: 'gene',
+      objectId: gene.unversioned_stable_id
+    });
 
     const newPreviouslyViewedEntity = {
-      entity_id: gene.unversioned_stable_id,
+      entity_id: entityId,
+      unversioned_stable_id: gene.unversioned_stable_id,
       label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
       type: 'gene' as const
     };
