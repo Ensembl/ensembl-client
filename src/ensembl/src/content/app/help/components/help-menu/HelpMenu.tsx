@@ -21,6 +21,8 @@ import { push } from 'connected-react-router';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
+import { addHelpItem } from 'src/content/app/help/state/helpSlice';
+
 import Chevron from 'src/shared/components/chevron/Chevron';
 import HelpMenuLink from './HelpMenuLink';
 
@@ -122,6 +124,7 @@ const Submenu = (props: SubmenuProps) => {
     // hopefully, the url is an internal one;
     // might need extra logic if we can have external urls in the menu
     props.onLinkClick();
+    dispatch(addHelpItem(url));
     dispatch(push(url));
   };
 
