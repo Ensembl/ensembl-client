@@ -89,7 +89,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     const updatedEntities = [
       newPreviouslyViewedEntity,
       ...previouslyViewedEntities
-    ].slice(0, 21);
+    ].slice(0, 20);
 
     // side effect
     entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
