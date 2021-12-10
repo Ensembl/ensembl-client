@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-  ThunkAction,
-  Action
-} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
@@ -109,14 +103,10 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
   }
 );
 
-export const loadPreviouslyViewedEntities =
-  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
-    dispatch(
-      bookmarksSlice.actions.setInitialPreviouslyViewedEntities(
-        entityViewerBookmarksStorageService.getPreviouslyViewedEntities()
-      )
-    );
-  };
+export const loadPreviouslyViewedEntities = createAsyncThunk(
+  'entity-viewer/loadPreviouslyViewedEntities',
+  () => entityViewerBookmarksStorageService.getPreviouslyViewedEntities()
+);
 
 const initialState: EntityViewerBookmarksState = {
   previouslyViewed: {}
@@ -125,14 +115,7 @@ const initialState: EntityViewerBookmarksState = {
 const bookmarksSlice = createSlice({
   name: 'entity-viewer-bookmarks',
   initialState,
-  reducers: {
-    setInitialPreviouslyViewedEntities(
-      state,
-      action: PayloadAction<PreviouslyViewedEntities>
-    ) {
-      state.previouslyViewed = action.payload;
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(
       updatePreviouslyViewedEntities.fulfilled,
@@ -141,6 +124,10 @@ const bookmarksSlice = createSlice({
         state.previouslyViewed[genomeId] = updatedEntities;
       }
     );
+
+    builder.addCase(loadPreviouslyViewedEntities.fulfilled, (state, action) => {
+      state.previouslyViewed = action.payload;
+    });
   }
 });
 
