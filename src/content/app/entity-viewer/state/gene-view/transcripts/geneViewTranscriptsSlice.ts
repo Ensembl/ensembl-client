@@ -46,6 +46,7 @@ export enum SortingRule {
 
 export type TranscriptsStatePerGene = {
   expandedIds: string[];
+  accordionUserInteraction: boolean;
   expandedDownloadIds: string[];
   expandedMoreInfoIds: string[];
   filters: Filters;
@@ -77,6 +78,7 @@ export type Filters = Record<string, Filter>;
 
 const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
+  accordionUserInteraction: false,
   expandedDownloadIds: [],
   expandedMoreInfoIds: [],
   filters: {},
@@ -188,16 +190,21 @@ export const toggleTranscriptInfo =
       expandedIds.delete(transcriptId);
     } else {
       expandedIds.add(transcriptId);
-      expandedIds.delete('noselection');
     }
 
     dispatch(
       transcriptsSlice.actions.updateExpandedTranscripts({
         activeGenomeId,
         activeEntityId,
-        expandedIds: [...expandedIds.values()].length
-          ? [...expandedIds.values()]
-          : ['noselection']
+        expandedIds: [...expandedIds.values()]
+      })
+    );
+
+    dispatch(
+      transcriptsSlice.actions.updateAccordionUserInteraction({
+        activeGenomeId,
+        activeEntityId,
+        accordionUserInteraction: true
       })
     );
   };
@@ -248,7 +255,6 @@ export const toggleTranscriptMoreInfo =
     } else {
       expandedIds.add(transcriptId);
     }
-
     dispatch(
       transcriptsSlice.actions.updateExpandedMoreInfo({
         activeGenomeId,
@@ -300,6 +306,12 @@ type UpdateFilterPanelPayload = {
   filterPanelOpen: boolean;
 };
 
+type UpdateAccordionUserInteractionPayload = {
+  activeGenomeId: string;
+  activeEntityId: string;
+  accordionUserInteraction: boolean;
+};
+
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
@@ -327,6 +339,19 @@ const transcriptsSlice = createSlice({
         action.payload;
       ensureGenePresence(state, action.payload);
       state[activeGenomeId][activeEntityId].filterPanelOpen = filterPanelOpen;
+    },
+    updateAccordionUserInteraction(
+      state,
+      action: PayloadAction<UpdateAccordionUserInteractionPayload>
+    ) {
+      const { activeGenomeId, activeEntityId, accordionUserInteraction } =
+        action.payload;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeEntityId}.accordionUserInteraction`,
+        accordionUserInteraction,
+        updatedState
+      );
     },
     updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
       const { activeGenomeId, activeEntityId, filters } = action.payload;

@@ -72,3 +72,8 @@ export const getFilterPanelOpen = (state: RootState): boolean => {
   const transcriptsSlice = getSliceForGene(state);
   return transcriptsSlice?.filterPanelOpen ?? false;
 };
+
+export const getAccordionUserInteraction = (state: RootState): boolean => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.accordionUserInteraction ?? false;
+};

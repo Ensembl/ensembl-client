@@ -33,6 +33,7 @@ import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
   getExpandedTranscriptIds,
+  getAccordionUserInteraction,
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
@@ -60,6 +61,7 @@ export type ProteinsListProps = {
 
 const ProteinsList = (props: ProteinsListProps) => {
   const expandedProteinIds = useSelector(getExpandedTranscriptIds);
+  const accordionUserInteraction = useSelector(getAccordionUserInteraction);
   const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
@@ -84,8 +86,12 @@ const ProteinsList = (props: ProteinsListProps) => {
       return;
     }
     const hasExpandedTranscripts = !!expandedProteinIds.length;
-    // Expand the first transcript by default
-    if (!hasExpandedTranscripts && !proteinIdToFocus) {
+    // Expand the first transcript by default when the user hasnt interacted with the accordion
+    if (
+      !hasExpandedTranscripts &&
+      !proteinIdToFocus &&
+      !accordionUserInteraction
+    ) {
       dispatch(toggleTranscriptInfo(proteinCodingTranscripts[0].stable_id));
     }
   }, []);
