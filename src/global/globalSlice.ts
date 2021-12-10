@@ -54,7 +54,7 @@ export const updateBreakpointWidth: ActionCreator<
 
 const globalSlice = createSlice({
   name: 'global',
-  initialState: defaultState as GlobalState,
+  initialState: defaultState,
   reducers: {
     setBreakpointWidth(state, action: PayloadAction<BreakpointWidth>) {
       state.breakpointWidth = action.payload;
