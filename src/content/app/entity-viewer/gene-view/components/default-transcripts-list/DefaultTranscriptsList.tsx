@@ -25,7 +25,7 @@ import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/
 
 import {
   getExpandedTranscriptIds,
-  getAccordionUserInteraction,
+  getExpandedTranscriptsModified,
   getExpandedTranscriptDownloadIds,
   getExpandedTranscriptMoreInfoIds,
   getFilters,
@@ -70,7 +70,9 @@ export type Props = {
 
 const DefaultTranscriptslist = (props: Props) => {
   const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
-  const accordionUserInteraction = useSelector(getAccordionUserInteraction);
+  const expandedTranscriptsModified = useSelector(
+    getExpandedTranscriptsModified
+  );
   const expandedTranscriptDownloadIds = useSelector(
     getExpandedTranscriptDownloadIds
   );
@@ -92,7 +94,7 @@ const DefaultTranscriptslist = (props: Props) => {
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;
 
     // Expand the first transcript by default when the user hasnt interacted with the accordion
-    if (!hasExpandedTranscripts && !accordionUserInteraction) {
+    if (!hasExpandedTranscripts && !expandedTranscriptsModified) {
       dispatch(toggleTranscriptInfo(sortedTranscripts[0].stable_id));
     }
   }, []);
