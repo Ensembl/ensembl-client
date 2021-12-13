@@ -16,10 +16,10 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
+import { getEntityViewerActiveEntityId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
 import { RootState } from 'src/store';
@@ -54,6 +54,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     const { genomeId, gene } = params;
     const { getState } = thunkAPI;
     const state = getState() as RootState;
+    const activeEntityId = getEntityViewerActiveEntityId(state) as string;
 
     const previouslyViewedEntities = getPreviouslyViewedEntities(
       state,
@@ -81,14 +82,9 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
         entityId: oldestPreviouslyViewedEntity.entity_id
       });
     }
-    const entityId = buildEnsObjectId({
-      genomeId,
-      type: 'gene',
-      objectId: gene.unversioned_stable_id
-    });
 
     const newPreviouslyViewedEntity = {
-      entity_id: entityId,
+      entity_id: activeEntityId,
       unversioned_stable_id: gene.unversioned_stable_id,
       label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
       type: 'gene' as const
