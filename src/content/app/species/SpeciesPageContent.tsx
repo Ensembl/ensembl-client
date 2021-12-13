@@ -22,7 +22,7 @@ import { push, replace } from 'connected-react-router';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
