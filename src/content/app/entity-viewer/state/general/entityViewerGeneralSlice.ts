@@ -24,7 +24,7 @@ import {
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { resetFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 

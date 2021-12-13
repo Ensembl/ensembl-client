@@ -23,8 +23,8 @@ import { push, replace } from 'connected-react-router';
 import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 
+import * as genomeActions from 'src/shared/state/genome/genomeSlice';
 import * as browserGeneralActions from '../state/browser-general/browserGeneralSlice';
-import * as genomeActions from 'src/shared/state/genome/genomeActions';
 
 import useBrowserRouting from './useBrowserRouting';
 
@@ -48,7 +48,7 @@ jest.mock(
   })
 );
 
-jest.mock('src/shared/state/genome/genomeActions', () => ({
+jest.mock('src/shared/state/genome/genomeSlice', () => ({
   fetchGenomeData: jest.fn(() => ({ type: 'fetchGenomeData' }))
 }));
 

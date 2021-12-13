@@ -22,3 +22,6 @@ export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
 
 export const getScrollPosition = (state: RootState): ScrollPosition =>
   state.global.scrollPosition;
+
+export const getCurrentApp = (state: RootState): string =>
+  state.global.currentApp;

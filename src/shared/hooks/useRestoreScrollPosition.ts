@@ -18,7 +18,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { saveScrollPosition } from 'src/global/globalActions';
+import { saveScrollPosition } from 'src/global/globalSlice';
 import { getScrollPosition } from 'src/global/globalSelectors';
 
 type RestoreScrollPositionProps = {

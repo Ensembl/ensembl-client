@@ -18,15 +18,14 @@ import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
-import { genomeBrowserApiSlice } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
-import genome from 'src/shared/state/genome/genomeReducer';
-import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
-import global from 'src/global/globalReducer';
-import header from 'src/header/headerReducer';
-import ensObjects from 'src/shared/state/ens-object/ensObjectReducer';
-import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
-import communication from 'src/shared/state/communication/communicationSlice';
-import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { genomeBrowserApiSlice } from '../content/app/genome-browser/state/genomeBrowserApiSlice';
+import genome from '../shared/state/genome/genomeSlice';
+import customDownload from '../content/app/custom-download/state/customDownloadReducer';
+import global from 'src/global/globalSlice';
+import ensObjects from '../shared/state/ens-object/ensObjectReducer';
+import inAppSearch from '../shared/state/in-app-search/inAppSearchSlice';
+import communication from '../shared/state/communication/communicationSlice';
+import speciesSelector from '../content/app/species-selector/state/speciesSelectorSlice';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 
@@ -39,7 +38,6 @@ const createRootReducer = (history: any) =>
     inAppSearch,
     genome,
     global,
-    header,
     router: connectRouter(history),
     speciesSelector,
     speciesPage,

@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
-import { updateBreakpointWidth } from '../global/globalActions';
+import { updateBreakpointWidth } from 'src/global/globalSlice';
 import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 
