@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-export type Menu = {
-  name: string;
-  items: MenuItem[];
-};
+import analyticsTracking from 'src/services/analytics-service';
 
-export type MenuItem = MenuArticleItem | MenuCollectionItem;
+const useHelpAppAnalytics = () => {
+  const trackTopLevelMenu = (navLabel: string) => {
+    analyticsTracking.trackEvent({
+      category: 'help_mega_nav',
+      label: navLabel,
+      action: 'opened'
+    });
+  };
 
-type MenuCollectionItem = {
-  name: string;
-  type: 'collection';
-  url?: string; // if a menu directory has an index page associated with it
-  items: MenuItem[];
-};
+  const trackMegaNavItemClick = (linkLabel: string, type: string) => {
+    const action =
+      type === 'article' ? 'text_article_opened' : 'video_article_opened';
+    analyticsTracking.trackEvent({
+      category: 'help_mega_nav',
+      label: linkLabel,
+      action
+    });
+  };
 
-export type MenuArticleItem = {
-  name: string;
-  type: 'article' | 'video';
-  url: string;
+  return {
+    trackTopLevelMenu,
+    trackMegaNavItemClick
+  };
 };
+export default useHelpAppAnalytics;

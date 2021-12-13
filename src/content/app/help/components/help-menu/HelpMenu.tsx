@@ -20,12 +20,14 @@ import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 import HelpMenuLink from './HelpMenuLink';
 
 import {
   Menu as MenuType,
+  MenuArticleItem,
   MenuItem
 } from 'src/shared/types/help-and-docs/menu';
 
@@ -40,6 +42,8 @@ const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
   const clickedMenuRef = useRef<number | null>(null);
 
+  const { trackTopLevelMenu } = useHelpAppAnalytics();
+
   if (isEnvironment([Environment.PRODUCTION])) {
     return (
       <div className={styles.helpMenu}>
@@ -48,7 +52,11 @@ const HelpMenu = (props: Props) => {
     );
   }
 
-  const toggleMegaMenu = (items: MenuItem[], menuIndex: number) => {
+  const toggleMegaMenu = (
+    items: MenuItem[],
+    menuIndex: number,
+    menuName: string
+  ) => {
     let nextValue = null;
     if (
       clickedMenuRef.current === null ||
@@ -58,11 +66,16 @@ const HelpMenu = (props: Props) => {
       clickedMenuRef.current = menuIndex;
       nextValue = items;
     } else {
-      // this means a repeated click on the same menu iteem
+      // this means a repeated click on the same menu item
       clickedMenuRef.current = null;
     }
-
     setSubmenuItems(nextValue);
+    nextValue && trackTopLevelMenu(menuName);
+  };
+
+  const handleHelpMenuLinkClick = (menuName: string) => {
+    closeMegaMenu();
+    trackTopLevelMenu(menuName);
   };
 
   const closeMegaMenu = () => {
@@ -76,12 +89,20 @@ const HelpMenu = (props: Props) => {
       key: index,
       className
     };
+
     return item.type === 'collection' ? (
-      <span {...commonProps} onClick={() => toggleMegaMenu(item.items, index)}>
+      <span
+        {...commonProps}
+        onClick={() => toggleMegaMenu(item.items, index, item.name)}
+      >
         {item.name}
       </span>
     ) : (
-      <HelpMenuLink {...commonProps} to={item.url} onClick={closeMegaMenu}>
+      <HelpMenuLink
+        {...commonProps}
+        to={item.url}
+        onClick={() => handleHelpMenuLinkClick(item.name)}
+      >
         {item.name}
       </HelpMenuLink>
     );
@@ -114,28 +135,32 @@ const Submenu = (props: SubmenuProps) => {
   const [childItems, setChildItems] = useState<MenuItem[] | null>(null);
   const dispatch = useDispatch();
 
+  const { trackMegaNavItemClick } = useHelpAppAnalytics();
+
   useEffect(() => {
     setChildItems(null);
   }, [props.items]);
 
-  const onLinkClick = (url: string) => {
+  const onLinkClick = (item: MenuArticleItem) => {
     // hopefully, the url is an internal one;
     // might need extra logic if we can have external urls in the menu
     props.onLinkClick();
-    dispatch(push(url));
+    dispatch(push(item.url));
+    trackMegaNavItemClick(item.name, item.type);
   };
 
   const renderedMenuItems = props.items.map((item, index) => {
     const className = classNames(styles.submenuItem);
-    const props: Record<string, unknown> = {};
+    const menuItemProps: Record<string, unknown> = {};
+
     if (item.type === 'collection') {
-      props.onMouseOver = () => setChildItems(item.items);
+      menuItemProps.onMouseOver = () => setChildItems(item.items);
     } else {
-      props.onMouseOver = () => setChildItems(null);
-      props.onClick = () => onLinkClick(item.url);
+      menuItemProps.onMouseOver = () => setChildItems(null);
+      menuItemProps.onClick = () => onLinkClick(item);
     }
     return (
-      <li key={index} {...props} className={className}>
+      <li key={index} {...menuItemProps} className={className}>
         {item.type === 'collection' ? (
           <>
             {item.name}
