@@ -270,30 +270,7 @@ const ensureGenePresence = (
 
 export const restoreGeneViewTranscripts = createAsyncThunk(
   'entity-viewer/restore-gene-view-transcripts',
-  () => {
-    const storedData = entityViewerStorageService.getGeneViewTranscriptsState();
-
-    if (!storedData) {
-      return {};
-    }
-    const stateToRestore = {} as GeneViewTranscriptsState;
-    Object.keys(storedData).forEach((genomeId) => {
-      const entitiesPerGenome = storedData[genomeId];
-      Object.keys(entitiesPerGenome).forEach((entityId) => {
-        ensureGenePresence(stateToRestore, {
-          activeGenomeId: genomeId,
-          activeEntityId: entityId
-        });
-
-        stateToRestore[genomeId][entityId] = {
-          ...stateToRestore[genomeId][entityId],
-          ...storedData[genomeId][entityId]
-        };
-      });
-    });
-
-    return stateToRestore;
-  }
+  () => entityViewerStorageService.getGeneViewTranscriptsState() || {}
 );
 
 type ExpandedIdsPayload = {
@@ -361,7 +338,22 @@ const transcriptsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(restoreGeneViewTranscripts.fulfilled, (state, action) => {
-      state = action.payload;
+      const storedData = action.payload;
+
+      Object.keys(storedData).forEach((genomeId) => {
+        const entitiesPerGenome = storedData[genomeId];
+        Object.keys(entitiesPerGenome).forEach((entityId) => {
+          ensureGenePresence(state, {
+            activeGenomeId: genomeId,
+            activeEntityId: entityId
+          });
+
+          state[genomeId][entityId] = {
+            ...state[genomeId][entityId],
+            ...storedData[genomeId][entityId]
+          };
+        });
+      });
     });
   }
 });
