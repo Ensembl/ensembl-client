@@ -39,13 +39,13 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'gene:brca2'
+        human: 'human:gene:brca2'
       }
     },
     geneView: {
       transcripts: {
         human: {
-          'gene:brca2': {
+          'human:gene:brca2': {
             expandedIds: [],
             expandedDownloadIds: [],
             filters: [],
@@ -114,7 +114,7 @@ describe('<TranscriptsFilter />', () => {
 
     // after we change sorting option
     const updatedState = set(
-      'entityViewer.geneView.transcripts.human.gene:brca2.sortingRule',
+      'entityViewer.geneView.transcripts.human.human:gene:brca2.sortingRule',
       'spliced_length_desc',
       mockState
     );

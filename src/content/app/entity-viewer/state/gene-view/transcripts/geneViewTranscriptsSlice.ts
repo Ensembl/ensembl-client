@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import set from 'lodash/fp/set';
+import cloneDeep from 'lodash/cloneDeep';
+
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -54,6 +56,14 @@ export type TranscriptsStatePerGene = {
 export type GeneViewTranscriptsState = {
   [genomeId: string]: {
     [geneId: string]: TranscriptsStatePerGene;
+  };
+};
+
+export type StoredGeneViewTranscriptsState = {
+  [genomeId: string]: {
+    [geneId: string]: Partial<
+      Pick<TranscriptsStatePerGene, 'filters' | 'sortingRule'>
+    >;
   };
 };
 
@@ -126,6 +136,14 @@ export const setFilters =
         filters
       })
     );
+
+    entityViewerStorageService.updateGeneViewTranscriptsState({
+      [activeGenomeId]: {
+        [activeEntityId]: {
+          filters
+        }
+      }
+    });
   };
 
 export const setSortingRule =
@@ -145,6 +163,14 @@ export const setSortingRule =
         sortingRule
       })
     );
+
+    entityViewerStorageService.updateGeneViewTranscriptsState({
+      [activeGenomeId]: {
+        [activeEntityId]: {
+          sortingRule
+        }
+      }
+    });
   };
 
 export const toggleTranscriptInfo =
@@ -234,22 +260,18 @@ const ensureGenePresence = (
   ids: { activeGenomeId: string; activeEntityId: string }
 ) => {
   const { activeGenomeId, activeEntityId } = ids;
+  const clonedDefaultStatePerGene = cloneDeep(defaultStatePerGene);
   if (!state[activeGenomeId]) {
-    return set(
-      activeGenomeId,
-      { [activeEntityId]: defaultStatePerGene },
-      state
-    );
+    state[activeGenomeId] = { [activeEntityId]: clonedDefaultStatePerGene };
   } else if (!state[activeGenomeId][activeEntityId]) {
-    return set(
-      `${activeGenomeId}.${activeEntityId}`,
-      defaultStatePerGene,
-      state
-    );
-  } else {
-    return state;
+    state[activeGenomeId][activeEntityId] = clonedDefaultStatePerGene;
   }
 };
+
+export const restoreGeneViewTranscripts = createAsyncThunk(
+  'entity-viewer/restore-gene-view-transcripts',
+  () => entityViewerStorageService.getGeneViewTranscriptsState() || {}
+);
 
 type ExpandedIdsPayload = {
   activeGenomeId: string;
@@ -284,59 +306,55 @@ const transcriptsSlice = createSlice({
       action: PayloadAction<ExpandedIdsPayload>
     ) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedIds = expandedIds;
     },
     updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedDownloadIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedDownloadIds = expandedIds;
     },
     updateExpandedMoreInfo(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedMoreInfoIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedMoreInfoIds = expandedIds;
     },
     updateFilterPanel(state, action: PayloadAction<UpdateFilterPanelPayload>) {
       const { activeGenomeId, activeEntityId, filterPanelOpen } =
         action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.filterPanelOpen`,
-        filterPanelOpen,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].filterPanelOpen = filterPanelOpen;
     },
     updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
       const { activeGenomeId, activeEntityId, filters } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.filters`,
-        filters,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].filters = filters;
     },
     updateSortingRule(state, action: PayloadAction<UpdateSortingRulePayload>) {
       const { activeGenomeId, activeEntityId, sortingRule } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.sortingRule`,
-        sortingRule,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].sortingRule = sortingRule;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(restoreGeneViewTranscripts.fulfilled, (state, action) => {
+      const storedData = action.payload;
+
+      Object.keys(storedData).forEach((genomeId) => {
+        const entitiesPerGenome = storedData[genomeId];
+        Object.keys(entitiesPerGenome).forEach((entityId) => {
+          ensureGenePresence(state, {
+            activeGenomeId: genomeId,
+            activeEntityId: entityId
+          });
+
+          state[genomeId][entityId] = {
+            ...state[genomeId][entityId],
+            ...storedData[genomeId][entityId]
+          };
+        });
+      });
+    });
   }
 });
 

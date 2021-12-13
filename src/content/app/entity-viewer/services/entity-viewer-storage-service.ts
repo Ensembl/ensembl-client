@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { StoredGeneViewTranscriptsState } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import storageService, {
   StorageServiceInterface,
@@ -21,7 +22,8 @@ import storageService, {
 } from 'src/services/storage-service';
 
 export enum StorageKeys {
-  GENERAL_STATE = 'entityViewer.generalState'
+  GENERAL_STATE = 'entityViewer.generalState',
+  GENE_VIEW_TRANSCRIPTS_STATE = 'entityViewer.geneView.transcriptsState'
 }
 
 const localStorageOptions = {
@@ -60,6 +62,35 @@ export class EntityViewerStorageService {
     this.storageService.removeAt(
       StorageKeys.GENERAL_STATE,
       ['activeEntityIds', genomeIdToDelete],
+      localStorageOptions
+    );
+  }
+
+  public getGeneViewTranscriptsState(): StoredGeneViewTranscriptsState | null {
+    return this.storageService.get(
+      StorageKeys.GENE_VIEW_TRANSCRIPTS_STATE,
+      localStorageOptions
+    );
+  }
+
+  public updateGeneViewTranscriptsState(
+    updatedState: StoredGeneViewTranscriptsState
+  ) {
+    this.storageService.update(
+      StorageKeys.GENE_VIEW_TRANSCRIPTS_STATE,
+      updatedState,
+      localStorageOptions
+    );
+  }
+
+  public clearGeneViewTranscriptsState(ids: {
+    genomeId: string;
+    entityId: string;
+  }) {
+    const { genomeId, entityId } = ids;
+    this.storageService.removeAt(
+      StorageKeys.GENE_VIEW_TRANSCRIPTS_STATE,
+      [genomeId, entityId],
       localStorageOptions
     );
   }

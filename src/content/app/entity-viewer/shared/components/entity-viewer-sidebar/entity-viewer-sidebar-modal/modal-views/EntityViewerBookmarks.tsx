@@ -59,7 +59,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           genomeId: props.activeGenomeId,
           entityId: buildFocusIdForUrl({
             type: 'gene',
-            objectId: entity.entity_id
+            objectId: entity.unversioned_stable_id
           })
         });
 
