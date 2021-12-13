@@ -34,7 +34,7 @@ import {
   buildFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave

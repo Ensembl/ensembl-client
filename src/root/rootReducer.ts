@@ -19,10 +19,9 @@ import { connectRouter } from 'connected-react-router';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
 import { genomeBrowserApiSlice } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
-import genome from 'src/shared/state/genome/genomeReducer';
+import genome from 'src/shared/state/genome/genomeSlice';
 import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
-import global from 'src/global/globalReducer';
-import header from 'src/header/headerReducer';
+import global from 'src/global/globalSlice';
 import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
@@ -37,7 +36,6 @@ const createRootReducer = (history: any) =>
     inAppSearch,
     genome,
     global,
-    header,
     router: connectRouter(history),
     speciesSelector,
     speciesPage,

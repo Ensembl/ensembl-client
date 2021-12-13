@@ -20,7 +20,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
 import useRestoredReduxState from './useRestoredReduxState';
-import { updateBreakpointWidth } from '../global/globalActions';
+import { updateBreakpointWidth } from 'src/global/globalSlice';
 
 import { Root } from './Root';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
@@ -35,7 +35,7 @@ jest.mock('../content/app/App', () => () => <div id="app" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
-jest.mock('../global/globalActions', () => ({
+jest.mock('../global/globalSlice', () => ({
   updateBreakpointWidth: jest.fn(() => ({ type: 'updateBreakpointWidth' }))
 }));
 jest.mock('./useRestoredReduxState', () => jest.fn());
