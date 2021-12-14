@@ -22,7 +22,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import { createEnsObject } from 'tests/fixtures/ens-object';
+import { createFocusObject } from 'tests/fixtures/focus-object';
 
 import { TrackPanelList } from './TrackPanelList';
 
@@ -63,13 +63,13 @@ describe('<TrackPanelList />', () => {
 
     it('does not render main track if the focus feature is a region', () => {
       const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
-      const activeEnsObjectId = (
-        mockState.browser.browserGeneral.activeEnsObjectIds as any
+      const activeFocusObjectId = (
+        mockState.browser.browserGeneral.activeFocusObjectIds as any
       )[activeGenomeId];
       const { container } = renderComponent(
         set(
-          `ensObjects.${activeEnsObjectId}.data`,
-          createEnsObject('region'),
+          `browser.focusObjects.${activeFocusObjectId}.data`,
+          createFocusObject('region'),
           mockState
         )
       );

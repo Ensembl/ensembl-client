@@ -15,7 +15,7 @@
  */
 
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
-import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
@@ -30,21 +30,21 @@ export const getBrowserActiveGenomeInfo = (state: RootState) => {
   return activeGenomeId ? allGenomesInfo[activeGenomeId] : null;
 };
 
-export const getBrowserActiveEnsObjectIds = (state: RootState) =>
-  state.browser.browserGeneral.activeEnsObjectIds;
+export const getBrowserActiveFocusObjectIds = (state: RootState) =>
+  state.browser.browserGeneral.activeFocusObjectIds;
 
-export const getBrowserActiveEnsObjectId = (state: RootState) => {
-  const activeEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+export const getBrowserActiveFocusObjectId = (state: RootState) => {
+  const activeFocusObjectIds = getBrowserActiveFocusObjectIds(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
+  return activeGenomeId ? activeFocusObjectIds[activeGenomeId] : null;
 };
 
-export const getBrowserActiveEnsObject = (state: RootState) => {
-  const activeObjectId = getBrowserActiveEnsObjectId(state);
+export const getBrowserActiveFocusObject = (state: RootState) => {
+  const activeObjectId = getBrowserActiveFocusObjectId(state);
   if (!activeObjectId) {
     return null;
   }
-  return getEnsObjectById(state, activeObjectId);
+  return getFocusObjectById(state, activeObjectId);
 };
 
 export const getBrowserTrackStates = (state: RootState) =>
@@ -103,13 +103,13 @@ export const getActualChrLocation = (state: RootState) => {
 };
 
 export const getDefaultChrLocation = (state: RootState) => {
-  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-  const activeEnsObject =
-    activeEnsObjectId && getEnsObjectById(state, activeEnsObjectId);
-  if (!activeEnsObject) {
+  const activeFocusObjectId = getBrowserActiveFocusObjectId(state);
+  const activeFocusObject =
+    activeFocusObjectId && getFocusObjectById(state, activeFocusObjectId);
+  if (!activeFocusObject) {
     return null;
   }
-  const { chromosome, start, end } = activeEnsObject.location;
+  const { chromosome, start, end } = activeFocusObject.location;
 
   return [chromosome, start, end] as ChrLocation;
 };

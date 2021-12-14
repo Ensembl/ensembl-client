@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
-  EnsObjectRegion,
-  EnsObjectGene
-} from 'src/shared/state/ens-object/ensObjectTypes';
-
-export type EnsObjectIdConstituents = {
-  genomeId: string;
-  type: string;
-  objectId: string;
-};
-
-export type UrlFocusIdConstituents = {
-  type: string;
-  objectId: string;
-};
+  FocusGene,
+  FocusObjectIdConstituents,
+  UrlFocusIdConstituents
+} from 'src/shared/types/focus-object/focusObjectTypes';
 
 // NOTE: it's possible that we will prefer to omit type from the id
 // if focus objects of different type are saved into different slots in the state
-export const buildEnsObjectId = (params: EnsObjectIdConstituents) => {
+export const buildFocusObjectId = (params: FocusObjectIdConstituents) => {
   const { genomeId, type, objectId } = params;
   return `${genomeId}:${type}:${objectId}`;
 };
 
-export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
+export const parseFocusObjectId = (id: string): FocusObjectIdConstituents => {
   const regex = /(.+?):(.+?):(.+)/;
   const match = id.match(regex);
 
@@ -59,7 +48,7 @@ export const buildFocusIdForUrl = (
   payload: string | UrlFocusIdConstituents
 ) => {
   if (typeof payload === 'string') {
-    payload = parseEnsObjectId(payload);
+    payload = parseFocusObjectId(payload);
   }
   const { type, objectId } = payload;
   return `${type}:${objectId}`;
@@ -82,7 +71,9 @@ export const parseFocusIdFromUrl = (id: string) => {
 };
 
 // focus object id in the url on the Genome Browser page has a format of <type>:<id>
-export const parseEnsObjectIdFromUrl = (id: string): UrlFocusIdConstituents => {
+export const parseFocusObjectIdFromUrl = (
+  id: string
+): UrlFocusIdConstituents => {
   const [type, objectId] = id.split(':');
   return {
     type,
@@ -90,24 +81,5 @@ export const parseEnsObjectIdFromUrl = (id: string): UrlFocusIdConstituents => {
   };
 };
 
-export const buildRegionObject = (
-  payload: EnsObjectIdConstituents
-): EnsObjectRegion => {
-  const { genomeId, objectId: regionId } = payload;
-  const [chromosome, start, end] = getChrLocationFromStr(regionId);
-
-  return {
-    type: 'region',
-    genome_id: genomeId,
-    object_id: buildEnsObjectId(payload),
-    label: regionId,
-    location: {
-      chromosome,
-      start,
-      end
-    }
-  };
-};
-
-export const getDisplayStableId = (ensObject: Partial<EnsObjectGene>) =>
-  ensObject.versioned_stable_id || ensObject.stable_id || '';
+export const getDisplayStableId = (focusObject: Partial<FocusGene>) =>
+  focusObject.versioned_stable_id || focusObject.stable_id || '';

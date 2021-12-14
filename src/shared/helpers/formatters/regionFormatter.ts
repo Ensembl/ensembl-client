@@ -16,9 +16,9 @@
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { EnsObjectLocation } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
-export const getFormattedLocation = (location: EnsObjectLocation) => {
+export const getFormattedLocation = (location: FocusObjectLocation) => {
   const start = getCommaSeparatedNumber(location.start);
   const end = getCommaSeparatedNumber(location.end);
 

@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 

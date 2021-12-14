@@ -24,26 +24,26 @@ import { SidebarLoader } from 'src/shared/components/loader';
 import { getIsTrackPanelModalOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject
+  getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 export const TrackPanel = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
+  const activeFocusObject = useSelector(getBrowserActiveFocusObject);
   const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
 
   const { genomeBrowser, restoreBrowserTrackStates } = useGenomeBrowser();
 
   const shouldRenderContent =
-    activeGenomeId && genomeBrowser && activeEnsObject;
+    activeGenomeId && genomeBrowser && activeFocusObject;
 
   useEffect(() => {
     if (genomeBrowser) {
       restoreBrowserTrackStates();
     }
-  }, [activeEnsObject]);
+  }, [activeFocusObject]);
 
   return shouldRenderContent ? (
     isTrackPanelModalOpened ? (

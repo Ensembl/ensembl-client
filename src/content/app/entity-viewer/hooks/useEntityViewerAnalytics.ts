@@ -19,7 +19,7 @@ import snakeCase from 'lodash/snakeCase';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -54,7 +54,7 @@ const useEntityViewerAnalytics = () => {
 
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
   const featureType = activeEntityId
-    ? parseEnsObjectId(activeEntityId).type
+    ? parseFocusObjectId(activeEntityId).type
     : '';
 
   const sendTrackEvent = (ga: AnalyticsOptions) => {

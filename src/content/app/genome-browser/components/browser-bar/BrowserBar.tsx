@@ -24,10 +24,10 @@ import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/Fea
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserBar.scss';
@@ -36,17 +36,17 @@ export type BrowserBarProps = {
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
-  ensObject: EnsObject | null;
+  focusObject: FocusObject | null;
 };
 
 export const BrowserBar = () => {
   const chrLocation = useSelector(getChrLocation);
-  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const focusObject = useSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
-  if (!(chrLocation && ensObject)) {
+  if (!(chrLocation && focusObject)) {
     return <div />;
   }
 
@@ -55,8 +55,11 @@ export const BrowserBar = () => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      {ensObject && (
-        <FeatureSummaryStrip ensObject={ensObject} isGhosted={isDrawerOpened} />
+      {focusObject && (
+        <FeatureSummaryStrip
+          focusObject={focusObject}
+          isGhosted={isDrawerOpened}
+        />
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator

@@ -23,8 +23,6 @@ import {
 
 import apiService from 'src/services/api-service';
 
-import { fetchExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectActions';
-
 import {
   getGenomeInfoById,
   getGenomeTrackCategories,
@@ -32,6 +30,7 @@ import {
 } from 'src/shared/state/genome/genomeSelectors';
 
 import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import {
   GenomeInfoData,
@@ -89,7 +88,7 @@ export const fetchGenomeData =
 
     dispatch(ensureSpeciesIsCommitted(genomeId));
 
-    dispatch(fetchExampleEnsObjects(genomeId));
+    dispatch(fetchExampleFocusObjects(genomeId));
   };
 
 export const fetchGenomeInfo = createAsyncThunk(

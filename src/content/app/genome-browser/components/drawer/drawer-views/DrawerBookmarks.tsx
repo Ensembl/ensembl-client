@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import analyticsTracking from 'src/services/analytics-service';
 

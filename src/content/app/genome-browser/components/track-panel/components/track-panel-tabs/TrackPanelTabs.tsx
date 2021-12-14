@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { TrackSet } from '../../trackPanelConfig';
 
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getSelectedTrackPanelTab,
   getIsTrackPanelModalOpened,
@@ -37,7 +37,7 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 import styles from './TrackPanelTabs.scss';
 
 export const TrackPanelTabs = () => {
-  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const focusObject = useSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
@@ -46,7 +46,7 @@ export const TrackPanelTabs = () => {
   const dispatch = useDispatch();
 
   const handleTabClick = (value: TrackSet) => {
-    if (!ensObject?.genome_id) {
+    if (!focusObject?.genome_id) {
       return;
     }
 
@@ -64,14 +64,14 @@ export const TrackPanelTabs = () => {
   const getTrackPanelTabClassNames = (trackSet: TrackSet) => {
     const isTrackPanelTabActive =
       isTrackPanelOpened &&
-      ensObject?.genome_id &&
+      focusObject?.genome_id &&
       selectedTrackPanelTab === trackSet &&
       !isDrawerOpened &&
       !isTrackPanelModalOpened;
 
     return classNames(styles.trackPanelTab, {
       [styles.trackPanelTabActive]: isTrackPanelTabActive,
-      [styles.trackPanelTabDisabled]: !ensObject?.genome_id
+      [styles.trackPanelTabDisabled]: !focusObject?.genome_id
     });
   };
 

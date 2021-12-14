@@ -31,7 +31,7 @@ import {
   getProductAminoAcidLength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getTranscriptMetadata } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';

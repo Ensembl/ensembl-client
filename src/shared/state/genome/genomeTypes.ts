@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 export type ExampleFocusObject = {
@@ -38,7 +38,7 @@ export type GenomeInfoData = {
 export type GenomeTrackCategory = {
   label: string;
   track_category_id: string;
-  track_list: EnsObjectTrack[];
+  track_list: FocusObjectTrack[];
   types: TrackSet[];
 };
 

@@ -41,8 +41,8 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 

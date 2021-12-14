@@ -17,15 +17,18 @@
 import faker from 'faker';
 
 import {
-  EnsObject,
-  EnsObjectType
-} from 'src/shared/state/ens-object/ensObjectTypes';
+  FocusObject,
+  FocusObjectType
+} from 'src/shared/types/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/thoas/strand';
 
-export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {
+export const createFocusObject = (
+  objectType?: FocusObjectType
+): FocusObject => {
   const genome_id = faker.lorem.word();
   const type = objectType || 'gene';
   const object_id = `${genome_id}:${objectType}:${faker.datatype.uuid()};`;
+
   return {
     bio_type: faker.lorem.words(),
     label: faker.lorem.word(),

@@ -18,7 +18,7 @@ import faker from 'faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   fake_genome_id_1: {
@@ -29,7 +29,7 @@ export const createTrackStates = (): BrowserTrackStates => ({
   }
 });
 
-export const createTrackInfo = (): EnsObjectTrack => ({
+export const createTrackInfo = (): FocusObjectTrack => ({
   additional_info: faker.lorem.words(),
   description: faker.lorem.words(),
   label: faker.lorem.words(),
@@ -37,7 +37,7 @@ export const createTrackInfo = (): EnsObjectTrack => ({
   stable_id: faker.lorem.words()
 });
 
-export const createMainTrackInfo = (): EnsObjectTrack => ({
+export const createMainTrackInfo = (): FocusObjectTrack => ({
   additional_info: faker.lorem.words(),
   child_tracks: [
     {

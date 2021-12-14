@@ -66,13 +66,15 @@ describe('<BrowserBar />', () => {
       expect(container.querySelector('#browserLocationIndicator')).toBeTruthy();
     });
 
-    it('contains FeatureSummaryStrip when ensObject is not null', () => {
+    it('contains FeatureSummaryStrip when focusObject is not null', () => {
       const { container } = renderComponent();
       expect(container.querySelector('#featureSummaryStrip')).toBeTruthy();
     });
 
-    it('does not contain FeatureSummaryStrip when ensObject is null', () => {
-      const { container } = renderComponent(set('ensObjects', null, mockState));
+    it('does not contain FeatureSummaryStrip when focusObject is null', () => {
+      const { container } = renderComponent(
+        set('browser.focusObjects', null, mockState)
+      );
       expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
   });

@@ -82,7 +82,7 @@ const mockState = {
   browser: {
     browserGeneral: {
       activeGenomeId: genomeId,
-      activeEnsObjectIds: {
+      activeFocusObjectIds: {
         [genomeId]: geneObjectId
       }
     },
@@ -100,7 +100,7 @@ const mockState = {
       drawerView: null
     }
   },
-  ensObjects: {
+  focusObjects: {
     [geneObjectId]: {
       data: {
         description: 'Heat shock protein 101',

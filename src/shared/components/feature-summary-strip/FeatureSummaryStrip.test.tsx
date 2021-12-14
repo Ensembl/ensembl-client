@@ -22,7 +22,7 @@ import {
   FeatureSummaryStripProps
 } from './FeatureSummaryStrip';
 
-import { createEnsObject } from 'tests/fixtures/ens-object';
+import { createFocusObject } from 'tests/fixtures/focus-object';
 
 jest.mock('../feature-summary-strip', () => ({
   GeneSummaryStrip: () => <div>Gene Summary Strip</div>,
@@ -31,7 +31,7 @@ jest.mock('../feature-summary-strip', () => ({
 
 describe('<FeatureSummaryStrip />', () => {
   const defaultProps = {
-    ensObject: createEnsObject(),
+    focusObject: createFocusObject(),
     isGhosted: false
   };
 
@@ -46,7 +46,7 @@ describe('<FeatureSummaryStrip />', () => {
 
     it('contains GeneSummaryStrip if focus object is gene', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ ensObject: createEnsObject('gene') })
+        renderFeatureSummaryStrip({ focusObject: createFocusObject('gene') })
       );
 
       expect(container.textContent).toBe('Gene Summary Strip'); // text from the mocked module
@@ -54,7 +54,7 @@ describe('<FeatureSummaryStrip />', () => {
 
     it('contains RegionSummaryStrip if focus object is region', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ ensObject: createEnsObject('region') })
+        renderFeatureSummaryStrip({ focusObject: createFocusObject('region') })
       );
       expect(container.textContent).toBe('Region Summary Strip'); // text from the mocked module
     });

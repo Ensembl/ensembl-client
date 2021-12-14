@@ -21,10 +21,10 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 
 import styles from './FeatureSummaryStrip.scss';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
 type Props = {
-  region: EnsObject;
+  region: FocusObject;
   isGhosted?: boolean;
 };
 

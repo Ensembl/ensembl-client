@@ -30,7 +30,7 @@ import {
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',
-  ACTIVE_ENS_OBJECT_ID = 'browser.activeEnsObjectId',
+  ACTIVE_ENS_OBJECT_ID = 'browser.activeFocusObjectId',
   CHR_LOCATION = 'browser.chrLocation',
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
@@ -56,16 +56,16 @@ export class BrowserStorageService {
     this.storageService.remove(StorageKeys.ACTIVE_GENOME_ID);
   }
 
-  public getActiveEnsObjectIds() {
+  public getActiveFocusObjectIds() {
     return this.storageService.get(StorageKeys.ACTIVE_ENS_OBJECT_ID) || {};
   }
 
-  public updateActiveEnsObjectIds(activeEnsObjectIds: {
+  public updateActiveFocusObjectIds(activeFocusObjectIds: {
     [genomeId: string]: string | undefined;
   }) {
     this.storageService.update(
       StorageKeys.ACTIVE_ENS_OBJECT_ID,
-      activeEnsObjectIds
+      activeFocusObjectIds
     );
   }
 
@@ -105,7 +105,7 @@ export class BrowserStorageService {
       this.clearActiveGenomeId();
     }
 
-    this.updateActiveEnsObjectIds({
+    this.updateActiveFocusObjectIds({
       [genomeIdToDelete]: undefined
     });
     this.updateChrLocation({

@@ -27,7 +27,7 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject
+  getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getActiveGenomePreviouslyViewedObjects,
@@ -161,8 +161,8 @@ export const updatePreviouslyViewedObjectsAndSave =
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
-    const activeEnsObject = getBrowserActiveEnsObject(state);
-    if (!activeGenomeId || !activeEnsObject) {
+    const activeFocusObject = getBrowserActiveFocusObject(state);
+    if (!activeGenomeId || !activeFocusObject) {
       return;
     }
 
@@ -171,7 +171,7 @@ export const updatePreviouslyViewedObjectsAndSave =
     ];
 
     const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
-      (entity) => entity.object_id === activeEnsObject.object_id
+      (entity) => entity.object_id === activeFocusObject.object_id
     );
 
     if (isCurrentEntityPreviouslyViewed) {
@@ -179,25 +179,25 @@ export const updatePreviouslyViewedObjectsAndSave =
     }
 
     const stable_id =
-      activeEnsObject.type === 'gene'
-        ? activeEnsObject.versioned_stable_id || activeEnsObject.stable_id
+      activeFocusObject.type === 'gene'
+        ? activeFocusObject.versioned_stable_id || activeFocusObject.stable_id
         : null;
 
     const geneSymbol =
-      activeEnsObject.type === 'gene' &&
-      activeEnsObject.label !== activeEnsObject.stable_id
-        ? activeEnsObject.label
+      activeFocusObject.type === 'gene' &&
+      activeFocusObject.label !== activeFocusObject.stable_id
+        ? activeFocusObject.label
         : null;
 
     const label =
-      activeEnsObject.type === 'gene' && geneSymbol
+      activeFocusObject.type === 'gene' && geneSymbol
         ? [geneSymbol, stable_id as string]
-        : activeEnsObject.label;
+        : activeFocusObject.label;
 
     const newObject = {
-      genome_id: activeEnsObject.genome_id,
-      object_id: activeEnsObject.object_id,
-      type: activeEnsObject.type,
+      genome_id: activeFocusObject.genome_id,
+      object_id: activeFocusObject.object_id,
+      type: activeFocusObject.type,
       label: label
     };
 

@@ -28,7 +28,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getDisplayStableId,
   buildFocusIdForUrl
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 import {
   getNumberOfCodingExons,
   getSplicedRNALength,
@@ -36,7 +36,7 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -45,7 +45,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
-import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
@@ -164,12 +164,12 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({
-    genomeId: ensObjectGene.genome_id,
-    geneId: ensObjectGene.stable_id
+    genomeId: focusGene.genome_id,
+    geneId: focusGene.stable_id
   });
 
   // TODO: change this to a single transcript query
@@ -182,9 +182,9 @@ const TranscriptSummary = (props: Props) => {
     transcript: Transcript;
   }>(GENE_AND_TRANSCRIPT_QUERY, {
     variables: {
-      geneId: ensObjectGene.stable_id,
+      geneId: focusGene.stable_id,
       transcriptId: activeDrawerTranscript?.stable_id,
-      genomeId: ensObjectGene.genome_id
+      genomeId: focusGene.genome_id
     },
     skip: !activeDrawerTranscript?.stable_id
   });
@@ -214,7 +214,7 @@ const TranscriptSummary = (props: Props) => {
   });
 
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: ensObjectGene.genome_id,
+    genomeId: focusGene.genome_id,
     entityId: focusId
   });
 
@@ -263,7 +263,7 @@ const TranscriptSummary = (props: Props) => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(ensObjectGene.location)}</span>
+              <span>{getFormattedLocation(focusGene.location)}</span>
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ const TranscriptSummary = (props: Props) => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadTranscript
-                genomeId={ensObjectGene.genome_id}
+                genomeId={focusGene.genome_id}
                 transcript={{
                   id: transcript.stable_id,
                   isProteinCoding: isProteinCodingTranscript(transcript)

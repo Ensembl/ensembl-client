@@ -18,7 +18,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 
-import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
@@ -65,7 +65,7 @@ type Gene = Required<
 const GeneOverview = () => {
   const params: EntityViewerParams = useParams();
   const { entityId, genomeId } = params;
-  const geneId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+  const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 

@@ -20,9 +20,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import loadable from '@loadable/component';
 
 import {
-  parseEnsObjectId,
+  parseFocusObjectId,
   parseFocusIdFromUrl
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+} from 'src/shared/helpers/focusObjectHelpers';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
@@ -49,7 +49,7 @@ const EntityViewerPage = () => {
 
   useEffect(() => {
     const geneId = activeEntityId
-      ? parseEnsObjectId(activeEntityId).objectId
+      ? parseFocusObjectId(activeEntityId).objectId
       : null;
     const shouldFetchPageTitle =
       activeGenomeId !== null &&

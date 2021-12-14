@@ -74,14 +74,14 @@ export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
   return (
     <div className={styles.container}>
       {data ? (
-        <GeneSummaryStrip gene={geneToEnsObjectFields(data.gene)} />
+        <GeneSummaryStrip gene={geneToFocusObjectFields(data.gene)} />
       ) : null}
     </div>
   );
 };
 
 // NOTE: temporary adaptor
-const geneToEnsObjectFields = (gene: Gene) => {
+const geneToFocusObjectFields = (gene: Gene) => {
   return {
     stable_id: gene.unversioned_stable_id,
     versioned_stable_id: gene.stable_id,

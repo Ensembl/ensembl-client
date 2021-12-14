@@ -41,7 +41,7 @@ import styles from './TrackPanelItem.scss';
 type TrackPanelGeneProps = {
   genomeId: string;
   geneId: string;
-  ensObjectId: string;
+  focusObjectId: string;
 };
 
 // TODO: figure out proper gene and transcript track naming conventions
@@ -49,7 +49,7 @@ const GENE_TRACK_ID = 'track:gene-feat';
 const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
-  const { genomeId, geneId, ensObjectId } = props;
+  const { genomeId, geneId, focusObjectId } = props;
   const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
   const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
   const { data } = useGetTrackPanelGeneQuery({
@@ -59,7 +59,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const trackStatus = useSelector((state: RootState) =>
     getBrowserTrackState(state, {
       genomeId,
-      objectId: ensObjectId,
+      objectId: focusObjectId,
       tracksGroup: 'objectTracks',
       categoryName: 'main',
       trackId: GENE_TRACK_ID
@@ -108,7 +108,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       updateTrackStatesAndSave({
         [genomeId]: {
           objectTracks: {
-            [ensObjectId]: {
+            [focusObjectId]: {
               main: {
                 [trackId]: newStatus
               }
@@ -158,7 +158,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
             transcript={transcript}
             trackId={trackId}
             genomeId={genomeId}
-            ensObjectId={ensObjectId}
+            focusObjectId={focusObjectId}
             onChangeVisibility={(trackStatus: TrackActivityStatus) =>
               onChangeVisibility({ trackId, status: trackStatus })
             }
