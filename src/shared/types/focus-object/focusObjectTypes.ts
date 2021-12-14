@@ -32,7 +32,7 @@ type BasicFocusObject = {
   type: FocusObjectType;
 };
 
-export type FocusObjectGene = BasicFocusObject & {
+export type FocusGene = BasicFocusObject & {
   type: 'gene';
   stable_id: string;
   versioned_stable_id: string;
@@ -40,11 +40,11 @@ export type FocusObjectGene = BasicFocusObject & {
   strand: Strand;
 };
 
-export type FocusObjectRegion = BasicFocusObject & {
+export type FocusRegion = BasicFocusObject & {
   type: 'region';
 };
 
-export type FocusObject = FocusObjectGene | FocusObjectRegion;
+export type FocusObject = FocusGene | FocusRegion;
 
 export type FocusObjectTrack = {
   additional_info?: string;
@@ -58,7 +58,7 @@ export type FocusObjectTrack = {
   description: string | null;
 };
 
-export type FocusObjectResponse = FocusObjectGene;
+export type FocusObjectResponse = FocusGene;
 
 export type FocusObjectIdConstituents = {
   genomeId: string;

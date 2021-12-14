@@ -15,7 +15,7 @@
  */
 
 import {
-  FocusObjectGene,
+  FocusGene,
   FocusObjectIdConstituents,
   UrlFocusIdConstituents
 } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -81,5 +81,5 @@ export const parseFocusObjectIdFromUrl = (
   };
 };
 
-export const getDisplayStableId = (focusObject: Partial<FocusObjectGene>) =>
+export const getDisplayStableId = (focusObject: Partial<FocusGene>) =>
   focusObject.versioned_stable_id || focusObject.stable_id || '';

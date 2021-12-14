@@ -45,7 +45,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
-import { FocusObjectGene } from 'src/shared/types/focus-object/focusObjectTypes';
+import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
@@ -164,9 +164,7 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const focusObjectGene = useSelector(
-    getBrowserActiveFocusObject
-  ) as FocusObjectGene;
+  const focusObjectGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({

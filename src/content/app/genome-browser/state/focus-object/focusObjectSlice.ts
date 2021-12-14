@@ -35,9 +35,9 @@ import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/br
 import { LoadingState } from 'src/shared/types/loading-state';
 import {
   FocusObject,
-  FocusObjectGene,
+  FocusGene,
   FocusObjectIdConstituents,
-  FocusObjectRegion
+  FocusRegion
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import { RootState } from 'src/store';
 
@@ -55,9 +55,7 @@ type BuildGeneObjectParams = {
 };
 
 // FIXME: many fields here are unnecessary for an focusObject
-export const buildGeneObject = (
-  params: BuildGeneObjectParams
-): FocusObjectGene => {
+export const buildGeneObject = (params: BuildGeneObjectParams): FocusGene => {
   const {
     slice: {
       location: { start, end },
@@ -97,9 +95,7 @@ const buildLoadedObject = (payload: { id: string; data: FocusObject }) => ({
   }
 });
 
-const buildRegionObject = (
-  payload: FocusObjectIdConstituents
-): FocusObjectRegion => {
+const buildRegionObject = (payload: FocusObjectIdConstituents): FocusRegion => {
   const { genomeId, objectId: regionId } = payload;
   const [chromosome, start, end] = getChrLocationFromStr(regionId);
 

@@ -39,7 +39,7 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { FocusObjectGene } from 'src/shared/types/focus-object/focusObjectTypes';
+import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
@@ -105,9 +105,7 @@ type Gene = Pick<
   };
 
 const GeneSummary = () => {
-  const focusObjectGene = useSelector(
-    getBrowserActiveFocusObject
-  ) as FocusObjectGene;
+  const focusObjectGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {

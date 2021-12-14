@@ -23,7 +23,7 @@ import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { FocusObjectGene } from 'src/shared/types/focus-object/focusObjectTypes';
+import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -43,7 +43,7 @@ type GeneFields =
   | 'stable_id'
   | 'strand'
   | 'location';
-type Gene = Pick<FocusObjectGene, GeneFields>;
+type Gene = Pick<FocusGene, GeneFields>;
 
 type Props = {
   gene: Gene;
