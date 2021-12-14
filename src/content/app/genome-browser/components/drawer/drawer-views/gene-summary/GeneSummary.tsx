@@ -105,14 +105,14 @@ type Gene = Pick<
   };
 
 const GeneSummary = () => {
-  const focusObjectGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
+  const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {
-      geneId: focusObjectGene.stable_id,
-      genomeId: focusObjectGene.genome_id
+      geneId: focusGene.stable_id,
+      genomeId: focusGene.genome_id
     },
-    skip: !focusObjectGene.stable_id
+    skip: !focusGene.stable_id
   });
 
   if (loading || !data?.gene) {
@@ -132,7 +132,7 @@ const GeneSummary = () => {
     objectId: gene.unversioned_stable_id
   });
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: focusObjectGene.genome_id,
+    genomeId: focusGene.genome_id,
     entityId: focusId
   });
 
@@ -162,7 +162,7 @@ const GeneSummary = () => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(focusObjectGene.location)}</span>
+              <span>{getFormattedLocation(focusGene.location)}</span>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ const GeneSummary = () => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene
-                genomeId={focusObjectGene.genome_id}
+                genomeId={focusGene.genome_id}
                 gene={{
                   id: gene.stable_id,
                   isProteinCoding: isProteinCodingGene(gene)

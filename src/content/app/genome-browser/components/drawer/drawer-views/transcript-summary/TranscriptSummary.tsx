@@ -164,12 +164,12 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const focusObjectGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
+  const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({
-    genomeId: focusObjectGene.genome_id,
-    geneId: focusObjectGene.stable_id
+    genomeId: focusGene.genome_id,
+    geneId: focusGene.stable_id
   });
 
   // TODO: change this to a single transcript query
@@ -182,9 +182,9 @@ const TranscriptSummary = (props: Props) => {
     transcript: Transcript;
   }>(GENE_AND_TRANSCRIPT_QUERY, {
     variables: {
-      geneId: focusObjectGene.stable_id,
+      geneId: focusGene.stable_id,
       transcriptId: activeDrawerTranscript?.stable_id,
-      genomeId: focusObjectGene.genome_id
+      genomeId: focusGene.genome_id
     },
     skip: !activeDrawerTranscript?.stable_id
   });
@@ -214,7 +214,7 @@ const TranscriptSummary = (props: Props) => {
   });
 
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: focusObjectGene.genome_id,
+    genomeId: focusGene.genome_id,
     entityId: focusId
   });
 
@@ -263,7 +263,7 @@ const TranscriptSummary = (props: Props) => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(focusObjectGene.location)}</span>
+              <span>{getFormattedLocation(focusGene.location)}</span>
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ const TranscriptSummary = (props: Props) => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadTranscript
-                genomeId={focusObjectGene.genome_id}
+                genomeId={focusGene.genome_id}
                 transcript={{
                   id: transcript.stable_id,
                   isProteinCoding: isProteinCodingTranscript(transcript)
