@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getExpandedTranscriptsModified } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import { isExpandedTranscriptsListModified } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 type TranscriptWithCanonicalMetadata = {
@@ -40,12 +40,12 @@ type Params = {
 const useExpandedCanonicalTranscript = (params: Params) => {
   const { transcripts, skip = false } = params;
   const dispatch = useDispatch();
-  const isExpandedTranscriptsListModified = useSelector(
-    getExpandedTranscriptsModified
+  const haveTranscriptsBeenExpanded = useSelector(
+    isExpandedTranscriptsListModified
   );
 
   useEffect(() => {
-    if (isExpandedTranscriptsListModified || skip) {
+    if (haveTranscriptsBeenExpanded || skip) {
       return; // nothing to do
     }
 

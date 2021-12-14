@@ -46,7 +46,7 @@ export enum SortingRule {
 
 export type TranscriptsStatePerGene = {
   expandedIds: string[];
-  expandedTranscriptsModified: boolean;
+  isExpandedTranscriptsListModified: boolean;
   expandedDownloadIds: string[];
   expandedMoreInfoIds: string[];
   filters: Filters;
@@ -78,7 +78,7 @@ export type Filters = Record<string, Filter>;
 
 const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
-  expandedTranscriptsModified: false,
+  isExpandedTranscriptsListModified: false,
   expandedDownloadIds: [],
   expandedMoreInfoIds: [],
   filters: {},
@@ -309,7 +309,8 @@ const transcriptsSlice = createSlice({
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
       ensureGenePresence(state, action.payload);
       state[activeGenomeId][activeEntityId].expandedIds = expandedIds;
-      state[activeGenomeId][activeEntityId].expandedTranscriptsModified = true;
+      state[activeGenomeId][activeEntityId].isExpandedTranscriptsListModified =
+        true;
     },
     updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;

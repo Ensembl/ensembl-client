@@ -73,7 +73,9 @@ export const getFilterPanelOpen = (state: RootState): boolean => {
   return transcriptsSlice?.filterPanelOpen ?? false;
 };
 
-export const getExpandedTranscriptsModified = (state: RootState): boolean => {
+export const isExpandedTranscriptsListModified = (
+  state: RootState
+): boolean => {
   const transcriptsSlice = getSliceForGene(state);
-  return transcriptsSlice?.expandedTranscriptsModified ?? false;
+  return transcriptsSlice?.isExpandedTranscriptsListModified ?? false;
 };
