@@ -30,6 +30,7 @@ type TranscriptWithCanonicalMetadata = {
 type Params = {
   geneStableId: string;
   transcripts: TranscriptWithCanonicalMetadata[];
+  skip?: boolean;
 };
 
 // When the default sorting rule is applied to the list of gene's transcripts,
@@ -37,17 +38,17 @@ type Params = {
 // Knowing this, and also knowing that every gene will always have a canonical transcript,
 // we can simply find the canonical transcript among gene's transcripts, and expand it in the initial view
 const useExpandedCanonicalTranscript = (params: Params) => {
+  const { transcripts, skip = false } = params;
   const dispatch = useDispatch();
   const isExpandedTranscriptsListModified = useSelector(
     getExpandedTranscriptsModified
   );
 
   useEffect(() => {
-    if (isExpandedTranscriptsListModified) {
+    if (isExpandedTranscriptsListModified || skip) {
       return; // nothing to do
     }
 
-    const { transcripts } = params;
     const canonicalTranscript = transcripts.find((transcript) =>
       Boolean(transcript.metadata.canonical)
     );

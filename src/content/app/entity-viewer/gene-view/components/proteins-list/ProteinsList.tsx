@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 import { Pick3 } from 'ts-multipick';
-
-import ProteinsListItem, {
-  Props as ProteinListItemProps
-} from './proteins-list-item/ProteinsListItem';
 
 import {
   getLongestProteinLength,
@@ -30,13 +26,16 @@ import {
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import useExpandedCanonicalTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
+
 import {
-  getExpandedTranscriptIds,
-  getExpandedTranscriptsModified,
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+
+import ProteinsListItem, {
+  Props as ProteinListItemProps
+} from './proteins-list-item/ProteinsListItem';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -60,11 +59,6 @@ export type ProteinsListProps = {
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
-  const expandedProteinIds = useSelector(getExpandedTranscriptIds);
-  const expandedTranscriptsModified = useSelector(
-    getExpandedTranscriptsModified
-  );
-  const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
 
@@ -83,20 +77,11 @@ const ProteinsList = (props: ProteinsListProps) => {
     isProteinCodingTranscript
   ) as Transcript[];
 
-  useEffect(() => {
-    if (!proteinCodingTranscripts.length) {
-      return;
-    }
-    const hasExpandedTranscripts = !!expandedProteinIds.length;
-    // Expand the first transcript by default when the user hasnt interacted with the accordion
-    if (
-      !hasExpandedTranscripts &&
-      !proteinIdToFocus &&
-      !expandedTranscriptsModified
-    ) {
-      dispatch(toggleTranscriptInfo(proteinCodingTranscripts[0].stable_id));
-    }
-  }, []);
+  useExpandedCanonicalTranscript({
+    geneStableId: props.gene.stable_id,
+    transcripts: props.gene.transcripts,
+    skip: Boolean(proteinIdToFocus)
+  });
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
