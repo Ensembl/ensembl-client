@@ -123,7 +123,7 @@ export function sortByExonCountAsc<
   });
 }
 
-type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
+export type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
   GetSplicedRNALengthParam & {
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];

@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Pick2, Pick3 } from 'ts-multipick';
 
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
-
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
+
+import useExpandedCanonicalTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
 
 import {
   getExpandedTranscriptIds,
-  getExpandedTranscriptsModified,
   getExpandedTranscriptDownloadIds,
   getExpandedTranscriptMoreInfoIds,
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import DefaultTranscriptsListItem, {
   DefaultTranscriptListItemProps
@@ -70,9 +69,6 @@ export type Props = {
 
 const DefaultTranscriptslist = (props: Props) => {
   const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
-  const expandedTranscriptsModified = useSelector(
-    getExpandedTranscriptsModified
-  );
   const expandedTranscriptDownloadIds = useSelector(
     getExpandedTranscriptDownloadIds
   );
@@ -81,7 +77,6 @@ const DefaultTranscriptslist = (props: Props) => {
   );
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
-  const dispatch = useDispatch();
 
   const { gene } = props;
 
@@ -90,14 +85,10 @@ const DefaultTranscriptslist = (props: Props) => {
   const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
 
-  useEffect(() => {
-    const hasExpandedTranscripts = !!expandedTranscriptIds.length;
-
-    // Expand the first transcript by default when the user hasnt interacted with the accordion
-    if (!hasExpandedTranscripts && !expandedTranscriptsModified) {
-      dispatch(toggleTranscriptInfo(sortedTranscripts[0].stable_id));
-    }
-  }, []);
+  useExpandedCanonicalTranscript({
+    geneStableId: gene.stable_id,
+    transcripts: gene.transcripts
+  });
 
   return (
     <div className={styles.transcriptsList}>
