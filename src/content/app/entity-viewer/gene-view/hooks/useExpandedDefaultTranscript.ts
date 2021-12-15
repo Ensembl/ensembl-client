@@ -37,7 +37,7 @@ type Params = {
 // the canonical transcript is always put on the first place.
 // Knowing this, and also knowing that every gene will always have a canonical transcript,
 // we can simply find the canonical transcript among gene's transcripts, and expand it in the initial view
-const useExpandedCanonicalTranscript = (params: Params) => {
+const useExpandedDefaultTranscript = (params: Params) => {
   const { transcripts, skip = false } = params;
   const dispatch = useDispatch();
   const haveTranscriptsBeenExpanded = useSelector(
@@ -62,4 +62,4 @@ const useExpandedCanonicalTranscript = (params: Params) => {
   }, [params.geneStableId]);
 };
 
-export default useExpandedCanonicalTranscript;
+export default useExpandedDefaultTranscript;

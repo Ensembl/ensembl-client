@@ -22,7 +22,7 @@ import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/e
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
-import useExpandedCanonicalTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
+import useExpandedDefaultTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
 
 import {
   getExpandedTranscriptIds,
@@ -85,7 +85,7 @@ const DefaultTranscriptslist = (props: Props) => {
   const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
 
-  useExpandedCanonicalTranscript({
+  useExpandedDefaultTranscript({
     geneStableId: gene.stable_id,
     transcripts: gene.transcripts
   });

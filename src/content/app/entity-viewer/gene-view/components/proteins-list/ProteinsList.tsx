@@ -26,7 +26,7 @@ import {
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
-import useExpandedCanonicalTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
+import useExpandedDefaultTranscript from 'src/content/app/entity-viewer/gene-view/hooks/useExpandedDefaultTranscript';
 
 import {
   getFilters,
@@ -77,7 +77,7 @@ const ProteinsList = (props: ProteinsListProps) => {
     isProteinCodingTranscript
   ) as Transcript[];
 
-  useExpandedCanonicalTranscript({
+  useExpandedDefaultTranscript({
     geneStableId: props.gene.stable_id,
     transcripts: props.gene.transcripts,
     skip: Boolean(proteinIdToFocus)
