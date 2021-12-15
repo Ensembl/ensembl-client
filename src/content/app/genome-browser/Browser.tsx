@@ -120,7 +120,7 @@ export const Browser = () => {
 
 type GenomeBrowserContextType = {
   genomeBrowser: EnsemblGenomeBrowser | null;
-  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser) => void;
+  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
   zmenus: StateZmenu;
   setZmenus: (zmenus: StateZmenu) => void;
 };

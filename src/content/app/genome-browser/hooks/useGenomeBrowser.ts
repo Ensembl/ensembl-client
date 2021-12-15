@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
@@ -35,8 +35,6 @@ import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import { updateBrowserActiveFocusObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
@@ -44,8 +42,6 @@ import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 const useGenomeBrowser = () => {
-  const dispatch = useDispatch();
-
   const activeFocusObjectId = useSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const { allTrackLabelsOn, allTrackNamesOn } =
@@ -62,15 +58,20 @@ const useGenomeBrowser = () => {
     genomeBrowserContext;
 
   const activateGenomeBrowser = async () => {
-    const genomeBrowserService = new EnsemblGenomeBrowser();
-    await genomeBrowserService.init({
+    const genomeBrowser = new EnsemblGenomeBrowser();
+    await genomeBrowser.init({
       backend_url: config.genomeBrowserBackendBaseUrl,
       target_element_id: BROWSER_CONTAINER_ID,
       'debug.show-incoming-messages': isEnvironment([Environment.PRODUCTION])
         ? 'false'
         : 'true'
     });
-    setGenomeBrowser(genomeBrowserService);
+    setGenomeBrowser(genomeBrowser);
+  };
+
+  const clearGenomeBrowser = () => {
+    // TODO: run genome browser cleanup logic when it becomes available
+    setGenomeBrowser(null);
   };
 
   const changeFocusObject = (focusObjectId: string) => {
@@ -79,9 +80,6 @@ const useGenomeBrowser = () => {
     }
 
     const { genomeId, objectId } = parseFocusObjectId(focusObjectId);
-
-    dispatch(updatePreviouslyViewedObjectsAndSave());
-    dispatch(updateBrowserActiveFocusObjectIdsAndSave(focusObjectId));
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
@@ -223,6 +221,7 @@ const useGenomeBrowser = () => {
 
   return {
     activateGenomeBrowser,
+    clearGenomeBrowser,
     changeFocusObject,
     changeFocusObjectFromZmenu,
     changeBrowserLocation,
