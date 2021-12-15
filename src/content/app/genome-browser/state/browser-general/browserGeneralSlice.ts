@@ -114,7 +114,7 @@ export const setDataFromUrlAndSave: ActionCreator<
       activeGenomeId === currentActiveGenomeId &&
       activeFocusObjectId !== currentActiveFocusObjectId
     ) {
-      dispatch(updatePreviouslyViewedObjectsAndSave()); // FIXME: actually pass the genome id and the focus object id?
+      dispatch(updatePreviouslyViewedObjectsAndSave());
     }
 
     dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
