@@ -16,17 +16,32 @@
 
 export const LINE_LENGTH = 60; // line length in Ensembl refget implementations
 
-export const toFasta = (sequenceLabel: string, sequence: string) => {
+type Sequence = {
+  header?: string;
+  value: string;
+};
+
+type Options = {
+  lineLength?: number;
+};
+
+export const toFasta = (sequence: Sequence, options: Options = {}) => {
+  const { header, value: rawSequence } = sequence;
+  const { lineLength = LINE_LENGTH } = options;
+
   const formattedSequence = [];
-  formattedSequence.push(`>${sequenceLabel}`);
+
+  if (header) {
+    formattedSequence.push(`>${header}`);
+  }
 
   let row = '';
 
-  for (let i = 0; i < sequence.length; i++) {
-    row += sequence[i];
+  for (let i = 0; i < rawSequence.length; i++) {
+    row += rawSequence[i];
 
-    const isAtEndOfLine = (i + 1) % LINE_LENGTH === 0;
-    if (i === sequence.length - 1 || isAtEndOfLine) {
+    const isAtEndOfLine = (i + 1) % lineLength === 0;
+    if (i === rawSequence.length - 1 || isAtEndOfLine) {
       formattedSequence.push(row);
       row = '';
     }

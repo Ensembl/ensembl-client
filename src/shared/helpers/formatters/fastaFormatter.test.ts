@@ -16,6 +16,7 @@
 
 import { toFasta, LINE_LENGTH } from './fastaFormatter';
 import random from 'lodash/random';
+import times from 'lodash/times';
 
 const generateSequence = (length: number) => {
   const alphabet = 'AGCT';
@@ -29,17 +30,53 @@ const generateSequence = (length: number) => {
 };
 
 describe('fasta formatter', () => {
-  it('formats raw sequence in the fasta format', () => {
+  it('formats a raw sequence with a header into the FASTA format', () => {
     const sequenceLength = random(1, 600);
-    const sequenceLabel = 'label for the sequence';
+    const header = times(
+      10,
+      () => 'This is a long, repeated header string! '
+    ).join();
     const rawSequence = generateSequence(sequenceLength);
-    const fastaFormattedSequence = toFasta(sequenceLabel, rawSequence);
+    const fastaFormattedSequence = toFasta({ header, value: rawSequence });
 
     const [firstLine, ...sequenceLines] = fastaFormattedSequence.split('\n');
-    expect(firstLine).toBe(`>${sequenceLabel}`);
+    expect(firstLine).toBe(`>${header}`);
     expect(
       sequenceLines.every((line) => line.length <= LINE_LENGTH)
     ).toBeTruthy();
     expect(sequenceLines.join('')).toBe(rawSequence);
+  });
+
+  it('formats a raw sequence without a header into the FASTA format', () => {
+    const sequenceLength = random(1, 600);
+    const rawSequence = generateSequence(sequenceLength);
+    const formattedSequence = toFasta({ value: rawSequence });
+
+    expect(formattedSequence.includes('>')).toBe(false);
+    expect(formattedSequence.replaceAll('\n', '')).toEqual(rawSequence);
+  });
+
+  it('respects the line length option', () => {
+    const header = times(
+      10,
+      () => 'This is a long, repeated header string! '
+    ).join();
+    const sequenceLength = 100;
+    const rawSequence = generateSequence(sequenceLength);
+
+    const lineLength = 10;
+
+    const formattedSequence = toFasta(
+      { header, value: rawSequence },
+      { lineLength }
+    );
+    formattedSequence.split('\n').forEach((line, index) => {
+      if (index === 0) {
+        // first line should be unmodified header
+        expect(line).toBe(`>${header}`);
+      } else {
+        expect(line.length).toBeLessThanOrEqual(lineLength);
+      }
+    });
   });
 });

@@ -32,12 +32,19 @@ export const BlastInputSequences = () => {
         ...result,
         rawInput: input
       })) as ParsedInputSequence[];
+
     if (typeof index === 'number') {
-      const newSequences = [...sequences].splice(index, 1, ...parsedSequences);
+      const newSequences = [...sequences];
+      newSequences.splice(index, 1, ...parsedSequences);
       setSequences(newSequences);
     } else {
       setSequences(parsedSequences);
     }
+  };
+
+  const onRemoveSequence = (index: number) => {
+    const newSequences = [...sequences].filter((_, i) => i !== index);
+    setSequences(newSequences);
   };
 
   return (
@@ -49,6 +56,7 @@ export const BlastInputSequences = () => {
             index={index}
             sequence={sequence}
             onCommitted={onSequenceAdded}
+            onRemoveSequence={onRemoveSequence}
           />
         ))
       ) : (

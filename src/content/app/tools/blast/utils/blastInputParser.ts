@@ -44,9 +44,11 @@ export const parseBlastInput = (input: string) => {
 
     if (line.startsWith('>')) {
       // this is a FASTA header line indicating the beginning of a new sequence
+      line = line.replace(/^\>\s*/, '');
+
       if (endsInEmptySequenceObject(sequences)) {
         const sequenceObject = sequences[sequences.length - 1];
-        sequenceObject.header = line;
+        sequenceObject.header = line; // remove the leading ">" from the header line
       } else {
         const newSequence = createEmptySequence();
         newSequence.header = line;

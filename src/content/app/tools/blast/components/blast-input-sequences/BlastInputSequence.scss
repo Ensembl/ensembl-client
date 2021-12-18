@@ -18,3 +18,16 @@ $border: 1px solid $grey;
   border: $border;
   font-family: $font-family-monospace;
 }
+
+// FIXME this should be a separate component
+
+.deleteButtonWrapper {
+  margin-left: 2em;
+}
+
+.deleteButton {
+  height: 20px;
+  width: 20px;
+  fill: $blue;
+  cursor: pointer;
+}
