@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import BlastInputSequence from './BlastInputSequence';
+import PlusButton from 'src/shared/components/plus-button/PlusButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
+import styles from './BlastInputSequences.scss';
+
 export const BlastInputSequences = () => {
   const [sequences, setSequences] = useState<ParsedInputSequence[]>([]);
+  const [shouldAppendEmptyInput, setShouldAppendEmptyInput] = useState(false);
+
+  useEffect(() => {
+    if (!sequences.length) {
+      setShouldAppendEmptyInput(true);
+    }
+  });
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input)
@@ -40,6 +50,12 @@ export const BlastInputSequences = () => {
     } else {
       setSequences(parsedSequences);
     }
+
+    setShouldAppendEmptyInput(false);
+  };
+
+  const appendEmptyInput = () => {
+    setShouldAppendEmptyInput(true);
   };
 
   const onRemoveSequence = (index: number) => {
@@ -49,19 +65,35 @@ export const BlastInputSequences = () => {
 
   return (
     <div>
-      {sequences.length ? (
-        sequences.map((sequence, index) => (
-          <BlastInputSequence
-            key={index}
-            index={index}
-            sequence={sequence}
-            onCommitted={onSequenceAdded}
-            onRemoveSequence={onRemoveSequence}
-          />
-        ))
-      ) : (
-        <BlastInputSequence onCommitted={onSequenceAdded} />
+      {sequences.map((sequence, index) => (
+        <BlastInputSequence
+          key={index}
+          index={index}
+          sequence={sequence}
+          onCommitted={onSequenceAdded}
+          onRemoveSequence={onRemoveSequence}
+        />
+      ))}
+      {shouldAppendEmptyInput && (
+        <BlastInputSequence
+          onCommitted={onSequenceAdded}
+          onRemoveSequence={onRemoveSequence}
+        />
       )}
+      {!shouldAppendEmptyInput && (
+        <div className={styles.addSequenceWrapper}>
+          <AddAnotherSequence onAdd={appendEmptyInput} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AddAnotherSequence = (props: { onAdd: () => void }) => {
+  return (
+    <div className={styles.addSequence}>
+      <span className={styles.addSequenceLabel}>Add another sequence</span>
+      <PlusButton onClick={props.onAdd} />
     </div>
   );
 };

@@ -1,0 +1,17 @@
+@import 'src/styles/common';
+
+.addSequenceWrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 14px 12px;
+}
+
+.addSequence {
+  display: flex;
+  align-items: center;
+}
+
+.addSequenceLabel {
+  font-weight: $light;
+  margin-right: 14px;
+}

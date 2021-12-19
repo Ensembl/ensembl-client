@@ -17,6 +17,7 @@
 import React, {
   useState,
   useEffect,
+  useRef,
   type FormEvent,
   type ClipboardEvent
 } from 'react';
@@ -25,8 +26,7 @@ import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { type ReadFile } from 'src/shared/components/upload/Upload';
-
-import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
@@ -58,6 +58,7 @@ type Props = {
 const BlastInputSequence = (props: Props) => {
   const { index = null, onCommitted, sequence = { value: '' } } = props;
   const [input, setInput] = useState(toFasta(sequence));
+  const canSubmit = useRef(true);
 
   useEffect(() => {
     setInput(toFasta(sequence));
@@ -80,11 +81,16 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onBlur = () => {
-    onCommitted(input, index);
+    if (canSubmit.current) {
+      onCommitted(input, index);
+    }
   };
 
   const onClear = () => {
-    props.onRemoveSequence?.(index as number);
+    canSubmit.current = false; // lock against the sequence submission on blur
+    setInput('');
+    sequence && props.onRemoveSequence?.(index as number);
+    setTimeout(() => (canSubmit.current = true), 0);
   };
 
   return (
@@ -93,7 +99,7 @@ const BlastInputSequence = (props: Props) => {
         <span>Heading</span>
         {input && (
           <span className={styles.deleteButtonWrapper}>
-            <ResetIcon className={styles.deleteButton} onClick={onClear} />
+            <DeleteButton onMouseDown={onClear} onTouchStart={onClear} />
           </span>
         )}
       </div>

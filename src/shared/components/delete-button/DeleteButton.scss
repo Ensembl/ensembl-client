@@ -1,0 +1,13 @@
+@import 'src/styles/common';
+
+.trashcanButton {
+  background: transparent;
+  border: none;
+  outline: none;
+  height: 20px;
+  width: 20px;
+
+  svg {
+    fill: $blue;
+  }
+}
