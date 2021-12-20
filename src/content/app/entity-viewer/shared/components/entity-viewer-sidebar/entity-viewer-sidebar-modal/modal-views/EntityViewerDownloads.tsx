@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
+
+import { useGeneForSequenceDownloadQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import {
   getEntityViewerActiveEntityId,
@@ -32,40 +33,24 @@ import InstantDownloadGene, {
   OnDownloadPayload
 } from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-
-const QUERY = gql`
-  query Gene($genomeId: String!, $entityId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
-      stable_id
-      transcripts {
-        product_generating_contexts {
-          product_type
-        }
-      }
-    }
-  }
-`;
-
-type Transcript = {
-  product_generating_contexts: Pick<
-    FullProductGeneratingContext,
-    'product_type'
-  >[];
-};
-
 const EntityViewerSidebarDownloads = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
-  const geneId = useSelector(getEntityViewerActiveEntityId);
+  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
   const { trackGeneDownload } = useEntityViewerAnalytics();
 
-  const entityId = geneId ? parseFocusObjectId(geneId).objectId : null;
+  const geneId = activeEntityId
+    ? parseFocusObjectId(activeEntityId).objectId
+    : null;
 
-  const { data } = useQuery<{
-    gene: { stable_id: string; transcripts: Transcript[] };
-  }>(QUERY, {
-    variables: { genomeId, entityId }
-  });
+  const { data } = useGeneForSequenceDownloadQuery(
+    {
+      genomeId: genomeId || '',
+      geneId: geneId || ''
+    },
+    {
+      skip: !genomeId || !geneId
+    }
+  );
 
   if (!data) {
     return null;

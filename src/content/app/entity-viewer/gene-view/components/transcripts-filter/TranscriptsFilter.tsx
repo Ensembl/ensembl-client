@@ -17,7 +17,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { Pick2 } from 'ts-multipick';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
@@ -43,15 +42,20 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 import styles from './TranscriptsFilter.scss';
 
-type Transcript = Pick2<
-  FullTranscript,
-  'metadata',
-  'biotype' | 'tsl' | 'appris'
->;
+type Transcript = {
+  metadata: {
+    biotype: TranscriptMetadata['biotype'];
+    tsl: Pick<NonNullable<TranscriptMetadata['tsl']>, 'label' | 'value'> | null;
+    appris: Pick<
+      NonNullable<TranscriptMetadata['appris']>,
+      'label' | 'value'
+    > | null;
+  };
+};
 
 type Props = {
   transcripts: Transcript[];

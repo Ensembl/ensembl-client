@@ -14,35 +14,15 @@
  * limitations under the License.
  */
 
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { request, ClientError } from 'graphql-request';
+import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import trackPanelGeneQuery from './queries/trackPanelGeneQuery';
 
 import type { TrackPanelGene } from './types/track-panel-gene';
 
-// FIXME: move some place more generic
-const graphqlBaseQuery =
-  ({ baseUrl }: { baseUrl: string }) =>
-  async ({ body }: { body: string }) => {
-    try {
-      const result = await request(baseUrl, body);
-      return { data: result };
-    } catch (error) {
-      if (error instanceof ClientError) {
-        return { error: { status: error.response.status, data: error } };
-      }
-      return { error: { status: 500, data: error } };
-    }
-  };
-
 type GeneQueryParams = { genomeId: string; geneId: string };
 
-export const genomeBrowserApiSlice = createApi({
-  reducerPath: 'genomeBrowserApi',
-  baseQuery: graphqlBaseQuery({
-    baseUrl: '/api/thoas'
-  }),
+const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTrackPanelGene: builder.query<{ gene: TrackPanelGene }, GeneQueryParams>(
       {

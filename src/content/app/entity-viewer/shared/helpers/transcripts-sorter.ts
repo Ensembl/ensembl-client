@@ -28,7 +28,6 @@ import {
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { Slice } from 'src/shared/types/thoas/slice';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 type SliceWithOnlyLength = Pick2<Slice, 'location', 'length'>;
 
@@ -50,19 +49,20 @@ function compareTranscriptLengths(
   return 0;
 }
 
-const isCanonical = (
-  transcript: Pick2<FullTranscript, 'metadata', 'canonical'>
-) => transcript.metadata.canonical;
+const isCanonical = (transcript: {
+  metadata: { canonical: Record<string, unknown> | null };
+}) => Boolean(transcript.metadata.canonical);
 
-const isManeTranscript = (
-  transcript: Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>
-) => transcript.metadata.mane;
+const isManeTranscript = (transcript: {
+  metadata: { mane: Record<string, unknown> | null };
+}) => Boolean(transcript.metadata.mane);
 
 export function defaultSort<
   T extends Array<
     IsProteinCodingTranscriptParam & {
       slice: SliceWithOnlyLength;
-    } & Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>
+    } & Parameters<typeof isManeTranscript>[0] &
+      Parameters<typeof isCanonical>[0]
   >
 >(transcripts: T): T {
   const [ensemblCanonicalTranscript, nonCanonicalTranscripts] = partition(
@@ -127,11 +127,12 @@ export type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
   GetSplicedRNALengthParam & {
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
-  } & Pick2<
-    FullTranscript,
-    'metadata',
-    'canonical' | 'mane' | 'biotype' | 'appris' | 'tsl'
-  >;
+    metadata: {
+      canonical: Record<string, unknown> | null;
+      mane: Record<string, unknown> | null;
+    };
+  } & Parameters<typeof isManeTranscript>[0] &
+  Parameters<typeof isCanonical>[0];
 
 type SortingFunction<T extends GeneViewSortableTranscript> = (
   transcript: T[]
@@ -153,5 +154,5 @@ export const getTranscriptSortingFunction = <
 >(
   rule: SortingRule
 ): SortingFunction<T> => {
-  return transcriptSortingFunctions[rule] as SortingFunction<T>;
+  return transcriptSortingFunctions[rule] as unknown as SortingFunction<T>; // typescript complains here; so forcing the type
 };

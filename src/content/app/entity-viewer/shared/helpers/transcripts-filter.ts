@@ -16,15 +16,15 @@
 
 import { Filters } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { Pick2 } from 'ts-multipick';
 import { metadataFields } from '../../gene-view/components/transcripts-filter/TranscriptsFilter';
 
-type Transcript = Pick2<
-  FullTranscript,
-  'metadata',
-  'biotype' | 'tsl' | 'appris'
->;
+type Transcript = {
+  metadata: {
+    biotype: { value: string } | null;
+    tsl: { value: string } | null;
+    appris: { value: string } | null;
+  };
+};
 
 export function filterTranscripts<T extends Transcript>(
   transcripts: T[],

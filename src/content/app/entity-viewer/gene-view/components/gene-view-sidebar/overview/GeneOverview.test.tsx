@@ -16,19 +16,26 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+
+import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import GeneOverview from './GeneOverview';
 
 jest.mock('react-router-dom', () => ({
-  useParams: jest.fn()
+  useParams: jest.fn(() => ({
+    params: {
+      entityId: geneId,
+      genomeId
+    }
+  }))
 }));
 
-jest.mock('@apollo/client', () => ({
-  gql: jest.fn(),
-  useQuery: jest.fn()
-}));
+jest.mock(
+  'src/content/app/entity-viewer/state/api/entityViewerThoasSlice',
+  () => ({
+    useGeneOverviewQuery: jest.fn()
+  })
+);
 
 jest.mock('../publications/GenePublications', () => () => (
   <div className="genePublications" />
@@ -66,22 +73,15 @@ const completeGeneData = {
 };
 
 describe('<GeneOverview />', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-
-    (useParams as any).mockImplementation(() => ({
-      params: {
-        entityId: geneId,
-        genomeId
-      }
-    }));
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('loading', () => {
     beforeEach(() => {
-      (useQuery as any).mockImplementation(() => ({
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: null,
-        loading: true
+        isLoading: true
       }));
     });
 
@@ -95,9 +95,9 @@ describe('<GeneOverview />', () => {
 
   describe('empty data', () => {
     beforeEach(() => {
-      (useQuery as any).mockImplementation(() => ({
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: null,
-        loading: false
+        isLoading: false
       }));
     });
 
@@ -111,9 +111,9 @@ describe('<GeneOverview />', () => {
 
   describe('full data', () => {
     beforeEach(() => {
-      (useQuery as any).mockImplementation(() => ({
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: { gene: completeGeneData },
-        loading: false
+        isLoading: false
       }));
     });
 
@@ -145,9 +145,10 @@ describe('<GeneOverview />', () => {
   describe('partial data', () => {
     it('renders only stable id if gene symbol is not available', () => {
       const geneData = { ...completeGeneData, symbol: null };
-      (useQuery as any).mockImplementation(() => ({
+
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
-        loading: false
+        isLoading: false
       }));
 
       const { queryByTestId } = render(<GeneOverview />);
@@ -158,9 +159,10 @@ describe('<GeneOverview />', () => {
 
     it('shows that the gene does not have a name', () => {
       const geneData = { ...completeGeneData, name: null };
-      (useQuery as any).mockImplementation(() => ({
+
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
-        loading: false
+        isLoading: false
       }));
 
       const { container } = render(<GeneOverview />);
@@ -171,9 +173,10 @@ describe('<GeneOverview />', () => {
 
     it('shows that the gene does not have synonyms', () => {
       const geneData = { ...completeGeneData, alternative_symbols: [] };
-      (useQuery as any).mockImplementation(() => ({
+
+      (useGeneOverviewQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
-        loading: false
+        isLoading: false
       }));
 
       const { container } = render(<GeneOverview />);

@@ -22,7 +22,7 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
 
-import { genomeBrowserApiSlice } from './content/app/genome-browser/state/genomeBrowserApiSlice';
+import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import createRootReducer from './root/rootReducer';
 import { analyticsMiddleWare } from './analyticsMiddleware';
@@ -40,7 +40,7 @@ const middleware = [
   routerMiddleware(history),
   epicMiddleware,
   analyticsMiddleWare,
-  genomeBrowserApiSlice.middleware
+  thoasApiSlice.middleware
 ];
 
 const preloadedState = (window as any).__PRELOADED_STATE__ || {};
