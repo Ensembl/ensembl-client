@@ -1,5 +1,12 @@
 @import 'src/styles/common';
 
+.inputBoxesContainer {
+  // hide top border for the input boxes stacked under the top one
+  & > div:not(:first-child) [class*='header'] {
+    border-top: none;
+  }
+}
+
 .addSequenceWrapper {
   display: flex;
   justify-content: flex-end;

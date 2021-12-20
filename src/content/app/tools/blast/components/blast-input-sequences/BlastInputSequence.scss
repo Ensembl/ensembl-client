@@ -3,6 +3,9 @@
 $border: 1px solid $grey;
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 16px 26px 14px;
   border: $border;
   border-bottom: none;

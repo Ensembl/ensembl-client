@@ -52,7 +52,7 @@ type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;
   onCommitted: (input: string, index: number | null) => void;
-  onRemoveSequence?: (index: number) => void;
+  onRemoveSequence?: (index: number | null) => void;
 };
 
 const BlastInputSequence = (props: Props) => {
@@ -89,7 +89,7 @@ const BlastInputSequence = (props: Props) => {
   const onClear = () => {
     canSubmit.current = false; // lock against the sequence submission on blur
     setInput('');
-    sequence && props.onRemoveSequence?.(index as number);
+    props.onRemoveSequence?.(index);
     setTimeout(() => (canSubmit.current = true), 0);
   };
 

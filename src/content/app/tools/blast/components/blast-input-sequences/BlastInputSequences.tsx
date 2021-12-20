@@ -48,7 +48,7 @@ export const BlastInputSequences = () => {
       newSequences.splice(index, 1, ...parsedSequences);
       setSequences(newSequences);
     } else {
-      setSequences(parsedSequences);
+      setSequences([...sequences, ...parsedSequences]);
     }
 
     setShouldAppendEmptyInput(false);
@@ -58,28 +58,33 @@ export const BlastInputSequences = () => {
     setShouldAppendEmptyInput(true);
   };
 
-  const onRemoveSequence = (index: number) => {
+  const onRemoveSequence = (index: number | null) => {
+    if (index === null) {
+      setShouldAppendEmptyInput(false);
+    }
     const newSequences = [...sequences].filter((_, i) => i !== index);
     setSequences(newSequences);
   };
 
   return (
     <div>
-      {sequences.map((sequence, index) => (
-        <BlastInputSequence
-          key={index}
-          index={index}
-          sequence={sequence}
-          onCommitted={onSequenceAdded}
-          onRemoveSequence={onRemoveSequence}
-        />
-      ))}
-      {shouldAppendEmptyInput && (
-        <BlastInputSequence
-          onCommitted={onSequenceAdded}
-          onRemoveSequence={onRemoveSequence}
-        />
-      )}
+      <div className={styles.inputBoxesContainer}>
+        {sequences.map((sequence, index) => (
+          <BlastInputSequence
+            key={index}
+            index={index}
+            sequence={sequence}
+            onCommitted={onSequenceAdded}
+            onRemoveSequence={onRemoveSequence}
+          />
+        ))}
+        {shouldAppendEmptyInput && (
+          <BlastInputSequence
+            onCommitted={onSequenceAdded}
+            onRemoveSequence={onRemoveSequence}
+          />
+        )}
+      </div>
       {!shouldAppendEmptyInput && (
         <div className={styles.addSequenceWrapper}>
           <AddAnotherSequence onAdd={appendEmptyInput} />
