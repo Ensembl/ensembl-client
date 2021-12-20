@@ -6,16 +6,24 @@ $border: 1px solid $grey;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 26px;
+  padding: 0 28px;
   min-height: 50px;
   border: $border;
   border-bottom: none;
 }
 
 .body {
-  padding: 16px 26px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 16px 28px;
   background-color: $light-grey;
   border: $border;
+
+  // FIXME: this is a hack
+  [class*='defaultUpload'] {
+    width: 112px;
+    margin-left: 18px;
+  }
 }
 
 .textarea {
@@ -23,15 +31,24 @@ $border: 1px solid $grey;
   font-family: $font-family-monospace;
 }
 
-// FIXME this should be a separate component
+.textareaCollapsed {
+  height: 104px;
+}
+
+.textareaExpanded {
+  min-height: 104px;
+  max-height: 445px;
+}
 
 .deleteButtonWrapper {
   margin-left: 2em;
 }
 
-.deleteButton {
-  height: 20px;
-  width: 20px;
-  fill: $blue;
-  cursor: pointer;
+.inputSizeToggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 48px;
+  height: 96px;
 }
