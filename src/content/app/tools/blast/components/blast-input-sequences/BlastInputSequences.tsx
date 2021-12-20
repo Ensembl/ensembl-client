@@ -59,11 +59,12 @@ export const BlastInputSequences = () => {
   };
 
   const onRemoveSequence = (index: number | null) => {
-    if (index === null) {
+    if (typeof index === 'number') {
+      const newSequences = [...sequences].filter((_, i) => i !== index);
+      setSequences(newSequences);
+    } else if (sequences.length) {
       setShouldAppendEmptyInput(false);
     }
-    const newSequences = [...sequences].filter((_, i) => i !== index);
-    setSequences(newSequences);
   };
 
   return (
