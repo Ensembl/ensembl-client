@@ -29,6 +29,8 @@ $border: 1px solid $grey;
 .textarea {
   border: $border;
   font-family: $font-family-monospace;
+  font-size: 12px;
+  letter-spacing: 0.1rem;
 }
 
 .textareaCollapsed {

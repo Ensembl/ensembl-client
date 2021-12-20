@@ -1,5 +1,40 @@
 @import 'src/styles/common';
 
+.header {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 28px;
+}
+
+.headerTitle {
+  font-weight: $bold;
+}
+
+.sequenceCounter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: $white;
+  background-color: $dark-grey;
+  font-weight: $bold;
+  border-radius: 100%;
+  font-size: 15px;
+  margin: 0 0.6rem 0 0.6rem;
+}
+
+.maxSequences {
+  font-weight: $light;
+}
+
+.clearAll {
+  margin-left: auto;
+  color: $blue;
+  cursor: pointer;
+}
+
 .inputBoxesContainer {
   // hide top border for the input boxes stacked under the top one
   & > div:not(:first-child) [class*='header'] {

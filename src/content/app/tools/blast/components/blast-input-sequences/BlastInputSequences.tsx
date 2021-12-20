@@ -67,8 +67,20 @@ export const BlastInputSequences = () => {
     }
   };
 
+  const onClearAll = () => {
+    setSequences([]);
+  };
+
   return (
     <div>
+      <div className={styles.header}>
+        <span className={styles.headerTitle}>Add sequence(s)</span>
+        <span className={styles.sequenceCounter}>{sequences.length}</span>
+        <span className={styles.maxSequences}>of 30 sequences</span>
+        <span className={styles.clearAll} onClick={onClearAll}>
+          Clear all
+        </span>
+      </div>
       <div className={styles.inputBoxesContainer}>
         {sequences.map((sequence, index) => (
           <BlastInputSequence
