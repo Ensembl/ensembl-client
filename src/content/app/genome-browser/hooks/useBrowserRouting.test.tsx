@@ -61,6 +61,13 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/state/focus-object/focusObjectSlice',
+  () => ({
+    fetchFocusObject: jest.fn(() => ({ type: 'fetch-focus-object' }))
+  })
+);
+
 const committedHuman = {
   ...createSelectedSpecies(),
   genome_id: 'human'
