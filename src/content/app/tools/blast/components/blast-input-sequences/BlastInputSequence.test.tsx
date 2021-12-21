@@ -138,6 +138,8 @@ describe('<BlastInputSequence />', () => {
   describe('when filled', () => {
     it.todo('shows the control for clearing the input');
 
+    it.todo('correctly updates the input after a paste event');
+
     it.todo('can hide or show the body containing the sequence');
   });
 });
