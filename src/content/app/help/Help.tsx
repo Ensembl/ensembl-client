@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { push } from 'connected-react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import classNames from 'classnames';
 
 import useApiService from 'src/shared/hooks/useApiService';
+
+import {
+  setCurrentItemIndex,
+  resetNavHistory,
+  addHelpItem
+} from './state/helpSlice';
+import {
+  getCurrentItemIndex,
+  getNavHistory,
+  getNextItem,
+  getPreviousItem
+} from './state/helpSelectors';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
@@ -30,16 +45,21 @@ import {
 } from 'src/shared/components/help-article';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
+import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
+import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
+
 import {
   Menu as MenuType,
   MenuItem
 } from 'src/shared/types/help-and-docs/menu';
 import {
+  RelatedArticleData,
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
 
 import styles from './Help.scss';
+import navButtonsStyles from 'src/shared/components/help-popup/HelpPopupBody.scss';
 
 type ArticleData = TextArticleData | VideoArticleData;
 
@@ -53,8 +73,16 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`,
     skip: isIndexPage
   });
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetNavHistory());
+    };
+  }, []);
 
   let breadcrumbs: string[] = [];
+
   if (menu) {
     breadcrumbs = buildBreadcrumbs(menu, { url: location.pathname });
   }
@@ -92,14 +120,82 @@ const AppBar = () => {
   );
 };
 
+const NavButtons = () => {
+  const navHistory = useSelector(getNavHistory);
+  const currentItemIndex = useSelector(getCurrentItemIndex);
+  const previousItem = useSelector(getPreviousItem);
+  const nextItem = useSelector(getNextItem);
+  const dispatch = useDispatch();
+
+  const onHistoryBack = () => {
+    if (previousItem) {
+      const newCurrentItemIndex = currentItemIndex - 1;
+
+      dispatch(setCurrentItemIndex(newCurrentItemIndex));
+      dispatch(push(navHistory[newCurrentItemIndex]));
+    }
+  };
+
+  const onHistoryForward = () => {
+    if (nextItem) {
+      const newCurrentItemIndex = currentItemIndex + 1;
+
+      dispatch(setCurrentItemIndex(newCurrentItemIndex));
+      dispatch(push(navHistory[newCurrentItemIndex]));
+    }
+  };
+
+  const historyForwardClasses = classNames(
+    navButtonsStyles.historyButton,
+    nextItem
+      ? navButtonsStyles.historyButtonActive
+      : navButtonsStyles.historyButtonInactive
+  );
+
+  const historyBackClasses = classNames(
+    navButtonsStyles.historyButton,
+    previousItem
+      ? navButtonsStyles.historyButtonActive
+      : navButtonsStyles.historyButtonInactive
+  );
+
+  return (
+    <div className={navButtonsStyles.historyButtons}>
+      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
+      <ForwardIcon
+        className={historyForwardClasses}
+        onClick={onHistoryForward}
+      />
+    </div>
+  );
+};
+
 const MainContent = (props: {
   article: ArticleData;
   breadcrumbs: string[];
 }) => {
   const { article, breadcrumbs } = props;
-  if (article.type !== 'article' && article.type !== 'video') {
+  const navHistory = useSelector(getNavHistory);
+  const dispatch = useDispatch();
+
+  const isHelpContent = article.type === 'article' || article.type === 'video';
+
+  useEffect(() => {
+    // add the first article into nav history
+    if (isHelpContent && !navHistory.length) {
+      dispatch(addHelpItem(article.url));
+    }
+  }, []);
+
+  if (!isHelpContent) {
     return null;
   }
+
+  const onRelatedItemClick = (reference: RelatedArticleData) => {
+    dispatch(addHelpItem(reference.url));
+    dispatch(push(reference.url));
+  };
+
   const renderedArticle =
     article.type === 'article' ? (
       <TextArticle article={article} />
@@ -116,7 +212,13 @@ const MainContent = (props: {
         <HelpArticleGrid className={styles.articleGrid}>
           {renderedArticle}
           {!!article.related_articles.length && (
-            <RelatedArticles articles={article.related_articles} />
+            <aside>
+              <NavButtons />
+              <RelatedArticles
+                articles={article.related_articles}
+                onArticleClick={onRelatedItemClick}
+              />
+            </aside>
           )}
         </HelpArticleGrid>
       </div>
