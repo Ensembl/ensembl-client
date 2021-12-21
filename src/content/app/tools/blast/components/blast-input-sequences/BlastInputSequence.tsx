@@ -28,7 +28,6 @@ import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { type ReadFile } from 'src/shared/components/upload/Upload';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import Chevron from 'src/shared/components/chevron/Chevron';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
@@ -61,7 +60,6 @@ type Props = {
 const BlastInputSequence = (props: Props) => {
   const { index = null, onCommitted, sequence = { value: '' }, title } = props;
   const [input, setInput] = useState(toFasta(sequence));
-  const [isExpanded, setIsExpanded] = useState(false);
   const canSubmit = useRef(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -108,17 +106,10 @@ const BlastInputSequence = (props: Props) => {
     setTimeout(() => (canSubmit.current = true), 0);
   };
 
-  const onInputSizeChange = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const textareaClasses = classNames(
-    styles.textarea,
-    isExpanded ? styles.textareaExpanded : styles.textareaCollapsed
-  );
+  const textareaClasses = classNames(styles.textarea);
 
   return (
-    <div>
+    <div className={styles.box}>
       <div className={styles.header}>
         <span>{title}</span>
         {input && (
@@ -132,18 +123,13 @@ const BlastInputSequence = (props: Props) => {
           ref={textareaRef}
           value={input}
           className={textareaClasses}
-          placeholder="Nucleotide of protein sequence in FASTA format"
+          placeholder="Paste a nucleotide of protein sequence"
           onChange={onChange}
           onPaste={onPaste}
           onBlur={onBlur}
           resizable={false}
         />
-        {input ? (
-          <InputSizeToggle
-            isExpanded={isExpanded}
-            onClick={onInputSizeChange}
-          />
-        ) : (
+        {!input && (
           <Upload
             label="Click or drag a file here to upload"
             onChange={onFileDrop}
@@ -151,19 +137,6 @@ const BlastInputSequence = (props: Props) => {
           />
         )}
       </div>
-    </div>
-  );
-};
-
-const InputSizeToggle = (props: {
-  isExpanded: boolean;
-  onClick: () => void;
-}) => {
-  const { isExpanded, onClick } = props;
-  const chevronDirection = isExpanded ? 'up' : 'down';
-  return (
-    <div className={styles.inputSizeToggle}>
-      <Chevron direction={chevronDirection} onClick={onClick} />
     </div>
   );
 };

@@ -1,5 +1,9 @@
 @import 'src/styles/common';
 
+.blastInputSequences {
+  width: 860px;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -8,6 +12,7 @@
 }
 
 .headerTitle {
+  font-size: 15px;
   font-weight: $bold;
 }
 
@@ -33,6 +38,7 @@
   margin-left: auto;
   color: $blue;
   cursor: pointer;
+  user-select: none;
 }
 
 .inputBoxesContainer {
@@ -45,7 +51,7 @@
 .addSequenceWrapper {
   display: flex;
   justify-content: flex-end;
-  padding: 12px 14px 12px;
+  padding: 12px 26px 12px;
 }
 
 .addSequence {

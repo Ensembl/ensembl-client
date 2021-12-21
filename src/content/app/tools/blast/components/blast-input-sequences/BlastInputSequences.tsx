@@ -72,16 +72,14 @@ export const BlastInputSequences = () => {
   };
 
   return (
-    <div>
+    <div className={styles.blastInputSequences}>
       <div className={styles.header}>
-        <span className={styles.headerTitle}>Add sequence(s)</span>
+        <span className={styles.headerTitle}>Sequences</span>
         <span className={styles.sequenceCounter}>{sequences.length}</span>
-        <span className={styles.maxSequences}>of 30 sequences</span>
-        {!!sequences.length && (
-          <span className={styles.clearAll} onClick={onClearAll}>
-            Clear all
-          </span>
-        )}
+        <span className={styles.maxSequences}>of 30</span>
+        <span className={styles.clearAll} onClick={onClearAll}>
+          Clear all
+        </span>
       </div>
       <div className={styles.inputBoxesContainer}>
         {sequences.map((sequence, index) => (

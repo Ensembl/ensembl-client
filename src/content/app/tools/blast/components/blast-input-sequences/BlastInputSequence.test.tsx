@@ -73,10 +73,25 @@ describe('<BlastInputSequence />', () => {
       expect(commonProps.onCommitted).toHaveBeenCalledWith(testFasta, null);
     });
 
-    it.todo('does not contain a control for clearing the input');
+    it('does not contain a control for clearing the input', () => {
+      const { container } = render(<BlastInputSequence {...commonProps} />);
+      const deleteButton = container.querySelector('.deleteButton');
+
+      expect(deleteButton).toBe(null);
+    });
   });
 
   describe('interaction with parent', () => {
+    it('renders a title controlled by the parent', () => {
+      const title = 'This is test title';
+      const { container } = render(
+        <BlastInputSequence {...commonProps} title={title} />
+      );
+      const inputHeader = container.querySelector('.header') as HTMLElement;
+
+      expect(inputHeader.innerHTML).toMatch(title);
+    });
+
     it('respects the sequence coming with the props', () => {
       let sequence = {
         header: 'this is my sequence header',
@@ -136,7 +151,12 @@ describe('<BlastInputSequence />', () => {
   });
 
   describe('when filled', () => {
-    it.todo('shows the control for clearing the input');
+    // it.only('can clear the input locally if the input has not yet been passed to the parent', () => {
+    //   const
+    //   const { container, rerender } = render(
+    //     <BlastInputSequence {...commonProps} />
+    //   );
+    // });
 
     it.todo('correctly updates the input after a paste event');
 

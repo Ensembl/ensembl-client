@@ -19,11 +19,11 @@ import { ReactComponent as TrashcanIcon } from 'static/img/shared/trash.svg';
 
 import styles from './DeleteButton.scss';
 
-type Props = HTMLAttributes<HTMLButtonElement>;
+type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
 
 const DeleteButton = (props: Props) => {
   return (
-    <button {...props} className={styles.trashcanButton}>
+    <button {...props} className={styles.deleteButton}>
       <TrashcanIcon />
     </button>
   );

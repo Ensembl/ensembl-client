@@ -2,11 +2,15 @@
 
 $border: 1px solid $grey;
 
+.box {
+  width: 860px;
+}
+
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 28px 0 30px;
   min-height: 50px;
   border: $border;
   border-bottom: none;
@@ -15,7 +19,7 @@ $border: 1px solid $grey;
 .body {
   display: grid;
   grid-template-columns: 1fr auto;
-  padding: 16px 28px;
+  padding: 10px 65px 12px 28px;
   background-color: $light-grey;
   border: $border;
 
@@ -34,16 +38,8 @@ $border: 1px solid $grey;
   white-space: nowrap;
 }
 
-.textareaCollapsed {
-  height: 104px;
-}
-
-.textareaExpanded {
-  min-height: 104px;
-  max-height: 445px;
-}
-
 .deleteButtonWrapper {
+  font-size: 0;
   margin-left: 2em;
 }
 
