@@ -87,12 +87,14 @@ export const BlastInputSequences = () => {
             key={index}
             index={index}
             sequence={sequence}
+            title={`Sequence ${index + 1}`}
             onCommitted={onSequenceAdded}
             onRemoveSequence={onRemoveSequence}
           />
         ))}
         {shouldAppendEmptyInput && (
           <BlastInputSequence
+            title={`Sequence ${sequences.length + 1}`}
             onCommitted={onSequenceAdded}
             onRemoveSequence={onRemoveSequence}
           />

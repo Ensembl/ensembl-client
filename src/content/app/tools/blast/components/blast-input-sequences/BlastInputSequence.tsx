@@ -53,15 +53,17 @@ import styles from './BlastInputSequence.scss';
 type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;
+  title?: string;
   onCommitted: (input: string, index: number | null) => void;
   onRemoveSequence?: (index: number | null) => void;
 };
 
 const BlastInputSequence = (props: Props) => {
-  const { index = null, onCommitted, sequence = { value: '' } } = props;
+  const { index = null, onCommitted, sequence = { value: '' }, title } = props;
   const [input, setInput] = useState(toFasta(sequence));
   const [isExpanded, setIsExpanded] = useState(false);
   const canSubmit = useRef(true);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setInput(toFasta(sequence));
@@ -72,8 +74,18 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onPaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
-    const input = event.clipboardData.getData('text');
-    onCommitted(input, index);
+    if (!input) {
+      const pasted = event.clipboardData.getData('text');
+      onCommitted(pasted, index);
+    } else {
+      // the user is modifying their input by pasting something inside of it;
+      // we can't just commit only what's been pasted;
+      // we have to read the whole input back from the textarea
+      setTimeout(() => {
+        const input = textareaRef.current?.value as string;
+        onCommitted(input, index);
+      }, 0);
+    }
   };
 
   const onFileDrop = (files: ReadFile[]) => {
@@ -108,7 +120,7 @@ const BlastInputSequence = (props: Props) => {
   return (
     <div>
       <div className={styles.header}>
-        <span>Heading</span>
+        <span>{title}</span>
         {input && (
           <span className={styles.deleteButtonWrapper}>
             <DeleteButton onMouseDown={onClear} onTouchStart={onClear} />
@@ -117,6 +129,7 @@ const BlastInputSequence = (props: Props) => {
       </div>
       <div className={styles.body}>
         <Textarea
+          ref={textareaRef}
           value={input}
           className={textareaClasses}
           placeholder="Nucleotide of protein sequence in FASTA format"
