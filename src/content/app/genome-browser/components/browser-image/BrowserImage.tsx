@@ -48,7 +48,8 @@ import styles from './BrowserImage.scss';
 export const BrowserImage = () => {
   const browserRef = useRef<HTMLDivElement>(null);
 
-  const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
+  const { activateGenomeBrowser, clearGenomeBrowser, genomeBrowser } =
+    useGenomeBrowser();
 
   const isNavbarOpen = useSelector(getBrowserNavOpenState);
   const isRegionEditorActive = useSelector(getRegionEditorActive);
@@ -94,6 +95,8 @@ export const BrowserImage = () => {
     if (!genomeBrowser) {
       activateGenomeBrowser();
     }
+
+    return () => clearGenomeBrowser();
   }, []);
 
   const browserContainerClassNames = classNames(styles.browserStage, {

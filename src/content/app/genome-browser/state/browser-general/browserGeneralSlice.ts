@@ -21,6 +21,7 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
+import { batch } from 'react-redux';
 import { replace } from 'connected-react-router';
 import pickBy from 'lodash/pickBy';
 import isEqual from 'lodash/isEqual';
@@ -38,6 +39,8 @@ import {
   setInitialTrackPanelDataForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
 import {
   getBrowserActiveFocusObjectIds,
   getBrowserTrackStates,
@@ -99,14 +102,27 @@ export const updateTrackStatesAndSave: ActionCreator<
 
 export const setDataFromUrlAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (payload: ParsedUrlPayload) => (dispatch) => {
-  dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
-  dispatch(setInitialTrackPanelDataForGenome(payload));
-
+> = (payload: ParsedUrlPayload) => (dispatch, getState: () => RootState) => {
   const { activeGenomeId, activeFocusObjectId, chrLocation } = payload;
+  const state = getState();
+  const currentActiveGenomeId = getBrowserActiveGenomeId(state);
+  const currentActiveFocusObjectId = getBrowserActiveFocusObjectId(state);
 
-  dispatch(ensureSpeciesIsEnabled(payload.activeGenomeId));
-  browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
+  batch(() => {
+    // update previously viewed objects before active genome id or active focus object id have changed
+    if (
+      activeGenomeId === currentActiveGenomeId &&
+      activeFocusObjectId !== currentActiveFocusObjectId
+    ) {
+      dispatch(updatePreviouslyViewedObjectsAndSave());
+    }
+
+    dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
+    dispatch(setInitialTrackPanelDataForGenome(payload));
+    dispatch(ensureSpeciesIsEnabled(activeGenomeId));
+  });
+
+  browserStorageService.saveActiveGenomeId(activeGenomeId);
   chrLocation &&
     browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
 

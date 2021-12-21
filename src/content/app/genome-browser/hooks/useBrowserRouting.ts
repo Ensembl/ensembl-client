@@ -39,13 +39,18 @@ import {
   setActiveGenomeId,
   setDataFromUrlAndSave
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObjectIds
 } from '../state/browser-general/browserGeneralSelectors';
+import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
+
+import { RootState } from 'src/store';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -79,6 +84,10 @@ const useBrowserRouting = () => {
   const activeFocusObjectId = genomeId
     ? allActiveFocusObjectIds[genomeId]
     : null;
+  const focusObject = useSelector((state: RootState) =>
+    getFocusObjectById(state, activeFocusObjectId || '')
+  );
+
   const newFocusId = focus ? buildNewFocusObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
@@ -154,6 +163,12 @@ const useBrowserRouting = () => {
       dispatch(fetchGenomeData(genomeId));
     }
   }, [genomeId]);
+
+  useEffect(() => {
+    if (!focusObject && activeFocusObjectId) {
+      dispatch(fetchFocusObject(activeFocusObjectId));
+    }
+  }, [focusObject, activeFocusObjectId]);
 
   const changeGenomeId = useCallback(
     (genomeId: string) => {
