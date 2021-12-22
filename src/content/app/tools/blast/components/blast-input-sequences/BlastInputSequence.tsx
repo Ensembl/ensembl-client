@@ -102,7 +102,7 @@ const BlastInputSequence = (props: Props) => {
   const onClear = () => {
     canSubmit.current = false; // lock against the sequence submission on blur
     setInput('');
-    props.onRemoveSequence?.(index);
+    sequence.value && props.onRemoveSequence?.(index);
     setTimeout(() => (canSubmit.current = true), 0);
   };
 

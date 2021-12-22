@@ -151,15 +151,24 @@ describe('<BlastInputSequence />', () => {
   });
 
   describe('when filled', () => {
-    // it.only('can clear the input locally if the input has not yet been passed to the parent', () => {
-    //   const
-    //   const { container, rerender } = render(
-    //     <BlastInputSequence {...commonProps} />
-    //   );
-    // });
+    it('can clear the input locally if the input has not yet been passed to the parent', () => {
+      const onRemoveSequence = jest.fn();
+      const { container } = render(
+        <BlastInputSequence
+          {...commonProps}
+          onRemoveSequence={onRemoveSequence}
+        />
+      );
+      const textarea = container.querySelector(
+        'textarea'
+      ) as HTMLTextAreaElement;
+      userEvent.type(textarea, 'AAAA');
 
-    it.todo('correctly updates the input after a paste event');
+      const deleteButton = container.querySelector('.deleteButton');
+      userEvent.click(deleteButton as HTMLElement);
 
-    it.todo('can hide or show the body containing the sequence');
+      expect(textarea.value).toBe('');
+      expect(onRemoveSequence).not.toHaveBeenCalled();
+    });
   });
 });
