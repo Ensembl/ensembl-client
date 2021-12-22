@@ -22,9 +22,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import useApiService from 'src/shared/hooks/useApiService';
 
 import {
-  setCurrentItemIndex,
-  resetNavHistory,
-  addHelpItem
+  addHelpItem,
+  moveBackInHistory,
+  moveForwardInHistory,
+  resetNavHistory
 } from './state/helpSlice';
 import {
   getCurrentItemIndex,
@@ -127,7 +128,7 @@ const HelpHistoryButtons = () => {
     if (previousItem) {
       const newCurrentItemIndex = currentItemIndex - 1;
 
-      dispatch(setCurrentItemIndex(newCurrentItemIndex));
+      dispatch(moveBackInHistory());
       dispatch(push(navHistory[newCurrentItemIndex]));
     }
   };
@@ -136,7 +137,7 @@ const HelpHistoryButtons = () => {
     if (nextItem) {
       const newCurrentItemIndex = currentItemIndex + 1;
 
-      dispatch(setCurrentItemIndex(newCurrentItemIndex));
+      dispatch(moveForwardInHistory());
       dispatch(push(navHistory[newCurrentItemIndex]));
     }
   };
@@ -145,8 +146,8 @@ const HelpHistoryButtons = () => {
     <HistoryButtons
       onHistoryBack={onHistoryBack}
       onHistoryForward={onHistoryForward}
-      hasPrevious={!!previousItem ?? false}
-      hasNext={!!nextItem ?? false}
+      hasPrevious={!!previousItem}
+      hasNext={!!nextItem}
     />
   );
 };

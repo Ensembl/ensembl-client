@@ -39,8 +39,11 @@ const helpSlice = createSlice({
       state.navHistory = newNavHistory;
       state.currentItemIndex = newNavHistory.length - 1;
     },
-    setCurrentItemIndex(state, action: PayloadAction<number>) {
-      state.currentItemIndex = action.payload;
+    moveBackInHistory(state) {
+      state.currentItemIndex = state.currentItemIndex - 1;
+    },
+    moveForwardInHistory(state) {
+      state.currentItemIndex = state.currentItemIndex + 1;
     },
     resetNavHistory(state) {
       state.navHistory = [];
@@ -49,7 +52,11 @@ const helpSlice = createSlice({
   }
 });
 
-export const { addHelpItem, setCurrentItemIndex, resetNavHistory } =
-  helpSlice.actions;
+export const {
+  addHelpItem,
+  moveBackInHistory,
+  moveForwardInHistory,
+  resetNavHistory
+} = helpSlice.actions;
 
 export default helpSlice.reducer;
