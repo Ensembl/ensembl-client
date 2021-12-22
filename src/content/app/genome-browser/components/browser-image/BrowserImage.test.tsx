@@ -28,12 +28,14 @@ import { BrowserImage } from './BrowserImage';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
+const mockClearGenomeBrowser = jest.fn();
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser(),
-    activateGenomeBrowser: jest.fn()
+    activateGenomeBrowser: jest.fn(),
+    clearGenomeBrowser: mockClearGenomeBrowser
   })
 );
 
@@ -69,7 +71,9 @@ const renderComponent = (state: typeof mockState = mockState) => {
 };
 
 describe('<BrowserImage />', () => {
-  afterEach(() => {
+  beforeEach(() => {
+    // running this in before each, because it looks that
+    // afterEach completes before cleanup functions called at component's unmounting get executed
     jest.resetAllMocks();
   });
 
@@ -95,6 +99,15 @@ describe('<BrowserImage />', () => {
         set('browser.browserGeneral.regionEditorActive', true, mockState)
       );
       expect(container.querySelector('#overlay')).toBeTruthy();
+    });
+  });
+
+  describe('unmounting', () => {
+    it('runs cleanup code to unregister the unmounted DOM node with genome browser', () => {
+      expect(mockClearGenomeBrowser).not.toHaveBeenCalled();
+      const { unmount } = renderComponent();
+      unmount();
+      expect(mockClearGenomeBrowser).toHaveBeenCalled();
     });
   });
 });
