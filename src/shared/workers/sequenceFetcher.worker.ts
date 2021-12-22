@@ -29,7 +29,7 @@ const downloadSequences = async (params: SequenceFetcherParams) => {
   const sequencePromises = params.map(({ label, url }) => {
     return fetch(url)
       .then((response) => response.text())
-      .then((sequence) => toFasta(label, sequence));
+      .then((sequence) => toFasta({ header: label, value: sequence }));
   });
 
   const sequences = await Promise.all(sequencePromises);
