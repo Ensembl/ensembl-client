@@ -14,25 +14,44 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { render, getNodeText } from '@testing-library/react';
+
+import BlastInputSequences from './BlastInputSequences';
+
 describe('<BlastInputSequences />', () => {
   describe('initial state', () => {
-    it.todo('shows a single empty input');
+    it('shows a single empty input', () => {
+      const { container } = render(<BlastInputSequences />);
+      const inputBoxes = container.querySelectorAll('.inputSequenceBox');
+      expect(inputBoxes.length).toBe(1);
+    });
   });
 
   describe('header', () => {
-    it.todo('shows sequence counter, starting with 0');
+    it('shows sequence counter, starting with 0', () => {
+      const { container } = render(<BlastInputSequences />);
+      const sequenceCounter = container.querySelector(
+        '.header .sequenceCounter'
+      );
+      expect(getNodeText(sequenceCounter as HTMLElement)).toBe('0');
+    });
 
-    it.todo('has a control to clear all sequences');
+    it('has a control to clear all sequences', () => {
+      const { container } = render(<BlastInputSequences />);
+      const clearAll = container.querySelector('.header .clearAll');
+      expect(clearAll).toBeTruthy();
+    });
   });
 
   describe('with added sequences', () => {
+    // TODO: tests to be written after the component is connected to redux
+
     it.todo('shows multiple inputs, each containing a sequence');
 
-    it.todo(
-      'shows a button for adding another sequence and tries to classify sequence'
-    );
+    it.todo('shows a button for adding another sequence');
 
-    it.todo('correctly accepts a FASTA input containing a single sequence');
+    it.todo('guesses the type of the first sequence');
 
     it.todo('correctly accepts a FASTA input containing multiple sequences');
 
@@ -41,15 +60,13 @@ describe('<BlastInputSequences />', () => {
     /**
      * QUESTIONS
      *
-     * WHAT SHOULD HAPPEN IF USER ADDS INADMISSIBLE SEQUECE?
-     * - a sequence different from the predicted (and do we need this prediction at all?)
-     * - a sequence with inadmissible characters?
+     * WHAT SHOULD HAPPEN IF USER ADDS AN UNEXPECTED SEQUECE?
+     * - a sequence different from the predicted
+     * - a sequence with invalid characters
      * - a sequence with only a FASTA header
      * - too short a sequence?
      *
      * WHAT SHOULD HAPPEN IF USER ADDS MORE SEQUENCES THAN WE ARE LIMITING THEM TO?
-     *
-     * WHAT HAPPENS TO THE FILE INPUT ELEMENT WHEN THE USER STARTS TYPING?
      */
   });
 });

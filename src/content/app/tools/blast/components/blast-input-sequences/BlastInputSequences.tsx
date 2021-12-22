@@ -25,7 +25,7 @@ import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/pars
 
 import styles from './BlastInputSequences.scss';
 
-export const BlastInputSequences = () => {
+const BlastInputSequences = () => {
   const [sequences, setSequences] = useState<ParsedInputSequence[]>([]);
   const [shouldAppendEmptyInput, setShouldAppendEmptyInput] = useState(false);
 
@@ -117,3 +117,5 @@ const AddAnotherSequence = (props: { onAdd: () => void }) => {
     </div>
   );
 };
+
+export default BlastInputSequences;

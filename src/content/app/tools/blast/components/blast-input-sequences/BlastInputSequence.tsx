@@ -109,7 +109,7 @@ const BlastInputSequence = (props: Props) => {
   const textareaClasses = classNames(styles.textarea);
 
   return (
-    <div className={styles.box}>
+    <div className={styles.inputSequenceBox}>
       <div className={styles.header}>
         <span>{title}</span>
         {input && (
