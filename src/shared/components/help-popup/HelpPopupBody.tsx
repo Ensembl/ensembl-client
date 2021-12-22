@@ -87,9 +87,10 @@ const HelpPopupBody = (props: Props) => {
           {article.related_articles.length > 0 && (
             <aside className={styles.aside}>
               <HistoryButtons
-                historyRef={historyRef}
                 onHistoryBack={onHistoryBack}
                 onHistoryForward={onHistoryForward}
+                hasPrevious={historyRef.current?.hasPrevious() ?? false}
+                hasNext={historyRef.current?.hasNext() ?? false}
               />
               <RelatedArticles
                 articles={article.related_articles}

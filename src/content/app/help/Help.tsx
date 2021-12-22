@@ -18,7 +18,6 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { push } from 'connected-react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import classNames from 'classnames';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
@@ -44,9 +43,7 @@ import {
   VideoArticle
 } from 'src/shared/components/help-article';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
-
-import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
-import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
+import HistoryButtons from 'src/shared/components/help-popup/HistoryButtons';
 
 import {
   Menu as MenuType,
@@ -59,7 +56,6 @@ import {
 } from 'src/shared/types/help-and-docs/article';
 
 import styles from './Help.scss';
-import navButtonsStyles from 'src/shared/components/help-popup/HelpPopupBody.scss';
 
 type ArticleData = TextArticleData | VideoArticleData;
 
@@ -120,7 +116,7 @@ const AppBar = () => {
   );
 };
 
-const NavButtons = () => {
+const HelpHistoryButtons = () => {
   const navHistory = useSelector(getNavHistory);
   const currentItemIndex = useSelector(getCurrentItemIndex);
   const previousItem = useSelector(getPreviousItem);
@@ -145,28 +141,13 @@ const NavButtons = () => {
     }
   };
 
-  const historyForwardClasses = classNames(
-    navButtonsStyles.historyButton,
-    nextItem
-      ? navButtonsStyles.historyButtonActive
-      : navButtonsStyles.historyButtonInactive
-  );
-
-  const historyBackClasses = classNames(
-    navButtonsStyles.historyButton,
-    previousItem
-      ? navButtonsStyles.historyButtonActive
-      : navButtonsStyles.historyButtonInactive
-  );
-
   return (
-    <div className={navButtonsStyles.historyButtons}>
-      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
-      <ForwardIcon
-        className={historyForwardClasses}
-        onClick={onHistoryForward}
-      />
-    </div>
+    <HistoryButtons
+      onHistoryBack={onHistoryBack}
+      onHistoryForward={onHistoryForward}
+      hasPrevious={!!previousItem ?? false}
+      hasNext={!!nextItem ?? false}
+    />
   );
 };
 
@@ -213,7 +194,7 @@ const MainContent = (props: {
           {renderedArticle}
           {!!article.related_articles.length && (
             <aside>
-              <NavButtons />
+              <HelpHistoryButtons />
               <RelatedArticles
                 articles={article.related_articles}
                 onArticleClick={onRelatedItemClick}
