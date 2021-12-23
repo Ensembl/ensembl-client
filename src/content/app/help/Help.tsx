@@ -16,20 +16,19 @@
 
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
-import { push } from 'connected-react-router';
+import { goBack, goForward, push } from 'connected-react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
 import {
-  addHelpItem,
+  addPageToHistory,
   moveBackInHistory,
   moveForwardInHistory,
   resetNavHistory
 } from './state/helpSlice';
 import {
-  getCurrentItemIndex,
-  getNavHistory,
+  getCurrentItem,
   getNextItem,
   getPreviousItem
 } from './state/helpSelectors';
@@ -61,15 +60,16 @@ import styles from './Help.scss';
 type ArticleData = TextArticleData | VideoArticleData;
 
 const Help = () => {
-  const location = useLocation();
-  const isIndexPage = isIndexRoute(location.pathname);
+  const { pathname } = useLocation();
+  const isIndexPage = isIndexRoute(pathname);
   const { data: menu } = useApiService<MenuType>({
     endpoint: `/api/docs/menus?name=help`
   });
   const { data: article } = useApiService<any>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`,
+    endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`,
     skip: isIndexPage
   });
+  const currentHistoryItem = useSelector(getCurrentItem);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -78,10 +78,17 @@ const Help = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (pathname !== currentHistoryItem) {
+      dispatch(addPageToHistory(pathname));
+    } else {
+    }
+  }, [pathname]);
+
   let breadcrumbs: string[] = [];
 
   if (menu) {
-    breadcrumbs = buildBreadcrumbs(menu, { url: location.pathname });
+    breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
   }
 
   const main = isIndexPage ? (
@@ -100,7 +107,7 @@ const Help = () => {
   return (
     <div className={styles.help}>
       <AppBar />
-      {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
+      {menu && <HelpMenu menu={menu} currentUrl={pathname} />}
       {main}
     </div>
   );
@@ -118,27 +125,21 @@ const AppBar = () => {
 };
 
 const HelpHistoryButtons = () => {
-  const navHistory = useSelector(getNavHistory);
-  const currentItemIndex = useSelector(getCurrentItemIndex);
   const previousItem = useSelector(getPreviousItem);
   const nextItem = useSelector(getNextItem);
   const dispatch = useDispatch();
 
   const onHistoryBack = () => {
     if (previousItem) {
-      const newCurrentItemIndex = currentItemIndex - 1;
-
       dispatch(moveBackInHistory());
-      dispatch(push(navHistory[newCurrentItemIndex]));
+      dispatch(goBack());
     }
   };
 
   const onHistoryForward = () => {
     if (nextItem) {
-      const newCurrentItemIndex = currentItemIndex + 1;
-
       dispatch(moveForwardInHistory());
-      dispatch(push(navHistory[newCurrentItemIndex]));
+      dispatch(goForward());
     }
   };
 
@@ -157,24 +158,15 @@ const MainContent = (props: {
   breadcrumbs: string[];
 }) => {
   const { article, breadcrumbs } = props;
-  const navHistory = useSelector(getNavHistory);
   const dispatch = useDispatch();
 
   const isHelpContent = article.type === 'article' || article.type === 'video';
-
-  useEffect(() => {
-    // add the first article into nav history
-    if (isHelpContent && !navHistory.length) {
-      dispatch(addHelpItem(article.url));
-    }
-  }, []);
 
   if (!isHelpContent) {
     return null;
   }
 
   const onRelatedItemClick = (reference: RelatedArticleData) => {
-    dispatch(addHelpItem(reference.url));
     dispatch(push(reference.url));
   };
 

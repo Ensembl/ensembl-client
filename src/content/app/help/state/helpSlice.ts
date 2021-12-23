@@ -30,7 +30,7 @@ const helpSlice = createSlice({
   name: 'species-page-general',
   initialState,
   reducers: {
-    addHelpItem(state, action: PayloadAction<string>) {
+    addPageToHistory(state, action: PayloadAction<string>) {
       const { navHistory, currentItemIndex } = state;
       const newNavHistory = navHistory
         .slice(0, currentItemIndex + 1)
@@ -53,7 +53,7 @@ const helpSlice = createSlice({
 });
 
 export const {
-  addHelpItem,
+  addPageToHistory,
   moveBackInHistory,
   moveForwardInHistory,
   resetNavHistory

@@ -18,8 +18,10 @@ import { RootState } from 'src/store';
 
 export const getNavHistory = (state: RootState) => state.help.navHistory;
 
-export const getCurrentItemIndex = (state: RootState) =>
-  state.help.currentItemIndex;
+export const getCurrentItem = (state: RootState) => {
+  const { navHistory, currentItemIndex } = state.help;
+  return currentItemIndex > -1 ? navHistory[currentItemIndex] : null;
+};
 
 export const getPreviousItem = (state: RootState) => {
   const { navHistory, currentItemIndex } = state.help;

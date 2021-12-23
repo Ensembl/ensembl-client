@@ -22,8 +22,6 @@ import { push } from 'connected-react-router';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
-import { addHelpItem } from 'src/content/app/help/state/helpSlice';
-
 import Chevron from 'src/shared/components/chevron/Chevron';
 import HelpMenuLink from './HelpMenuLink';
 
@@ -147,7 +145,6 @@ const Submenu = (props: SubmenuProps) => {
     // hopefully, the url is an internal one;
     // might need extra logic if we can have external urls in the menu
     props.onLinkClick();
-    dispatch(addHelpItem(item.url));
     dispatch(push(item.url));
     trackMegaNavItemClick(item.name, item.type);
   };
