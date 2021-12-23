@@ -33,22 +33,6 @@ import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/pars
 
 import styles from './BlastInputSequence.scss';
 
-/**
- * Expectations:
- * - user can type a sequence into the field
- * - user can paste a sequence into the field
- * - user can upload a file with one or more sequences
- *
- * What the component needs to be able to do:
- * - receive a sequence object from the parent
- * - accept user's modified input
- *
- * When should the splitting of a single input into multipe inputs happen
- * - on file upload
- * - on paste
- * - on blur?
- */
-
 type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;

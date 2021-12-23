@@ -72,7 +72,7 @@ describe('fasta formatter', () => {
     );
     formattedSequence.split('\n').forEach((line, index) => {
       if (index === 0) {
-        // first line should be unmodified header
+        // first line should be the unmodified header
         expect(line).toBe(`>${header}`);
       } else {
         expect(line.length).toBeLessThanOrEqual(lineLength);

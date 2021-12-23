@@ -27,9 +27,8 @@ import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/pars
  * - FASTA-formatted sequences separated by empty lines
  *
  * Also:
- * - if a sequence contains spaces, interpret them as just a formatting tool
- *   and remove them
- * - all sequence characters will be upper-cased
+ * - if a sequence contains spaces, remove them
+ * - make sure all sequence characters are upper-cased
  */
 
 export const parseBlastInput = (input: string) => {
