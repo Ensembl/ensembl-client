@@ -44,12 +44,17 @@ type Props = {
 const BlastInputSequence = (props: Props) => {
   const { index = null, onCommitted, sequence = { value: '' }, title } = props;
   const [input, setInput] = useState(toFasta(sequence));
+  const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const canSubmit = useRef(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setInput(toFasta(sequence));
-  }, [sequence.header, sequence.value]);
+  }, [sequence.header, sequence.value, forceRenderCount]);
+
+  const forceReadSequenceFromProps = () => {
+    setForceRenderCount((count) => count + 1);
+  };
 
   const onChange = (event: FormEvent<HTMLTextAreaElement>) => {
     setInput(event.currentTarget.value);
@@ -66,6 +71,7 @@ const BlastInputSequence = (props: Props) => {
       setTimeout(() => {
         const input = textareaRef.current?.value as string;
         onCommitted(input, index);
+        forceReadSequenceFromProps();
       }, 0);
     }
   };
@@ -80,6 +86,7 @@ const BlastInputSequence = (props: Props) => {
   const onBlur = () => {
     if (canSubmit.current) {
       onCommitted(input, index);
+      forceReadSequenceFromProps();
     }
   };
 
@@ -126,3 +133,28 @@ const BlastInputSequence = (props: Props) => {
 };
 
 export default BlastInputSequence;
+
+/**
+ * EXPLANATION OF THE forceRenderCount HACK ABOVE
+ *
+ * Consider the following scenario:
+ *
+ * 1. The user pastes the sequence "AAA" into the input box.
+ * 2. He then focuses on the input box, presses enter twice (leaving a blank line),
+ * and then pastes another sequence (say, "TTT") on a new line.
+ *
+ * What will happen is the following:
+ * - After the first paste event, the "AAA" sequence is communicated to the parent
+ *   as committed.
+ * - When the second sequence ("TTT") is pasted in the same textarea,
+ *   the content of the textarea is committed again.
+ * - During the commitment phase, the parent's code will figure out that the textarea
+ *   now contains two sequences. So it will split out the second sequence from the input.
+ *   Now, there are two committed sequences.
+ * - However, the first committed sequence has remained exactly the same as before.
+ *   Therefore, the useEffect hook, which runs only when the parent passes a new sequence, won't run
+ * - Without the useEffect re-running, the textarea will contain both sequences.
+ *   But we want it to only contain the first sequence.
+ * - Therefore, we have to nudge the useEffect to re-run, and to reset the textarea value
+ *   to the sequence passed with the props.
+ */
