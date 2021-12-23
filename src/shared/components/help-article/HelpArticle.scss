@@ -26,11 +26,17 @@ $textColumnWidth: 450px;
     margin-bottom: $line-height;
   }
 
-  h1, h2, h3, p, ul {
+  h1,
+  h2,
+  h3,
+  p,
+  ul,
+  ol {
     width: $textColumnWidth;
   }
 
-  p, ul {
+  p,
+  ul {
     margin: $line-height 0;
   }
 
@@ -45,7 +51,7 @@ $textColumnWidth: 450px;
 
   // Notice that the external-link svg has the same shape as in the static/img/shared folder
   // But the version copied here has the fill color set inline, because it is being accessed as an external image via url
-  a[href^=http] {
+  a[href^='http'] {
     &::before {
       content: url('./external-link.svg');
       display: inline-block;
@@ -76,11 +82,9 @@ $textColumnWidth: 450px;
 }
 
 @media (max-width: $pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
-
   .indexArticle {
     grid-template-columns: repeat(2, #{$indexItemWidth});
   }
-
 }
 
 .videoArticle {
