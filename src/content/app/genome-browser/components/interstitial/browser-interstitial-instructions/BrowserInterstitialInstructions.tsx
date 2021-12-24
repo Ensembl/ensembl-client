@@ -20,12 +20,12 @@ import { useNavigate } from 'react-router-dom';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Step } from 'src/shared/components/step/Step';
-import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import { Status } from 'src/shared/types/status';
+import {
+  SpeciesSelectorIcon,
+  GenomeBrowserIcon
+} from 'src/shared/components/app-icon';
 
-import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
 import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 
 import styles from './BrowserInterstitialInstructions.scss';
@@ -44,11 +44,7 @@ const BrowserInterstitialInstructions = () => {
         <div className={styles.stepWrapper}>
           <Step count={1} label="Find and add a species">
             <div className={styles.description}>
-              <ImageButton
-                className={styles.imageButtonIcon}
-                status={Status.DISABLED}
-                image={SpeciesSelectorIcon}
-              />
+              <SpeciesSelectorIcon />
               <div className={styles.iconLabel}>Species Selector</div>
             </div>
           </Step>
@@ -57,11 +53,7 @@ const BrowserInterstitialInstructions = () => {
         <div className={styles.stepWrapper}>
           <Step count={2} label="Return to this app">
             <div className={styles.description}>
-              <ImageButton
-                className={styles.imageButtonIcon}
-                status={Status.DISABLED}
-                image={BrowserIcon}
-              />
+              <GenomeBrowserIcon />
               <div className={styles.iconLabel}>Genome Browser</div>
             </div>
           </Step>
@@ -73,11 +65,7 @@ const BrowserInterstitialInstructions = () => {
             label="Use Search or the example links to view a gene or region"
           >
             <div className={styles.searchDescription}>
-              <ImageButton
-                className={styles.searchButtonIcon}
-                status={Status.DISABLED}
-                image={SearchIcon}
-              />
+              <SearchIcon className={styles.searchIcon} />
               <div className={styles.exampleText}>Example gene</div>
               <div className={styles.exampleText}>Example region</div>
             </div>

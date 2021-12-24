@@ -21,11 +21,13 @@ import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
 
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import {
+  GenomeBrowserIcon,
+  SpeciesSelectorIcon,
+  EntityViewerIcon
+} from 'src/shared/components/app-icon';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
-import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import speciesStripUrl from 'static/img/home/species-strip.svg';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
@@ -58,7 +60,9 @@ const Home = () => {
                     onClick={() => handleButtonClick('species-selector')}
                   >
                     <span>Species selector</span>
-                    <SpeciesSelectorIcon className={styles.icon} />
+                    <div className={styles.appIconWrapper}>
+                      <SpeciesSelectorIcon />
+                    </div>
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
@@ -76,7 +80,9 @@ const Home = () => {
                     onClick={() => handleButtonClick('genome-browser')}
                   >
                     <span>Genome browser</span>
-                    <BrowserIcon className={styles.icon} />
+                    <div className={styles.appIconWrapper}>
+                      <GenomeBrowserIcon />
+                    </div>
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
@@ -94,7 +100,9 @@ const Home = () => {
                     onClick={() => handleButtonClick('entity-viewer')}
                   >
                     <span>Entity viewer</span>
-                    <EntityViewerIcon className={styles.icon} />
+                    <div className={styles.appIconWrapper}>
+                      <EntityViewerIcon />
+                    </div>
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>

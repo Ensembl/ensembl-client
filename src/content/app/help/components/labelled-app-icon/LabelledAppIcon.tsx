@@ -18,9 +18,11 @@ import React from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
-import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
+import {
+  GenomeBrowserIcon,
+  SpeciesSelectorIcon,
+  EntityViewerIcon
+} from 'src/shared/components/app-icon';
 
 import styles from './LabelledAppIcon.scss';
 
@@ -35,7 +37,7 @@ type Props = {
 
 const appNameToIcon: Record<AppName, React.FunctionComponent> = {
   speciesSelector: SpeciesSelectorIcon,
-  genomeBrowser: BrowserIcon,
+  genomeBrowser: GenomeBrowserIcon,
   entityViewer: EntityViewerIcon
 };
 

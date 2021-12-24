@@ -25,29 +25,17 @@ $leftMargin: 40px;
 .description {
   display: flex;
   align-items: center;
+  --app-icon-bg-color: #{$dark-grey};
 
   .iconLabel {
     margin-left: 12px;
   }
 }
 
-.imageButtonIcon {
-  width: 32px;
-  height: 32px;
-  background-color: $dark-grey;
-
-  svg {
-    fill: $white;
-  }
-}
-
-.searchButtonIcon {
+.searchIcon {
   width: 30px;
   height: 30px;
-
-  svg {
-    fill: $dark-grey;
-  }
+  fill: $dark-grey;
 }
 
 .searchDescription {
@@ -63,9 +51,7 @@ $leftMargin: 40px;
   justify-self: start;
 }
 
-
 @media (max-width: 2 * $global-padding-left + $leftMargin + 4 * $columnWidth + 3 * $columnGap) {
-
   .instructionsWrapper {
     grid-template-columns: repeat(2, #{$columnWidth});
   }

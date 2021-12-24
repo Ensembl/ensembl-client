@@ -20,8 +20,10 @@ import classNames from 'classnames';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
+import {
+  GenomeBrowserIcon,
+  EntityViewerIcon
+} from 'src/shared/components/app-icon';
 
 import { Status } from 'src/shared/types/status';
 
@@ -30,7 +32,7 @@ import styles from './ViewInApp.scss';
 export const Apps = {
   genomeBrowser: {
     tooltip: 'Genome Browser',
-    icon: BrowserIcon
+    icon: GenomeBrowserIcon
   },
   entityViewer: {
     tooltip: 'Entity Viewer',

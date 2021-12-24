@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import React, { memo, type FunctionComponent } from 'react';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 
@@ -35,7 +35,7 @@ export type ImageButtonStatus =
 export type Props = {
   status: ImageButtonStatus;
   description: string;
-  image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
+  image: FunctionComponent<unknown> | string;
   className?: string;
   statusClasses?: { [key in ImageButtonStatus]?: string };
   onClick?: () => void;

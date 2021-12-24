@@ -45,32 +45,33 @@
   width: 32px;
   margin: 0 12px;
 
-  img {
-    max-width: 30px;
-    max-height: 30px;
+  button {
+    width: 32px;
+    height: 32px;
   }
 }
 
 .launchbarButtonImage {
+  background-color: $blue;
+
   svg {
-    width: 32px;
-    height: 32px;
     fill: $white;
-    background-color: $blue;
   }
 }
 
 .launchbarButtonSelectedImage {
+  background-color: $black;
+
   svg {
     fill: $white;
-    background-color: $black;
   }
 }
 
 .launchbarButtonDisabledImage {
+  background-color: $grey;
+
   svg {
     fill: $white;
-    background-color: $grey;
   }
   button {
     cursor: default;

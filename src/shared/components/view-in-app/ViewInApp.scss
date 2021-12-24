@@ -13,15 +13,14 @@
 
 .viewInAppLink {
   margin-left: 20px;
+  --app-icon-size: 25px;
+  --app-icon-bg-color: #{$blue};
 
   &:first-of-type {
     margin-left: 15px;
   }
 
   svg {
-    width: 25px;
-    height: 25px;
     fill: $white;
-    background-color: $blue;
   }
 }
