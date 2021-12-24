@@ -142,6 +142,7 @@ describe('<BlastInputSequence />', () => {
       // if index is not passed at all
       rerender(<BlastInputSequence {...commonProps} />);
       textarea.focus();
+      userEvent.type(textarea, typedInSequence); // the previously typed in sequence has been overridden by synchronizing with the props after the blur event
       textarea.blur();
       expect(commonProps.onCommitted).toHaveBeenCalledWith(
         typedInSequence,
