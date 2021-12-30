@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { push, replace } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -110,13 +109,13 @@ type AppButtonProps = {
 };
 
 export const AppButton = (props: AppButtonProps) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClick = () => {
     if (props.replaceState) {
-      dispatch(replace(props.url));
+      navigate(props.url, { replace: true });
     } else {
-      dispatch(push(props.url));
+      navigate(props.url);
     }
     props.onClick?.();
   };

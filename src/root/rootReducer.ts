@@ -15,7 +15,6 @@
  */
 
 import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
@@ -29,7 +28,7 @@ import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReduce
 import speciesPage from 'src/content/app/species/state/index';
 import help from 'src/content/app/help/state/helpSlice';
 
-const createRootReducer = (history: any) =>
+const createRootReducer = () =>
   combineReducers({
     browser,
     customDownload,
@@ -37,7 +36,6 @@ const createRootReducer = (history: any) =>
     inAppSearch,
     genome,
     global,
-    router: connectRouter(history),
     speciesSelector,
     speciesPage,
     entityViewer,

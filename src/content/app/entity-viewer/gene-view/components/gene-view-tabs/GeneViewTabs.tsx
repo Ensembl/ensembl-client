@@ -16,9 +16,8 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
@@ -52,7 +51,7 @@ const GeneViewTabs = (props: Props) => {
   const { genomeId, entityId } = useParams() as { [key: string]: string };
   const selectedTab = useSelector(getSelectedGeneViewTabs).primaryTab;
   const selectedTabViews = useSelector(getSelectedTabViews);
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { trackTabChange } = useEntityViewerAnalytics();
 
   const tabClassNames = {
@@ -78,7 +77,7 @@ const GeneViewTabs = (props: Props) => {
       entityId,
       view
     });
-    dispatch(push(url));
+    navigate(url);
   };
 
   return (

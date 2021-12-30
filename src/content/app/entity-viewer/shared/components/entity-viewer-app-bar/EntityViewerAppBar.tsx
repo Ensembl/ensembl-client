@@ -15,9 +15,8 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -32,7 +31,7 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 const EntityViewerAppBar = () => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
 
@@ -40,7 +39,7 @@ const EntityViewerAppBar = () => {
     const url = urlFor.entityViewer({
       genomeId
     });
-    dispatch(push(url));
+    navigate(url);
   };
 
   const speciesTabs = speciesList.map((species, index) => (

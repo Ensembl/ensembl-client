@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { push } from 'connected-react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
@@ -35,13 +33,13 @@ type Props = {
 
 const RelatedArticles = (props: Props) => {
   const location = useLocation();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onArticleClick = (article: RelatedArticleData) => {
     if (props.onArticleClick) {
       props.onArticleClick(article);
     } else {
-      dispatch(push(article.url));
+      navigate(article.url);
     }
   };
 

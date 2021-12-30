@@ -35,13 +35,17 @@ import {
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
 
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
   activeEntityIds: { [genomeId: string]: string };
 }>;
+
+type EntityViewerParams = {
+  genomeId?: string;
+  entityId?: string;
+};
 
 export const initialState: EntityViewerGeneralState = {
   activeGenomeId: null, // FIXME add entity viewer storage service

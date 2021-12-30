@@ -16,8 +16,7 @@
 
 import React, { useRef, useEffect, RefObject } from 'react';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
@@ -47,7 +46,7 @@ const useRoutingRules = <T extends HTMLElement>(
   ref: RefObject<T>,
   onInternalLinkClick?: (link: string) => void
 ) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -60,7 +59,7 @@ const useRoutingRules = <T extends HTMLElement>(
     const href = target.getAttribute('href') as string;
     if (href.startsWith('/')) {
       // This is an internal link
-      onInternalLinkClick ? onInternalLinkClick(href) : dispatch(push(href));
+      onInternalLinkClick ? onInternalLinkClick(href) : navigate(href);
     } else {
       // A href containing an absolute urls, with a protocol and a hostname
       // is treated as a link to an external resource; open it in a new tab

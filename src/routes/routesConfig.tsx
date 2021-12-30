@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React, { type ReactNode } from 'react';
+
 import HomePage from 'src/content/home/HomePage';
 import SpeciesSelectorPage from 'src/content/app/species-selector/SpeciesSelectorPage';
 import SpeciesPage from 'src/content/app/species/SpeciesPage';
@@ -24,54 +26,57 @@ import EntityViewerPage, {
 import CustomDownloadPage from 'src/content/app/custom-download/CustomDownloadPage';
 import AboutPage from 'src/content/app/about/AboutPage';
 import HelpPage from 'src/content/app/help/HelpPage';
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 type ServerFetchParams = {
   store: any; // FIXME: should be ServerSideReduxStore, but needs tweaking
-  match: any; // FIXME: ideally, should be match type from react-router-dom; but needs its generic extended
+  path: string;
 };
 export type ServerFetch = (params: ServerFetchParams) => Promise<unknown>;
 
-type RouteConfig = {
+export type RouteConfig = {
   path: string;
-  exact?: boolean;
+  element: ReactNode;
   serverFetch?: ServerFetch;
-  component: any; // :-(
 };
 
 const routes: RouteConfig[] = [
   {
     path: '/',
-    exact: true,
-    component: HomePage
+    element: <HomePage />
   },
   {
-    path: '/genome-browser/:genomeId?',
-    component: GenomeBrowserPage
+    path: '/genome-browser/*',
+    element: <GenomeBrowserPage />
   },
   {
     path: '/species-selector',
-    component: SpeciesSelectorPage
+    element: <SpeciesSelectorPage />
   },
   {
     path: '/species/:genomeId',
-    component: SpeciesPage
+    element: <SpeciesPage />
   },
   {
-    path: '/entity-viewer/:genomeId?/:entityId?',
-    component: EntityViewerPage,
+    path: '/entity-viewer/*',
+    element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
   },
   {
-    path: '/about',
-    component: AboutPage
+    path: '/about/*',
+    element: <AboutPage />
   },
   {
-    path: '/help',
-    component: HelpPage
+    path: '/help/*',
+    element: <HelpPage />
   },
   {
     path: '/custom-download',
-    component: CustomDownloadPage
+    element: <CustomDownloadPage />
+  },
+  {
+    path: '*',
+    element: <NotFoundErrorScreen />
   }
   // TODO: when the global search component gets added
   // {

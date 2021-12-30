@@ -22,17 +22,12 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 import { batch } from 'react-redux';
-import { replace } from 'connected-react-router';
 import pickBy from 'lodash/pickBy';
-import isEqual from 'lodash/isEqual';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
-import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import {
   deleteGenomeTrackPanelData,
@@ -45,8 +40,7 @@ import {
   getBrowserActiveFocusObjectIds,
   getBrowserTrackStates,
   getBrowserActiveGenomeId,
-  getBrowserActiveFocusObjectId,
-  getChrLocation
+  getBrowserActiveFocusObjectId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
@@ -168,7 +162,6 @@ export const setChrLocation: ActionCreator<
     if (!activeGenomeId || !activeFocusObjectId) {
       return;
     }
-    const savedChrLocation = getChrLocation(state);
 
     const payload = {
       [activeGenomeId]: chrLocation
@@ -176,15 +169,6 @@ export const setChrLocation: ActionCreator<
 
     dispatch(updateChrLocation(payload));
     browserStorageService.updateChrLocation(payload);
-
-    if (!isEqual(chrLocation, savedChrLocation)) {
-      const newUrl = urlFor.browser({
-        genomeId: activeGenomeId,
-        focus: buildFocusIdForUrl(activeFocusObjectId),
-        location: getChrLocationStr(chrLocation)
-      });
-      dispatch(replace(newUrl));
-    }
   };
 };
 

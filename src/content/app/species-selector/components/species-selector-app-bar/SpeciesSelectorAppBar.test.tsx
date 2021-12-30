@@ -16,10 +16,9 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import { MemoryRouter, Location } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { push } from 'connected-react-router';
 import configureMockStore from 'redux-mock-store';
 import times from 'lodash/times';
 
@@ -31,14 +30,7 @@ import {
   SpeciesSelectorAppBar,
   placeholderMessage
 } from './SpeciesSelectorAppBar';
-
-jest.mock('react-router-dom', () => ({
-  Link: (props: any) => <div>{props.children}</div>
-}));
-
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(() => ({ type: 'push' }))
-}));
+import RouteChecker from 'tests/router/RouteChecker';
 
 jest.mock(
   'src/shared/components/communication-framework/ConversationIcon',
@@ -53,15 +45,28 @@ const defaultReduxState = {
   }
 };
 
-const mockStore = configureMockStore([thunk]);
+const mockStore = configureMockStore();
 
 const renderComponent = (state?: any) => {
   state = Object.assign({}, defaultReduxState, state);
-  return render(
-    <Provider store={mockStore(state)}>
-      <SpeciesSelectorAppBar />
-    </Provider>
+
+  const routerInfo: { location: Location | null } = { location: null };
+
+  const renderResult = render(
+    <MemoryRouter initialEntries={['/species-selector']}>
+      <Provider store={mockStore(state)}>
+        <SpeciesSelectorAppBar />
+        <RouteChecker
+          setLocation={(location) => (routerInfo.location = location)}
+        />
+      </Provider>
+    </MemoryRouter>
   );
+
+  return {
+    ...renderResult,
+    routerInfo
+  };
 };
 
 describe('<SpeciesSelectorAppBar />', () => {
@@ -92,7 +97,7 @@ describe('<SpeciesSelectorAppBar />', () => {
   });
 
   it('opens the species page when a SelectedSpecies tab button is clicked', () => {
-    const { container } = renderComponent();
+    const { container, routerInfo } = renderComponent();
     const firstSelectedSpecies = container.querySelector(
       '.species'
     ) as HTMLElement;
@@ -104,6 +109,6 @@ describe('<SpeciesSelectorAppBar />', () => {
       genomeId: firstSpeciesGenomeId
     });
 
-    expect(push).toBeCalledWith(speciesPageUrl);
+    expect(routerInfo.location?.pathname).toBe(speciesPageUrl);
   });
 });

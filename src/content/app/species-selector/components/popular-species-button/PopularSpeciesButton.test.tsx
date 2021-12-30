@@ -16,10 +16,9 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import { MemoryRouter, Location } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { push } from 'connected-react-router';
 import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 import merge from 'lodash/merge';
@@ -30,15 +29,12 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import PopularSpeciesButton, {
   Props as PopularSpeciesButtonProps
 } from './PopularSpeciesButton';
+import RouteChecker from 'tests/router/RouteChecker';
 
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import { RootState } from 'src/store';
-
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(() => ({ type: 'push' }))
-}));
 
 jest.mock(
   'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
@@ -72,7 +68,7 @@ const defaultProps = {
   species: humanFromProps
 };
 
-const mockStore = configureMockStore([thunk]);
+const mockStore = configureMockStore();
 
 type RenderComponentParams = {
   props?: Partial<PopularSpeciesButtonProps>;
@@ -83,11 +79,21 @@ type RenderComponentParams = {
 
 const renderComponent = (params: RenderComponentParams) => {
   const state = merge({}, defaultReduxState, params.state);
-  return render(
-    <Provider store={mockStore(state)}>
-      <PopularSpeciesButton {...defaultProps} {...params.props} />
-    </Provider>
+  const routerInfo: { location: Location | null } = { location: null };
+
+  const renderResult = render(
+    <MemoryRouter initialEntries={['/species-selector']}>
+      <Provider store={mockStore(state)}>
+        <PopularSpeciesButton {...defaultProps} {...params.props} />
+        <RouteChecker setLocation={(loc) => (routerInfo.location = loc)} />
+      </Provider>
+    </MemoryRouter>
   );
+
+  return {
+    ...renderResult,
+    routerInfo
+  };
 };
 
 describe('<PopularSpeciesButton />', () => {
@@ -170,7 +176,7 @@ describe('<PopularSpeciesButton />', () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
-      const { container } = renderComponent({
+      const { container, routerInfo } = renderComponent({
         state: reduxFragmentWithSelectedSpecies
       });
       const button = container.querySelector(
@@ -183,7 +189,7 @@ describe('<PopularSpeciesButton />', () => {
         speciesSelectorActions.clearSelectedSearchResult
       ).toHaveBeenCalled();
       expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
-      expect(push).not.toHaveBeenCalled();
+      expect(routerInfo.location?.pathname).toBe('/species-selector'); // the click has not caused a url change
     });
   });
 
@@ -210,7 +216,7 @@ describe('<PopularSpeciesButton />', () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
-      const { container } = renderComponent({
+      const { container, routerInfo } = renderComponent({
         state: reduxFragmentWithCommittedSpecies
       });
       const button = container.querySelector(
@@ -219,7 +225,7 @@ describe('<PopularSpeciesButton />', () => {
 
       userEvent.click(button);
 
-      expect(push).toHaveBeenCalledWith(
+      expect(routerInfo.location?.pathname).toBe(
         urlFor.speciesPage({
           genomeId: defaultProps.species.genome_id
         })

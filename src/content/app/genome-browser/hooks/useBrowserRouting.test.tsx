@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
+import React, { createContext, useContext } from 'react';
+import { render, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { MemoryRouter, Route, useLocation } from 'react-router';
-import { push, replace } from 'connected-react-router';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 
@@ -30,15 +29,10 @@ import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-// NOTE: scrary stuff, but if you prefix function name with the word "mock",
+// NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
 const mockChangeFocusObject = jest.fn();
 const mockChangeBrowserLocation = jest.fn();
-
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(() => ({ type: 'push' })),
-  replace: jest.fn(() => ({ type: 'replace' }))
-}));
 
 jest.mock(
   'src/content/app/genome-browser/state/browser-general/browserGeneralSlice.ts',
@@ -98,21 +92,25 @@ const mockState = {
 const mockStore = configureMockStore([thunk]);
 
 let routingHandle: ReturnType<typeof useBrowserRouting> | null = null;
+const emptyTestContext = {
+  url: '',
+  pathname: '',
+  search: ''
+};
+let testContext: typeof emptyTestContext;
 
-// This component isn't that useful now; but will become so
-// after we have migrated to react-router v6 and removed connected-react-router
+const TestContext = createContext(emptyTestContext);
+
 const TestComponent = () => {
-  const location = useLocation();
+  const { pathname, search } = useLocation();
+  const context = useContext(TestContext);
   routingHandle = useBrowserRouting();
-  const { pathname, search } = location;
 
-  return (
-    <div>
-      <div data-test-id="pathname-and-search">{`${pathname}${search}`}</div>
-      <div data-test-id="pathname">{pathname}</div>
-      <div data-test-id="search">{search}</div>
-    </div>
-  );
+  context.url = `${pathname}${search}`;
+  context.pathname = pathname;
+  context.search = search;
+
+  return <div>content doesn't matter</div>;
 };
 
 const renderComponent = ({
@@ -122,13 +120,21 @@ const renderComponent = ({
   state?: typeof mockState;
   path: string;
 }) => {
+  testContext = { ...emptyTestContext };
+
   return render(
     <Provider store={mockStore(state)}>
-      <MemoryRouter initialEntries={[path]}>
-        <Route path="/genome-browser/:genomeId?">
-          <TestComponent />
-        </Route>
-      </MemoryRouter>
+      <TestContext.Provider value={testContext}>
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/genome-browser" element={<TestComponent />} />
+            <Route
+              path="/genome-browser/:genomeId"
+              element={<TestComponent />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </TestContext.Provider>
     </Provider>
   );
 };
@@ -150,7 +156,7 @@ describe('useBrowserRouting', () => {
 
       // this is useless, because this route will be handled by the interstitial;
       // yet this is how the code currently behaves
-      expect(replace).toHaveBeenCalledWith('/genome-browser/wheat');
+      expect(testContext.url).toBe('/genome-browser/wheat');
     });
 
     it('redirects to url for active genome using focus id and location from redux', () => {
@@ -160,7 +166,7 @@ describe('useBrowserRouting', () => {
       // notice how the identifier "human:gene:ENSG00000139618" that was used in the mock store
       // is reformatted to gene:ENSG00000139618 in the url;
       // this can be tested by examining TestComponent after a switch to react-router v6
-      expect(replace).toHaveBeenCalledWith(
+      expect(testContext.url).toBe(
         '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
       );
     });
@@ -180,7 +186,7 @@ describe('useBrowserRouting', () => {
       renderComponent({ state: updatedState, path: '/genome-browser' });
 
       // this is useless behaviour; yet this is how the code currently behaves
-      expect(replace).toHaveBeenCalledWith('/genome-browser/wheat');
+      expect(testContext.url).toBe('/genome-browser/wheat');
     });
   });
 
@@ -204,7 +210,7 @@ describe('useBrowserRouting', () => {
     it('redirects to url containing focus id if available in redux', () => {
       renderComponent({ path: '/genome-browser/human' });
 
-      expect(replace).toHaveBeenCalledWith(
+      expect(testContext.url).toBe(
         '/genome-browser/human?focus=gene:ENSG00000139618'
       );
     });
@@ -223,8 +229,9 @@ describe('useBrowserRouting', () => {
       });
 
       // no navigation actions expected
-      expect(push).not.toHaveBeenCalled();
-      expect(replace).not.toHaveBeenCalled();
+      expect(testContext.url).toBe(
+        '/genome-browser/human?focus=gene:ENSG00000139618'
+      );
     });
 
     it('tells genome browser to switch to the focus object from the url', () => {
@@ -252,8 +259,9 @@ describe('useBrowserRouting', () => {
       });
 
       // no navigation actions expected
-      expect(push).not.toHaveBeenCalled();
-      expect(replace).not.toHaveBeenCalled();
+      expect(testContext.url).toBe(
+        '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+      );
     });
 
     it('tells genome browser to set the focus object and the location from the url', () => {
@@ -278,8 +286,11 @@ describe('useBrowserRouting', () => {
         jest.clearAllMocks();
         jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
-        routingHandle?.changeGenomeId('wheat');
-        expect(push).toHaveBeenCalledWith('/genome-browser/wheat');
+        act(() => {
+          routingHandle?.changeGenomeId('wheat');
+        });
+
+        expect(testContext.url).toBe('/genome-browser/wheat');
         expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(
           'wheat'
         );
@@ -298,8 +309,11 @@ describe('useBrowserRouting', () => {
         jest.clearAllMocks();
         jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
-        routingHandle?.changeGenomeId('wheat');
-        expect(push).toHaveBeenCalledWith(
+        act(() => {
+          routingHandle?.changeGenomeId('wheat');
+        });
+
+        expect(testContext.url).toBe(
           '/genome-browser/wheat?focus=gene:TraesCS3D02G273600'
         );
         expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(
@@ -325,8 +339,11 @@ describe('useBrowserRouting', () => {
         jest.clearAllMocks();
         jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
-        routingHandle?.changeGenomeId('wheat');
-        expect(push).toHaveBeenCalledWith(
+        act(() => {
+          routingHandle?.changeGenomeId('wheat');
+        });
+
+        expect(testContext.url).toBe(
           '/genome-browser/wheat?focus=gene:TraesCS3D02G273600&location=3D:1000-1100'
         );
         expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(

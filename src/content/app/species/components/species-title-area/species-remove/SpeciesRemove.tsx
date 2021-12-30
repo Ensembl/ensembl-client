@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
@@ -39,6 +39,7 @@ const SpeciesRemove = () => {
     getCommittedSpeciesById(state, genomeId || '')
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { trackDeletedSpecies } = useSpeciesAnalytics();
 
@@ -51,9 +52,9 @@ const SpeciesRemove = () => {
   };
 
   const onRemove = () => {
-    dispatch(push(urlFor.speciesSelector()));
     dispatch(deleteSpeciesAndSave(genomeId));
     trackDeletedSpecies(species);
+    navigate(urlFor.speciesSelector());
   };
 
   return (

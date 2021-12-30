@@ -27,14 +27,12 @@ import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.scss';
 
 const GeneOverview = () => {
-  const params: EntityViewerParams = useParams();
-  const { entityId, genomeId } = params;
+  const { entityId, genomeId } = useParams<'genomeId' | 'entityId'>();
   const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();

@@ -15,21 +15,20 @@
  */
 
 import React from 'react';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import * as router from 'connected-react-router';
-import configureMockStore from 'redux-mock-store';
+import { MemoryRouter, Location } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
 import sampleSize from 'lodash/sampleSize';
+import kebabCase from 'lodash/kebabCase';
 
-import { ViewInApp, AppName, Apps, ViewInAppProps, UrlObj } from './ViewInApp';
-
-jest.mock('connected-react-router');
-
-const mockStore = configureMockStore([thunk]);
-const store: ReturnType<typeof mockStore> = mockStore({});
+import {
+  ViewInApp,
+  Apps,
+  type AppName,
+  type ViewInAppProps,
+  type UrlObj
+} from './ViewInApp';
+import RouteChecker from 'tests/router/RouteChecker';
 
 const renderComponent = (props: Partial<ViewInAppProps>) => {
   const defaultProps = { links: {} };
@@ -38,15 +37,31 @@ const renderComponent = (props: Partial<ViewInAppProps>) => {
     ...props
   };
 
-  return render(
-    <Provider store={store}>
+  const routerInfo: { location: Location | null; navigationType: string } = {
+    location: null,
+    navigationType: ''
+  };
+
+  const renderResult = render(
+    <MemoryRouter initialEntries={['/']}>
       <ViewInApp {...completeProps} />
-    </Provider>
+      <RouteChecker
+        setLocation={(location) => (routerInfo.location = location)}
+        setNavigationType={(navigationType) =>
+          (routerInfo.navigationType = navigationType)
+        }
+      />
+    </MemoryRouter>
   );
+
+  return {
+    ...renderResult,
+    routerInfo
+  };
 };
 
 const appLinkTuples = Object.keys(Apps).map(
-  (appName) => [appName as AppName, faker.internet.url()] as const
+  (appName) => [appName as AppName, `/${kebabCase(appName)}`] as const
 );
 
 const randomSampleSize = Math.ceil(Math.random() * appLinkTuples.length);
@@ -79,17 +94,13 @@ describe('<ViewInApp />', () => {
   });
 
   it('changes url using history push by default', () => {
-    jest
-      .spyOn(router, 'push')
-      .mockImplementation((link) => ({ type: 'push', link } as any));
-
     const links = {
       genomeBrowser: {
-        url: faker.internet.url()
+        url: '/genome-browser'
       }
     };
 
-    renderComponent({ links });
+    const { routerInfo } = renderComponent({ links });
 
     const appButtonContainer = screen.getByTestId('genomeBrowser');
 
@@ -97,22 +108,19 @@ describe('<ViewInApp />', () => {
       appButtonContainer.querySelector('button') as HTMLButtonElement
     );
 
-    expect(router.push).toHaveBeenCalledWith(links.genomeBrowser.url);
+    expect(routerInfo.location?.pathname).toBe(links.genomeBrowser.url);
+    expect(routerInfo.navigationType).toBe('PUSH');
   });
 
   it('changes url using history replace with appropriate props', () => {
-    jest
-      .spyOn(router, 'replace')
-      .mockImplementation((link) => ({ type: 'replace', link } as any));
-
     const links = {
       genomeBrowser: {
-        url: faker.internet.url(),
+        url: '/genome-browser',
         replaceState: true
       }
     };
 
-    renderComponent({ links });
+    const { routerInfo } = renderComponent({ links });
 
     const appButtonContainer = screen.getByTestId('genomeBrowser');
 
@@ -120,20 +128,15 @@ describe('<ViewInApp />', () => {
       appButtonContainer.querySelector('button') as HTMLButtonElement
     );
 
-    expect(router.replace).toHaveBeenCalledWith(links.genomeBrowser.url);
+    expect(routerInfo.location?.pathname).toBe(links.genomeBrowser.url);
+    expect(routerInfo.navigationType).toBe('REPLACE');
   });
 
   describe('onClick behaviour', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(router, 'push')
-        .mockImplementation((link) => ({ type: 'push', link } as any));
-    });
-
     it('calls a click handler associated with a single app', () => {
       const links = {
-        entityViewer: { url: 'http://foo.com' },
-        genomeBrowser: { url: 'http://bar.com' }
+        entityViewer: { url: '/entity-viewer' },
+        genomeBrowser: { url: '/genome-browser' }
       };
       const clickHandlerMock = jest.fn();
       const { getByTestId } = renderComponent({
@@ -158,8 +161,8 @@ describe('<ViewInApp />', () => {
 
     it('calls a click handler associated with any app', () => {
       const links = {
-        entityViewer: { url: 'http://foo.com' },
-        genomeBrowser: { url: 'http://bar.com' }
+        entityViewer: { url: '/entity-viewer' },
+        genomeBrowser: { url: '/genome-browser' }
       };
       const clickHandlerMock = jest.fn();
       const { getByTestId } = renderComponent({

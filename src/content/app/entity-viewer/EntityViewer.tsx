@@ -16,11 +16,18 @@
 
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { replace } from 'connected-react-router';
-import { useParams } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import {
@@ -50,16 +57,8 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 
 import styles from './EntityViewer.scss';
 
-export type EntityViewerParams = {
-  genomeId?: string;
-  entityId?: string;
-};
-
 const EntityViewer = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-  const viewportWidth = useSelector(getBreakpointWidth);
-
   const dispatch = useDispatch();
 
   useEntityViewerRouting();
@@ -70,12 +69,26 @@ const EntityViewer = () => {
     }
   }, [activeGenomeId]);
 
+  return (
+    <div className={styles.entityViewer}>
+      <EntityViewerAppBar />
+      <Routes>
+        <Route index element={<EntityViewerInterstitial />} />
+        <Route path="/:genomeId" element={<EntityViewerInterstitial />} />
+        <Route path="/:genomeId/:entityId" element={<EntityViewerForGene />} />
+      </Routes>
+    </div>
+  );
+};
+
+const EntityViewerForGene = () => {
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const isSidebarModalOpen = Boolean(
     useSelector(getEntityViewerSidebarModalView)
   );
-
-  const params: EntityViewerParams = useParams();
-  const { genomeId, entityId } = params;
+  const viewportWidth = useSelector(getBreakpointWidth);
+  const { genomeId, entityId } = useParams<'genomeId' | 'entityId'>();
+  const dispatch = useDispatch();
 
   const SideBarContent = isSidebarModalOpen ? (
     <EntityViewerSidebarModal />
@@ -84,36 +97,37 @@ const EntityViewer = () => {
   );
 
   return (
-    <div className={styles.entityViewer}>
-      <EntityViewerAppBar />
-      {genomeId && entityId ? (
-        <StandardAppLayout
-          mainContent={<GeneView />}
-          topbarContent={
-            <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
-          }
-          sidebarContent={SideBarContent}
-          sidebarNavigation={<GeneViewSidebarTabs />}
-          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-          isSidebarOpen={isSidebarOpen}
-          onSidebarToggle={() => dispatch(toggleSidebar())}
-          isDrawerOpen={false}
-          viewportWidth={viewportWidth}
+    <StandardAppLayout
+      mainContent={<GeneView />}
+      topbarContent={
+        <EntityViewerTopbar
+          genomeId={genomeId as string}
+          entityId={entityId as string}
         />
-      ) : (
-        <EntityViewerInterstitial />
-      )}
-    </div>
+      }
+      sidebarContent={SideBarContent}
+      sidebarNavigation={<GeneViewSidebarTabs />}
+      sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+      isSidebarOpen={isSidebarOpen}
+      onSidebarToggle={() => dispatch(toggleSidebar())}
+      isDrawerOpen={false}
+      viewportWidth={viewportWidth}
+    />
   );
 };
 
 const useEntityViewerRouting = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const params: EntityViewerParams = useParams();
+  const params = useUrlParams<'genomeId' | 'entityId'>(
+    ['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'],
+    pathname
+  );
   const { genomeId, entityId } = params;
 
   useEffect(() => {
@@ -126,7 +140,7 @@ const useEntityViewerRouting = () => {
         genomeId: activeGenomeId,
         entityId: entityIdForUrl
       });
-      dispatch(replace(newUrl));
+      navigate(newUrl, { replace: true });
     } else if (
       activeGenomeId &&
       activeGenomeId === genomeId &&
@@ -139,7 +153,7 @@ const useEntityViewerRouting = () => {
         genomeId: activeGenomeId,
         entityId: entityIdForUrl
       });
-      dispatch(replace(replacementUrl));
+      navigate(replacementUrl, { replace: true });
     }
     dispatch(setDataFromUrl(params));
   }, [params.genomeId, params.entityId, activeGenomeId, activeEntityId]);

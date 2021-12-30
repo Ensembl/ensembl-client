@@ -15,11 +15,11 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { push, replace } from 'connected-react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -68,8 +68,13 @@ import { RootState } from 'src/store';
 
 const useBrowserRouting = () => {
   const firstRenderRef = useRef(true);
-  const params: { [key: string]: string } = useParams();
+  const { pathname } = useLocation();
+  const params = useUrlParams<'genomeId'>(
+    '/genome-browser/:genomeId',
+    pathname
+  );
   const { search } = useLocation(); // from document.location provided by the router
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { genomeId } = params;
@@ -88,7 +93,9 @@ const useBrowserRouting = () => {
     getFocusObjectById(state, activeFocusObjectId || '')
   );
 
-  const newFocusId = focus ? buildNewFocusObjectId(genomeId, focus) : null;
+  const newFocusId = focus
+    ? buildNewFocusObjectId(genomeId as string, focus)
+    : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
     useGenomeBrowser();
@@ -129,7 +136,9 @@ const useBrowserRouting = () => {
       const newFocus = buildFocusIdForUrl(
         parseFocusObjectId(activeFocusObjectId)
       );
-      dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
+      navigate(urlFor.browser({ genomeId, focus: newFocus }), {
+        replace: true
+      });
     } else if (newFocusId && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
@@ -196,9 +205,8 @@ const useBrowserRouting = () => {
       //
       // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
       // becomes a valid searchable page in its own right.
-      const historyMethod = params.genomeId ? push : replace;
 
-      dispatch(historyMethod(urlFor.browser(nextUrlParams)));
+      navigate(urlFor.browser(nextUrlParams), { replace: !params.genomeId });
     },
     [params.genomeId]
   );
