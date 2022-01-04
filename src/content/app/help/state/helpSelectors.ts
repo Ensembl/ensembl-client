@@ -16,19 +16,23 @@
 
 import { RootState } from 'src/store';
 
-export const getNavHistory = (state: RootState) => state.help.navHistory;
-
-export const getCurrentItem = (state: RootState) => {
-  const { navHistory, currentItemIndex } = state.help;
-  return currentItemIndex > -1 ? navHistory[currentItemIndex] : null;
+export const getCurrentHistoryItem = (state: RootState) => {
+  const { navHistory, currentHistoryItemIndex } = state.help;
+  return currentHistoryItemIndex > -1
+    ? navHistory[currentHistoryItemIndex]
+    : null;
 };
 
 export const getPreviousItem = (state: RootState) => {
-  const { navHistory, currentItemIndex } = state.help;
-  return currentItemIndex > -1 ? navHistory[currentItemIndex - 1] : null;
+  const { navHistory, currentHistoryItemIndex } = state.help;
+  return currentHistoryItemIndex > -1
+    ? navHistory[currentHistoryItemIndex - 1]
+    : null;
 };
 
 export const getNextItem = (state: RootState) => {
-  const { navHistory, currentItemIndex } = state.help;
-  return currentItemIndex > -1 ? navHistory[currentItemIndex + 1] : null;
+  const { navHistory, currentHistoryItemIndex } = state.help;
+  return currentHistoryItemIndex > -1
+    ? navHistory[currentHistoryItemIndex + 1]
+    : null;
 };

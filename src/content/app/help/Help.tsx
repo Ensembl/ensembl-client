@@ -28,7 +28,7 @@ import {
   resetNavHistory
 } from './state/helpSlice';
 import {
-  getCurrentItem,
+  getCurrentHistoryItem,
   getNextItem,
   getPreviousItem
 } from './state/helpSelectors';
@@ -69,7 +69,7 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`,
     skip: isIndexPage
   });
-  const currentHistoryItem = useSelector(getCurrentItem);
+  const currentHistoryItem = useSelector(getCurrentHistoryItem);
   const dispatch = useDispatch();
 
   useEffect(() => {

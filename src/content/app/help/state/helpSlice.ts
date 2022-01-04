@@ -18,12 +18,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type HelpState = {
   navHistory: string[];
-  currentItemIndex: number;
+  currentHistoryItemIndex: number;
 };
 
 const initialState: HelpState = {
   navHistory: [],
-  currentItemIndex: -1
+  currentHistoryItemIndex: -1
 };
 
 const helpSlice = createSlice({
@@ -31,23 +31,23 @@ const helpSlice = createSlice({
   initialState,
   reducers: {
     addPageToHistory(state, action: PayloadAction<string>) {
-      const { navHistory, currentItemIndex } = state;
+      const { navHistory, currentHistoryItemIndex } = state;
       const newNavHistory = navHistory
-        .slice(0, currentItemIndex + 1)
+        .slice(0, currentHistoryItemIndex + 1)
         .concat(action.payload);
 
       state.navHistory = newNavHistory;
-      state.currentItemIndex = newNavHistory.length - 1;
+      state.currentHistoryItemIndex = newNavHistory.length - 1;
     },
     moveBackInHistory(state) {
-      state.currentItemIndex = state.currentItemIndex - 1;
+      state.currentHistoryItemIndex = state.currentHistoryItemIndex - 1;
     },
     moveForwardInHistory(state) {
-      state.currentItemIndex = state.currentItemIndex + 1;
+      state.currentHistoryItemIndex = state.currentHistoryItemIndex + 1;
     },
     resetNavHistory(state) {
       state.navHistory = [];
-      state.currentItemIndex = -1;
+      state.currentHistoryItemIndex = -1;
     }
   }
 });
