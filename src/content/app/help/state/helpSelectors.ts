@@ -23,14 +23,14 @@ export const getCurrentHistoryItem = (state: RootState) => {
     : null;
 };
 
-export const getPreviousItem = (state: RootState) => {
+export const getPreviousHistoryItem = (state: RootState) => {
   const { navHistory, currentHistoryItemIndex } = state.help;
   return currentHistoryItemIndex > -1
     ? navHistory[currentHistoryItemIndex - 1]
     : null;
 };
 
-export const getNextItem = (state: RootState) => {
+export const getNextHistoryItem = (state: RootState) => {
   const { navHistory, currentHistoryItemIndex } = state.help;
   return currentHistoryItemIndex > -1
     ? navHistory[currentHistoryItemIndex + 1]

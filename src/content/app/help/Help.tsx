@@ -29,8 +29,8 @@ import {
 } from './state/helpSlice';
 import {
   getCurrentHistoryItem,
-  getNextItem,
-  getPreviousItem
+  getNextHistoryItem,
+  getPreviousHistoryItem
 } from './state/helpSelectors';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
@@ -124,19 +124,19 @@ const AppBar = () => {
 };
 
 const HelpHistoryButtons = () => {
-  const previousItem = useSelector(getPreviousItem);
-  const nextItem = useSelector(getNextItem);
+  const previousHistoryItem = useSelector(getPreviousHistoryItem);
+  const nextHistoryItem = useSelector(getNextHistoryItem);
   const dispatch = useDispatch();
 
   const onHistoryBack = () => {
-    if (previousItem) {
+    if (previousHistoryItem) {
       dispatch(moveBackInHistory());
       dispatch(goBack());
     }
   };
 
   const onHistoryForward = () => {
-    if (nextItem) {
+    if (nextHistoryItem) {
       dispatch(moveForwardInHistory());
       dispatch(goForward());
     }
@@ -146,8 +146,8 @@ const HelpHistoryButtons = () => {
     <HistoryButtons
       onHistoryBack={onHistoryBack}
       onHistoryForward={onHistoryForward}
-      hasPrevious={!!previousItem}
-      hasNext={!!nextItem}
+      hasPrevious={!!previousHistoryItem}
+      hasNext={!!nextHistoryItem}
     />
   );
 };
