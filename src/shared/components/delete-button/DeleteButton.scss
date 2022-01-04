@@ -1,13 +1,11 @@
 @import 'src/styles/common';
 
-// FIXME: add CSS variable for size
-
 .deleteButton {
   background: transparent;
   border: none;
   outline: none;
-  height: 18px;
-  width: 18px;
+  height: var(--delete-button-size, 18px);
+  width: var(--delete-button-size, 18px);
 
   svg {
     fill: $blue;

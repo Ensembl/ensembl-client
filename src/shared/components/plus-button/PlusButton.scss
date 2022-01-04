@@ -1,10 +1,8 @@
 @import 'src/styles/common';
 
-// FIXME: add CSS variable for size
-
 .plusButton {
-  height: 22px;
-  width: 22px;
+  height: var(--plus-button-size, 22px);
+  width: var(--plus-button-size, 22px);
 
   svg {
     width: 100%;
