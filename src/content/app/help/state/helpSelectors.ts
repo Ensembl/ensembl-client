@@ -18,21 +18,15 @@ import { RootState } from 'src/store';
 
 export const getCurrentHistoryItem = (state: RootState) => {
   const { navHistory, currentHistoryItemIndex } = state.help;
-  return currentHistoryItemIndex > -1
-    ? navHistory[currentHistoryItemIndex]
-    : null;
+  return navHistory[currentHistoryItemIndex] ?? null;
 };
 
 export const getPreviousHistoryItem = (state: RootState) => {
   const { navHistory, currentHistoryItemIndex } = state.help;
-  return currentHistoryItemIndex > -1
-    ? navHistory[currentHistoryItemIndex - 1]
-    : null;
+  return navHistory[currentHistoryItemIndex - 1] ?? null;
 };
 
 export const getNextHistoryItem = (state: RootState) => {
   const { navHistory, currentHistoryItemIndex } = state.help;
-  return currentHistoryItemIndex > -1
-    ? navHistory[currentHistoryItemIndex + 1]
-    : null;
+  return navHistory[currentHistoryItemIndex + 1] ?? null;
 };
