@@ -81,7 +81,6 @@ const Help = () => {
   useEffect(() => {
     if (pathname !== currentHistoryItem) {
       dispatch(addPageToHistory(pathname));
-    } else {
     }
   }, [pathname]);
 
