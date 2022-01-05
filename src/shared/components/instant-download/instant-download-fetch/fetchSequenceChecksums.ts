@@ -118,9 +118,18 @@ type GeneQueryResult = {
   gene: GeneWithTranscriptsInResponse;
 };
 
-type TranscriptQueryVariables = {
+type TranscriptQueryResult = {
+  transcript: TranscriptInResponse;
+};
+
+type GeneAndTranscriptQueryVariables = {
   genomeId: string;
   geneId: string;
+  transcriptId: string;
+};
+
+type TranscriptQueryVariables = {
+  genomeId: string;
   transcriptId: string;
 };
 
@@ -129,113 +138,88 @@ type GeneQueryVariables = {
   geneId: string;
 };
 
-const transcriptChecksumsQuery = gql`
-  query GeneAndTranscript(
-    $genomeId: String!
-    $geneId: String!
-    $transcriptId: String!
-  ) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      stable_id
-      slice {
-        location {
-          start
-          end
-        }
-        region {
-          sequence {
-            checksum
-          }
-        }
+const geneQueryFragment = gql`
+  fragment GeneDetails on Gene {
+    stable_id
+    slice {
+      location {
+        start
+        end
       }
-    }
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
-      stable_id
-      unversioned_stable_id
-      slice {
-        location {
-          start
-          end
-        }
-        region {
-          sequence {
-            checksum
-          }
-        }
-      }
-      product_generating_contexts {
-        cds {
-          sequence {
-            checksum
-          }
-        }
-        cdna {
-          sequence {
-            checksum
-          }
-        }
-        product {
-          stable_id
-          sequence {
-            checksum
-          }
+      region {
+        sequence {
+          checksum
         }
       }
     }
   }
 `;
 
-const geneChecksumsQuery = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      stable_id
-      unversioned_stable_id
-      slice {
-        location {
-          start
-          end
-        }
-        region {
-          sequence {
-            checksum
-          }
+const transcriptQueryFragment = gql`
+  fragment TranscriptDetails on Transcript {
+    stable_id
+    unversioned_stable_id
+    slice {
+      location {
+        start
+        end
+      }
+      region {
+        sequence {
+          checksum
         }
       }
-      transcripts {
-        stable_id
-        unversioned_stable_id
-        slice {
-          location {
-            start
-            end
-          }
-          region {
-            sequence {
-              checksum
-            }
-          }
+    }
+    product_generating_contexts {
+      cds {
+        sequence {
+          checksum
         }
-        product_generating_contexts {
-          cds {
-            sequence {
-              checksum
-            }
-          }
-          cdna {
-            sequence {
-              checksum
-            }
-          }
-          product {
-            stable_id
-            sequence {
-              checksum
-            }
-          }
+      }
+      cdna {
+        sequence {
+          checksum
+        }
+      }
+      product {
+        stable_id
+        sequence {
+          checksum
         }
       }
     }
   }
+`;
+
+const geneAndTranscriptChecksumsQuery = gql`
+  query GeneAndTranscript(
+    $genomeId: String!
+    $geneId: String!
+    $transcriptId: String!
+  ) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      ...GeneDetails
+    }
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      ...TranscriptDetails
+    }
+  }
+  ${geneQueryFragment}
+  ${transcriptQueryFragment}
+`;
+
+const geneChecksumsQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      ...GeneDetails
+      }
+      transcripts {
+        ...TranscriptDetails
+      }
+    }
+  }
+  ${geneQueryFragment}
+  ${transcriptQueryFragment}
 `;
 
 const processGeneAndTranscriptData = (data: GeneAndTranscriptQueryResult) => {
@@ -303,11 +287,11 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
 };
 
 export const fetchGeneAndTranscriptSequenceMetadata = (
-  variables: TranscriptQueryVariables
+  variables: GeneAndTranscriptQueryVariables
 ): Promise<GeneAndTranscriptSequenceMetadata> =>
   client
     .query<GeneAndTranscriptQueryResult>({
-      query: transcriptChecksumsQuery,
+      query: geneAndTranscriptChecksumsQuery,
       variables
     })
     .then(({ data }) => processGeneAndTranscriptData(data));
@@ -326,3 +310,14 @@ export const fetchGeneSequenceMetadata = (
         processTranscriptData(transcript)
       )
     }));
+
+export const fetchTranscriptSequenceMetadata = (
+  variables: TranscriptQueryVariables
+): Promise<TranscriptSequenceMetadata> => {
+  return client
+    .query<TranscriptQueryResult>({
+      query: geneChecksumsQuery,
+      variables
+    })
+    .then(({ data }) => processTranscriptData(data.transcript));
+};
