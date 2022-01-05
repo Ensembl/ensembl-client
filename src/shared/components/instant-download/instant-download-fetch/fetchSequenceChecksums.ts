@@ -23,7 +23,13 @@ import { Sequence } from 'src/shared/types/thoas/sequence';
 export type TranscriptSequenceMetadata = {
   stable_id: string;
   unversioned_stable_id: string;
-  cdna?: {
+  genomic: {
+    label: string;
+    checksum: string;
+    start: number;
+    end: number;
+  };
+  cdna: {
     checksum: string;
     label: string;
   };
@@ -40,12 +46,55 @@ export type TranscriptSequenceMetadata = {
 export type GeneSequenceMetadata = {
   stable_id: string;
   unversioned_stable_id: string;
+  genomic: {
+    label: string;
+    checksum: string;
+    start: number;
+    end: number;
+  };
+};
+
+export type GeneAndTranscriptSequenceMetadata = {
+  gene: GeneSequenceMetadata;
+  transcript: TranscriptSequenceMetadata;
+};
+
+export type GeneWithTranscriptsSequenceMetadata = GeneSequenceMetadata & {
   transcripts: TranscriptSequenceMetadata[];
 };
 
-type TranscriptInResponse = {
-  stable_id: string; // for apollo client caching
+type SliceInResponse = {
+  location: {
+    start: number;
+    end: number;
+  };
+  region: {
+    sequence: Sequence;
+  };
+};
+
+type GeneInResponse = {
+  stable_id: string;
   unversioned_stable_id: string;
+  slice: SliceInResponse;
+};
+
+type GeneWithTranscriptsInResponse = GeneInResponse & {
+  transcripts: TranscriptInResponse[];
+};
+
+type TranscriptInResponse = {
+  stable_id: string;
+  unversioned_stable_id: string;
+  slice: {
+    location: {
+      start: number;
+      end: number;
+    };
+    region: {
+      sequence: Sequence;
+    };
+  };
   product_generating_contexts: Array<{
     cdna: {
       sequence: Sequence;
@@ -60,20 +109,18 @@ type TranscriptInResponse = {
   }>;
 };
 
-type TranscriptQueryResult = {
+type GeneAndTranscriptQueryResult = {
+  gene: GeneInResponse;
   transcript: TranscriptInResponse;
 };
 
 type GeneQueryResult = {
-  gene: {
-    stable_id: string;
-    unversioned_stable_id: string;
-    transcripts: TranscriptInResponse[];
-  };
+  gene: GeneWithTranscriptsInResponse;
 };
 
 type TranscriptQueryVariables = {
   genomeId: string;
+  geneId: string;
   transcriptId: string;
 };
 
@@ -83,10 +130,39 @@ type GeneQueryVariables = {
 };
 
 const transcriptChecksumsQuery = gql`
-  query Transcript($genomeId: String!, $transcriptId: String!) {
+  query GeneAndTranscript(
+    $genomeId: String!
+    $geneId: String!
+    $transcriptId: String!
+  ) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      slice {
+        location {
+          start
+          end
+        }
+        region {
+          sequence {
+            checksum
+          }
+        }
+      }
+    }
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
       stable_id
       unversioned_stable_id
+      slice {
+        location {
+          start
+          end
+        }
+        region {
+          sequence {
+            checksum
+          }
+        }
+      }
       product_generating_contexts {
         cds {
           sequence {
@@ -109,23 +185,36 @@ const transcriptChecksumsQuery = gql`
   }
 `;
 
-const onlyGeneQuery = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      stable_id
-      unversioned_stable_id
-    }
-  }
-`;
-
 const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
       unversioned_stable_id
+      slice {
+        location {
+          start
+          end
+        }
+        region {
+          sequence {
+            checksum
+          }
+        }
+      }
       transcripts {
         stable_id
         unversioned_stable_id
+        slice {
+          location {
+            start
+            end
+          }
+          region {
+            sequence {
+              checksum
+            }
+          }
+        }
         product_generating_contexts {
           cds {
             sequence {
@@ -149,29 +238,59 @@ const geneChecksumsQuery = gql`
   }
 `;
 
-const processTranscriptData = (transcript: TranscriptInResponse) => {
-  // TODO: expect to fetch genomic sequence here as well when checksum becomes available
-  const { stable_id, unversioned_stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
-  const productGeneratingContext = transcript.product_generating_contexts[0];
-
-  if (!productGeneratingContext) {
-    return {
-      stable_id,
-      unversioned_stable_id
-    };
-  }
+const processGeneAndTranscriptData = (data: GeneAndTranscriptQueryResult) => {
+  const { gene, transcript } = data;
 
   return {
-    stable_id,
-    unversioned_stable_id,
+    gene: processGeneData(gene),
+    transcript: processTranscriptData(transcript)
+  };
+};
+
+const processGeneData = (gene: GeneInResponse) => {
+  const {
+    stable_id: geneStableId,
+    unversioned_stable_id: geneUnversionedStableId,
+    slice: geneSlice
+  } = gene;
+
+  return {
+    stable_id: geneStableId,
+    unversioned_stable_id: geneUnversionedStableId,
+    genomic: {
+      label: `${geneStableId} genomic`,
+      checksum: geneSlice.region.sequence.checksum,
+      start: geneSlice.location.start,
+      end: geneSlice.location.end
+    }
+  };
+};
+
+const processTranscriptData = (transcript: TranscriptInResponse) => {
+  const {
+    stable_id: transcriptStableId,
+    unversioned_stable_id: transcriptUnversionedStableId, // FIXME no longer needed? only required when we requested genomic sequences from REST?
+    slice: transcriptSlice
+  } = transcript;
+  const productGeneratingContext = transcript.product_generating_contexts[0];
+
+  return {
+    stable_id: transcriptStableId,
+    unversioned_stable_id: transcriptUnversionedStableId,
+    genomic: {
+      label: `${transcriptStableId} genomic`,
+      checksum: transcriptSlice.region.sequence.checksum,
+      start: transcriptSlice.location.start,
+      end: transcriptSlice.location.end
+    },
     cdna: {
       checksum: productGeneratingContext.cdna.sequence.checksum,
-      label: `${stable_id} cdna`
+      label: `${transcriptStableId} cdna`
     },
     cds: productGeneratingContext.cds
       ? {
           checksum: productGeneratingContext.cds.sequence.checksum,
-          label: `${stable_id} cds`
+          label: `${transcriptStableId} cds`
         }
       : undefined,
     protein: productGeneratingContext.product
@@ -183,42 +302,26 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
   };
 };
 
-export const fetchTranscriptSequenceMetadata = (
+export const fetchGeneAndTranscriptSequenceMetadata = (
   variables: TranscriptQueryVariables
-): Promise<TranscriptSequenceMetadata> =>
+): Promise<GeneAndTranscriptSequenceMetadata> =>
   client
-    .query<TranscriptQueryResult>({
+    .query<GeneAndTranscriptQueryResult>({
       query: transcriptChecksumsQuery,
       variables
     })
-    .then(({ data }) => processTranscriptData(data.transcript));
-
-type OnlyGeneSequenceMetadata = {
-  stable_id: string;
-  unversioned_stable_id: string;
-};
-// temporary function; will change it to fetch gene sequence checksum when available
-export const fetchGeneWithoutTranscriptsSequenceMetadata = (
-  variables: GeneQueryVariables
-): Promise<OnlyGeneSequenceMetadata> =>
-  client
-    .query<{ gene: OnlyGeneSequenceMetadata }>({
-      query: onlyGeneQuery,
-      variables
-    })
-    .then(({ data }) => data.gene);
+    .then(({ data }) => processGeneAndTranscriptData(data));
 
 export const fetchGeneSequenceMetadata = (
   variables: GeneQueryVariables
-): Promise<GeneSequenceMetadata> =>
+): Promise<GeneWithTranscriptsSequenceMetadata> =>
   client
     .query<GeneQueryResult>({
       query: geneChecksumsQuery,
       variables
     })
     .then(({ data }) => ({
-      stable_id: data.gene.stable_id,
-      unversioned_stable_id: data.gene.unversioned_stable_id,
+      ...processGeneData(data.gene),
       transcripts: data.gene.transcripts.map((transcript) =>
         processTranscriptData(transcript)
       )

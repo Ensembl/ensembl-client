@@ -24,8 +24,7 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
-  fetchTranscriptSequenceMetadata,
-  fetchGeneWithoutTranscriptsSequenceMetadata,
+  fetchGeneAndTranscriptSequenceMetadata,
   TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
@@ -55,22 +54,20 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
-    genomeId,
-    transcriptId
-  });
+  const { transcript: transcriptSequenceData, gene: geneSequenceData } =
+    await fetchGeneAndTranscriptSequenceMetadata({
+      genomeId,
+      geneId,
+      transcriptId
+    });
   const sequenceDownloadParams = prepareDownloadParameters({
     transcriptSequenceData,
     options: transcriptOptions
   });
 
   if (geneOptions.genomicSequence) {
-    const metadata = await fetchGeneWithoutTranscriptsSequenceMetadata({
-      genomeId,
-      geneId
-    });
     sequenceDownloadParams.unshift(
-      getGenomicSequenceData(metadata.stable_id, metadata.unversioned_stable_id)
+      prepareGeneDownloadParameters(geneSequenceData)
     );
   }
 
@@ -117,10 +114,13 @@ export const prepareDownloadParameters = (
     .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'cdna', 'cds', 'protein'
     .map((option) => {
       if (option === 'genomic') {
-        return getGenomicSequenceData(
-          params.transcriptSequenceData.stable_id,
-          params.transcriptSequenceData.unversioned_stable_id
-        );
+        const { label, start, end, checksum } =
+          params.transcriptSequenceData.genomic;
+        const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
+        return {
+          label,
+          url
+        };
       } else {
         const dataForSingleSequence = params.transcriptSequenceData[option];
 
@@ -137,10 +137,17 @@ export const prepareDownloadParameters = (
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
 
-export const getGenomicSequenceData = (
-  versionedStableId: string,
-  unversionedStableId: string
-) => ({
-  label: `${versionedStableId} genomic`,
-  url: `https://rest.ensembl.org/sequence/id/${unversionedStableId}?content-type=text/plain&type=genomic`
-});
+export const prepareGeneDownloadParameters = (
+  geneData: Awaited<
+    ReturnType<typeof fetchGeneAndTranscriptSequenceMetadata>
+  >['gene']
+) => {
+  const {
+    genomic: { label, start, end, checksum }
+  } = geneData;
+  const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
+  return {
+    label,
+    url
+  };
+};
