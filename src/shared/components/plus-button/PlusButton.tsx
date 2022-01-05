@@ -21,7 +21,7 @@ import styles from './PlusButton.scss';
 
 type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
 
-const DeleteButton = (props: Props) => {
+const PlusButton = (props: Props) => {
   return (
     <button {...props} className={styles.plusButton}>
       <PlusIcon />
@@ -29,4 +29,4 @@ const DeleteButton = (props: Props) => {
   );
 };
 
-export default DeleteButton;
+export default PlusButton;

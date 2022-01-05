@@ -21,7 +21,6 @@ import React, {
   type FormEvent,
   type ClipboardEvent
 } from 'react';
-import classNames from 'classnames';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
@@ -97,8 +96,6 @@ const BlastInputSequence = (props: Props) => {
     setTimeout(() => (canSubmit.current = true), 0);
   };
 
-  const textareaClasses = classNames(styles.textarea);
-
   return (
     <div className={styles.inputSequenceBox}>
       <div className={styles.header}>
@@ -113,7 +110,7 @@ const BlastInputSequence = (props: Props) => {
         <Textarea
           ref={textareaRef}
           value={input}
-          className={textareaClasses}
+          className={styles.textarea}
           placeholder="Paste a nucleotide of protein sequence"
           onChange={onChange}
           onPaste={onPaste}
