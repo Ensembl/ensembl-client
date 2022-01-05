@@ -212,13 +212,21 @@ const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       ...GeneDetails
-      }
-      transcripts {
-        ...TranscriptDetails
-      }
+    }
+    transcripts {
+      ...TranscriptDetails
     }
   }
   ${geneQueryFragment}
+  ${transcriptQueryFragment}
+`;
+
+const transcriptChecksumsQuery = gql`
+  query Transcript($genomeId: String!, $transcriptId: String!) {
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      ...TranscriptDetails
+    }
+  }
   ${transcriptQueryFragment}
 `;
 
@@ -316,7 +324,7 @@ export const fetchTranscriptSequenceMetadata = (
 ): Promise<TranscriptSequenceMetadata> => {
   return client
     .query<TranscriptQueryResult>({
-      query: geneChecksumsQuery,
+      query: transcriptChecksumsQuery,
       variables
     })
     .then(({ data }) => processTranscriptData(data.transcript));
