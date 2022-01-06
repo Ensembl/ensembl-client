@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { gql } from '@apollo/client';
-
-import { client } from 'src/gql-client';
+import { request, gql } from 'graphql-request';
 
 import { Sequence } from 'src/shared/types/thoas/sequence';
 
@@ -212,9 +210,9 @@ const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       ...GeneDetails
-    }
-    transcripts {
-      ...TranscriptDetails
+      transcripts {
+        ...TranscriptDetails
+      }
     }
   }
   ${geneQueryFragment}
@@ -297,35 +295,30 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
 export const fetchGeneAndTranscriptSequenceMetadata = (
   variables: GeneAndTranscriptQueryVariables
 ): Promise<GeneAndTranscriptSequenceMetadata> =>
-  client
-    .query<GeneAndTranscriptQueryResult>({
-      query: geneAndTranscriptChecksumsQuery,
-      variables
-    })
-    .then(({ data }) => processGeneAndTranscriptData(data));
+  request<GeneAndTranscriptQueryResult>(
+    '/api/thoas',
+    geneAndTranscriptChecksumsQuery,
+    variables
+  ).then((data) => processGeneAndTranscriptData(data));
 
 export const fetchGeneSequenceMetadata = (
   variables: GeneQueryVariables
 ): Promise<GeneWithTranscriptsSequenceMetadata> =>
-  client
-    .query<GeneQueryResult>({
-      query: geneChecksumsQuery,
-      variables
-    })
-    .then(({ data }) => ({
+  request<GeneQueryResult>('/api/thoas', geneChecksumsQuery, variables).then(
+    (data) => ({
       ...processGeneData(data.gene),
       transcripts: data.gene.transcripts.map((transcript) =>
         processTranscriptData(transcript)
       )
-    }));
+    })
+  );
 
 export const fetchTranscriptSequenceMetadata = (
   variables: TranscriptQueryVariables
 ): Promise<TranscriptSequenceMetadata> => {
-  return client
-    .query<TranscriptQueryResult>({
-      query: transcriptChecksumsQuery,
-      variables
-    })
-    .then(({ data }) => processTranscriptData(data.transcript));
+  return request<TranscriptQueryResult>(
+    '/api/thoas',
+    transcriptChecksumsQuery,
+    variables
+  ).then((data) => processTranscriptData(data.transcript));
 };
