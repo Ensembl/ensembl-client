@@ -36,9 +36,7 @@ const BlastInputSequences = () => {
   });
 
   const onSequenceAdded = (input: string, index: number | null) => {
-    const parsedSequences = parseBlastInput(input).filter((result) =>
-      Boolean(result.value)
-    ) as ParsedInputSequence[]; // <-- this would make a header without a sequence disappear; it is a good idea?
+    const parsedSequences = parseBlastInput(input);
 
     if (typeof index === 'number') {
       const newSequences = [...sequences];
