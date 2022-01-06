@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
-import { goBack, goForward, push } from 'connected-react-router';
+import { goBack, goForward } from 'connected-react-router';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useApiService from 'src/shared/hooks/useApiService';
@@ -50,7 +50,6 @@ import {
   MenuItem
 } from 'src/shared/types/help-and-docs/menu';
 import {
-  RelatedArticleData,
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
@@ -157,17 +156,11 @@ const MainContent = (props: {
   breadcrumbs: string[];
 }) => {
   const { article, breadcrumbs } = props;
-  const dispatch = useDispatch();
-
   const isHelpContent = article.type === 'article' || article.type === 'video';
 
   if (!isHelpContent) {
     return null;
   }
-
-  const onRelatedItemClick = (reference: RelatedArticleData) => {
-    dispatch(push(reference.url));
-  };
 
   const renderedArticle =
     article.type === 'article' ? (
@@ -187,10 +180,7 @@ const MainContent = (props: {
           {!!article.related_articles.length && (
             <aside>
               <HelpHistoryButtons />
-              <RelatedArticles
-                articles={article.related_articles}
-                onArticleClick={onRelatedItemClick}
-              />
+              <RelatedArticles articles={article.related_articles} />
             </aside>
           )}
         </HelpArticleGrid>
