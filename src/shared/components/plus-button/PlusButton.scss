@@ -1,0 +1,12 @@
+@import 'src/styles/common';
+
+.plusButton {
+  height: var(--plus-button-size, 22px);
+  width: var(--plus-button-size, 22px);
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: $blue;
+  }
+}

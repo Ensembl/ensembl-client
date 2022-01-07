@@ -1,0 +1,13 @@
+@import 'src/styles/common';
+
+.deleteButton {
+  background: transparent;
+  border: none;
+  outline: none;
+  height: var(--delete-button-size, 18px);
+  width: var(--delete-button-size, 18px);
+
+  svg {
+    fill: $blue;
+  }
+}

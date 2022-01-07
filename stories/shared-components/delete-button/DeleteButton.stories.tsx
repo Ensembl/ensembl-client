@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import 'src/styles/main.scss';
+import React from 'react';
+import noop from 'lodash/noop';
 
-import './design-primitives/index.ts';
-import './shared-components/index.ts';
-import './static-images/index.ts';
-import './genome-browser/index.ts';
-import './entity-viewer/index.ts';
-import './species/index.ts';
-import './hooks/index.ts';
+import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+
+export default {
+  title: 'Components/Shared Components/Delete button'
+};
+
+export const DefaultDeleteButton = () => <DeleteButton onClick={noop} />;
+
+DefaultDeleteButton.storyName = 'default';
