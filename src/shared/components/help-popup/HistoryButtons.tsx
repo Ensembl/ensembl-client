@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { MutableRefObject } from 'react';
+import React from 'react';
 import classNames from 'classnames';
-import HelpPopupHistory from '../help-popup/helpPopupHistory';
 
 import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
 import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
@@ -24,32 +23,30 @@ import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right
 import styles from '../help-popup/HelpPopupBody.scss';
 
 type HistoryButtonsProps = {
-  historyRef: MutableRefObject<HelpPopupHistory | null>;
   onHistoryBack: () => void;
   onHistoryForward: () => void;
+  hasPrevious: boolean;
+  hasNext: boolean;
 };
 
 const HistoryButtons = (props: HistoryButtonsProps) => {
-  const { historyRef, onHistoryBack, onHistoryForward } = props;
   const historyForwardClasses = classNames(
     styles.historyButton,
-    historyRef.current?.hasNext()
-      ? styles.historyButtonActive
-      : styles.historyButtonInactive
+    props.hasNext ? styles.historyButtonActive : styles.historyButtonInactive
   );
   const historyBackClasses = classNames(
     styles.historyButton,
-    historyRef.current?.hasPrevious()
+    props.hasPrevious
       ? styles.historyButtonActive
       : styles.historyButtonInactive
   );
 
   return (
     <div className={styles.historyButtons}>
-      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
+      <BackIcon className={historyBackClasses} onClick={props.onHistoryBack} />
       <ForwardIcon
         className={historyForwardClasses}
-        onClick={onHistoryForward}
+        onClick={props.onHistoryForward}
       />
     </div>
   );

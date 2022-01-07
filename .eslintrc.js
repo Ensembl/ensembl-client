@@ -31,6 +31,7 @@ module.exports = {
     'prettier/prettier': 0,
     'no-unused-vars': 'off',
     'no-unneeded-ternary': 'error',
+    'no-empty': 'error',
     'eqeqeq': 'error',
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',

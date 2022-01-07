@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { goBack, goForward } from 'connected-react-router';
+import { useDispatch, useSelector } from 'react-redux';
 
 import useApiService from 'src/shared/hooks/useApiService';
+
+import {
+  addPageToHistory,
+  moveBackInHistory,
+  moveForwardInHistory,
+  resetNavHistory
+} from './state/helpSlice';
+import {
+  getCurrentHistoryItem,
+  getNextHistoryItem,
+  getPreviousHistoryItem
+} from './state/helpSelectors';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
@@ -29,6 +43,7 @@ import {
   VideoArticle
 } from 'src/shared/components/help-article';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
+import HistoryButtons from 'src/shared/components/help-popup/HistoryButtons';
 
 import {
   Menu as MenuType,
@@ -44,19 +59,34 @@ import styles from './Help.scss';
 type ArticleData = TextArticleData | VideoArticleData;
 
 const Help = () => {
-  const location = useLocation();
-  const isIndexPage = isIndexRoute(location.pathname);
+  const { pathname } = useLocation();
+  const isIndexPage = isIndexRoute(pathname);
   const { data: menu } = useApiService<MenuType>({
     endpoint: `/api/docs/menus?name=help`
   });
   const { data: article } = useApiService<any>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`,
+    endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`,
     skip: isIndexPage
   });
+  const currentHistoryItem = useSelector(getCurrentHistoryItem);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetNavHistory());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pathname !== currentHistoryItem) {
+      dispatch(addPageToHistory(pathname));
+    }
+  }, [pathname]);
 
   let breadcrumbs: string[] = [];
+
   if (menu) {
-    breadcrumbs = buildBreadcrumbs(menu, { url: location.pathname });
+    breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
   }
 
   const main = isIndexPage ? (
@@ -75,7 +105,7 @@ const Help = () => {
   return (
     <div className={styles.help}>
       <AppBar />
-      {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
+      {menu && <HelpMenu menu={menu} currentUrl={pathname} />}
       {main}
     </div>
   );
@@ -92,14 +122,46 @@ const AppBar = () => {
   );
 };
 
+const HelpHistoryButtons = () => {
+  const previousHistoryItem = useSelector(getPreviousHistoryItem);
+  const nextHistoryItem = useSelector(getNextHistoryItem);
+  const dispatch = useDispatch();
+
+  const onHistoryBack = () => {
+    if (previousHistoryItem) {
+      dispatch(moveBackInHistory());
+      dispatch(goBack());
+    }
+  };
+
+  const onHistoryForward = () => {
+    if (nextHistoryItem) {
+      dispatch(moveForwardInHistory());
+      dispatch(goForward());
+    }
+  };
+
+  return (
+    <HistoryButtons
+      onHistoryBack={onHistoryBack}
+      onHistoryForward={onHistoryForward}
+      hasPrevious={!!previousHistoryItem}
+      hasNext={!!nextHistoryItem}
+    />
+  );
+};
+
 const MainContent = (props: {
   article: ArticleData;
   breadcrumbs: string[];
 }) => {
   const { article, breadcrumbs } = props;
-  if (article.type !== 'article' && article.type !== 'video') {
+  const isHelpContent = article.type === 'article' || article.type === 'video';
+
+  if (!isHelpContent) {
     return null;
   }
+
   const renderedArticle =
     article.type === 'article' ? (
       <TextArticle article={article} />
@@ -116,7 +178,10 @@ const MainContent = (props: {
         <HelpArticleGrid className={styles.articleGrid}>
           {renderedArticle}
           {!!article.related_articles.length && (
-            <RelatedArticles articles={article.related_articles} />
+            <aside>
+              <HelpHistoryButtons />
+              <RelatedArticles articles={article.related_articles} />
+            </aside>
           )}
         </HelpArticleGrid>
       </div>
