@@ -35,38 +35,31 @@ export const parseBlastInput = (input: string) => {
   input = input.trim();
 
   const sequences: ParsedInputSequence[] = [];
+  let newSequence = createEmptySequence();
 
   const lines = input.split('\n');
 
-  lines.forEach((line, index) => {
+  lines.forEach((line) => {
     line = prepareLine(line);
+
+    if (
+      isSequenceSeparator(line) &&
+      (newSequence.value || newSequence.header)
+    ) {
+      addToSequences(newSequence, sequences);
+      newSequence = createEmptySequence();
+    }
 
     if (line.startsWith('>')) {
       // this is a FASTA header line indicating the beginning of a new sequence
       line = line.replace(/^\>\s*/, '');
-
-      if (endsInEmptySequenceObject(sequences)) {
-        const sequenceObject = sequences[sequences.length - 1];
-        sequenceObject.header = line; // remove the leading ">" from the header line
-      } else {
-        const newSequence = createEmptySequence();
-        newSequence.header = line;
-        sequences.push(newSequence);
-      }
-    } else if (line === '' && lines[index - 1] !== '') {
-      // interpret it as a sequence separator, and create a new sequence
-      const newSequence = createEmptySequence();
-      sequences.push(newSequence);
+      newSequence.header = line; // remove the leading ">" from the header line
     } else {
-      if (index === 0) {
-        // this is the first line of a bare sequence; create the sequence object first
-        const newSequence = createEmptySequence();
-        sequences.push(newSequence);
-      }
-      const sequenceObject = sequences[sequences.length - 1];
-      sequenceObject.value += line;
+      newSequence.value += line;
     }
   });
+
+  addToSequences(newSequence, sequences);
 
   return sequences;
 };
@@ -84,12 +77,17 @@ const prepareLine = (line: string) => {
   return line.toUpperCase();
 };
 
-const endsInEmptySequenceObject = (sequences: ParsedInputSequence[]) => {
-  if (!sequences.length) {
-    return false;
-  }
-  const lastSequenceObject = sequences[sequences.length - 1];
-  return !lastSequenceObject.header && !lastSequenceObject.value;
+const isSequenceSeparator = (line: string) => {
+  return line.startsWith('>') || line === '';
 };
 
 const createEmptySequence = (): ParsedInputSequence => ({ value: '' });
+
+const addToSequences = (
+  sequence: ParsedInputSequence,
+  sequences: ParsedInputSequence[]
+) => {
+  if (sequence.value || sequence.header) {
+    sequences.push(sequence);
+  }
+};
