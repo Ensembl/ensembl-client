@@ -42,10 +42,7 @@ export const parseBlastInput = (input: string) => {
   lines.forEach((line) => {
     line = prepareLine(line);
 
-    if (
-      isSequenceSeparator(line) &&
-      (newSequence.value || newSequence.header)
-    ) {
+    if (isSequenceSeparator(line)) {
       addToSequences(newSequence, sequences);
       newSequence = createEmptySequence();
     }
