@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useReducer } from 'react';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
@@ -25,15 +25,50 @@ import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/pars
 
 import styles from './BlastInputSequences.scss';
 
-const BlastInputSequences = () => {
-  const [sequences, setSequences] = useState<ParsedInputSequence[]>([]);
-  const [shouldAppendEmptyInput, setShouldAppendEmptyInput] = useState(false);
+// the reducer code below is temporary; it will need to be moved over to Redux
 
-  useEffect(() => {
-    if (!sequences.length) {
-      setShouldAppendEmptyInput(true);
+type InputSequencesState = {
+  sequences: ParsedInputSequence[];
+  shouldAppendEmptyInput: boolean;
+};
+
+const initialState: InputSequencesState = {
+  sequences: [],
+  shouldAppendEmptyInput: true
+};
+
+type SetSequencesAction = {
+  type: 'set_sequences';
+  sequences: ParsedInputSequence[];
+};
+
+type DisplayEmptyInputAction = {
+  type: 'display_empty_input';
+  shouldAppendEmptyInput: boolean;
+};
+
+type Action = SetSequencesAction | DisplayEmptyInputAction;
+
+const reducer = (state: InputSequencesState, action: Action) => {
+  switch (action.type) {
+    case 'set_sequences': {
+      const shouldAppendEmptyInput = Boolean(!action.sequences.length);
+      return {
+        shouldAppendEmptyInput,
+        sequences: action.sequences
+      };
     }
-  });
+    case 'display_empty_input':
+      return {
+        ...state,
+        shouldAppendEmptyInput: action.shouldAppendEmptyInput
+      };
+  }
+};
+
+const BlastInputSequences = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { sequences, shouldAppendEmptyInput } = state;
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -41,29 +76,40 @@ const BlastInputSequences = () => {
     if (typeof index === 'number') {
       const newSequences = [...sequences];
       newSequences.splice(index, 1, ...parsedSequences);
-      setSequences(newSequences);
+      dispatch({
+        type: 'set_sequences',
+        sequences: newSequences
+      });
     } else {
-      setSequences([...sequences, ...parsedSequences]);
+      dispatch({
+        type: 'set_sequences',
+        sequences: [...sequences, ...parsedSequences]
+      });
     }
-
-    setShouldAppendEmptyInput(false);
   };
 
   const appendEmptyInput = () => {
-    setShouldAppendEmptyInput(true);
+    dispatch({
+      type: 'display_empty_input',
+      shouldAppendEmptyInput: true
+    });
   };
 
   const onRemoveSequence = (index: number | null) => {
     if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
-      setSequences(newSequences);
-    } else if (sequences.length) {
-      setShouldAppendEmptyInput(false);
+      dispatch({
+        type: 'set_sequences',
+        sequences: newSequences
+      });
     }
   };
 
   const onClearAll = () => {
-    setSequences([]);
+    dispatch({
+      type: 'set_sequences',
+      sequences: []
+    });
   };
 
   return (

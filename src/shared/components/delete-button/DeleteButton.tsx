@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
+import React, {
+  forwardRef,
+  type HTMLAttributes,
+  type ForwardedRef
+} from 'react';
 import { ReactComponent as TrashcanIcon } from 'static/img/shared/trash.svg';
 
 import styles from './DeleteButton.scss';
 
 type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
 
-const DeleteButton = (props: Props) => {
+const DeleteButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
   return (
-    <button {...props} className={styles.deleteButton}>
+    <button {...props} ref={ref} className={styles.deleteButton}>
       <TrashcanIcon />
     </button>
   );
 };
 
-export default DeleteButton;
+export default forwardRef(DeleteButton);

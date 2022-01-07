@@ -19,7 +19,8 @@ import React, {
   useEffect,
   useRef,
   type FormEvent,
-  type ClipboardEvent
+  type ClipboardEvent,
+  type FocusEvent
 } from 'react';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
@@ -44,7 +45,7 @@ const BlastInputSequence = (props: Props) => {
   const { index = null, onCommitted, sequence = { value: '' }, title } = props;
   const [input, setInput] = useState(toFasta(sequence));
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
-  const canSubmit = useRef(true);
+  const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -82,18 +83,22 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
-  const onBlur = () => {
-    if (canSubmit.current) {
+  const onBlur = (event: FocusEvent) => {
+    const { relatedTarget } = event;
+
+    if (relatedTarget !== deleteButtonRef.current) {
       onCommitted(input, index);
       forceReadSequenceFromProps();
     }
   };
 
   const onClear = () => {
-    canSubmit.current = false; // lock against the sequence submission on blur
-    setInput('');
-    sequence.value && props.onRemoveSequence?.(index);
-    setTimeout(() => (canSubmit.current = true), 0);
+    if (typeof index === 'number') {
+      props.onRemoveSequence?.(index);
+      forceReadSequenceFromProps();
+    } else {
+      setInput('');
+    }
   };
 
   return (
@@ -102,7 +107,7 @@ const BlastInputSequence = (props: Props) => {
         <span>{title}</span>
         {input && (
           <span className={styles.deleteButtonWrapper}>
-            <DeleteButton onMouseDown={onClear} onTouchStart={onClear} />
+            <DeleteButton ref={deleteButtonRef} onClick={onClear} />
           </span>
         )}
       </div>
