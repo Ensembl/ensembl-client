@@ -15,8 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router';
-import { goBack, goForward } from 'connected-react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useApiService from 'src/shared/hooks/useApiService';
@@ -126,18 +125,19 @@ const HelpHistoryButtons = () => {
   const previousHistoryItem = useSelector(getPreviousHistoryItem);
   const nextHistoryItem = useSelector(getNextHistoryItem);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onHistoryBack = () => {
     if (previousHistoryItem) {
       dispatch(moveBackInHistory());
-      dispatch(goBack());
+      navigate(-1);
     }
   };
 
   const onHistoryForward = () => {
     if (nextHistoryItem) {
       dispatch(moveForwardInHistory());
-      dispatch(goForward());
+      navigate(1);
     }
   };
 
