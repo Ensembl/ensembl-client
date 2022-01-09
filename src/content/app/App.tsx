@@ -61,31 +61,8 @@ const App = memo(() => {
     <>
       <Header />
       {routes}
-      {/*  remember to handle the 404's (update commented code below) */}
-      {/* <Route component={NotFound} /> */}
     </>
   );
 });
-
-// const Status = ({ code, children }: { code: number; children: ReactNode }) => {
-//   return (
-//     <Route
-//       render={({ staticContext }) => {
-//         if (staticContext) {
-//           (staticContext as any).status = code;
-//         }
-//         return children;
-//       }}
-//     />
-//   );
-// };
-
-// const NotFound = () => {
-//   return (
-//     <Status code={404}>
-//       <NotFoundErrorScreen />
-//     </Status>
-//   );
-// };
 
 export default AppContainer;
