@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchPath } from 'react-router';
+import { matchPath, useLocation } from 'react-router-dom';
 
 /**
  * React-router version 6 has removed optional url parameters
@@ -41,12 +41,12 @@ export const getPathParameters = <ParamKey extends string>(
     const matchResult = matchPath(pattern, pathname);
     return { ...params, ...matchResult?.params };
   }, {}) as Partial<Record<ParamKey, string>>;
-  // if (Object.keys(params).length) {
-  //   return params as Record<ParamKey, string>;
-  // } else {
-  //   return null;
-  // }
 };
 
 // exported as a React hook
-export const useUrlParams = getPathParameters;
+export const useUrlParams = <ParamKey extends string>(
+  patternOrPatterns: string | string[]
+) => {
+  const { pathname } = useLocation();
+  return getPathParameters<ParamKey>(patternOrPatterns, pathname);
+};

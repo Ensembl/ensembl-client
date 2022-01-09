@@ -68,11 +68,7 @@ import { RootState } from 'src/store';
 
 const useBrowserRouting = () => {
   const firstRenderRef = useRef(true);
-  const { pathname } = useLocation();
-  const params = useUrlParams<'genomeId'>(
-    '/genome-browser/:genomeId',
-    pathname
-  );
+  const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
   const { search } = useLocation(); // from document.location provided by the router
   const navigate = useNavigate();
   const dispatch = useDispatch();

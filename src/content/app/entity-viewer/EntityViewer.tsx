@@ -16,13 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-  useParams
-} from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
@@ -119,15 +113,14 @@ const EntityViewerForGene = () => {
 const useEntityViewerRouting = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
-  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const params = useUrlParams<'genomeId' | 'entityId'>(
-    ['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'],
-    pathname
-  );
+  const params = useUrlParams<'genomeId' | 'entityId'>([
+    '/entity-viewer/:genomeId',
+    '/entity-viewer/:genomeId/:entityId'
+  ]);
   const { genomeId, entityId } = params;
 
   useEffect(() => {
