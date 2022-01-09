@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
 import useApiService from 'src/shared/hooks/useApiService';
-
-import {
-  addPageToHistory,
-  moveBackInHistory,
-  moveForwardInHistory,
-  resetNavHistory
-} from './state/helpSlice';
-import {
-  getCurrentHistoryItem,
-  getNextHistoryItem,
-  getPreviousHistoryItem
-} from './state/helpSelectors';
+import useHelpHistory from 'src/content/app/help/hooks/useHelpHistory';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
@@ -67,20 +55,7 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`,
     skip: isIndexPage
   });
-  const currentHistoryItem = useSelector(getCurrentHistoryItem);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetNavHistory());
-    };
-  }, []);
-
-  useEffect(() => {
-    if (pathname !== currentHistoryItem) {
-      dispatch(addPageToHistory(pathname));
-    }
-  }, [pathname]);
+  const { hasNext, hasPrevious } = useHelpHistory();
 
   let breadcrumbs: string[] = [];
 
@@ -98,7 +73,12 @@ const Help = () => {
       </div>
     </main>
   ) : article ? (
-    <MainContent article={article} breadcrumbs={breadcrumbs} />
+    <MainContent
+      article={article}
+      breadcrumbs={breadcrumbs}
+      hasNext={hasNext}
+      hasPrevious={hasPrevious}
+    />
   ) : null;
 
   return (
@@ -121,32 +101,27 @@ const AppBar = () => {
   );
 };
 
-const HelpHistoryButtons = () => {
-  const previousHistoryItem = useSelector(getPreviousHistoryItem);
-  const nextHistoryItem = useSelector(getNextHistoryItem);
-  const dispatch = useDispatch();
+const HelpHistoryButtons = (props: {
+  hasNext: boolean;
+  hasPrevious: boolean;
+}) => {
+  const { hasNext, hasPrevious } = props;
   const navigate = useNavigate();
 
   const onHistoryBack = () => {
-    if (previousHistoryItem) {
-      dispatch(moveBackInHistory());
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   const onHistoryForward = () => {
-    if (nextHistoryItem) {
-      dispatch(moveForwardInHistory());
-      navigate(1);
-    }
+    navigate(1);
   };
 
   return (
     <HistoryButtons
       onHistoryBack={onHistoryBack}
       onHistoryForward={onHistoryForward}
-      hasPrevious={!!previousHistoryItem}
-      hasNext={!!nextHistoryItem}
+      hasPrevious={hasPrevious}
+      hasNext={hasNext}
     />
   );
 };
@@ -154,8 +129,10 @@ const HelpHistoryButtons = () => {
 const MainContent = (props: {
   article: ArticleData;
   breadcrumbs: string[];
+  hasNext: boolean;
+  hasPrevious: boolean;
 }) => {
-  const { article, breadcrumbs } = props;
+  const { article, breadcrumbs, hasNext, hasPrevious } = props;
   const isHelpContent = article.type === 'article' || article.type === 'video';
 
   if (!isHelpContent) {
@@ -179,7 +156,7 @@ const MainContent = (props: {
           {renderedArticle}
           {!!article.related_articles.length && (
             <aside>
-              <HelpHistoryButtons />
+              <HelpHistoryButtons hasNext={hasNext} hasPrevious={hasPrevious} />
               <RelatedArticles articles={article.related_articles} />
             </aside>
           )}
