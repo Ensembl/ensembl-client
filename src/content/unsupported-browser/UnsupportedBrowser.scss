@@ -5,10 +5,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   padding-top: 100px;
+}
+
+.section1 {
+  margin-bottom: 55px;
+}
+
+.section2 {
+  margin-bottom: 100px;
+}
+
+.section3 {
+  padding-bottom: 100px;
 }
 
 .diagramTitle {
   font-weight: $bold;
   margin-bottom: 0.6rem;
+}
+
+.supportMessage {
+  margin-bottom: 15px;
+}
+
+.supportedBrowsers {
+  display: flex;
 }

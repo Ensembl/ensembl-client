@@ -75,7 +75,16 @@ export default (): Configuration => {
         // but also use @svgr/webpack to be able to require svg's directly as React components
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack', 'file-loader']
+          use: [
+            '@svgr/webpack',
+            {
+              loader: 'file-loader',
+              options: {
+                outputPath: paths.buildStaticPath,
+                publicPath: '/static/'
+              }
+            }
+          ]
         }
       ]
     },

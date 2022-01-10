@@ -18,6 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 // import { Topbar } from 'src/header/Header';
+import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 
 import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
 
@@ -27,8 +28,18 @@ import errorStyles from 'src/shared/components/error-screen/ErrorScreen.scss';
 const UnsupportedBrowser = () => {
   return (
     <div className={styles.container}>
-      <Diagram />
-      <div>We support the latest versions of these browsers</div>
+      <section className={styles.section1}>
+        <Diagram />
+      </section>
+      <section className={styles.section2}>
+        <div className={styles.supportMessage}>
+          We support the latest versions of these browsers
+        </div>
+        <SupportedBrowsers />
+      </section>
+      <section className={styles.section3}>
+        If you think you’re seeing this message in error, please contact us
+      </section>
     </div>
   );
 };
@@ -61,6 +72,18 @@ const Diagram = () => {
         </div>
       </div>
     </>
+  );
+};
+
+const SupportedBrowsers = () => {
+  const browserNames = ['chrome', 'edge', 'firefox', 'safari'] as const;
+
+  return (
+    <div className={styles.supportedBrowsers}>
+      {browserNames.map((browserName) => (
+        <SupportedWebBrowser name={browserName} key={browserName} />
+      ))}
+    </div>
   );
 };
 
