@@ -48,6 +48,7 @@ const unsupportedBrowserRouter = (_: Request, res: Response) => {
       <base href="/">
       <title>Unsupported browser</title>
       <meta name="description" content="Your browser is not supported"></meta>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       ${extractor.getLinkTags()}
       ${extractor.getStyleTags()}
     </head>
