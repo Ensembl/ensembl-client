@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 100px;
+}
+
+.diagramTitle {
+  font-weight: $bold;
+  margin-bottom: 0.6rem;
+}

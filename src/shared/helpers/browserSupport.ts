@@ -28,6 +28,10 @@ const hasOutdatedMediaQueryList = () => {
 
 const browserChecks = [hasOutdatedMediaQueryList];
 
-if (browserChecks.some((check) => check())) {
-  window.location.replace('/unsupported-browser');
-}
+const ensureBrowserSupport = () => {
+  if (browserChecks.some((check) => check())) {
+    window.location.replace('/unsupported-browser');
+  }
+};
+
+export default ensureBrowserSupport;

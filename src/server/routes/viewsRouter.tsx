@@ -41,7 +41,7 @@ const viewRouter = async (req: Request, res: Response) => {
   // and needs to be initialized at every request
   const extractor = new ChunkExtractor({
     statsFile,
-    entrypoints: ['client', 'browserSupport']
+    entrypoints: ['client']
   });
 
   const reduxStore = getServerSideReduxStore();

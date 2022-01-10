@@ -30,9 +30,9 @@ export default (env: Record<string, unknown>): Configuration => {
     // the starting point of webpack bundling
     entry: {
       client: path.join(paths.rootPath, 'src/index.tsx'),
-      browserSupport: path.join(
+      unsupportedBrowser: path.join(
         paths.rootPath,
-        'src/shared/helpers/browserSupport.ts'
+        'src/content/unsupported-browser/index.tsx'
       )
     },
 

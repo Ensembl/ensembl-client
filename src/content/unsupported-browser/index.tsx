@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { Request, Response } from 'express';
+import React, { StrictMode } from 'react';
+import { hydrate } from 'react-dom';
 
-const pathToHtml = path.resolve(__dirname, 'views/unsupported-browser.html'); // <-- notice that this will be the path in the dist directory
+import UnsupportedBrowser from './UnsupportedBrowser';
 
-const unsupportedBrowserRouter = (_: Request, res: Response) => {
-  res.sendFile(pathToHtml);
-};
+import 'src/styles/main';
 
-export default unsupportedBrowserRouter;
+hydrate(
+  <StrictMode>
+    <UnsupportedBrowser />
+  </StrictMode>,
+  document.getElementById('ens-app')
+);
