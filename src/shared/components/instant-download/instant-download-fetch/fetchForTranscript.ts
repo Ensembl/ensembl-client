@@ -67,7 +67,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 
   if (geneOptions.genomicSequence) {
     sequenceDownloadParams.unshift(
-      prepareGeneDownloadParameters(geneSequenceData)
+      prepareGenomicDownloadParameters(geneSequenceData.genomic)
     );
   }
 
@@ -114,13 +114,9 @@ export const prepareDownloadParameters = (
     .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'cdna', 'cds', 'protein'
     .map((option) => {
       if (option === 'genomic') {
-        const { label, start, end, checksum } =
-          params.transcriptSequenceData.genomic;
-        const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
-        return {
-          label,
-          url
-        };
+        return prepareGenomicDownloadParameters(
+          params.transcriptSequenceData.genomic
+        );
       } else {
         const dataForSingleSequence = params.transcriptSequenceData[option];
 
@@ -137,14 +133,13 @@ export const prepareDownloadParameters = (
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
 
-export const prepareGeneDownloadParameters = (
-  geneData: Awaited<
-    ReturnType<typeof fetchGeneAndTranscriptSequenceMetadata>
-  >['gene']
-) => {
-  const {
-    genomic: { label, start, end, checksum }
-  } = geneData;
+export const prepareGenomicDownloadParameters = (params: {
+  label: string;
+  checksum: string;
+  start: number;
+  end: number;
+}) => {
+  const { label, start, end, checksum } = params;
   const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
   return {
     label,

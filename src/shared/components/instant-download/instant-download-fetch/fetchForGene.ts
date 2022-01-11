@@ -22,7 +22,7 @@ import { TranscriptOptions } from '../instant-download-transcript/InstantDownloa
 import { fetchGeneSequenceMetadata } from './fetchSequenceChecksums';
 
 import {
-  prepareGeneDownloadParameters,
+  prepareGenomicDownloadParameters,
   prepareDownloadParameters
 } from './fetchForTranscript';
 
@@ -63,7 +63,7 @@ export const fetchForGene = async (payload: FetchPayload) => {
 
   if (geneOptions.genomicSequence) {
     sequenceDownloadParams.unshift(
-      prepareGeneDownloadParameters(geneSequenceData)
+      prepareGenomicDownloadParameters(geneSequenceData.genomic)
     );
   }
 
