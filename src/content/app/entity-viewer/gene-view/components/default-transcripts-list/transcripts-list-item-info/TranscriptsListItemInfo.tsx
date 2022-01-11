@@ -63,7 +63,7 @@ export const TranscriptsListItemInfo = (
   props: TranscriptsListItemInfoProps
 ) => {
   const { transcript } = props;
-  const params: { [key: string]: string } = useParams();
+  const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
 
   const dispatch = useDispatch();

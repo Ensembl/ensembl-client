@@ -16,8 +16,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
@@ -133,7 +132,7 @@ type SubmenuProps = {
 };
 const Submenu = (props: SubmenuProps) => {
   const [childItems, setChildItems] = useState<MenuItem[] | null>(null);
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { trackMegaNavItemClick } = useHelpAppAnalytics();
 
@@ -145,7 +144,7 @@ const Submenu = (props: SubmenuProps) => {
     // hopefully, the url is an internal one;
     // might need extra logic if we can have external urls in the menu
     props.onLinkClick();
-    dispatch(push(item.url));
+    navigate(item.url);
     trackMegaNavItemClick(item.name, item.type);
   };
 

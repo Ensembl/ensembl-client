@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { push, replace } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -42,13 +42,14 @@ type SpeciesPageParams = {
 const SpeciesPageContent = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const changeGenomeId = (genomeId: string) => {
     const params = {
       genomeId
     };
 
-    dispatch(replace(urlFor.speciesPage(params)));
+    navigate(urlFor.speciesPage(params), { replace: true });
   };
 
   const sidebarStatus = useSelector(isSidebarOpen);
@@ -78,10 +79,10 @@ const SpeciesPageContent = () => {
 };
 
 const TopBar = () => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const returnToSpeciesSelector = () => {
-    dispatch(push(urlFor.speciesSelector()));
+    navigate(urlFor.speciesSelector());
   };
 
   return (

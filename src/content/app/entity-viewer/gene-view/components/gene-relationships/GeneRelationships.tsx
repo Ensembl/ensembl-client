@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -48,10 +47,10 @@ const tabClassNames = {
 };
 
 const GeneRelationships = () => {
+  const navigate = useNavigate();
   const { genomeId, entityId } = useParams() as { [key: string]: string };
   const selectedTabNameFromRedux = useSelector(getSelectedGeneViewTabs)
     .secondaryTab as GeneRelationshipsTabName;
-  const dispatch = useDispatch();
 
   const changeTab = (tab: string) => {
     const match = [...GeneViewTabMap.entries()].find(
@@ -67,7 +66,7 @@ const GeneRelationships = () => {
       view
     });
 
-    dispatch(push(url));
+    navigate(url);
   };
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab

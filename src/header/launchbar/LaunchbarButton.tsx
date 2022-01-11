@@ -15,8 +15,8 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { NavLink } from 'react-router-dom';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { NavLink, useLocation } from 'react-router-dom';
+import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
@@ -31,13 +31,14 @@ type LaunchbarButtonProps = {
   description: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   enabled: boolean;
-} & RouteComponentProps;
+};
 
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
+  const location = useLocation();
   const pathTo = `/${props.app}`;
-  const isActive = new RegExp(`^${pathTo}`).test(props.location.pathname);
+  const isActive = new RegExp(`^${pathTo}`).test(location.pathname);
   const imageButtonStatus = getImageButtonStatus({
     isDisabled: !props.enabled,
     isActive
@@ -57,11 +58,17 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
     />
   );
 
+  const activeButtonClass = classNames(
+    styles.launchbarButton,
+    styles.launchbarButtonSelected
+  );
+
   return props.enabled ? (
     <NavLink
-      className={styles.launchbarButton}
+      className={({ isActive }) =>
+        isActive ? activeButtonClass : styles.launchbarButton
+      }
       to={pathTo}
-      activeClassName={styles.launchbarButtonSelected}
     >
       {imageButton}
     </NavLink>
@@ -86,4 +93,4 @@ const getImageButtonStatus = ({
   }
 };
 
-export default withRouter(LaunchbarButton);
+export default LaunchbarButton;

@@ -17,8 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { replace } from 'connected-react-router';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
@@ -67,13 +66,13 @@ type GeneViewWithDataProps = {
 };
 
 const GeneView = () => {
-  const params: { [key: string]: string } = useParams();
+  const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
-  const { objectId: geneId } = parseFocusIdFromUrl(entityId);
+  const { objectId: geneId } = parseFocusIdFromUrl(entityId as string);
 
   const { data, isLoading } = useDefaultEntityViewerGeneQuery({
     geneId,
-    genomeId
+    genomeId: genomeId as string
   });
 
   // TODO decide about error handling
@@ -224,9 +223,10 @@ const isViewParameterValid = (view: string) =>
 
 const useGeneViewRouting = () => {
   const dispatch = useDispatch();
-  const params: { [key: string]: string } = useParams();
+  const navigate = useNavigate();
+  const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
-  const { objectId: geneId } = parseFocusIdFromUrl(entityId);
+  const { objectId: geneId } = parseFocusIdFromUrl(entityId as string);
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
 
@@ -247,7 +247,7 @@ const useGeneViewRouting = () => {
         view: viewInRedux,
         proteinId
       });
-      dispatch(replace(url));
+      navigate(url, { replace: true });
     }
   }, [view, viewInRedux, genomeId, previousGenomeId]);
 

@@ -18,12 +18,13 @@ import path from 'path';
 import { Request, Response } from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { StaticRouter, matchPath } from 'react-router-dom';
+import { matchPath } from 'react-router-dom';
+import { StaticRouter } from 'react-router-dom/server';
 import { Provider } from 'react-redux';
 import { HelmetProvider, FilledContext } from 'react-helmet-async';
 import { ChunkExtractor } from '@loadable/server';
 
-import routesConfig from 'src/routes/routesConfig';
+import routesConfig, { type RouteConfig } from 'src/routes/routesConfig';
 import { getPaths } from 'webpackDir/paths';
 import { getConfigForClient } from '../helpers/getConfigForClient';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
@@ -45,24 +46,18 @@ const viewRouter = async (req: Request, res: Response) => {
 
   const reduxStore = getServerSideReduxStore();
   const helmetContext = {};
-  const routerContext = {};
 
-  // load data server-side
-  const dataRequirements = routesConfig
-    .filter((route) => matchPath(req.path, route)) // filter matching paths
-    .filter((route) => route.serverFetch) // check if components have data requirement
-    .map((route) => {
-      // FIXME: note that matchPath can't deal with query parameters and requires only a pathname (req.path),
-      // so we should independently pass either the whole req object or just req.query to the serverFetch function
-      const match = matchPath(req.path, route);
-      return route.serverFetch?.({ match, store: reduxStore });
-    });
+  const matchedPageConfig = routesConfig.find((route) =>
+    matchPath(route.path, req.path)
+  ) as RouteConfig;
 
-  await Promise.all(dataRequirements);
+  if (matchedPageConfig.serverFetch) {
+    await matchedPageConfig.serverFetch({ path: req.path, store: reduxStore });
+  }
 
   const ReactApp = (
     <Provider store={reduxStore}>
-      <StaticRouter location={req.url} context={routerContext}>
+      <StaticRouter location={req.url}>
         <HelmetProvider context={helmetContext}>
           <Root />
         </HelmetProvider>
@@ -77,13 +72,6 @@ const viewRouter = async (req: Request, res: Response) => {
   // Extract data after the React context has been populated during rendering
   const { helmet } = helmetContext as FilledContext;
   const reduxState = reduxStore.getState();
-
-  if ('url' in routerContext) {
-    // TODO: revisit after React 18 and react-router 6 are released
-    const url = (routerContext as any).url as string;
-    res.redirect(301, url);
-    return;
-  }
 
   const responseString = `
     <!DOCTYPE html>
@@ -111,9 +99,11 @@ const viewRouter = async (req: Request, res: Response) => {
     </html>
   `;
 
-  if ('status' in routerContext) {
-    const status = (routerContext as any).status as number;
-    res.status(status);
+  if (matchedPageConfig.path === '*') {
+    // TODO: Eventually, we will also need to return a 404 status code
+    // if the data loader explicitly tells us so
+    // (e.g. when the route is correct but a gene doesn't exist)
+    res.status(404);
   }
 
   res.send(responseString);

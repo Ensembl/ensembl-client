@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 import {
@@ -58,7 +57,7 @@ export type Props = {
 };
 
 const GeneFunction = (props: Props) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const selectedTabName = useSelector(getSelectedGeneViewTabs)
     .secondaryTab as GeneFunctionTabName;
 
@@ -84,7 +83,7 @@ const GeneFunction = (props: Props) => {
       view
     });
 
-    dispatch(push(url));
+    navigate(url);
   };
 
   // Check if we have at least one protein coding transcript

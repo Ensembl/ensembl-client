@@ -24,6 +24,7 @@ import {
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
+import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { fetchPageTitleInfo } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSlice';
@@ -34,7 +35,6 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
-import type { match as MatchType } from 'react-router-dom';
 
 const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
 
@@ -78,10 +78,11 @@ const EntityViewerPage = () => {
 };
 
 export const serverFetch: ServerFetch = async (params) => {
-  const match: MatchType<{ genomeId?: string; entityId?: string }> =
-    params.match;
-  const { genomeId, entityId } = match.params;
-  const store = params.store;
+  const { path, store } = params;
+  const { genomeId, entityId } = getPathParameters<'genomeId' | 'entityId'>(
+    '/entity-viewer/:genomeId/:entityId',
+    path
+  );
 
   if (genomeId && entityId) {
     const stableId = parseFocusIdFromUrl(entityId).objectId;

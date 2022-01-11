@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 
 import HelpMenu, { Props as HelpMenuProps } from './HelpMenu';
 
 import menuData from './helpMenuFixture';
-
-jest.mock('react-router-dom', () => ({
-  Link: (props: { children: ReactNode }) => (
-    <a className="topMenuItem" data-test-id="react-router-link">
-      {props.children}
-    </a>
-  )
-}));
-
-const reduxStore = configureMockStore()({});
 
 const defaultProps: HelpMenuProps = {
   menu: menuData,
@@ -41,9 +30,9 @@ const defaultProps: HelpMenuProps = {
 
 const renderMenu = (props: Partial<HelpMenuProps> = {}) =>
   render(
-    <Provider store={reduxStore}>
+    <MemoryRouter initialEntries={['/help']}>
       <HelpMenu {...defaultProps} {...props} />
-    </Provider>
+    </MemoryRouter>
   );
 
 describe('<HelpMenu>', () => {

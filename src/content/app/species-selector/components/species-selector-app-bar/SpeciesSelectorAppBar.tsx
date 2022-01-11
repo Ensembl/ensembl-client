@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -58,14 +58,14 @@ export const SpeciesSelectorAppBar = () => {
 };
 
 const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const showSpeciesPage = (genome_id: string) => {
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: genome_id
     });
 
-    dispatch(push(speciesPageUrl));
+    navigate(speciesPageUrl);
   };
 
   const selectedSpecies = props.selectedSpecies.map((species) => (

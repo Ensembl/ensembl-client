@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -32,11 +31,11 @@ import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 import styles from './EntityViewerInterstitialInstructions.scss';
 
 const EntityViewerInterstitialInstructions = () => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const goToSpeciesSelector = () => {
     const url = urlFor.speciesSelector();
-    dispatch(push(url));
+    navigate(url);
   };
 
   return (

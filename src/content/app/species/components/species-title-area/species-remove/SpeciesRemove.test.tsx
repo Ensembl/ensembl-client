@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
+import { MemoryRouter, Location } from 'react-router-dom';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { push } from 'connected-react-router';
-import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -29,10 +28,8 @@ import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/spe
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesRemove, { confirmationMessage } from './SpeciesRemove';
+import RouteChecker from 'tests/router/RouteChecker';
 
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(() => ({ type: 'push' }))
-}));
 jest.mock(
   'src/content/app/species-selector/state/speciesSelectorSlice',
   () => ({
@@ -58,14 +55,26 @@ const mockState = {
   }
 };
 
-const mockStore = configureMockStore([thunk]);
+const mockStore = configureMockStore();
 
 const wrapInRedux = (state: typeof mockState = mockState) => {
-  return render(
-    <Provider store={mockStore(state)}>
-      <SpeciesRemove />
-    </Provider>
+  const routerInfo: { location: Location | null } = { location: null };
+
+  const renderResult = render(
+    <MemoryRouter initialEntries={[`/species/${selectedSpecies.genome_id}`]}>
+      <Provider store={mockStore(state)}>
+        <SpeciesRemove />
+        <RouteChecker
+          setLocation={(location) => (routerInfo.location = location)}
+        />
+      </Provider>
+    </MemoryRouter>
   );
+
+  return {
+    ...renderResult,
+    routerInfo
+  };
 };
 
 describe('SpeciesSelectionControls', () => {
@@ -95,7 +104,7 @@ describe('SpeciesSelectionControls', () => {
   });
 
   it('removes species and redirects to species selector after removal', () => {
-    const { container } = wrapInRedux();
+    const { container, routerInfo } = wrapInRedux();
 
     // open removal confitmation dialog
     const removeLabel = getByText(container as HTMLElement, 'Remove');
@@ -107,6 +116,6 @@ describe('SpeciesSelectionControls', () => {
     expect(deleteSpeciesAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
     );
-    expect(push).toHaveBeenCalledWith(urlFor.speciesSelector());
+    expect(routerInfo.location?.pathname).toBe(urlFor.speciesSelector());
   });
 });

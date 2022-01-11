@@ -91,7 +91,7 @@ const addProteinDomains = (
 
 const ProteinsListItemInfo = (props: Props) => {
   const { gene, transcript, trackLength } = props;
-  const params: { [key: string]: string } = useParams();
+  const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId } = params;
 
   const [transcriptWithProteinDomains, setTranscriptWithProteinDomains] =
@@ -234,7 +234,7 @@ const ProteinsListItemInfo = (props: Props) => {
             {domainsLoadingState === LoadingState.SUCCESS && (
               <div className={styles.downloadWrapper}>
                 <InstantDownloadProtein
-                  genomeId={genomeId}
+                  genomeId={genomeId as string}
                   transcriptId={transcript.unversioned_stable_id}
                   onDownloadSuccess={(payload) =>
                     onDownload(payload, 'success')

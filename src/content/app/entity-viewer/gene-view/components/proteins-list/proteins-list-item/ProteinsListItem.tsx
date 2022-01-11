@@ -16,8 +16,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLocation, useParams } from 'react-router';
-import { replace } from 'connected-react-router';
+import { useLocation, useParams, useNavigate } from 'react-router';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -54,9 +53,10 @@ const ProteinsListItem = (props: Props) => {
   const { gene, transcript, trackLength } = props;
   const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { trackProteinInfoToggle } = useEntityViewerAnalytics();
 
-  const params: { [key: string]: string } = useParams();
+  const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
@@ -75,7 +75,7 @@ const ProteinsListItem = (props: Props) => {
         view: View.PROTEIN
       });
 
-      dispatch(replace(url));
+      navigate(url, { replace: true });
     }
 
     dispatch(toggleTranscriptInfo(transcript.stable_id));

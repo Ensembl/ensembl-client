@@ -18,11 +18,11 @@ import React, { StrictMode } from 'react';
 import { hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
-import { ConnectedRouter } from 'connected-react-router';
 import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter } from 'react-router-dom';
 
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
-import configureStore, { history } from './store';
+import configureStore from './store';
 import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
@@ -36,11 +36,11 @@ hydrate(
     <CookiesProvider>
       <IndexedDBProvider>
         <Provider store={store}>
-          <ConnectedRouter history={history}>
+          <BrowserRouter>
             <HelmetProvider>
               <Root />
             </HelmetProvider>
-          </ConnectedRouter>
+          </BrowserRouter>
         </Provider>
       </IndexedDBProvider>
     </CookiesProvider>

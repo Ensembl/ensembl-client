@@ -15,8 +15,6 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import { createBrowserHistory } from 'history';
-import { routerMiddleware } from 'connected-react-router';
 import { StateType } from 'typesafe-actions';
 import { createEpicMiddleware } from 'redux-observable';
 
@@ -25,23 +23,15 @@ import config from 'config';
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import createRootReducer from './root/rootReducer';
-import { analyticsMiddleWare } from './analyticsMiddleware';
 import rootEpic from './root/rootEpic';
-
-export const history = createBrowserHistory();
 
 const epicMiddleware = createEpicMiddleware();
 
-const rootReducer = createRootReducer(history);
+const rootReducer = createRootReducer();
 
 export type RootState = StateType<typeof rootReducer>;
 
-const middleware = [
-  routerMiddleware(history),
-  epicMiddleware,
-  analyticsMiddleWare,
-  thoasApiSlice.middleware
-];
+const middleware = [epicMiddleware, thoasApiSlice.middleware];
 
 const preloadedState = (window as any).__PRELOADED_STATE__ || {};
 

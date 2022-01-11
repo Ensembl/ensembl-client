@@ -27,7 +27,6 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 import type {
   QueriedExternalReference,
@@ -42,8 +41,7 @@ type ExternalReferencesGroupType = {
 };
 
 const GeneExternalReferences = () => {
-  const params: EntityViewerParams = useParams();
-  const { entityId, genomeId } = params;
+  const { entityId, genomeId } = useParams<'genomeId' | 'entityId'>();
   const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();

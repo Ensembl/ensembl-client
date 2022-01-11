@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
-import { push } from 'connected-react-router';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 import useHover from 'src/shared/hooks/useHover';
@@ -49,6 +49,7 @@ const PopularSpeciesButton = (props: Props) => {
   const currentSpeciesGenomeId = useSelector(getCurrentSpeciesGenomeId);
   const allCommittedSpecies = useSelector(getCommittedSpecies);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { trackPopularSpeciesSelect } = useSpeciesSelectorAnalytics();
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
@@ -68,12 +69,10 @@ const PopularSpeciesButton = (props: Props) => {
       dispatch(clearSelectedSearchResult());
       trackPopularSpeciesSelect(species, 'unpreselect');
     } else if (isSpeciesCommitted) {
-      dispatch(
-        push(
-          urlFor.speciesPage({
-            genomeId: species.genome_id
-          })
-        )
+      navigate(
+        urlFor.speciesPage({
+          genomeId: species.genome_id
+        })
       );
     } else {
       // the species is available, not selected and not committed;

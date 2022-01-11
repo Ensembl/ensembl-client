@@ -48,7 +48,7 @@ export const EntityViewerSidebarToolstrip = () => {
   const sidebarModalView = useSelector(getEntityViewerSidebarModalView);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
 
-  const params: { [key: string]: string } = useParams();
+  const params = useParams<'genomeId' | 'entityId'>();
 
   const { trackSidebarToolstripButtonClick } = useEntityViewerAnalytics();
 
@@ -60,7 +60,7 @@ export const EntityViewerSidebarToolstrip = () => {
     if (selectedItem === sidebarModalView) {
       dispatch(closeSidebarModal());
     } else {
-      trackSidebarToolstripButtonClick(selectedItem, params.genomeId);
+      trackSidebarToolstripButtonClick(selectedItem, params.genomeId as string);
       dispatch(openSidebarModal(selectedItem));
     }
   };

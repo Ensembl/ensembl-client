@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useEffect, ReactNode, memo } from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
+import React, { useEffect, memo } from 'react';
+import { useLocation, useRoutes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import routes from 'src/routes/routesConfig';
+import routesConfig from 'src/routes/routesConfig';
 
 import analyticsTracking from 'src/services/analytics-service';
 
 import { changeCurrentApp } from 'src/global/globalSlice';
 
 import Header from 'src/header/Header';
-import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 const AppContainer = () => {
   const dispatch = useDispatch();
@@ -41,47 +40,29 @@ const AppContainer = () => {
     };
   }, [location.pathname]);
 
+  useLocationReporting();
+
   return <App />;
 };
 
+const useLocationReporting = () => {
+  const { pathname, search, hash } = useLocation();
+
+  useEffect(() => {
+    const pathToReport = `${pathname}${search}${hash}`;
+    analyticsTracking.trackPageView(pathToReport);
+  }, [pathname]);
+};
+
 const App = memo(() => {
+  const routes = useRoutes(routesConfig);
+
   return (
     <>
       <Header />
-      <Switch>
-        {routes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            exact={route.exact}
-            render={(props) => <route.component {...props} />}
-          />
-        ))}
-        <Route component={NotFound} />
-      </Switch>
+      {routes}
     </>
   );
 });
-
-const Status = ({ code, children }: { code: number; children: ReactNode }) => {
-  return (
-    <Route
-      render={({ staticContext }) => {
-        if (staticContext) {
-          (staticContext as any).status = code;
-        }
-        return children;
-      }}
-    />
-  );
-};
-
-const NotFound = () => {
-  return (
-    <Status code={404}>
-      <NotFoundErrorScreen />
-    </Status>
-  );
-};
 
 export default AppContainer;
