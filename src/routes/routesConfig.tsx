@@ -64,7 +64,7 @@ const routes: RouteConfig[] = [
     serverFetch: entityViewerServerFetch
   },
   {
-    path: '/blast',
+    path: '/blast/*',
     element: <BlastPage />
   },
   {

@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import loadable from '@loadable/component';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const BlastSearch = loadable(() => import('./BlastSearch'));
+const BlastForm = loadable(() => import('./BlastForm'));
 const BlastJobs = loadable(() => import('./BlastJobs'));
 
 const pageDescription = `
@@ -39,14 +39,10 @@ const BrowserPage = () => {
         <meta name="description" content={pageDescription} />
       </Helmet>
       {hasMounted && (
-        <Switch>
-          <Route exact path="/blast">
-            <BlastSearch />
-          </Route>
-          <Route exact path="/blast/jobs">
-            <BlastJobs />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route index element={<BlastForm />} />
+          <Route path="jobs" element={<BlastJobs />} />
+        </Routes>
       )}
     </>
   );

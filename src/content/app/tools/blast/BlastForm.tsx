@@ -19,7 +19,7 @@ import React from 'react';
 import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 
-const BlastSearch = () => {
+const BlastForm = () => {
   return (
     <div>
       <ToolsAppBar />
@@ -29,4 +29,4 @@ const BlastSearch = () => {
   );
 };
 
-export default BlastSearch;
+export default BlastForm;
