@@ -13,8 +13,9 @@
 .button {
   display: inline-flex;
   align-items: center;
-  padding: 0 3px;
+  justify-content: center;
   height: 22px;
+  width: 26px;
   background: $blue;
   font-size: 0;
   border-radius: 5px;
@@ -22,6 +23,6 @@
 }
 
 .icon {
-  height: 90%;
+  height: 13px;
   fill: white;
 }

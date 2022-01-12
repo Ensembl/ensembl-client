@@ -1,16 +1,24 @@
 @import 'src/styles/common';
 
+/* stylelint-disable no-descending-specificity */
+// stylelint doesn't like that the 'imageButton button > svg' selector is more specific than ".default svg" and others;
+// but moving it below the rest of the selectors feels weird
+
 .imageButton {
   position: relative;
   font-size: 0;
 
   svg {
-    width: 100%;
-    height: 100%;
     transition: opacity 0.4s;
   }
 
   button {
+    width: 100%;
+    height: 100%;
+  }
+
+  // if a button's immediate child is an svg, it should be the same size as the button
+  button > svg {
     width: 100%;
     height: 100%;
   }

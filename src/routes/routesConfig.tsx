@@ -23,6 +23,7 @@ import GenomeBrowserPage from 'src/content/app/genome-browser/BrowserPage';
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
+import BlastPage from 'src/content/app/tools/blast/BlastPage';
 import CustomDownloadPage from 'src/content/app/custom-download/CustomDownloadPage';
 import AboutPage from 'src/content/app/about/AboutPage';
 import HelpPage from 'src/content/app/help/HelpPage';
@@ -61,6 +62,10 @@ const routes: RouteConfig[] = [
     path: '/entity-viewer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
+  },
+  {
+    path: '/blast/*',
+    element: <BlastPage />
   },
   {
     path: '/about/*',

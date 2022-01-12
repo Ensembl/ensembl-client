@@ -20,12 +20,16 @@ import { useSelector } from 'react-redux';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
-import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
-import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
-import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
+import {
+  GenomeBrowserIcon,
+  SpeciesSelectorIcon,
+  GlobalSearchIcon,
+  EntityViewerIcon,
+  BlastIcon,
+  CustomDownloadIcon,
+  HelpIcon
+} from 'src/shared/components/app-icon';
+
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -48,7 +52,7 @@ const Launchbar = () => {
             <LaunchbarButton
               app="global-search"
               description="Site search"
-              icon={SearchIcon}
+              icon={GlobalSearchIcon}
               enabled={false}
             />
             <LaunchbarButton
@@ -62,7 +66,7 @@ const Launchbar = () => {
             <LaunchbarButton
               app="genome-browser"
               description="Genome browser"
-              icon={BrowserIcon}
+              icon={GenomeBrowserIcon}
               enabled={true}
             />
           </div>
@@ -74,6 +78,16 @@ const Launchbar = () => {
               enabled={true}
             />
           </div>
+          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="blast"
+                description="BLAST"
+                icon={BlastIcon}
+                enabled={true}
+              />
+            </div>
+          )}
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
               <LaunchbarButton

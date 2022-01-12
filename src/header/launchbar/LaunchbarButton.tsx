@@ -29,7 +29,7 @@ import styles from './Launchbar.scss';
 type LaunchbarButtonProps = {
   app: string;
   description: string;
-  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
+  icon: FunctionComponent<unknown> | string;
   enabled: boolean;
 };
 
