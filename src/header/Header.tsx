@@ -38,18 +38,30 @@ export const Copyright = () => (
   </div>
 );
 
-export const HomeLink = () => (
+export const HomeLink = (
+  { useRegularLink }: { useRegularLink?: boolean } = { useRegularLink: false }
+) => (
   <div className={styles.homeLink}>
-    <Link to="/">
-      <HomeIcon />
-    </Link>
+    {useRegularLink ? (
+      <a href="/">
+        <HomeIcon />
+      </a>
+    ) : (
+      <Link to="/">
+        <HomeIcon />
+      </Link>
+    )}
   </div>
 );
 
-export const Topbar = () => (
+export const Topbar = (
+  { useRegularHomeLink }: { useRegularHomeLink?: boolean } = {
+    useRegularHomeLink: false
+  }
+) => (
   <div className={styles.topbar}>
     <div className={styles.topbarLeft}>
-      <HomeLink />
+      <HomeLink useRegularLink={useRegularHomeLink} />
       <div className={styles.topbarLeftTextBlock}>
         <div className={styles.logotypeWrapper}>
           <Logotype className={styles.logotype} />

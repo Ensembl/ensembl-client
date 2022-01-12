@@ -1,5 +1,11 @@
 @import 'src/styles/common';
 
+html,
+body,
+[class='ens-app'] {
+  min-width: initial !important; // !important seems to be the only way to override the min-width set in styles/main.scss
+}
+
 .container {
   height: 100%;
   display: flex;
@@ -19,6 +25,10 @@
 
 .section3 {
   padding-bottom: 100px;
+
+  span {
+    display: block;
+  }
 }
 
 .diagramTitle {

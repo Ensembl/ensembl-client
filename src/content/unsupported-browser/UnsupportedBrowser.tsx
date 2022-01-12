@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-// import { Topbar } from 'src/header/Header';
+import { Topbar } from 'src/header/Header';
 import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 
 import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
@@ -27,20 +27,28 @@ import errorStyles from 'src/shared/components/error-screen/ErrorScreen.scss';
 
 const UnsupportedBrowser = () => {
   return (
-    <div className={styles.container}>
-      <section className={styles.section1}>
-        <Diagram />
-      </section>
-      <section className={styles.section2}>
-        <div className={styles.supportMessage}>
-          We support the latest versions of these browsers
-        </div>
-        <SupportedBrowsers />
-      </section>
-      <section className={styles.section3}>
-        If you think you’re seeing this message in error, please contact us
-      </section>
-    </div>
+    <>
+      <Topbar useRegularHomeLink={true} />
+      <div className={styles.container}>
+        <section className={styles.section1}>
+          <Diagram />
+        </section>
+        <section className={styles.section2}>
+          <div className={styles.supportMessage}>
+            We support the latest versions of these browsers
+          </div>
+          <SupportedBrowsers />
+        </section>
+        <section className={styles.section3}>
+          <span>If you think you’re seeing this message in error,</span>
+          <span>
+            <a href="https://www.ensembl.info/contact-us/">
+              please contact us via our Blog
+            </a>
+          </span>
+        </section>
+      </div>
+    </>
   );
 };
 
