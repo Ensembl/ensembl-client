@@ -20,7 +20,6 @@ import { Sequence } from 'src/shared/types/thoas/sequence';
 
 export type TranscriptSequenceMetadata = {
   stable_id: string;
-  unversioned_stable_id: string;
   genomic: {
     label: string;
     checksum: string;
@@ -43,7 +42,6 @@ export type TranscriptSequenceMetadata = {
 
 export type GeneSequenceMetadata = {
   stable_id: string;
-  unversioned_stable_id: string;
   genomic: {
     label: string;
     checksum: string;
@@ -73,7 +71,6 @@ type SliceInResponse = {
 
 type GeneInResponse = {
   stable_id: string;
-  unversioned_stable_id: string;
   slice: SliceInResponse;
 };
 
@@ -83,7 +80,6 @@ type GeneWithTranscriptsInResponse = GeneInResponse & {
 
 type TranscriptInResponse = {
   stable_id: string;
-  unversioned_stable_id: string;
   slice: {
     location: {
       start: number;
@@ -156,7 +152,6 @@ const geneQueryFragment = gql`
 const transcriptQueryFragment = gql`
   fragment TranscriptDetails on Transcript {
     stable_id
-    unversioned_stable_id
     slice {
       location {
         start
@@ -238,15 +233,10 @@ const processGeneAndTranscriptData = (data: GeneAndTranscriptQueryResult) => {
 };
 
 const processGeneData = (gene: GeneInResponse) => {
-  const {
-    stable_id: geneStableId,
-    unversioned_stable_id: geneUnversionedStableId,
-    slice: geneSlice
-  } = gene;
+  const { stable_id: geneStableId, slice: geneSlice } = gene;
 
   return {
     stable_id: geneStableId,
-    unversioned_stable_id: geneUnversionedStableId,
     genomic: {
       label: `${geneStableId} genomic`,
       checksum: geneSlice.region.sequence.checksum,
@@ -257,16 +247,11 @@ const processGeneData = (gene: GeneInResponse) => {
 };
 
 const processTranscriptData = (transcript: TranscriptInResponse) => {
-  const {
-    stable_id: transcriptStableId,
-    unversioned_stable_id: transcriptUnversionedStableId, // FIXME no longer needed? only required when we requested genomic sequences from REST?
-    slice: transcriptSlice
-  } = transcript;
+  const { stable_id: transcriptStableId, slice: transcriptSlice } = transcript;
   const productGeneratingContext = transcript.product_generating_contexts[0];
 
   return {
     stable_id: transcriptStableId,
-    unversioned_stable_id: transcriptUnversionedStableId,
     genomic: {
       label: `${transcriptStableId} genomic`,
       checksum: transcriptSlice.region.sequence.checksum,
