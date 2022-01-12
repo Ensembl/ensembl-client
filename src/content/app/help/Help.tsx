@@ -154,12 +154,12 @@ const MainContent = (props: {
       <div className={styles.articleContainer}>
         <HelpArticleGrid className={styles.articleGrid}>
           {renderedArticle}
-          {!!article.related_articles.length && (
-            <aside>
-              <HelpHistoryButtons hasNext={hasNext} hasPrevious={hasPrevious} />
+          <aside>
+            <HelpHistoryButtons hasNext={hasNext} hasPrevious={hasPrevious} />
+            {!!article.related_articles.length && (
               <RelatedArticles articles={article.related_articles} />
-            </aside>
-          )}
+            )}
+          </aside>
         </HelpArticleGrid>
       </div>
     </>
