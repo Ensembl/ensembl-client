@@ -56,22 +56,13 @@ const staticAssetsMiddleware = createProxyMiddleware('/static', {
   target: 'http://localhost:8081'
 });
 
-const apiProxyMiddleware = createProxyMiddleware(['/api/**', '!/api/thoas'], {
+const apiProxyMiddleware = createProxyMiddleware('/api', {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-const thoasProxyMiddleware = createProxyMiddleware('/api/thoas', {
-  target: 'http://map-thoas.review.ensembl.org',
-  pathRewrite: {
-    '^/api/docs': '/api' // rewrite path
-  },
-  changeOrigin: true,
-  secure: false
-});
-
-let proxyMiddleware = [apiProxyMiddleware, thoasProxyMiddleware];
+let proxyMiddleware = [apiProxyMiddleware];
 
 if (process.env.NODE_ENV === 'development') {
   proxyMiddleware = proxyMiddleware.concat([
