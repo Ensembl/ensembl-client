@@ -21,7 +21,7 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 
-import { getTrackPanelGene } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
+import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {

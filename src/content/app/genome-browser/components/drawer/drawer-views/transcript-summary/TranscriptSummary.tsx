@@ -35,7 +35,7 @@ import {
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
+import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';

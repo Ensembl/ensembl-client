@@ -1,0 +1,175 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { gql } from 'graphql-request';
+import { Pick2, Pick3, Pick4 } from 'ts-multipick';
+
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import type { SplicedExon } from 'src/shared/types/thoas/exon';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+
+// phased_exons {
+//   start_phase
+//   end_phase
+//   exon {
+//     stable_id
+//   }
+// }
+
+export const transcriptSummaryQuery = gql`
+  query TranscriptSummary($genomeId: String!, $transcriptId: String!) {
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      stable_id
+      unversioned_stable_id
+      external_references {
+        accession_id
+        url
+        source {
+          id
+        }
+      }
+      spliced_exons {
+        relative_location {
+          start
+          end
+        }
+        exon {
+          stable_id
+          slice {
+            location {
+              length
+            }
+          }
+        }
+      }
+      product_generating_contexts {
+        product_type
+        default
+        cds {
+          protein_length
+        }
+        product {
+          stable_id
+          external_references {
+            accession_id
+            url
+            source {
+              id
+            }
+          }
+        }
+      }
+      slice {
+        strand {
+          code
+        }
+        location {
+          length
+        }
+      }
+      metadata {
+        biotype {
+          label
+          value
+          definition
+        }
+        canonical {
+          value
+          label
+          definition
+        }
+        mane {
+          value
+          label
+          definition
+        }
+      }
+      gene {
+        name
+        stable_id
+        unversioned_stable_id
+        symbol
+      }
+    }
+  }
+`;
+
+type GeneInSummaryTranscript = Pick<
+  FullGene,
+  'name' | 'stable_id' | 'unversioned_stable_id' | 'symbol'
+>;
+
+type SummaryTranscriptMetadata = Pick2<
+  TranscriptMetadata,
+  'biotype',
+  'label' | 'value' | 'definition'
+> & {
+  canonical: Pick<
+    NonNullable<TranscriptMetadata['canonical']>,
+    'label' | 'value' | 'definition'
+  > | null;
+  mane: Pick<
+    NonNullable<TranscriptMetadata['mane']>,
+    'label' | 'value' | 'definition'
+  > | null;
+};
+
+type RequestedExternalReference = Pick<
+  FullTranscript['external_references'][number],
+  'accession_id' | 'url'
+> &
+  Pick2<FullTranscript['external_references'][number], 'source', 'url'>;
+
+type SplicedExonOnSummaryTranscript = Pick2<
+  SplicedExon,
+  'relative_location',
+  'start' | 'end'
+> &
+  Pick2<SplicedExon, 'exon', 'stable_id'> &
+  Pick4<SplicedExon, 'exon', 'slice', 'location', 'length'>;
+
+type ProductGeneratingContextOnSummaryTranscript = Pick<
+  FullProductGeneratingContext,
+  'product_type' | 'default'
+> & {
+  cds: Pick<
+    NonNullable<FullProductGeneratingContext['cds']>,
+    'protein_length'
+  > | null;
+  product: {
+    stable_id: string;
+    external_references: RequestedExternalReference[];
+  } | null;
+};
+
+type SummaryTranscript = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id'
+> &
+  Pick3<FullTranscript, 'slice', 'strand', 'code'> &
+  Pick3<FullTranscript, 'slice', 'location', 'length'> & {
+    metadata: SummaryTranscriptMetadata;
+    gene: GeneInSummaryTranscript;
+    spliced_exons: SplicedExonOnSummaryTranscript[];
+    product_generating_contexts: ProductGeneratingContextOnSummaryTranscript[];
+    external_references: RequestedExternalReference[];
+  };
+
+export type TranscriptSummaryQueryResult = {
+  transcript: SummaryTranscript;
+};

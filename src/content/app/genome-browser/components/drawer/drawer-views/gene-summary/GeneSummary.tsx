@@ -16,8 +16,6 @@
 
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
-import { Pick3 } from 'ts-multipick';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -25,6 +23,8 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
+import { useGeneSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import {
   buildFocusIdForUrl,
@@ -40,82 +40,22 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
-import { FullGene } from 'src/shared/types/thoas/gene';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './GeneSummary.scss';
-
-const GENE_QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      alternative_symbols
-      name
-      stable_id
-      unversioned_stable_id
-      symbol
-      transcripts {
-        stable_id
-        product_generating_contexts {
-          product_type
-        }
-      }
-      slice {
-        strand {
-          code
-        }
-        location {
-          length
-        }
-      }
-      metadata {
-        biotype {
-          label
-          value
-          definition
-        }
-        name {
-          accession_id
-          url
-        }
-      }
-    }
-  }
-`;
-
-type Transcript = Pick<FullTranscript, 'stable_id'> & {
-  product_generating_contexts: Pick<
-    FullProductGeneratingContext,
-    'product_type'
-  >[];
-};
-
-type Gene = Pick<
-  FullGene,
-  | 'stable_id'
-  | 'unversioned_stable_id'
-  | 'symbol'
-  | 'name'
-  | 'alternative_symbols'
-  | 'metadata'
-> &
-  Pick3<FullGene, 'slice', 'strand', 'code'> &
-  Pick3<FullGene, 'slice', 'location', 'length'> & {
-    transcripts: Transcript[];
-  };
 
 const GeneSummary = () => {
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
-  const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
-    variables: {
-      geneId: focusGene.stable_id,
-      genomeId: focusGene.genome_id
-    },
+
+  const geneQueryParams = {
+    geneId: focusGene.stable_id,
+    genomeId: focusGene.genome_id
+  };
+  const { data, isLoading } = useGeneSummaryQuery(geneQueryParams, {
     skip: !focusGene.stable_id
   });
 
-  if (loading || !data?.gene) {
+  if (isLoading) {
     return null;
   }
 

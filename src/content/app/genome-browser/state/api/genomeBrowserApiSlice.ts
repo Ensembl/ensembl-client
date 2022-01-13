@@ -17,10 +17,19 @@
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import trackPanelGeneQuery from './queries/trackPanelGeneQuery';
+import {
+  geneSummaryQuery,
+  type GeneSummaryQueryResult
+} from './queries/geneSummaryQuery';
+import {
+  transcriptSummaryQuery,
+  type TranscriptSummaryQueryResult
+} from './queries/transcriptSummaryQuery';
 
-import type { TrackPanelGene } from './types/track-panel-gene';
+import type { TrackPanelGene } from '../types/track-panel-gene';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
+type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 
 const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -30,9 +39,28 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
           body: trackPanelGeneQuery(params)
         })
       }
-    )
+    ),
+    geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
+      query: (params) => ({
+        body: geneSummaryQuery,
+        variables: params
+      })
+    }),
+    transcriptSummary: builder.query<
+      TranscriptSummaryQueryResult,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        body: transcriptSummaryQuery,
+        variables: params
+      })
+    })
   })
 });
 
 export const { getTrackPanelGene } = genomeBrowserApiSlice.endpoints;
-export const { useGetTrackPanelGeneQuery } = genomeBrowserApiSlice;
+export const {
+  useGetTrackPanelGeneQuery,
+  useGeneSummaryQuery,
+  useTranscriptSummaryQuery
+} = genomeBrowserApiSlice;
