@@ -54,7 +54,7 @@ export const BrowserLocationIndicator = (props: Props) => {
     <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView} {...onClickProps}>
-        {genomeKaryotype && !genomeKaryotype[0].is_circular ? (
+        {genomeKaryotype && genomeKaryotype[0].is_circular ? (
           <CircularChromosomeIndicator />
         ) : (
           <div className={styles.chrCode}>{chrCode}</div>
