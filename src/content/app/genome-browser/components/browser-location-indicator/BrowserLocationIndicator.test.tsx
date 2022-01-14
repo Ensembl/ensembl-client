@@ -49,6 +49,13 @@ const mockState = {
       },
       activeGenomeId: 'human'
     }
+  },
+  genome: {
+    genomeKaryotype: {
+      genomeKaryotypeData: {
+        human: [{ is_circular: false }]
+      }
+    }
   }
 };
 
