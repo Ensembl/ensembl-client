@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
 import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -35,8 +34,8 @@ import {
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -45,118 +44,9 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
-import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullGene } from 'src/shared/types/thoas/gene';
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 
 import styles from './TranscriptSummary.scss';
-
-// TODO: narrow down the types for spliced exons and product-generating_contexts
-type Transcript = Pick<
-  FullTranscript,
-  | 'stable_id'
-  | 'unversioned_stable_id'
-  | 'external_references'
-  | 'slice'
-  | 'spliced_exons'
-  | 'product_generating_contexts'
-  | 'metadata'
->;
-
-// TODO: narrow down the type and use it in the Transcript type
-type ProductGeneratingContext =
-  Transcript['product_generating_contexts'][number];
-
-type Gene = Pick<
-  FullGene,
-  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name' | 'transcripts'
->;
-
-const GENE_AND_TRANSCRIPT_QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!, $transcriptId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      name
-      stable_id
-      unversioned_stable_id
-      symbol
-    }
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
-      stable_id
-      unversioned_stable_id
-      external_references {
-        accession_id
-        url
-        source {
-          id
-        }
-      }
-      spliced_exons {
-        relative_location {
-          start
-          end
-        }
-        exon {
-          stable_id
-          slice {
-            location {
-              length
-            }
-          }
-        }
-      }
-      product_generating_contexts {
-        product_type
-        default
-        cds {
-          protein_length
-        }
-        phased_exons {
-          start_phase
-          end_phase
-          exon {
-            stable_id
-          }
-        }
-        product {
-          stable_id
-          external_references {
-            accession_id
-            url
-            source {
-              id
-            }
-          }
-        }
-      }
-      slice {
-        strand {
-          code
-        }
-        location {
-          length
-        }
-      }
-      metadata {
-        biotype {
-          label
-          value
-          definition
-        }
-        canonical {
-          value
-          label
-          definition
-        }
-        mane {
-          value
-          label
-          definition
-        }
-      }
-    }
-  }
-`;
 
 type Props = {
   drawerView: TranscriptDrawerView;
@@ -164,48 +54,35 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
 
-  const { data: geneData } = useGetTrackPanelGeneQuery({
-    genomeId: focusGene.genome_id,
-    geneId: focusGene.stable_id
-  });
-
-  // TODO: change this to a single transcript query
-  const activeDrawerTranscript = geneData?.gene.transcripts.find(
-    (transcript) => transcript.stable_id === transcriptId
+  const { data, isLoading } = useTranscriptSummaryQuery(
+    {
+      genomeId: activeGenomeId || '',
+      transcriptId
+    },
+    {
+      skip: !activeGenomeId
+    }
   );
 
-  const { data, loading } = useQuery<{
-    gene: Gene;
-    transcript: Transcript;
-  }>(GENE_AND_TRANSCRIPT_QUERY, {
-    variables: {
-      geneId: focusGene.stable_id,
-      transcriptId: activeDrawerTranscript?.stable_id,
-      genomeId: focusGene.genome_id
-    },
-    skip: !activeDrawerTranscript?.stable_id
-  });
-
-  if (loading) {
+  if (!activeGenomeId || isLoading) {
     return null;
   }
 
-  if (!data?.gene || !data.transcript) {
+  if (!data?.transcript) {
     return <div>No data available</div>;
   }
 
-  const { gene, transcript } = data;
+  const { transcript } = data;
+  const { gene } = transcript;
   const metadata = transcript.metadata;
 
   const defaultProductGeneratingContext =
-    transcript.product_generating_contexts.find(
-      (entry) => entry.default
-    ) as ProductGeneratingContext;
+    transcript.product_generating_contexts.find((entry) => entry.default);
 
-  const product = defaultProductGeneratingContext.product;
+  const product = defaultProductGeneratingContext?.product;
   const stableId = getDisplayStableId(transcript);
 
   const focusId = buildFocusIdForUrl({
@@ -214,7 +91,7 @@ const TranscriptSummary = (props: Props) => {
   });
 
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: focusGene.genome_id,
+    genomeId: activeGenomeId,
     entityId: focusId
   });
 
@@ -263,7 +140,13 @@ const TranscriptSummary = (props: Props) => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(focusGene.location)}</span>
+              <span>
+                {getFormattedLocation({
+                  chromosome: transcript.slice.region.name,
+                  start: transcript.slice.location.start,
+                  end: transcript.slice.location.end
+                })}
+              </span>
             </div>
           </div>
         </div>
@@ -345,7 +228,7 @@ const TranscriptSummary = (props: Props) => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadTranscript
-                genomeId={focusGene.genome_id}
+                genomeId={activeGenomeId}
                 transcript={{
                   id: transcript.stable_id,
                   isProteinCoding: isProteinCodingTranscript(transcript)

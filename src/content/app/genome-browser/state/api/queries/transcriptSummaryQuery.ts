@@ -19,17 +19,9 @@ import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import type { SplicedExon } from 'src/shared/types/thoas/exon';
+import type { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
-
-// phased_exons {
-//   start_phase
-//   end_phase
-//   exon {
-//     stable_id
-//   }
-// }
 
 export const transcriptSummaryQuery = gql`
   query TranscriptSummary($genomeId: String!, $transcriptId: String!) {
@@ -63,6 +55,13 @@ export const transcriptSummaryQuery = gql`
         cds {
           protein_length
         }
+        phased_exons {
+          start_phase
+          end_phase
+          exon {
+            stable_id
+          }
+        }
         product {
           stable_id
           external_references {
@@ -79,7 +78,12 @@ export const transcriptSummaryQuery = gql`
           code
         }
         location {
+          start
+          end
           length
+        }
+        region {
+          name
         }
       }
       metadata {
@@ -133,7 +137,7 @@ type RequestedExternalReference = Pick<
   FullTranscript['external_references'][number],
   'accession_id' | 'url'
 > &
-  Pick2<FullTranscript['external_references'][number], 'source', 'url'>;
+  Pick2<FullTranscript['external_references'][number], 'source', 'id'>;
 
 type SplicedExonOnSummaryTranscript = Pick2<
   SplicedExon,
@@ -143,6 +147,12 @@ type SplicedExonOnSummaryTranscript = Pick2<
   Pick2<SplicedExon, 'exon', 'stable_id'> &
   Pick4<SplicedExon, 'exon', 'slice', 'location', 'length'>;
 
+type PhasedExonOfDefaultTranscript = Pick<
+  PhasedExon,
+  'start_phase' | 'end_phase'
+> &
+  Pick2<PhasedExon, 'exon', 'stable_id'>;
+
 type ProductGeneratingContextOnSummaryTranscript = Pick<
   FullProductGeneratingContext,
   'product_type' | 'default'
@@ -151,6 +161,7 @@ type ProductGeneratingContextOnSummaryTranscript = Pick<
     NonNullable<FullProductGeneratingContext['cds']>,
     'protein_length'
   > | null;
+  phased_exons: PhasedExonOfDefaultTranscript[];
   product: {
     stable_id: string;
     external_references: RequestedExternalReference[];
@@ -162,7 +173,8 @@ type SummaryTranscript = Pick<
   'stable_id' | 'unversioned_stable_id'
 > &
   Pick3<FullTranscript, 'slice', 'strand', 'code'> &
-  Pick3<FullTranscript, 'slice', 'location', 'length'> & {
+  Pick3<FullTranscript, 'slice', 'location', 'length' | 'start' | 'end'> &
+  Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     metadata: SummaryTranscriptMetadata;
     gene: GeneInSummaryTranscript;
     spliced_exons: SplicedExonOnSummaryTranscript[];
