@@ -20,6 +20,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
+import set from 'lodash/fp/set';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -78,6 +79,17 @@ describe('BrowserLocationIndicator', () => {
       const { container } = renderComponent();
       const renderedName = container.querySelector('.chrCode');
       expect(renderedName?.textContent).toBe(chrName);
+    });
+
+    it('displays circular chromosome', () => {
+      const newstate = set(
+        'genome.genomeKaryotype.genomeKaryotypeData.human[0].is_circular',
+        true,
+        mockState
+      );
+      const { container } = renderComponent(newstate);
+      const circularIndicator = container.querySelector('.circularIndicator');
+      expect(circularIndicator).toBeTruthy();
     });
 
     it('displays location', () => {
