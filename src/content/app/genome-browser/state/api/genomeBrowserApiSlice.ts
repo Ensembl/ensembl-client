@@ -25,6 +25,10 @@ import {
   transcriptSummaryQuery,
   type TranscriptSummaryQueryResult
 } from './queries/transcriptSummaryQuery';
+import {
+  transcriptZmenuQuery,
+  TranscriptZmenuQueryResult
+} from './queries/transcriptInZmenuQuery';
 
 import type { TrackPanelGene } from '../types/track-panel-gene';
 
@@ -40,18 +44,27 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
         })
       }
     ),
-    geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
+    gbGeneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
         body: geneSummaryQuery,
         variables: params
       })
     }),
-    transcriptSummary: builder.query<
+    gbTranscriptSummary: builder.query<
       TranscriptSummaryQueryResult,
       TranscriptQueryParams
     >({
       query: (params) => ({
         body: transcriptSummaryQuery,
+        variables: params
+      })
+    }),
+    gbTranscriptInZmenu: builder.query<
+      TranscriptZmenuQueryResult,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        body: transcriptZmenuQuery,
         variables: params
       })
     })
@@ -61,6 +74,7 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
 export const { getTrackPanelGene } = genomeBrowserApiSlice.endpoints;
 export const {
   useGetTrackPanelGeneQuery,
-  useGeneSummaryQuery,
-  useTranscriptSummaryQuery
+  useGbGeneSummaryQuery,
+  useGbTranscriptSummaryQuery,
+  useGbTranscriptInZmenuQuery
 } = genomeBrowserApiSlice;

@@ -34,7 +34,7 @@ import {
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { useTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
@@ -57,7 +57,7 @@ const TranscriptSummary = (props: Props) => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
 
-  const { data, isLoading } = useTranscriptSummaryQuery(
+  const { data, isLoading } = useGbTranscriptSummaryQuery(
     {
       genomeId: activeGenomeId || '',
       transcriptId

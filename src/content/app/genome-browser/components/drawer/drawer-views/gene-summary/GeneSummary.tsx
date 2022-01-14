@@ -24,7 +24,7 @@ import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormat
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { useGeneSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { useGbGeneSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import {
   buildFocusIdForUrl,
@@ -51,7 +51,7 @@ const GeneSummary = () => {
     geneId: focusGene.stable_id,
     genomeId: focusGene.genome_id
   };
-  const { data, isLoading } = useGeneSummaryQuery(geneQueryParams, {
+  const { data, isLoading } = useGbGeneSummaryQuery(geneQueryParams, {
     skip: !focusGene.stable_id
   });
 
