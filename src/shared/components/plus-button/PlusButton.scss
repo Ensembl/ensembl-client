@@ -10,3 +10,9 @@
     fill: $blue;
   }
 }
+
+.plusButton:disabled {
+  svg {
+    fill: $grey;
+  }
+}

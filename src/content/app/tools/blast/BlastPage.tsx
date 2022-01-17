@@ -21,8 +21,8 @@ import loadable from '@loadable/component';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const BlastForm = loadable(() => import('./BlastForm'));
-const BlastJobs = loadable(() => import('./BlastJobs'));
+const BlastForm = loadable(() => import('./views/blast-form/BlastForm'));
+const BlastJobs = loadable(() => import('./views/blast-jobs/BlastJobs'));
 
 const pageDescription = `
 BLAST stands for Basic Local Alignment Search Tool.

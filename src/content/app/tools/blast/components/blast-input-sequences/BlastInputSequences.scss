@@ -1,14 +1,24 @@
 @import 'src/styles/common';
 
-.blastInputSequences {
+.blastInputSequences,
+.header {
   width: 860px;
 }
 
 .header {
   display: flex;
+  gap: 45px;
   align-items: center;
-  height: 56px;
-  padding: 0 28px;
+  padding: 0 28px 12px;
+}
+
+.headerGroup {
+  display: flex;
+  align-items: center;
+}
+
+.headerGroup:last-child {
+  margin-left: auto;
 }
 
 .headerTitle {
@@ -35,7 +45,7 @@
 }
 
 .clearAll {
-  margin-left: auto;
+  margin-right: 30px;
   color: $blue;
   cursor: pointer;
   user-select: none;

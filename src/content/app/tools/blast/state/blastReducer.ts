@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes } from 'react';
-import { ReactComponent as PlusIcon } from './plus-icon.svg';
+import { combineReducers } from 'redux';
 
-import styles from './PlusButton.scss';
+import blastFormReducer from './blast-form/blastFormSlice';
 
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
-
-const PlusButton = (props: Props) => {
-  return (
-    <button {...props} className={styles.plusButton}>
-      <PlusIcon />
-    </button>
-  );
-};
-
-export default PlusButton;
+export default combineReducers({
+  blastForm: blastFormReducer
+});

@@ -26,6 +26,7 @@ import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
+import blast from 'src/content/app/tools/blast/state/blastReducer';
 
 const createRootReducer = () =>
   combineReducers({
@@ -38,6 +39,7 @@ const createRootReducer = () =>
     speciesSelector,
     speciesPage,
     entityViewer,
+    blast,
     [thoasApiSlice.reducerPath]: thoasApiSlice.reducer
   });
 
