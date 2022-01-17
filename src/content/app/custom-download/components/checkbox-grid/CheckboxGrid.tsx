@@ -131,6 +131,10 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
                       <Checkbox
                         label={attribute.label}
                         checked={Boolean(attribute.isChecked)}
+                        theme="lighter"
+                        classNames={{
+                          default: styles.checkbox
+                        }}
                         onChange={(status) => {
                           props.onChange(status, attribute.id);
                         }}

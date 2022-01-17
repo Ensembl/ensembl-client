@@ -6,12 +6,10 @@
 }
 
 .defaultCheckbox {
+  background-color: transparent;
   cursor: pointer;
   justify-self: center;
-  height: 14px;
-  width: 14px;
-  border: 1px solid $grey;
-  background-color: $white;
+  border: 1px solid;
   transition: background-color 0.1s ease-in-out;
   margin-top: 7px;
 
@@ -19,10 +17,6 @@
     cursor: pointer;
     font-weight: $light;
   }
-}
-
-.unchecked {
-  background-color: $white;
 }
 
 .checked {
@@ -39,13 +33,47 @@
 }
 
 .defaultLabel {
-  color: $black;
   line-height: 30px;
-  font-size: 12px;
   padding-left: 8px;
   padding-right: 2px;
   max-width: calc(100% - 17px);
   word-wrap: break-word;
+}
+
+.themeDarkCheckbox {
+  border-color: $dark-grey;
+  height: 12px;
+  width: 12px;
+}
+
+.themeDarkLabel {
+  color: $white;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.themeLighterCheckbox {
+  border-color: $grey;
+  height: 13px;
+  width: 13px;
+}
+
+.themeLighterLabel {
+  color: $black;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.themeLightCheckbox {
+  border-color: $grey;
+  height: 13px;
+  width: 13px;
+}
+
+.themeLightLabel {
+  color: $black;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .hiddenInput {

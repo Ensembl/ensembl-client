@@ -12,11 +12,9 @@
 
 .radio {
   justify-self: center;
-  height: 15px;
-  width: 15px;
   border-radius: 50%;
-  border: 1px solid $grey;
-  background-color: none;
+  border: 1px solid;
+  background-color: transparent;
   margin-top: 7px;
   cursor: pointer;
 
@@ -38,8 +36,31 @@
 
 .label {
   line-height: 30px;
-  font-size: 14px;
   padding-right: 2px;
   word-wrap: break-word;
   cursor: pointer;
+}
+
+.themeDarkRadio {
+  border-color: $dark-grey;
+  height: 12px;
+  width: 12px;
+}
+
+.themeDarkLabel {
+  color: $white;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.themeLightRadio {
+  border-color: $grey;
+  height: 13px;
+  width: 13px;
+}
+
+.themeLightLabel {
+  color: $black;
+  font-size: 13px;
+  font-weight: 400;
 }

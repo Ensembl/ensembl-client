@@ -20,7 +20,7 @@
       font-weight: 300;
       padding-right: 4px;
     }
-    
+
     &:not(:last-child) {
       border-right: 1px solid $grey;
     }
@@ -47,4 +47,9 @@
     display: inline-block;
     vertical-align: middle;
   }
+}
+
+.radio {
+  height: 15px;
+  width: 15px;
 }

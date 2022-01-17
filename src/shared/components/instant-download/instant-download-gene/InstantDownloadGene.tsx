@@ -183,7 +183,7 @@ const GeneSection = (props: GeneSectionProps) => (
     <Checkbox
       classNames={{
         checkboxHolder: styles.checkboxHolder,
-        unchecked: styles.checkboxUnchecked
+        default: styles.checkboxDefault
       }}
       labelClassName={styles.checkboxLabel}
       label="Genomic sequence"
@@ -204,7 +204,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
       key={key}
       classNames={{
         checkboxHolder: styles.checkboxHolder,
-        unchecked: styles.checkboxUnchecked
+        default: styles.checkboxDefault
       }}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}

@@ -26,6 +26,7 @@ export type RadioOption = {
 };
 
 export type RadioOptions = RadioOption[];
+export type Theme = 'light' | 'dark';
 
 type Props = {
   onChange: (selectedOption: OptionValue) => void;
@@ -35,9 +36,25 @@ type Props = {
     radio?: string;
     radioChecked?: string;
   };
+  theme?: Theme;
   options: RadioOptions;
   selectedOption: OptionValue;
   disabled?: boolean;
+};
+
+const getThemeClasses = (theme: Theme = 'light') => {
+  const themeClasses = {
+    light: {
+      radio: styles.themeLightRadio,
+      label: styles.themeLightLabel
+    },
+    dark: {
+      radio: styles.themeDarkRadio,
+      label: styles.themeDarkLabel
+    }
+  };
+
+  return themeClasses[theme];
 };
 
 const RadioGroup = (props: Props) => {
@@ -48,8 +65,12 @@ const RadioGroup = (props: Props) => {
     props.onChange(value);
   };
 
-  const labelClass = classNames(styles.label, props.classNames?.label);
-
+  const themeClasses = getThemeClasses(props.theme);
+  const labelClass = classNames(
+    styles.label,
+    props.classNames?.label,
+    themeClasses.label
+  );
   const wrapperClass = classNames(styles.wrapper, props.classNames?.wrapper);
 
   const getRadioClass = (option: RadioOption) => {
@@ -61,6 +82,7 @@ const RadioGroup = (props: Props) => {
     const radioClass = classNames(
       styles.radio,
       props.classNames?.radio,
+      themeClasses.radio,
       option.value === props.selectedOption ? radioCheckedClass : undefined
     );
 

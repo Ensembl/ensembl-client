@@ -2,11 +2,11 @@
 @import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
 .container {
-  grid-area: 3/1/3/4;  
+  grid-area: 3/1/3/4;
   position: sticky;
   height: 100%;
   top: -5px;
-  z-index: 1;     
+  z-index: 1;
   padding-bottom: 9px;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .sortContainer {
-    padding-left: 160px;
+  padding-left: 160px;
 }
 
 .filterContent {
@@ -43,15 +43,7 @@
   display: block;
 }
 
-.label {
-  color: white;
-  font-size: 12px;
-}
-
 .radio {
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
   margin-top: 9px;
 
   &Checked {
@@ -62,18 +54,6 @@
   }
 }
 
-.checkboxUnchecked {
-  background-color: transparent;
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
-  margin-top: 9px;
-}
-
-.checkboxChecked {
-  background-color: $green;
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
+.checkboxDefault {
   margin-top: 9px;
 }
