@@ -17,18 +17,31 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
+import { render, getNodeText } from '@testing-library/react';
 
 import blastFormReducer, {
   initialState as initialBlastFormState,
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import BlastInputSequences from './BlastInputSequences';
+import BlastInputSequencesHeader, {
+  type Props as BlastInputSequencesHeaderProps
+} from './BlastInputSequencesHeader';
+
+const defaultProps: BlastInputSequencesHeaderProps = {
+  compact: false
+};
 
 const renderComponent = (
-  { state }: { state?: Partial<BlastFormState> } = { state: {} }
+  {
+    props,
+    state
+  }: {
+    state?: Partial<BlastFormState>;
+    props?: BlastInputSequencesHeaderProps;
+  } = { state: {} }
 ) => {
+  props = Object.assign({}, defaultProps, props);
   const blastFormState = Object.assign({}, initialBlastFormState, state);
   const rootReducer = combineReducers({
     blast: combineReducers({
@@ -46,7 +59,7 @@ const renderComponent = (
 
   const renderResult = render(
     <Provider store={store}>
-      <BlastInputSequences />
+      <BlastInputSequencesHeader {...props} />
     </Provider>
   );
 
@@ -56,38 +69,16 @@ const renderComponent = (
   };
 };
 
-describe('<BlastInputSequences />', () => {
-  describe('initial state', () => {
-    it('shows a single empty input', () => {
-      const { container } = renderComponent();
-      const inputBoxes = container.querySelectorAll('.inputSequenceBox');
-      expect(inputBoxes.length).toBe(1);
-    });
+describe('BlastInputSequencesHeader', () => {
+  it('shows sequence counter, starting with 0', () => {
+    const { container } = renderComponent();
+    const sequenceCounter = container.querySelector('.header .sequenceCounter');
+    expect(getNodeText(sequenceCounter as HTMLElement)).toBe('0');
   });
 
-  describe('with added sequences', () => {
-    // TODO: tests to be written after the component is connected to redux
-
-    it.todo('shows multiple inputs, each containing a sequence');
-
-    it.todo('shows a button for adding another sequence');
-
-    it.todo('guesses the type of the first sequence');
-
-    it.todo('correctly accepts a FASTA input containing multiple sequences');
-
-    it.todo('updates the sequence counter in the header');
-
-    /**
-     * QUESTIONS
-     *
-     * WHAT SHOULD HAPPEN IF USER ADDS AN UNEXPECTED SEQUECE?
-     * - a sequence different from the predicted
-     * - a sequence with invalid characters
-     * - a sequence with only a FASTA header
-     * - too short a sequence?
-     *
-     * WHAT SHOULD HAPPEN IF USER ADDS MORE SEQUENCES THAN WE ARE LIMITING THEM TO?
-     */
+  it('has a control to clear all sequences', () => {
+    const { container } = renderComponent();
+    const clearAll = container.querySelector('.header .clearAll');
+    expect(clearAll).toBeTruthy();
   });
 });

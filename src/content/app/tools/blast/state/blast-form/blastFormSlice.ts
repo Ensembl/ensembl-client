@@ -19,13 +19,13 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
-type BlastFormState = {
+export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
 };
 
-const initialState: BlastFormState = {
+export const initialState: BlastFormState = {
   step: 'sequences',
   sequences: [],
   shouldAppendEmptyInput: true

@@ -33,7 +33,7 @@ import PlusButton from 'src/shared/components/plus-button/PlusButton';
 
 import styles from './BlastInputSequences.scss';
 
-type Props = {
+export type Props = {
   compact: boolean;
 };
 
