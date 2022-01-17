@@ -1,9 +1,7 @@
 @import 'src/styles/common';
 
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: inline-block;
   padding: 0 25px 1rem 25px;
 }
 
@@ -14,5 +12,7 @@
 }
 
 .label {
+  display: block;
   color: $dark-grey;
+  text-transform: capitalize;
 }

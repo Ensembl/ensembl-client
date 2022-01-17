@@ -15,20 +15,18 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import { Topbar } from 'src/header/Header';
+import Topbar from './components/topbar/Topbar';
 import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 
-import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
+import unsupportedBrowsersDiagramPath from 'src/content/unsupported-browser/images/unsupported_browsers_diagram.svg';
 
 import styles from './UnsupportedBrowser.scss';
-import errorStyles from 'src/shared/components/error-screen/ErrorScreen.scss';
 
 const UnsupportedBrowser = () => {
   return (
     <>
-      <Topbar useRegularHomeLink={true} />
+      <Topbar />
       <div className={styles.container}>
         <section className={styles.section1}>
           <Diagram />
@@ -54,32 +52,13 @@ const UnsupportedBrowser = () => {
 
 const Diagram = () => {
   return (
-    <>
+    <div className={styles.diagram}>
       <div className={styles.diagramTitle}>Venn of the unsupported browser</div>
-      <div className={errorStyles.generalErrorImage}>
-        <div
-          className={classNames(
-            errorStyles.vennCircle,
-            errorStyles.vennCircleLeft
-          )}
-        >
-          <span> We may not support this browser...</span>
-        </div>
-        <div
-          className={classNames(
-            errorStyles.vennCircle,
-            errorStyles.vennCircleRight
-          )}
-        >
-          <div className={errorStyles.vennIntersection}>
-            <div className={errorStyles.infoIcon}>
-              <InfoIcon />
-            </div>
-          </div>
-          <span>...you may need to update or change your browser</span>
-        </div>
-      </div>
-    </>
+      <img
+        src={unsupportedBrowsersDiagramPath}
+        alt="You may need ot update or change your browser"
+      />
+    </div>
   );
 };
 
