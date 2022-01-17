@@ -7,18 +7,19 @@
 
 .header {
   display: flex;
-  gap: 45px;
+  justify-content: space-between;
   align-items: center;
-  padding: 0 28px 12px;
+  padding-left: 28px;
+  padding-bottom: 12px;
 }
+
+// .headerCompact {
+//   padding-right: 0;
+// }
 
 .headerGroup {
   display: flex;
   align-items: center;
-}
-
-.headerGroup:last-child {
-  margin-left: auto;
 }
 
 .headerTitle {
@@ -51,6 +52,10 @@
   user-select: none;
 }
 
+.blastAgainstButton {
+  margin-left: 66px;
+}
+
 .inputBoxesContainer {
   // hide top border for the input boxes stacked under the top one
   & > div:not(:first-child) [class*='header'] {
@@ -58,15 +63,10 @@
   }
 }
 
-.addSequenceWrapper {
-  display: flex;
-  justify-content: flex-end;
-  padding: 12px 26px 12px;
-}
-
 .addSequence {
   display: flex;
   align-items: center;
+  margin-right: 28px;
 }
 
 .addSequenceLabel {

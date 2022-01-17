@@ -75,12 +75,15 @@ const BlastInputSequencesHeader = (props: Props) => {
           onAdd={appendEmptyInput}
           disabled={shouldAppendEmptyInput}
         />
+        {compact && (
+          <SecondaryButton
+            className={styles.blastAgainstButton}
+            onClick={onSwitchToSpecies}
+          >
+            Blast against
+          </SecondaryButton>
+        )}
       </div>
-      {compact && (
-        <SecondaryButton onClick={onSwitchToSpecies}>
-          Blast against
-        </SecondaryButton>
-      )}
     </div>
   );
 };
