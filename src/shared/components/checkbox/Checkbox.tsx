@@ -49,22 +49,13 @@ const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
 };
 
 const getThemeClasses = (theme: Theme = 'lighter') => {
-  const themeClasses = {
-    dark: {
-      checkbox: styles.themeDarkCheckbox,
-      label: styles.themeDarkLabel
-    },
-    light: {
-      checkbox: styles.themeLightCheckbox,
-      label: styles.themeLightLabel
-    },
-    lighter: {
-      checkbox: styles.themeLighterCheckbox,
-      label: styles.themeLighterLabel
-    }
-  };
+  if (theme === 'dark') {
+    return styles.themeDark;
+  }
 
-  return themeClasses[theme];
+  if (theme === 'light') {
+    return styles.themeLight;
+  }
 };
 
 const Checkbox = (props: CheckboxProps) => {
@@ -74,26 +65,26 @@ const Checkbox = (props: CheckboxProps) => {
     }
   };
 
-  const themeClasses = getThemeClasses(props.theme);
+  const themeClass = getThemeClasses(props.theme);
 
   const wrapperClasses = classNames(
     styles.checkboxHolder,
+    themeClass,
     props.classNames?.checkboxHolder
   );
 
   const checkboxClasses = classNames(
-    styles.defaultCheckbox,
-    themeClasses.checkbox,
+    styles.checkboxDefault,
     props.classNames?.default,
     props.checked
-      ? classNames(styles.checked, props.classNames?.checked)
+      ? classNames(styles.checkboxChecked, props.classNames?.checked)
       : classNames(styles.unchecked, props.classNames?.unchecked),
-    props.disabled && classNames(styles.disabled, props.classNames?.disabled)
+    props.disabled &&
+      classNames(styles.checkboxDisabled, props.classNames?.disabled)
   );
 
   const labelClassName = classNames(
-    styles.defaultLabel,
-    themeClasses.label,
+    styles.labelDefault,
     isWithLabel(props) && props.labelClassName
   );
 

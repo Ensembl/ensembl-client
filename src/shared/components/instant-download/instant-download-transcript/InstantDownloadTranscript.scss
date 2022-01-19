@@ -25,40 +25,8 @@
   margin-bottom: 9px;
 }
 
-.checkboxUnchecked,
-.checkboxChecked {
+.checkboxDefault {
   margin-top: 9px;
-  height: 12px;
-  width: 12px;
-}
-
-.checkboxUnchecked {
-  background-color: transparent;
-  border-color: $dark-grey;
-}
-
-.checkboxLabel {
-  font-size: 12px;
-}
-
-.themeDark {
-  .label {
-    color: $white;
-  }
-
-  .checkboxLabel {
-    color: $white;
-  }
-}
-
-.themeLight {
-  .label {
-    color: $black;
-  }
-
-  .checkboxLabel {
-    font-weight: $light;
-  }
 }
 
 .downloadButtonWrapper {

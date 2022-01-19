@@ -62,6 +62,7 @@ type TranscriptSectionProps = {
 type GeneSectionProps = {
   gene: GeneFields;
   isGenomicSequenceSelected: boolean;
+  theme: Theme;
   onChange: () => void;
 };
 
@@ -151,6 +152,7 @@ const InstantDownloadGene = (props: Props) => {
       <GeneSection
         gene={props.gene}
         isGenomicSequenceSelected={isGeneSequenceSelected}
+        theme={props.theme}
         onChange={onGeneOptionChange}
       />
       <TranscriptSection
@@ -185,6 +187,7 @@ const GeneSection = (props: GeneSectionProps) => (
         checkboxHolder: styles.checkboxHolder,
         default: styles.checkboxDefault
       }}
+      theme={props.theme}
       labelClassName={styles.checkboxLabel}
       label="Genomic sequence"
       checked={props.isGenomicSequenceSelected}
@@ -206,6 +209,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
         checkboxHolder: styles.checkboxHolder,
         default: styles.checkboxDefault
       }}
+      theme={props.theme}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}

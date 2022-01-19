@@ -175,11 +175,10 @@ const TranscriptsFilter = (props: Props) => {
           <div className={styles.sortContent}>
             <RadioGroup
               classNames={{
-                label: styles.label,
                 radio: styles.radio,
-                radioChecked: styles.radioChecked,
                 wrapper: styles.buttonWrapper
               }}
+              theme="dark"
               options={radioData}
               onChange={onSortingRuleChange}
               selectedOption={sortingRule}

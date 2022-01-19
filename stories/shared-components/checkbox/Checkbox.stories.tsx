@@ -46,7 +46,31 @@ export const DefaultCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultCheckboxStory.storyName = 'default';
+DefaultCheckboxStory.storyName = 'default (lighter theme)';
+
+export const LightThemeCheckboxStory = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <StatefulCheckbox
+      theme="light"
+      label="I am a label for the light theme"
+      {...args}
+    />
+  </div>
+);
+
+LightThemeCheckboxStory.storyName = 'light theme';
+
+export const DarkThemeCheckboxStory = (args: DefaultArgs) => (
+  <div className={styles.darkThemeWrapper}>
+    <StatefulCheckbox
+      theme="dark"
+      label="I am a label for the dark theme"
+      {...args}
+    />
+  </div>
+);
+
+DarkThemeCheckboxStory.storyName = 'dark theme';
 
 export const DisabledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -58,10 +82,10 @@ DisabledCheckboxStory.storyName = 'disabled';
 
 export const LabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox label={'I am label'} {...args} />
+    <StatefulCheckbox label="I am label" {...args} />
     <StatefulCheckbox
       disabled={true}
-      label={'I am label of disabled checkbox'}
+      label="I am label of disabled checkbox"
       {...args}
     />
   </div>
@@ -72,30 +96,30 @@ LabelledCheckboxStory.storyName = 'with label';
 export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.gridWrapper}>
     <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
       <StatefulCheckbox
         disabled={true}
-        label={'I am label of disabled checkbox'}
+        label="I am label of disabled checkbox"
         {...args}
       />
       <StatefulCheckbox
-        label={'I am a very long long label that wraps to another line'}
+        label="I am a very long long label that wraps to another line"
         {...args}
       />
     </div>
 
     <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
       <StatefulCheckbox
-        label={'I am another very long long label that wraps to another line'}
+        label="I am another very long long label that wraps to another line"
         {...args}
       />
-      <StatefulCheckbox label={'I am label'} {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
     </div>
 
     <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
-      <StatefulCheckbox label={'I am label'} {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
     </div>
   </div>
 );

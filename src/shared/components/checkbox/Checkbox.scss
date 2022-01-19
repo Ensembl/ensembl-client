@@ -5,13 +5,15 @@
   grid-template-columns: 27px 1fr;
 }
 
-.defaultCheckbox {
-  background-color: transparent;
+.checkboxDefault {
   cursor: pointer;
   justify-self: center;
-  border: 1px solid;
   transition: background-color 0.1s ease-in-out;
   margin-top: 7px;
+  background-color: var(--checkbox-background-color, #{$white});
+  border: 1px solid var(--checkbox-border-color, #{$grey});
+  height: var(--checkbox-dimension-size, 13px);
+  width: var(--checkbox-dimension-size, 13px);
 
   & + label {
     cursor: pointer;
@@ -19,11 +21,11 @@
   }
 }
 
-.checked {
+.checkboxChecked {
   background-color: $green;
 }
 
-.disabled {
+.checkboxDisabled {
   background-color: $light-grey;
   cursor: default;
 
@@ -32,7 +34,10 @@
   }
 }
 
-.defaultLabel {
+.labelDefault {
+  color: var(--checkbox-label-color, #{$black});
+  font-size: var(--checkbox-label-font-size, 12px);
+  font-weight: var(--checkbox-label-font-weight, #{$light});
   line-height: 30px;
   padding-left: 8px;
   padding-right: 2px;
@@ -40,40 +45,16 @@
   word-wrap: break-word;
 }
 
-.themeDarkCheckbox {
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
+.themeLight {
+  --checkbox-label-font-size: 13px;
+  --checkbox-label-font-weight: #{$normal};
 }
 
-.themeDarkLabel {
-  color: $white;
-  font-size: 12px;
-  font-weight: 300;
-}
-
-.themeLighterCheckbox {
-  border-color: $grey;
-  height: 13px;
-  width: 13px;
-}
-
-.themeLighterLabel {
-  color: $black;
-  font-size: 12px;
-  font-weight: 300;
-}
-
-.themeLightCheckbox {
-  border-color: $grey;
-  height: 13px;
-  width: 13px;
-}
-
-.themeLightLabel {
-  color: $black;
-  font-size: 13px;
-  font-weight: 400;
+.themeDark {
+  --checkbox-background-color: transparent;
+  --checkbox-border-color: #{$dark-grey};
+  --checkbox-dimension-size: 12px;
+  --checkbox-label-color: #{$white};
 }
 
 .hiddenInput {

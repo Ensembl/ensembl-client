@@ -17,40 +17,66 @@
 import React, { useState } from 'react';
 
 import RadioGroup, {
+  RadioGroupProps,
   RadioOptions,
   OptionValue
 } from 'src/shared/components/radio-group/RadioGroup';
+
+import styles from './RadioGroup.stories.scss';
 
 type DefaultArgs = {
   onChange: (...args: any) => void;
 };
 
-const radioData: RadioOptions = [
-  { value: 'default', label: 'Default' },
-  { value: 'length_longest', label: 'Spliced length: longest - shortest' },
-  { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
-];
-
-export const RadioGroupStory = (args: DefaultArgs) => {
+const StatefulRadioGroup = (props: Partial<RadioGroupProps> & DefaultArgs) => {
   const [selectedRadio, setSelectedRadio] = useState<OptionValue>('default');
 
   const handleChange = (value: OptionValue) => {
     setSelectedRadio(value);
-    args.onChange(value);
+    props.onChange(value);
   };
+
+  const radioData: RadioOptions = [
+    { value: 'default', label: 'Default' },
+    { value: 'length_longest', label: 'Spliced length: longest - shortest' },
+    { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
+  ];
 
   return (
     <div>
       <RadioGroup
+        {...props}
         options={radioData}
         onChange={handleChange}
         selectedOption={selectedRadio}
-      ></RadioGroup>
+      />
     </div>
   );
 };
 
-RadioGroupStory.storyName = 'default';
+export const RadioGroupStory = (args: DefaultArgs) => (
+  <div>
+    <StatefulRadioGroup {...args} />
+  </div>
+);
+
+RadioGroupStory.storyName = 'default (light theme)';
+
+export const DarkThemeCheckboxStory = (args: DefaultArgs) => (
+  <div className={styles.darkThemeWrapper}>
+    <StatefulRadioGroup theme="dark" {...args} />
+  </div>
+);
+
+DarkThemeCheckboxStory.storyName = 'dark theme';
+
+export const DisabledCheckboxStory = (args: DefaultArgs) => (
+  <div>
+    <StatefulRadioGroup disabled={true} {...args} />
+  </div>
+);
+
+DisabledCheckboxStory.storyName = 'disabled';
 
 export default {
   title: 'Components/Shared Components/RadioGroup',
