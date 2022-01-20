@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
@@ -27,7 +28,6 @@ import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/bl
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
 
 import styles from './BlastForm.scss';
-import { useSelector } from 'react-redux';
 
 const BlastForm = () => {
   return (

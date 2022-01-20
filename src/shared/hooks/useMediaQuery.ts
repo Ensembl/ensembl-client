@@ -36,9 +36,7 @@ const useMediaQuery = (mediaQuery: string): boolean | null => {
 };
 
 const getMediaQueryList = (mediaQuery: string) => {
-  if (!isClient()) {
-    return null;
-  } else {
+  if (isClient()) {
     return window.matchMedia(mediaQuery);
   }
 };
