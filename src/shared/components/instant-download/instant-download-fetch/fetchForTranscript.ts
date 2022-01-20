@@ -32,6 +32,7 @@ import type {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -138,11 +139,13 @@ export const prepareGenomicDownloadParameters = (params: {
   checksum: string;
   start: number;
   end: number;
+  strand: Strand;
 }) => {
-  const { label, start, end, checksum } = params;
+  const { label, start, end, checksum, strand } = params;
   const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
   return {
     label,
-    url
+    url,
+    reverseComplement: strand === Strand.REVERSE
   };
 };
