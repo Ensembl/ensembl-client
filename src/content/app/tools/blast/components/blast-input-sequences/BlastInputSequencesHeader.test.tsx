@@ -18,6 +18,9 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, getNodeText } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import random from 'lodash/random';
+import times from 'lodash/times';
 
 import blastFormReducer, {
   initialState as initialBlastFormState,
@@ -70,15 +73,65 @@ const renderComponent = (
 };
 
 describe('BlastInputSequencesHeader', () => {
-  it('shows sequence counter, starting with 0', () => {
-    const { container } = renderComponent();
-    const sequenceCounter = container.querySelector('.header .sequenceCounter');
-    expect(getNodeText(sequenceCounter as HTMLElement)).toBe('0');
+  describe('sequence counter', () => {
+    it('starts with 0', () => {
+      const { container } = renderComponent();
+      const sequenceCounter = container.querySelector(
+        '.header .sequenceCounter'
+      );
+      expect(getNodeText(sequenceCounter as HTMLElement)).toBe('0');
+    });
+
+    it('displays the number of added sequences', () => {
+      const numberOfSequences = random(1, 30);
+      const sequences = times(numberOfSequences, () => ({ value: 'ACTG' }));
+      const { container } = renderComponent({ state: { sequences } });
+      const sequenceCounter = container.querySelector(
+        '.header .sequenceCounter'
+      );
+      expect(getNodeText(sequenceCounter as HTMLElement)).toBe(
+        `${numberOfSequences}`
+      );
+    });
   });
 
-  it('has a control to clear all sequences', () => {
-    const { container } = renderComponent();
-    const clearAll = container.querySelector('.header .clearAll');
-    expect(clearAll).toBeTruthy();
+  describe('button for adding sequences', () => {
+    it('is disabled if a flag for appending an empty input box is set', () => {
+      const { container } = renderComponent(); // initial state has shouldAppendEmptyInput set to true
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      ) as HTMLButtonElement;
+
+      expect(addSequenceButton.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('toggles a flag for displaying an empty input box', () => {
+      const { container, store } = renderComponent({
+        state: { shouldAppendEmptyInput: false }
+      });
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      );
+
+      userEvent.click(addSequenceButton as HTMLButtonElement);
+
+      const updatedState = store.getState();
+
+      expect(updatedState.blast.blastForm.shouldAppendEmptyInput).toBe(true);
+    });
+  });
+
+  describe('clear all control', () => {
+    it('clears all sequences', () => {
+      const sequences = times(10, () => ({ value: 'ACTG' }));
+      const { container, store } = renderComponent({ state: { sequences } });
+      const clearAll = container.querySelector('.clearAll');
+
+      userEvent.click(clearAll as HTMLElement);
+
+      const updatedState = store.getState();
+
+      expect(updatedState.blast.blastForm.sequences).toEqual([]);
+    });
   });
 });
