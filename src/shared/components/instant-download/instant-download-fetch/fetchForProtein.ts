@@ -16,18 +16,19 @@
 
 import { wrap } from 'comlink';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 import {
-  ProteinOptions,
-  ProteinOption,
-  proteinOptionsOrder
+  proteinOptionsOrder,
+  type ProteinOptions,
+  type ProteinOption
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
   fetchTranscriptSequenceMetadata,
-  TranscriptSequenceMetadata
+  type TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
-import {
+import type {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
@@ -92,7 +93,7 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
       }
       return {
         label: dataForSingleSequence.label,
-        url: `/api/refget/sequence/${dataForSingleSequence.checksum}?accept=text/plain`
+        url: urlFor.refget({ checksum: dataForSingleSequence.checksum })
       };
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
