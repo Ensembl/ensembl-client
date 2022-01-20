@@ -78,7 +78,7 @@ describe('<CheckboxWithTextfields />', () => {
     const label = faker.random.words();
     const { container } = renderCheckboxWithTextfields({ label });
     expect(
-      container.querySelector('.checkboxHolder .defaultLabel')?.textContent
+      container.querySelector('.checkboxHolder .labelDefault')?.textContent
     ).toBe(label);
   });
 

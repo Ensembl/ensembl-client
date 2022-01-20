@@ -78,7 +78,7 @@ const Checkbox = (props: CheckboxProps) => {
     props.classNames?.default,
     props.checked
       ? classNames(styles.checkboxChecked, props.classNames?.checked)
-      : classNames(styles.unchecked, props.classNames?.unchecked),
+      : classNames(styles.checkboxUnchecked, props.classNames?.unchecked),
     props.disabled &&
       classNames(styles.checkboxDisabled, props.classNames?.disabled)
   );

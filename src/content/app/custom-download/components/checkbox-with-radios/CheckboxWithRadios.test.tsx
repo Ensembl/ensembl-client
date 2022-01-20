@@ -75,7 +75,7 @@ describe('<CheckboxWithRadios />', () => {
   it('displays all the radios when the checkbox is checked', () => {
     const { container } = renderCheckboxWithRadios();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLElement);
 
@@ -87,7 +87,7 @@ describe('<CheckboxWithRadios />', () => {
   it('calls the onChange when the radio is changed with the selected option', () => {
     const { container } = renderCheckboxWithRadios();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLInputElement);
 
