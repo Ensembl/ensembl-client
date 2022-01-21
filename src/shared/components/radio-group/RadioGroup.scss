@@ -15,10 +15,10 @@
   cursor: pointer;
   justify-self: center;
   margin-top: 7px;
-  background-color: var(--checkbox-background-color, #{$white});
+  background-color: var(--radio-background-color, #{$white});
   border: 1px solid var(--radio-border-color, #{$grey});
-  height: var(--radio-dimension-size, 13px);
-  width: var(--radio-dimension-size, 13px);
+  height: var(--radio-diameter, 13px);
+  width: var(--radio-diameter, 13px);
 
   &Checked {
     background-color: $white;
@@ -28,8 +28,8 @@
       float: left;
       margin-top: 2px;
       margin-left: 2px;
-      height: var(--radio-checked-dimension-size, 7px);
-      width: var(--radio-checked-dimension-size, 7px);
+      height: var(--radio-checked-diameter, 7px);
+      width: var(--radio-checked-diameter, 7px);
       border-radius: 50%;
       background: $green;
     }
@@ -52,9 +52,9 @@
 }
 
 .themeDark {
-  --checkbox-background-color: transparent;
+  --radio-background-color: transparent;
   --radio-border-color: #{$dark-grey};
-  --radio-dimension-size: 12px;
+  --radio-diameter: 12px;
   --radio-label-color: #{$white};
   --radio-checked-dimension-size: 6px;
 }

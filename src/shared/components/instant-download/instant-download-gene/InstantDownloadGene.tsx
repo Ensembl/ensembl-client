@@ -206,8 +206,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
     <Checkbox
       key={key}
       classNames={{
-        checkboxHolder: styles.checkboxHolder,
-        default: styles.checkboxDefault
+        checkboxHolder: styles.checkboxHolder
       }}
       theme={props.theme}
       labelClassName={styles.checkboxLabel}

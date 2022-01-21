@@ -48,13 +48,13 @@ const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
   return 'label' in props;
 };
 
-const getThemeClasses = (theme: Theme = 'lighter') => {
-  if (theme === 'dark') {
-    return styles.themeDark;
+const getThemeClasses = (theme: Theme = 'light') => {
+  if (theme === 'lighter') {
+    return styles.themeLighter;
   }
 
-  if (theme === 'light') {
-    return styles.themeLight;
+  if (theme === 'dark') {
+    return styles.themeDark;
   }
 };
 

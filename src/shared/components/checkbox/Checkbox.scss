@@ -36,8 +36,8 @@
 
 .labelDefault {
   color: var(--checkbox-label-color, #{$black});
-  font-size: var(--checkbox-label-font-size, 12px);
-  font-weight: var(--checkbox-label-font-weight, #{$light});
+  font-size: var(--checkbox-label-font-size, 13px);
+  font-weight: var(--checkbox-label-font-weight, #{$normal});
   line-height: 30px;
   padding-left: 8px;
   padding-right: 2px;
@@ -45,9 +45,9 @@
   word-wrap: break-word;
 }
 
-.themeLight {
-  --checkbox-label-font-size: 13px;
-  --checkbox-label-font-weight: #{$normal};
+.themeLighter {
+  --checkbox-label-font-size: 12px;
+  --checkbox-label-font-weight: #{$light};
 }
 
 .themeDark {
@@ -55,6 +55,8 @@
   --checkbox-border-color: #{$dark-grey};
   --checkbox-dimension-size: 12px;
   --checkbox-label-color: #{$white};
+  --checkbox-label-font-size: 12px;
+  --checkbox-label-font-weight: #{$light};
 }
 
 .hiddenInput {

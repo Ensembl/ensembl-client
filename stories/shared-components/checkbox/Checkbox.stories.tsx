@@ -46,19 +46,19 @@ export const DefaultCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultCheckboxStory.storyName = 'default (lighter theme)';
+DefaultCheckboxStory.storyName = 'default (light theme)';
 
 export const LightThemeCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
     <StatefulCheckbox
-      theme="light"
-      label="I am a label for the light theme"
+      theme="lighter"
+      label="I am a label for the lighter theme"
       {...args}
     />
   </div>
 );
 
-LightThemeCheckboxStory.storyName = 'light theme';
+LightThemeCheckboxStory.storyName = 'lighter theme';
 
 export const DarkThemeCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.darkThemeWrapper}>
