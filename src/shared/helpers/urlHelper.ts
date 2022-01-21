@@ -16,6 +16,8 @@
 
 import queryString from 'query-string';
 
+import config from 'config';
+
 export const home = () => '/';
 export const speciesSelector = () => '/species-selector';
 export const customDownload = () => '/custom-download';
@@ -90,4 +92,34 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   );
 
   return query ? `${path}?${query}` : path;
+};
+
+type RefgetUrlParams = {
+  checksum: string;
+  start?: number;
+  end?: number;
+};
+
+/**
+ * Refget is using a zero-based coordinate space,
+ * with start coordinate inclusive and end exclusive.
+ * To translate from Ensembl coordinate space to Refget's,
+ * we subtract 1 from the start coordinate
+ * and leave the end coordinate as is.
+ */
+export const refget = (params: RefgetUrlParams) => {
+  const { checksum, start, end } = params;
+  const searchParams = new URLSearchParams();
+  if (typeof start === 'number') {
+    const refgetStart = start - 1;
+    searchParams.append('start', `${refgetStart}`);
+  }
+  if (typeof end === 'number') {
+    searchParams.append('end', `${end}`);
+  }
+  searchParams.append('accept', 'text/plain');
+
+  return `${
+    config.refgetBaseUrl
+  }/sequence/${checksum}?${searchParams.toString()}`;
 };

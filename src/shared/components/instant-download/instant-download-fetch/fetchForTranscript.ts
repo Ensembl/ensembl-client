@@ -16,22 +16,24 @@
 
 import { wrap } from 'comlink';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 
 import {
-  TranscriptOptions,
-  TranscriptOption,
-  transcriptOptionsOrder
+  transcriptOptionsOrder,
+  type TranscriptOptions,
+  type TranscriptOption
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
   fetchGeneAndTranscriptSequenceMetadata,
-  TranscriptSequenceMetadata
+  type TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
 import type {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -127,7 +129,7 @@ export const prepareDownloadParameters = (
 
         return {
           label: dataForSingleSequence.label,
-          url: `/api/refget/sequence/${dataForSingleSequence.checksum}?accept=text/plain`
+          url: urlFor.refget({ checksum: dataForSingleSequence.checksum })
         };
       }
     })
@@ -138,11 +140,13 @@ export const prepareGenomicDownloadParameters = (params: {
   checksum: string;
   start: number;
   end: number;
+  strand: Strand;
 }) => {
-  const { label, start, end, checksum } = params;
-  const url = `/api/refget/sequence/${checksum}?start=${start}&end=${end}&accept=text/plain`;
+  const { label, start, end, checksum, strand } = params;
+  const url = urlFor.refget({ checksum, start, end });
   return {
     label,
-    url
+    url,
+    reverseComplement: strand === Strand.REVERSE
   };
 };

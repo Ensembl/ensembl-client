@@ -16,38 +16,33 @@
 
 import { request, gql } from 'graphql-request';
 
-import { Sequence } from 'src/shared/types/thoas/sequence';
+import type { Sequence } from 'src/shared/types/thoas/sequence';
+import type { Strand } from 'src/shared/types/thoas/strand';
+
+type NonGenomicSequenceMetadata = {
+  checksum: string;
+  label: string;
+};
+
+type GenomicSequenceMetadata = {
+  label: string;
+  checksum: string;
+  start: number;
+  end: number;
+  strand: Strand;
+};
 
 export type TranscriptSequenceMetadata = {
   stable_id: string;
-  genomic: {
-    label: string;
-    checksum: string;
-    start: number;
-    end: number;
-  };
-  cdna: {
-    checksum: string;
-    label: string;
-  };
-  cds?: {
-    checksum: string;
-    label: string;
-  };
-  protein?: {
-    checksum: string;
-    label: string;
-  };
+  genomic: GenomicSequenceMetadata;
+  cdna: NonGenomicSequenceMetadata;
+  cds?: NonGenomicSequenceMetadata;
+  protein?: NonGenomicSequenceMetadata;
 };
 
 export type GeneSequenceMetadata = {
   stable_id: string;
-  genomic: {
-    label: string;
-    checksum: string;
-    start: number;
-    end: number;
-  };
+  genomic: GenomicSequenceMetadata;
 };
 
 export type GeneAndTranscriptSequenceMetadata = {
@@ -67,6 +62,9 @@ type SliceInResponse = {
   region: {
     sequence: Sequence;
   };
+  strand: {
+    code: Strand;
+  };
 };
 
 type GeneInResponse = {
@@ -80,15 +78,7 @@ type GeneWithTranscriptsInResponse = GeneInResponse & {
 
 type TranscriptInResponse = {
   stable_id: string;
-  slice: {
-    location: {
-      start: number;
-      end: number;
-    };
-    region: {
-      sequence: Sequence;
-    };
-  };
+  slice: SliceInResponse;
   product_generating_contexts: Array<{
     cdna: {
       sequence: Sequence;
@@ -145,6 +135,9 @@ const geneQueryFragment = gql`
           checksum
         }
       }
+      strand {
+        code
+      }
     }
   }
 `;
@@ -161,6 +154,9 @@ const transcriptQueryFragment = gql`
         sequence {
           checksum
         }
+      }
+      strand {
+        code
       }
     }
     product_generating_contexts {
@@ -241,7 +237,8 @@ const processGeneData = (gene: GeneInResponse) => {
       label: `${geneStableId} genomic`,
       checksum: geneSlice.region.sequence.checksum,
       start: geneSlice.location.start,
-      end: geneSlice.location.end
+      end: geneSlice.location.end,
+      strand: geneSlice.strand.code
     }
   };
 };
@@ -256,7 +253,8 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
       label: `${transcriptStableId} genomic`,
       checksum: transcriptSlice.region.sequence.checksum,
       start: transcriptSlice.location.start,
-      end: transcriptSlice.location.end
+      end: transcriptSlice.location.end,
+      strand: transcriptSlice.strand.code
     },
     cdna: {
       checksum: productGeneratingContext.cdna.sequence.checksum,

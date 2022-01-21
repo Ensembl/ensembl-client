@@ -16,20 +16,27 @@
 
 import { expose } from 'comlink';
 
+import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
 export type SingleSequenceFetchParams = {
   label: string;
   url: string;
+  reverseComplement?: boolean; // this is only relevant when requesting genomic sequences
 };
 
 export type SequenceFetcherParams = Array<SingleSequenceFetchParams>;
 
 const downloadSequences = async (params: SequenceFetcherParams) => {
-  const sequencePromises = params.map(({ label, url }) => {
+  const sequencePromises = params.map(({ label, url, reverseComplement }) => {
     return fetch(url)
       .then((response) => response.text())
-      .then((sequence) => toFasta({ header: label, value: sequence }));
+      .then((sequence) => {
+        if (reverseComplement) {
+          sequence = getReverseComplement(sequence);
+        }
+        return toFasta({ header: label, value: sequence });
+      });
   });
 
   const sequences = await Promise.all(sequencePromises);
