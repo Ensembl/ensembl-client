@@ -12,7 +12,14 @@
   border: 1px dashed $blue;
   color: $blue;
   cursor: pointer;
+  user-select: none;
   transition: color 0.4s, border-color 0.4s, background-color 0.4s;
+}
+
+.uploadIcon {
+  width: 32px;
+  height: 32px;
+  fill: $blue;
 }
 
 // this will prevent dragenter and dragleave events emitted by children of the drop area
@@ -22,17 +29,19 @@
 }
 
 .uploadDragOver {
-  // background-color: var(--drop-zone-bg-color, rgba(51, 173, 255, 0.2));
   background-color: var(--drop-zone-bg-color, #{$ice-blue});
 }
 
 .uploadDisabled {
   border: 1px dashed $grey;
   color: $grey;
-  display: inline-block;
-  padding: 15px 27px;
-  user-select: none;
-  transition: color 0.4s, border-color 0.4s;
+  // padding: 15px 27px;
+  pointer-events: none;
+  // transition: color 0.4s, border-color 0.4s;
+}
+
+.uploadDisabled .uploadIcon {
+  fill: $grey;
 }
 
 .fileInput {
@@ -52,10 +61,4 @@
   width: 94px; // make customizable
   font-size: 12px; // make customizable
   text-align: center;
-}
-
-.uploadIcon {
-  width: 32px;
-  height: 32px;
-  fill: $blue;
 }

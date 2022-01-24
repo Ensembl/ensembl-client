@@ -1,8 +1,17 @@
 @import 'src/styles/common';
 
-.defaultWrapper {
+.wrapper {
+  padding: 40px;
+}
+
+.wrapperGrey {
   padding: 40px;
   background-color: $light-grey;
+}
+
+.storyDescription {
+  width: 60ch;
+  padding-bottom: 1rem;
 }
 
 .customizedUpload {
@@ -25,7 +34,6 @@
 }
 
 .dropZone {
-  // --drop-zone-bg-color: rgba(51, 173, 255, 0.2);
   --drop-zone-bg-color: #{$ice-blue};
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import classNames from 'classnames';
 
 import useFileDrop from 'src/shared/components/upload/hooks/useFileDrop';
@@ -30,13 +30,20 @@ type DefaultArgs = {
   onChange: (...args: any) => void;
 };
 
-const disableDefaultDragover = () => {
-  document.addEventListener('dragover', function (event) {
+const useDisabledDocumentDragover = () => {
+  const preventDefault = (event: Event) => {
     event.preventDefault();
-  });
-  document.addEventListener('drop', function (event) {
-    event.preventDefault();
-  });
+  };
+
+  useEffect(() => {
+    document.addEventListener('dragover', preventDefault);
+    document.addEventListener('drop', preventDefault);
+
+    return () => {
+      document.removeEventListener('dragover', preventDefault);
+      document.removeEventListener('drop', preventDefault);
+    };
+  }, []);
 };
 
 // const Wrapper = (props: any) => {
@@ -54,18 +61,39 @@ const disableDefaultDragover = () => {
 // };
 
 export const DefaultStory = (args: DefaultArgs) => {
-  disableDefaultDragover();
+  useDisabledDocumentDragover();
   return (
-    <div className={styles.defaultWrapper}>
-      <Upload onUpload={args.onChange} />
-    </div>
+    <>
+      <div className={styles.wrapper}>
+        <Upload onUpload={args.onChange} />
+      </div>
+      <div className={styles.wrapperGrey}>
+        <Upload onUpload={args.onChange} />
+      </div>
+    </>
   );
 };
 
 DefaultStory.storyName = 'default';
 
+export const DisabledStory = (args: DefaultArgs) => {
+  useDisabledDocumentDragover();
+  return (
+    <>
+      <div className={styles.wrapper}>
+        <Upload onUpload={args.onChange} disabled={true} />
+      </div>
+      <div className={styles.wrapperGrey}>
+        <Upload onUpload={args.onChange} disabled={true} />
+      </div>
+    </>
+  );
+};
+
+DisabledStory.storyName = 'disabled';
+
 export const InputBoxStory = () => {
-  disableDefaultDragover();
+  useDisabledDocumentDragover();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const onUpload = ({ content }: FileTransformedToString) => {
@@ -82,14 +110,21 @@ export const InputBoxStory = () => {
   });
 
   return (
-    <div className={inputBoxClasses} ref={ref}>
-      <div className={styles.textareaContainer}>
-        <ShadedTextarea ref={textareaRef} placeholder="Hello stranger" />
+    <>
+      <p className={styles.storyDescription}>
+        You can wire up a larger component to detect dragging and dropping of
+        files. In the example below, a file can be dropped anywhere over the
+        input box, not just over the dedicated drop area.
+      </p>
+      <div className={inputBoxClasses} ref={ref}>
+        <div className={styles.textareaContainer}>
+          <ShadedTextarea ref={textareaRef} placeholder="Hello stranger" />
+        </div>
+        <div className={styles.dropZoneContainer}>
+          <Upload onUpload={onUpload} transformTo="text" />
+        </div>
       </div>
-      <div className={styles.dropZoneContainer}>
-        <Upload onUpload={onUpload} transformTo="text" />
-      </div>
-    </div>
+    </>
   );
 };
 
