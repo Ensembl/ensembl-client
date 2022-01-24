@@ -15,8 +15,8 @@
  */
 
 import { ExternalReference } from './externalReference';
-import { LocationWithinRegion } from './location';
 import { Sequence } from './sequence';
+import { Source } from './source';
 
 export type ProteinDomainsResources = {
   [name_of_resource: string]: {
@@ -43,6 +43,21 @@ export enum ProductType {
   PROTEIN = 'Protein'
 }
 
+type Location = {
+  start: number;
+  end: number;
+};
+
+type SequenceFamily = {
+  name: string;
+  description: string;
+  source: Source;
+};
+export type FamilyMatches = {
+  relative_location: Location;
+  sequence_family: SequenceFamily;
+};
+
 // TODO: have at least two types of products:
 // one for protein, the other for RNA
 export type Product = {
@@ -51,15 +66,7 @@ export type Product = {
   unversioned_stable_id: string;
   version: number | null;
   length: number;
-  protein_domains: ProteinDomain[];
   external_references: ExternalReference[];
   sequence: Sequence;
-};
-
-export type ProteinDomain = {
-  id: string;
-  name: string;
-  resource_name: string;
-  location: LocationWithinRegion;
-  // there will be a couple of other properties coming from the api that we aren't interested in ATM
+  family_matches: FamilyMatches[];
 };

@@ -26,7 +26,7 @@ import ProteinDomainImage, {
 const product = createProduct();
 
 const minimalProps = {
-  proteinDomains: product.protein_domains,
+  proteinDomains: product.family_matches,
   width: 600
 };
 
@@ -53,9 +53,9 @@ describe('<ProteinDomainImage />', () => {
 
   it('renders the correct number of domains in an svg', () => {
     const { container } = renderComponent();
-    const firstDomainsGroup = Object.values(
-      domainsByResourceGroups
-    ).flatMap((resource) => Object.values(resource))[0];
+    const firstDomainsGroup = Object.values(domainsByResourceGroups).flatMap(
+      (resource) => Object.values(resource)
+    )[0];
 
     expect(
       container.querySelector('svg')?.querySelectorAll('.domain').length

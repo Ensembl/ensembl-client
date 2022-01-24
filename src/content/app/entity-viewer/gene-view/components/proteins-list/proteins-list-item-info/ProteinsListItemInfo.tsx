@@ -16,7 +16,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
@@ -36,14 +35,14 @@ import {
   externalSourceLinks,
   getProteinXrefs
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
   fetchProteinSummaryStats,
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
+import { useProteinDomainsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+
 import { LoadingState } from 'src/shared/types/loading-state';
-import { ProteinDomain } from 'src/shared/types/thoas/product';
 import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
 import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
@@ -54,22 +53,6 @@ import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-type ProductWithoutDomains = NonNullable<
-  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number]['product_generating_contexts'][number]['product']
->;
-
-type ProductWithDomains = ProductWithoutDomains & {
-  protein_domains: ProteinDomain[];
-};
-
-type TranscriptWithProteinDomains = ProteinCodingTranscript & {
-  product_generating_contexts: Array<
-    ProteinCodingTranscript['product_generating_contexts'][number] & {
-      product: ProductWithDomains;
-    }
-  >;
-};
-
 export type Props = {
   gene: DefaultEntityViewerGeneQueryResult['gene'];
   transcript: ProteinCodingTranscript;
@@ -78,69 +61,29 @@ export type Props = {
 
 const gene_image_width = Number(settings.gene_image_width);
 
-const addProteinDomains = (
-  transcript: ProteinCodingTranscript,
-  proteinDomains: ProteinDomain[]
-) => {
-  return set(
-    ['product_generating_contexts', '0', 'product', 'protein_domains'],
-    proteinDomains,
-    transcript
-  ) as TranscriptWithProteinDomains;
-};
-
 const ProteinsListItemInfo = (props: Props) => {
   const { gene, transcript, trackLength } = props;
   const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId } = params;
 
-  const [transcriptWithProteinDomains, setTranscriptWithProteinDomains] =
-    useState<TranscriptWithProteinDomains | null>(null);
-
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined
   >();
-
-  const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
-    LoadingState.LOADING
-  );
 
   const [summaryStatsLoadingState, setSummaryStatsLoadingState] =
     useState<LoadingState>(LoadingState.LOADING);
 
   const { trackProteinDownload } = useEntityViewerAnalytics();
 
-  const proteinId =
-    transcript.product_generating_contexts[0].product.unversioned_stable_id;
-
-  const { product: productWithProteinDomains } =
-    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
+  const productId = transcript.product_generating_contexts[0].product.stable_id;
 
   const proteinXrefs = getProteinXrefs(transcript);
   const displayXref = proteinXrefs[0];
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (domainsLoadingState === LoadingState.LOADING) {
-      fetchProteinDomains(proteinId, abortController.signal)
-        .then((proteinDomains) => {
-          if (!abortController.signal.aborted) {
-            setTranscriptWithProteinDomains(
-              addProteinDomains(transcript, proteinDomains)
-            );
-            setDomainsLoadingState(LoadingState.SUCCESS);
-          }
-        })
-        .catch(() => {
-          setDomainsLoadingState(LoadingState.ERROR);
-        });
-    }
-
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [domainsLoadingState]);
+  const { data } = useProteinDomainsQuery({
+    productId: productId,
+    genomeId: params.genomeId as string
+  });
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -187,20 +130,19 @@ const ProteinsListItemInfo = (props: Props) => {
   };
 
   const showLoadingIndicator =
-    domainsLoadingState === LoadingState.LOADING ||
     summaryStatsLoadingState === LoadingState.LOADING;
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {productWithProteinDomains && (
+      {data && (
         <>
           <ProteinDomainImage
-            proteinDomains={productWithProteinDomains.protein_domains}
+            proteinDomains={data.product.family_matches}
             trackLength={trackLength}
             width={gene_image_width}
           />
           <ProteinImage
-            product={productWithProteinDomains}
+            productLength={data.product.length}
             trackLength={trackLength}
             width={gene_image_width}
           />
@@ -210,28 +152,27 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {proteinXrefs.length > 0 &&
-              domainsLoadingState === LoadingState.SUCCESS && (
-                <div>
-                  <div className={styles.xrefsWrapper}>
-                    <ProteinExternalReferenceGroup
-                      source={
-                        proteinXrefs[0].source.id === SWISSPROT_SOURCE
-                          ? ExternalSource.UNIPROT_SWISSPROT
-                          : ExternalSource.UNIPROT_TREMBL
-                      }
-                      xrefs={proteinXrefs}
-                    />
-                  </div>
-                  <div className={styles.xrefsWrapper}>
-                    <ProteinExternalReferenceGroup
-                      source={ExternalSource.INTERPRO}
-                      xrefs={proteinXrefs}
-                    />
-                  </div>
+            {proteinXrefs.length > 0 && (
+              <div>
+                <div className={styles.xrefsWrapper}>
+                  <ProteinExternalReferenceGroup
+                    source={
+                      proteinXrefs[0].source.id === SWISSPROT_SOURCE
+                        ? ExternalSource.UNIPROT_SWISSPROT
+                        : ExternalSource.UNIPROT_TREMBL
+                    }
+                    xrefs={proteinXrefs}
+                  />
                 </div>
-              )}
-            {domainsLoadingState === LoadingState.SUCCESS && (
+                <div className={styles.xrefsWrapper}>
+                  <ProteinExternalReferenceGroup
+                    source={ExternalSource.INTERPRO}
+                    xrefs={proteinXrefs}
+                  />
+                </div>
+              </div>
+            )}
+            {
               <div className={styles.downloadWrapper}>
                 <InstantDownloadProtein
                   genomeId={genomeId as string}
@@ -244,9 +185,9 @@ const ProteinsListItemInfo = (props: Props) => {
                   }
                 />
               </div>
-            )}
+            }
           </div>
-          {proteinSummaryStats && domainsLoadingState === LoadingState.SUCCESS && (
+          {proteinSummaryStats && (
             <div className={styles.proteinStatsWrapper}>
               <ProteinExternalReference
                 source={ExternalSource.PDBE}
