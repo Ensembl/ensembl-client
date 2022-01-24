@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
+import classNames from 'classnames';
 
-import Upload, { FileReaderMethod } from 'src/shared/components/upload/Upload';
+import useFileDrop from 'src/shared/components/upload/hooks/useFileDrop';
+
+import Upload from 'src/shared/components/upload/Upload';
+import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
+
+import type { FileTransformedToString } from 'src/shared/components/upload/types';
 
 import styles from './Upload.stories.scss';
 
@@ -24,92 +30,137 @@ type DefaultArgs = {
   onChange: (...args: any) => void;
 };
 
-const Wrapper = (props: any) => {
-  const { upload: Upload, ...otherProps } = props;
+const disableDefaultDragover = () => {
+  document.addEventListener('dragover', function (event) {
+    event.preventDefault();
+  });
+  document.addEventListener('drop', function (event) {
+    event.preventDefault();
+  });
+};
 
-  const onChange = (filesOrContent: any) => {
-    props.onChange(filesOrContent);
-  };
+// const Wrapper = (props: any) => {
+//   const { upload: Upload, ...otherProps } = props;
 
+//   const onChange = (filesOrContent: any) => {
+//     props.onChange(filesOrContent);
+//   };
+
+//   return (
+//     <div className={styles.defaultWrapper}>
+//       <Upload onChange={onChange} {...otherProps} />
+//     </div>
+//   );
+// };
+
+export const DefaultStory = (args: DefaultArgs) => {
+  disableDefaultDragover();
   return (
     <div className={styles.defaultWrapper}>
-      <Upload onChange={onChange} {...otherProps} />
+      <Upload onUpload={args.onChange} />
     </div>
   );
 };
 
-export const DefaultStory = (args: DefaultArgs) => (
-  <Wrapper upload={Upload} {...args} />
-);
-
 DefaultStory.storyName = 'default';
 
-export const CustomLabelStory = (args: DefaultArgs) => (
-  <Wrapper upload={Upload} label={'Upload'} {...args} />
-);
+export const InputBoxStory = () => {
+  disableDefaultDragover();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-CustomLabelStory.storyName = 'with custom label';
+  const onUpload = ({ content }: FileTransformedToString) => {
+    if (!textareaRef.current) {
+      return;
+    }
+    textareaRef.current.value = content;
+  };
 
-export const CallbackWithSingleFileStory = (args: DefaultArgs) => (
-  <Wrapper
-    upload={Upload}
-    callbackWithFiles={true}
-    allowMultiple={false}
-    {...args}
-  />
-);
+  const { ref, isDraggedOver } = useFileDrop({ onUpload, transformTo: 'text' });
 
-CallbackWithSingleFileStory.storyName = 'callback with single file';
+  const inputBoxClasses = classNames(styles.inputBox, {
+    [styles.dropZone]: isDraggedOver
+  });
 
-export const CallbackWithMultipleFilesStory = (args: DefaultArgs) => (
-  <Wrapper upload={Upload} callbackWithFiles={true} {...args} />
-);
+  return (
+    <div className={inputBoxClasses} ref={ref}>
+      <div className={styles.textareaContainer}>
+        <ShadedTextarea ref={textareaRef} placeholder="Hello stranger" />
+      </div>
+      <div className={styles.dropZoneContainer}>
+        <Upload onUpload={onUpload} transformTo="text" />
+      </div>
+    </div>
+  );
+};
 
-CallbackWithMultipleFilesStory.storyName = 'callback with multiple files';
+InputBoxStory.storyName = 'part of an input box';
 
-export const CallbackWithDataUrlStory = (args: DefaultArgs) => (
-  <Wrapper
-    upload={Upload}
-    fileReaderMethod={FileReaderMethod.DATA_URL}
-    {...args}
-  />
-);
+// export const CustomLabelStory = (args: DefaultArgs) => (
+//   <Wrapper upload={Upload} label={'Upload'} {...args} />
+// );
 
-CallbackWithDataUrlStory.storyName = 'callback with data urls';
+// CustomLabelStory.storyName = 'with custom label';
 
-export const CallbackWithBinaryStringStory = (args: DefaultArgs) => (
-  <Wrapper
-    upload={Upload}
-    fileReaderMethod={FileReaderMethod.BINARY_STRING}
-    {...args}
-  />
-);
+// export const CallbackWithSingleFileStory = (args: DefaultArgs) => (
+//   <Wrapper
+//     upload={Upload}
+//     callbackWithFiles={true}
+//     allowMultiple={false}
+//     {...args}
+//   />
+// );
 
-CallbackWithBinaryStringStory.storyName = 'callback with binary string';
+// CallbackWithSingleFileStory.storyName = 'callback with single file';
 
-export const CallbackWithArrayBufferStory = (args: DefaultArgs) => (
-  <Wrapper
-    upload={Upload}
-    fileReaderMethod={FileReaderMethod.ARRAY_BUFFER}
-    {...args}
-  />
-);
+// export const CallbackWithMultipleFilesStory = (args: DefaultArgs) => (
+//   <Wrapper upload={Upload} callbackWithFiles={true} {...args} />
+// );
 
-CallbackWithArrayBufferStory.storyName = 'callback with array buffer';
+// CallbackWithMultipleFilesStory.storyName = 'callback with multiple files';
 
-export const CustomStylingStory = (args: DefaultArgs) => (
-  <Wrapper
-    upload={Upload}
-    label="Upload here"
-    classNames={{
-      default: styles.customizedUpload,
-      active: styles.customizedUploadActive
-    }}
-    {...args}
-  />
-);
+// export const CallbackWithDataUrlStory = (args: DefaultArgs) => (
+//   <Wrapper
+//     upload={Upload}
+//     fileReaderMethod={FileReaderMethod.DATA_URL}
+//     {...args}
+//   />
+// );
 
-CustomStylingStory.storyName = 'customized upload';
+// CallbackWithDataUrlStory.storyName = 'callback with data urls';
+
+// export const CallbackWithBinaryStringStory = (args: DefaultArgs) => (
+//   <Wrapper
+//     upload={Upload}
+//     fileReaderMethod={FileReaderMethod.BINARY_STRING}
+//     {...args}
+//   />
+// );
+
+// CallbackWithBinaryStringStory.storyName = 'callback with binary string';
+
+// export const CallbackWithArrayBufferStory = (args: DefaultArgs) => (
+//   <Wrapper
+//     upload={Upload}
+//     fileReaderMethod={FileReaderMethod.ARRAY_BUFFER}
+//     {...args}
+//   />
+// );
+
+// CallbackWithArrayBufferStory.storyName = 'callback with array buffer';
+
+// export const CustomStylingStory = (args: DefaultArgs) => (
+//   <Wrapper
+//     upload={Upload}
+//     label="Upload here"
+//     classNames={{
+//       default: styles.customizedUpload,
+//       active: styles.customizedUploadActive
+//     }}
+//     {...args}
+//   />
+// );
+
+// CustomStylingStory.storyName = 'customized upload';
 
 export default {
   title: 'Components/Shared Components/Upload',

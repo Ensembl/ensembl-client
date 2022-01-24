@@ -1,10 +1,24 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import windowService from 'src/services/window-service';
 
-type TransformTo =
-  | 'arrayBuffet'
-  | 'binaryString'
-  | 'dataUrl'
-  | 'text';
+import type { Options, Result, OptionsWithDefinedTransform } from '../types';
+
+type TransformTo = 'arrayBuffer' | 'binaryString' | 'dataUrl' | 'text';
 
 type FileReaderMethod =
   | 'readAsArrayBuffer'
@@ -12,33 +26,52 @@ type FileReaderMethod =
   | 'readAsDataURL'
   | 'readAsText';
 
+const transformToFileReaderMethodMap: Record<TransformTo, FileReaderMethod> = {
+  arrayBuffer: 'readAsArrayBuffer',
+  binaryString: 'readAsBinaryString',
+  dataUrl: 'readAsDataURL',
+  text: 'readAsText'
+};
+
 const fileReaderErrorMessages: Record<number, string> = {
   1: 'The file can not be found (NOT_FOUND_ERR).',
   2: 'The operation is insecure (SECURITY_ERR).',
   4: 'The I/O read operation failed (NOT_READABLE_ERR).'
 };
 
-const isDropEvent = (event: React.ChangeEvent<HTMLInputElement> | React.DragEvent): event is React.DragEvent => {
-  return event.type === 'drop';
-};
-
-const getFilesFromEvent = (event: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
-  if (isDropEvent(event)) {
-    event.dataTransfer.clearData();
-    return event.dataTransfer.files;
+export const transformFiles = async <
+  T extends Options & OptionsWithDefinedTransform
+>(
+  files: File[],
+  options: T
+): Promise<Result<T>> => {
+  const { allowMultiple, transformTo } = options;
+  if (allowMultiple) {
+    const promises = [...files].map(
+      async (file) => await transformFile(file, transformTo)
+    );
+    const results = await Promise.all(promises);
+    return results.filter((result) =>
+      Boolean(result.content)
+    ) as unknown as Result<T>;
   } else {
-    return event.target.files
+    const result = await transformFile(files[0], transformTo);
+    return result as unknown as Result<T>;
   }
 };
 
-const readFromFile = async (file: File, method: FileReaderMethod) => {
-  const fileReader = windowService.getFileReader();
-  const promise = new Promise((resolve, reject) => {
-    fileReader.onload = resolve;
-    fileReader.onerror = reject;
-    fileReader[method](file);
-  });
-  return await promise;
+const transformFile = async (file: File, transformTo: TransformTo) => {
+  const fileReaderMethod = transformToFileReaderMethodMap[transformTo];
+  switch (fileReaderMethod) {
+    case 'readAsArrayBuffer':
+      return await fileToArrayBuffer(file);
+    case 'readAsBinaryString':
+      return await fileToBinaryString(file);
+    case 'readAsDataURL':
+      return await fileToDataUrl(file);
+    case 'readAsText':
+      return await fileToText(file);
+  }
 };
 
 const fileToArrayBuffer = async (file: File) => {
@@ -48,9 +81,12 @@ const fileToArrayBuffer = async (file: File) => {
     error: null as string | null
   };
   try {
-    result.content = await readFromFile(file, 'readAsArrayBuffer') as ArrayBuffer;
+    result.content = (await readFromFile(
+      file,
+      'readAsArrayBuffer'
+    )) as ArrayBuffer;
   } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);  
+    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
   }
   return result;
 };
@@ -62,9 +98,9 @@ const fileToBinaryString = async (file: File) => {
     error: null as string | null
   };
   try {
-    result.content = await readFromFile(file, 'readAsBinaryString') as string;
+    result.content = (await readFromFile(file, 'readAsBinaryString')) as string;
   } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);  
+    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
   }
   return result;
 };
@@ -76,9 +112,9 @@ const fileToDataUrl = async (file: File) => {
     error: null as string | null
   };
   try {
-    result.content = await readFromFile(file, 'readAsDataURL') as string;
+    result.content = (await readFromFile(file, 'readAsDataURL')) as string;
   } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);  
+    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
   }
   return result;
 };
@@ -90,14 +126,26 @@ const fileToText = async (file: File) => {
     error: null as string | null
   };
   try {
-    result.content = await readFromFile(file, 'readAsText') as string;
+    result.content = (await readFromFile(file, 'readAsText')) as string;
   } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);  
+    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
   }
   return result;
 };
 
+const readFromFile = async (file: File, method: FileReaderMethod) => {
+  const fileReader = windowService.getFileReader();
+  const promise = new Promise((resolve, reject) => {
+    fileReader.onload = resolve;
+    fileReader.onerror = reject;
+    fileReader[method](file);
+  });
+  await promise;
+  return fileReader.result;
+};
+
 const getErrorMessage = (error: ProgressEvent<FileReader>) => {
-  const errorCode = (error as ProgressEvent<FileReader>).target?.error?.code as number;
+  const errorCode = (error as ProgressEvent<FileReader>).target?.error
+    ?.code as number;
   return fileReaderErrorMessages[errorCode];
-}
+};

@@ -1,21 +1,32 @@
 @import 'src/styles/common';
 
-.defaultUpload {
+.upload {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: var(--drop-zone-height, 102px);
+  width: var(--drop-zone-width, 200px);
+  background-color: var(--drop-zone-bg-color, #{$white});
+  position: relative;
   border: 1px dashed $blue;
   color: $blue;
-  display: inline-block;
-  position: relative;
-  padding: 15px 27px;
   cursor: pointer;
   transition: color 0.4s, border-color 0.4s, background-color 0.4s;
 }
 
-.defaultUploadActive {
-  transition: background-color 0.4s;
-  background-color: rgba(51, 173, 255, 0.2);
+// this will prevent dragenter and dragleave events emitted by children of the drop area
+// (although it doesn't remove the need for a javascript solution when other components are used as drop areas)
+.upload > * {
+  pointer-events: none;
 }
 
-.disabledUpload {
+.uploadDragOver {
+  // background-color: var(--drop-zone-bg-color, rgba(51, 173, 255, 0.2));
+  background-color: var(--drop-zone-bg-color, #{$ice-blue});
+}
+
+.uploadDisabled {
   border: 1px dashed $grey;
   color: $grey;
   display: inline-block;
@@ -35,4 +46,16 @@
 
 .defaultUpload:focus-within {
   background: 1px dashed $black;
+}
+
+.label {
+  width: 94px; // make customizable
+  font-size: 12px; // make customizable
+  text-align: center;
+}
+
+.uploadIcon {
+  width: 32px;
+  height: 32px;
+  fill: $blue;
 }

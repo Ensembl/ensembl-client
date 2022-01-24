@@ -14,3 +14,26 @@
   border-color: $green;
   color: $green;
 }
+
+.inputBox {
+  display: flex;
+  gap: 1rem;
+  width: 800px;
+  padding: 20px;
+  background-color: $light-grey;
+  --textarea-height: 102px;
+}
+
+.dropZone {
+  // --drop-zone-bg-color: rgba(51, 173, 255, 0.2);
+  --drop-zone-bg-color: #{$ice-blue};
+}
+
+.textareaContainer {
+  width: 500px;
+  height: 100px;
+}
+
+.dropZoneContainer {
+  background-color: $grey;
+}
