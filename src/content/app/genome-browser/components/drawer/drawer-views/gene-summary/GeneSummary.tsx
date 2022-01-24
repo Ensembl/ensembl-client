@@ -31,6 +31,7 @@ import {
   getDisplayStableId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';

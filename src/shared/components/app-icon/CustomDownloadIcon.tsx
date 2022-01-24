@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as SVGIcon } from 'static/img/launchbar/custom-download.svg';
+import { ReactComponent as SVGIcon } from 'static/icons/custom-download.svg';
 
 import styles from './AppIcon.scss';
 

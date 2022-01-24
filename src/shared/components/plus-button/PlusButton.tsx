@@ -15,6 +15,7 @@
  */
 
 import React, { type ButtonHTMLAttributes } from 'react';
+
 import { ReactComponent as PlusIcon } from './plus-icon.svg';
 
 import styles from './PlusButton.scss';

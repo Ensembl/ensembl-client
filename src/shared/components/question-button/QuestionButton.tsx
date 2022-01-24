@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import { useQuestionButtonBehaviour } from './useQuestionButtonBehaviour';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
 import { ReactComponent as QuestionIcon } from './question_circle.svg';
 
 import defaultStyles from './QuestionButton.scss';

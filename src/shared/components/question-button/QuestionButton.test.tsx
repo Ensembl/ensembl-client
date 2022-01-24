@@ -19,6 +19,7 @@ import { render, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import QuestionButton from './QuestionButton';
+
 import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
 
 describe('<QuestionButton />', () => {

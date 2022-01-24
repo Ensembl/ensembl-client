@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import classNames from 'classnames';
 
 import {
   getIsTrackPanelOpened,
@@ -34,16 +35,17 @@ import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
-import { ReactComponent as tracksManagerIcon } from 'static/img/sidebar/tracks-manager.svg';
-import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
-import { ReactComponent as personalDataIcon } from 'static/img/sidebar/own-data.svg';
-import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
-import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
+import { ReactComponent as searchIcon } from 'static/icons/search.svg';
+import { ReactComponent as tracksManagerIcon } from 'static/icons/tracks-manager.svg';
+import { ReactComponent as bookmarkIcon } from 'static/icons/bookmark.svg';
+import { ReactComponent as personalDataIcon } from 'static/icons/own-data.svg';
+import { ReactComponent as shareIcon } from 'static/icons/share.svg';
+import { ReactComponent as downloadIcon } from 'static/icons/download.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from 'src/shared/components/layout/StandardAppLayout.scss';
+import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
+import styles from './TrackPanelBar.scss';
 
 export const TrackPanelBar = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
@@ -83,9 +85,14 @@ export const TrackPanelBar = () => {
       : Status.UNSELECTED;
   };
 
+  const searchIconClasses = classNames(
+    layoutStyles.sidebarIcon,
+    styles.searchIcon
+  );
+
   return (
     <>
-      <div className={styles.sidebarIcon} key="search">
+      <div className={searchIconClasses} key="search">
         <ImageButton
           status={getViewIconStatus('search')}
           description="Search"
@@ -93,7 +100,7 @@ export const TrackPanelBar = () => {
           image={searchIcon}
         />
       </div>
-      <div className={styles.sidebarIcon} key="tracks-manager">
+      <div className={layoutStyles.sidebarIcon} key="tracks-manager">
         <ImageButton
           status={Status.DISABLED}
           description="Tracks manager"
@@ -101,7 +108,7 @@ export const TrackPanelBar = () => {
           image={tracksManagerIcon}
         />
       </div>
-      <div className={styles.sidebarIcon} key="bookmarks">
+      <div className={layoutStyles.sidebarIcon} key="bookmarks">
         <ImageButton
           status={getViewIconStatus('bookmarks')}
           description="Previously viewed"
@@ -109,7 +116,7 @@ export const TrackPanelBar = () => {
           image={bookmarkIcon}
         />
       </div>
-      <div className={styles.sidebarIcon} key="personal-data">
+      <div className={layoutStyles.sidebarIcon} key="personal-data">
         <ImageButton
           status={Status.DISABLED}
           description="Personal data"
@@ -117,7 +124,7 @@ export const TrackPanelBar = () => {
           image={personalDataIcon}
         />
       </div>
-      <div className={styles.sidebarIcon} key="share">
+      <div className={layoutStyles.sidebarIcon} key="share">
         <ImageButton
           status={Status.DISABLED}
           description="Share"
@@ -125,7 +132,7 @@ export const TrackPanelBar = () => {
           image={shareIcon}
         />
       </div>
-      <div className={styles.sidebarIcon} key="downloads">
+      <div className={layoutStyles.sidebarIcon} key="downloads">
         <ImageButton
           status={Status.DISABLED}
           description="Downloads"

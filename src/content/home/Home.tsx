@@ -27,7 +27,8 @@ import {
   EntityViewerIcon
 } from 'src/shared/components/app-icon';
 
-import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
+import { ReactComponent as Logotype } from 'static/icons/logotype.svg';
+
 import speciesStripUrl from 'static/img/home/species-strip.svg';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg';

@@ -22,10 +22,10 @@ import storageService from 'src/services/storage-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Topbar } from 'src/header/Header';
-
-import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
-import { PrimaryButton } from '../button/Button';
 import ShowHide from '../show-hide/ShowHide';
+import { PrimaryButton } from '../button/Button';
+
+import { ReactComponent as InfoIcon } from 'static/icons/alert-circle.svg';
 
 import styles from './ErrorScreen.scss';
 

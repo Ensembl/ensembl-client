@@ -19,6 +19,14 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
 import {
+  setAttributesAccordionExpandedPanel,
+  fetchAttributes,
+  resetSelectedAttributes
+} from 'src/content/app/custom-download/state/attributes/attributesActions';
+import { Orthologues } from './sections';
+import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
+
+import {
   Accordion,
   AccordionItem,
   AccordionItemHeading,
@@ -26,24 +34,18 @@ import {
   AccordionItemButton,
   AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
-
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
-import {
-  setAttributesAccordionExpandedPanel,
-  fetchAttributes,
-  resetSelectedAttributes
-} from 'src/content/app/custom-download/state/attributes/attributesActions';
-import { Orthologues } from './sections';
-import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
-import JSONValue from 'src/shared/types/JSON';
+
+import { ReactComponent as ResetIcon } from 'static/icons/trash.svg';
+
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
 import {
   getAttributesAccordionExpandedPanels,
   getSelectedAttributes
 } from 'src/content/app/custom-download/state/attributes/attributesSelector';
 
+import JSONValue from 'src/shared/types/JSON';
 import { Status } from 'src/shared/types/status';
 
 import styles from './AttributesAccordion.scss';

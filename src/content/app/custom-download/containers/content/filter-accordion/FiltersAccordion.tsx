@@ -26,12 +26,13 @@ import {
   AccordionItemButton,
   AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
-
-import JSONValue from 'src/shared/types/JSON';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
+
+import { ReactComponent as ResetIcon } from 'static/icons/trash.svg';
+
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+
 import FiltersAccordionSection from 'src/content/app/custom-download/containers/content/filter-accordion/sections/FiltersAccordionSection';
 import {
   setFiltersAccordionExpandedPanel,
@@ -44,6 +45,7 @@ import {
 } from 'src/content/app/custom-download/state/filters/filtersSelector';
 import { getPreviewResult } from 'src/content/app/custom-download/state/customDownloadSelectors';
 
+import JSONValue from 'src/shared/types/JSON';
 import { Status } from 'src/shared/types/status';
 
 import styles from './FiltersAccordion.scss';

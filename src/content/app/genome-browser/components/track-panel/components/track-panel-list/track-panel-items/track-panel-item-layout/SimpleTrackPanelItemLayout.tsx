@@ -29,7 +29,7 @@ import classNames from 'classnames';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
-import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
+import { ReactComponent as Ellipsis } from 'static/icons/ellipsis.svg';
 
 import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';

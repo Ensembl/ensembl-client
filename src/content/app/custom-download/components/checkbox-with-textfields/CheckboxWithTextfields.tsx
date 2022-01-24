@@ -15,13 +15,13 @@
  */
 
 import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
-
 import Textarea from 'src/shared/components/textarea/Textarea';
 import { Upload, FileTransformedToString } from 'src/shared/components/upload';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { ReactComponent as RemoveIcon } from 'static/icons/clear.svg';
 
 import styles from './CheckboxWithTextfields.scss';
 

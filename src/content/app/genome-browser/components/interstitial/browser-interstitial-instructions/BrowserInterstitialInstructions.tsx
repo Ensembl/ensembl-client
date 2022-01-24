@@ -26,7 +26,7 @@ import {
   GenomeBrowserIcon
 } from 'src/shared/components/app-icon';
 
-import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
+import { ReactComponent as SearchIcon } from 'static/icons/search.svg';
 
 import styles from './BrowserInterstitialInstructions.scss';
 

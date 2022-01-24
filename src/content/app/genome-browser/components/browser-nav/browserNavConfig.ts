@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactComponent as zoomInIcon } from 'static/img/browser/zoom-in.svg';
-import { ReactComponent as zoomOutIcon } from 'static/img/browser/zoom-out.svg';
-import { ReactComponent as navigateUpIcon } from 'static/img/browser/navigate-up.svg';
-import { ReactComponent as navigateDownIcon } from 'static/img/browser/navigate-down.svg';
-import { ReactComponent as navigateLeftIcon } from 'static/img/browser/navigate-left.svg';
-import { ReactComponent as navigateRightIcon } from 'static/img/browser/navigate-right.svg';
+import { ReactComponent as zoomInIcon } from 'static/icons/zoom-in.svg';
+import { ReactComponent as zoomOutIcon } from 'static/icons/zoom-out.svg';
+import { ReactComponent as navigateUpIcon } from 'static/icons/navigate-up.svg';
+import { ReactComponent as navigateDownIcon } from 'static/icons/navigate-down.svg';
+import { ReactComponent as navigateLeftIcon } from 'static/icons/navigate-left.svg';
+import { ReactComponent as navigateRightIcon } from 'static/icons/navigate-right.svg';
 
 import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 

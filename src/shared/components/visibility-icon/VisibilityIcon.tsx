@@ -20,8 +20,8 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
-import { ReactComponent as EyePartial } from 'static/img/track-panel/eye-half.svg';
+import { ReactComponent as Eye } from 'static/icons/eye.svg';
+import { ReactComponent as EyePartial } from 'static/icons/eye-half.svg';
 
 import { Status } from 'src/shared/types/status';
 
