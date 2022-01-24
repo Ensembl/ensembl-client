@@ -14,61 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useReducer } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { setSequences } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import {
+  getSequences,
+  getEmptyInputVisibility
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import BlastInputSequence from './BlastInputSequence';
-import PlusButton from 'src/shared/components/plus-button/PlusButton';
-
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
 import styles from './BlastInputSequences.scss';
 
-// the reducer code below is temporary; it will need to be moved over to Redux
-
-type InputSequencesState = {
-  sequences: ParsedInputSequence[];
-  shouldAppendEmptyInput: boolean;
-};
-
-const initialState: InputSequencesState = {
-  sequences: [],
-  shouldAppendEmptyInput: true
-};
-
-type SetSequencesAction = {
-  type: 'set_sequences';
-  sequences: ParsedInputSequence[];
-};
-
-type DisplayEmptyInputAction = {
-  type: 'display_empty_input';
-  shouldAppendEmptyInput: boolean;
-};
-
-type Action = SetSequencesAction | DisplayEmptyInputAction;
-
-const reducer = (state: InputSequencesState, action: Action) => {
-  switch (action.type) {
-    case 'set_sequences': {
-      const shouldAppendEmptyInput = Boolean(!action.sequences.length);
-      return {
-        shouldAppendEmptyInput,
-        sequences: action.sequences
-      };
-    }
-    case 'display_empty_input':
-      return {
-        ...state,
-        shouldAppendEmptyInput: action.shouldAppendEmptyInput
-      };
-  }
-};
-
 const BlastInputSequences = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { sequences, shouldAppendEmptyInput } = state;
+  const sequences = useSelector(getSequences);
+  const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
+  const dispatch = useDispatch();
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -76,52 +41,33 @@ const BlastInputSequences = () => {
     if (typeof index === 'number') {
       const newSequences = [...sequences];
       newSequences.splice(index, 1, ...parsedSequences);
-      dispatch({
-        type: 'set_sequences',
-        sequences: newSequences
-      });
+      dispatch(
+        setSequences({
+          sequences: newSequences
+        })
+      );
     } else {
-      dispatch({
-        type: 'set_sequences',
-        sequences: [...sequences, ...parsedSequences]
-      });
+      dispatch(
+        setSequences({
+          sequences: [...sequences, ...parsedSequences]
+        })
+      );
     }
-  };
-
-  const appendEmptyInput = () => {
-    dispatch({
-      type: 'display_empty_input',
-      shouldAppendEmptyInput: true
-    });
   };
 
   const onRemoveSequence = (index: number | null) => {
     if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
-      dispatch({
-        type: 'set_sequences',
-        sequences: newSequences
-      });
+      dispatch(
+        setSequences({
+          sequences: newSequences
+        })
+      );
     }
-  };
-
-  const onClearAll = () => {
-    dispatch({
-      type: 'set_sequences',
-      sequences: []
-    });
   };
 
   return (
     <div className={styles.blastInputSequences}>
-      <div className={styles.header}>
-        <span className={styles.headerTitle}>Sequences</span>
-        <span className={styles.sequenceCounter}>{sequences.length}</span>
-        <span className={styles.maxSequences}>of 30</span>
-        <span className={styles.clearAll} onClick={onClearAll}>
-          Clear all
-        </span>
-      </div>
       <div className={styles.inputBoxesContainer}>
         {sequences.map((sequence, index) => (
           <BlastInputSequence
@@ -141,20 +87,6 @@ const BlastInputSequences = () => {
           />
         )}
       </div>
-      {!shouldAppendEmptyInput && (
-        <div className={styles.addSequenceWrapper}>
-          <AddAnotherSequence onAdd={appendEmptyInput} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const AddAnotherSequence = (props: { onAdd: () => void }) => {
-  return (
-    <div className={styles.addSequence}>
-      <span className={styles.addSequenceLabel}>Add another sequence</span>
-      <PlusButton onClick={props.onAdd} />
     </div>
   );
 };

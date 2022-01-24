@@ -1,14 +1,21 @@
 @import 'src/styles/common';
 
-.blastInputSequences {
+.blastInputSequences,
+.header {
   width: 860px;
 }
 
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 56px;
-  padding: 0 28px;
+  padding-left: 28px;
+  padding-bottom: 12px;
+}
+
+.headerGroup {
+  display: flex;
+  align-items: center;
 }
 
 .headerTitle {
@@ -35,10 +42,14 @@
 }
 
 .clearAll {
-  margin-left: auto;
+  margin-right: 30px;
   color: $blue;
   cursor: pointer;
   user-select: none;
+}
+
+.blastAgainstButton {
+  margin-left: 66px;
 }
 
 .inputBoxesContainer {
@@ -48,15 +59,10 @@
   }
 }
 
-.addSequenceWrapper {
-  display: flex;
-  justify-content: flex-end;
-  padding: 12px 26px 12px;
-}
-
 .addSequence {
   display: flex;
   align-items: center;
+  margin-right: 28px;
 }
 
 .addSequenceLabel {

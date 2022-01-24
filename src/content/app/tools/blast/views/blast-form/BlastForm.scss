@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.container {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100%;
+}
+
+.mainContainer {
+  height: 100%;
+  padding: 21px 65px 90px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, min-content);
+  column-gap: 45px;
+  height: 100%;
+}
+
+// temporary class, to be removed when the real thing is ready
+.speciesSelectorPlaceholder {
+  width: 860px;
+  height: 80%;
+  max-height: 684px;
+  background-color: $light-grey;
+}

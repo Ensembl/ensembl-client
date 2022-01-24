@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { combineReducers } from 'redux';
 
-import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
+import blastFormReducer from './blast-form/blastFormSlice';
 
-import commonStyles from '../../common.scss';
-import styles from './BlastInputSequences.stories.scss';
-
-export default {
-  title: 'Components/Blast/BlastInputSequences'
-};
-
-export const BlastInputSequencesStory = () => {
-  return (
-    <div className={commonStyles.page}>
-      <div className={styles.container}>
-        <BlastInputSequences />
-      </div>
-    </div>
-  );
-};
-
-BlastInputSequencesStory.storyName = 'default';
+export default combineReducers({
+  blastForm: blastFormReducer
+});

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
+import React, { type ButtonHTMLAttributes } from 'react';
 import { ReactComponent as PlusIcon } from './plus-icon.svg';
 
 import styles from './PlusButton.scss';
 
-type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
 
 const PlusButton = (props: Props) => {
   return (

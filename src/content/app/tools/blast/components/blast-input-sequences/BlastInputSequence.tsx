@@ -116,7 +116,7 @@ const BlastInputSequence = (props: Props) => {
           ref={textareaRef}
           value={input}
           className={styles.textarea}
-          placeholder="Paste a nucleotide of protein sequence"
+          placeholder="Paste a nucleotide or protein sequence"
           onChange={onChange}
           onPaste={onPaste}
           onBlur={onBlur}

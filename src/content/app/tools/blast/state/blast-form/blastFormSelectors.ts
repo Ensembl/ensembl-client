@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { RootState } from 'src/store';
 
-import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
-import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+export const getSequences = (state: RootState) =>
+  state.blast.blastForm.sequences;
 
-const BlastForm = () => {
-  return (
-    <div>
-      <ToolsAppBar />
-      <ToolsTopBar>stuff</ToolsTopBar>
-      <div>This is Blast search view</div>
-    </div>
-  );
-};
+export const getEmptyInputVisibility = (state: RootState) =>
+  state.blast.blastForm.shouldAppendEmptyInput;
 
-export default BlastForm;
+export const getStep = (state: RootState) => state.blast.blastForm.step;

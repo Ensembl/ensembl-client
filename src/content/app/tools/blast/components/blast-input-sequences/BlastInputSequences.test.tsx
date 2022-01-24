@@ -15,47 +15,171 @@
  */
 
 import React from 'react';
-import { render, getNodeText } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import blastFormReducer, {
+  initialState as initialBlastFormState,
+  type BlastFormState
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import BlastInputSequences from './BlastInputSequences';
+
+const renderComponent = (
+  { state }: { state?: Partial<BlastFormState> } = { state: {} }
+) => {
+  const blastFormState = Object.assign({}, initialBlastFormState, state);
+  const rootReducer = combineReducers({
+    blast: combineReducers({
+      blastForm: blastFormReducer
+    })
+  });
+  const initialState = {
+    blast: { blastForm: blastFormState }
+  };
+
+  const store = configureStore({
+    reducer: rootReducer,
+    preloadedState: initialState
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
+      <BlastInputSequences />
+    </Provider>
+  );
+
+  return {
+    ...renderResult,
+    store
+  };
+};
 
 describe('<BlastInputSequences />', () => {
   describe('initial state', () => {
     it('shows a single empty input', () => {
-      const { container } = render(<BlastInputSequences />);
+      const { container } = renderComponent();
       const inputBoxes = container.querySelectorAll('.inputSequenceBox');
       expect(inputBoxes.length).toBe(1);
     });
   });
 
-  describe('header', () => {
-    it('shows sequence counter, starting with 0', () => {
-      const { container } = render(<BlastInputSequences />);
-      const sequenceCounter = container.querySelector(
-        '.header .sequenceCounter'
-      );
-      expect(getNodeText(sequenceCounter as HTMLElement)).toBe('0');
+  describe('adding sequences', () => {
+    // The tests in this section check how BlastInputSequences will update the redux state
+    // when new sequences are added
+
+    it('adds a single sequence', () => {
+      const { container, store } = renderComponent();
+      const textarea = container.querySelector(
+        '.inputSequenceBox textarea'
+      ) as HTMLTextAreaElement;
+      const inputText = [
+        '>my test sequence',
+        'ACTG',
+        'GATC' // adding a piece of sequence on another line to make sure that it will be joined to the previous line
+      ].join('{enter}');
+
+      userEvent.type(textarea, inputText);
+      textarea.blur();
+
+      const reduxState = store.getState();
+
+      expect(reduxState.blast.blastForm.sequences).toEqual([
+        {
+          header: 'my test sequence',
+          value: 'ACTGGATC'
+        }
+      ]);
     });
 
-    it('has a control to clear all sequences', () => {
-      const { container } = render(<BlastInputSequences />);
-      const clearAll = container.querySelector('.header .clearAll');
-      expect(clearAll).toBeTruthy();
+    it('adds multiple sequences', () => {
+      const { container, store } = renderComponent();
+      const textarea = container.querySelector(
+        '.inputSequenceBox textarea'
+      ) as HTMLTextAreaElement;
+      const inputText = [
+        '>first test sequence',
+        'ACTG',
+        '>second test sequence',
+        'GATC'
+      ].join('{enter}');
+
+      userEvent.type(textarea, inputText);
+      textarea.blur();
+
+      const reduxState = store.getState();
+
+      const expectedSequences = [
+        {
+          header: 'first test sequence',
+          value: 'ACTG'
+        },
+        {
+          header: 'second test sequence',
+          value: 'GATC'
+        }
+      ];
+
+      expect(reduxState.blast.blastForm.sequences).toEqual(expectedSequences);
     });
   });
 
   describe('with added sequences', () => {
-    // TODO: tests to be written after the component is connected to redux
+    const sequence1 = { value: 'ACTG' };
+    const sequence2 = { value: 'GATC' };
+    const sequence3 = { value: 'TCAG' };
+    const sequences = [sequence1, sequence2, sequence3];
 
-    it.todo('shows multiple inputs, each containing a sequence');
+    describe('with an empty input', () => {
+      it('renders filled input boxes and an empty input', () => {
+        const { container } = renderComponent({
+          state: {
+            sequences,
+            shouldAppendEmptyInput: true
+          }
+        });
+        const [...inputBoxes] = container.querySelectorAll('.inputSequenceBox');
+        expect(inputBoxes.length).toBe(sequences.length + 1);
 
-    it.todo('shows a button for adding another sequence');
+        sequences.forEach((sequence, index) => {
+          const inputBox = inputBoxes[index];
+          const textarea = inputBox.querySelector(
+            'textarea'
+          ) as HTMLTextAreaElement;
+          expect(textarea.value).toBe(sequence.value);
+        });
+
+        const lastInput = inputBoxes[inputBoxes.length - 1].querySelector(
+          'textarea'
+        ) as HTMLTextAreaElement;
+        expect(lastInput.value).toBe('');
+      });
+    });
+
+    describe('without an empty input', () => {
+      it('renders filled input boxes', () => {
+        const { container } = renderComponent({
+          state: {
+            sequences,
+            shouldAppendEmptyInput: false
+          }
+        });
+        const [...inputBoxes] = container.querySelectorAll('.inputSequenceBox');
+        expect(inputBoxes.length).toBe(sequences.length);
+
+        sequences.forEach((sequence, index) => {
+          const inputBox = inputBoxes[index];
+          const textarea = inputBox.querySelector(
+            'textarea'
+          ) as HTMLTextAreaElement;
+          expect(textarea.value).toBe(sequence.value);
+        });
+      });
+    });
 
     it.todo('guesses the type of the first sequence');
-
-    it.todo('correctly accepts a FASTA input containing multiple sequences');
-
-    it.todo('updates the sequence counter in the header');
 
     /**
      * QUESTIONS
