@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState, memo, useMemo } from 'react';
-import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
@@ -24,7 +23,6 @@ import EnsemblGenomeBrowser from 'ensembl-genome-browser';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 
-import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -93,28 +91,26 @@ export const Browser = () => {
   );
 
   return (
-    <ApolloProvider client={client}>
-      <div className={styles.genomeBrowser}>
-        <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {activeGenomeId && focus ? (
-          <StandardAppLayout
-            mainContent={mainContent}
-            sidebarContent={<TrackPanel />}
-            sidebarNavigation={<TrackPanelTabs />}
-            sidebarToolstripContent={<TrackPanelBar />}
-            onSidebarToggle={onSidebarToggle}
-            topbarContent={<BrowserBar />}
-            isSidebarOpen={isTrackPanelOpened}
-            isDrawerOpen={isDrawerOpened}
-            drawerContent={<Drawer />}
-            onDrawerClose={onDrawerClose}
-            viewportWidth={viewportWidth}
-          />
-        ) : (
-          <BrowserInterstitial />
-        )}
-      </div>
-    </ApolloProvider>
+    <div className={styles.genomeBrowser}>
+      <BrowserAppBar onSpeciesSelect={changeGenomeId} />
+      {activeGenomeId && focus ? (
+        <StandardAppLayout
+          mainContent={mainContent}
+          sidebarContent={<TrackPanel />}
+          sidebarNavigation={<TrackPanelTabs />}
+          sidebarToolstripContent={<TrackPanelBar />}
+          onSidebarToggle={onSidebarToggle}
+          topbarContent={<BrowserBar />}
+          isSidebarOpen={isTrackPanelOpened}
+          isDrawerOpen={isDrawerOpened}
+          drawerContent={<Drawer />}
+          onDrawerClose={onDrawerClose}
+          viewportWidth={viewportWidth}
+        />
+      ) : (
+        <BrowserInterstitial />
+      )}
+    </div>
   );
 };
 

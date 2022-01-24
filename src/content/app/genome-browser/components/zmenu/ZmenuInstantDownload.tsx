@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
-import { Pick2 } from 'ts-multipick';
+
+import { useGbTranscriptInZmenuQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
@@ -26,58 +26,34 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-
 import styles from './Zmenu.scss';
 
 type Props = {
   id: string;
 };
 
-const TRANSCRIPT_QUERY = gql`
-  query Transcript($genomeId: String!, $transcriptId: String!) {
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
-      product_generating_contexts {
-        product_type
-      }
-      gene {
-        stable_id
-      }
-    }
-  }
-`;
-
-type Transcript = Pick2<FullTranscript, 'gene', 'stable_id'> & {
-  product_generating_contexts: Pick<
-    FullProductGeneratingContext,
-    'product_type'
-  >[];
-};
-
 const ZmenuInstantDownload = (props: Props) => {
   const transcriptId = props.id;
 
-  const genomeId = useSelector(getBrowserActiveGenomeId);
+  const genomeId = useSelector(getBrowserActiveGenomeId) || '';
 
-  const { data, loading } = useQuery<{
-    transcript: Transcript;
-  }>(TRANSCRIPT_QUERY, {
-    variables: {
+  const { data, isLoading } = useGbTranscriptInZmenuQuery(
+    {
       genomeId,
       transcriptId
+    },
+    {
+      skip: !genomeId
     }
-  });
+  );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.zmenuInstantDowloadLoading}>
         <CircleLoader />
       </div>
     );
-  }
-
-  if (!data || !genomeId) {
+  } else if (!data || !genomeId) {
     return null;
   }
 
