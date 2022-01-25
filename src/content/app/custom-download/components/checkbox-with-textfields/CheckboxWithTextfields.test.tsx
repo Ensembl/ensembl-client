@@ -77,9 +77,9 @@ describe('<CheckboxWithTextfields />', () => {
   it('passes the label to the checkbox component', () => {
     const label = faker.random.words();
     const { container } = renderCheckboxWithTextfields({ label });
-    expect(
-      container.querySelector('.checkboxHolder .labelDefault')?.textContent
-    ).toBe(label);
+    expect(container.querySelector('.checkboxHolder .label')?.textContent).toBe(
+      label
+    );
   });
 
   it('automatically checks the checkbox when a textValue is passed', () => {
