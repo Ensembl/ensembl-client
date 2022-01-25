@@ -49,8 +49,8 @@
   line-height: var(--checkbox-label-height, 30px);
   padding-left: var(--checkbox-label-padding-left, 8px);
   padding-right: var(--checkbox-label-padding-right, 2px);
-  max-width: var(--checkbox-label-max-width, calc(100% - 17px));
-  width: var(--checkbox-label-width);
+  margin-right: var(--checkbox-label-margin-right, 0);
+  max-width: var(--checkbox-label-max-width, inherit);
   word-wrap: break-word;
 }
 
