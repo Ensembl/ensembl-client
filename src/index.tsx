@@ -21,6 +21,8 @@ import { CookiesProvider } from 'react-cookie';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 
+import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
+
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
 import configureStore from './store';
 import Root from './root/Root';
@@ -28,6 +30,8 @@ import Root from './root/Root';
 import { registerSW } from './registerServiceWorker';
 
 import './styles/main';
+
+ensureBrowserSupport();
 
 const store = configureStore();
 

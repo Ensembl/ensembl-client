@@ -19,6 +19,7 @@ import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 import { getPaths } from '../paths';
 
@@ -74,7 +75,16 @@ export default (): Configuration => {
         // but also use @svgr/webpack to be able to require svg's directly as React components
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack', 'file-loader']
+          use: [
+            '@svgr/webpack',
+            {
+              loader: 'file-loader',
+              options: {
+                outputPath: paths.buildStaticPath,
+                publicPath: '/static/'
+              }
+            }
+          ]
         }
       ]
     },
@@ -91,6 +101,14 @@ export default (): Configuration => {
       new ForkTsCheckerPlugin(),
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
+      }),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.join(paths.rootPath, 'src/server/views'),
+            to: path.join(paths.buildServerDir, 'views')
+          }
+        ]
       })
     ],
 

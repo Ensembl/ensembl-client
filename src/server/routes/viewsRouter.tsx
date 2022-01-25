@@ -90,6 +90,9 @@ const viewRouter = async (req: Request, res: Response) => {
     getConfigForClient()
   )}
       </script>
+      <script nomodule>
+        window.location.replace("/unsupported-browser");
+      </script>
     </head>
     <body>  
       <div id="ens-app" class="ens-app">${markup}</div>
