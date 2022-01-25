@@ -16,19 +16,20 @@
 
 import windowService from 'src/services/window-service';
 
-import type { Options, Result, OptionsWithDefinedTransform } from '../types';
+import type {
+  Options,
+  Result,
+  OptionsWithDefinedTransform,
+  TransformTo
+} from '../types';
 
-type TransformTo = 'arrayBuffer' | 'binaryString' | 'dataUrl' | 'text';
-
-type FileReaderMethod =
-  | 'readAsArrayBuffer'
-  | 'readAsBinaryString'
-  | 'readAsDataURL'
-  | 'readAsText';
+// The File API also includes the `readAsBinaryString` method which is not recommended
+// (readAsArrayBuffer should be used instead)
+// (see: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString)
+type FileReaderMethod = 'readAsArrayBuffer' | 'readAsDataURL' | 'readAsText';
 
 const transformToFileReaderMethodMap: Record<TransformTo, FileReaderMethod> = {
   arrayBuffer: 'readAsArrayBuffer',
-  binaryString: 'readAsBinaryString',
   dataUrl: 'readAsDataURL',
   text: 'readAsText'
 };
@@ -65,8 +66,6 @@ const transformFile = async (file: File, transformTo: TransformTo) => {
   switch (fileReaderMethod) {
     case 'readAsArrayBuffer':
       return await fileToArrayBuffer(file);
-    case 'readAsBinaryString':
-      return await fileToBinaryString(file);
     case 'readAsDataURL':
       return await fileToDataUrl(file);
     case 'readAsText':
@@ -85,20 +84,6 @@ const fileToArrayBuffer = async (file: File) => {
       file,
       'readAsArrayBuffer'
     )) as ArrayBuffer;
-  } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
-  }
-  return result;
-};
-
-const fileToBinaryString = async (file: File) => {
-  const result = {
-    filename: file.name,
-    content: null as string | null,
-    error: null as string | null
-  };
-  try {
-    result.content = (await readFromFile(file, 'readAsBinaryString')) as string;
   } catch (error) {
     result.error = getErrorMessage(error as ProgressEvent<FileReader>);
   }

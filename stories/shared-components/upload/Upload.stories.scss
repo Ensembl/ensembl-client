@@ -45,3 +45,11 @@
 .dropZoneContainer {
   background-color: $grey;
 }
+
+.fileContent {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid $grey;
+  padding: 10px;
+  word-wrap: break-word;
+}

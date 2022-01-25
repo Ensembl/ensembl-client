@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { transformFiles } from '../helpers/uploadHelpers';
 
@@ -23,11 +23,16 @@ import type { Options, Result, FileUploadParams } from '../types';
 const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
   const elementRef = useRef<HTMLElement | null>();
+  const paramsRef = useRef(params); // to be able to get to the params from within a callback's closure
 
   // keep count of all dragenter and dragleave events from the component and its children
   // to correctly detect when the dragged file is removed from the component
   // (https://stackoverflow.com/a/21002544/3925302)
   const counterRef = useRef(0);
+
+  useEffect(() => {
+    paramsRef.current = params; // update at every rerender
+  });
 
   const onDragEnter = (event: DragEvent) => {
     event.stopPropagation();
@@ -52,6 +57,7 @@ const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
     setIsDraggedOver(false);
     counterRef.current = 0;
 
+    const params = paramsRef.current; // always use up-to-data params
     const { onUpload, transformTo, allowMultiple } = params;
     const files = getFilesFromDragEvent(event);
 

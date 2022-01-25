@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type TransformTo = 'arrayBuffer' | 'binaryString' | 'dataUrl' | 'text';
+export type TransformTo = 'arrayBuffer' | 'dataUrl' | 'text';
 
 export type Options = {
   transformTo?: TransformTo;
