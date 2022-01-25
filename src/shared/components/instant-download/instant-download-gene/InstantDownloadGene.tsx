@@ -89,6 +89,9 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
   proteinSequence: 'Protein sequence'
 };
 
+export const getCheckboxTheme = (theme: Theme) =>
+  theme === 'light' ? 'lighter' : 'dark';
+
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
@@ -183,12 +186,7 @@ const GeneSection = (props: GeneSectionProps) => (
       <span className={styles.featureId}>{props.gene.id}</span>
     </div>
     <Checkbox
-      classNames={{
-        checkboxHolder: styles.checkboxHolder,
-        default: styles.checkboxDefault
-      }}
-      theme={props.theme}
-      labelClassName={styles.checkboxLabel}
+      theme={getCheckboxTheme(props.theme)}
       label="Genomic sequence"
       checked={props.isGenomicSequenceSelected}
       onChange={props.onChange}
@@ -205,11 +203,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{
-        checkboxHolder: styles.checkboxHolder
-      }}
-      theme={props.theme}
-      labelClassName={styles.checkboxLabel}
+      theme={getCheckboxTheme(props.theme)}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
       onChange={() => props.onChange(key as TranscriptOption)}

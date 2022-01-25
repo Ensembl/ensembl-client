@@ -193,7 +193,6 @@ export const BrowserTrackConfig = () => {
           selectedOption={
             applyToAllConfig.isSelected ? 'all_tracks' : 'this_track'
           }
-          classNames={{ radio: styles.radio }}
         />
       </div>
       <div className={styles.section}>

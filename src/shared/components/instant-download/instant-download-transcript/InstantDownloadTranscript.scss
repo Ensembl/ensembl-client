@@ -25,10 +25,6 @@
   margin-bottom: 9px;
 }
 
-.checkboxDefault {
-  margin-top: 9px;
-}
-
 .downloadButtonWrapper {
   align-self: end;
   justify-self: end;
@@ -39,6 +35,7 @@
   display: grid;
   font-size: 13px;
   align-items: start;
+  --checkbox-margin-top: 9px;
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;
@@ -55,6 +52,7 @@
 
     .geneSection {
       grid-area: gene;
+      --checkbox-holder-margin-left: 6px;
 
       .checkboxWrapper {
         margin-left: 6px;
@@ -87,6 +85,7 @@
     .geneSection {
       margin-top: 18px;
       margin-bottom: 18px;
+      --checkbox-holder-margin-top: 12px;
 
       .label {
         margin-left: -18px;

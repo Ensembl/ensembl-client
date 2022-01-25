@@ -30,12 +30,12 @@ export type Theme = 'light' | 'dark';
 
 export type RadioGroupProps = {
   onChange: (selectedOption: OptionValue) => void;
-  classNames?: {
-    label?: string;
-    wrapper?: string;
-    radio?: string;
-    radioChecked?: string;
-  };
+  // classNames?: {
+  //   label?: string;
+  //   wrapper?: string;
+  //   radio?: string;
+  //   radioChecked?: string;
+  // };
   theme?: Theme;
   options: RadioOptions;
   selectedOption: OptionValue;
@@ -54,27 +54,12 @@ const RadioGroup = (props: RadioGroupProps) => {
   };
 
   const themeClass = getThemeClasses(props.theme);
-  const wrapperClass = classNames(
-    styles.wrapper,
-    props.classNames?.wrapper,
-    themeClass
-  );
-  const labelClass = classNames(styles.label, props.classNames?.label);
-
-  const getRadioClass = (option: RadioOption) => {
-    const radioCheckedClass = classNames(
-      styles.radioChecked,
-      props.classNames?.radioChecked
-    );
-
-    const radioClass = classNames(
+  const wrapperClass = classNames(styles.wrapper, themeClass);
+  const getRadioClass = (option: RadioOption) =>
+    classNames(
       styles.radio,
-      props.classNames?.radio,
-      option.value === props.selectedOption ? radioCheckedClass : undefined
+      option.value === props.selectedOption ? styles.radioChecked : undefined
     );
-
-    return radioClass;
-  };
 
   return (
     <div>
@@ -84,7 +69,7 @@ const RadioGroup = (props: RadioGroupProps) => {
             onClick={() => handleChange(option.value)}
             className={getRadioClass(option)}
           />
-          <label className={labelClass}>
+          <label className={styles.label}>
             <input
               className={styles.input}
               type="radio"

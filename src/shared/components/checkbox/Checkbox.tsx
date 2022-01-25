@@ -21,17 +21,8 @@ import styles from './Checkbox.scss';
 
 type Theme = 'lighter' | 'light' | 'dark';
 
-type ClassNames = Partial<{
-  checkboxHolder: string;
-  default: string;
-  checked: string;
-  unchecked: string;
-  disabled: string;
-}>;
-
 type WithoutLabelProps = {
   onChange: (status: boolean) => void;
-  classNames?: ClassNames;
   disabled?: boolean;
   checked: boolean;
   theme?: Theme;
@@ -39,7 +30,6 @@ type WithoutLabelProps = {
 
 type WithLabelProps = WithoutLabelProps & {
   label: string;
-  labelClassName?: string;
 };
 
 export type CheckboxProps = WithLabelProps | WithoutLabelProps;
@@ -67,25 +57,12 @@ const Checkbox = (props: CheckboxProps) => {
 
   const themeClass = getThemeClasses(props.theme);
 
-  const wrapperClasses = classNames(
-    styles.checkboxHolder,
-    themeClass,
-    props.classNames?.checkboxHolder
-  );
+  const wrapperClasses = classNames(styles.checkboxHolder, themeClass);
 
   const checkboxClasses = classNames(
     styles.checkboxDefault,
-    props.classNames?.default,
-    props.checked
-      ? classNames(styles.checkboxChecked, props.classNames?.checked)
-      : classNames(styles.checkboxUnchecked, props.classNames?.unchecked),
-    props.disabled &&
-      classNames(styles.checkboxDisabled, props.classNames?.disabled)
-  );
-
-  const labelClassName = classNames(
-    styles.labelDefault,
-    isWithLabel(props) && props.labelClassName
+    props.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
+    props.disabled && styles.checkboxDisabled
   );
 
   return (
@@ -98,7 +75,7 @@ const Checkbox = (props: CheckboxProps) => {
       />
       <div onClick={handleOnChange} className={checkboxClasses} />
       {isWithLabel(props) && (
-        <label onClick={handleOnChange} className={labelClassName}>
+        <label onClick={handleOnChange} className={styles.label}>
           {props.label}
         </label>
       )}

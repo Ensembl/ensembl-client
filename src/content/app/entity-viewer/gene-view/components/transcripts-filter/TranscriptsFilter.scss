@@ -31,6 +31,7 @@
   display: grid;
   grid-template-columns: repeat(3, 210px);
   height: auto;
+  --checkbox-margin-top: 9px;
 }
 
 .header {
@@ -44,9 +45,5 @@
 }
 
 .radio {
-  margin-top: 9px;
-}
-
-.checkboxDefault {
   margin-top: 9px;
 }

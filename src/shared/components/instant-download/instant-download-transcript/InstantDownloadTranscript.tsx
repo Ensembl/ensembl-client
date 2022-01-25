@@ -218,9 +218,6 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{
-        default: styles.checkboxDefault
-      }}
       theme={getCheckboxTheme(props.theme)}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
@@ -259,9 +256,6 @@ const GeneSection = (props: GeneSectionProps) => {
       </div>
       <div>
         <Checkbox
-          classNames={{
-            default: styles.checkboxDefault
-          }}
           theme={getCheckboxTheme(props.theme)}
           label="Genomic sequence"
           checked={props.isGenomicSequenceSelected}

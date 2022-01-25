@@ -3,45 +3,54 @@
 .checkboxHolder {
   display: grid;
   grid-template-columns: 27px 1fr;
+  margin-top: var(--checkbox-holder-margin-top, 0);
+  margin-left: var(--checkbox-holder-margin-left, 0);
 }
 
 .checkboxDefault {
   cursor: pointer;
   justify-self: center;
   transition: background-color 0.1s ease-in-out;
-  margin-top: 7px;
+  margin-top: var(--checkbox-margin-top, 7px);
+  padding-left: var(--checkbox-padding-left, 0);
+  padding-right: var(--checkbox-padding-right, 0);
   background-color: var(--checkbox-background-color, #{$white});
   border: 1px solid var(--checkbox-border-color, #{$grey});
-  height: var(--checkbox-dimension-size, 13px);
-  width: var(--checkbox-dimension-size, 13px);
+  height: var(--checkbox-side-size, 13px);
+  width: var(--checkbox-side-size, 13px);
 
   & + label {
     cursor: pointer;
-    font-weight: $light;
   }
 }
 
 .checkboxChecked {
-  background-color: $green;
+  background-color: var(--checkbox-checked-background-color, #{$green});
+}
+
+.checkboxUnchecked {
+  background-color: var(--checkbox-unchecked-background-color, inherit);
 }
 
 .checkboxDisabled {
-  background-color: $light-grey;
+  background-color: var(--checkbox-disabled-background-color, #{$light-grey});
   cursor: default;
+  pointer-events: none;
 
   & + label {
     cursor: default;
   }
 }
 
-.labelDefault {
+.label {
   color: var(--checkbox-label-color, #{$black});
   font-size: var(--checkbox-label-font-size, 13px);
   font-weight: var(--checkbox-label-font-weight, #{$normal});
-  line-height: 30px;
-  padding-left: 8px;
-  padding-right: 2px;
-  max-width: calc(100% - 17px);
+  line-height: var(--checkbox-label-height, 30px);
+  padding-left: var(--checkbox-label-padding-left, 8px);
+  padding-right: var(--checkbox-label-padding-right, 2px);
+  max-width: var(--checkbox-label-max-width, calc(100% - 17px));
+  width: var(--checkbox-label-width);
   word-wrap: break-word;
 }
 
@@ -53,7 +62,7 @@
 .themeDark {
   --checkbox-background-color: transparent;
   --checkbox-border-color: #{$dark-grey};
-  --checkbox-dimension-size: 12px;
+  --checkbox-side-size: 12px;
   --checkbox-label-color: #{$white};
   --checkbox-label-font-size: 12px;
   --checkbox-label-font-weight: #{$light};

@@ -14,22 +14,22 @@
   border-radius: 50%;
   cursor: pointer;
   justify-self: center;
-  margin-top: 7px;
+  margin-top: var(--radio-margin-top, 7px);
   background-color: var(--radio-background-color, #{$white});
   border: 1px solid var(--radio-border-color, #{$grey});
   height: var(--radio-diameter, 13px);
   width: var(--radio-diameter, 13px);
 
   &Checked {
-    background-color: $white;
+    background-color: var(--radio-checked-background-color, #{$white});
 
     &:after {
       content: '';
       float: left;
       margin-top: 2px;
       margin-left: 2px;
-      height: var(--radio-checked-diameter, 7px);
-      width: var(--radio-checked-diameter, 7px);
+      height: var(--radio-checked-diameter, 6px);
+      width: var(--radio-checked-diameter, 6px);
       border-radius: 50%;
       background: $green;
     }

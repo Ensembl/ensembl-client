@@ -77,10 +77,7 @@ describe('<Checkbox />', () => {
 
   it('correctly applies classes passed from the parent', () => {
     const classesFromParent = {
-      checkboxHolder: faker.datatype.uuid(),
-      checked: faker.datatype.uuid(),
-      unchecked: faker.datatype.uuid(),
-      disabled: faker.datatype.uuid()
+      checkboxHolder: faker.datatype.uuid()
     };
     const label = faker.lorem.words();
     const labelClassFromParent = faker.lorem.word();
@@ -93,29 +90,14 @@ describe('<Checkbox />', () => {
       labelClassName: labelClassFromParent
     };
 
-    const { container, rerender } = render(<Checkbox {...props} />);
+    const { container } = render(<Checkbox {...props} />);
     const topLevelElement = container.querySelector('.checkboxHolder');
-    const checkbox = container.querySelector('.checkboxDefault');
     const labelElement = container.querySelector('label');
 
     expect(
       topLevelElement?.classList.contains(classesFromParent.checkboxHolder)
     ).toBe(true);
     expect(labelElement?.classList.contains(labelClassFromParent)).toBe(true);
-    expect(checkbox?.classList.contains(classesFromParent.unchecked)).toBe(
-      true
-    );
-    expect(checkbox?.classList.contains(classesFromParent.disabled)).toBe(true);
-
-    rerender(<Checkbox {...props} checked={true} disabled={false} />);
-
-    expect(checkbox?.classList.contains(classesFromParent.checked)).toBe(true);
-    expect(checkbox?.classList.contains(classesFromParent.unchecked)).toBe(
-      false
-    );
-    expect(checkbox?.classList.contains(classesFromParent.disabled)).toBe(
-      false
-    );
   });
 
   describe('behaviour on change', () => {

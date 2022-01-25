@@ -11,17 +11,11 @@
   }
 }
 
-.checkboxHolder {
-  margin-left: 15px;
-}
-
-.checkboxLabel {
-  padding-left: 2px;
-  width: 200px;
-}
-
 .container {
   position: relative;
+  --checkbox-holder-margin-left: 15px;
+  --checkbox-label-width: 200px;
+  --checkbox-label-padding-left: 2px;
 
   .geneSection {
     .label {
