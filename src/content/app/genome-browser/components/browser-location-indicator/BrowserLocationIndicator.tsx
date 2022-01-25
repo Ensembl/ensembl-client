@@ -23,7 +23,6 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 
 import styles from './BrowserLocationIndicator.scss';
 
@@ -34,7 +33,6 @@ type Props = {
 export const BrowserLocationIndicator = (props: Props) => {
   const actualChrLocation = useSelector(getActualChrLocation);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const genomeKaryotype = useSelector(getGenomeKaryotype);
 
   const dispatch = useDispatch();
 
@@ -54,7 +52,7 @@ export const BrowserLocationIndicator = (props: Props) => {
     <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView} {...onClickProps}>
-        {genomeKaryotype && genomeKaryotype[0].is_circular ? (
+        {chrCode === 'Chromosome' ? (
           <CircularChromosomeIndicator />
         ) : (
           <div className={styles.chrCode}>{chrCode}</div>
