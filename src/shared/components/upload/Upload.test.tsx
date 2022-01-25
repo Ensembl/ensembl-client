@@ -15,130 +15,180 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import faker from 'faker';
-import times from 'lodash/times';
+import { setTimeout } from 'timers/promises';
+import { render, fireEvent, act } from '@testing-library/react';
 import noop from 'lodash/noop';
-import Upload, { UploadProps } from './Upload';
-import windowService from 'src/services/window-service';
+import Upload from './Upload';
 
-const onChange = jest.fn();
+import type { FileTransformedToString } from './types';
 
-const defaultProps = {
-  onChange
-};
+const file1 = new File(['Lorem ipsum'], 'file1.txt', {
+  type: 'text/plain'
+});
 
-const event = { preventDefault: noop, stopPropagation: noop };
+const file2 = new File(['dolor sit amet'], 'file2.txt', {
+  type: 'text/plain'
+});
 
-const renderUpload = (props: Partial<UploadProps> = {}) =>
-  render(<Upload {...defaultProps} {...props} />);
-
-const fileContents = faker.random.words();
-
-const generateFile = () => {
-  return new File([fileContents], 'file.txt', { type: 'text/plain' });
-};
-
-const files = times(faker.datatype.number(10), () => generateFile());
-
-const mockFileReader = {
-  onload: jest.fn(),
-  readAsText: jest.fn().mockImplementation(function () {
-    mockFileReader.onload();
-  }),
-  readAsArrayBuffer: jest.fn(),
-  readAsBinaryString: jest.fn(),
-  readAsDataURL: jest.fn(),
-  result: fileContents
-};
-
-describe.skip('Upload', () => {
+describe('Upload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    windowService.getFileReader = jest.fn(() => mockFileReader) as any;
   });
 
-  describe('using the input', () => {
-    const container = renderUpload().container;
-    it('always renders an input of type file', () => {
+  describe('rendering', () => {
+    it('renders an input of type file', () => {
+      const { container } = render(<Upload onUpload={noop} />);
       expect(container.querySelectorAll('input[type="file"]')).toHaveLength(1);
     });
 
-    it('allows multiple files to be selected by default', () => {
-      const container = renderUpload().container;
-      expect(
-        container.querySelector('input')?.getAttribute('multiple')
-      ).toEqual('');
+    it('allows upload of only a single file by default', () => {
+      const { container } = render(<Upload onUpload={noop} />);
+      const input = container.querySelector('input');
+      expect(input?.hasAttribute('multiple')).toBe(false);
     });
 
-    it('disables multiple file selection if allowMultiple is set to false', () => {
-      const container = renderUpload({ allowMultiple: false }).container;
-      expect(
-        container.querySelector('input')?.getAttribute('multiple')
-      ).toBeFalsy();
-    });
-
-    it('calls the windowService.getFileReader for every file selected', () => {
-      const container = renderUpload().container;
-      fireEvent.change(container.querySelector('input') as HTMLElement, {
-        ...event,
-        target: { files: files }
-      });
-      expect(windowService.getFileReader).toHaveBeenCalledTimes(files.length);
-    });
-
-    it('calls the readAsText multiple times based on the number of files', () => {
-      const container = renderUpload().container;
-      fireEvent.change(container.querySelector('input') as HTMLElement, {
-        ...event,
-        target: { files: files }
-      });
-      expect(mockFileReader.readAsText).toHaveBeenCalledTimes(files.length);
+    it('allows upload of multiple files', () => {
+      const { container } = render(
+        <Upload onUpload={noop} allowMultiple={true} />
+      );
+      const input = container.querySelector('input');
+      expect(input?.hasAttribute('multiple')).toBe(true);
     });
   });
 
-  describe('using drag and drop', () => {
-    it('changes its appearance when the user drags a file over', () => {
-      const item = {};
-      const dataTransfer = {
-        items: [item]
-      };
+  describe('file uploading via file input', () => {
+    const onUpload = jest.fn();
 
-      const { container } = renderUpload();
-      const label = container.querySelector('label') as HTMLElement;
+    it('uploads a single file', () => {
+      const { container } = render(<Upload onUpload={onUpload} />);
 
-      // before dragging
-      expect(label.className.includes('defaultUpload')).toBe(true);
-      expect(label.className.includes('defaultUploadActive')).toBe(false);
-
-      fireEvent.dragEnter(label, { dataTransfer });
-
-      expect(label.className.includes('defaultUploadActive')).toBe(true);
-
-      fireEvent.dragLeave(label);
-
-      expect(label.className.includes('defaultUploadActive')).toBe(false);
-    });
-
-    it('passes file content to the onChange prop after the file is dropped', async () => {
-      const file = generateFile();
-      const mockEvent = {
+      fireEvent.change(container.querySelector('input') as HTMLElement, {
         ...event,
-        dataTransfer: { files: [file], clearData: noop }
-      };
-      const { container } = renderUpload();
+        target: { files: [file1] }
+      });
+
+      const uploadedFile = onUpload.mock.calls[0][0] as File;
+
+      expect(uploadedFile.name).toBe('file1.txt');
+    });
+
+    it('uploads multiple files', () => {
+      const { container } = render(
+        <Upload onUpload={onUpload} allowMultiple={true} />
+      );
+
+      fireEvent.change(container.querySelector('input') as HTMLElement, {
+        ...event,
+        target: { files: [file1, file2] }
+      });
+
+      const [uploadedFile1, uploadedFile2] = onUpload.mock
+        .calls[0][0] as File[];
+
+      expect(uploadedFile1.name).toBe('file1.txt');
+      expect(uploadedFile2.name).toBe('file2.txt');
+    });
+
+    // for tests of all possible file transformations, see uploadHelpers.test.ts
+    it('can read text contents of a file', async () => {
+      // intentionally redefining onUpload to prove
+      // that the type of the callback function matches component's expectations
+      let textFromFile = '';
+      const onUpload = (result: FileTransformedToString) =>
+        (textFromFile = result.content);
+
+      const { container } = render(
+        <Upload onUpload={onUpload} transformTo="text" />
+      );
+
+      await act(async () => {
+        fireEvent.change(container.querySelector('input') as HTMLElement, {
+          ...event,
+          target: { files: [file1, file2] }
+        });
+        // bump to the end of event loop to give file reader time to read the file, and for React component to update
+        await setTimeout(0);
+      });
+
+      expect(textFromFile).toBe('Lorem ipsum');
+    });
+
+    it('can read text contents of several files', async () => {
+      // intentionally redefining onUpload;
+      // notice how the type of its parameter is different from onUpload in the previous test
+      let textFromFile = '';
+      const onUpload = (results: FileTransformedToString[]) =>
+        (textFromFile = results.map((result) => result.content).join(' '));
+
+      const { container } = render(
+        <Upload onUpload={onUpload} allowMultiple={true} transformTo="text" />
+      );
+
+      await act(async () => {
+        fireEvent.change(container.querySelector('input') as HTMLElement, {
+          ...event,
+          target: { files: [file1, file2] }
+        });
+        // bump to the end of event loop to give file reader time to read the file, and for React component to update
+        await setTimeout(0);
+      });
+
+      expect(textFromFile).toBe('Lorem ipsum dolor sit amet');
+    });
+  });
+
+  describe('file uploading via drag and drop', () => {
+    const mockDragEvent = {
+      preventDefault: noop,
+      stopPropagation: noop,
+      dataTransfer: {
+        items: [{ getAsFile: () => file1 }, { getAsFile: () => file2 }],
+        types: ['Files']
+      }
+    };
+    const onUpload = jest.fn();
+
+    it('changes drop zone class when a file is dragged over', () => {
+      const { container } = render(<Upload onUpload={onUpload} />);
       const label = container.querySelector('label') as HTMLElement;
 
-      fireEvent.drop(label, mockEvent);
+      fireEvent.dragEnter(label, mockDragEvent);
 
-      await waitFor(() => {
-        expect(onChange.mock.calls.length).toBeGreaterThan(0);
-      });
-      const parsedFiles = onChange.mock.calls[0][0]; // the argument passed to onChange is an array of parsed files
-      const parsedFile = parsedFiles[0];
-      expect(parsedFile.filename).toBe('file.txt');
-      expect(parsedFile.content).toBe(fileContents);
-      expect(parsedFile.error).toBe(null);
+      expect(label.classList.contains('uploadDragOver')).toBe(true);
+
+      fireEvent.dragLeave(label, mockDragEvent);
+
+      expect(label.classList.contains('uploadDragOver')).toBe(false);
     });
+
+    it('uploads a single file', () => {
+      const { container } = render(<Upload onUpload={onUpload} />);
+      const label = container.querySelector('label') as HTMLElement;
+
+      fireEvent.drop(label, mockDragEvent);
+
+      const uploadedFile = onUpload.mock.calls[0][0] as File;
+
+      expect(uploadedFile.name).toBe('file1.txt');
+    });
+
+    it('uploads multiple files', () => {
+      const { container } = render(
+        <Upload allowMultiple={true} onUpload={onUpload} />
+      );
+      const label = container.querySelector('label') as HTMLElement;
+
+      fireEvent.drop(label, mockDragEvent);
+
+      const [uploadedFile1, uploadedFile2] = onUpload.mock
+        .calls[0][0] as File[];
+
+      expect(uploadedFile1.name).toBe('file1.txt');
+      expect(uploadedFile2.name).toBe('file2.txt');
+    });
+
+    // tests for reading contents of one or more dropped files
+    // wouldn't really add much compared to what was tested for uploading via file input;
+    // and are therefore skipped from this section
   });
 });

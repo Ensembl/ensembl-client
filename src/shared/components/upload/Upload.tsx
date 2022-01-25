@@ -71,36 +71,6 @@ const Upload = <T extends Options>(props: UploadProps<T>) => {
     }
   };
 
-  // const getDefaultClassNames = () => {
-  //   if (!props.classNames || !props.classNames.default) {
-  //     return styles.defaultUpload;
-  //   }
-
-  //   return classNames(styles.defaultUpload, props.classNames.default);
-  // };
-
-  // const getActiveClassNames = () => {
-  //   if (!drag) {
-  //     return '';
-  //   }
-
-  //   if (!props.classNames || !props.classNames.active) {
-  //     return styles.defaultUploadActive;
-  //   }
-
-  //   return classNames(styles.defaultUploadActive, props.classNames.active);
-  // };
-
-  // if (props.disabled) {
-  //   const elementClasses = classNames(
-  //     styles.disabledUpload,
-  //     props.classNames?.disabled
-  //   );
-  //   // using the label html tag even though there is no input
-  //   // to keep it the same as the label element of the enabled component (to support animations)
-  //   return <label className={elementClasses}>{props.label}</label>;
-  // }
-
   const dropAreaClasses = classNames(
     styles.upload,
     { [styles.uploadDisabled]: props.disabled },

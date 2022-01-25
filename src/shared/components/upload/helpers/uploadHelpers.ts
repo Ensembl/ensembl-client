@@ -34,12 +34,6 @@ const transformToFileReaderMethodMap: Record<TransformTo, FileReaderMethod> = {
   text: 'readAsText'
 };
 
-const fileReaderErrorMessages: Record<number, string> = {
-  1: 'The file can not be found (NOT_FOUND_ERR).',
-  2: 'The operation is insecure (SECURITY_ERR).',
-  4: 'The I/O read operation failed (NOT_READABLE_ERR).'
-};
-
 export const transformFiles = async <
   T extends Options & OptionsWithDefinedTransform
 >(
@@ -61,15 +55,23 @@ export const transformFiles = async <
   }
 };
 
-const transformFile = async (file: File, transformTo: TransformTo) => {
+export const transformFile = async (file: File, transformTo: TransformTo) => {
   const fileReaderMethod = transformToFileReaderMethodMap[transformTo];
-  switch (fileReaderMethod) {
-    case 'readAsArrayBuffer':
-      return await fileToArrayBuffer(file);
-    case 'readAsDataURL':
-      return await fileToDataUrl(file);
-    case 'readAsText':
-      return await fileToText(file);
+  try {
+    switch (fileReaderMethod) {
+      case 'readAsArrayBuffer':
+        return await fileToArrayBuffer(file);
+      case 'readAsDataURL':
+        return await fileToDataUrl(file);
+      case 'readAsText':
+        return await fileToText(file);
+    }
+  } catch (error) {
+    return {
+      filename: file.name,
+      content: null,
+      error: 'Could not read the file'
+    };
   }
 };
 
@@ -77,16 +79,12 @@ const fileToArrayBuffer = async (file: File) => {
   const result = {
     filename: file.name,
     content: null as ArrayBuffer | null,
-    error: null as string | null
+    error: null
   };
-  try {
-    result.content = (await readFromFile(
-      file,
-      'readAsArrayBuffer'
-    )) as ArrayBuffer;
-  } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
-  }
+  result.content = (await readFromFile(
+    file,
+    'readAsArrayBuffer'
+  )) as ArrayBuffer;
   return result;
 };
 
@@ -96,11 +94,7 @@ const fileToDataUrl = async (file: File) => {
     content: null as string | null,
     error: null as string | null
   };
-  try {
-    result.content = (await readFromFile(file, 'readAsDataURL')) as string;
-  } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
-  }
+  result.content = (await readFromFile(file, 'readAsDataURL')) as string;
   return result;
 };
 
@@ -110,11 +104,7 @@ const fileToText = async (file: File) => {
     content: null as string | null,
     error: null as string | null
   };
-  try {
-    result.content = (await readFromFile(file, 'readAsText')) as string;
-  } catch (error) {
-    result.error = getErrorMessage(error as ProgressEvent<FileReader>);
-  }
+  result.content = (await readFromFile(file, 'readAsText')) as string;
   return result;
 };
 
@@ -127,10 +117,4 @@ const readFromFile = async (file: File, method: FileReaderMethod) => {
   });
   await promise;
   return fileReader.result;
-};
-
-const getErrorMessage = (error: ProgressEvent<FileReader>) => {
-  const errorCode = (error as ProgressEvent<FileReader>).target?.error
-    ?.code as number;
-  return fileReaderErrorMessages[errorCode];
 };

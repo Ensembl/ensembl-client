@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import React, { useState } from 'react';
+import { setTimeout } from 'timers/promises';
+import { render, fireEvent, act } from '@testing-library/react';
 import noop from 'lodash/noop';
 import classNames from 'classnames';
 
 import useFileDrop from './useFileDrop';
 
-// const generateFile = () => {
-//   const fileContents = 'This is my file. There are many like it, but this one is mine';
-//   return new File([fileContents], 'file.txt', { type: 'text/plain' });
-// };
+import type { FileTransformedToString } from '../types';
+
+const file = new File(['Lorem ipsum'], 'file.txt', {
+  type: 'text/plain'
+});
 
 const TestComponent = () => {
+  const [text, setText] = useState('I am empty component');
+  const onUpload = ({ content }: FileTransformedToString) => setText(content);
+
   const { ref, isDraggedOver } = useFileDrop({
-    allowMultiple: true,
-    onUpload: (files: File[]) => noop(files)
+    transformTo: 'text',
+    onUpload
   });
 
   const className = classNames({
@@ -38,36 +43,45 @@ const TestComponent = () => {
 
   return (
     <div data-test-id="test-component" ref={ref} className={className}>
-      I am a test component
+      {text}
     </div>
   );
 };
 
 describe('useFileDrop', () => {
-  it('works', () => {
-    // const file = generateFile();
-    const mockEvent = {
-      preventDefault: noop,
-      stopPropagation: noop
-      // dataTransfer: { files: [file], clearData: noop }
-    };
+  const mockDragEvent = {
+    preventDefault: noop,
+    stopPropagation: noop,
+    dataTransfer: {
+      items: [{ getAsFile: () => file }],
+      types: ['Files']
+    }
+  };
+
+  it('detects dragenter and dragleave events for a component', async () => {
     const { getByTestId } = render(<TestComponent />);
     const testElement = getByTestId('test-component');
 
-    fireEvent.dragEnter(testElement, mockEvent);
+    fireEvent.dragEnter(testElement, mockDragEvent);
 
     expect(testElement.classList.contains('fileOver')).toBe(true);
 
-    fireEvent.dragLeave(testElement, mockEvent);
+    fireEvent.dragLeave(testElement, mockDragEvent);
 
     expect(testElement.classList.contains('fileOver')).toBe(false);
-    // fireEvent.drop(testElement, mockEvent);
   });
 
-  it.todo('detects when the file is dragged over');
+  it('handles file drop', async () => {
+    const { getByTestId } = render(<TestComponent />);
+    const testElement = getByTestId('test-component');
 
-  it.todo('handles file drop');
+    expect(testElement.innerHTML).toBe('I am empty component');
 
-  // QUESTION: should there be tests for different file reader options,
-  // or is it sufficient to just test this for upload helpers?
+    await act(async () => {
+      fireEvent.drop(testElement, mockDragEvent);
+      await setTimeout(0); // bump to the end of event loop to give file reader time to read the file, and for React component to update
+    });
+
+    expect(testElement.innerHTML).toBe('Lorem ipsum');
+  });
 });
