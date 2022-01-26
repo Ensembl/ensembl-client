@@ -71,7 +71,7 @@ describe('<CheckboxWithTextfields />', () => {
 
   it('displays one Upload component by default', () => {
     const { container } = renderCheckboxWithTextfields();
-    expect(container.querySelectorAll('.defaultUpload')).toHaveLength(1);
+    expect(container.querySelectorAll('.upload')).toHaveLength(1);
   });
 
   it('passes the label to the checkbox component', () => {
