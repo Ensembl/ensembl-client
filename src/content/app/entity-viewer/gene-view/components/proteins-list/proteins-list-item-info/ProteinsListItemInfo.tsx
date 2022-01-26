@@ -82,7 +82,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   const { data } = useProteinDomainsQuery({
     productId: productId,
-    genomeId: params.genomeId as string
+    genomeId: genomeId as string
   });
 
   useEffect(() => {
@@ -142,7 +142,7 @@ const ProteinsListItemInfo = (props: Props) => {
             width={gene_image_width}
           />
           <ProteinImage
-            productLength={data.product.length}
+            proteinLength={data.product.length}
             trackLength={trackLength}
             width={gene_image_width}
           />

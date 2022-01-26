@@ -17,10 +17,8 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import type { FamilyMatches } from 'src/shared/types/thoas/product';
+import type { FamilyMatch } from 'src/shared/types/thoas/product';
 
-// A light query to get brief information about a gene.
-// Useful for populating the top bar and example links in the interstitial.
 export const proteinDomainsQuery = gql`
   query ProteinDomains($genomeId: String!, $productId: String!) {
     product(genome_id: $genomeId, stable_id: $productId) {
@@ -42,17 +40,17 @@ export const proteinDomainsQuery = gql`
   }
 `;
 
-export type FamilyMatchesProduct = Pick2<
-  FamilyMatches,
+export type FamilyMatchProduct = Pick2<
+  FamilyMatch,
   'relative_location',
   'start' | 'end'
 > &
-  Pick2<FamilyMatches, 'sequence_family', 'name' | 'description'> &
-  Pick3<FamilyMatches, 'sequence_family', 'source', 'name'>;
+  Pick2<FamilyMatch, 'sequence_family', 'name' | 'description'> &
+  Pick3<FamilyMatch, 'sequence_family', 'source', 'name'>;
 
 export type ProteinDomainsQueryResult = {
   product: {
     length: number;
-    family_matches: FamilyMatchesProduct[];
+    family_matches: FamilyMatchProduct[];
   };
 };

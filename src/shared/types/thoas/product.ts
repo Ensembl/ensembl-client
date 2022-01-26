@@ -15,6 +15,7 @@
  */
 
 import { ExternalReference } from './externalReference';
+import { LocationWithinRegion } from './location';
 import { Sequence } from './sequence';
 import { Source } from './source';
 
@@ -43,18 +44,13 @@ export enum ProductType {
   PROTEIN = 'Protein'
 }
 
-type Location = {
-  start: number;
-  end: number;
-};
-
 type SequenceFamily = {
   name: string;
   description: string;
   source: Source;
 };
-export type FamilyMatches = {
-  relative_location: Location;
+export type FamilyMatch = {
+  relative_location: LocationWithinRegion;
   sequence_family: SequenceFamily;
 };
 
@@ -68,5 +64,5 @@ export type Product = {
   length: number;
   external_references: ExternalReference[];
   sequence: Sequence;
-  family_matches: FamilyMatches[];
+  family_matches: FamilyMatch[];
 };

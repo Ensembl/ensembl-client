@@ -25,7 +25,7 @@ const TRACK_HEIGHT = 24;
 const PROTEIN_HEIGHT = 10;
 
 type ProteinImageProps = {
-  productLength: number;
+  proteinLength: number;
   trackLength: number; // length in amino acids
   className?: string;
   width: number; // available width for drawing in pixels
@@ -60,7 +60,7 @@ const ProteinImage = (props: ProteinImageProps) => {
                 className={styles.protein}
                 y="8"
                 height={PROTEIN_HEIGHT}
-                width={scale(props.productLength as number)}
+                width={scale(props.proteinLength)}
               />
             </g>
           </g>
