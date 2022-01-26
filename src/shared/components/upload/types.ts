@@ -35,12 +35,14 @@ type OptionsForMultipleFiles = {
 
 export type FileTransformedToArrayBuffer = {
   filename: string;
-  content: ArrayBuffer;
+  content: ArrayBuffer | null;
+  error: string | null;
 };
 
 export type FileTransformedToString = {
   filename: string;
-  content: string;
+  content: string | null;
+  error: string | null;
 };
 
 export type Result<T extends Options> = T extends OptionsForArrayBuffer

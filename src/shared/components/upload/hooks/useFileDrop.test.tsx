@@ -30,7 +30,8 @@ const file = new File(['Lorem ipsum'], 'file.txt', {
 
 const TestComponent = () => {
   const [text, setText] = useState('I am empty component');
-  const onUpload = ({ content }: FileTransformedToString) => setText(content);
+  const onUpload = ({ content }: FileTransformedToString) =>
+    setText(content as string);
 
   const { ref, isDraggedOver } = useFileDrop({
     transformTo: 'text',

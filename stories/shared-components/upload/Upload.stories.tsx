@@ -92,7 +92,7 @@ export const InputBoxStory = () => {
     if (!textareaRef.current) {
       return;
     }
-    textareaRef.current.value = content;
+    textareaRef.current.value = content as string;
   };
 
   const { ref, isDraggedOver } = useFileDrop({ onUpload, transformTo: 'text' });
@@ -132,10 +132,10 @@ export const ReadFileContentStory = () => {
   const [fileContent, setFileContent] = useState('');
   useDisabledDocumentDragover();
 
-  const onUpload = ({ content }: { content: ArrayBuffer | string }) => {
+  const onUpload = ({ content }: { content: ArrayBuffer | string | null }) => {
     if (typeof content === 'string') {
       setFileContent(content);
-    } else {
+    } else if (content) {
       const bytes = Array.from(new Uint8Array(content));
       // just output a raw bytes string, https://stackoverflow.com/a/62224531/3925302
       const string = bytes.reduce(

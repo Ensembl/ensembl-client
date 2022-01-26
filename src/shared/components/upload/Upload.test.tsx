@@ -95,7 +95,7 @@ describe('Upload', () => {
       // that the type of the callback function matches component's expectations
       let textFromFile = '';
       const onUpload = (result: FileTransformedToString) =>
-        (textFromFile = result.content);
+        (textFromFile = result.content as string);
 
       const { container } = render(
         <Upload onUpload={onUpload} transformTo="text" />
