@@ -31,7 +31,7 @@ import useSavedForm from '../hooks/useSavedForm';
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
-import Upload from 'src/shared/components/upload/Upload';
+import { Upload } from 'src/shared/components/upload';
 import UploadedFile from 'src/shared/components/uploaded-file/UploadedFile';
 import SubmitSlider from '../submit-slider/SubmitSlider';
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
@@ -184,8 +184,8 @@ const ContactUsInitialForm = () => {
     []
   );
 
-  const onFileChange = useCallback((fileList: FileList) => {
-    for (const file of fileList) {
+  const onFileChange = useCallback((files: File[]) => {
+    for (const file of files) {
       dispatch({ type: 'add-file', payload: file });
     }
   }, []);
@@ -294,10 +294,9 @@ const ContactUsInitialForm = () => {
             />
           ))}
           <Upload
-            label="Click or drag a file here to upload"
-            callbackWithFiles={true}
             disabled={!isFormValid}
-            onChange={onFileChange}
+            allowMultiple={true}
+            onUpload={onFileChange}
           />
         </div>
 

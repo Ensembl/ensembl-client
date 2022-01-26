@@ -26,7 +26,10 @@ import React, {
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
-import Upload, { type ReadFile } from 'src/shared/components/upload/Upload';
+import {
+  Upload,
+  type FileTransformedToString
+} from 'src/shared/components/upload';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
@@ -76,10 +79,9 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
-  const onFileDrop = (files: ReadFile[]) => {
-    const { content, error } = files[0]; // multiple files aren't allowed
-    if (!error && content) {
-      onCommitted(content as string, index); // content is expected to be a string because it's Upload's default prop
+  const onFileDrop = ({ content }: FileTransformedToString) => {
+    if (content) {
+      onCommitted(content, index);
     }
   };
 
@@ -122,13 +124,7 @@ const BlastInputSequence = (props: Props) => {
           onBlur={onBlur}
           resizable={false}
         />
-        {!input && (
-          <Upload
-            label="Click or drag a file here to upload"
-            onChange={onFileDrop}
-            allowMultiple={false}
-          />
-        )}
+        {!input && <Upload transformTo="text" onUpload={onFileDrop} />}
       </div>
     </div>
   );
