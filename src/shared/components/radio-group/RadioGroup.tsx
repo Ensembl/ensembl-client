@@ -30,12 +30,6 @@ export type Theme = 'light' | 'dark';
 
 export type RadioGroupProps = {
   onChange: (selectedOption: OptionValue) => void;
-  // classNames?: {
-  //   label?: string;
-  //   wrapper?: string;
-  //   radio?: string;
-  //   radioChecked?: string;
-  // };
   theme?: Theme;
   options: RadioOptions;
   selectedOption: OptionValue;

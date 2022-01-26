@@ -55,17 +55,25 @@
 }
 
 .themeLighter {
-  --checkbox-label-font-size: 12px;
-  --checkbox-label-font-weight: #{$light};
+  .label {
+    font-size: var(--checkbox-label-font-size, 12px);
+    font-weight: var(--checkbox-label-font-weight, #{$light});
+  }
 }
 
 .themeDark {
-  --checkbox-background-color: transparent;
-  --checkbox-border-color: #{$dark-grey};
-  --checkbox-side-size: 12px;
-  --checkbox-label-color: #{$white};
-  --checkbox-label-font-size: 12px;
-  --checkbox-label-font-weight: #{$light};
+  .checkboxDefault {
+    background-color: var(--checkbox-background-color, transparent);
+    border-color: var(--checkbox-border-color, #{$dark-grey});
+    height: var(--checkbox-side-size, 12px);
+    width: var(--checkbox-side-size, 12px);
+  }
+
+  .label {
+    color: var(--checkbox-label-color, #{$white});
+    font-size: var(--checkbox-label-font-size, 12px);
+    font-weight: var(--checkbox-label-font-weight, #{$light});
+  }
 }
 
 .hiddenInput {

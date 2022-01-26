@@ -28,8 +28,8 @@
       float: left;
       margin-top: 2px;
       margin-left: 2px;
-      height: var(--radio-checked-diameter, 6px);
-      width: var(--radio-checked-diameter, 6px);
+      height: var(--radio-checked-diameter, 7px);
+      width: var(--radio-checked-diameter, 7px);
       border-radius: 50%;
       background: $green;
     }
@@ -47,14 +47,26 @@
 }
 
 .themeLight {
-  --radio-label-font-size: 13px;
-  --radio-label-font-weight: #{$normal};
+  .label {
+    font-size: var(--radio-label-font-size, 13px);
+    font-weight: var(--radio-label-font-weight, #{$normal});
+  }
 }
 
 .themeDark {
-  --radio-background-color: transparent;
-  --radio-border-color: #{$dark-grey};
-  --radio-diameter: 12px;
-  --radio-label-color: #{$white};
-  --radio-checked-dimension-size: 6px;
+  .radio {
+    background-color: var(--radio-background-color, transparent);
+    border-color: var(--radio-border-color, #{$dark-grey});
+    height: var(--radio-diameter, 12px);
+    width: var(--radio-diameter, 12px);
+
+    &Checked::after {
+      height: var(--radio-checked-diameter, 6px);
+      width: var(--radio-checked-diameter, 6px);
+    }
+  }
+
+  .label {
+    color: var(--radio-label-color, #{$white});
+  }
 }
