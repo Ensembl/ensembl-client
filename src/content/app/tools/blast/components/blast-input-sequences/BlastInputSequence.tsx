@@ -22,12 +22,14 @@ import React, {
   type ClipboardEvent,
   type FocusEvent
 } from 'react';
+import classNames from 'classnames';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import {
   Upload,
+  useFileDrop,
   type FileTransformedToString
 } from 'src/shared/components/upload';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
@@ -50,6 +52,17 @@ const BlastInputSequence = (props: Props) => {
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const onFileDrop = ({ content }: FileTransformedToString) => {
+    if (content) {
+      onCommitted(content, index);
+    }
+  };
+
+  const { ref: dropZoneRef, isDraggedOver: isFileOver } = useFileDrop({
+    onUpload: onFileDrop,
+    transformTo: 'text'
+  });
 
   useEffect(() => {
     setInput(toFasta(sequence));
@@ -79,12 +92,6 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
-  const onFileDrop = ({ content }: FileTransformedToString) => {
-    if (content) {
-      onCommitted(content, index);
-    }
-  };
-
   const onBlur = (event: FocusEvent) => {
     const { relatedTarget } = event;
 
@@ -103,8 +110,12 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
+  const inputBoxClassnames = classNames(styles.inputSequenceBox, {
+    [styles.inputSequenceBoxFileOver]: isFileOver
+  });
+
   return (
-    <div className={styles.inputSequenceBox}>
+    <div className={inputBoxClassnames} ref={dropZoneRef}>
       <div className={styles.header}>
         <span>{title}</span>
         {input && (

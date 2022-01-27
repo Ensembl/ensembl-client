@@ -4,6 +4,11 @@ $border: 1px solid $grey;
 
 .inputSequenceBox {
   width: 860px;
+  --textarea-height: 102px; // same as upload button's height
+}
+
+.inputSequenceBoxFileOver {
+  --drop-zone-bg-color: #{$ice-blue};
 }
 
 .header {
@@ -19,6 +24,7 @@ $border: 1px solid $grey;
 .body {
   display: grid;
   grid-template-columns: 1fr auto;
+  column-gap: 20px;
   padding: 10px 65px 12px 28px;
   background-color: $light-grey;
   border: $border;

@@ -1,11 +1,12 @@
 @import 'src/styles/common';
+@import 'uploadConstants';
 
 .upload {
   display: inline-flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: var(--drop-zone-height, 102px);
+  height: var(--drop-zone-height, #{$uploadButtonTallerHeight});
   width: var(--drop-zone-width, 200px);
   background-color: var(--drop-zone-bg-color, #{$white});
   position: relative;
@@ -29,15 +30,13 @@
 }
 
 .uploadDragOver {
-  background-color: var(--drop-zone-bg-color, #{$ice-blue});
+  background-color: var(--drop-zone-bg-color, #{$highlightedUploadBackground});
 }
 
 .uploadDisabled {
   border: 1px dashed $grey;
   color: $grey;
-  // padding: 15px 27px;
   pointer-events: none;
-  // transition: color 0.4s, border-color 0.4s;
 }
 
 .uploadDisabled .uploadIcon {
@@ -58,7 +57,7 @@
 }
 
 .label {
-  width: 94px; // make customizable
-  font-size: 12px; // make customizable
+  width: var(--upload-label-width, #{$uploadTwoLineLabelWidth});
+  font-size: 12px; // make customizable?
   text-align: center;
 }

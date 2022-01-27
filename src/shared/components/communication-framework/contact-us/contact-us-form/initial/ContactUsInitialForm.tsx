@@ -31,7 +31,7 @@ import useSavedForm from '../hooks/useSavedForm';
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
-import { Upload } from 'src/shared/components/upload';
+import { Upload, useFileDrop } from 'src/shared/components/upload';
 import UploadedFile from 'src/shared/components/uploaded-file/UploadedFile';
 import SubmitSlider from '../submit-slider/SubmitSlider';
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
@@ -145,6 +145,25 @@ const ContactUsInitialForm = () => {
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
 
+  const isFormValid = validate(state) && emailFieldValid;
+
+  const onFileChange = useCallback(
+    (files: File[]) => {
+      if (!isFormValid) {
+        return;
+      }
+      for (const file of files) {
+        dispatch({ type: 'add-file', payload: file });
+      }
+    },
+    [isFormValid]
+  );
+
+  const { ref: dropAreaRef, isDraggedOver: isFileOver } = useFileDrop({
+    onUpload: onFileChange,
+    allowMultiple: true
+  });
+
   const { clearSavedForm } = useSavedForm({
     formName: FORM_NAME,
     currentState: state,
@@ -184,12 +203,6 @@ const ContactUsInitialForm = () => {
     []
   );
 
-  const onFileChange = useCallback((files: File[]) => {
-    for (const file of files) {
-      dispatch({ type: 'add-file', payload: file });
-    }
-  }, []);
-
   const validateEmail = useCallback(() => {
     if (emailFieldRef.current) {
       setEmailFieldValid(emailFieldRef.current?.checkValidity());
@@ -225,14 +238,16 @@ const ContactUsInitialForm = () => {
       });
   }, []);
 
-  const isFormValid = validate(state) && emailFieldValid;
-
   if (submissionState === LoadingState.SUCCESS) {
     return <SubmissionSuccess />;
   }
 
+  const containerClasses = classNames(commonStyles.container, {
+    [commonStyles.containerFileOver]: isFormValid && isFileOver
+  });
+
   return (
-    <div className={commonStyles.container}>
+    <div className={containerClasses} ref={dropAreaRef}>
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
           <span>All fields are required</span>
