@@ -18,7 +18,12 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { transformFiles } from '../helpers/uploadHelpers';
 
-import type { Options, Result, FileUploadParams } from '../types';
+import type {
+  Options,
+  OptionsWithDefinedTransform,
+  Result,
+  FileUploadParams
+} from '../types';
 
 const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
@@ -69,7 +74,10 @@ const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
       const payload = allowMultiple ? [...files] : files[0];
       onUpload(payload as Result<O>);
     } else {
-      const result = await transformFiles(files, params as any); // FIXME: transformTo property should not be undefined here
+      const result = await transformFiles(
+        files,
+        params as OptionsWithDefinedTransform
+      );
       onUpload(result as Result<O>);
     }
   };

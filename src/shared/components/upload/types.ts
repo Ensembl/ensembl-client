@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { RequiredField } from 'src/shared/types/utility-types/requiredField';
+
 export type TransformTo = 'arrayBuffer' | 'dataUrl' | 'text';
 
 export type Options = {
@@ -25,11 +27,9 @@ type OptionsForArrayBuffer = {
   transformTo: 'arrayBuffer';
 };
 
-export type OptionsWithDefinedTransform = {
-  transformTo: TransformTo;
-};
+export type OptionsWithDefinedTransform = RequiredField<Options, 'transformTo'>;
 
-type OptionsForMultipleFiles = {
+export type OptionsForMultipleFiles = Options & {
   allowMultiple: true;
 };
 
@@ -68,36 +68,3 @@ type ResultForPlainFile<T extends Options> = T extends OptionsForMultipleFiles
 export type FileUploadParams<T extends Options> = T & {
   onUpload: (result: Result<T>) => void;
 };
-
-/*
-// FIXME: delete the code below
-
-// TODO: delete example below
-const simpleFunction = <T extends Options>(params: T): Result<T> => {
-  return {} as unknown as Result<T>; // lying to typescript for simplicity
-};
-
-const testVal1 = simpleFunction({ transformTo: 'arrayBuffer', allowMultiple: true }); // infers FileTransformedToArrayBuffer[]
-const testVal2 = simpleFunction({ transformTo: 'arrayBuffer' }); // infers FileTransformedToArrayBuffer
-const testVal3 = simpleFunction({ transformTo: 'dataUrl' }); // infers FileTransformedToString
-const testVal4 = simpleFunction({ allowMultiple: true }); // infers File[]
-
-
-type UseUploadParams<T extends Options> = T & {
-  onChange: (result: Result<T>) => void;
-};
-
-const useFileUpload = <T extends Options>(params: UseUploadParams<T>) => {
-  const result = {} as unknown as Result<T>; // lying to typescript for simplicity
-  params.onChange(result);
-};
-
-// 
-useFileUpload({
-  transformTo: 'arrayBuffer',
-  allowMultiple: true,
-  onChange: (result: FileTransformedToArrayBuffer[]) => console.log(result)
-});
-
-
-*/

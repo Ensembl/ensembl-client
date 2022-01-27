@@ -189,6 +189,6 @@ describe('Upload', () => {
 
     // tests for reading contents of one or more dropped files
     // wouldn't really add much compared to what was tested for uploading via file input;
-    // and are therefore skipped from this section
+    // and are therefore omitted in this section
   });
 });
