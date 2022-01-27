@@ -63,7 +63,6 @@ describe('Upload', () => {
       const { container } = render(<Upload onUpload={onUpload} />);
 
       fireEvent.change(container.querySelector('input') as HTMLElement, {
-        ...event,
         target: { files: [file1] }
       });
 
@@ -78,7 +77,6 @@ describe('Upload', () => {
       );
 
       fireEvent.change(container.querySelector('input') as HTMLElement, {
-        ...event,
         target: { files: [file1, file2] }
       });
 
@@ -103,7 +101,6 @@ describe('Upload', () => {
 
       await act(async () => {
         fireEvent.change(container.querySelector('input') as HTMLElement, {
-          ...event,
           target: { files: [file1, file2] }
         });
         // bump to the end of event loop to give file reader time to read the file, and for React component to update
@@ -126,7 +123,6 @@ describe('Upload', () => {
 
       await act(async () => {
         fireEvent.change(container.querySelector('input') as HTMLElement, {
-          ...event,
           target: { files: [file1, file2] }
         });
         // bump to the end of event loop to give file reader time to read the file, and for React component to update
