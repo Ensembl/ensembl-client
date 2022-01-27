@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import useFileDrop from 'src/shared/components/upload/hooks/useFileDrop';
+import useDisabledDocumentDragover from 'src/root/useDisabledDocumentDragover';
 
 import Upload from 'src/shared/components/upload/Upload';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
@@ -34,22 +35,6 @@ import styles from './Upload.stories.scss';
 
 type DefaultArgs = {
   onChange: (...args: any) => void;
-};
-
-const useDisabledDocumentDragover = () => {
-  const preventDefault = (event: Event) => {
-    event.preventDefault();
-  };
-
-  useEffect(() => {
-    document.addEventListener('dragover', preventDefault);
-    document.addEventListener('drop', preventDefault);
-
-    return () => {
-      document.removeEventListener('dragover', preventDefault);
-      document.removeEventListener('drop', preventDefault);
-    };
-  }, []);
 };
 
 export const DefaultStory = (args: DefaultArgs) => {

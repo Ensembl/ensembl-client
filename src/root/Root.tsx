@@ -23,6 +23,7 @@ import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 
 import useRestoredReduxState from './useRestoredReduxState';
+import useDisabledDocumentDragover from './useDisabledDocumentDragover';
 
 import App from '../content/app/App';
 import RootMeta from './RootMeta';
@@ -37,6 +38,7 @@ export const Root = () => {
   const dispatch = useDispatch();
 
   useRestoredReduxState();
+  useDisabledDocumentDragover();
 
   useEffect(() => {
     const subscription = observeMediaQueries(globalMediaQueries, (match) => {
