@@ -110,7 +110,10 @@ export const InputBoxStory = () => {
       </p>
       <div className={inputBoxClasses} ref={ref}>
         <div className={styles.textareaContainer}>
-          <ShadedTextarea ref={textareaRef} placeholder="Hello stranger" />
+          <ShadedTextarea
+            ref={textareaRef}
+            placeholder="You can drop the file on me if you want"
+          />
         </div>
         <div className={styles.dropZoneContainer}>
           <Upload onUpload={onUpload} transformTo="text" />
