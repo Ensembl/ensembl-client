@@ -42,11 +42,14 @@ const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
 const endPosition =
   startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
 
+const circularChrName = faker.lorem.word();
+
 const mockState = {
   browser: {
     browserGeneral: {
       actualChrLocations: {
-        human: [chrName, startPosition, endPosition] as ChrLocation
+        human: [chrName, startPosition, endPosition] as ChrLocation,
+        ecoli: [circularChrName, startPosition, endPosition] as ChrLocation
       },
       activeGenomeId: 'human'
     }
@@ -54,7 +57,8 @@ const mockState = {
   genome: {
     genomeKaryotype: {
       genomeKaryotypeData: {
-        human: [{ is_circular: false }]
+        human: [{ is_circular: false, name: chrName }],
+        ecoli: [{ is_circular: true, name: circularChrName }]
       }
     }
   }
@@ -83,8 +87,8 @@ describe('BrowserLocationIndicator', () => {
 
     it('displays circular chromosome', () => {
       const newstate = set(
-        'genome.genomeKaryotype.genomeKaryotypeData.human[0].is_circular',
-        true,
+        'browser.browserGeneral.activeGenomeId',
+        'ecoli',
         mockState
       );
       const { container } = renderComponent(newstate);

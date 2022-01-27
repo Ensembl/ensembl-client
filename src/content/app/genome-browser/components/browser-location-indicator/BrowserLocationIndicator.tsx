@@ -50,9 +50,9 @@ export const BrowserLocationIndicator = (props: Props) => {
     ? {}
     : { onClick: () => dispatch(toggleBrowserNav({ activeGenomeId })) };
 
-  const activeKaryotype =
+  const activeChromosome =
     genomeKaryotype &&
-    genomeKaryotype.filter((karyotype) => {
+    genomeKaryotype.find((karyotype) => {
       return karyotype.name === chrCode;
     });
 
@@ -60,7 +60,7 @@ export const BrowserLocationIndicator = (props: Props) => {
     <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView} {...onClickProps}>
-        {activeKaryotype && activeKaryotype[0].is_chromosome ? (
+        {activeChromosome?.is_circular ? (
           <CircularChromosomeIndicator />
         ) : (
           <div className={styles.chrCode}>{chrCode}</div>
