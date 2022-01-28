@@ -40,7 +40,7 @@ export const proteinDomainsQuery = gql`
   }
 `;
 
-export type FamilyMatchProduct = Pick2<
+export type FamilyMatchInProduct = Pick2<
   FamilyMatch,
   'relative_location',
   'start' | 'end'
@@ -51,6 +51,6 @@ export type FamilyMatchProduct = Pick2<
 export type ProteinDomainsQueryResult = {
   product: {
     length: number;
-    family_matches: FamilyMatchProduct[];
+    family_matches: FamilyMatchInProduct[];
   };
 };

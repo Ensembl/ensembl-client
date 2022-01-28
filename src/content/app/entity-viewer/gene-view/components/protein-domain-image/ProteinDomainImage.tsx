@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { FamilyMatchProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
+import { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -26,7 +26,7 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  proteinDomains: FamilyMatchProduct[];
+  proteinDomains: FamilyMatchInProduct[];
   trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
@@ -45,7 +45,7 @@ type ProteinDomainImageData = {
 };
 
 export const getDomainsByResourceGroups = (
-  proteinDomains: FamilyMatchProduct[]
+  proteinDomains: FamilyMatchInProduct[]
 ) => {
   const groupedDomains: ProteinDomainImageData = {};
 
