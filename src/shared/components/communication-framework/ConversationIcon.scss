@@ -5,8 +5,8 @@
 }
 
 .conversationIconWrapper {
-  display: grid;
-  grid-template-columns: 75px 40px;
+  display: flex;
+  gap: 16px;
   align-items: center;
   cursor: pointer;
   color: $blue;

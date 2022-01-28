@@ -40,12 +40,11 @@ const ConversationIcon = (props: Props) => {
     dispatch(toggleCommunicationPanel());
   };
 
-  const wrapperClass = props.withLabel ? styles.conversationIconWrapper : '';
   return (
     <>
       <CommunicationPanel />
-      <div className={wrapperClass} onClick={onClick}>
-        {props.withLabel && 'Contact Us'}
+      <div className={styles.conversationIconWrapper} onClick={onClick}>
+        {props.withLabel && 'Contact us'}
         <ConversationImageIcon className={styles.conversationIcon} />
       </div>
     </>
