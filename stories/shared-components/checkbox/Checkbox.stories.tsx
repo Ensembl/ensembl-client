@@ -124,7 +124,7 @@ export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-LabelledCheckboxStory.storyName = 'grid with long label';
+LongLabelledCheckboxStory.storyName = 'grid with long label';
 
 export default {
   title: 'Components/Shared Components/Checkbox',
