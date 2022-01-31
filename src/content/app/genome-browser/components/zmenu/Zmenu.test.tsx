@@ -18,15 +18,12 @@ import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
-import faker from 'faker';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import { createZmenuContent } from 'tests/fixtures/browser';
-
-import { ZmenuContentFeature } from 'ensembl-genome-browser';
+import { createZmenuPayload } from 'tests/fixtures/browser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
@@ -46,16 +43,10 @@ jest.mock('./ZmenuInstantDownload', () => () => (
 ));
 
 const defaultProps: ZmenuProps = {
-  anchor_coordinates: {
-    x: 490,
-    y: 80
-  },
   browserRef: {
     current: document.createElement('div')
   },
-  content: createZmenuContent() as ZmenuContentFeature[],
-  id: faker.lorem.words(),
-  unversioned_id: faker.lorem.words()
+  content: createZmenuPayload()
 };
 
 const mockStore = configureMockStore();

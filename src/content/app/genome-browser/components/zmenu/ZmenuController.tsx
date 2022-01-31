@@ -20,9 +20,9 @@ import { useDispatch } from 'react-redux';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
-  ZmenuAction,
+  ZmenuCreateAction,
   IncomingActionType,
-  ZmenuPayload
+  ZmenuCreatePayload
 } from 'ensembl-genome-browser';
 
 import Zmenu from './Zmenu';
@@ -37,7 +37,7 @@ type Props = {
 // and its data is saved in the state keyed by this id
 // (just in case we need to show more than one zmenu at a time)
 export type StateZmenu = {
-  [key: string]: ZmenuPayload;
+  [key: string]: ZmenuCreatePayload;
 };
 
 const ZmenuController = (props: Props) => {
@@ -53,10 +53,12 @@ const ZmenuController = (props: Props) => {
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const handleZmenuCreate = (action: ZmenuAction) => {
+  const handleZmenuCreate = (action: ZmenuCreateAction) => {
     const payload = action.payload;
 
-    dispatch(changeHighlightedTrackId(payload.content[0].metadata.track));
+    const trackIdToHighlight = payload.transcripts[0].metadata.track;
+
+    dispatch(changeHighlightedTrackId(trackIdToHighlight));
 
     setZmenus &&
       setZmenus({
@@ -69,7 +71,7 @@ const ZmenuController = (props: Props) => {
     return null;
   }
   const zmenuElements = Object.keys(zmenus).map((id) => (
-    <Zmenu key={id} browserRef={props.browserRef} {...zmenus[id]} />
+    <Zmenu key={id} browserRef={props.browserRef} content={zmenus[id]} />
   ));
 
   return <>{zmenuElements}</>;

@@ -22,29 +22,46 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import ZmenuAppLinks from './ZmenuAppLinks';
 
 import {
-  ZmenuContentGeneMetadata,
-  ZmenuContentFeature as ZmenuContentFeatureType,
+  ZmenuCreatePayload,
   ZmenuContentItem as ZmenuContentItemType,
-  Markup
+  Markup,
+  ZmenuContentTranscript,
+  ZmenuContentGene
 } from 'ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
-  content: ZmenuContentFeatureType[];
+  content: ZmenuCreatePayload;
   destroyZmenu: () => void;
 };
 
 export const ZmenuContent = (props: ZmenuContentProps) => {
   const { content } = props;
 
-  const { id } = content[1].metadata as ZmenuContentGeneMetadata;
-  const unversionedId = id.split('.')[0];
+  const { genes, transcripts, unversioned_id: unversionedId, id } = content;
+
+  const transcript = transcripts.find(
+    (transcript: ZmenuContentTranscript) =>
+      transcript.metadata.transcript_id === id
+  );
+
+  if (!transcript) {
+    return null;
+  }
+  const relatedGene = genes.find(
+    (gene: ZmenuContentGene) => gene.metadata.id === transcript.metadata.gene_id
+  );
+
+  const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [transcript];
+  if (relatedGene) {
+    features.push(relatedGene);
+  }
   const featureId = `gene:${unversionedId}`;
 
   const renderedContent = (
     <>
-      {content.map((feature: any, index) => (
+      {features.map((feature: any, index) => (
         <p key={index} className={styles.zmenuContentFeature}>
           <ZmenuContentFeature
             featureId={featureId}
@@ -62,7 +79,7 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
 
 type ZmenuContentFeatureProps = {
   featureId: string;
-  feature: ZmenuContentFeatureType;
+  feature: ZmenuContentGene | ZmenuContentTranscript;
   destroyZmenu: () => void;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {

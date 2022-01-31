@@ -31,7 +31,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuPayload } from 'ensembl-genome-browser';
+import { ZmenuCreatePayload } from 'ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
@@ -40,7 +40,8 @@ enum Direction {
   RIGHT = 'right'
 }
 
-export type ZmenuProps = ZmenuPayload & {
+export type ZmenuProps = {
+  content: ZmenuCreatePayload;
   browserRef: React.RefObject<HTMLDivElement>;
 };
 
@@ -51,7 +52,8 @@ const Zmenu = (props: ZmenuProps) => {
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
-    setZmenus && setZmenus(pickBy(zmenus, (value, key) => key !== props.id));
+    setZmenus &&
+      setZmenus(pickBy(zmenus, (value, key) => key !== props.content.id));
   };
 
   const direction = chooseDirection(props);
@@ -73,7 +75,9 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(props.unversioned_id)}
+            footerContent={getToolboxFooterContent(
+              props.content.unversioned_id
+            )}
           />
         </Toolbox>
       )}
@@ -84,7 +88,7 @@ const Zmenu = (props: ZmenuProps) => {
 const getAnchorInlineStyles = (params: ZmenuProps) => {
   const {
     anchor_coordinates: { x, y }
-  } = params;
+  } = params.content;
   return {
     left: `${x}px`,
     top: `${y}px`
@@ -95,7 +99,7 @@ const getAnchorInlineStyles = (params: ZmenuProps) => {
 const chooseDirection = (params: ZmenuProps) => {
   const browserElement = params.browserRef.current as HTMLDivElement;
   const { width } = browserElement.getBoundingClientRect();
-  const { x } = params.anchor_coordinates;
+  const { x } = params.content.anchor_coordinates;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
 };
 
