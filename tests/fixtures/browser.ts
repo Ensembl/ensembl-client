@@ -78,8 +78,8 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
       x: 490,
       y: 80
     },
-    id: faker.lorem.words(),
-    unversioned_id: faker.lorem.words(),
+    id: 'transcript_id.1',
+    unversioned_id: 'transcript_id',
     transcripts: [
       {
         data: [
@@ -99,7 +99,7 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
           ]
         ],
         metadata: {
-          transcript_id: 'transcript_id',
+          transcript_id: 'transcript_id.1',
           designation: 'designation',
           strand: 'forward',
           transcript_biotype: 'protein_coding',
