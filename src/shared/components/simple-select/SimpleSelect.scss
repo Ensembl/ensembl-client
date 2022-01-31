@@ -1,0 +1,41 @@
+@import 'src/styles/common';
+
+.selectResetDefaults {
+  // A reset of styles, including removing the default dropdown arrow
+  appearance: none;
+  // Additional resets for further consistency
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+}
+
+.select {
+  position: relative;
+  min-width: 15ch;
+  max-width: 30ch;
+  background-color: #fff;
+  border: 1px solid $blue;
+  padding: 0 10px;
+}
+
+.select::after {
+  content: '';
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-25%);
+  width: 0.8em;
+  height: 0.5em;
+  background-color: $blue;
+  clip-path: polygon(
+    100% 0%,
+    0 0%,
+    50% 100%
+  ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
+}
