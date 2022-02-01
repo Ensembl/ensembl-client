@@ -21,8 +21,8 @@ export type ValueSetMetadata = {
 };
 
 export type XrefMetadata = {
-  accession_id: string;
-  url: string;
+  accession_id: string | null;
+  url: string | null;
 };
 
 type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };

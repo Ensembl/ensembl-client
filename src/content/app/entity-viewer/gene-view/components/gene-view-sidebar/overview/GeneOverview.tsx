@@ -56,15 +56,18 @@ const GeneOverview = () => {
   }
 
   const { gene } = data;
+  const {
+    metadata: { name: geneNameMetadata }
+  } = gene;
 
   const trackLink = () => {
-    if (!gene.metadata.name) {
+    if (!geneNameMetadata?.accession_id) {
       return;
     }
 
     trackExternalReferenceLinkClick({
       tabName: SidebarTabName.OVERVIEW,
-      linkLabel: gene.metadata.name.accession_id
+      linkLabel: geneNameMetadata.accession_id
     });
   };
 
@@ -83,14 +86,14 @@ const GeneOverview = () => {
         <div className={styles.sectionHead}>Gene name</div>
         <div className={styles.sectionContent}>
           <div className={styles.geneName}>{getGeneName(gene.name)}</div>
-          {gene.metadata.name && (
+          {geneNameMetadata?.accession_id && geneNameMetadata?.url && (
             <ExternalReference
               classNames={{
                 container: styles.externalRefContainer,
                 link: styles.externalRefLink
               }}
-              to={gene.metadata.name.url}
-              linkText={gene.metadata.name.accession_id}
+              to={geneNameMetadata.url}
+              linkText={geneNameMetadata.accession_id}
               onClick={trackLink}
             />
           )}
