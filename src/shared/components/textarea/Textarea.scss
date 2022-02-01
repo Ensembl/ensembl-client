@@ -4,7 +4,7 @@
   border: none;
   padding: 7px;
   width: 100%;
-  height: 85px; /* To display 5 lines of text */
+  height: var(--textarea-height, 85px); /* To display 5 lines of text */
   &:focus,
   &:active {
     outline: none;

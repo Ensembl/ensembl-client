@@ -22,19 +22,19 @@ import faker from 'faker';
 import CheckboxWithTextfields, {
   CheckboxWithTextfieldsProps
 } from './CheckboxWithTextfields';
-import { ReadFile } from 'src/shared/components/upload/Upload';
+import { FileTransformedToString } from 'src/shared/components/upload';
 
 const onTextChange = jest.fn();
 const onFilesChange = jest.fn();
 const onReset = jest.fn();
 
-const mockReadFile: ReadFile = {
+const mockReadFile: FileTransformedToString = {
   filename: faker.random.words(),
   content: faker.random.words(),
   error: null
 };
 
-const mockReadFileWithError: ReadFile = {
+const mockReadFileWithError: FileTransformedToString = {
   filename: faker.random.words(),
   content: faker.random.words(),
   error: faker.random.words()
@@ -71,7 +71,7 @@ describe('<CheckboxWithTextfields />', () => {
 
   it('displays one Upload component by default', () => {
     const { container } = renderCheckboxWithTextfields();
-    expect(container.querySelectorAll('.defaultUpload')).toHaveLength(1);
+    expect(container.querySelectorAll('.upload')).toHaveLength(1);
   });
 
   it('passes the label to the checkbox component', () => {
