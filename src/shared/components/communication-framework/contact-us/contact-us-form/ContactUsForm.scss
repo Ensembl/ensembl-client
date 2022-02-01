@@ -10,7 +10,7 @@ $columnGapWidth: 12px;
   padding: 12px 0 52px 30px;
   min-height: 570px;
   --upload-label-width: #{$uploadOneLineLabelWidth};
-  --drop-zone-height: #{$uploadButtonShallowerHeight};
+  --drop-zone-height: #{$uploadButtonShorterHeight};
 }
 
 .containerFileOver {
