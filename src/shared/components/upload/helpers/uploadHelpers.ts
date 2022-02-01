@@ -16,12 +16,7 @@
 
 import windowService from 'src/services/window-service';
 
-import type {
-  Options,
-  Result,
-  OptionsWithDefinedTransform,
-  TransformTo
-} from '../types';
+import type { TransformTo } from '../types';
 
 // The File API also includes the `readAsBinaryString` method which is not recommended
 // (readAsArrayBuffer should be used instead)
@@ -34,25 +29,14 @@ const transformToFileReaderMethodMap: Record<TransformTo, FileReaderMethod> = {
   text: 'readAsText'
 };
 
-export const transformFiles = async <
-  T extends Options & OptionsWithDefinedTransform
->(
+export const transformFiles = async (
   files: File[],
-  options: T
-): Promise<Result<T>> => {
-  const { allowMultiple, transformTo } = options;
-  if (allowMultiple) {
-    const promises = [...files].map(
-      async (file) => await transformFile(file, transformTo)
-    );
-    const results = await Promise.all(promises);
-    return results.filter((result) =>
-      Boolean(result.content)
-    ) as unknown as Result<T>;
-  } else {
-    const result = await transformFile(files[0], transformTo);
-    return result as unknown as Result<T>;
-  }
+  transformTo: TransformTo
+) => {
+  const promises = [...files].map(
+    async (file) => await transformFile(file, transformTo)
+  );
+  return await Promise.all(promises);
 };
 
 export const transformFile = async (file: File, transformTo: TransformTo) => {

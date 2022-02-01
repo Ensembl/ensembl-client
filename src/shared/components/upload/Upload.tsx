@@ -18,16 +18,11 @@ import React, { useRef } from 'react';
 import classNames from 'classnames';
 
 import useFileDrop from './hooks/useFileDrop';
-import { transformFiles } from './helpers/uploadHelpers';
+import { transformFiles, transformFile } from './helpers/uploadHelpers';
 
 import { ReactComponent as UploadIcon } from './icon_upload.svg'; // FIXME: this will go in the static/images/icons folder
 
-import type {
-  FileUploadParams,
-  Options,
-  OptionsWithDefinedTransform,
-  Result
-} from './types';
+import type { FileUploadParams, Options, Result } from './types';
 
 import styles from './Upload.scss';
 
@@ -50,10 +45,9 @@ const Upload = <T extends Options>(props: UploadProps<T>) => {
     const files = [...(event.target.files as FileList)];
 
     if (transformTo) {
-      const result = await transformFiles(
-        files,
-        props as OptionsWithDefinedTransform
-      );
+      const result = allowMultiple
+        ? await transformFiles(files, transformTo)
+        : await transformFile(files[0], transformTo);
       props.onUpload(result as Result<T>);
     } else if (allowMultiple) {
       props.onUpload([...files] as Result<T>);

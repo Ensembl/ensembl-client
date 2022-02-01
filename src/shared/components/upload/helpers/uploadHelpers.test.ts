@@ -62,16 +62,8 @@ describe('transformFiles', () => {
   // just checking the reading of one file vs many files here;
   // individual transformations are checked in the tests for transformFile
 
-  it('reads the content of a single file', async () => {
-    const result = await transformFiles([file1], { transformTo: 'text' });
-    expect(result.content).toBe(fileText1);
-  });
-
   it('reads the content of multiple files', async () => {
-    const [result1, result2] = await transformFiles([file1, file2], {
-      transformTo: 'text',
-      allowMultiple: true
-    });
+    const [result1, result2] = await transformFiles([file1, file2], 'text');
     expect(result1.content).toBe(fileText1);
     expect(result2.content).toBe(fileText2);
   });
