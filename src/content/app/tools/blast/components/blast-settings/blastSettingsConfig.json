@@ -1,0 +1,801 @@
+{
+  "parameters": {
+    "database": {
+      "label": "Database",
+      "description": "Database used for the BLAST search.",
+      "type": "select",
+      "options": [
+        {
+          "label": "Genomic sequence",
+          "value": "genomic"
+        },
+        {
+          "label": "cDNAs (transcripts/splice variants)",
+          "value": "cdna"
+        },
+        {
+          "label": "Proteins",
+          "value": "proteins"
+        }
+      ]
+    },
+    "program": {
+      "label": "Program",
+      "description": "The BLAST program to be used for the Sequence Similarity Search.",
+      "type": "select",
+      "options": [
+        {
+          "label": "blastp",
+          "value": "blastp"
+        },
+        {
+          "label": "blastx",
+          "value": "blastx"
+        },
+        {
+          "label": "blastn",
+          "value": "blastn"
+        },
+        {
+          "label": "tblastx",
+          "value": "tblastx"
+        },
+        {
+          "label": "tblastn",
+          "value": "tblastn"
+        }
+      ]
+    },
+    "alignments": {
+      "label": "Alignments",
+      "description": "Maximum number of match alignments reported in the result output.",
+      "type": "select",
+      "options": [
+        {
+          "label": "0",
+          "value": "0"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "20",
+          "value": "20"
+        },
+        {
+          "label": "50",
+          "value": "50"
+        },
+        {
+          "label": "100",
+          "value": "100"
+        },
+        {
+          "label": "150",
+          "value": "150"
+        },
+        {
+          "label": "200",
+          "value": "200"
+        },
+        {
+          "label": "250",
+          "value": "250"
+        },
+        {
+          "label": "500",
+          "value": "500"
+        },
+        {
+          "label": "750",
+          "value": "750"
+        },
+        {
+          "label": "1000",
+          "value": "1000"
+        }
+      ]
+    },
+    "scores": {
+      "label": "Scores",
+      "description": "Maximum number of match score summaries reported in the result output.",
+      "type": "select",
+      "options": [
+        {
+          "label": "0",
+          "value": "0"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "20",
+          "value": "20"
+        },
+        {
+          "label": "50",
+          "value": "50"
+        },
+        {
+          "label": "100",
+          "value": "100"
+        },
+        {
+          "label": "150",
+          "value": "150"
+        },
+        {
+          "label": "200",
+          "value": "200"
+        },
+        {
+          "label": "250",
+          "value": "250"
+        },
+        {
+          "label": "500",
+          "value": "500"
+        },
+        {
+          "label": "750",
+          "value": "750"
+        },
+        {
+          "label": "1000",
+          "value": "1000"
+        }
+      ]
+    },
+    "hsps": {
+      "label": "High-scoring Segment Pair",
+      "description": "Maximum number of HSPs (alignments) to keep for any single query-subject pair.",
+      "type": "select",
+      "options": [
+        {
+          "label": "100",
+          "value": "100"
+        }
+      ]
+    },
+    "dropoff": {
+      "label": "Dropoff",
+      "description": "The amount a score can drop before gapped extension of word hits is halted",
+      "type": "select",
+      "options": [
+        {
+          "label": "0",
+          "value": "0"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        },
+        {
+          "label": "6",
+          "value": "6"
+        },
+        {
+          "label": "8",
+          "value": "8"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        }
+      ]
+    },
+    "gapalign": {
+      "label": "Gapalign",
+      "description": "This is a true/false setting that tells the program the perform optimised alignments within regions involving gaps. If set to true, the program will perform an alignment using gaps. Otherwise, if it is set to false, it will report only individual HSP where two sequence match each other, and thus will not produce alignments with gaps.",
+      "type": "boolean",
+      "options": {
+        "true": "true",
+        "false": "false"
+      }
+    },
+    "filter": {
+      "label": "Filter",
+      "description": "Filter regions of low sequence complexity. This can avoid issues with low complexity sequences where matches are found due to composition rather than meaningful sequence similarity. However in some cases filtering also masks regions of interest and so should be used with caution.",
+      "type": "boolean",
+      "options": {
+        "true": "T",
+        "false": "F"
+      }
+    },
+    "compstats": {
+      "label": "Composition-based statistics",
+      "description": "Use composition-based statistics.",
+      "type": "select",
+      "options": [
+        {
+          "label": "F",
+          "value": "F"
+        },
+        {
+          "label": "D",
+          "value": "D"
+        },
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        }
+      ]
+    },
+    "exp": {
+      "label": "Expectation value threshold",
+      "description": "Limits the number of scores and alignments reported based on the expectation value. This is the maximum number of times the match is expected to occur by chance.",
+      "type": "select",
+      "options": [
+        {
+          "label": "1e-200",
+          "value": "1e-200"
+        },
+        {
+          "label": "1e-100",
+          "value": "1e-100"
+        },
+        {
+          "label": "1e-50",
+          "value": "1e-50"
+        },
+        {
+          "label": "1e-10",
+          "value": "1e-10"
+        },
+        {
+          "label": "1e-5",
+          "value": "1e-5"
+        },
+        {
+          "label": "1e-4",
+          "value": "1e-4"
+        },
+        {
+          "label": "1e-3",
+          "value": "1e-3"
+        },
+        {
+          "label": "1e-2",
+          "value": "1e-2"
+        },
+        {
+          "label": "1e-1",
+          "value": "1e-1"
+        },
+        {
+          "label": "1.0",
+          "value": "1.0"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "100",
+          "value": "100"
+        },
+        {
+          "label": "1000",
+          "value": "1000"
+        }
+      ]
+    },
+    "match_scores": {
+      "label": "Match/mismatch scores",
+      "description": "(Nucleotide searches) The match score is the bonus to the alignment score when matching the same base. The mismatch is the penalty when failing to match.",
+      "type": "select",
+      "options": [
+        {
+          "label": "1,-4",
+          "value": "1,-4"
+        },
+        {
+          "label": "2,-7",
+          "value": "2,-7"
+        },
+        {
+          "label": "1,-3",
+          "value": "1,-3"
+        },
+        {
+          "label": "2,-5",
+          "value": "2,-5"
+        },
+        {
+          "label": "1,-2",
+          "value": "1,-2"
+        },
+        {
+          "label": "2,-3",
+          "value": "2,-3"
+        },
+        {
+          "label": "1,-1",
+          "value": "1,-1"
+        },
+        {
+          "label": "5,-4",
+          "value": "5,-4"
+        },
+        {
+          "label": "4,-5",
+          "value": "4,-5"
+        },
+        {
+          "label": "N/A",
+          "value": ""
+        }
+      ]
+    },
+    "wordsize": {
+      "label": "Word size",
+      "description": "Word size for wordfinder algorithm",
+      "type": "select",
+      "options": [
+        {
+          "label": "6",
+          "value": "6"
+        },
+        {
+          "label": "11",
+          "value": "11"
+        },
+        {
+          "label": "28",
+          "value": "28"
+        }
+      ]
+    },
+    "gapopen": {
+      "label": "Gap open",
+      "description": "Penalty taken away from the score when a gap is created in sequence. Increasing the gap openning penalty will decrease the number of gaps in the final alignment.",
+      "type": "select",
+      "options": [
+        {
+          "label": "-1",
+          "value": "-1"
+        },
+        {
+          "label": "0",
+          "value": "0"
+        },
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "6",
+          "value": "6"
+        },
+        {
+          "label": "7",
+          "value": "7"
+        },
+        {
+          "label": "8",
+          "value": "8"
+        },
+        {
+          "label": "9",
+          "value": "9"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "11",
+          "value": "11"
+        },
+        {
+          "label": "12",
+          "value": "12"
+        },
+        {
+          "label": "13",
+          "value": "13"
+        },
+        {
+          "label": "14",
+          "value": "14"
+        },
+        {
+          "label": "15",
+          "value": "15"
+        },
+        {
+          "label": "16",
+          "value": "16"
+        },
+        {
+          "label": "17",
+          "value": "17"
+        },
+        {
+          "label": "18",
+          "value": "18"
+        },
+        {
+          "label": "19",
+          "value": "19"
+        },
+        {
+          "label": "20",
+          "value": "20"
+        },
+        {
+          "label": "21",
+          "value": "21"
+        },
+        {
+          "label": "25",
+          "value": "25"
+        }
+      ]
+    },
+    "gapext": {
+      "label": "Gap extend",
+      "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favors short gaps in the final alignment, conversly decreasing the gap extension penalty favors long gaps in the final alignment.",
+      "type": "select",
+      "options": [
+        {
+          "label": "-1 (default)",
+          "value": "-1"
+        },
+        {
+          "label": "0",
+          "value": "0"
+        },
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "6",
+          "value": "6"
+        },
+        {
+          "label": "8",
+          "value": "8"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        }
+      ]
+    },
+    "matrix": {
+      "label": "Matrix",
+      "description": "(Protein searches) The substitution matrix used for scoring alignments when searching the database.",
+      "type": "select",
+      "options": [
+        {
+          "label": "BLOSUM45",
+          "value": "BLOSUM45"
+        },
+        {
+          "label": "BLOSUM50",
+          "value": "BLOSUM50"
+        },
+        {
+          "label": "BLOSUM62",
+          "value": "BLOSUM62"
+        },
+        {
+          "label": "BLOSUM80",
+          "value": "BLOSUM80"
+        },
+        {
+          "label": "BLOSUM90",
+          "value": "BLOSUM90"
+        },
+        {
+          "label": "PAM30",
+          "value": "PAM30"
+        },
+        {
+          "label": "PAM70",
+          "value": "PAM70"
+        },
+        {
+          "label": "PAM250",
+          "value": "PAM250"
+        },
+        {
+          "label": "NONE",
+          "value": "NONE"
+        }
+      ]
+    }
+  },
+  "defaults": {
+    "program": "blastn",
+    "alignments": "50",
+    "scores": "50",
+    "hsps": "100",
+    "dropoff": "0",
+    "gapalign": "true",
+    "filter": "T",
+    "compstats": "F",
+    "exp": "10",
+    "gapopen": "-1",
+    "gapext": "-1"
+  },
+  "presets": {
+    "label": "Search sensitivity",
+    "defaultPreset": "normal",
+    "options": [
+      {
+        "label": "Near match",
+        "value": "near_match"
+      },
+      {
+        "label": "Short sequences",
+        "value": "short_sequences"
+      },
+      {
+        "label": "Normal",
+        "value": "normal"
+      },
+      {
+        "label": "Distant homologies",
+        "value": "distant_homologies"
+      }
+    ],
+    "settings": {
+      "blastn": {
+        "normal": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "10",
+          "gapopen": "5",
+          "gapext": "2",
+          "wordsize": "11",
+          "match_scores": "1,-3"
+        },
+        "near_match": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "10",
+          "gapopen": "5",
+          "gapext": "2",
+          "wordsize": "15",
+          "match_scores": "1,-3"
+        },
+        "short_sequences": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "F",
+          "compstats": "F",
+          "exp": "1000",
+          "gapopen": "5",
+          "gapext": "2",
+          "wordsize": "7",
+          "match_scores": "1,-3"
+        },
+        "distant_homologies": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "10",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "9",
+          "match_scores": "1,-1"
+        }
+      },
+      "blastx": {
+        "normal": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM62"
+        },
+        "near_match": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM90"
+        },
+        "distant_homologies": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM45"
+        }
+      },
+      "blastp": {
+        "normal": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM62"
+        },
+        "near_match": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM90"
+        },
+        "distant_homologies": {
+          "alignments": "50",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "11",
+          "match_scores": "1,-3",
+          "matrix": "BLOSUM45"
+        }
+      },
+      "tblastx": {
+        "normal": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1",
+          "matrix": "BLOSUM62"
+        },
+        "near_match": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1",
+          "matrix": "BLOSUM90"
+        },
+        "distant_homologies": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1",
+          "matrix": "BLOSUM45"
+        }
+      }
+    }
+  }
+}
