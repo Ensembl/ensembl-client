@@ -20,7 +20,7 @@ export type ValueSetMetadata = {
   definition: string;
 };
 
-export type XrefMetadata = {
+export type GeneNameMetadata = {
   accession_id: string | null;
   url: string | null;
 };
@@ -46,5 +46,5 @@ export type TranscriptMetadata = {
 
 export type GeneMetadata = {
   biotype: ValueSetMetadata;
-  name: XrefMetadata | null;
+  name: GeneNameMetadata | null;
 };
