@@ -1,0 +1,119 @@
+@import 'src/styles/common';
+
+.header {
+  display: flex;
+  width: 860px;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 28px;
+  padding-bottom: 12px;
+}
+
+.headerGroup {
+  display: flex;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: 15px;
+  font-weight: $bold;
+}
+
+.maxSpecies {
+  font-weight: $light;
+  margin-right: 30px;
+}
+
+.clearAll {
+  margin-right: 30px;
+  color: $blue;
+  cursor: pointer;
+  user-select: none;
+}
+
+.speciesCounter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: $white;
+  background-color: $dark-grey;
+  font-weight: $bold;
+  border-radius: 100%;
+  font-size: 15px;
+  margin: 0 0.6rem 0 0.6rem;
+}
+
+.speciesSelectorPlaceholder {
+  width: 860px;
+  height: 684px;
+  background-color: $light-grey;
+  border: 1px solid $grey;
+  padding: 10px;
+
+  .checkboxUnchecked {
+    margin-top: 0px;
+    margin-left: 10px;
+    width: 13px;
+    height: 13px;
+  }
+
+  .checkboxChecked {
+    margin-top: 0px;
+    margin-left: 10px;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.sequencesButton {
+  margin-left: 66px;
+}
+
+.speciesSelectorTable {
+  width: 100%;
+  text-align: left;
+  border-collapse: separate;
+  border-spacing: 0;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  thead th {
+    border-bottom: 2px solid $blue;
+    padding: 6px 10px 6px 15px;
+  }
+
+  tbody td {
+    border-bottom: 1px solid $medium-light-grey;
+    padding: 8px 8px 8px 15px;
+  }
+}
+
+.commonNameHeader {
+  width: 240px;
+}
+
+.scientificNameHeader {
+  width: 260px;
+}
+
+.scientificNameCol {
+  font-style: italic;
+}
+
+.assemblyHeader {
+  width: 235px;
+}
+
+.selectCol {
+  text-align: center;
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.speciesDetails {
+  color: $grey;
+  font-weight: 300;
+  font-size: 11px;
+}

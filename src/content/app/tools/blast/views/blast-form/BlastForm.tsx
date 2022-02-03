@@ -27,7 +27,57 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
 
+import SpeciesSelectorHeader from 'src/content/app/tools/blast/components/species-selector/SpeciesSelectorHeader';
+import SpeciesSelector from 'src/content/app/tools/blast/components/species-selector/SpeciesSelector';
+
 import styles from './BlastForm.scss';
+
+//TODO: hardcoding species list for now, this need replacing with API when we implement search or add more species and find out which field we need to submit a job
+const speciesList = [
+  {
+    assembly_name: 'GRCh38.p13',
+    common_name: 'Human',
+    genome_id: 'homo_sapiens_GCA_000001405_28',
+    scientific_name: 'Homo sapiens'
+  },
+  {
+    assembly_name: 'IWGSC',
+    common_name: null,
+    genome_id: 'triticum_aestivum_GCA_900519105_1',
+    scientific_name: 'Triticum aestivum'
+  },
+  {
+    assembly_name: 'GRCh37.p13',
+    common_name: 'Human',
+    genome_id: 'homo_sapiens_GCA_000001405_14',
+    scientific_name: 'Homo sapiens'
+  },
+  {
+    assembly_name: 'WBcel235',
+    common_name: null,
+    genome_id: 'caenorhabditis_elegans_GCA_000002985_3',
+    scientific_name: 'Caenorhabditis elegans'
+  },
+  {
+    assembly_name: 'R64-1-1',
+    common_name: null,
+    genome_id: 'saccharomyces_cerevisiae_GCA_000146045_2',
+    scientific_name: 'Saccharomyces cerevisiae'
+  },
+  {
+    assembly_name: 'ASM584v2',
+    common_name: null,
+    genome_id:
+      'escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2',
+    scientific_name: 'Escherichia coli str. K-12 substr. MG1655'
+  },
+  {
+    assembly_name: 'ASM276v2',
+    common_name: null,
+    genome_id: 'plasmodium_falciparum_GCA_000002765_2',
+    scientific_name: 'Plasmodium falciparum 3D7'
+  }
+];
 
 const BlastForm = () => {
   return (
@@ -58,7 +108,8 @@ const MainLarge = () => {
           <BlastInputSequences />
         </div>
         <div>
-          <SpeciesSelectorPlaceholder />
+          <SpeciesSelectorHeader compact={false} />
+          <SpeciesSelector speciesList={speciesList} />
         </div>
       </div>
     </div>
@@ -76,16 +127,11 @@ const MainSmall = () => {
           <BlastInputSequences />
         </>
       ) : (
-        <SpeciesSelectorPlaceholder />
+        <>
+          <SpeciesSelectorHeader compact={true} />
+          <SpeciesSelector speciesList={speciesList} />
+        </>
       )}
-    </div>
-  );
-};
-
-const SpeciesSelectorPlaceholder = () => {
-  return (
-    <div className={styles.speciesSelectorPlaceholder}>
-      Species will go here
     </div>
   );
 };
