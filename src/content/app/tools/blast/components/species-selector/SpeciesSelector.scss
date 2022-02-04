@@ -86,7 +86,7 @@
 
   tbody td {
     border-bottom: 1px solid $medium-light-grey;
-    padding: 8px 8px 8px 15px;
+    padding: 14px 8px 14px 15px;
   }
 }
 
@@ -102,6 +102,11 @@
   font-style: italic;
 }
 
+.assemblyCol {
+  font-weight: 400;
+  font-size: 11px;
+}
+
 .assemblyHeader {
   width: 235px;
 }
@@ -113,7 +118,6 @@
 }
 
 .speciesDetails {
-  color: $grey;
   font-weight: 300;
   font-size: 11px;
 }

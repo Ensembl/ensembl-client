@@ -98,7 +98,7 @@ const SpeciesSelector = (props: Props) => {
                 <td className={styles.scientificNameCol}>
                   {item.scientific_name}
                 </td>
-                <td>{item.assembly_name}</td>
+                <td className={styles.assemblyCol}>{item.assembly_name}</td>
                 <td className={styles.selectCol}>
                   <Checkbox
                     classNames={{
