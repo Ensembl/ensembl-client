@@ -477,7 +477,7 @@
       "type": "select",
       "options": [
         {
-          "label": "-1 (default)",
+          "label": "-1",
           "value": "-1"
         },
         {
@@ -562,18 +562,58 @@
       ]
     }
   },
+  "progams_per_sequence_type": {
+    "dna": ["blastn", "tblastx", "tblastn"],
+    "protein": ["blastp", "blastx"]
+  },
+  "programs_configurator": [
+    {
+      "sequence_type": "dna",
+      "database_type": "dna",
+      "programs": ["blastn", "tblastx"]
+    },
+    {
+      "sequence_type": "dna",
+      "database_type": "protein",
+      "programs": ["blastx"]
+    },
+    {
+      "sequence_type": "protein",
+      "database_type": "dna",
+      "programs": ["tblastn"]
+    },
+    {
+      "sequence_type": "protein",
+      "database_type": "protein",
+      "programs": ["blastp"]
+    }
+  ],
+  "databases": {
+    "label": "Database",
+    "description": "Database used for the BLAST search.",
+    "type": "select",
+    "blast_parameter_name": "database",
+    "options": [
+      {
+        "label": "Genomic sequence",
+        "value": "genomic",
+        "sequence_type": "dna"
+      },
+      {
+        "label": "cDNAs (transcripts/splice variants)",
+        "value": "cdna",
+        "sequence_type": "dna"
+      },
+      {
+        "label": "Proteins",
+        "value": "proteins",
+        "sequence_type": "protein"
+      }
+    ]
+  },
   "defaults": {
     "program": "blastn",
-    "alignments": "50",
-    "scores": "50",
-    "hsps": "100",
-    "dropoff": "0",
-    "gapalign": "true",
-    "filter": "T",
-    "compstats": "F",
-    "exp": "10",
-    "gapopen": "-1",
-    "gapext": "-1"
+    "database": "genomic"
   },
   "presets": {
     "label": "Search sensitivity",
@@ -668,7 +708,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -683,7 +722,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -698,7 +736,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM45"
         }
       },
@@ -715,7 +752,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -730,7 +766,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -745,7 +780,6 @@
           "gapopen": "11",
           "gapext": "1",
           "wordsize": "11",
-          "match_scores": "1,-3",
           "matrix": "BLOSUM45"
         }
       },
@@ -762,8 +796,7 @@
           "gapopen": "2",
           "gapext": "2",
           "wordsize": "3",
-          "match_scores": "1,-1",
-          "matrix": "BLOSUM62"
+          "match_scores": "1,-1"
         },
         "near_match": {
           "alignments": "100",
@@ -777,8 +810,7 @@
           "gapopen": "2",
           "gapext": "2",
           "wordsize": "3",
-          "match_scores": "1,-1",
-          "matrix": "BLOSUM90"
+          "match_scores": "1,-1"
         },
         "distant_homologies": {
           "alignments": "100",
@@ -792,8 +824,7 @@
           "gapopen": "2",
           "gapext": "2",
           "wordsize": "3",
-          "match_scores": "1,-1",
-          "matrix": "BLOSUM45"
+          "match_scores": "1,-1"
         }
       }
     }

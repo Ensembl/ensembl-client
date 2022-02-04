@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const blastSettingNames = [
+const blastParameterNames = [
   'database',
   'program',
   'alignments',
@@ -32,18 +32,14 @@ const blastSettingNames = [
   'matrix'
 ] as const;
 
-export type BlastSettingName = typeof blastSettingNames[number];
-
-// type BlastSettingName =
-//   | 'database'
-//   | 'program'
-//   | 'alignments'
-//   | 'scores'
-//   | 'hsps'
-//   | 'dropoff'
-//   | 'gapalign'
-//   | 'filter'
-//   | 'compstats'
+export type BlastParameterName = typeof blastParameterNames[number];
+export type SequenceType = 'dna' | 'protein';
+export type BlastProgram =
+  | 'blastn'
+  | 'tblastx'
+  | 'tblastn'
+  | 'blastp'
+  | 'blastx';
 
 type Option = {
   label: string;
@@ -69,7 +65,7 @@ export type BlastBooleanSetting = {
 
 export type BlastSetting = BlastSelectSetting | BlastBooleanSetting;
 
-type Preset = Record<BlastSettingName, string>;
+type Preset = Record<BlastParameterName, string>;
 
 export type Presets = {
   label: string;
@@ -82,7 +78,31 @@ export type Presets = {
   };
 };
 
+type ProgramConfiguration = {
+  sequence_type: SequenceType;
+  database_type: SequenceType;
+  programs: BlastProgram[];
+};
+
+// FIXME: remove this type?
+type BlastDatabases = {
+  label: string;
+  blast_parameter_name: string;
+  options: {
+    label: string;
+    value: string;
+    sequence_type: SequenceType;
+  }[];
+};
+
+type Defaults = {
+  database: string;
+};
+
 export type BlastSettingsConfig = {
-  parameters: Record<BlastSettingName, BlastSetting>;
+  parameters: Record<BlastParameterName, BlastSetting>;
+  programs_configurator: ProgramConfiguration[];
+  databases: BlastDatabases;
+  defaults: Defaults;
   presets: Presets;
 };
