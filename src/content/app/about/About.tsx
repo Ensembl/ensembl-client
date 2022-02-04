@@ -29,6 +29,7 @@ import {
   SideMenu
 } from 'src/content/app/about/components/about-menu/AboutMenu';
 import { CircleLoader } from 'src/shared/components/loader';
+import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';
@@ -81,7 +82,14 @@ const About = () => {
 };
 
 const AppBar = () => {
-  return <div className={styles.appBar}>About Ensembl</div>;
+  return (
+    <div className={styles.appBar}>
+      About Ensembl
+      <div className={styles.conversationIcon}>
+        <ConversationIcon withLabel={true} />
+      </div>
+    </div>
+  );
 };
 
 const TopMenuBar = (props: { children: ReactNode }) => {

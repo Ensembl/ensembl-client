@@ -1,3 +1,13 @@
+@import 'src/styles/common';
+
 .conversationIcon {
+  width: 40px;
+}
+
+.conversationIconWrapper {
+  display: flex;
+  gap: 16px;
+  align-items: center;
   cursor: pointer;
+  color: $blue;
 }
