@@ -70,6 +70,10 @@
     margin-top: var(--checkbox-margin-top, 9px);
   }
 
+  .checkboxChecked {
+    background-color: var(--checkbox-checked-background-color, #{$green});
+  }
+
   .label {
     color: var(--checkbox-label-color, #{$white});
     font-size: var(--checkbox-label-font-size, 12px);

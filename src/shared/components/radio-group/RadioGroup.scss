@@ -60,9 +60,13 @@
     height: var(--radio-diameter, 12px);
     width: var(--radio-diameter, 12px);
 
-    &Checked::after {
-      height: var(--radio-checked-diameter, 6px);
-      width: var(--radio-checked-diameter, 6px);
+    &Checked {
+      background-color: var(--radio-checked-background-color, #{$white});
+
+      &::after {
+        height: var(--radio-checked-diameter, 6px);
+        width: var(--radio-checked-diameter, 6px);
+      }
     }
   }
 
