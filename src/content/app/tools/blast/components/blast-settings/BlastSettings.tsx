@@ -221,8 +221,17 @@ const BlastSettings = () => {
             onChange: (value: string) =>
               onBlastParameterChange('dropoff', value)
           })}
-          {buildCheckbox(getParameterData('gapalign') as BlastBooleanSetting)}
-          {buildCheckbox(getParameterData('filter') as BlastBooleanSetting)}
+          {buildCheckbox({
+            ...(getParameterData('gapalign') as BlastBooleanSetting),
+            selectedOption: blastParameters.gapalign as string,
+            onChange: (value: string) =>
+              onBlastParameterChange('gapalign', value)
+          })}
+          {buildCheckbox({
+            ...(getParameterData('filter') as BlastBooleanSetting),
+            selectedOption: blastParameters.filter as string,
+            onChange: (value: string) => onBlastParameterChange('filter', value)
+          })}
           {buildSelect({
             ...(getParameterData('compstats') as BlastSelectSetting),
             selectedOption: blastParameters.compstats as string,
@@ -324,13 +333,24 @@ const buildSelect = (setting: {
   );
 };
 
-const buildCheckbox = (setting: BlastBooleanSetting) => {
+const buildCheckbox = (params: {
+  label: string;
+  options: {
+    true: string;
+    false: string;
+  };
+  selectedOption: string;
+  onChange: (value: string) => void;
+}) => {
+  const { label, options, selectedOption, onChange } = params;
+  const isChecked = options.true === selectedOption;
+
+  const onCheckboxChange = (isChecked: boolean) => {
+    onChange(options[`${isChecked}`]);
+  };
+
   return (
-    <Checkbox
-      label={setting.label}
-      checked={false}
-      onChange={() => {} /* eslint-disable-line */}
-    />
+    <Checkbox label={label} checked={isChecked} onChange={onCheckboxChange} />
   );
 };
 

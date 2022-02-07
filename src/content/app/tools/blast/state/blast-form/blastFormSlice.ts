@@ -152,6 +152,7 @@ const blastFormSlice = createSlice({
         ? 'automatic'
         : 'manual';
       state.settings.program = programName;
+      state.settings.preset = presetName;
       state.settings.parameters = { ...parameters, database: selectedDatabase };
     },
     setBlastDatabase(
@@ -175,6 +176,7 @@ const blastFormSlice = createSlice({
       const presetName = initialBlastFormSettings.preset;
       const parameters = config.presets.settings[programName][presetName];
       state.settings.program = programName;
+      state.settings.preset = presetName;
       state.settings.parameters = { ...parameters, database };
     },
     setBlastProgram(
@@ -185,9 +187,10 @@ const blastFormSlice = createSlice({
       }>
     ) {
       const { program, config } = action.payload;
-      const presetName = initialBlastFormSettings.preset; // wrong, should be default
+      const presetName = initialBlastFormSettings.preset;
       const parameters = config.presets.settings[program][presetName];
       state.settings.program = program;
+      state.settings.preset = presetName;
       state.settings.parameters = {
         ...parameters,
         database: state.settings.parameters.database

@@ -826,6 +826,50 @@
           "wordsize": "3",
           "match_scores": "1,-1"
         }
+      },
+      "tblastn": {
+        "normal": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1"
+        },
+        "near_match": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1"
+        },
+        "distant_homologies": {
+          "alignments": "100",
+          "scores": "50",
+          "hsps": "100",
+          "dropoff": "0",
+          "gapalign": "true",
+          "filter": "T",
+          "compstats": "F",
+          "exp": "1e-1",
+          "gapopen": "2",
+          "gapext": "2",
+          "wordsize": "3",
+          "match_scores": "1,-1"
+        }
       }
     }
   }
