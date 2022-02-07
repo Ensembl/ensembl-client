@@ -84,17 +84,6 @@ type ProgramConfiguration = {
   programs: BlastProgram[];
 };
 
-// FIXME: remove this type?
-type BlastDatabases = {
-  label: string;
-  blast_parameter_name: string;
-  options: {
-    label: string;
-    value: string;
-    sequence_type: SequenceType;
-  }[];
-};
-
 type Defaults = {
   database: string;
 };
@@ -102,7 +91,7 @@ type Defaults = {
 export type BlastSettingsConfig = {
   parameters: Record<BlastParameterName, BlastSetting>;
   programs_configurator: ProgramConfiguration[];
-  databases: BlastDatabases;
+  database_sequence_types: Record<string, SequenceType>;
   defaults: Defaults;
   presets: Presets;
 };

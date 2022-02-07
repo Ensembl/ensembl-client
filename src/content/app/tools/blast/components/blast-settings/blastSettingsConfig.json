@@ -566,6 +566,11 @@
     "dna": ["blastn", "tblastx", "tblastn"],
     "protein": ["blastp", "blastx"]
   },
+  "database_sequence_types": {
+    "genomic": "dna",
+    "cdna": "dna",
+    "proteins": "protein"
+  },
   "programs_configurator": [
     {
       "sequence_type": "dna",

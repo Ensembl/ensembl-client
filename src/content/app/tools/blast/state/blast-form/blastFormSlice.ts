@@ -83,8 +83,7 @@ const getDatabaseSequenceType = ({
   database: string;
   config: BlastSettingsConfig;
 }) => {
-  return config.databases.options.find((option) => option.value === database)
-    ?.sequence_type as SequenceType;
+  return config.database_sequence_types[database];
 };
 
 const blastFormSlice = createSlice({
