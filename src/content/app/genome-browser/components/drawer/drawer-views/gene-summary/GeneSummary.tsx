@@ -51,19 +51,19 @@ const GeneSummary = () => {
     geneId: focusGene.stable_id,
     genomeId: focusGene.genome_id
   };
-  const { data, isLoading } = useGbGeneSummaryQuery(geneQueryParams, {
+  const { currentData, isFetching } = useGbGeneSummaryQuery(geneQueryParams, {
     skip: !focusGene.stable_id
   });
 
-  if (isLoading) {
+  if (isFetching) {
     return null;
   }
 
-  if (!data?.gene) {
+  if (!currentData?.gene) {
     return <div>No data available</div>;
   }
 
-  const { gene } = data;
+  const { gene } = currentData;
   const {
     metadata: { name: geneNameMetadata }
   } = gene;

@@ -37,7 +37,7 @@ const ZmenuInstantDownload = (props: Props) => {
 
   const genomeId = useSelector(getBrowserActiveGenomeId) || '';
 
-  const { data, isLoading } = useGbTranscriptInZmenuQuery(
+  const { currentData, isFetching } = useGbTranscriptInZmenuQuery(
     {
       genomeId,
       transcriptId
@@ -47,23 +47,23 @@ const ZmenuInstantDownload = (props: Props) => {
     }
   );
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className={styles.zmenuInstantDowloadLoading}>
         <CircleLoader />
       </div>
     );
-  } else if (!data || !genomeId) {
+  } else if (!currentData || !genomeId) {
     return null;
   }
 
   const payload = {
     transcript: {
       id: transcriptId,
-      isProteinCoding: isProteinCodingTranscript(data.transcript)
+      isProteinCoding: isProteinCodingTranscript(currentData.transcript)
     },
     gene: {
-      id: data.transcript.gene.stable_id
+      id: currentData.transcript.gene.stable_id
     }
   };
 
