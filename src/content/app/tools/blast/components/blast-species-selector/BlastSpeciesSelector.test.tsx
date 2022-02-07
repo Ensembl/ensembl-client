@@ -74,9 +74,7 @@ describe('SpeciesSelector', () => {
 
       const updatedState = store.getState();
 
-      expect(
-        Object.keys(updatedState.blast.blastForm.selectedSpecies).length
-      ).toBe(1);
+      expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
       expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
         'homo_sapiens_GCA_000001405_14'
       );

@@ -24,5 +24,5 @@ export const getEmptyInputVisibility = (state: RootState) =>
 
 export const getStep = (state: RootState) => state.blast.blastForm.step;
 
-export const getSelectedSpecies = (state: RootState) =>
+export const getSelectedSpeciesIds = (state: RootState) =>
   state.blast.blastForm.selectedSpecies;

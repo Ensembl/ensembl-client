@@ -18,7 +18,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { updateSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import { getSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
@@ -28,7 +28,7 @@ import styles from './BlastSpeciesSelector.scss';
 
 const BlastSpeciesSelector = () => {
   const dispatch = useDispatch();
-  const selectedSpecies = useSelector(getSelectedSpecies);
+  const selectedSpecies = useSelector(getSelectedSpeciesIds);
 
   const onSpeciesSelection = (isChecked: boolean, genomeId: string) => {
     dispatch(updateSelectedSpecies({ isChecked, genomeId }));

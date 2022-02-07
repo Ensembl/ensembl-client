@@ -21,7 +21,7 @@ import {
   switchToSequencesStep,
   clearSelectedSpecies
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import { getSelectedSpecies } from 'src/content/app/tools/blast//state/blast-form/blastFormSelectors';
+import { getSelectedSpeciesIds } from 'src/content/app/tools/blast//state/blast-form/blastFormSelectors';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
@@ -35,7 +35,7 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
   const { compact } = props;
   const dispatch = useDispatch();
 
-  const selectedSpecies = useSelector(getSelectedSpecies);
+  const selectedSpecies = useSelector(getSelectedSpeciesIds);
 
   const onSwitchToSequence = () => {
     dispatch(switchToSequencesStep());

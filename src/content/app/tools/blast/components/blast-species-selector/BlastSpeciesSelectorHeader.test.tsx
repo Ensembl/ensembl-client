@@ -100,9 +100,7 @@ describe('SpeciesSelectorHeader', () => {
 
       const updatedState = store.getState();
 
-      expect(
-        Object.keys(updatedState.blast.blastForm.selectedSpecies).length
-      ).toBe(0);
+      expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(0);
 
       const speciesCounter = container.querySelector('.header .speciesCounter');
       expect(getNodeText(speciesCounter as HTMLElement)).toBe('0');
