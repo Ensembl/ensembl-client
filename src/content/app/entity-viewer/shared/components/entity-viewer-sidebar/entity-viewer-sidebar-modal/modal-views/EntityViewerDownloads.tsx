@@ -42,7 +42,7 @@ const EntityViewerSidebarDownloads = () => {
     ? parseFocusObjectId(activeEntityId).objectId
     : null;
 
-  const { data } = useGeneForSequenceDownloadQuery(
+  const { currentData } = useGeneForSequenceDownloadQuery(
     {
       genomeId: genomeId || '',
       geneId: geneId || ''
@@ -52,7 +52,7 @@ const EntityViewerSidebarDownloads = () => {
     }
   );
 
-  if (!data) {
+  if (!currentData) {
     return null;
   }
 
@@ -72,7 +72,7 @@ const EntityViewerSidebarDownloads = () => {
     }
 
     trackGeneDownload({
-      geneSymbol: data.gene.stable_id,
+      geneSymbol: currentData.gene.stable_id,
       options: downloadOptions,
       downloadStatus
     });
@@ -83,8 +83,8 @@ const EntityViewerSidebarDownloads = () => {
       <InstantDownloadGene
         genomeId={genomeId as string}
         gene={{
-          id: data.gene.stable_id,
-          isProteinCoding: isProteinCodingGene(data.gene)
+          id: currentData.gene.stable_id,
+          isProteinCoding: isProteinCodingGene(currentData.gene)
         }}
         onDownloadSuccess={(payload) => onDownload(payload, 'success')}
         onDownloadFailure={(payload) => onDownload(payload, 'failure')}
