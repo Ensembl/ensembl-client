@@ -149,7 +149,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         })
       );
     };
-  }, [genomeId, props.gene.stable_id]);
+  }, [genomeId, geneStableId]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>
