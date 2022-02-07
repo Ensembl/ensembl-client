@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { updateSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -23,34 +22,11 @@ import { getSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
-import styles from './SpeciesSelector.scss';
+import SpeciesList from './SpeciesList';
 
-type SpeciesList = {
-  assembly_name: string;
-  common_name: string | null;
-  genome_id: string;
-  scientific_name: string;
-};
+import styles from './BlastSpeciesSelector.scss';
 
-export type Props = { speciesList: SpeciesList[] };
-
-const SpeciesSelector = (props: Props) => {
-  const { speciesList } = props;
-
-  speciesList.sort((a, b) => {
-    if (a.common_name) {
-      if (a.common_name && b.common_name) {
-        return a.common_name > b.common_name ? 1 : -1;
-      }
-      return -1;
-    } else {
-      if (!a.common_name && !b.common_name) {
-        return a.scientific_name > b.scientific_name ? 1 : -1;
-      }
-      return 1;
-    }
-  });
-
+const BlastSpeciesSelector = () => {
   const dispatch = useDispatch();
   const selectedSpecies = useSelector(getSelectedSpecies);
 
@@ -59,39 +35,18 @@ const SpeciesSelector = (props: Props) => {
   };
 
   return (
-    <div className={styles.speciesSelectorPlaceholder}>
+    <div className={styles.speciesSelectorContainer}>
       <table className={styles.speciesSelectorTable}>
         <thead>
           <tr>
-            <th
-              className={classNames(
-                styles.speciesDetails,
-                styles.commonNameHeader
-              )}
-            >
-              Common name
-            </th>
-            <th
-              className={classNames(
-                styles.speciesDetails,
-                styles.scientificNameHeader
-              )}
-            >
-              Scientific name
-            </th>
-            <th
-              className={classNames(
-                styles.speciesDetails,
-                styles.assemblyHeader
-              )}
-            >
-              Assembly
-            </th>
+            <th className={styles.commonNameHeader}>Common name</th>
+            <th className={styles.scientificNameHeader}>Scientific name</th>
+            <th className={styles.assemblyHeader}>Assembly</th>
             <th className={styles.selectCol}>Select</th>
           </tr>
         </thead>
         <tbody>
-          {speciesList.map((item, index) => {
+          {SpeciesList.map((item, index) => {
             return (
               <tr key={index}>
                 <td>{item.common_name ? item.common_name : '-'}</td>
@@ -105,7 +60,7 @@ const SpeciesSelector = (props: Props) => {
                       unchecked: styles.checkboxUnchecked,
                       checked: styles.checkboxChecked
                     }}
-                    checked={!!selectedSpecies[item.genome_id]}
+                    checked={selectedSpecies.includes(item.genome_id)}
                     onChange={(isChecked) =>
                       onSpeciesSelection(isChecked, item.genome_id)
                     }
@@ -120,4 +75,4 @@ const SpeciesSelector = (props: Props) => {
   );
 };
 
-export default SpeciesSelector;
+export default BlastSpeciesSelector;

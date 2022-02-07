@@ -23,14 +23,14 @@ export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
-  selectedSpecies: { [genomeId: string]: boolean };
+  selectedSpecies: string[];
 };
 
 export const initialState: BlastFormState = {
   step: 'sequences',
   sequences: [],
   shouldAppendEmptyInput: true,
-  selectedSpecies: {}
+  selectedSpecies: []
 };
 
 const blastFormSlice = createSlice({
@@ -50,14 +50,17 @@ const blastFormSlice = createSlice({
       action: PayloadAction<{ isChecked: boolean; genomeId: string }>
     ) {
       const { genomeId, isChecked } = action.payload;
+
       if (isChecked) {
-        state.selectedSpecies[genomeId] = true;
+        state.selectedSpecies.push(genomeId);
       } else {
-        delete state.selectedSpecies[genomeId];
+        state.selectedSpecies = state.selectedSpecies.filter(
+          (item) => item !== genomeId
+        );
       }
     },
     clearSelectedSpecies(state) {
-      state.selectedSpecies = {};
+      state.selectedSpecies = [];
     },
     updateEmptyInputDisplay(state, action: PayloadAction<boolean>) {
       state.shouldAppendEmptyInput = action.payload;

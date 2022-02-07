@@ -25,13 +25,13 @@ import { getSelectedSpecies } from 'src/content/app/tools/blast//state/blast-for
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SpeciesSelector.scss';
+import styles from './BlastSpeciesSelector.scss';
 
 export type Props = {
   compact: boolean;
 };
 
-const SpeciesSelectorHeader = (props: Props) => {
+const BlastSpeciesSelectorHeader = (props: Props) => {
   const { compact } = props;
   const dispatch = useDispatch();
 
@@ -49,9 +49,7 @@ const SpeciesSelectorHeader = (props: Props) => {
     <div className={styles.header}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Blast against</span>
-        <span className={styles.speciesCounter}>
-          {Object.keys(selectedSpecies).length}
-        </span>
+        <span className={styles.speciesCounter}>{selectedSpecies.length}</span>
         <span className={styles.maxSpecies}>of 7 species</span>
         {compact && (
           <span className={styles.clearAll} onClick={onClearAll}>
@@ -78,4 +76,4 @@ const SpeciesSelectorHeader = (props: Props) => {
   );
 };
 
-export default SpeciesSelectorHeader;
+export default BlastSpeciesSelectorHeader;

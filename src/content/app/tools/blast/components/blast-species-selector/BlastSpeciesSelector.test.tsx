@@ -17,7 +17,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render, getNodeText } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import blastFormReducer, {
@@ -25,24 +25,15 @@ import blastFormReducer, {
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import SpeciesSelectorHeader, {
-  type Props as SpeciesSelectorHeaderProps
-} from './SpeciesSelectorHeader';
-
-const defaultProps: SpeciesSelectorHeaderProps = {
-  compact: false
-};
+import SpeciesSelector from './BlastSpeciesSelector';
 
 const renderComponent = (
   {
-    props,
     state
   }: {
     state?: Partial<BlastFormState>;
-    props?: SpeciesSelectorHeaderProps;
   } = { state: {} }
 ) => {
-  props = Object.assign({}, defaultProps, props);
   const blastFormState = Object.assign({}, initialBlastFormState, state);
   const rootReducer = combineReducers({
     blast: combineReducers({
@@ -60,7 +51,7 @@ const renderComponent = (
 
   const renderResult = render(
     <Provider store={store}>
-      <SpeciesSelectorHeader {...props} />
+      <SpeciesSelector />
     </Provider>
   );
 
@@ -70,42 +61,25 @@ const renderComponent = (
   };
 };
 
-describe('SpeciesSelectorHeader', () => {
-  describe('species counter', () => {
-    it('starts with 0', () => {
-      const { container } = renderComponent();
-      const speciesCounter = container.querySelector('.header .speciesCounter');
-      expect(getNodeText(speciesCounter as HTMLElement)).toBe('0');
-    });
+describe('SpeciesSelector', () => {
+  describe('species selection', () => {
+    it('updates the selectedSpecies state', () => {
+      const { container, store } = renderComponent();
 
-    it('displays the number of added species', () => {
-      const selectedSpecies = { human: true, mouse: true };
-      const { container } = renderComponent({ state: { selectedSpecies } });
-      const speciesCounter = container.querySelector('.header .speciesCounter');
-      expect(getNodeText(speciesCounter as HTMLElement)).toBe(
-        `${Object.keys(selectedSpecies).length}`
-      );
-    });
-  });
+      const speciesCheckbox = container.querySelector(
+        'tbody tr .defaultCheckbox'
+      ) as HTMLElement;
 
-  describe('clear all control', () => {
-    it('clears all selected species', () => {
-      const selectedSpecies = { Human: true, mouse: true, ecoli: true };
-      const { container, store } = renderComponent({
-        state: { selectedSpecies }
-      });
-      const clearAll = container.querySelector('.clearAll');
-
-      userEvent.click(clearAll as HTMLElement);
+      userEvent.click(speciesCheckbox);
 
       const updatedState = store.getState();
 
       expect(
         Object.keys(updatedState.blast.blastForm.selectedSpecies).length
-      ).toBe(0);
-
-      const speciesCounter = container.querySelector('.header .speciesCounter');
-      expect(getNodeText(speciesCounter as HTMLElement)).toBe('0');
+      ).toBe(1);
+      expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
+        'homo_sapiens_GCA_000001405_14'
+      );
     });
   });
 });
