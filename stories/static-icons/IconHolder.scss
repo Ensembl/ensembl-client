@@ -1,4 +1,4 @@
-.imageHolder {
+.iconHolder {
   display: inline-block;
   width: 200px;
   height: 300px;
@@ -9,20 +9,20 @@
   margin-bottom: 0.5rem;
   box-shadow: 0 1px 0 0 darken(#eaeced, 20%);
 
-  .imageArea {
+  .iconArea {
     height: 200px;
     border-bottom: 1px solid #eaeced;
     position: relative;
+
+    img {
+      height: 50%;
+      top: 25%;
+      left: 25%;
+      position: absolute;
+    }
   }
 
-  .imageArea img {
-    height: 50%;
-    top: 25%;
-    left: 25%;
-    position: absolute;
-  }
-
-  .imagePath {
+  .iconPath {
     padding: 5px;
     overflow-wrap: break-word;
   }

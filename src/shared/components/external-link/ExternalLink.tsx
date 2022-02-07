@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as LinkIcon } from 'static/icons/external-link.svg';
+import { ReactComponent as LinkIcon } from 'static/icons/icon_xlink.svg';
 
 import styles from './ExternalLink.scss';
 

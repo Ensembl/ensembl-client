@@ -20,8 +20,8 @@ import classNames from 'classnames';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import { ReactComponent as Checkmark } from './checkmark.svg';
-import { ReactComponent as Cross } from './cross.svg';
+import { ReactComponent as Checkmark } from 'static/icons/icon_tick.svg';
+import { ReactComponent as Cross } from 'static/icons/icon_cross.svg';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 

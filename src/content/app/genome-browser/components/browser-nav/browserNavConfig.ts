@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReactComponent as zoomInIcon } from 'static/icons/zoom-in.svg';
-import { ReactComponent as zoomOutIcon } from 'static/icons/zoom-out.svg';
+import { ReactComponent as zoomInIcon } from 'static/icons/icon_nav_plus.svg';
+import { ReactComponent as zoomOutIcon } from 'static/icons/icon_nav_minus.svg';
 import { ReactComponent as navigateUpIcon } from 'static/icons/navigate-up.svg';
 import { ReactComponent as navigateDownIcon } from 'static/icons/navigate-down.svg';
 import { ReactComponent as navigateLeftIcon } from 'static/icons/navigate-left.svg';

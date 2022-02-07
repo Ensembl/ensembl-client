@@ -21,7 +21,7 @@ import Textarea from 'src/shared/components/textarea/Textarea';
 import { Upload, FileTransformedToString } from 'src/shared/components/upload';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as RemoveIcon } from 'static/icons/clear.svg';
+import { ReactComponent as RemoveIcon } from 'static/icons/icon_close.svg';
 
 import styles from './CheckboxWithTextfields.scss';
 

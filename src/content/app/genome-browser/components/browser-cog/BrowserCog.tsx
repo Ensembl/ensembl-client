@@ -23,7 +23,7 @@ import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as cogIcon } from 'static/icons/cog.svg';
+import { ReactComponent as cogIcon } from 'static/icons/icon_settings.svg';
 
 export type BrowserCogProps = {
   cogActivated: boolean;

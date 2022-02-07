@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as SVGIcon } from 'static/icons/entity-viewer.svg';
+import { ReactComponent as SVGIcon } from 'static/icons/icon_launchbar_entity_viewer.svg';
 
 import styles from './AppIcon.scss';
 

@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as SVGIcon } from 'static/icons/blast.svg';
+import { ReactComponent as SVGIcon } from 'static/icons/icon_launchbar_blast.svg';
 
 import styles from './AppIcon.scss';
 

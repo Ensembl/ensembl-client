@@ -18,7 +18,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { ReactComponent as VideoIcon } from 'static/icons/video.svg';
+import { ReactComponent as VideoIcon } from 'static/icons/icon_video.svg';
 
 import { RelatedArticleData } from 'src/shared/types/help-and-docs/article';
 

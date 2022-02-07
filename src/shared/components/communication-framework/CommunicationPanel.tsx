@@ -22,7 +22,7 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ContactUs from './contact-us/ContactUs';
 
-import { ReactComponent as ConversationIcon } from 'static/icons/conversation.svg';
+import { ReactComponent as ConversationIcon } from 'static/icons/icon_conversation.svg';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';

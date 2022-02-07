@@ -29,7 +29,7 @@ import {
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
-import { ReactComponent as ResetIcon } from 'static/icons/trash.svg';
+import { ReactComponent as ResetIcon } from 'static/icons/icon_delete.svg';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 

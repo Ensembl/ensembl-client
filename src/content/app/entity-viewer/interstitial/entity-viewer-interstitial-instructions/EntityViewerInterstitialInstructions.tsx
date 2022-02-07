@@ -26,7 +26,7 @@ import {
   EntityViewerIcon
 } from 'src/shared/components/app-icon';
 
-import { ReactComponent as SearchIcon } from 'static/icons/search.svg';
+import { ReactComponent as SearchIcon } from 'static/icons/icon_search.svg';
 
 import styles from './EntityViewerInterstitialInstructions.scss';
 

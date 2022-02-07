@@ -37,7 +37,7 @@ import {
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as ResetIcon } from 'static/icons/trash.svg';
+import { ReactComponent as ResetIcon } from 'static/icons/icon_delete.svg';
 
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
 import {

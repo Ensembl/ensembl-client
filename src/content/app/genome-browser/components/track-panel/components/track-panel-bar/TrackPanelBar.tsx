@@ -35,12 +35,12 @@ import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as searchIcon } from 'static/icons/search.svg';
-import { ReactComponent as tracksManagerIcon } from 'static/icons/tracks-manager.svg';
-import { ReactComponent as bookmarkIcon } from 'static/icons/bookmark.svg';
-import { ReactComponent as personalDataIcon } from 'static/icons/own-data.svg';
-import { ReactComponent as shareIcon } from 'static/icons/share.svg';
-import { ReactComponent as downloadIcon } from 'static/icons/download.svg';
+import { ReactComponent as searchIcon } from 'static/icons/icon_search.svg';
+import { ReactComponent as tracksManagerIcon } from 'static/icons/icon_sliders.svg';
+import { ReactComponent as bookmarkIcon } from 'static/icons/icon_bookmark.svg';
+import { ReactComponent as personalDataIcon } from 'static/icons/icon_nav_plus.svg';
+import { ReactComponent as shareIcon } from 'static/icons/icon_share.svg';
+import { ReactComponent as downloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 

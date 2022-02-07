@@ -16,22 +16,22 @@
 
 import React from 'react';
 
-import styles from './ImageHolder.scss';
+import styles from './IconHolder.scss';
 
 type Props = {
-  image: string;
+  icon: string;
   filePath: string;
 };
 
-const ImageHolder = (props: Props) => {
+const IconHolder = (props: Props) => {
   return (
-    <div className={styles.imageHolder}>
-      <div className={styles.imageArea}>
-        <img src={props.image} />
+    <div className={styles.iconHolder}>
+      <div className={styles.iconArea}>
+        <img src={props.icon} />
       </div>
-      <div className={styles.imagePath}>{props.filePath}</div>
+      <div className={styles.iconPath}>{props.filePath}</div>
     </div>
   );
 };
 
-export default ImageHolder;
+export default IconHolder;

@@ -32,9 +32,9 @@ import { ReactComponent as Logotype } from 'static/icons/logotype.svg';
 import speciesStripUrl from 'static/img/home/species-strip.svg';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
-import facebookIconUrl from 'static/img/home/facebook.svg';
-import twitterIconUrl from 'static/img/home/twitter.svg';
-import blogIconUrl from 'static/img/home/blog.svg';
+import facebookIconUrl from 'static/icons/icon_facebook.svg';
+import twitterIconUrl from 'static/icons/icon_twitter.svg';
+import blogIconUrl from 'static/icons/icon_blog.svg';
 
 import styles from './Home.scss';
 

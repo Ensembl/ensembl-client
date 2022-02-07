@@ -34,10 +34,10 @@ import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/en
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as searchIcon } from 'static/icons/search.svg';
-import { ReactComponent as bookmarkIcon } from 'static/icons/bookmark.svg';
-import { ReactComponent as shareIcon } from 'static/icons/share.svg';
-import { ReactComponent as downloadIcon } from 'static/icons/download.svg';
+import { ReactComponent as searchIcon } from 'static/icons/icon_search.svg';
+import { ReactComponent as bookmarkIcon } from 'static/icons/icon_bookmark.svg';
+import { ReactComponent as shareIcon } from 'static/icons/icon_share.svg';
+import { ReactComponent as downloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
