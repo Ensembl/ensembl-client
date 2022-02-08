@@ -31,7 +31,7 @@ import {
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
 
-import { ReactComponent as Logotype } from 'static/icons/logotype.svg';
+import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import styles from './Launchbar.scss';
