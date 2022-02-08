@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import Topbar from './components/topbar/Topbar';
 import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 
@@ -24,6 +26,8 @@ import unsupportedBrowsersDiagramPath from 'src/content/unsupported-browser/imag
 import styles from './UnsupportedBrowser.scss';
 
 const UnsupportedBrowser = () => {
+  analyticsTracking.trackPageView('/unsupported-browser');
+
   return (
     <>
       <Topbar />
