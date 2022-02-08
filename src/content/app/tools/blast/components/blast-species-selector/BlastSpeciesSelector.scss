@@ -47,7 +47,7 @@
 
 .speciesSelectorContainer {
   width: 860px;
-  height: 96%;
+  flex-grow: 1;
   background-color: $light-grey;
   border: 1px solid $grey;
   padding: 10px;
@@ -86,6 +86,11 @@
     font-size: 11px;
   }
 
+  thead th.selectCol {
+    text-align: center;
+    font-weight: $bold;
+  }
+
   tbody td {
     border-bottom: 1px solid $medium-light-grey;
     padding: 14px 8px 14px 15px;
@@ -110,9 +115,4 @@
 
 .assemblyHeader {
   width: 235px;
-}
-
-thead th.selectCol {
-  text-align: center;
-  font-weight: $bold;
 }

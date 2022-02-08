@@ -60,7 +60,7 @@ const MainLarge = () => {
           <BlastInputSequencesHeader compact={false} />
           <BlastInputSequences />
         </div>
-        <div>
+        <div className={styles.speciesSelectorGrid}>
           <BlastSpeciesSelectorHeader compact={false} />
           <BlastSpeciesSelector />
         </div>

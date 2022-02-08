@@ -83,7 +83,7 @@ describe('SpeciesSelectorHeader', () => {
       const { container } = renderComponent({ state: { selectedSpecies } });
       const speciesCounter = container.querySelector('.header .speciesCounter');
       expect(getNodeText(speciesCounter as HTMLElement)).toBe(
-        `${Object.keys(selectedSpecies).length}`
+        `${selectedSpecies.length}`
       );
     });
   });
