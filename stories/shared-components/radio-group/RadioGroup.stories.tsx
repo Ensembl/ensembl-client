@@ -37,9 +37,9 @@ const StatefulRadioGroup = (props: Partial<RadioGroupProps> & DefaultArgs) => {
   };
 
   const radioData: RadioOptions = [
-    { value: 'default', label: 'Default' },
-    { value: 'length_longest', label: 'Spliced length: longest - shortest' },
-    { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
+    { value: 'option_1', label: 'Option 1' },
+    { value: 'option_2', label: 'Option 2' },
+    { value: 'option_3', label: 'Option 3' }
   ];
 
   return (
@@ -56,27 +56,31 @@ const StatefulRadioGroup = (props: Partial<RadioGroupProps> & DefaultArgs) => {
 
 export const RadioGroupStory = (args: DefaultArgs) => (
   <div>
+    <p>Light theme</p>
     <StatefulRadioGroup {...args} />
+
+    <p>Dark theme</p>
+    <div className={styles.darkThemeWrapper}>
+      <StatefulRadioGroup theme="dark" {...args} />
+    </div>
   </div>
 );
 
-RadioGroupStory.storyName = 'default (light theme)';
+RadioGroupStory.storyName = 'radios in a column';
 
-export const DarkThemeCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.darkThemeWrapper}>
-    <StatefulRadioGroup theme="dark" {...args} />
-  </div>
-);
-
-DarkThemeCheckboxStory.storyName = 'dark theme';
-
-export const DisabledCheckboxStory = (args: DefaultArgs) => (
+export const HorizontalRadioGroupStory = (args: DefaultArgs) => (
   <div>
-    <StatefulRadioGroup disabled={true} {...args} />
+    <p>Light theme</p>
+    <StatefulRadioGroup direction="row" {...args} />
+
+    <p>Dark theme</p>
+    <div className={styles.darkThemeWrapper}>
+      <StatefulRadioGroup direction="row" theme="dark" {...args} />
+    </div>
   </div>
 );
 
-DisabledCheckboxStory.storyName = 'disabled';
+HorizontalRadioGroupStory.storyName = 'radios in a row';
 
 export default {
   title: 'Components/Shared Components/RadioGroup',

@@ -40,6 +40,7 @@ export type RadioGroupProps = {
 };
 
 const RadioGroup = (props: RadioGroupProps) => {
+  const direction = props.direction ?? 'column';
   const theme = props.theme ?? 'light';
 
   const handleChange = (value: OptionValue) => {
@@ -50,8 +51,9 @@ const RadioGroup = (props: RadioGroupProps) => {
   };
 
   const radioGroupClasses = classNames(
+    styles.radioGroup,
     {
-      [styles.radioGroupRow]: props.direction === 'row',
+      [styles.radioGroupColumn]: direction === 'column',
       [styles.themeDark]: theme === 'dark',
       [styles.themeLight]: theme === 'light'
     },

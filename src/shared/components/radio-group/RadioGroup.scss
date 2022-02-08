@@ -1,11 +1,20 @@
 @import 'src/styles/common';
 
+.radioGroup {
+  display: flex;
+}
+
+.radioGroupColumn {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .radioGroupRow {
   display: flex;
 }
 
 .radioGroupItem {
-  display: grid;
+  display: inline-grid;
   grid-template-columns: 38px max-content;
 }
 
