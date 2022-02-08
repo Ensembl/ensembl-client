@@ -260,6 +260,7 @@ const GeneSection = (props: GeneSectionProps) => {
           label="Genomic sequence"
           checked={props.isGenomicSequenceSelected}
           onChange={props.onChange}
+          className={styles.checkbox}
         />
       </div>
     </div>

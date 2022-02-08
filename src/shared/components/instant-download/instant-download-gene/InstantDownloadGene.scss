@@ -13,9 +13,6 @@
 
 .container {
   position: relative;
-  --checkbox-holder-margin-left: 15px;
-  --checkbox-label-width: 200px;
-  --checkbox-label-padding-left: 2px;
 
   .geneSection {
     .label {
@@ -36,4 +33,9 @@
     float: right;
     font-size: 12px;
   }
+}
+
+.checkbox {
+  margin-left: 15px;
+  --checkbox-label-padding-left: 2px; // is this necessary?
 }

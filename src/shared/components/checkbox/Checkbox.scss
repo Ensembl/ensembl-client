@@ -3,8 +3,6 @@
 .checkboxHolder {
   display: grid;
   grid-template-columns: 27px 1fr;
-  margin-top: var(--checkbox-holder-margin-top, 0);
-  margin-left: var(--checkbox-holder-margin-left, 0);
 }
 
 .checkboxDefault {
@@ -46,11 +44,8 @@
   color: var(--checkbox-label-color, #{$black});
   font-size: var(--checkbox-label-font-size, 13px);
   font-weight: var(--checkbox-label-font-weight, #{$normal});
-  line-height: var(--checkbox-label-height, 30px);
+  line-height: var(--checkbox-label-line-height, 30px);
   padding-left: var(--checkbox-label-padding-left, 8px);
-  padding-right: var(--checkbox-label-padding-right, 2px);
-  margin-right: var(--checkbox-label-margin-right, 0);
-  max-width: var(--checkbox-label-max-width, inherit);
   word-wrap: break-word;
 }
 

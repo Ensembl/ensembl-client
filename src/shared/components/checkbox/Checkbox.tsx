@@ -26,6 +26,7 @@ type WithoutLabelProps = {
   disabled?: boolean;
   checked: boolean;
   theme?: Theme;
+  className?: string; // will only apply to the outermost element of the component
 };
 
 type WithLabelProps = WithoutLabelProps & {
@@ -57,7 +58,11 @@ const Checkbox = (props: CheckboxProps) => {
 
   const themeClass = getThemeClasses(props.theme);
 
-  const wrapperClasses = classNames(styles.checkboxHolder, themeClass);
+  const wrapperClasses = classNames(
+    styles.checkboxHolder,
+    themeClass,
+    props.className
+  );
 
   const checkboxClasses = classNames(
     styles.checkboxDefault,

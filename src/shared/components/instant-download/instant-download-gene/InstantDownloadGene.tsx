@@ -190,6 +190,7 @@ const GeneSection = (props: GeneSectionProps) => (
       label="Genomic sequence"
       checked={props.isGenomicSequenceSelected}
       onChange={props.onChange}
+      className={styles.checkbox}
     />
   </div>
 );
@@ -207,6 +208,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
       onChange={() => props.onChange(key as TranscriptOption)}
+      className={styles.checkbox}
     />
   ));
 
