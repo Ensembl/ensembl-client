@@ -11,6 +11,10 @@
   align-items: center;
   padding-left: 28px;
   padding-bottom: 12px;
+  position: sticky;
+  top: 0px;
+  z-index: 2;
+  background-color: $white;
 }
 
 .headerGroup {
