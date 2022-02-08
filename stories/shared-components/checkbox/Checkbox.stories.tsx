@@ -40,37 +40,24 @@ const StatefulCheckbox = (props: Partial<CheckboxProps> & DefaultArgs) => {
   );
 };
 
-export const DefaultCheckboxStory = (args: DefaultArgs) => (
+export const CheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
+    <p>Without label</p>
     <StatefulCheckbox {...args} />
+    <p>With label</p>
+    <div>
+      <StatefulCheckbox {...args} label="Light theme" />
+    </div>
+    <div>
+      <StatefulCheckbox theme="lighter" label="Lighter theme" {...args} />
+    </div>
+    <div className={styles.darkThemeWrapper}>
+      <StatefulCheckbox theme="dark" label="Dark theme" {...args} />
+    </div>
   </div>
 );
 
-DefaultCheckboxStory.storyName = 'default (light theme)';
-
-export const LightThemeCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
-    <StatefulCheckbox
-      theme="lighter"
-      label="I am a label for the lighter theme"
-      {...args}
-    />
-  </div>
-);
-
-LightThemeCheckboxStory.storyName = 'lighter theme';
-
-export const DarkThemeCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.darkThemeWrapper}>
-    <StatefulCheckbox
-      theme="dark"
-      label="I am a label for the dark theme"
-      {...args}
-    />
-  </div>
-);
-
-DarkThemeCheckboxStory.storyName = 'dark theme';
+CheckboxStory.storyName = 'default';
 
 export const DisabledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -124,7 +111,7 @@ export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-LongLabelledCheckboxStory.storyName = 'grid with long label';
+LongLabelledCheckboxStory.storyName = 'grid with long labels';
 
 export default {
   title: 'Components/Shared Components/Checkbox',
