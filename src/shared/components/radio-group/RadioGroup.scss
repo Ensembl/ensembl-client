@@ -1,8 +1,12 @@
 @import 'src/styles/common';
 
-.wrapper {
+.radioGroupRow {
+  display: flex;
+}
+
+.radioGroupItem {
   display: grid;
-  grid-template-columns: 38px 100%;
+  grid-template-columns: 38px max-content;
 }
 
 .input {
@@ -11,6 +15,7 @@
 }
 
 .radio {
+  position: relative;
   border-radius: 50%;
   cursor: pointer;
   justify-self: center;
@@ -25,7 +30,7 @@
 
     &:after {
       content: '';
-      float: left;
+      position: absolute;
       margin-top: 2px;
       margin-left: 2px;
       height: var(--radio-checked-diameter, 7px);
