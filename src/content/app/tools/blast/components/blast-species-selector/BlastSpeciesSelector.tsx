@@ -35,7 +35,7 @@ const BlastSpeciesSelector = () => {
   };
 
   return (
-    <div className={styles.speciesSelectorContainer}>
+    <div className={styles.speciesSelector}>
       <table className={styles.speciesSelectorTable}>
         <thead>
           <tr>
