@@ -57,7 +57,7 @@ const TranscriptSummary = (props: Props) => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
 
-  const { data, isLoading } = useGbTranscriptSummaryQuery(
+  const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
       genomeId: activeGenomeId || '',
       transcriptId
@@ -67,15 +67,15 @@ const TranscriptSummary = (props: Props) => {
     }
   );
 
-  if (!activeGenomeId || isLoading) {
+  if (!activeGenomeId || isFetching) {
     return null;
   }
 
-  if (!data?.transcript) {
+  if (!currentData?.transcript) {
     return <div>No data available</div>;
   }
 
-  const { transcript } = data;
+  const { transcript } = currentData;
   const { gene } = transcript;
   const metadata = transcript.metadata;
 
