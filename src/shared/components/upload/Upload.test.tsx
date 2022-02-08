@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { setTimeout } from 'timers/promises';
-import { render, fireEvent, act } from '@testing-library/react';
+import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import noop from 'lodash/noop';
 import Upload from './Upload';
 
@@ -103,11 +102,9 @@ describe('Upload', () => {
         fireEvent.change(container.querySelector('input') as HTMLElement, {
           target: { files: [file1, file2] }
         });
-        // bump to the end of event loop to give file reader time to read the file, and for React component to update
-        await setTimeout(0);
       });
 
-      expect(textFromFile).toBe('Lorem ipsum');
+      await waitFor(() => expect(textFromFile).toBe('Lorem ipsum'));
     });
 
     it('can read text contents of several files', async () => {
@@ -125,11 +122,11 @@ describe('Upload', () => {
         fireEvent.change(container.querySelector('input') as HTMLElement, {
           target: { files: [file1, file2] }
         });
-        // bump to the end of event loop to give file reader time to read the file, and for React component to update
-        await setTimeout(0);
       });
 
-      expect(textFromFile).toBe('Lorem ipsum dolor sit amet');
+      await waitFor(() =>
+        expect(textFromFile).toBe('Lorem ipsum dolor sit amet')
+      );
     });
   });
 
