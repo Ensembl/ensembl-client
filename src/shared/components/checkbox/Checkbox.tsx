@@ -35,7 +35,7 @@ type WithLabelProps = WithoutLabelProps & {
 
 export type CheckboxProps = WithLabelProps | WithoutLabelProps;
 
-const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
+const hasLabel = (props: CheckboxProps): props is WithLabelProps => {
   return 'label' in props;
 };
 
@@ -50,7 +50,7 @@ const getThemeClasses = (theme: Theme = 'light') => {
 };
 
 const Checkbox = (props: CheckboxProps) => {
-  const handleOnChange = () => {
+  const onChange = () => {
     if (!props.disabled) {
       props.onChange(!props.checked);
     }
@@ -59,7 +59,10 @@ const Checkbox = (props: CheckboxProps) => {
   const themeClass = getThemeClasses(props.theme);
 
   const wrapperClasses = classNames(
-    styles.checkboxHolder,
+    styles.wrapper,
+    {
+      [styles.wrapperWithLabel]: hasLabel(props)
+    },
     themeClass,
     props.className
   );
@@ -71,20 +74,17 @@ const Checkbox = (props: CheckboxProps) => {
   );
 
   return (
-    <div className={wrapperClasses}>
+    <label className={wrapperClasses}>
       <input
         type="checkbox"
         className={styles.hiddenInput}
-        onChange={handleOnChange}
+        onChange={onChange}
         checked={props.checked}
+        disabled={props.disabled}
       />
-      <div onClick={handleOnChange} className={checkboxClasses} />
-      {isWithLabel(props) && (
-        <label onClick={handleOnChange} className={styles.label}>
-          {props.label}
-        </label>
-      )}
-    </div>
+      <div className={checkboxClasses} />
+      {hasLabel(props) && <span className={styles.label}>{props.label}</span>}
+    </label>
   );
 };
 
