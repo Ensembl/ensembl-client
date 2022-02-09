@@ -42,34 +42,18 @@ const StatefulCheckbox = (props: Partial<CheckboxProps> & DefaultArgs) => {
 
 export const CheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <p>Without label</p>
+    <p>Enabled</p>
     <StatefulCheckbox {...args} />
-    <p>With label</p>
-    <div>
-      <StatefulCheckbox {...args} label="Light theme" />
-    </div>
-    <div>
-      <StatefulCheckbox theme="lighter" label="Lighter theme" {...args} />
-    </div>
-    <div className={styles.darkThemeWrapper}>
-      <StatefulCheckbox theme="dark" label="Dark theme" {...args} />
-    </div>
-  </div>
-);
-
-CheckboxStory.storyName = 'default';
-
-export const DisabledCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
+    <p>Disabled</p>
     <StatefulCheckbox disabled={true} {...args} />
   </div>
 );
 
-DisabledCheckboxStory.storyName = 'disabled';
+CheckboxStory.storyName = 'without label';
 
 export const LabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox label="I am label" {...args} />
+    <StatefulCheckbox label="I am label, you can click me" {...args} />
     <StatefulCheckbox
       disabled={true}
       label="I am label of disabled checkbox"
@@ -79,6 +63,22 @@ export const LabelledCheckboxStory = (args: DefaultArgs) => (
 );
 
 LabelledCheckboxStory.storyName = 'with label';
+
+export const ThemesStory = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <div className={styles.lightThemeWrapper}>
+      <StatefulCheckbox {...args} label="Light theme (default)" />
+    </div>
+    <div className={styles.lightThemeWrapper}>
+      <StatefulCheckbox theme="lighter" label="Lighter theme" {...args} />
+    </div>
+    <div className={styles.darkThemeWrapper}>
+      <StatefulCheckbox theme="dark" label="Dark theme" {...args} />
+    </div>
+  </div>
+);
+
+ThemesStory.storyName = 'themes';
 
 export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.gridWrapper}>

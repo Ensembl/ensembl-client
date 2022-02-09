@@ -4,9 +4,10 @@
   display: inline-block;
 }
 
-.wrapperWithLabel {
+.grid {
   display: inline-grid;
-  grid-template-columns: 27px 1fr;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--checkbox-distance-to-label, 12px);
 }
 
 .checkboxDefault {
@@ -19,8 +20,8 @@
   transition: background-color 0.1s ease-in-out;
 }
 
-.wrapperWithLabel .checkboxDefault {
-  margin-top: var(--checkbox-margin-top, 8px); // is this right?
+.grid .checkboxDefault {
+  margin-top: var(--checkbox-margin-top, 8px);
 }
 
 .checkboxChecked {
@@ -46,7 +47,6 @@
   font-size: var(--checkbox-label-font-size, 13px);
   font-weight: var(--checkbox-label-font-weight, #{$normal});
   line-height: var(--checkbox-label-line-height, 30px);
-  padding-left: var(--checkbox-label-padding-left, 8px);
   cursor: pointer;
   user-select: none;
   word-wrap: break-word;

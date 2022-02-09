@@ -60,9 +60,6 @@ const Checkbox = (props: CheckboxProps) => {
 
   const wrapperClasses = classNames(
     styles.wrapper,
-    {
-      [styles.wrapperWithLabel]: hasLabel(props)
-    },
     themeClass,
     props.className
   );
@@ -73,8 +70,8 @@ const Checkbox = (props: CheckboxProps) => {
     props.disabled && styles.checkboxDisabled
   );
 
-  return (
-    <label className={wrapperClasses}>
+  const checkboxElement = (
+    <>
       <input
         type="checkbox"
         className={styles.hiddenInput}
@@ -83,8 +80,18 @@ const Checkbox = (props: CheckboxProps) => {
         disabled={props.disabled}
       />
       <div className={checkboxClasses} />
-      {hasLabel(props) && <span className={styles.label}>{props.label}</span>}
-    </label>
+    </>
+  );
+
+  return hasLabel(props) ? (
+    <div className={wrapperClasses}>
+      <label className={styles.grid}>
+        {checkboxElement}
+        <span className={styles.label}>{props.label}</span>
+      </label>
+    </div>
+  ) : (
+    <label className={wrapperClasses}>{checkboxElement}</label>
   );
 };
 

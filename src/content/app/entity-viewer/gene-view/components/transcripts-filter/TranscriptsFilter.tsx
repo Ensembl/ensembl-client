@@ -155,6 +155,7 @@ const TranscriptsFilter = (props: Props) => {
       <Checkbox
         key={key}
         theme="dark"
+        className={styles.checkbox}
         checked={filter.selected}
         label={filter.label}
         onChange={(selected) => onFilterChange(key, filter, selected)}
