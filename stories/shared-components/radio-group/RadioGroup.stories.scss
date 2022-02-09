@@ -1,6 +1,10 @@
 @import 'src/styles/common';
 
+.lightThemeWrapper {
+  padding: 0.6rem;
+}
+
 .darkThemeWrapper {
   background-color: $black;
-  padding: 0.6rem 0;
+  padding: 0.6rem;
 }

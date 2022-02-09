@@ -57,7 +57,9 @@ const StatefulRadioGroup = (props: Partial<RadioGroupProps> & DefaultArgs) => {
 export const RadioGroupStory = (args: DefaultArgs) => (
   <div>
     <p>Light theme</p>
-    <StatefulRadioGroup {...args} />
+    <div className={styles.lightThemeWrapper}>
+      <StatefulRadioGroup {...args} />
+    </div>
 
     <p>Dark theme</p>
     <div className={styles.darkThemeWrapper}>
@@ -71,7 +73,9 @@ RadioGroupStory.storyName = 'radios in a column';
 export const HorizontalRadioGroupStory = (args: DefaultArgs) => (
   <div>
     <p>Light theme</p>
-    <StatefulRadioGroup direction="row" {...args} />
+    <div className={styles.lightThemeWrapper}>
+      <StatefulRadioGroup direction="row" {...args} />
+    </div>
 
     <p>Dark theme</p>
     <div className={styles.darkThemeWrapper}>

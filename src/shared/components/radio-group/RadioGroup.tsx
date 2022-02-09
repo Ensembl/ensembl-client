@@ -54,6 +54,7 @@ const RadioGroup = (props: RadioGroupProps) => {
     styles.radioGroup,
     {
       [styles.radioGroupColumn]: direction === 'column',
+      [styles.radioGroupRow]: direction === 'row',
       [styles.themeDark]: theme === 'dark',
       [styles.themeLight]: theme === 'light'
     },

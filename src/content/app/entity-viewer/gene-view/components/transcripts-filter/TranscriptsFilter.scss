@@ -30,7 +30,7 @@
 .filterContent {
   display: grid;
   grid-template-columns: repeat(3, 210px);
-  height: auto;
+  padding-left: 12px;
 }
 
 .header {
@@ -47,6 +47,6 @@
   display: block;
 }
 
-.radio {
-  margin-top: 9px;
+.radioGroup {
+  margin-left: 12px;
 }
