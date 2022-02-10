@@ -14,6 +14,10 @@
     margin: 8px 0px;
     padding: 0px 18px;
 
+    &:first-child {
+      padding-left: 30px;
+    }
+
     .subLabel {
       line-height: 30px;
       font-size: 12px;
