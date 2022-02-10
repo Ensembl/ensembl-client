@@ -23,7 +23,7 @@ import { AppName } from 'src/global/globalConfig';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { updateSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
@@ -37,7 +37,7 @@ const ToolsAppBar = () => {
 
   const speciesLozengeClick = (genomeId: string) => {
     if (!speciesListIds.includes(genomeId)) {
-      dispatch(updateSelectedSpecies({ isChecked: true, genomeId }));
+      dispatch(addSelectedSpecies({ genomeId }));
     }
   };
 
