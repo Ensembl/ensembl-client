@@ -10,6 +10,7 @@
 }
 
 .checkboxDefault {
+  display: inline-block;
   cursor: pointer;
   justify-self: center;
   background-color: var(--checkbox-background-color, #{$white});
@@ -35,10 +36,6 @@
   background-color: var(--checkbox-disabled-background-color, #{$light-grey});
   cursor: default;
   pointer-events: none;
-
-  & + .label {
-    cursor: default;
-  }
 }
 
 .label {
@@ -50,6 +47,10 @@
   cursor: pointer;
   user-select: none;
   word-wrap: break-word;
+}
+
+.checkboxDisabled + .label {
+  cursor: default;
 }
 
 .themeLighter {
