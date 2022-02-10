@@ -58,7 +58,7 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
   });
@@ -67,7 +67,7 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
 
@@ -90,7 +90,7 @@ describe('<CheckboxWithSelects />', () => {
     });
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });

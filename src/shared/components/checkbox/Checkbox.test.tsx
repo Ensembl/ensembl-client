@@ -31,7 +31,7 @@ describe('<Checkbox />', () => {
     const { container } = render(
       <Checkbox checked={false} onChange={onChange} />
     );
-    expect(container.querySelector('label')).toBeFalsy();
+    expect(container.querySelector('.label')).toBeFalsy();
   });
 
   it('displays the label if it is passed as a prop', () => {
@@ -49,7 +49,6 @@ describe('<Checkbox />', () => {
       <Checkbox checked={false} onChange={onChange} label={label} />
     );
 
-    expect(container.querySelector('.checkboxHolder')).toBeTruthy();
     expect(container.querySelector('.checkboxDefault')).toBeTruthy();
     expect(container.querySelector('.label')).toBeTruthy();
   });

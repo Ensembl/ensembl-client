@@ -56,7 +56,7 @@ describe('<CheckboxWithRadios />', () => {
     const { container } = renderCheckboxWithRadios();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
   });
@@ -65,7 +65,7 @@ describe('<CheckboxWithRadios />', () => {
     const { container } = renderCheckboxWithRadios();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
 

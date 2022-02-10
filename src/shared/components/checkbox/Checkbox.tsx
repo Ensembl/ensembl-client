@@ -85,13 +85,15 @@ const Checkbox = (props: CheckboxProps) => {
 
   return hasLabel(props) ? (
     <div className={wrapperClasses}>
-      <label className={styles.grid}>
+      <label className={styles.grid} data-test-id="checkbox-label-grid">
         {checkboxElement}
         <span className={styles.label}>{props.label}</span>
       </label>
     </div>
   ) : (
-    <label className={wrapperClasses}>{checkboxElement}</label>
+    <label data-test-id="checkbox" className={wrapperClasses}>
+      {checkboxElement}
+    </label>
   );
 };
 
