@@ -7,7 +7,6 @@
 .grid {
   display: inline-grid;
   grid-template-columns: auto 1fr;
-  column-gap: var(--checkbox-distance-to-label, 12px);
 }
 
 .checkboxDefault {
@@ -47,6 +46,7 @@
   font-size: var(--checkbox-label-font-size, 13px);
   font-weight: var(--checkbox-label-font-weight, #{$normal});
   line-height: var(--checkbox-label-line-height, 30px);
+  padding-left: var(--checkbox-distance-to-label, 12px);
   cursor: pointer;
   user-select: none;
   word-wrap: break-word;

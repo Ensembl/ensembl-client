@@ -75,25 +75,31 @@ const Checkbox = (props: CheckboxProps) => {
       <input
         type="checkbox"
         className={styles.hiddenInput}
-        onChange={onChange}
         checked={props.checked}
         disabled={props.disabled}
+        onChange={onChange}
       />
-      <div className={checkboxClasses} />
+      <span className={checkboxClasses} />
     </>
   );
 
+  // NOTE: the attempt to wrap the input with a label and only listen to input's change event
+  // was rejected, because such checkboxes failed to work inside a zmenu
   return hasLabel(props) ? (
     <div className={wrapperClasses}>
-      <label className={styles.grid} data-test-id="checkbox-label-grid">
+      <div
+        className={styles.grid}
+        data-test-id="checkbox-label-grid"
+        onClick={onChange}
+      >
         {checkboxElement}
-        <span className={styles.label}>{props.label}</span>
-      </label>
+        <label className={styles.label}>{props.label}</label>
+      </div>
     </div>
   ) : (
-    <label data-test-id="checkbox" className={wrapperClasses}>
+    <div data-test-id="checkbox" className={wrapperClasses} onClick={onChange}>
       {checkboxElement}
-    </label>
+    </div>
   );
 };
 
