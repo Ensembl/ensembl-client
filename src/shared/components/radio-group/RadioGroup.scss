@@ -11,7 +11,9 @@
 
 .radioGroupRow {
   display: flex;
-  gap: 30px;
+  flex-wrap: wrap;
+  column-gap: 30px;
+  row-gap: 10px;
 }
 
 .radioGroupItem {

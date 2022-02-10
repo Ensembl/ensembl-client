@@ -15,10 +15,10 @@
  */
 
 import React, { useState } from 'react';
+import times from 'lodash/times';
 
 import RadioGroup, {
   RadioGroupProps,
-  RadioOptions,
   OptionValue
 } from 'src/shared/components/radio-group/RadioGroup';
 
@@ -28,25 +28,26 @@ type DefaultArgs = {
   onChange: (...args: any) => void;
 };
 
+const defaultRadioOptions = [
+  { value: 'option_1', label: 'Option 1' },
+  { value: 'option_2', label: 'Option 2' },
+  { value: 'option_3', label: 'Option 3' }
+];
+
 const StatefulRadioGroup = (props: Partial<RadioGroupProps> & DefaultArgs) => {
   const [selectedRadio, setSelectedRadio] = useState<OptionValue>('default');
+  const options = props.options ?? defaultRadioOptions;
 
   const handleChange = (value: OptionValue) => {
     setSelectedRadio(value);
     props.onChange(value);
   };
 
-  const radioData: RadioOptions = [
-    { value: 'option_1', label: 'Option 1' },
-    { value: 'option_2', label: 'Option 2' },
-    { value: 'option_3', label: 'Option 3' }
-  ];
-
   return (
     <div>
       <RadioGroup
         {...props}
-        options={radioData}
+        options={options}
         onChange={handleChange}
         selectedOption={selectedRadio}
       />
@@ -70,19 +71,31 @@ export const RadioGroupStory = (args: DefaultArgs) => (
 
 RadioGroupStory.storyName = 'radios in a column';
 
-export const HorizontalRadioGroupStory = (args: DefaultArgs) => (
-  <div>
-    <p>Light theme</p>
-    <div className={styles.lightThemeWrapper}>
-      <StatefulRadioGroup direction="row" {...args} />
-    </div>
+export const HorizontalRadioGroupStory = (args: DefaultArgs) => {
+  const moreOptions = times(5, (count) => ({
+    value: `option_${count}`,
+    label: `Option ${count + 1}`
+  }));
 
-    <p>Dark theme</p>
-    <div className={styles.darkThemeWrapper}>
-      <StatefulRadioGroup direction="row" theme="dark" {...args} />
+  return (
+    <div>
+      <p>Light theme</p>
+      <div className={styles.lightThemeWrapper}>
+        <StatefulRadioGroup direction="row" {...args} />
+      </div>
+
+      <p>Dark theme</p>
+      <div className={styles.darkThemeWrapper}>
+        <StatefulRadioGroup direction="row" theme="dark" {...args} />
+      </div>
+
+      <p>Line wrapping</p>
+      <div className={styles.narrowOptionsWrapper}>
+        <StatefulRadioGroup direction="row" options={moreOptions} {...args} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 HorizontalRadioGroupStory.storyName = 'radios in a row';
 
