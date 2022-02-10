@@ -51,14 +51,11 @@ import styles from './BlastSettings.scss';
 const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
 
 const getParameterData = (name: BlastParameterName) => {
-  return (blastSettingsConfig as unknown as BlastSettingsConfig).parameters[
-    name
-  ];
+  return blastSettingsConfig.parameters[name];
 };
 
 const getPresetsList = () => {
-  const presets = (blastSettingsConfig as unknown as BlastSettingsConfig)
-    .presets;
+  const { presets } = blastSettingsConfig;
   const { label, options } = presets;
   return { label, options };
 };
@@ -104,7 +101,7 @@ const BlastSettings = () => {
     dispatch(
       setSequenceType({
         sequenceType: sequenceType as SequenceType,
-        config: blastSettingsConfig as unknown as BlastSettingsConfig
+        config: blastSettingsConfig
       })
     );
   };
@@ -113,7 +110,7 @@ const BlastSettings = () => {
     dispatch(
       setBlastDatabase({
         database,
-        config: blastSettingsConfig as unknown as BlastSettingsConfig
+        config: blastSettingsConfig
       })
     );
   };
@@ -122,7 +119,7 @@ const BlastSettings = () => {
     dispatch(
       setBlastProgram({
         program: program as BlastProgram,
-        config: blastSettingsConfig as unknown as BlastSettingsConfig
+        config: blastSettingsConfig
       })
     );
   };
@@ -131,7 +128,7 @@ const BlastSettings = () => {
     dispatch(
       changeSensitivityPresets({
         presetName,
-        config: blastSettingsConfig as unknown as BlastSettingsConfig
+        config: blastSettingsConfig
       })
     );
   };
