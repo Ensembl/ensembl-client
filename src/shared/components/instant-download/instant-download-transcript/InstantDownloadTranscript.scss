@@ -51,10 +51,9 @@
 
     .geneSection {
       grid-area: gene;
-      --checkbox-holder-margin-left: 6px;
 
-      .checkboxWrapper {
-        margin-left: 6px;
+      .checkbox {
+        margin-left: 12px;
       }
     }
 
@@ -63,7 +62,7 @@
     }
 
     .checkboxGrid {
-      padding-left: 6px;
+      padding-left: 14px;
     }
 
     button {
@@ -91,6 +90,7 @@
 
       .checkbox {
         margin-top: 12px;
+        margin-left: 6px;
       }
     }
 
@@ -100,6 +100,7 @@
 
     .checkboxGrid {
       grid-template-columns: 2fr 1fr;
+      padding-left: 6px;
     }
 
     button {
