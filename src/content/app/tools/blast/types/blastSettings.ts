@@ -65,7 +65,7 @@ export type BlastBooleanSetting = {
 
 export type BlastSetting = BlastSelectSetting | BlastBooleanSetting;
 
-type Preset = Record<BlastParameterName, string>;
+type Preset = Partial<Record<BlastParameterName, string>>;
 
 export type Presets = {
   label: string;

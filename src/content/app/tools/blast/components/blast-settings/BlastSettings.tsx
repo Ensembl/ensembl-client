@@ -21,7 +21,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
-import blastSettingsConfig from './blastSettingsConfig.json';
+import untypedBlastSettingsConfig from './blastSettingsConfig.json';
 
 import {
   getSelectedSequenceType,
@@ -48,6 +48,8 @@ import type {
 
 import styles from './BlastSettings.scss';
 
+const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
+
 const getParameterData = (name: BlastParameterName) => {
   return (blastSettingsConfig as unknown as BlastSettingsConfig).parameters[
     name
@@ -62,9 +64,7 @@ const getPresetsList = () => {
 };
 
 const getDatabaseSequenceType = (database: string) => {
-  return blastSettingsConfig.databases.options.find(
-    (option) => option.value === database
-  )?.sequence_type as string;
+  return blastSettingsConfig.database_sequence_types[database];
 };
 
 const getAvailableBlastPrograms = (
@@ -78,9 +78,9 @@ const getAvailableBlastPrograms = (
   )?.programs as string[];
   const blastProgramSetting = {
     ...blastSettingsConfig.parameters.program,
-    options: blastSettingsConfig.parameters.program.options.filter(
-      ({ value }) => availablePrograms.includes(value)
-    )
+    options: (
+      blastSettingsConfig.parameters.program as BlastSelectSetting
+    ).options.filter(({ value }) => availablePrograms.includes(value))
   };
   return blastProgramSetting;
 };
@@ -343,14 +343,14 @@ const buildCheckbox = (params: {
   onChange: (value: string) => void;
 }) => {
   const { label, options, selectedOption, onChange } = params;
-  const isChecked = options.true === selectedOption;
+  const isSelected = options.true === selectedOption;
 
   const onCheckboxChange = (isChecked: boolean) => {
     onChange(options[`${isChecked}`]);
   };
 
   return (
-    <Checkbox label={label} checked={isChecked} onChange={onCheckboxChange} />
+    <Checkbox label={label} checked={isSelected} onChange={onCheckboxChange} />
   );
 };
 

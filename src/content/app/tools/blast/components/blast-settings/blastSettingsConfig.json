@@ -562,10 +562,6 @@
       ]
     }
   },
-  "progams_per_sequence_type": {
-    "dna": ["blastn", "tblastx", "tblastn"],
-    "protein": ["blastp", "blastx"]
-  },
   "database_sequence_types": {
     "genomic": "dna",
     "cdna": "dna",
@@ -593,29 +589,6 @@
       "programs": ["blastp"]
     }
   ],
-  "databases": {
-    "label": "Database",
-    "description": "Database used for the BLAST search.",
-    "type": "select",
-    "blast_parameter_name": "database",
-    "options": [
-      {
-        "label": "Genomic sequence",
-        "value": "genomic",
-        "sequence_type": "dna"
-      },
-      {
-        "label": "cDNAs (transcripts/splice variants)",
-        "value": "cdna",
-        "sequence_type": "dna"
-      },
-      {
-        "label": "Proteins",
-        "value": "proteins",
-        "sequence_type": "protein"
-      }
-    ]
-  },
   "defaults": {
     "program": "blastn",
     "database": "genomic"
