@@ -16,51 +16,61 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 
 import blastFormReducer, {
-  initialState as initialBlastFormState,
-  type BlastFormState
+  initialState as initialBlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import speciesSelectorReducer, {
+  SpeciesSelectorState
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import ToolsAppBar from './ToolsAppBar';
 
-const renderComponent = (
-  { state }: { state?: Partial<BlastFormState> } = { state: {} }
-) => {
-  const blastFormState = Object.assign({}, initialBlastFormState, state);
+jest.mock(
+  'src/shared/components/communication-framework/ConversationIcon',
+  () => () => <div>ConversationIcon</div>
+);
 
-  const rootReducer = combineReducers({
-    blast: combineReducers({
-      blastForm: blastFormReducer
-    })
-  });
+const mockCommittedItems = [
+  {
+    genome_id: 'homo_sapiens_GCA_000001405_14',
+    reference_genome_id: null,
+    common_name: 'Human',
+    scientific_name: 'Homo sapiens',
+    assembly_name: 'GRCh37.p13',
+    isEnabled: true
+  }
+];
 
-  const mockCommittedItems = [
-    {
-      genome_id: 'homo_sapiens_GCA_000001405_14',
-      reference_genome_id: null,
-      common_name: 'Human',
-      scientific_name: 'Homo sapiens',
-      assembly_name: 'GRCh37.p13',
-      isEnabled: true
-    }
-  ];
+const initialState = {
+  blast: { blastForm: initialBlastFormState },
+  speciesSelector: {
+    committedItems: mockCommittedItems
+  } as SpeciesSelectorState
+};
 
-  const initialState = {
-    blast: { blastForm: blastFormState },
-    speciesSelector: { committedItems: mockCommittedItems }
-  };
+const rootReducer = combineReducers({
+  blast: combineReducers({
+    blastForm: blastFormReducer
+  }),
+  speciesSelector: speciesSelectorReducer
+});
 
-  const store = configureStore({
-    reducer: rootReducer,
-    preloadedState: initialState
-  });
+const store = configureStore({
+  reducer: rootReducer,
+  preloadedState: initialState
+});
 
+const renderComponent = () => {
   const renderResult = render(
     <Provider store={store}>
-      <ToolsAppBar />
+      <MemoryRouter>
+        <ToolsAppBar />
+      </MemoryRouter>
     </Provider>
   );
 
