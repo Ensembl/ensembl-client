@@ -102,8 +102,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const { search } = useLocation();
   const { trackFiltersPanelOpen } = useEntityViewerAnalytics();
   const view = new URLSearchParams(search).get('view');
-
-  const uniqueScrollReferenceId = `${COMPONENT_ID}_${props.gene.stable_id}_${view}`;
+  const geneStableId = props.gene.stable_id;
+  const uniqueScrollReferenceId = `${COMPONENT_ID}_${geneStableId}_${view}`;
 
   const { targetElementRef } = useRestoreScrollPosition({
     referenceId: uniqueScrollReferenceId
@@ -149,7 +149,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         })
       );
     };
-  }, [genomeId, geneId]);
+  }, [genomeId, geneStableId]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>

@@ -25,42 +25,6 @@
   margin-bottom: 9px;
 }
 
-.checkboxUnchecked,
-.checkboxChecked {
-  margin-top: 9px;
-  height: 12px;
-  width: 12px;
-}
-
-.checkboxUnchecked {
-  background-color: transparent;
-  border-color: $dark-grey;
-}
-
-.checkboxLabel {
-  font-size: 12px;
-}
-
-.themeDark {
-  .label {
-    color: $white;
-  }
-
-  .checkboxLabel {
-    color: $white;
-  }
-}
-
-.themeLight {
-  .label {
-    color: $black;
-  }
-
-  .checkboxLabel {
-    font-weight: $light;
-  }
-}
-
 .downloadButtonWrapper {
   align-self: end;
   justify-self: end;
@@ -88,8 +52,8 @@
     .geneSection {
       grid-area: gene;
 
-      .checkboxWrapper {
-        margin-left: 6px;
+      .checkbox {
+        margin-left: 12px;
       }
     }
 
@@ -98,7 +62,7 @@
     }
 
     .checkboxGrid {
-      padding-left: 6px;
+      padding-left: 14px;
     }
 
     button {
@@ -124,8 +88,9 @@
         margin-left: -18px;
       }
 
-      .checkboxWrapper {
+      .checkbox {
         margin-top: 12px;
+        margin-left: 6px;
       }
     }
 
@@ -135,6 +100,7 @@
 
     .checkboxGrid {
       grid-template-columns: 2fr 1fr;
+      padding-left: 6px;
     }
 
     button {

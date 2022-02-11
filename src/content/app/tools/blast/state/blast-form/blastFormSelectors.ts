@@ -22,6 +22,21 @@ export const getSequences = (state: RootState) =>
 export const getEmptyInputVisibility = (state: RootState) =>
   state.blast.blastForm.shouldAppendEmptyInput;
 
+export const getSelectedSequenceType = (state: RootState) =>
+  state.blast.blastForm.settings.sequenceType;
+
+export const getSequenceSelectionMode = (state: RootState) =>
+  state.blast.blastForm.settings.sequenceSelectionMode;
+
+export const getSelectedBlastProgram = (state: RootState) =>
+  state.blast.blastForm.settings.program;
+
+export const getSelectedSearchSensitivity = (state: RootState) =>
+  state.blast.blastForm.settings.preset;
+
+export const getBlastSearchParameters = (state: RootState) =>
+  state.blast.blastForm.settings.parameters;
+
 export const getStep = (state: RootState) => state.blast.blastForm.step;
 
 export const getSelectedSpeciesIds = (state: RootState) =>

@@ -92,15 +92,15 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
     <div className={styles.inputGroup}>
       <Checkbox
         label={proteinOptionLabels.proteinSequence}
-        labelClassName={styles.checkboxLabel}
         checked={isProteinSeqSelected}
         onChange={onProteinCheckboxChange}
+        theme="lighter"
       />
       <Checkbox
         label={proteinOptionLabels.cds}
-        labelClassName={styles.checkboxLabel}
         checked={isCdsSeqSelected}
         onChange={onCdsCheckboxChange}
+        theme="lighter"
       />
       <InstantDownloadButton
         isDisabled={isDownloadDisabled()}

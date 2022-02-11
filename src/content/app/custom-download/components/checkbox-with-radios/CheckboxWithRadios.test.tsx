@@ -56,7 +56,7 @@ describe('<CheckboxWithRadios />', () => {
     const { container } = renderCheckboxWithRadios();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
   });
@@ -65,7 +65,7 @@ describe('<CheckboxWithRadios />', () => {
     const { container } = renderCheckboxWithRadios();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
 
@@ -75,7 +75,7 @@ describe('<CheckboxWithRadios />', () => {
   it('displays all the radios when the checkbox is checked', () => {
     const { container } = renderCheckboxWithRadios();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLElement);
 
@@ -87,7 +87,7 @@ describe('<CheckboxWithRadios />', () => {
   it('calls the onChange when the radio is changed with the selected option', () => {
     const { container } = renderCheckboxWithRadios();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLInputElement);
 

@@ -1,0 +1,16 @@
+@import 'src/styles/common';
+
+.lightThemeWrapper {
+  padding: 0.6rem;
+}
+
+.darkThemeWrapper {
+  background-color: $black;
+  padding: 0.6rem;
+}
+
+.narrowOptionsWrapper {
+  width: 400px;
+  padding: 0.6rem;
+  border: 1px dashed black;
+}

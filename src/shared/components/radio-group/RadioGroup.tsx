@@ -26,21 +26,23 @@ export type RadioOption = {
 };
 
 export type RadioOptions = RadioOption[];
+export type Theme = 'light' | 'dark';
+type Direction = 'row' | 'column';
 
-type Props = {
+export type RadioGroupProps = {
   onChange: (selectedOption: OptionValue) => void;
-  classNames?: {
-    label?: string;
-    wrapper?: string;
-    radio?: string;
-    radioChecked?: string;
-  };
   options: RadioOptions;
   selectedOption: OptionValue;
   disabled?: boolean;
+  theme?: Theme;
+  direction?: Direction;
+  className?: string; // optional class name for the whole radio group element
 };
 
-const RadioGroup = (props: Props) => {
+const RadioGroup = (props: RadioGroupProps) => {
+  const direction = props.direction ?? 'column';
+  const theme = props.theme ?? 'light';
+
   const handleChange = (value: OptionValue) => {
     if (props.disabled || value === props.selectedOption) {
       return;
@@ -48,44 +50,36 @@ const RadioGroup = (props: Props) => {
     props.onChange(value);
   };
 
-  const labelClass = classNames(styles.label, props.classNames?.label);
-
-  const wrapperClass = classNames(styles.wrapper, props.classNames?.wrapper);
-
-  const getRadioClass = (option: RadioOption) => {
-    const radioCheckedClass = classNames(
-      styles.radioChecked,
-      props.classNames?.radioChecked
-    );
-
-    const radioClass = classNames(
+  const radioGroupClasses = classNames(
+    styles.radioGroup,
+    {
+      [styles.radioGroupColumn]: direction === 'column',
+      [styles.radioGroupRow]: direction === 'row',
+      [styles.themeDark]: theme === 'dark',
+      [styles.themeLight]: theme === 'light'
+    },
+    props.className
+  );
+  const getRadioClass = (option: RadioOption) =>
+    classNames(
       styles.radio,
-      props.classNames?.radio,
-      option.value === props.selectedOption ? radioCheckedClass : undefined
+      option.value === props.selectedOption ? styles.radioChecked : undefined
     );
-
-    return radioClass;
-  };
 
   return (
-    <div>
+    <div className={radioGroupClasses}>
       {props.options.map((option, index) => (
-        <div key={index} className={wrapperClass}>
-          <div
-            onClick={() => handleChange(option.value)}
-            className={getRadioClass(option)}
+        <label key={index} className={styles.radioGroupItem}>
+          <span className={getRadioClass(option)} />
+          <span className={styles.label}>{option.label}</span>
+          <input
+            className={styles.input}
+            type="radio"
+            onChange={() => handleChange(option.value)}
+            checked={option.value === props.selectedOption}
+            disabled={props.disabled}
           />
-          <label className={labelClass}>
-            <input
-              className={styles.input}
-              type="radio"
-              onChange={() => handleChange(option.value)}
-              checked={option.value === props.selectedOption}
-              disabled={props.disabled}
-            />
-            {option.label}
-          </label>
-        </div>
+        </label>
       ))}
     </div>
   );

@@ -40,28 +40,23 @@ const StatefulCheckbox = (props: Partial<CheckboxProps> & DefaultArgs) => {
   );
 };
 
-export const DefaultCheckboxStory = (args: DefaultArgs) => (
+export const CheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
+    <p>Enabled</p>
     <StatefulCheckbox {...args} />
-  </div>
-);
-
-DefaultCheckboxStory.storyName = 'default';
-
-export const DisabledCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
+    <p>Disabled</p>
     <StatefulCheckbox disabled={true} {...args} />
   </div>
 );
 
-DisabledCheckboxStory.storyName = 'disabled';
+CheckboxStory.storyName = 'without label';
 
 export const LabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox label={'I am label'} {...args} />
+    <StatefulCheckbox label="I am label, you can click me" {...args} />
     <StatefulCheckbox
       disabled={true}
-      label={'I am label of disabled checkbox'}
+      label="I am label of disabled checkbox"
       {...args}
     />
   </div>
@@ -69,38 +64,54 @@ export const LabelledCheckboxStory = (args: DefaultArgs) => (
 
 LabelledCheckboxStory.storyName = 'with label';
 
-export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.gridWrapper}>
-    <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
-      <StatefulCheckbox
-        disabled={true}
-        label={'I am label of disabled checkbox'}
-        {...args}
-      />
-      <StatefulCheckbox
-        label={'I am a very long long label that wraps to another line'}
-        {...args}
-      />
+export const ThemesStory = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <div className={styles.lightThemeWrapper}>
+      <StatefulCheckbox {...args} label="Light theme (default)" />
     </div>
-
-    <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
-      <StatefulCheckbox
-        label={'I am another very long long label that wraps to another line'}
-        {...args}
-      />
-      <StatefulCheckbox label={'I am label'} {...args} />
+    <div className={styles.lightThemeWrapper}>
+      <StatefulCheckbox theme="lighter" label="Lighter theme" {...args} />
     </div>
-
-    <div>
-      <StatefulCheckbox label={'I am label'} {...args} />
-      <StatefulCheckbox label={'I am label'} {...args} />
+    <div className={styles.darkThemeWrapper}>
+      <StatefulCheckbox theme="dark" label="Dark theme" {...args} />
     </div>
   </div>
 );
 
-LabelledCheckboxStory.storyName = 'grid with long label';
+ThemesStory.storyName = 'themes';
+
+export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
+  <div className={styles.gridWrapper}>
+    <div>
+      <StatefulCheckbox label="I am label" {...args} />
+      <StatefulCheckbox
+        disabled={true}
+        label="I am label of disabled checkbox"
+        {...args}
+      />
+      <StatefulCheckbox
+        label="I am a very long long label that wraps to another line"
+        {...args}
+      />
+    </div>
+
+    <div>
+      <StatefulCheckbox label="I am label" {...args} />
+      <StatefulCheckbox
+        label="I am another very long long label that wraps to another line"
+        {...args}
+      />
+      <StatefulCheckbox label="I am label" {...args} />
+    </div>
+
+    <div>
+      <StatefulCheckbox label="I am label" {...args} />
+      <StatefulCheckbox label="I am label" {...args} />
+    </div>
+  </div>
+);
+
+LongLabelledCheckboxStory.storyName = 'grid with long labels';
 
 export default {
   title: 'Components/Shared Components/Checkbox',
