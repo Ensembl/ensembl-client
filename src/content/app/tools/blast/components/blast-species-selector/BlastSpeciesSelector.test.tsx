@@ -67,7 +67,7 @@ describe('SpeciesSelector', () => {
       const { container, store } = renderComponent();
 
       const speciesCheckbox = container.querySelector(
-        'tbody tr .defaultCheckbox'
+        'tbody tr [data-test-id="checkbox"]'
       ) as HTMLElement;
 
       userEvent.click(speciesCheckbox);

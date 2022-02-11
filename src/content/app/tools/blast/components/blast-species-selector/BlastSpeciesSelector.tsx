@@ -56,10 +56,6 @@ const BlastSpeciesSelector = () => {
                 <td className={styles.assemblyCol}>{item.assembly_name}</td>
                 <td className={styles.selectCol}>
                   <Checkbox
-                    classNames={{
-                      unchecked: styles.checkboxUnchecked,
-                      checked: styles.checkboxChecked
-                    }}
                     checked={selectedSpecies.includes(item.genome_id)}
                     onChange={(isChecked) =>
                       onSpeciesSelection(isChecked, item.genome_id)

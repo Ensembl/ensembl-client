@@ -69,7 +69,7 @@ describe('<CheckboxGrid />', () => {
   it('renders N number of checkboxes based on the options', () => {
     const { container } = renderCheckboxGrid();
 
-    expect(container.querySelectorAll('.defaultCheckbox')?.length).toEqual(
+    expect(container.querySelectorAll('.checkboxDefault')?.length).toEqual(
       defaultOptions.length
     );
   });
@@ -88,7 +88,7 @@ describe('<CheckboxGrid />', () => {
     const firstLabel = labels.shift();
     const lastLabel = labels.pop();
     const allCheckboxes = (firstGridContainer as HTMLElement).querySelectorAll(
-      '.defaultCheckbox'
+      '.checkboxDefault'
     );
     const firstCheckbox = allCheckboxes[0];
     expect(firstCheckbox.nextSibling?.textContent).toEqual(firstLabel);
@@ -100,7 +100,7 @@ describe('<CheckboxGrid />', () => {
   it('calls the checkboxOnChange when a checkbox is checked/unchecked', async () => {
     const { container } = renderCheckboxGrid();
     const firstCheckbox = container.querySelector(
-      '.defaultCheckbox'
+      '.checkboxDefault'
     ) as HTMLElement;
 
     userEvent.click(firstCheckbox);
@@ -122,7 +122,7 @@ describe('<CheckboxGrid />', () => {
       }
     });
 
-    expect(container.querySelectorAll('.defaultCheckbox').length).toBe(
+    expect(container.querySelectorAll('.checkboxDefault').length).toBe(
       totalCheckedCheckboxes
     );
   });

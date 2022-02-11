@@ -2,11 +2,11 @@
 @import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
 .container {
-  grid-area: 3/1/3/4;  
+  grid-area: 3/1/3/4;
   position: sticky;
   height: 100%;
   top: -5px;
-  z-index: 1;     
+  z-index: 1;
   padding-bottom: 9px;
 }
 
@@ -24,13 +24,13 @@
 }
 
 .sortContainer {
-    padding-left: 160px;
+  padding-left: 160px;
 }
 
 .filterContent {
   display: grid;
   grid-template-columns: repeat(3, 210px);
-  height: auto;
+  padding-left: 12px;
 }
 
 .header {
@@ -43,37 +43,10 @@
   display: block;
 }
 
-.label {
-  color: white;
-  font-size: 12px;
+.checkbox {
+  display: block;
 }
 
-.radio {
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
-  margin-top: 9px;
-
-  &Checked {
-    &:after {
-      width: 6px;
-      height: 6px;
-    }
-  }
-}
-
-.checkboxUnchecked {
-  background-color: transparent;
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
-  margin-top: 9px;
-}
-
-.checkboxChecked {
-  background-color: $green;
-  border-color: $dark-grey;
-  height: 12px;
-  width: 12px;
-  margin-top: 9px;
+.radioGroup {
+  margin-left: 12px;
 }

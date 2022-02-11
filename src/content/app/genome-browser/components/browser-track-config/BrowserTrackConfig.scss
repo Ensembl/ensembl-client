@@ -14,13 +14,17 @@
     margin: 8px 0px;
     padding: 0px 18px;
 
+    &:first-child {
+      padding-left: 30px;
+    }
+
     .subLabel {
       line-height: 30px;
       font-size: 12px;
       font-weight: 300;
       padding-right: 4px;
     }
-    
+
     &:not(:last-child) {
       border-right: 1px solid $grey;
     }

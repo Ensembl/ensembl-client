@@ -77,15 +77,13 @@ describe('<CheckboxWithTextfields />', () => {
   it('passes the label to the checkbox component', () => {
     const label = faker.random.words();
     const { container } = renderCheckboxWithTextfields({ label });
-    expect(
-      container.querySelector('.checkboxHolder .defaultLabel')?.textContent
-    ).toBe(label);
+    expect(container.querySelector('.label')?.textContent).toBe(label);
   });
 
   it('automatically checks the checkbox when a textValue is passed', () => {
     const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });
@@ -96,16 +94,14 @@ describe('<CheckboxWithTextfields />', () => {
     });
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });
 
   it('calls the onReset prop when the checkbox is unchecked', () => {
-    const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
-    const checkboxLabelElement = container.querySelector(
-      '.checkboxHolder .hiddenInput'
-    );
+    const { getByTestId } = renderCheckboxWithTextfields({ textValue: 'foo' });
+    const checkboxLabelElement = getByTestId('checkbox-label-grid');
 
     userEvent.click(checkboxLabelElement as HTMLElement);
 

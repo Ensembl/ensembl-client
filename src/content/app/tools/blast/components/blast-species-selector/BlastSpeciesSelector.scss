@@ -87,7 +87,6 @@
   }
 
   thead th.selectCol {
-    text-align: center;
     font-weight: $bold;
   }
 
@@ -115,4 +114,8 @@
 
 .assemblyHeader {
   width: 235px;
+}
+
+.selectCol {
+  text-align: center;
 }
