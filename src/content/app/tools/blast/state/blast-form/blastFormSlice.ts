@@ -231,7 +231,7 @@ export const {
   switchToSequencesStep,
   addSelectedSpecies,
   removeSelectedSpecies,
-  clearSelectedSpecies
+  clearSelectedSpecies,
   setSequenceType,
   setBlastDatabase,
   setBlastProgram,

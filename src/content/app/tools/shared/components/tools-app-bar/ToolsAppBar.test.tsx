@@ -19,6 +19,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import blastFormReducer, {
   initialState as initialBlastFormState
@@ -83,9 +84,15 @@ const renderComponent = () => {
 describe('ToolsAppBar', () => {
   describe('Species Lozenge click', () => {
     it('updates the selectedSpecies state', () => {
-      const { container } = renderComponent();
+      const { container, store } = renderComponent();
 
-      container.querySelector('.selectedSpecies');
+      const speciesLozenge = container.querySelector('.inUseInactive');
+
+      userEvent.click(speciesLozenge as HTMLElement);
+
+      const updatedState = store.getState();
+
+      expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     });
   });
 });
