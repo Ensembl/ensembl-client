@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import classNames from 'classnames';
 
 import {
   getIsTrackPanelOpened,
@@ -35,17 +34,16 @@ import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as searchIcon } from 'static/icons/icon_search.svg';
-import { ReactComponent as tracksManagerIcon } from 'static/icons/icon_sliders.svg';
-import { ReactComponent as bookmarkIcon } from 'static/icons/icon_bookmark.svg';
-import { ReactComponent as personalDataIcon } from 'static/icons/icon_nav_plus.svg';
-import { ReactComponent as shareIcon } from 'static/icons/icon_share.svg';
-import { ReactComponent as downloadIcon } from 'static/icons/icon_download.svg';
+import { ReactComponent as SearchIcon } from 'static/icons/icon_search.svg';
+import { ReactComponent as TracksManagerIcon } from 'static/icons/icon_sliders.svg';
+import { ReactComponent as BookmarkIcon } from 'static/icons/icon_bookmark.svg';
+import { ReactComponent as PersonalDataIcon } from 'static/icons/icon_nav_plus.svg';
+import { ReactComponent as ShareIcon } from 'static/icons/icon_share.svg';
+import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
 import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
-import styles from './TrackPanelBar.scss';
 
 export const TrackPanelBar = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
@@ -85,61 +83,50 @@ export const TrackPanelBar = () => {
       : Status.UNSELECTED;
   };
 
-  const searchIconClasses = classNames(
-    layoutStyles.sidebarIcon,
-    styles.searchIcon
-  );
-
   return (
     <>
-      <div className={searchIconClasses} key="search">
-        <ImageButton
-          status={getViewIconStatus('search')}
-          description="Search"
-          onClick={() => toggleModalView('search')}
-          image={searchIcon}
-        />
-      </div>
-      <div className={layoutStyles.sidebarIcon} key="tracks-manager">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Tracks manager"
-          onClick={() => toggleModalView('tracks-manager')}
-          image={tracksManagerIcon}
-        />
-      </div>
-      <div className={layoutStyles.sidebarIcon} key="bookmarks">
-        <ImageButton
-          status={getViewIconStatus('bookmarks')}
-          description="Previously viewed"
-          onClick={() => toggleModalView('bookmarks')}
-          image={bookmarkIcon}
-        />
-      </div>
-      <div className={layoutStyles.sidebarIcon} key="personal-data">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Personal data"
-          onClick={() => toggleModalView('personal-data')}
-          image={personalDataIcon}
-        />
-      </div>
-      <div className={layoutStyles.sidebarIcon} key="share">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Share"
-          onClick={() => toggleModalView('share')}
-          image={shareIcon}
-        />
-      </div>
-      <div className={layoutStyles.sidebarIcon} key="downloads">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Downloads"
-          onClick={() => toggleModalView('downloads')}
-          image={downloadIcon}
-        />
-      </div>
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={getViewIconStatus('search')}
+        description="Search"
+        onClick={() => toggleModalView('search')}
+        image={SearchIcon}
+      />
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={Status.DISABLED}
+        description="Tracks manager"
+        onClick={() => toggleModalView('tracks-manager')}
+        image={TracksManagerIcon}
+      />
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={getViewIconStatus('bookmarks')}
+        description="Previously viewed"
+        onClick={() => toggleModalView('bookmarks')}
+        image={BookmarkIcon}
+      />
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={Status.DISABLED}
+        description="Personal data"
+        onClick={() => toggleModalView('personal-data')}
+        image={PersonalDataIcon}
+      />
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={Status.DISABLED}
+        description="Share"
+        onClick={() => toggleModalView('share')}
+        image={ShareIcon}
+      />
+      <ImageButton
+        className={layoutStyles.sidebarIcon}
+        status={Status.DISABLED}
+        description="Downloads"
+        onClick={() => toggleModalView('downloads')}
+        image={DownloadIcon}
+      />
     </>
   );
 };

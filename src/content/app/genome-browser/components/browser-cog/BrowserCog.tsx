@@ -25,6 +25,8 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as cogIcon } from 'static/icons/icon_settings.svg';
 
+import styles from './BrowserCogList.scss';
+
 export type BrowserCogProps = {
   cogActivated: boolean;
   trackId: string;
@@ -58,11 +60,6 @@ const BrowserCog = (props: BrowserCogProps) => {
     }
   }, [cogActivated]);
 
-  const imgInline = {
-    height: '18px',
-    width: '18px'
-  };
-
   const cogIconConfig = {
     description: 'Configure Track',
     icon: cogIcon
@@ -86,17 +83,16 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   return (
     <>
-      <div style={imgInline}>
-        {cogActivated ? (
-          <CloseButton onClick={toggleCog} />
-        ) : (
-          <ImageButton
-            description={cogIconConfig.description}
-            onClick={toggleCog}
-            image={cogIconConfig.icon}
-          />
-        )}
-      </div>
+      {cogActivated ? (
+        <CloseButton onClick={toggleCog} />
+      ) : (
+        <ImageButton
+          className={styles.browserCog}
+          description={cogIconConfig.description}
+          onClick={toggleCog}
+          image={cogIconConfig.icon}
+        />
+      )}
       {transition((style, item) => {
         return (
           item && (

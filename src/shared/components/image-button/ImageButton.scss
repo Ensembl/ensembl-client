@@ -31,9 +31,10 @@
 }
 
 .selected {
+  background-color: $blue;
+
   svg {
     fill: $white;
-    background: $blue;
   }
   &svg:hover {
     opacity: 0.8;
