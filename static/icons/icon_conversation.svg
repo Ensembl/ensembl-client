@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 25.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="conversation" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
 	 y="0px" viewBox="0 0 32 22" style="enable-background:new 0 0 32 22;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#B7C0C8;}
 	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#0099FF;}
 </style>
-<path id="left" class="st0" d="M3.0633,0.4478h13.8733C18.0706,0.4478,19,1.3772,19,2.5111v8.904
+<path class="st0" d="M3.0633,0.4478h13.8733C18.0706,0.4478,19,1.3772,19,2.5111v8.904
 	c0,1.1339-0.9294,2.0633-2.0633,2.0633H9.4145v3.6744c0,0.347-0.378,0.4337-0.6568,0.2169l-5.0127-3.8912H3.0633
 	C1.9294,13.4784,1,12.549,1,11.4151v-8.904C1,1.3772,1.9294,0.4478,3.0633,0.4478L3.0633,0.4478z"/>
-<path id="right" class="st1" d="M28.9367,4.5121H15.0633C13.9294,4.5121,13,5.4416,13,6.5755v8.904
+<path class="st1" d="M28.9367,4.5121H15.0633C13.9294,4.5121,13,5.4416,13,6.5755v8.904
 	c0,1.1339,0.9294,2.0633,2.0633,2.0633h7.5222v3.6744c0,0.347,0.378,0.4337,0.6568,0.2169l5.0127-3.8912h0.6816
 	c1.1339,0,2.0633-0.9294,2.0633-2.0633v-8.904C31,5.4416,30.0706,4.5121,28.9367,4.5121L28.9367,4.5121z"/>
 </svg>
