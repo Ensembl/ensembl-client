@@ -37,7 +37,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as SearchIcon } from 'static/icons/icon_search.svg';
 import { ReactComponent as TracksManagerIcon } from 'static/icons/icon_sliders.svg';
 import { ReactComponent as BookmarkIcon } from 'static/icons/icon_bookmark.svg';
-import { ReactComponent as PersonalDataIcon } from 'static/icons/icon_nav_plus.svg';
+import { ReactComponent as PersonalDataIcon } from 'static/icons/icon_plus_circle.svg';
 import { ReactComponent as ShareIcon } from 'static/icons/icon_share.svg';
 import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
 
