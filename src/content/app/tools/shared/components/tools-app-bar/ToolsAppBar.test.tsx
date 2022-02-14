@@ -88,7 +88,7 @@ describe('ToolsAppBar', () => {
 
       const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
-      userEvent.click(speciesLozenge as HTMLElement);
+      userEvent.click(speciesLozenge);
 
       const updatedState = store.getState();
 
