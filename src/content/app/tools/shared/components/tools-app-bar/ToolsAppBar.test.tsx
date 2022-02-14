@@ -18,7 +18,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
+import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import blastFormReducer, {
@@ -86,7 +86,7 @@ describe('ToolsAppBar', () => {
     it('updates the selectedSpecies state', () => {
       const { container, store } = renderComponent();
 
-      const speciesLozenge = container.querySelector('.inUseInactive');
+      const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
       userEvent.click(speciesLozenge as HTMLElement);
 
