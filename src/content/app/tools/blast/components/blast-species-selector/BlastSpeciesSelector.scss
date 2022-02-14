@@ -9,6 +9,7 @@
   padding-bottom: 12px;
   position: sticky;
   top: 0px;
+  z-index: 1;
   background-color: $white;
 }
 
@@ -54,7 +55,6 @@
   background-color: $light-grey;
   border: 1px solid $grey;
   padding: 10px;
-  margin-bottom: 90px;
 
   .checkboxUnchecked {
     margin-top: 0px;
