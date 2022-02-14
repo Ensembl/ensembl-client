@@ -16,29 +16,36 @@
 
 import React from 'react';
 
-import IconHolder from './IconHolder';
+import IconCard from './IconCard';
 
 import storyStyles from '../common.scss';
 
 function importAllIcons() {
-  const allIcons: any = require.context('static/icons', true, /\.(svg)$/);
-  const iconPaths = allIcons.keys();
-  const iconComponents = iconPaths.map(allIcons);
-  const icons: any = [];
+  const iconsContextModule: any = require.context(
+    'static/icons',
+    true,
+    /\.(svg)$/
+  );
+  const iconFileNames: string[] = iconsContextModule.keys();
+  const iconPaths = iconFileNames
+    .map(iconsContextModule)
+    .map((module) => (module as any).default as string); // svg modules are imported as file paths
 
-  iconPaths.forEach(({}: string, key: number) => {
-    const filePath =
-      'static/icons' + iconPaths[key].substring(1, iconPaths[key].length);
-    icons.push([filePath, iconComponents[key]]);
+  return iconPaths.map((iconPath, index) => {
+    const fileName = iconFileNames[index].split('/').pop() as string;
+    return {
+      iconPath,
+      fileName
+    };
   });
-
-  return icons;
 }
 
 export const Icons = () => (
   <div className={storyStyles.page}>
-    {importAllIcons().map((icon: any, key: number) => {
-      return <IconHolder key={key} icon={icon[1].default} filePath={icon[0]} />;
+    {importAllIcons().map(({ iconPath, fileName }) => {
+      return (
+        <IconCard key={iconPath} iconPath={iconPath} fileName={fileName} />
+      );
     })}
   </div>
 );
@@ -46,5 +53,5 @@ export const Icons = () => (
 Icons.storyName = 'Icons';
 
 export default {
-  title: 'Other/Static Icons'
+  title: 'Other/Static assets'
 };

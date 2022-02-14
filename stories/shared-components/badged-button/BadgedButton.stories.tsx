@@ -22,7 +22,7 @@ import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as DownloadIcon } from 'static/icons/download.svg';
+import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 

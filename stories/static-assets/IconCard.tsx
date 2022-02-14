@@ -16,22 +16,22 @@
 
 import React from 'react';
 
-import styles from './IconHolder.scss';
+import styles from './Icons.stories.scss';
 
 type Props = {
-  icon: string;
-  filePath: string;
+  iconPath: string;
+  fileName: string;
 };
 
-const IconHolder = (props: Props) => {
+const IconCard = (props: Props) => {
   return (
-    <div className={styles.iconHolder}>
-      <div className={styles.iconArea}>
-        <img src={props.icon} />
+    <div className={styles.iconCard}>
+      <div className={styles.icon}>
+        <img src={props.iconPath} />
       </div>
-      <div className={styles.iconPath}>{props.filePath}</div>
+      <div className={styles.label}>{props.fileName}</div>
     </div>
   );
 };
 
-export default IconHolder;
+export default IconCard;

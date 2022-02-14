@@ -21,7 +21,7 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as DownloadIcon } from 'static/icons/download.svg';
+import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
