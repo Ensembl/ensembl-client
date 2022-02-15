@@ -18,14 +18,14 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { CommunicationPanelContextProvider } from './communicationPanelContext';
-
 import Overlay from 'src/shared/components/overlay/Overlay';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ContactUs from './contact-us/ContactUs';
 
+import { ReactComponent as ConversationIcon } from 'static/icons/icon_conversation.svg';
+
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';
-import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
 import styles from './CommunicationPanel.scss';
 

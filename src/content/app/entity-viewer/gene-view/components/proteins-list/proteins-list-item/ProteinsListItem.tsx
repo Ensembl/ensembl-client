@@ -32,10 +32,10 @@ import {
   TranscriptQualityLabel,
   getTranscriptMetadata as getTranscriptQualityMetadata
 } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
+import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 

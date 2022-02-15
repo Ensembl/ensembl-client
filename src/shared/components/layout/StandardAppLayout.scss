@@ -121,9 +121,11 @@ $drawerWindowWidth: 45px;
 }
 
 .sidebarIcon {
-  width: 22px;
-  height: 22px;
-  margin: 6px 6px 23px;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 2px;
+  margin-bottom: 30px;
 }
 
 .drawer {
