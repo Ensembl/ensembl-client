@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { guessSequenceType } from './sequenceTypeGuesser';
+import {
+  guessSequenceType,
+  guessSequencesType,
+  aminoAcidOnlyCodes
+} from './sequenceTypeGuesser';
 
-describe('guessSequence', () => {
+describe('guessSequenceType', () => {
   it('guesses a protein sequence', () => {
     const sequence =
       'MENLNMDLLYMAAAVMMGLAAIGAAIGIGILGGKFLEGAARQPDLIPLLRTQFFIVMGLVDAIPMIAVGL';
@@ -29,10 +33,46 @@ describe('guessSequence', () => {
     expect(guessSequenceType(sequence)).toBe('dna');
   });
 
-  it.skip('guesses a nucleotide sequence with ambiguous codes', () => {
-    // This will be guessed as a protein although it's a nucleic acid
-    // should we remove the N's as Uniprot does? What about other ambiguous nucleotide codes?
+  it('interprets sequence as protein if it contains one or more unique characters', () => {
+    // amino acid alphabet contains the following letters not present in the nucleotide alphabet: EFILPQXZ
+    aminoAcidOnlyCodes.split('').forEach((character) => {
+      const sequence = `ACGTUACGTUACGTUACGTUACGTUACGTU${character}`;
+      expect(guessSequenceType(sequence)).toBe('protein');
+    });
+  });
+
+  it('ignores the ambiguous code N when guessing a nucleotide sequence', () => {
+    // The letter N exists in both amino acid and nucleotide alphabets.
+    // It is ignored while guessing a sequence type
     const sequence = 'CCCNTTAAAGGGGGNNCCCCTNCNNGGGGGAATAAAACAANTTNNTTTTTT';
     expect(guessSequenceType(sequence)).toBe('dna');
+  });
+});
+
+describe('guessSequencesType', () => {
+  const nucleotideSequence1 = 'ACACACTCACACACACTTGGTCAGAGATGCTGTGC';
+  const nucleotideSequence2 = 'TNAAGCNTGACAACACCAGGCAGGTATGAGAGGAAAG';
+  const proteinSequence1 =
+    'QIKDLLVSSSTDLDTTLVLVNAIYFKGMWKTAFNAEDTREMPFHVTKQESKPVQMMCMNNSFNVATLPAE';
+  const proteinSequence2 =
+    'KMKILELPFASGDLSMLVLLPDEVSDLERIEKTINFEKLTEWTNPNTMEKRRVKVYLPQMKIEEKYNLTS';
+
+  it('assumes all sequences to be DNA if none is guessed as protein', () => {
+    const nucleotideSequences = [nucleotideSequence1, nucleotideSequence2];
+    expect(guessSequencesType(nucleotideSequences)).toBe('dna');
+  });
+
+  it('assumes all sequences to be protein if none is guessed as DNA', () => {
+    const proteinSequences = [proteinSequence1, proteinSequence2];
+    expect(guessSequencesType(proteinSequences)).toBe('protein');
+  });
+
+  it('assumes all sequences to be protein if at least one is guessed as protein', () => {
+    const mixedSequences = [
+      nucleotideSequence1,
+      nucleotideSequence2,
+      proteinSequence1
+    ];
+    expect(guessSequencesType(mixedSequences)).toBe('protein');
   });
 });

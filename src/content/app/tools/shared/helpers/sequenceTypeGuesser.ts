@@ -31,19 +31,19 @@ import difference from 'lodash/difference';
 
  * The amino acid codes allowed by BLASTP and TBLASTN programs are:
 
-		A  alanine               P  proline
-		B  aspartate/asparagine  Q  glutamine
-		C  cystine               R  arginine
-		D  aspartate             S  serine
-		E  glutamate             T  threonine
-		F  phenylalanine         U  selenocysteine
-		G  glycine               V  valine
-		H  histidine             W  tryptophan
-		I  isoleucine            Y  tyrosine
-		K  lysine                Z  glutamate/glutamine
-		L  leucine               X  any
-		M  methionine            *  translation stop
-		N  asparagine            -  gap of indeterminate length
+    A  alanine               P  proline
+    B  aspartate/asparagine  Q  glutamine
+    C  cystine               R  arginine
+    D  aspartate             S  serine
+    E  glutamate             T  threonine
+    F  phenylalanine         U  selenocysteine
+    G  glycine               V  valine
+    H  histidine             W  tryptophan
+    I  isoleucine            Y  tyrosine
+    K  lysine                Z  glutamate/glutamine
+    L  leucine               X  any
+    M  methionine            *  translation stop
+    N  asparagine            -  gap of indeterminate length
 
   (From NCBI Blast docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
  */
@@ -73,25 +73,29 @@ const ambiguousNucleotides = 'BDHKMNRSVWY';
 
 // FIXME: remove the eslint disable comment
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const aminoAcidOnlyCodes = difference(
+export const aminoAcidOnlyCodes = difference(
   `${certainAminoAcids}${ambiguousAminoAcids}`.split(''),
   `${certainNucleotides}${ambiguousNucleotides}`.split('')
 ).join('');
 
-const nucleotideOnlyCodes = difference(
-  `${certainNucleotides}${ambiguousNucleotides}`.split(''),
-  `${certainAminoAcids}${ambiguousAminoAcids}`.split('')
-).join('');
+const aminoAcidOnlyRegex = new RegExp(`[${aminoAcidOnlyCodes}]`, 'i');
+
+// const nucleotideOnlyCodes = difference(
+//   `${certainNucleotides}${ambiguousNucleotides}`.split(''),
+//   `${certainAminoAcids}${ambiguousAminoAcids}`.split('')
+// ).join('');
 
 const certainNucleotidesSet = new Set(Array.from(certainNucleotides));
 
-// FIXME: use SeuenceType
-
+// guess the type of a single sequence
 export const guessSequenceType = (sequence: string) => {
-  // QUESTION: should we include testing for amino-acid-only codes in this function?
   sequence = cleanUpSequence(sequence);
 
-  // an arbitrary threshold saying that if 90% or more characters in a sequence
+  if (hasUniqueAminoAcidCharacters(sequence)) {
+    return 'protein';
+  }
+
+  // an arbitrary threshold meaning that if 90% or more characters in a sequence
   // match unambiguous nucleotide characters, then guess that it's a nucleic acid
   const nucleotideThreshold = 0.9;
 
@@ -107,8 +111,23 @@ export const guessSequenceType = (sequence: string) => {
     : 'protein';
 };
 
+// guess the type of multiple sequences assuming that they are of the same type
+export const guessSequencesType = (sequences: string[]) => {
+  return sequences.some((sequence) => guessSequenceType(sequence) === 'protein')
+    ? 'protein'
+    : 'dna';
+};
+
+const hasUniqueAminoAcidCharacters = (sequence: string) => {
+  return aminoAcidOnlyRegex.test(sequence);
+};
+
 const cleanUpSequence = (sequence: string) => {
-  const cleanupRegExp = /[^A-Z]/gi; // anything that isn't a valid letter
+  // Remove the following from the sequence:
+  // - any non-letter characters
+  // - the letter N (could be an amino acid or a common ambiguous nucleotide code; will impact the threshold)
+  // - the letter J (according to NCBI, not included in either the nucleotide or the amino acid alphabet)
+  const cleanupRegExp = /[^A-Z]|[NJ]/gi;
   return sequence.replace(cleanupRegExp, '');
 };
 
