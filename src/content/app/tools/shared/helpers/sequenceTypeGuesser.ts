@@ -71,19 +71,14 @@ const ambiguousNucleotides = 'BDHKMNRSVWY';
 // const aminoAcidsOnly = /[EQILFPXJ]/gi;
 // const nucleicAcidsOnly = /U/gi;
 
-// FIXME: remove the eslint disable comment
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// While the amino acid alphabet includes all characters from the nucleotide alphabet,
+// it also contains some characters that are unique to the amino acid alphabet
 export const aminoAcidOnlyCodes = difference(
   `${certainAminoAcids}${ambiguousAminoAcids}`.split(''),
   `${certainNucleotides}${ambiguousNucleotides}`.split('')
 ).join('');
 
 const aminoAcidOnlyRegex = new RegExp(`[${aminoAcidOnlyCodes}]`, 'i');
-
-// const nucleotideOnlyCodes = difference(
-//   `${certainNucleotides}${ambiguousNucleotides}`.split(''),
-//   `${certainAminoAcids}${ambiguousAminoAcids}`.split('')
-// ).join('');
 
 const certainNucleotidesSet = new Set(Array.from(certainNucleotides));
 

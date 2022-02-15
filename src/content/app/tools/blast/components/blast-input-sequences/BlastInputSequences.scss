@@ -5,9 +5,10 @@
 }
 
 .header {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  column-gap: 52px;
   width: 860px;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   padding-left: 28px;
   padding-bottom: 12px;
@@ -20,6 +21,10 @@
 .headerGroup {
   display: flex;
   align-items: center;
+}
+
+.headerGroup:last-child {
+  justify-self: end;
 }
 
 .headerTitle {
@@ -53,7 +58,7 @@
 }
 
 .blastAgainstButton {
-  margin-left: 66px;
+  margin-left: 18px;
 }
 
 .inputBoxesContainer {

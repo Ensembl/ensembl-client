@@ -17,23 +17,63 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { setSequences } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import {
+  setSequences,
+  setSequenceType
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import {
   getSequences,
+  getSelectedSequenceType,
+  getSequenceSelectionMode,
   getEmptyInputVisibility
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+import { guessSequenceType } from 'src/content/app/tools/shared/helpers/sequenceTypeGuesser';
 
 import BlastInputSequence from './BlastInputSequence';
 
+import untypedBlastSettingsConfig from 'src/content/app/tools/blast/components/blast-settings/blastSettingsConfig.json';
+
+import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+
 import styles from './BlastInputSequences.scss';
+
+const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
 
 const BlastInputSequences = () => {
   const sequences = useSelector(getSequences);
+  const sequenceType = useSelector(getSelectedSequenceType);
+  const sequenceSelectionMode = useSelector(getSequenceSelectionMode);
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
   const dispatch = useDispatch();
+
+  const updateSequences = (sequences: ParsedInputSequence[]) => {
+    dispatch(setSequences({ sequences }));
+    updateSequenceType(sequences);
+  };
+
+  const updateSequenceType = (sequences: ParsedInputSequence[]) => {
+    if (sequenceSelectionMode === 'manual') {
+      return;
+    }
+
+    const guessedSequenceType = sequences.length
+      ? guessSequenceType(sequences[0].value)
+      : 'dna';
+
+    if (guessedSequenceType !== sequenceType) {
+      dispatch(
+        setSequenceType({
+          sequenceType: guessedSequenceType,
+          isAutomatic: true,
+          config: blastSettingsConfig
+        })
+      );
+    }
+  };
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -41,28 +81,16 @@ const BlastInputSequences = () => {
     if (typeof index === 'number') {
       const newSequences = [...sequences];
       newSequences.splice(index, 1, ...parsedSequences);
-      dispatch(
-        setSequences({
-          sequences: newSequences
-        })
-      );
+      updateSequences(newSequences);
     } else {
-      dispatch(
-        setSequences({
-          sequences: [...sequences, ...parsedSequences]
-        })
-      );
+      updateSequences([...sequences, ...parsedSequences]);
     }
   };
 
   const onRemoveSequence = (index: number | null) => {
     if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
-      dispatch(
-        setSequences({
-          sequences: newSequences
-        })
-      );
+      updateSequences(newSequences);
     }
   };
 
