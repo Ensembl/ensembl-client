@@ -48,28 +48,10 @@ import difference from 'lodash/difference';
   (From NCBI Blast docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
  */
 
-/**
- * QUESTIONS:
- * Uniprot (see https://github.com/ebi-uniprot/franklin-sites/blob/main/src/sequence-utils/sequenceValidator.ts):
- * - Doesn't allow U as an amino acid code (although NCBI blast allows it as selenocysteine)
- * - Includes J (leucine or isoleucine) in the list of ambiguous amino acid codes, whereas NCBI doesn't list it among allowed amino acid codes
- *
- * Who is right?
- *
- *
- * Also, see old Ensembl code:
- * https://github.com/Ensembl/public-plugins/blob/release/105/tools/htdocs/components/20_BlastForm.js#L364
- */
-
 const certainAminoAcids = 'ACDEFGHIKLMNPQRSTUVWY';
 const ambiguousAminoAcids = 'XBZ';
 const certainNucleotides = 'ACGTU';
 const ambiguousNucleotides = 'BDHKMNRSVWY';
-
-// TODO: three lines below are from Uniprot; check them
-// Characters unique only to their subset e.g. 'U' is not a valid AA.
-// const aminoAcidsOnly = /[EQILFPXJ]/gi;
-// const nucleicAcidsOnly = /U/gi;
 
 // While the amino acid alphabet includes all characters from the nucleotide alphabet,
 // it also contains some characters that are unique to the amino acid alphabet
@@ -125,20 +107,3 @@ const cleanUpSequence = (sequence: string) => {
   const cleanupRegExp = /[^A-Z]|[NJ]/gi;
   return sequence.replace(cleanupRegExp, '');
 };
-
-/*
-
-export const validAminoAcids = [
-  naturalAminoAcids,
-  ambiguousAminoAcids,
-  '*', // Stop
-  '.-', // Gaps
-].join('');
-
-export const validNucleicAcids = [
-  baseNucleicAcids,
-  ambiguousNucleicAcids,
-  // No gaps e.g. - and . are not allowed
-].join('');
-
-*/
