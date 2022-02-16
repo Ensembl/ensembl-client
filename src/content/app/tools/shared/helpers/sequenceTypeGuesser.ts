@@ -17,7 +17,7 @@
 import difference from 'lodash/difference';
 
 /**
- * The nucleic acid codes are:
+  The nucleotide codes are:
 
     A --> adenine             M --> A C (amino)
     C --> cytosine            S --> G C (strong)
@@ -29,7 +29,7 @@ import difference from 'lodash/difference';
     K --> G T (keto)          N --> A G C T (any)
                               -  gap of indeterminate length
 
- * The amino acid codes allowed by BLASTP and TBLASTN programs are:
+  The amino acid codes allowed by BLASTP and TBLASTN programs are:
 
     A  alanine               P  proline
     B  aspartate/asparagine  Q  glutamine
