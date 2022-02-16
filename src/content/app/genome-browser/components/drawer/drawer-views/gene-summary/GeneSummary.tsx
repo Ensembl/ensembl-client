@@ -64,6 +64,9 @@ const GeneSummary = () => {
   }
 
   const { gene } = data;
+  const {
+    metadata: { name: geneNameMetadata }
+  } = gene;
 
   const stableId = getDisplayStableId(gene);
 
@@ -112,11 +115,11 @@ const GeneSummary = () => {
         <div className={styles.label}>Gene name</div>
         <div className={styles.geneName}>
           {getGeneName(gene.name)}
-          {gene.metadata.name && (
+          {geneNameMetadata?.accession_id && geneNameMetadata?.url && (
             <ExternalReference
               classNames={{ container: styles.marginTop }}
-              to={gene.metadata.name.url}
-              linkText={gene.metadata.name.accession_id}
+              to={geneNameMetadata.url}
+              linkText={geneNameMetadata.accession_id}
             />
           )}
         </div>

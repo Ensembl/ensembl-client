@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { ProteinDomain } from 'src/shared/types/thoas/product';
+import { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -26,7 +26,7 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  proteinDomains: ProteinDomain[];
+  proteinDomains: FamilyMatchInProduct[];
   trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
@@ -44,14 +44,18 @@ type ProteinDomainImageData = {
   };
 };
 
-export const getDomainsByResourceGroups = (proteinDomains: ProteinDomain[]) => {
+export const getDomainsByResourceGroups = (
+  proteinDomains: FamilyMatchInProduct[]
+) => {
   const groupedDomains: ProteinDomainImageData = {};
 
   proteinDomains.forEach((domain) => {
     const {
-      resource_name,
-      name: domainName,
-      location: { start, end }
+      sequence_family: { description: domainName },
+      sequence_family: {
+        source: { name: resource_name }
+      },
+      relative_location: { start, end }
     } = domain;
 
     if (!groupedDomains[resource_name]) {

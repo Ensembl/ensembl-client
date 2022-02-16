@@ -25,7 +25,11 @@ import CommunicationPanel from 'src/shared/components/communication-framework/Co
 
 import styles from './ConversationIcon.scss';
 
-const ConversationIcon = () => {
+type Props = {
+  withLabel?: boolean;
+};
+
+const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
 
   const { trackContextualHelpOpened } = useCommonAnalytics();
@@ -35,13 +39,14 @@ const ConversationIcon = () => {
 
     dispatch(toggleCommunicationPanel());
   };
+
   return (
     <>
       <CommunicationPanel />
-      <ConversationImageIcon
-        onClick={onClick}
-        className={styles.conversationIcon}
-      />
+      <div className={styles.conversationIconWrapper} onClick={onClick}>
+        {props.withLabel && 'Contact us'}
+        <ConversationImageIcon className={styles.conversationIcon} />
+      </div>
     </>
   );
 };

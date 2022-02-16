@@ -36,8 +36,13 @@ import {
   geneForSequenceDownloadQuery,
   GeneForSequenceDownloadQueryResult
 } from './queries/geneForSequenceDownloadQuery';
+import {
+  proteinDomainsQuery,
+  ProteinDomainsQueryResult
+} from './queries/proteinDomainsQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
+type ProductQueryParams = { productId: string; genomeId: string };
 
 const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -79,6 +84,15 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
         body: geneForSequenceDownloadQuery,
         variables: params
       })
+    }),
+    proteinDomains: builder.query<
+      ProteinDomainsQueryResult,
+      ProductQueryParams
+    >({
+      query: (params) => ({
+        body: proteinDomainsQuery,
+        variables: params
+      })
     })
   })
 });
@@ -88,5 +102,6 @@ export const {
   useGeneSummaryQuery,
   useGeneOverviewQuery,
   useGeneExternalReferencesQuery,
-  useGeneForSequenceDownloadQuery
+  useGeneForSequenceDownloadQuery,
+  useProteinDomainsQuery
 } = entityViewerThoasSlice;

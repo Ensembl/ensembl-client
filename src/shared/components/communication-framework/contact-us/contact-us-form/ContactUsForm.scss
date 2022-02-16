@@ -1,4 +1,5 @@
 @import 'src/styles/common';
+@import 'src/shared/components/upload/uploadConstants';
 
 $maxFormWidth: 520px;
 $leftColumnWidth: 135px;
@@ -8,6 +9,12 @@ $columnGapWidth: 12px;
   background: $light-grey;
   padding: 12px 0 52px 30px;
   min-height: 570px;
+  --upload-label-width: #{$uploadOneLineLabelWidth};
+  --drop-zone-height: #{$uploadButtonShorterHeight};
+}
+
+.containerFileOver {
+  --drop-zone-bg-color: #{$highlightedUploadBackground};
 }
 
 .grid {

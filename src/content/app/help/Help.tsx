@@ -95,7 +95,7 @@ const AppBar = () => {
     <div className={styles.appBar}>
       Help
       <div className={styles.conversationIcon}>
-        <ConversationIcon />
+        <ConversationIcon withLabel={true} />
       </div>
     </div>
   );
