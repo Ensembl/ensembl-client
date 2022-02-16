@@ -80,7 +80,7 @@ const ProteinsListItemInfo = (props: Props) => {
   const proteinXrefs = getProteinXrefs(transcript);
   const displayXref = proteinXrefs[0];
 
-  const { data } = useProteinDomainsQuery({
+  const { currentData } = useProteinDomainsQuery({
     productId: productId,
     genomeId: genomeId as string
   });
@@ -134,15 +134,15 @@ const ProteinsListItemInfo = (props: Props) => {
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {data && (
+      {currentData && (
         <>
           <ProteinDomainImage
-            proteinDomains={data.product.family_matches}
+            proteinDomains={currentData.product.family_matches}
             trackLength={trackLength}
             width={gene_image_width}
           />
           <ProteinImage
-            proteinLength={data.product.length}
+            proteinLength={currentData.product.length}
             trackLength={trackLength}
             width={gene_image_width}
           />

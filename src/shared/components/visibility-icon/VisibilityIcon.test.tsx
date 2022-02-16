@@ -19,6 +19,7 @@ import { render, screen } from '@testing-library/react';
 
 import { VisibilityIcon } from './VisibilityIcon';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+
 import { Status } from 'src/shared/types/status';
 
 jest.mock('src/shared/components/image-button/ImageButton', () => {

@@ -33,7 +33,6 @@ import {
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
-
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import QuestionButton, {

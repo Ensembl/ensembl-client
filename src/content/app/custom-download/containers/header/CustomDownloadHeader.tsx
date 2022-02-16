@@ -16,15 +16,13 @@
 
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+
+import Select, { Option } from 'src/shared/components/select/Select';
 import {
   PrimaryButton,
   SecondaryButton
 } from 'src/shared/components/button/Button';
-
 import RoundButton from 'src/shared/components/round-button/RoundButton';
-
-import { RootState } from 'src/store';
-import Select, { Option } from 'src/shared/components/select/Select';
 
 import {
   getSelectedPreFilter,
@@ -37,7 +35,7 @@ import {
 
 import { getSelectedFilters } from '../../state/filters/filtersSelector';
 import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
-import JSONValue from 'src/shared/types/JSON';
+
 import {
   togglePreFiltersPanel,
   setShowPreview,
@@ -52,6 +50,9 @@ import {
   setIsLoadingResult,
   fetchPreviewResult
 } from 'src/content/app/custom-download/state/customDownloadActions';
+
+import JSONValue from 'src/shared/types/JSON';
+import { RootState } from 'src/store';
 
 import styles from './CustomDownloadHeader.scss';
 

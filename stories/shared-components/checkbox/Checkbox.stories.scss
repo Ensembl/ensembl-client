@@ -8,3 +8,12 @@
   display: grid;
   grid-template-columns: 210px 210px 210px;
 }
+
+.lightThemeWrapper {
+  padding: 0.6rem;
+}
+
+.darkThemeWrapper {
+  padding: 0.6rem;
+  background-color: $black;
+}

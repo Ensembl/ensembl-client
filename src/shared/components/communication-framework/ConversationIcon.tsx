@@ -20,8 +20,10 @@ import { useDispatch } from 'react-redux';
 import useCommonAnalytics from 'src/shared/hooks/useCommonAnalytics';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
-import { ReactComponent as ConversationImageIcon } from 'static/img/shared/icon_conversation.svg';
+
 import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
+
+import { ReactComponent as ConversationImageIcon } from 'static/icons/icon_conversation.svg';
 
 import styles from './ConversationIcon.scss';
 

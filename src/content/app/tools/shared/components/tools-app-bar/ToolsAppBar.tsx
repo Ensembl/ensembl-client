@@ -15,14 +15,16 @@
  */
 
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
+import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
@@ -30,9 +32,21 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 
 const ToolsAppBar = () => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
+  const speciesListIds = useSelector(getSelectedSpeciesIds);
+  const dispatch = useDispatch();
+
+  const speciesLozengeClick = (genomeId: string) => {
+    if (!speciesListIds.includes(genomeId)) {
+      dispatch(addSelectedSpecies({ genomeId }));
+    }
+  };
 
   const speciesTabs = speciesList.map((species, index) => (
-    <SelectedSpecies key={index} species={species} onClick={noop} />
+    <SelectedSpecies
+      key={index}
+      species={species}
+      onClick={() => speciesLozengeClick(species.genome_id)}
+    />
   ));
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;

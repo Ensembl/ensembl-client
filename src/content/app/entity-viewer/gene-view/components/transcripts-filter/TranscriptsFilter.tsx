@@ -154,11 +154,8 @@ const TranscriptsFilter = (props: Props) => {
     const checkboxes = filtersForColumn.map(([key, filter]) => (
       <Checkbox
         key={key}
-        classNames={{
-          unchecked: styles.checkboxUnchecked,
-          checked: styles.checkboxChecked
-        }}
-        labelClassName={styles.label}
+        theme="dark"
+        className={styles.checkbox}
         checked={filter.selected}
         label={filter.label}
         onChange={(selected) => onFilterChange(key, filter, selected)}
@@ -175,15 +172,11 @@ const TranscriptsFilter = (props: Props) => {
           <div className={styles.header}>Sort by</div>
           <div className={styles.sortContent}>
             <RadioGroup
-              classNames={{
-                label: styles.label,
-                radio: styles.radio,
-                radioChecked: styles.radioChecked,
-                wrapper: styles.buttonWrapper
-              }}
+              theme="dark"
               options={radioData}
               onChange={onSortingRuleChange}
               selectedOption={sortingRule}
+              className={styles.radioGroup}
             />
           </div>
         </div>

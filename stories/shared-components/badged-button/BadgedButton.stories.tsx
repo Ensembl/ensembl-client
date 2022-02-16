@@ -20,11 +20,13 @@ import noop from 'lodash/noop';
 import Roundbutton from 'src/shared/components/round-button/RoundButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { SecondaryButton } from 'src/shared/components/button/Button';
-import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
-import styles from './BadgedButton.stories.scss';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
+import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
+
 import { Status } from 'src/shared/types/status';
+
+import styles from './BadgedButton.stories.scss';
 
 const onClick = noop;
 

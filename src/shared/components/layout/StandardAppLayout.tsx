@@ -18,11 +18,12 @@ import React, { ReactNode, useEffect } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import Chevron from 'src/shared/components/chevron/Chevron';
+
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import styles from './StandardAppLayout.scss';
 

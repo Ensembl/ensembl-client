@@ -19,7 +19,6 @@ import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
@@ -32,6 +31,8 @@ import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import styles from './SpeciesPage.scss';
 

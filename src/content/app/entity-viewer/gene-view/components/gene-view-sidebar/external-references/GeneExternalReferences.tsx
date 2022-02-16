@@ -46,7 +46,7 @@ const GeneExternalReferences = () => {
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
-  const { data, isLoading } = useGeneExternalReferencesQuery(
+  const { currentData, isFetching } = useGeneExternalReferencesQuery(
     {
       geneId: geneId || '',
       genomeId: genomeId || ''
@@ -56,18 +56,18 @@ const GeneExternalReferences = () => {
     }
   );
 
-  if (isLoading) {
+  if (isFetching) {
     return <div>Loading...</div>;
   }
 
-  if (!data || !data.gene) {
+  if (!currentData || !currentData.gene) {
     return <div>No data to display</div>;
   }
 
   const externalReferencesGroups = buildExternalReferencesGroups(
-    data.gene.external_references
+    currentData.gene.external_references
   );
-  const { transcripts } = data.gene;
+  const { transcripts } = currentData.gene;
   const sortedTranscripts = defaultSort(transcripts);
 
   const clickHandler = (linkLabel: string) => {
@@ -81,13 +81,13 @@ const GeneExternalReferences = () => {
     <div>
       <section>
         <div className={styles.sectionContent}>
-          <span className={styles.geneSymbol}>{data.gene.symbol}</span>
-          <span>{data.gene.stable_id}</span>
+          <span className={styles.geneSymbol}>{currentData.gene.symbol}</span>
+          <span>{currentData.gene.stable_id}</span>
         </div>
       </section>
       <section>
         <div className={styles.sectionHead}>Gene</div>
-        {data.gene.external_references && (
+        {currentData.gene.external_references && (
           <div className={styles.sectionContent}>
             {renderExternalReferencesGroups(
               externalReferencesGroups,

@@ -52,7 +52,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
   const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
   const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
-  const { data } = useGetTrackPanelGeneQuery({
+  const { currentData } = useGetTrackPanelGeneQuery({
     genomeId,
     geneId
   });
@@ -73,7 +73,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
   }, [genomeBrowser]);
 
-  if (!data) {
+  if (!currentData) {
     return null;
   }
 
@@ -119,7 +119,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const { gene } = data;
+  const { gene } = currentData;
   let sortedTranscripts;
 
   if (isEnvironment([Environment.PRODUCTION])) {

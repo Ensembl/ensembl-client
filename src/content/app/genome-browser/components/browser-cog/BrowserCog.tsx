@@ -18,12 +18,14 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 
 import analyticsTracking from 'src/services/analytics-service';
-import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 
+import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
+import { ReactComponent as cogIcon } from 'static/icons/icon_settings.svg';
+
+import styles from './BrowserCogList.scss';
 
 export type BrowserCogProps = {
   cogActivated: boolean;
@@ -58,11 +60,6 @@ const BrowserCog = (props: BrowserCogProps) => {
     }
   }, [cogActivated]);
 
-  const imgInline = {
-    height: '18px',
-    width: '18px'
-  };
-
   const cogIconConfig = {
     description: 'Configure Track',
     icon: cogIcon
@@ -86,17 +83,16 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   return (
     <>
-      <div style={imgInline}>
-        {cogActivated ? (
-          <CloseButton onClick={toggleCog} />
-        ) : (
-          <ImageButton
-            description={cogIconConfig.description}
-            onClick={toggleCog}
-            image={cogIconConfig.icon}
-          />
-        )}
-      </div>
+      {cogActivated ? (
+        <CloseButton onClick={toggleCog} />
+      ) : (
+        <ImageButton
+          className={styles.browserCog}
+          description={cogIconConfig.description}
+          onClick={toggleCog}
+          image={cogIconConfig.icon}
+        />
+      )}
       {transition((style, item) => {
         return (
           item && (

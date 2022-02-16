@@ -21,7 +21,7 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
+import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
@@ -30,7 +30,7 @@ import styles from './ImageButton.stories.scss';
 const icon = {
   image: DownloadIcon,
   imageName: 'ImageButton',
-  imagePath: 'static/img/track-panel/download.svg',
+  imagePath: 'static/icons/download.svg',
   imageClass: ''
 };
 

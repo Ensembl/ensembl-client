@@ -1,8 +1,25 @@
 @import 'src/styles/common';
 
-.wrapper {
-  display: grid;
-  grid-template-columns: 38px 100%;
+.radioGroup {
+  display: flex;
+}
+
+.radioGroupColumn {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.radioGroupRow {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 30px;
+  row-gap: 10px;
+}
+
+.radioGroupItem {
+  display: inline-grid;
+  grid-template-columns: auto max-content;
+  column-gap: 12px;
 }
 
 .input {
@@ -11,25 +28,26 @@
 }
 
 .radio {
-  justify-self: center;
-  height: 15px;
-  width: 15px;
+  position: relative;
   border-radius: 50%;
-  border: 1px solid $grey;
-  background-color: none;
-  margin-top: 7px;
   cursor: pointer;
+  justify-self: center;
+  margin-top: var(--radio-margin-top, 9px);
+  background-color: var(--radio-background-color, #{$white});
+  border: 1px solid var(--radio-border-color, #{$grey});
+  height: var(--radio-diameter, 13px);
+  width: var(--radio-diameter, 13px);
 
   &Checked {
-    background-color: $white;
+    background-color: var(--radio-checked-background-color, #{$white});
 
     &:after {
       content: '';
-      float: left;
+      position: absolute;
       margin-top: 2px;
       margin-left: 2px;
-      width: 9px;
-      height: 9px;
+      height: var(--radio-checked-diameter, 7px);
+      width: var(--radio-checked-diameter, 7px);
       border-radius: 50%;
       background: $green;
     }
@@ -37,9 +55,41 @@
 }
 
 .label {
+  color: var(--radio-label-color, #{$black});
+  font-size: var(--radio-label-font-size, 12px);
+  font-weight: var(--radio-label-font-weight, #{$light});
   line-height: 30px;
-  font-size: 14px;
   padding-right: 2px;
   word-wrap: break-word;
+  user-select: none;
   cursor: pointer;
+}
+
+.themeLight {
+  .label {
+    font-size: var(--radio-label-font-size, 13px);
+    font-weight: var(--radio-label-font-weight, #{$normal});
+  }
+}
+
+.themeDark {
+  .radio {
+    background-color: var(--radio-background-color, transparent);
+    border-color: var(--radio-border-color, #{$dark-grey});
+    height: var(--radio-diameter, 12px);
+    width: var(--radio-diameter, 12px);
+
+    &Checked {
+      background-color: var(--radio-checked-background-color, #{$white});
+
+      &::after {
+        height: var(--radio-checked-diameter, 6px);
+        width: var(--radio-checked-diameter, 6px);
+      }
+    }
+  }
+
+  .label {
+    color: var(--radio-label-color, #{$white});
+  }
 }

@@ -1,0 +1,34 @@
+.topLevel {
+  display: flex;
+  gap: 1rem;
+}
+
+.mainSettings {
+  display: flex;
+  gap: 1rem;
+}
+
+.mainSettings > * {
+  flex: 0 0 auto;
+}
+
+.mainSettings select {
+  flex: 0 0 auto;
+}
+
+.select label {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+}
+
+.bottomLevel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.6rem;
+}
+
+.bottomLevel > * {
+  flex-basis: auto;
+  white-space: nowrap;
+}

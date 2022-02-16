@@ -17,9 +17,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
+// NOTE: Remove this comment before merging
 // the shared close.svg file in static/img/shared folder has inline style with fill
 // TODO: consider moving the close.svg imported below back to shared folder when all our components use the CloseButton consistently
-import { ReactComponent as CloseIcon } from './close.svg';
+import { ReactComponent as CloseIcon } from 'static/icons/icon_close.svg';
 
 import styles from './CloseButton.scss';
 

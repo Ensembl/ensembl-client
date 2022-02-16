@@ -30,6 +30,7 @@ import {
   browserNavConfig,
   BrowserNavItem
 } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
+
 import styles from './BrowserNavBarControls.scss';
 
 export const BrowserNavBarControls = () => {

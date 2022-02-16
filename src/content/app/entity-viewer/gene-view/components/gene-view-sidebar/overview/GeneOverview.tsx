@@ -37,7 +37,7 @@ const GeneOverview = () => {
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
-  const { data, isLoading } = useGeneOverviewQuery(
+  const { currentData, isFetching } = useGeneOverviewQuery(
     {
       geneId: geneId || '',
       genomeId: genomeId as string
@@ -47,15 +47,15 @@ const GeneOverview = () => {
     }
   );
 
-  if (isLoading) {
+  if (isFetching) {
     return <div>Loading...</div>;
   }
 
-  if (!data || !data.gene) {
+  if (!currentData || !currentData.gene) {
     return <div>No data to display</div>;
   }
 
-  const { gene } = data;
+  const { gene } = currentData;
   const {
     metadata: { name: geneNameMetadata }
   } = gene;

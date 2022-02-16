@@ -58,7 +58,7 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
   });
@@ -67,7 +67,7 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects();
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeFalsy();
 
@@ -77,7 +77,7 @@ describe('<CheckboxWithSelects />', () => {
   it('displays one Select when the checkbox is checked', () => {
     const { container } = renderCheckboxWithSelects();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLElement);
 
@@ -90,7 +90,7 @@ describe('<CheckboxWithSelects />', () => {
     });
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });
@@ -98,7 +98,7 @@ describe('<CheckboxWithSelects />', () => {
   it('does not display the remove button next to the Select if no option is selected ', () => {
     const { container } = renderCheckboxWithSelects();
 
-    const checkboxElement = container.querySelector('.defaultCheckbox');
+    const checkboxElement = container.querySelector('.checkboxDefault');
 
     userEvent.click(checkboxElement as HTMLElement);
 

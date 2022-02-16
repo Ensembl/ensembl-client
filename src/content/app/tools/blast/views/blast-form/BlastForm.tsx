@@ -26,6 +26,10 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
+import BlastSettings from 'src/content/app/tools/blast/components/blast-settings/BlastSettings';
+
+import BlastSpeciesSelectorHeader from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelectorHeader';
+import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelector';
 
 import styles from './BlastForm.scss';
 
@@ -33,7 +37,9 @@ const BlastForm = () => {
   return (
     <div className={styles.container}>
       <ToolsAppBar />
-      <ToolsTopBar>Various toggles go here</ToolsTopBar>
+      <ToolsTopBar>
+        <BlastSettings />
+      </ToolsTopBar>
       <Main />
     </div>
   );
@@ -57,8 +63,9 @@ const MainLarge = () => {
           <BlastInputSequencesHeader compact={false} />
           <BlastInputSequences />
         </div>
-        <div>
-          <SpeciesSelectorPlaceholder />
+        <div className={styles.speciesSelectorContainer}>
+          <BlastSpeciesSelectorHeader compact={false} />
+          <BlastSpeciesSelector />
         </div>
       </div>
     </div>
@@ -76,16 +83,11 @@ const MainSmall = () => {
           <BlastInputSequences />
         </>
       ) : (
-        <SpeciesSelectorPlaceholder />
+        <>
+          <BlastSpeciesSelectorHeader compact={true} />
+          <BlastSpeciesSelector />
+        </>
       )}
-    </div>
-  );
-};
-
-const SpeciesSelectorPlaceholder = () => {
-  return (
-    <div className={styles.speciesSelectorPlaceholder}>
-      Species will go here
     </div>
   );
 };
