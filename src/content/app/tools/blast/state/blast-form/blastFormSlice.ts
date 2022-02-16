@@ -98,19 +98,15 @@ const blastFormSlice = createSlice({
       state.sequences = sequences;
       state.shouldAppendEmptyInput = Boolean(!sequences.length);
     },
-    updateSelectedSpecies(
-      state,
-      action: PayloadAction<{ isChecked: boolean; genomeId: string }>
-    ) {
-      const { genomeId, isChecked } = action.payload;
-
-      if (isChecked) {
-        state.selectedSpecies.push(genomeId);
-      } else {
-        state.selectedSpecies = state.selectedSpecies.filter(
-          (item) => item !== genomeId
-        );
-      }
+    addSelectedSpecies(state, action: PayloadAction<{ genomeId: string }>) {
+      const { genomeId } = action.payload;
+      state.selectedSpecies.push(genomeId);
+    },
+    removeSelectedSpecies(state, action: PayloadAction<{ genomeId: string }>) {
+      const { genomeId } = action.payload;
+      state.selectedSpecies = state.selectedSpecies.filter(
+        (item) => item !== genomeId
+      );
     },
     clearSelectedSpecies(state) {
       state.selectedSpecies = [];
@@ -233,7 +229,8 @@ export const {
   updateEmptyInputDisplay,
   switchToSpeciesStep,
   switchToSequencesStep,
-  updateSelectedSpecies,
+  addSelectedSpecies,
+  removeSelectedSpecies,
   clearSelectedSpecies,
   setSequenceType,
   setBlastDatabase,
