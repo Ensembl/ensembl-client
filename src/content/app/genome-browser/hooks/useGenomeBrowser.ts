@@ -19,7 +19,7 @@ import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
-} from 'ensembl-genome-browser';
+} from '@ensembl/ensembl-genome-browser';
 
 import config from 'config';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';

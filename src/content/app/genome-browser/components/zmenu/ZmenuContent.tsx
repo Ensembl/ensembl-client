@@ -27,7 +27,7 @@ import {
   Markup,
   ZmenuContentTranscript,
   ZmenuContentGene
-} from 'ensembl-genome-browser';
+} from '@ensembl/ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 

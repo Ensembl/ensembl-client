@@ -41,7 +41,7 @@
     "core-js": "3.20.2",
     "cross-fetch": "3.1.4",
     "d3": "6.7.0",
-    "ensembl-genome-browser": "git+https://github.com/Ensembl/ensembl-genome-browser.git#c6361c640089321733a6174b013f153ee4b8c06a",
+    "@ensembl/ensembl-genome-browser": "0.2.0alpha",
     "express": "4.17.2",
     "filesize": "8.0.6",
     "graphql": "15.5.1",

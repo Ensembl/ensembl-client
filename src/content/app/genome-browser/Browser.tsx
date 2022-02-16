@@ -18,7 +18,7 @@ import React, { useEffect, useState, memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
-import EnsemblGenomeBrowser from 'ensembl-genome-browser';
+import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';

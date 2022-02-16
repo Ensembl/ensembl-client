@@ -16,7 +16,7 @@
 
 import React, { memo } from 'react';
 
-import { OutgoingAction } from 'ensembl-genome-browser';
+import { OutgoingAction } from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 

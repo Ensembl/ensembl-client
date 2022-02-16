@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
-import { IncomingActionType } from 'ensembl-genome-browser';
+import { IncomingActionType } from '@ensembl/ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 

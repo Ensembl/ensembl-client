@@ -31,7 +31,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuCreatePayload } from 'ensembl-genome-browser';
+import { ZmenuCreatePayload } from '@ensembl/ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
