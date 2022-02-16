@@ -15,65 +15,21 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import {
-  setSequences,
-  setSequenceType
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import {
-  getSequences,
-  getSelectedSequenceType,
-  getSequenceSelectionMode,
-  getEmptyInputVisibility
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import useBlastInputSequences from './useBlastInputSequences';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-import { guessSequenceType } from 'src/content/app/tools/shared/helpers/sequenceTypeGuesser';
 
 import BlastInputSequence from './BlastInputSequence';
 
-import untypedBlastSettingsConfig from 'src/content/app/tools/blast/components/blast-settings/blastSettingsConfig.json';
-
-import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
-
 import styles from './BlastInputSequences.scss';
 
-const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
-
 const BlastInputSequences = () => {
-  const sequences = useSelector(getSequences);
-  const sequenceType = useSelector(getSelectedSequenceType);
-  const sequenceSelectionMode = useSelector(getSequenceSelectionMode);
+  const { sequences, updateSequences } = useBlastInputSequences();
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
-  const dispatch = useDispatch();
-
-  const updateSequences = (sequences: ParsedInputSequence[]) => {
-    dispatch(setSequences({ sequences }));
-    updateSequenceType(sequences);
-  };
-
-  const updateSequenceType = (sequences: ParsedInputSequence[]) => {
-    if (sequenceSelectionMode === 'manual') {
-      return;
-    }
-
-    const guessedSequenceType = sequences.length
-      ? guessSequenceType(sequences[0].value)
-      : 'dna';
-
-    if (guessedSequenceType !== sequenceType) {
-      dispatch(
-        setSequenceType({
-          sequenceType: guessedSequenceType,
-          isAutomatic: true,
-          config: blastSettingsConfig
-        })
-      );
-    }
-  };
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);

@@ -17,29 +17,20 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import {
-  getSelectedSequenceType,
-  getSequences,
-  getEmptyInputVisibility
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import {
-  setSequenceType,
-  setSequences,
   updateEmptyInputDisplay,
   switchToSpeciesStep
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import useBlastInputSequences from './useBlastInputSequences';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
-import untypedBlastSettingsConfig from 'src/content/app/tools/blast/components/blast-settings/blastSettingsConfig.json';
-
-import type {
-  SequenceType,
-  BlastSettingsConfig
-} from 'src/content/app/tools/blast/types/blastSettings';
+import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequences.scss';
 
@@ -47,32 +38,14 @@ export type Props = {
   compact: boolean;
 };
 
-const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
-
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
-  const sequenceType = useSelector(getSelectedSequenceType);
-  const sequences = useSelector(getSequences);
+  const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
+    useBlastInputSequences();
+
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const dispatch = useDispatch();
-
-  const onSequenceTypeChange = (sequenceType: SequenceType) => {
-    dispatch(
-      setSequenceType({
-        sequenceType,
-        config: blastSettingsConfig
-      })
-    );
-  };
-
-  const onClearAll = () => {
-    dispatch(
-      setSequences({
-        sequences: []
-      })
-    );
-  };
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
@@ -91,10 +64,10 @@ const BlastInputSequencesHeader = (props: Props) => {
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
-        onChange={onSequenceTypeChange}
+        onChange={updateSequenceType}
       />
       <div className={styles.headerGroup}>
-        <span className={styles.clearAll} onClick={onClearAll}>
+        <span className={styles.clearAll} onClick={clearAllSequences}>
           Clear all
         </span>
         <AddAnotherSequence
