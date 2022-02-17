@@ -16,9 +16,12 @@
 
 import faker from 'faker';
 import {
-  ZmenuCreatePayload,
   Markup,
-  ZmenuFeatureType
+  ZmenuFeatureType,
+  ZmenuContentTranscript,
+  ZmenuContentGene,
+  ZmenuCreatePayload,
+  ZmenuPayloadVarietyType
 } from '@ensembl/ensembl-genome-browser';
 
 import {
@@ -72,15 +75,12 @@ export const createTrackConfigNames = () => ({
   'track:variant': true
 });
 
-export const createZmenuPayload = (): ZmenuCreatePayload => {
+export const createZmenuContentPayload = (): {
+  features: (ZmenuContentTranscript | ZmenuContentGene)[];
+  featureId: string;
+} => {
   return {
-    anchor_coordinates: {
-      x: 490,
-      y: 80
-    },
-    id: 'transcript_id.1',
-    unversioned_id: 'transcript_id',
-    transcripts: [
+    features: [
       {
         data: [
           [
@@ -107,10 +107,7 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
           type: ZmenuFeatureType.TRANSCRIPT,
           gene_id: 'gene_id'
         }
-      }
-    ],
-
-    genes: [
+      },
       {
         data: [
           [
@@ -130,6 +127,20 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
           track: 'track_id',
           type: ZmenuFeatureType.GENE
         }
+      }
+    ],
+    featureId: 'transcript_id'
+  };
+};
+
+export const createZmenuPayload = (): ZmenuCreatePayload => {
+  return {
+    x: 100,
+    y: 100,
+    content: [...createZmenuContentPayload().features],
+    variety: [
+      {
+        type: ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT
       }
     ]
   };

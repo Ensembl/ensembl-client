@@ -17,6 +17,7 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
@@ -33,6 +34,15 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts',
+  () => ({
+    changeHighlightedTrackId: jest.fn(() => ({
+      type: 'change-track-highlight'
+    }))
+  })
+);
+
 jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 jest.mock('./ZmenuContent', () => () => (
@@ -46,10 +56,11 @@ const defaultProps: ZmenuProps = {
   browserRef: {
     current: document.createElement('div')
   },
-  content: createZmenuPayload()
+  zmenuId: '1',
+  payload: createZmenuPayload()
 };
 
-const mockStore = configureMockStore();
+const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
 const renderComponent = () => {
   store = mockStore();
@@ -60,10 +71,6 @@ const renderComponent = () => {
   );
 };
 describe('<Zmenu />', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   describe('rendering', () => {
     test('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();

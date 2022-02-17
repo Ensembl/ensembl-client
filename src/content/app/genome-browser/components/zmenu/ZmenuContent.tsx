@@ -22,7 +22,6 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import ZmenuAppLinks from './ZmenuAppLinks';
 
 import {
-  ZmenuCreatePayload,
   ZmenuContentItem as ZmenuContentItemType,
   Markup,
   ZmenuContentTranscript,
@@ -32,32 +31,13 @@ import {
 import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
-  content: ZmenuCreatePayload;
+  features: (ZmenuContentTranscript | ZmenuContentGene)[];
+  featureId: string;
   destroyZmenu: () => void;
 };
 
 export const ZmenuContent = (props: ZmenuContentProps) => {
-  const { content } = props;
-
-  const { genes, transcripts, unversioned_id: unversionedId, id } = content;
-
-  const transcript = transcripts.find(
-    (transcript: ZmenuContentTranscript) =>
-      transcript.metadata.transcript_id === id
-  );
-
-  if (!transcript) {
-    return null;
-  }
-  const relatedGene = genes.find(
-    (gene: ZmenuContentGene) => gene.metadata.id === transcript.metadata.gene_id
-  );
-
-  const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [transcript];
-  if (relatedGene) {
-    features.push(relatedGene);
-  }
-  const featureId = `gene:${unversionedId}`;
+  const { features, featureId } = props;
 
   const renderedContent = (
     <>

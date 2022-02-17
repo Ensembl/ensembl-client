@@ -24,7 +24,7 @@ import configureMockStore from 'redux-mock-store';
 
 import {
   createMockBrowserState,
-  createZmenuPayload
+  createZmenuContentPayload
 } from 'tests/fixtures/browser';
 
 import {
@@ -56,7 +56,7 @@ const mockStoreCreator = configureMockStore([thunk]);
 const mockStore = mockStoreCreator(() => mockState);
 
 const defaultZmenuContentProps: ZmenuContentProps = {
-  content: createZmenuPayload(),
+  ...createZmenuContentPayload(),
   destroyZmenu: jest.fn()
 };
 
@@ -89,8 +89,7 @@ describe('<ZmenuContent />', () => {
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
       const { container } = renderZmenuContent();
-      const zmenuContentLine =
-        defaultZmenuContentProps.content.transcripts[0].data[0];
+      const zmenuContentLine = defaultZmenuContentProps.features[0].data[0];
 
       const renderedContentBlocks = container
         .querySelectorAll('.zmenuContentLine')[0]
