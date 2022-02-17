@@ -38,7 +38,7 @@ class ErrorService implements ErrorServiceInterface {
   }
 
   private initializeReportingService() {
-    if (config.isProduction) {
+    if (config.shouldReportErrors) {
       Sentry.init({
         dsn: 'https://ab4205dce9c047588d30ddfaafd0655a@sentry.io/1507303',
         ignoreErrors: [
