@@ -120,7 +120,7 @@ const SequenceSwitcher = (props: {
       options={options}
       direction="row"
       selectedOption={props.sequenceType}
-      onChange={(val) => props.onChange(val as unknown as SequenceType)}
+      onChange={(val) => props.onChange(val as SequenceType)}
     />
   );
 };

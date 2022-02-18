@@ -30,15 +30,16 @@ import blastFormReducer, {
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
+const rootReducer = combineReducers({
+  blast: combineReducers({
+    blastForm: blastFormReducer
+  })
+});
+
 const getWrapper = (
   { state }: { state?: Partial<BlastFormState> } = { state: {} }
 ) => {
   const blastFormState = Object.assign({}, initialBlastFormState, state);
-  const rootReducer = combineReducers({
-    blast: combineReducers({
-      blastForm: blastFormReducer
-    })
-  });
   const initialState = {
     blast: { blastForm: blastFormState }
   };
@@ -232,14 +233,6 @@ describe('useBlastInputSequences', () => {
       const { result } = renderHook(() => useBlastInputSequences(), {
         wrapper
       });
-
-      // initial values
-      expect(getSelectedSequenceType(store.getState() as any)).toEqual(
-        'protein'
-      );
-      expect(getSequenceSelectionMode(store.getState() as any)).toEqual(
-        'manual'
-      );
 
       const { clearAllSequences } = result.current;
       clearAllSequences();
