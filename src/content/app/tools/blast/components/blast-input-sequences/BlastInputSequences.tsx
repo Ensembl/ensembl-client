@@ -28,7 +28,7 @@ import BlastInputSequence from './BlastInputSequence';
 import styles from './BlastInputSequences.scss';
 
 const BlastInputSequences = () => {
-  const { sequences, updateSequences } = useBlastInputSequences();
+  const { sequences, sequenceType, updateSequences } = useBlastInputSequences();
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const onSequenceAdded = (input: string, index: number | null) => {
@@ -58,6 +58,7 @@ const BlastInputSequences = () => {
             key={index}
             index={index}
             sequence={sequence}
+            sequenceType={sequenceType}
             title={`Sequence ${index + 1}`}
             onCommitted={onSequenceAdded}
             onRemoveSequence={onRemoveSequence}
@@ -66,6 +67,7 @@ const BlastInputSequences = () => {
         {shouldAppendEmptyInput && (
           <BlastInputSequence
             title={`Sequence ${sequences.length + 1}`}
+            sequenceType={sequenceType}
             onCommitted={onSequenceAdded}
             onRemoveSequence={onRemoveSequence}
           />

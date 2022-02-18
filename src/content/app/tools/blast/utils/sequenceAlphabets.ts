@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import difference from 'lodash/difference';
-
 /**
   The nucleotide codes are:
 
@@ -48,10 +46,25 @@ import difference from 'lodash/difference';
   (From NCBI Blast docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
  */
 
-const certainAminoAcids = 'ACDEFGHIKLMNPQRSTUVWY';
-const ambiguousAminoAcids = 'XBZ';
-const certainNucleotides = 'ACGTU';
-const ambiguousNucleotides = 'BDHKMNRSVWY';
+import difference from 'lodash/difference';
+
+export const certainAminoAcids = 'ACDEFGHIKLMNPQRSTUVWY';
+export const ambiguousAminoAcids = 'XBZ';
+export const certainNucleotides = 'ACGTU';
+export const ambiguousNucleotides = 'BDHKMNRSVWY';
+
+export const aminoAcidAlphabet = [
+  certainAminoAcids,
+  ambiguousAminoAcids,
+  '*', // Stop
+  '-' // Gap
+].join('');
+
+export const nucleotideAlphabet = [
+  certainNucleotides,
+  ambiguousNucleotides,
+  '-' // Gap
+].join('');
 
 // While the amino acid alphabet includes all characters from the nucleotide alphabet,
 // it also contains some characters that are unique to the amino acid alphabet
@@ -59,51 +72,3 @@ export const aminoAcidOnlyCodes = difference(
   `${certainAminoAcids}${ambiguousAminoAcids}`.split(''),
   `${certainNucleotides}${ambiguousNucleotides}`.split('')
 ).join('');
-
-const aminoAcidOnlyRegex = new RegExp(`[${aminoAcidOnlyCodes}]`, 'i');
-
-const certainNucleotidesSet = new Set(Array.from(certainNucleotides));
-
-// guess the type of a single sequence
-export const guessSequenceType = (sequence: string) => {
-  sequence = cleanUpSequence(sequence);
-
-  if (hasUniqueAminoAcidCharacters(sequence)) {
-    return 'protein';
-  }
-
-  // an arbitrary threshold meaning that if 90% or more characters in a sequence
-  // match unambiguous nucleotide characters, then guess that it's a nucleic acid
-  const nucleotideThreshold = 0.9;
-
-  const nucleotideCandidateCount = sequence
-    .split('')
-    .reduce(
-      (count, character) =>
-        certainNucleotidesSet.has(character) ? count + 1 : count,
-      0
-    );
-  return nucleotideCandidateCount / sequence.length >= nucleotideThreshold
-    ? 'dna'
-    : 'protein';
-};
-
-// guess the type of multiple sequences assuming that they are of the same type
-export const guessSequencesType = (sequences: string[]) => {
-  return sequences.some((sequence) => guessSequenceType(sequence) === 'protein')
-    ? 'protein'
-    : 'dna';
-};
-
-const hasUniqueAminoAcidCharacters = (sequence: string) => {
-  return aminoAcidOnlyRegex.test(sequence);
-};
-
-const cleanUpSequence = (sequence: string) => {
-  // Remove the following from the sequence:
-  // - any non-letter characters
-  // - the letter N (could be an amino acid or a common ambiguous nucleotide code; will impact the threshold)
-  // - the letter J (according to NCBI, not included in either the nucleotide or the amino acid alphabet)
-  const cleanupRegExp = /[^A-Z]|[NJ]/gi;
-  return sequence.replace(cleanupRegExp, '');
-};

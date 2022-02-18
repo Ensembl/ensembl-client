@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  guessSequenceType,
-  guessSequencesType,
-  aminoAcidOnlyCodes
-} from './sequenceTypeGuesser';
+import { guessSequenceType, guessSequencesType } from '../sequenceTypeGuesser';
+import { aminoAcidOnlyCodes } from '../sequenceAlphabets';
 
 describe('guessSequenceType', () => {
   it('guesses a protein sequence', () => {

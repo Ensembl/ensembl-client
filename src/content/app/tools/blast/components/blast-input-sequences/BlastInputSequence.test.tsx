@@ -25,7 +25,8 @@ import BlastInputSequence from './BlastInputSequence';
 const testInput = 'AGCT'; // it shouldn't even matter for testing purposes
 
 const commonProps = {
-  onCommitted: jest.fn()
+  onCommitted: jest.fn(),
+  sequenceType: 'dna' as const
 };
 
 describe('<BlastInputSequence />', () => {

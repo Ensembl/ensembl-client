@@ -28,7 +28,7 @@ import {
   getSequenceSelectionMode
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import { guessSequenceType } from 'src/content/app/tools/shared/helpers/sequenceTypeGuesser';
+import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
 
 import untypedBlastSettingsConfig from 'src/content/app/tools/blast/components/blast-settings/blastSettingsConfig.json';
 

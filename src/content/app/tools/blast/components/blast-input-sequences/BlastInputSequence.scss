@@ -37,11 +37,20 @@ $border: 1px solid $grey;
 }
 
 .textarea {
-  border: $border;
   font-family: $font-family-monospace;
   font-size: 12px;
   letter-spacing: 0.1rem;
   white-space: nowrap;
+}
+
+.textarea:not(.textareaInvalid) {
+  &:focus {
+    --textarea-border-color: #{$blue};
+  }
+}
+
+.textareaInvalid {
+  --textarea-border-color: #{$red};
 }
 
 .deleteButtonWrapper {

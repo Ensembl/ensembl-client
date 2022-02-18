@@ -25,6 +25,10 @@ import React, {
 import classNames from 'classnames';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+import {
+  hasSufficientLength,
+  hasValidSequenceCharacters
+} from 'src/content/app/tools/blast/utils/sequenceValidators';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import {
@@ -35,20 +39,29 @@ import {
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequence.scss';
 
 type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;
+  sequenceType: SequenceType;
   title?: string;
   onCommitted: (input: string, index: number | null) => void;
   onRemoveSequence?: (index: number | null) => void;
 };
 
 const BlastInputSequence = (props: Props) => {
-  const { index = null, onCommitted, sequence = { value: '' }, title } = props;
+  const {
+    index = null,
+    onCommitted,
+    sequence = { value: '' },
+    sequenceType,
+    title
+  } = props;
   const [input, setInput] = useState(toFasta(sequence));
+  const [isFocused, setIsFocused] = useState(false);
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -92,8 +105,13 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
+  const onFocus = () => {
+    setIsFocused(true);
+  };
+
   const onBlur = (event: FocusEvent) => {
     const { relatedTarget } = event;
+    setIsFocused(false);
 
     if (relatedTarget !== deleteButtonRef.current) {
       onCommitted(input, index);
@@ -110,8 +128,16 @@ const BlastInputSequence = (props: Props) => {
     }
   };
 
+  const isInputValid = input
+    ? checkSequenceValidity(input, sequenceType)
+    : true; // treat empty input as valid
+
   const inputBoxClassnames = classNames(styles.inputSequenceBox, {
     [styles.inputSequenceBoxFileOver]: isFileOver
+  });
+
+  const textareaClasses = classNames(styles.textarea, {
+    [styles.textareaInvalid]: !isInputValid
   });
 
   return (
@@ -128,16 +154,30 @@ const BlastInputSequence = (props: Props) => {
         <Textarea
           ref={textareaRef}
           value={input}
-          className={styles.textarea}
-          placeholder="Paste a nucleotide or protein sequence"
+          className={textareaClasses}
+          placeholder="Paste plain text or FASTA sequence of at least 5 characters"
           onChange={onChange}
           onPaste={onPaste}
+          onFocus={onFocus}
           onBlur={onBlur}
           resizable={false}
         />
-        {!input && <Upload transformTo="text" onUpload={onFileDrop} />}
+        {!input && !isFocused && (
+          <Upload transformTo="text" onUpload={onFileDrop} />
+        )}
       </div>
     </div>
+  );
+};
+
+const checkSequenceValidity = (
+  sequence: string,
+  sequenceType: SequenceType
+) => {
+  sequence = sequence.replace(/>.*/, '').replaceAll(/\s/g, '');
+  return (
+    hasSufficientLength(sequence) &&
+    hasValidSequenceCharacters(sequence, sequenceType)
   );
 };
 
