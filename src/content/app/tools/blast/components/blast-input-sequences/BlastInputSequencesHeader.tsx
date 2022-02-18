@@ -17,19 +17,20 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import {
-  getSequences,
-  getEmptyInputVisibility
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import {
-  setSequences,
   updateEmptyInputDisplay,
   switchToSpeciesStep
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
+import useBlastInputSequences from './useBlastInputSequences';
+
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
+import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+
+import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequences.scss';
 
@@ -39,18 +40,12 @@ export type Props = {
 
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
-  const sequences = useSelector(getSequences);
+  const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
+    useBlastInputSequences();
+
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const dispatch = useDispatch();
-
-  const onClearAll = () => {
-    dispatch(
-      setSequences({
-        sequences: []
-      })
-    );
-  };
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
@@ -67,8 +62,12 @@ const BlastInputSequencesHeader = (props: Props) => {
         <span className={styles.sequenceCounter}>{sequences.length}</span>
         <span className={styles.maxSequences}>of 30</span>
       </div>
+      <SequenceSwitcher
+        sequenceType={sequenceType}
+        onChange={updateSequenceType}
+      />
       <div className={styles.headerGroup}>
-        <span className={styles.clearAll} onClick={onClearAll}>
+        <span className={styles.clearAll} onClick={clearAllSequences}>
           Clear all
         </span>
         <AddAnotherSequence
@@ -99,6 +98,30 @@ const AddAnotherSequence = (props: AddAnotherSequenceProps) => {
       <span className={styles.addSequenceLabel}>Add another sequence</span>
       <PlusButton onClick={props.onAdd} disabled={props.disabled} />
     </div>
+  );
+};
+
+const SequenceSwitcher = (props: {
+  sequenceType: string;
+  onChange: (sequenceType: SequenceType) => void;
+}) => {
+  const options: { label: string; value: SequenceType }[] = [
+    {
+      label: 'Nucleotide',
+      value: 'dna'
+    },
+    {
+      label: 'Protein',
+      value: 'protein'
+    }
+  ];
+  return (
+    <RadioGroup
+      options={options}
+      direction="row"
+      selectedOption={props.sequenceType}
+      onChange={(val) => props.onChange(val as SequenceType)}
+    />
   );
 };
 
