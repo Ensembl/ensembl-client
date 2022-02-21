@@ -70,9 +70,9 @@ export const GroupedOptionsStory = () => {
   const options2 = createSimpleOptions(3);
   const options3 = createSimpleOptions(4);
   const optionGroups = [
-    { options: options1, tite: 'Group 1' },
-    { options: options2, tite: 'Group 2' },
-    { options: options3, tite: 'Group 3' }
+    { options: options1, title: 'Group 1' },
+    { options: options2, title: 'Group 2' },
+    { options: options3, title: 'Group 3' }
   ];
 
   return <SimpleSelect optionGroups={optionGroups} />;
