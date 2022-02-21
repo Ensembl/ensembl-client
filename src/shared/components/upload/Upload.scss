@@ -1,27 +1,46 @@
 @import 'src/styles/common';
+@import 'uploadConstants';
 
-.defaultUpload {
+.upload {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: var(--drop-zone-height, #{$uploadButtonTallerHeight});
+  width: var(--drop-zone-width, 200px);
+  background-color: var(--drop-zone-bg-color, #{$white});
+  position: relative;
   border: 1px dashed $blue;
   color: $blue;
-  display: inline-block;
-  position: relative;
-  padding: 15px 27px;
   cursor: pointer;
+  user-select: none;
   transition: color 0.4s, border-color 0.4s, background-color 0.4s;
 }
 
-.defaultUploadActive {
-  transition: background-color 0.4s;
-  background-color: rgba(51, 173, 255, 0.2);
+.uploadIcon {
+  width: 32px;
+  height: 32px;
+  fill: $blue;
 }
 
-.disabledUpload {
+// this will prevent dragenter and dragleave events emitted by children of the drop area
+// (although it doesn't remove the need for a javascript solution when other components are used as drop areas)
+.upload > * {
+  pointer-events: none;
+}
+
+.uploadDragOver {
+  background-color: var(--drop-zone-bg-color, #{$highlightedUploadBackground});
+}
+
+.uploadDisabled {
   border: 1px dashed $grey;
   color: $grey;
-  display: inline-block;
-  padding: 15px 27px;
-  user-select: none;
-  transition: color 0.4s, border-color 0.4s;
+  pointer-events: none;
+}
+
+.uploadDisabled .uploadIcon {
+  fill: $grey;
 }
 
 .fileInput {
@@ -35,4 +54,10 @@
 
 .defaultUpload:focus-within {
   background: 1px dashed $black;
+}
+
+.label {
+  width: var(--upload-label-width, #{$uploadTwoLineLabelWidth});
+  font-size: 12px; // make customizable?
+  text-align: center;
 }

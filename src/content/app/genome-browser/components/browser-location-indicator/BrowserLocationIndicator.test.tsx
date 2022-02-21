@@ -20,6 +20,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
+import set from 'lodash/fp/set';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -41,13 +42,24 @@ const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
 const endPosition =
   startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
 
+const circularChrName = faker.lorem.word();
+
 const mockState = {
   browser: {
     browserGeneral: {
       actualChrLocations: {
-        human: [chrName, startPosition, endPosition] as ChrLocation
+        human: [chrName, startPosition, endPosition] as ChrLocation,
+        ecoli: [circularChrName, startPosition, endPosition] as ChrLocation
       },
       activeGenomeId: 'human'
+    }
+  },
+  genome: {
+    genomeKaryotype: {
+      genomeKaryotypeData: {
+        human: [{ is_circular: false, name: chrName }],
+        ecoli: [{ is_circular: true, name: circularChrName }]
+      }
     }
   }
 };
@@ -71,6 +83,17 @@ describe('BrowserLocationIndicator', () => {
       const { container } = renderComponent();
       const renderedName = container.querySelector('.chrCode');
       expect(renderedName?.textContent).toBe(chrName);
+    });
+
+    it('displays circular chromosome', () => {
+      const newstate = set(
+        'browser.browserGeneral.activeGenomeId',
+        'ecoli',
+        mockState
+      );
+      const { container } = renderComponent(newstate);
+      const circularIndicator = container.querySelector('.circularIndicator');
+      expect(circularIndicator).toBeTruthy();
     });
 
     it('displays location', () => {

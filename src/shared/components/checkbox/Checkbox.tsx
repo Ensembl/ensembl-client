@@ -19,70 +19,81 @@ import classNames from 'classnames';
 
 import styles from './Checkbox.scss';
 
-type ClassNames = Partial<{
-  checkboxHolder: string;
-  checked: string;
-  unchecked: string;
-  disabled: string;
-}>;
+type Theme = 'lighter' | 'light' | 'dark';
 
 type WithoutLabelProps = {
   onChange: (status: boolean) => void;
-  classNames?: ClassNames;
   disabled?: boolean;
   checked: boolean;
+  theme?: Theme;
+  className?: string; // will only apply to the outermost element of the component
 };
 
 type WithLabelProps = WithoutLabelProps & {
   label: string;
-  labelClassName?: string;
 };
 
 export type CheckboxProps = WithLabelProps | WithoutLabelProps;
 
-const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
+const hasLabel = (props: CheckboxProps): props is WithLabelProps => {
   return 'label' in props;
 };
 
+const getThemeClasses = (theme: Theme = 'light') => {
+  if (theme === 'lighter') {
+    return styles.themeLighter;
+  }
+
+  if (theme === 'dark') {
+    return styles.themeDark;
+  }
+};
+
 const Checkbox = (props: CheckboxProps) => {
-  const handleOnChange = () => {
+  const onChange = () => {
     if (!props.disabled) {
       props.onChange(!props.checked);
     }
   };
 
+  const themeClass = getThemeClasses(props.theme);
+
   const wrapperClasses = classNames(
-    styles.checkboxHolder,
-    props.classNames?.checkboxHolder
+    styles.wrapper,
+    themeClass,
+    props.className
   );
 
   const checkboxClasses = classNames(
-    styles.defaultCheckbox,
-    props.checked
-      ? classNames(styles.checked, props.classNames?.checked)
-      : classNames(styles.unchecked, props.classNames?.unchecked),
-    props.disabled && classNames(styles.disabled, props.classNames?.disabled)
-  );
-  const labelClassName = classNames(
-    styles.defaultLabel,
-    isWithLabel(props) && props.labelClassName
+    styles.checkboxDefault,
+    props.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
+    props.disabled && styles.checkboxDisabled
   );
 
-  return (
-    <div className={wrapperClasses}>
+  const checkboxElement = (
+    <>
       <input
         type="checkbox"
         className={styles.hiddenInput}
-        onChange={handleOnChange}
         checked={props.checked}
+        disabled={props.disabled}
+        onChange={onChange}
       />
-      <div onClick={handleOnChange} className={checkboxClasses} />
-      {isWithLabel(props) && (
-        <label onClick={handleOnChange} className={labelClassName}>
-          {props.label}
-        </label>
-      )}
+      <span className={checkboxClasses} />
+    </>
+  );
+
+  return hasLabel(props) ? (
+    <div className={wrapperClasses}>
+      <label className={styles.grid} data-test-id="checkbox-label-grid">
+        {checkboxElement}
+        <span className={styles.label}>{props.label}</span>
+      </label>
     </div>
+  ) : (
+    <label data-test-id="checkbox" className={wrapperClasses}>
+      {checkboxElement}
+    </label>
   );
 };
 

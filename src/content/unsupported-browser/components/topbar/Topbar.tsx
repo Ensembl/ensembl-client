@@ -17,7 +17,7 @@
 import React from 'react';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
-import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
+import { ReactComponent as HomeIcon } from 'static/icons/icon_home.svg';
 
 import styles from './Topbar.scss';
 

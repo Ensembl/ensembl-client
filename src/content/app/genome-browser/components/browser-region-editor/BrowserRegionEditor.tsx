@@ -53,7 +53,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
-import applyIcon from 'static/img/shared/apply.svg';
+import applyUrl from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
@@ -286,7 +286,7 @@ export const BrowserRegionEditor = () => {
         </div>
         <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
-            <img src={applyIcon} alt="Apply changes" />
+            <img src={applyUrl} alt="Apply changes" />
           </button>
         </span>
       </form>

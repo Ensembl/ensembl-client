@@ -82,18 +82,18 @@
   }
 }
 
-.helpLabel {
-  color: $blue;
-  font-weight: $bold;
-}
-
 .homeTopRight {
   position: absolute;
-  top: 7px;
+  top: 2px;
   right: 20px;
   display: grid;
   grid-template-columns: repeat(2, auto);
   align-items: start;
+
+  .helpLabel {
+    color: $blue;
+    font-weight: $bold;
+  }
 
   .howToUse {
     display: grid;

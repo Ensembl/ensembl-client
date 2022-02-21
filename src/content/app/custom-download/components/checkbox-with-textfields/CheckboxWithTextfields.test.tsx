@@ -22,19 +22,19 @@ import faker from 'faker';
 import CheckboxWithTextfields, {
   CheckboxWithTextfieldsProps
 } from './CheckboxWithTextfields';
-import { ReadFile } from 'src/shared/components/upload/Upload';
+import { FileTransformedToString } from 'src/shared/components/upload';
 
 const onTextChange = jest.fn();
 const onFilesChange = jest.fn();
 const onReset = jest.fn();
 
-const mockReadFile: ReadFile = {
+const mockReadFile: FileTransformedToString = {
   filename: faker.random.words(),
   content: faker.random.words(),
   error: null
 };
 
-const mockReadFileWithError: ReadFile = {
+const mockReadFileWithError: FileTransformedToString = {
   filename: faker.random.words(),
   content: faker.random.words(),
   error: faker.random.words()
@@ -71,21 +71,19 @@ describe('<CheckboxWithTextfields />', () => {
 
   it('displays one Upload component by default', () => {
     const { container } = renderCheckboxWithTextfields();
-    expect(container.querySelectorAll('.defaultUpload')).toHaveLength(1);
+    expect(container.querySelectorAll('.upload')).toHaveLength(1);
   });
 
   it('passes the label to the checkbox component', () => {
     const label = faker.random.words();
     const { container } = renderCheckboxWithTextfields({ label });
-    expect(
-      container.querySelector('.checkboxHolder .defaultLabel')?.textContent
-    ).toBe(label);
+    expect(container.querySelector('.label')?.textContent).toBe(label);
   });
 
   it('automatically checks the checkbox when a textValue is passed', () => {
     const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });
@@ -96,16 +94,14 @@ describe('<CheckboxWithTextfields />', () => {
     });
 
     expect(
-      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+      (container.querySelector('input[type="checkbox"]') as HTMLInputElement)
         .checked
     ).toBeTruthy();
   });
 
   it('calls the onReset prop when the checkbox is unchecked', () => {
-    const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
-    const checkboxLabelElement = container.querySelector(
-      '.checkboxHolder .hiddenInput'
-    );
+    const { getByTestId } = renderCheckboxWithTextfields({ textValue: 'foo' });
+    const checkboxLabelElement = getByTestId('checkbox-label-grid');
 
     userEvent.click(checkboxLabelElement as HTMLElement);
 

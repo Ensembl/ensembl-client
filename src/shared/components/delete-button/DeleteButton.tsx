@@ -19,7 +19,7 @@ import React, {
   type HTMLAttributes,
   type ForwardedRef
 } from 'react';
-import { ReactComponent as TrashcanIcon } from 'static/img/shared/trash.svg';
+import { ReactComponent as TrashcanIcon } from 'static/icons/icon_delete.svg';
 
 import styles from './DeleteButton.scss';
 

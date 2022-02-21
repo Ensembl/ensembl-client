@@ -15,22 +15,22 @@
  */
 
 import React, { useState, useEffect, FormEvent, useCallback } from 'react';
+
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
-
 import Textarea from 'src/shared/components/textarea/Textarea';
-import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
+import { Upload, FileTransformedToString } from 'src/shared/components/upload';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { ReactComponent as RemoveIcon } from 'static/icons/icon_close.svg';
 
 import styles from './CheckboxWithTextfields.scss';
 
 export type CheckboxWithTextfieldsProps = {
   textValue: string;
-  files: ReadFile[];
+  files: FileTransformedToString[];
   label: string;
   disabled?: boolean;
-  onFilesChange: (files: ReadFile[]) => void;
+  onFilesChange: (files: FileTransformedToString[]) => void;
   onReset: () => void;
   onTextChange: (value: string) => void;
 };
@@ -40,7 +40,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
   const [isTextareaShown, showTextarea] = useState(false);
 
-  const [files, setFiles] = useState<ReadFile[]>([]);
+  const [files, setFiles] = useState<FileTransformedToString[]>([]);
 
   useEffect(() => {
     setFiles(props.files);
@@ -81,7 +81,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onFilesChange(newFiles);
   };
 
-  const handleUpload = (uploadedFiles: ReadFile[]) => {
+  const handleUpload = (uploadedFiles: FileTransformedToString[]) => {
     const newFiles = [...files, ...uploadedFiles];
     props.onFilesChange(newFiles);
   };
@@ -137,7 +137,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           props.files.map((entry, key: number) => {
             return (
               <div key={key} className={styles.filesList}>
-                {entry && (entry as ReadFile).filename && (
+                {entry && (entry as FileTransformedToString).filename && (
                   <div key={key} className={styles.fileWrapper}>
                     <span className={styles.fileDetails}>
                       <span
@@ -162,7 +162,11 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
             );
           })}
         <div className={styles.uploadWrapper}>
-          <Upload onChange={handleUpload} />
+          <Upload
+            onUpload={handleUpload}
+            transformTo="text"
+            allowMultiple={true}
+          />
         </div>
       </div>
     </div>

@@ -32,12 +32,12 @@ export type EntityViewerTopbarProps = {
 export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
   const { genomeId } = props;
   const entityId = props.entityId.split(':').pop() as string;
-  const { data } = useGeneSummaryQuery({ geneId: entityId, genomeId });
+  const { currentData } = useGeneSummaryQuery({ geneId: entityId, genomeId });
 
   return (
     <div className={styles.container}>
-      {data ? (
-        <GeneSummaryStrip gene={geneToFocusObjectFields(data.gene)} />
+      {currentData ? (
+        <GeneSummaryStrip gene={geneToFocusObjectFields(currentData.gene)} />
       ) : null}
     </div>
   );

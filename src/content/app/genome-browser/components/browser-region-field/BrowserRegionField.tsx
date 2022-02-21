@@ -43,7 +43,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import applyIcon from 'static/img/shared/apply.svg';
+import applyUrl from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionField.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
@@ -180,7 +180,7 @@ export const BrowserRegionField = () => {
         </span>
         <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
-            <img src={applyIcon} alt="Apply changes" />
+            <img src={applyUrl} alt="Apply changes" />
           </button>
         </span>
       </form>

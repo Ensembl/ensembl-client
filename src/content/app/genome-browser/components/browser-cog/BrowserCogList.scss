@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .browserCogListOuter {
   width: 36px;
   right: 0;
@@ -8,4 +10,11 @@
 
 .browserCogOuter {
   position: absolute;
+}
+
+.browserCog {
+  border: 1px solid $blue;
+  width: 18px;
+  height: 18px;
+  padding: 1px;
 }

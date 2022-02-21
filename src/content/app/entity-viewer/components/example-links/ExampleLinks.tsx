@@ -38,7 +38,7 @@ const ExampleLinks = () => {
     getGenomeExampleFocusObjects(state, activeGenomeId || '')
   );
   const exampleGeneId = exampleEntities.find(({ type }) => type === 'gene')?.id;
-  const { isLoading, data, error } = useGeneSummaryQuery(
+  const { isFetching, currentData, error } = useGeneSummaryQuery(
     {
       geneId: exampleGeneId || '',
       genomeId: activeGenomeId || ''
@@ -48,7 +48,7 @@ const ExampleLinks = () => {
     }
   );
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div>
         <div className={styles.exampleLinks__emptyTopbar} />
@@ -60,13 +60,13 @@ const ExampleLinks = () => {
   }
 
   // TODO: Data doesn't get changed when there is an error?
-  if (!data || error) {
+  if (!currentData || error) {
     return null;
   }
 
   const featureIdInUrl = buildFocusIdForUrl({
     type: 'gene',
-    objectId: data.gene.unversioned_stable_id
+    objectId: currentData.gene.unversioned_stable_id
   });
   const path = urlHelper.entityViewer({
     genomeId: activeGenomeId,

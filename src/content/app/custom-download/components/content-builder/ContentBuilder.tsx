@@ -44,7 +44,7 @@ import {
 } from 'src/content/app/custom-download/types/Attributes';
 
 import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
-import { ReadFile } from 'src/shared/components/upload/Upload';
+import { FileTransformedToString } from 'src/shared/components/upload';
 import styles from './ContentBuilder.scss';
 
 type Path = (string | number)[];
@@ -152,8 +152,8 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     const currentPath = [...path, entry.id];
 
     const selectedOptions = get(props.selectedData, currentPath, {});
-    const totalSelectedOptions = Object.values(selectedOptions).filter(Boolean)
-      .length;
+    const totalSelectedOptions =
+      Object.values(selectedOptions).filter(Boolean).length;
 
     if (props.showOverview && !totalSelectedOptions) {
       return null;
@@ -309,7 +309,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
               ...values.slice(1)
             ] as PrimitiveOrArrayValue)
           }
-          onFilesChange={(newFiles: ReadFile[]) =>
+          onFilesChange={(newFiles: FileTransformedToString[]) =>
             onChangeHandler(currentPath, [
               textValue,
               ...newFiles

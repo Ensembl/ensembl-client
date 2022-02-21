@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as SVGIcon } from 'static/img/launchbar/search.svg';
+import { ReactComponent as SVGIcon } from 'static/icons/icon_search.svg';
 
 import styles from './AppIcon.scss';
 

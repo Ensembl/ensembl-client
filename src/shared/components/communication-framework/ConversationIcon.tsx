@@ -20,12 +20,18 @@ import { useDispatch } from 'react-redux';
 import useCommonAnalytics from 'src/shared/hooks/useCommonAnalytics';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
-import { ReactComponent as ConversationImageIcon } from 'static/img/shared/icon_conversation.svg';
+
 import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
+
+import { ReactComponent as ConversationImageIcon } from 'static/icons/icon_conversation.svg';
 
 import styles from './ConversationIcon.scss';
 
-const ConversationIcon = () => {
+type Props = {
+  withLabel?: boolean;
+};
+
+const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
 
   const { trackContextualHelpOpened } = useCommonAnalytics();
@@ -35,13 +41,14 @@ const ConversationIcon = () => {
 
     dispatch(toggleCommunicationPanel());
   };
+
   return (
     <>
       <CommunicationPanel />
-      <ConversationImageIcon
-        onClick={onClick}
-        className={styles.conversationIcon}
-      />
+      <div className={styles.conversationIconWrapper} onClick={onClick}>
+        {props.withLabel && 'Contact us'}
+        <ConversationImageIcon className={styles.conversationIcon} />
+      </div>
     </>
   );
 };

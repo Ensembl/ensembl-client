@@ -25,7 +25,7 @@ import {
   flattenObject,
   getProcessedAttributes
 } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
-import { ReadFile } from 'src/shared/components/upload/Upload';
+import { FileTransformedToString } from 'src/shared/components/upload';
 
 export const fetchCustomDownloadResults = (
   downloadType: string,
@@ -33,9 +33,8 @@ export const fetchCustomDownloadResults = (
   filters: JSONValue,
   activeGenomeId: string | null
 ) => {
-  const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
-    attributes
-  );
+  const flatSelectedAttributes: { [key: string]: boolean } =
+    flattenObject(attributes);
 
   let endpoint = getEndpointUrl(
     activeGenomeId,
@@ -51,9 +50,8 @@ export const fetchCustomDownloadResults = (
 };
 
 export const getProcessedFilters = (filters: JSONValue) => {
-  const flatSelectedFilters: { [key: string]: boolean } = flattenObject(
-    filters
-  );
+  const flatSelectedFilters: { [key: string]: boolean } =
+    flattenObject(filters);
 
   const selectedFilters = mapKeys(
     flatSelectedFilters,
@@ -92,7 +90,7 @@ export const getEndpointUrl = (
 
   const limitToGenes = get(processedFilters, 'genes.limit_to_genes', []);
 
-  limitToGenes.forEach((element: string | ReadFile) => {
+  limitToGenes.forEach((element: string | FileTransformedToString) => {
     if (typeof element === 'string') {
       gene_ids.push(element);
     } else if (element && element.content) {

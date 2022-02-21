@@ -23,7 +23,8 @@ import { getBrowserActiveFocusObjectId } from 'src/content/app/genome-browser/st
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
+
+import { ReactComponent as resetIcon } from 'static/icons/icon_reset.svg';
 
 import { Status } from 'src/shared/types/status';
 

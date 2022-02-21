@@ -18,11 +18,11 @@ import React from 'react';
 
 import { ProteinStats } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
-import structuresIcon from 'static/img/entity-viewer/icon_protein_structures.svg';
-import ligandsIcon from 'static/img/entity-viewer/icon_protein_ligands.svg';
-import interactionsIcon from 'static/img/entity-viewer/icon_protein_interactions.svg';
-import annotationsIcon from 'static/img/entity-viewer/icon_protein_annotations.svg';
-import similarProteinsIcon from 'static/img/entity-viewer/icon_protein_similar.svg';
+import structuresUrl from 'static/icons/icon_protein_structures.svg';
+import ligandsUrl from 'static/icons/icon_protein_ligands.svg';
+import interactionsUrl from 'static/icons/icon_protein_interactions.svg';
+import annotationsUrl from 'static/icons/icon_protein_annotations.svg';
+import similarProteinsUrl from 'static/icons/icon_protein_similar.svg';
 
 import styles from './ProteinFeaturesCount.scss';
 
@@ -46,27 +46,27 @@ const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
       <FeatureCount
         label={FeatureCountLabel.STRUCTURES}
         count={proteinStats.structuresCount}
-        icon={structuresIcon}
+        imageUrl={structuresUrl}
       />
       <FeatureCount
         label={FeatureCountLabel.LIGANDS}
         count={proteinStats.ligandsCount}
-        icon={ligandsIcon}
+        imageUrl={ligandsUrl}
       />
       <FeatureCount
         label={FeatureCountLabel.INTERACTIONS}
         count={proteinStats.interactionsCount}
-        icon={interactionsIcon}
+        imageUrl={interactionsUrl}
       />
       <FeatureCount
         label={FeatureCountLabel.ANNOTATIONS}
         count={proteinStats.annotationsCount}
-        icon={annotationsIcon}
+        imageUrl={annotationsUrl}
       />
       <FeatureCount
         label={FeatureCountLabel.SIMILAR_PROTEINS}
         count={proteinStats.similarProteinsCount}
-        icon={similarProteinsIcon}
+        imageUrl={similarProteinsUrl}
       />
     </div>
   );
@@ -74,14 +74,14 @@ const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
 
 type FeatureCountProps = {
   count: number;
-  icon: string;
+  imageUrl: string;
   label: string;
 };
 
 const FeatureCount = (props: FeatureCountProps) => (
   <div className={styles.feature}>
     <div className={styles.featureImg}>
-      <img src={props.icon} alt={props.label} />
+      <img src={props.imageUrl} alt={props.label} />
     </div>
     <div className={styles.featureCount}>{props.count}</div>
     <div className={styles.featureText}>{props.label}</div>

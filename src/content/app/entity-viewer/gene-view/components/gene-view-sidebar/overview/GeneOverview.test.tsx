@@ -80,8 +80,8 @@ describe('<GeneOverview />', () => {
   describe('loading', () => {
     beforeEach(() => {
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: null,
-        isLoading: true
+        currentData: null,
+        isFetching: true
       }));
     });
 
@@ -96,8 +96,8 @@ describe('<GeneOverview />', () => {
   describe('empty data', () => {
     beforeEach(() => {
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: null,
-        isLoading: false
+        currentData: null,
+        isFetching: false
       }));
     });
 
@@ -112,8 +112,8 @@ describe('<GeneOverview />', () => {
   describe('full data', () => {
     beforeEach(() => {
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: { gene: completeGeneData },
-        isLoading: false
+        currentData: { gene: completeGeneData },
+        isFetching: false
       }));
     });
 
@@ -147,8 +147,8 @@ describe('<GeneOverview />', () => {
       const geneData = { ...completeGeneData, symbol: null };
 
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: { gene: geneData },
-        isLoading: false
+        currentData: { gene: geneData },
+        isFetching: false
       }));
 
       const { queryByTestId } = render(<GeneOverview />);
@@ -161,8 +161,8 @@ describe('<GeneOverview />', () => {
       const geneData = { ...completeGeneData, name: null };
 
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: { gene: geneData },
-        isLoading: false
+        currentData: { gene: geneData },
+        isFetching: false
       }));
 
       const { container } = render(<GeneOverview />);
@@ -175,8 +175,8 @@ describe('<GeneOverview />', () => {
       const geneData = { ...completeGeneData, alternative_symbols: [] };
 
       (useGeneOverviewQuery as any).mockImplementation(() => ({
-        data: { gene: geneData },
-        isLoading: false
+        currentData: { gene: geneData },
+        isFetching: false
       }));
 
       const { container } = render(<GeneOverview />);

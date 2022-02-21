@@ -31,6 +31,7 @@ import {
   getDisplayStableId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -51,19 +52,22 @@ const GeneSummary = () => {
     geneId: focusGene.stable_id,
     genomeId: focusGene.genome_id
   };
-  const { data, isLoading } = useGbGeneSummaryQuery(geneQueryParams, {
+  const { currentData, isFetching } = useGbGeneSummaryQuery(geneQueryParams, {
     skip: !focusGene.stable_id
   });
 
-  if (isLoading) {
+  if (isFetching) {
     return null;
   }
 
-  if (!data?.gene) {
+  if (!currentData?.gene) {
     return <div>No data available</div>;
   }
 
-  const { gene } = data;
+  const { gene } = currentData;
+  const {
+    metadata: { name: geneNameMetadata }
+  } = gene;
 
   const stableId = getDisplayStableId(gene);
 
@@ -112,11 +116,11 @@ const GeneSummary = () => {
         <div className={styles.label}>Gene name</div>
         <div className={styles.geneName}>
           {getGeneName(gene.name)}
-          {gene.metadata.name && (
+          {geneNameMetadata?.accession_id && geneNameMetadata?.url && (
             <ExternalReference
               classNames={{ container: styles.marginTop }}
-              to={gene.metadata.name.url}
-              linkText={gene.metadata.name.accession_id}
+              to={geneNameMetadata.url}
+              linkText={geneNameMetadata.accession_id}
             />
           )}
         </div>

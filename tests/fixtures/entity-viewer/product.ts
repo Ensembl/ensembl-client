@@ -20,9 +20,9 @@ import times from 'lodash/times';
 import { createExternalReference } from './external-reference';
 
 import {
-  ProteinDomain,
   Product,
-  ProductType
+  ProductType,
+  FamilyMatch
 } from 'src/shared/types/thoas/product';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
@@ -38,7 +38,7 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     unversioned_stable_id: unversionedStableId,
     version,
     length: length,
-    protein_domains: createProteinDomains(length),
+    family_matches: createFamilyMatches(length),
     external_references: times(2, () => createExternalReference()),
     sequence: {
       checksum: faker.datatype.uuid()
@@ -47,7 +47,7 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
   };
 };
 
-const createProteinDomains = (proteinLength: number): ProteinDomain[] => {
+const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
   const numberOfDomains = faker.datatype.number({ min: 1, max: 10 });
   const maxDomainLength = Math.floor(proteinLength / numberOfDomains);
 
@@ -64,15 +64,22 @@ const createProteinDomains = (proteinLength: number): ProteinDomain[] => {
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
+    const length = end - start + 1;
 
     return {
-      id: faker.datatype.uuid(),
-      name: faker.random.words(),
-      resource_name: faker.random.word(),
-      location: {
+      relative_location: {
         start,
         end,
-        length: end - start + 1
+        length
+      },
+      sequence_family: {
+        name: faker.random.words(),
+        description: faker.random.words(),
+        source: {
+          id: faker.datatype.uuid(),
+          name: faker.random.word(),
+          url: faker.internet.url()
+        }
       }
     };
   });
