@@ -74,9 +74,10 @@ const MainLarge = () => {
 
 const MainSmall = () => {
   const step = useSelector(getStep);
+  const containerClasses = `${styles.mainContainer} ${styles.mainContainerSmall}`;
 
   return (
-    <div className={styles.mainContainer}>
+    <div className={containerClasses}>
       {step === 'sequences' ? (
         <>
           <BlastInputSequencesHeader compact={true} />

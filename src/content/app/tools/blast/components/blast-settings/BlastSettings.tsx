@@ -19,7 +19,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
 import untypedBlastSettingsConfig from './blastSettingsConfig.json';
@@ -31,7 +30,6 @@ import {
   getBlastSearchParameters
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
-  setSequenceType,
   setBlastDatabase,
   setBlastProgram,
   changeSensitivityPresets,
@@ -39,7 +37,6 @@ import {
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import type {
-  SequenceType,
   BlastProgram,
   BlastSelectSetting,
   BlastBooleanSetting,
@@ -97,15 +94,6 @@ const BlastSettings = () => {
       onDatabaseChange(defaultDatabase);
     }
   }, []);
-
-  const onSequenceTypeChange = (sequenceType: string) => {
-    dispatch(
-      setSequenceType({
-        sequenceType: sequenceType as SequenceType,
-        config: blastSettingsConfig
-      })
-    );
-  };
 
   const onDatabaseChange = (database: string) => {
     dispatch(
@@ -190,10 +178,6 @@ const BlastSettings = () => {
             onClick={onParametersToggle}
           />
         </div>
-        <SequenceSwitcher
-          sequenceType={sequenceType}
-          onChange={onSequenceTypeChange}
-        />
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
@@ -275,29 +259,6 @@ const BlastSettings = () => {
         </div>
       )}
     </>
-  );
-};
-
-const SequenceSwitcher = (props: {
-  sequenceType: string;
-  onChange: (sequenceType: string) => void;
-}) => {
-  const options = [
-    {
-      label: 'Nucleotide',
-      value: 'dna'
-    },
-    {
-      label: 'Protein',
-      value: 'protein'
-    }
-  ];
-  return (
-    <RadioGroup
-      options={options}
-      selectedOption={props.sequenceType}
-      onChange={(val) => props.onChange(val as string)}
-    />
   );
 };
 
