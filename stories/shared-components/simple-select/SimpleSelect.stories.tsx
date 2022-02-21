@@ -17,15 +17,68 @@
 import React from 'react';
 import times from 'lodash/times';
 
-import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import SimpleSelect, {
+  Option
+} from 'src/shared/components/simple-select/SimpleSelect';
+
+const createSimpleOption = (value: string): Option => ({
+  value,
+  label: `option ${value}`
+});
+
+const createSimpleOptions = (number: number) => {
+  return times(number, (time) => createSimpleOption(`${time + 1}`));
+};
 
 export const SimpleSelectDefaultStory = () => {
-  const options = times(15, (count) => <option>Option {count}</option>);
+  const options = createSimpleOptions(15);
 
-  return <SimpleSelect>{options}</SimpleSelect>;
+  return <SimpleSelect options={options}></SimpleSelect>;
 };
 
 SimpleSelectDefaultStory.storyName = 'default';
+
+export const SimpleSelectDefaultValueStory = () => {
+  const options = createSimpleOptions(15);
+  const lastOption = options[options.length - 1];
+
+  return (
+    <SimpleSelect
+      options={options}
+      defaultValue={lastOption.value}
+    ></SimpleSelect>
+  );
+};
+
+SimpleSelectDefaultValueStory.storyName = 'with default value';
+
+export const SimpleSelectWithPlaceholderStory = () => {
+  const options = createSimpleOptions(15);
+
+  return (
+    <SimpleSelect
+      options={options}
+      placeholder="Select an option"
+    ></SimpleSelect>
+  );
+};
+
+SimpleSelectWithPlaceholderStory.storyName = 'with placeholder';
+
+export const GroupedOptionsStory = () => {
+  const options1 = createSimpleOptions(2);
+  const options2 = createSimpleOptions(3);
+  const options3 = createSimpleOptions(4);
+  const optionGroups = [
+    { options: options1, tite: 'Group 1' },
+    { options: options2, tite: 'Group 2' },
+    { options: options3, tite: 'Group 3' }
+  ];
+
+  return <SimpleSelect optionGroups={optionGroups} />;
+};
+
+GroupedOptionsStory.storyName = 'groups of options';
 
 export default {
   title: 'Components/Shared Components/SimpleSelect'

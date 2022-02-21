@@ -21,13 +21,13 @@
   max-width: 30ch;
   background-color: #fff;
   border: 1px solid $blue;
-  padding: 0 10px;
+  padding: 5px 10px;
 }
 
 .select::after {
   content: '';
   position: absolute;
-  right: 5px;
+  right: 10px;
   top: 50%;
   transform: translateY(-25%);
   width: 0.8em;

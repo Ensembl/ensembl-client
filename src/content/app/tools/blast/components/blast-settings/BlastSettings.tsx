@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
 import untypedBlastSettingsConfig from './blastSettingsConfig.json';
 
@@ -307,12 +308,6 @@ const buildSelect = (setting: {
   selectedOption: string;
   onChange: (value: string) => void;
 }) => {
-  const options = setting.options.map((option) => (
-    <option key={option.value} value={option.value}>
-      {option.label}
-    </option>
-  ));
-
   const onChange = (e: FormEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
@@ -322,9 +317,11 @@ const buildSelect = (setting: {
     <div className={styles.select}>
       <label>
         <span>{setting.label}</span>
-        <select value={setting.selectedOption} onInput={onChange}>
-          {options}
-        </select>
+        <SimpleSelect
+          defaultValue={setting.selectedOption}
+          onInput={onChange}
+          options={setting.options}
+        />
       </label>
     </div>
   );

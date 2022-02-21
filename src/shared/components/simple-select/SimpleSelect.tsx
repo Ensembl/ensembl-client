@@ -18,7 +18,7 @@ import React, { type HTMLAttributes } from 'react';
 
 import styles from './SimpleSelect.scss';
 
-type Props = HTMLAttributes<HTMLSelectElement>;
+type HTMLSelectProps = HTMLAttributes<HTMLSelectElement>;
 
 // This is just a simple wrapper for the native HTML select element.
 // The purpose of this React component is to style the select button,
@@ -28,12 +28,92 @@ type Props = HTMLAttributes<HTMLSelectElement>;
 // pass your event handler to the onInput rather than the onChange property,
 // because onInput fires immediately, while the onChange fires when the select gets unfocussed.
 
-const SimpleSelect = (props: Props) => {
+export type Option = {
+  value: string;
+  label: string;
+};
+
+export type OptionGroup = {
+  title?: string;
+  options: Option[];
+};
+
+type OptionsSpecificProps = {
+  options: Option[];
+  title?: string;
+};
+
+type OptionGroupsSpecificProps = {
+  optionGroups: OptionGroup[];
+};
+
+type CommonProps = {
+  placeholder?: string;
+};
+
+type OptionsSelectProps = CommonProps & OptionsSpecificProps;
+type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
+
+type SimpleSelectAdapterProps = HTMLSelectProps &
+  (OptionsSelectProps | OptionGroupsSelectProps);
+
+export type SimpleSelectProps = HTMLSelectProps &
+  OptionGroupsSelectProps & { placeholder?: string };
+
+const SimpleSelect = (props: SimpleSelectProps) => {
+  const { optionGroups, placeholder, ...rest } = props;
+
+  if (optionGroups.length === 1) {
+    return (
+      <div className={styles.select}>
+        <select
+          className={styles.selectResetDefaults}
+          defaultValue=""
+          {...rest}
+        >
+          {placeholder && <option value="">{placeholder}</option>}
+          {optionGroups[0].options.map((option, key) => (
+            <option key={key} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.select}>
-      <select className={styles.selectResetDefaults} {...props} />
+      <select className={styles.selectResetDefaults} defaultValue="" {...rest}>
+        {placeholder && <option value="">{placeholder}</option>}
+        {optionGroups.map((optionGroup, optionGroupKey) => {
+          return (
+            <optgroup label={optionGroup.title} key={optionGroupKey}>
+              {optionGroup.options.map((option, optionKey) => (
+                <option key={optionKey} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </optgroup>
+          );
+        })}
+      </select>
     </div>
   );
 };
 
-export default SimpleSelect;
+const SimpleSelectAdapter = (props: SimpleSelectAdapterProps) => {
+  if ((props as OptionGroupsSelectProps).optionGroups) {
+    return <SimpleSelect {...(props as OptionGroupsSelectProps)} />;
+  }
+  const { options, title, ...otherProps } = props as OptionsSelectProps;
+  const optionGroups = [
+    {
+      title,
+      options
+    }
+  ];
+  return <SimpleSelect optionGroups={optionGroups} {...otherProps} />;
+};
+
+export default SimpleSelectAdapter;

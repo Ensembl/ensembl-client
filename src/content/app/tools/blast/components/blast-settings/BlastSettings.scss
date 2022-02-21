@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .topLevel {
   display: flex;
   gap: 1rem;
@@ -19,6 +21,12 @@
 .select label {
   display: grid;
   grid-template-columns: repeat(2, auto);
+  column-gap: 10px;
+}
+
+.select label span {
+  font-weight: $light;
+  line-height: 30px;
 }
 
 .bottomLevel {
