@@ -19,7 +19,7 @@
   position: relative;
   min-width: var(--select-min-width, 15ch);
   max-width: var(--select-max-width, 30ch);
-  background-color: var(--select-background-color, #fff);
+  background-color: var(--select-background-color, $white);
   border: 1px solid $blue;
 }
 
