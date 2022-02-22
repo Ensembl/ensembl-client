@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { MutableRefObject } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -35,24 +35,15 @@ import styles from './BlastInputSequences.scss';
 
 export type Props = {
   compact: boolean;
-  container: HTMLDivElement | null;
+  containerRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 const BlastInputSequencesHeader = (props: Props) => {
-  const { compact, container } = props;
+  const { compact, containerRef } = props;
   const sequences = useSelector(getSequences);
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // if(container.clientHeight > container.scrollHeight && shouldAppendEmptyInput) {
-    //   window.scrollTo(0, container?.scrollHeight);
-    // }
-    if (container) {
-      window.scrollTo(0, 100000);
-    }
-  }, [shouldAppendEmptyInput]);
 
   const onClearAll = () => {
     dispatch(
@@ -64,10 +55,33 @@ const BlastInputSequencesHeader = (props: Props) => {
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
+
+    // give React time to add the input box
+    setTimeout(() => scrollToLastInputBox(), 0);
   };
 
   const onSwitchToSpecies = () => {
     dispatch(switchToSpeciesStep());
+  };
+
+  const scrollToLastInputBox = () => {
+    if (containerRef.current) {
+      // This is more reliable, but requires use of a global selector
+      const inputBox = [
+        ...document.querySelectorAll('[class^=inputSequenceBox]')
+      ].pop();
+      inputBox?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+
+      // The code below is how I imagined it would work, but seems to work much worse
+
+      // const paddingBottomString = window.getComputedStyle(containerRef.current, null).paddingBottom;
+      // const paddingBottom = parseInt(paddingBottomString.match(/\d+/)?.[0] as string);
+      // const inputBoxHeadingHeight = 50;
+      // containerRef.current.scroll({
+      //   top: containerRef.current.scrollHeight - paddingBottom - inputBoxHeadingHeight,
+      //   behavior: 'smooth'
+      // });
+    }
   };
 
   return (

@@ -64,7 +64,7 @@ const MainLarge = () => {
         <div>
           <BlastInputSequencesHeader
             compact={false}
-            container={containerRef.current}
+            containerRef={containerRef}
           />
           <BlastInputSequences />
         </div>
@@ -88,7 +88,7 @@ const MainSmall = () => {
         <>
           <BlastInputSequencesHeader
             compact={true}
-            container={containerRef.current}
+            containerRef={containerRef}
           />
           <BlastInputSequences />
         </>
