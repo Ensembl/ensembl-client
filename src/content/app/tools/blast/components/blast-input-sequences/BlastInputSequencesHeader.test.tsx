@@ -32,7 +32,8 @@ import BlastInputSequencesHeader, {
 } from './BlastInputSequencesHeader';
 
 const defaultProps: BlastInputSequencesHeaderProps = {
-  compact: false
+  compact: false,
+  container: null
 };
 
 const renderComponent = (

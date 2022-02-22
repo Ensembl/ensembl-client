@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -35,14 +35,24 @@ import styles from './BlastInputSequences.scss';
 
 export type Props = {
   compact: boolean;
+  container: HTMLDivElement | null;
 };
 
 const BlastInputSequencesHeader = (props: Props) => {
-  const { compact } = props;
+  const { compact, container } = props;
   const sequences = useSelector(getSequences);
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // if(container.clientHeight > container.scrollHeight && shouldAppendEmptyInput) {
+    //   window.scrollTo(0, container?.scrollHeight);
+    // }
+    if (container) {
+      window.scrollTo(0, 100000);
+    }
+  }, [shouldAppendEmptyInput]);
 
   const onClearAll = () => {
     dispatch(

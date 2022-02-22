@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
@@ -56,11 +56,16 @@ const Main = () => {
 };
 
 const MainLarge = () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   return (
-    <div className={styles.mainContainer}>
+    <div className={styles.mainContainer} ref={containerRef}>
       <div className={styles.grid}>
         <div>
-          <BlastInputSequencesHeader compact={false} />
+          <BlastInputSequencesHeader
+            compact={false}
+            container={containerRef.current}
+          />
           <BlastInputSequences />
         </div>
         <div className={styles.speciesSelectorContainer}>
@@ -75,12 +80,16 @@ const MainLarge = () => {
 const MainSmall = () => {
   const step = useSelector(getStep);
   const containerClasses = `${styles.mainContainer} ${styles.mainContainerSmall}`;
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} ref={containerRef}>
       {step === 'sequences' ? (
         <>
-          <BlastInputSequencesHeader compact={true} />
+          <BlastInputSequencesHeader
+            compact={true}
+            container={containerRef.current}
+          />
           <BlastInputSequences />
         </>
       ) : (
