@@ -25,10 +25,7 @@ import React, {
 import classNames from 'classnames';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
-import {
-  hasSufficientLength,
-  hasValidSequenceCharacters
-} from 'src/content/app/tools/blast/utils/sequenceValidators';
+import { isValidSequence } from 'src/content/app/tools/blast/utils/sequenceValidators';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import {
@@ -174,11 +171,9 @@ const checkSequenceValidity = (
   sequence: string,
   sequenceType: SequenceType
 ) => {
+  // cleanup the sequence entered into the input box before validating it
   sequence = sequence.replace(/>.*/, '').replaceAll(/\s/g, '');
-  return (
-    hasSufficientLength(sequence) &&
-    hasValidSequenceCharacters(sequence, sequenceType)
-  );
+  return isValidSequence(sequence, sequenceType);
 };
 
 export default BlastInputSequence;

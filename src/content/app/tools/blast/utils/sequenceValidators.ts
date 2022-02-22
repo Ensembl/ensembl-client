@@ -45,3 +45,13 @@ export const isValidProteinSequence = (sequence: string) => {
   // check if sequence contains anything outside the amino acid alphabet
   return !notAminoAcidRegex.test(sequence);
 };
+
+export const isValidSequence = (
+  sequence: string,
+  sequenceType: SequenceType
+) => {
+  return (
+    hasSufficientLength(sequence) &&
+    hasValidSequenceCharacters(sequence, sequenceType)
+  );
+};
