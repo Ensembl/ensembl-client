@@ -73,6 +73,11 @@ const shouldReportAnalytics = () =>
   isClient() &&
   (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment.shouldReportAnalytics;
 
+// TODO: figure out what to do with errors that happen server-side
+const shouldReportErrors = () =>
+  isClient() &&
+  (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment.shouldReportErrors;
+
 const buildEnvironment = readEnvironment().buildEnvironment;
 
 export default {
@@ -84,6 +89,7 @@ export default {
   isProduction: buildEnvironment !== 'development',
 
   shouldReportAnalytics: shouldReportAnalytics(),
+  shouldReportErrors: shouldReportErrors(),
 
   // TODO: remove this from the config in the future (will require refactoring of the apiService)
   // We will instead be passing base urls for differeent microservices individually

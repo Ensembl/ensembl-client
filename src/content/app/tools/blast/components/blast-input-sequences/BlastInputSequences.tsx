@@ -15,14 +15,11 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { setSequences } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import {
-  getSequences,
-  getEmptyInputVisibility
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import useBlastInputSequences from './useBlastInputSequences';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
@@ -31,9 +28,8 @@ import BlastInputSequence from './BlastInputSequence';
 import styles from './BlastInputSequences.scss';
 
 const BlastInputSequences = () => {
-  const sequences = useSelector(getSequences);
+  const { sequences, updateSequences } = useBlastInputSequences();
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
-  const dispatch = useDispatch();
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -41,28 +37,16 @@ const BlastInputSequences = () => {
     if (typeof index === 'number') {
       const newSequences = [...sequences];
       newSequences.splice(index, 1, ...parsedSequences);
-      dispatch(
-        setSequences({
-          sequences: newSequences
-        })
-      );
+      updateSequences(newSequences);
     } else {
-      dispatch(
-        setSequences({
-          sequences: [...sequences, ...parsedSequences]
-        })
-      );
+      updateSequences([...sequences, ...parsedSequences]);
     }
   };
 
   const onRemoveSequence = (index: number | null) => {
     if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
-      dispatch(
-        setSequences({
-          sequences: newSequences
-        })
-      );
+      updateSequences(newSequences);
     }
   };
 

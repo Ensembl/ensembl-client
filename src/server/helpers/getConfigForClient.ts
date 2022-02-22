@@ -34,7 +34,8 @@ const getEnvironment = () => {
   return {
     buildEnvironment: process.env.NODE_ENV ?? 'production',
     deploymentEnvironment: process.env.ENVIRONMENT ?? 'development',
-    shouldReportAnalytics: shouldReportAnalytics()
+    shouldReportAnalytics: shouldReportAnalytics(),
+    shouldReportErrors: shouldReportErrors()
   };
 };
 
@@ -46,6 +47,9 @@ const getKeys = () => {
 
 const shouldReportAnalytics = () =>
   `${process.env.REPORT_ANALYTICS}`.toLowerCase() === 'true';
+
+const shouldReportErrors = () =>
+  `${process.env.REPORT_ERRORS}`.toLowerCase() === 'true';
 
 export const getConfigForClient = () => {
   return {

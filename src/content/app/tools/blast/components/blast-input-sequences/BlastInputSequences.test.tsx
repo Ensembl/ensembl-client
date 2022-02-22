@@ -178,19 +178,5 @@ describe('<BlastInputSequences />', () => {
         });
       });
     });
-
-    it.todo('guesses the type of the first sequence');
-
-    /**
-     * QUESTIONS
-     *
-     * WHAT SHOULD HAPPEN IF USER ADDS AN UNEXPECTED SEQUECE?
-     * - a sequence different from the predicted
-     * - a sequence with invalid characters
-     * - a sequence with only a FASTA header
-     * - too short a sequence?
-     *
-     * WHAT SHOULD HAPPEN IF USER ADDS MORE SEQUENCES THAN WE ARE LIMITING THEM TO?
-     */
   });
 });
