@@ -19,6 +19,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
+import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 import untypedBlastSettingsConfig from './blastSettingsConfig.json';
 
@@ -26,13 +28,15 @@ import {
   getSelectedSequenceType,
   getSelectedBlastProgram,
   getSelectedSearchSensitivity,
-  getBlastSearchParameters
+  getBlastSearchParameters,
+  getBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
   setBlastDatabase,
   setBlastProgram,
   changeSensitivityPresets,
-  setBlastParameter
+  setBlastParameter,
+  setBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import type {
@@ -177,6 +181,10 @@ const BlastSettings = () => {
             onClick={onParametersToggle}
           />
         </div>
+        <div className={styles.blastJobBlock}>
+          <BlastJobName />
+          <BlastJobSubmit />
+        </div>
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
@@ -258,6 +266,23 @@ const BlastSettings = () => {
         </div>
       )}
     </>
+  );
+};
+
+const BlastJobName = () => {
+  const jobName = useSelector(getBlastJobName);
+  const dispatch = useDispatch();
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.currentTarget.value;
+    dispatch(setBlastJobName(name));
+  };
+
+  return (
+    <div className={styles.blastJobName}>
+      <span>Name the job</span>
+      <ShadedInput value={jobName} onChange={onChange} placeholder="optional" />
+    </div>
   );
 };
 

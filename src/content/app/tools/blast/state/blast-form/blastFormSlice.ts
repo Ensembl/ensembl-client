@@ -26,6 +26,7 @@ import type {
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 type BlastFormSettings = {
+  jobName: string;
   sequenceType: SequenceType;
   sequenceSelectionMode: 'automatic' | 'manual';
   program: BlastProgram;
@@ -42,6 +43,7 @@ export type BlastFormState = {
 };
 
 const initialBlastFormSettings: BlastFormSettings = {
+  jobName: '',
   sequenceType: 'dna',
   sequenceSelectionMode: 'automatic',
   program: 'blastn',
@@ -217,6 +219,9 @@ const blastFormSlice = createSlice({
       const { parameterName, parameterValue } = action.payload;
       state.settings.parameters[parameterName] = parameterValue;
     },
+    setBlastJobName(state, action: PayloadAction<string>) {
+      state.settings.jobName = action.payload;
+    },
     clearForm() {
       // TODO: apply default settings to the form
       return cloneDeep(initialState);
@@ -236,6 +241,7 @@ export const {
   setBlastDatabase,
   setBlastProgram,
   changeSensitivityPresets,
-  setBlastParameter
+  setBlastParameter,
+  setBlastJobName
 } = blastFormSlice.actions;
 export default blastFormSlice.reducer;
