@@ -40,3 +40,16 @@
   flex-basis: auto;
   white-space: nowrap;
 }
+
+.blastJobBlock {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 32px;
+}
+
+.blastJobName {
+  display: inline-flex;
+  column-gap: 24px;
+  align-items: center;
+  white-space: nowrap;
+}
