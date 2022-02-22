@@ -6,7 +6,7 @@
   // Additional resets for further consistency
   background-color: transparent;
   border: none;
-  padding: 0 1em 0 0;
+  padding: 3px 10px;
   margin: 0;
   width: 100%;
   font-family: inherit;
@@ -17,11 +17,10 @@
 
 .select {
   position: relative;
-  min-width: 15ch;
-  max-width: 30ch;
-  background-color: #fff;
+  min-width: var(--select-min-width, 15ch);
+  max-width: var(--select-max-width, 30ch);
+  background-color: var(--select-background-color, #fff);
   border: 1px solid $blue;
-  padding: 5px 10px;
 }
 
 .select::after {

@@ -161,12 +161,9 @@ const SelectOptionsPanel = (props: Props) => {
 
   useEffect(() => {
     setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
-    // document.addEventListener('click', handleClickOutside);
-    // document.addEventListener('touchend', handleClickOutside);
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      // document.removeEventListener('touchend', handleClickOutside);
     };
   }, []);
 

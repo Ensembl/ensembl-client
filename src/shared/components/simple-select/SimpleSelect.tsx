@@ -15,7 +15,7 @@
  */
 
 import React, { type HTMLAttributes } from 'react';
-
+import classNames from 'classnames';
 import styles from './SimpleSelect.scss';
 
 type HTMLSelectProps = HTMLAttributes<HTMLSelectElement>;
@@ -58,20 +58,27 @@ type SimpleSelectAdapterProps = HTMLSelectProps &
   (OptionsSelectProps | OptionGroupsSelectProps);
 
 export type SimpleSelectProps = HTMLSelectProps &
-  OptionGroupsSelectProps & { placeholder?: string };
+  OptionGroupsSelectProps &
+  CommonProps;
 
 const SimpleSelect = (props: SimpleSelectProps) => {
   const { optionGroups, placeholder, ...rest } = props;
 
+  const selectClassnames = classNames(styles.select, props.className);
+
   if (optionGroups.length === 1) {
     return (
-      <div className={styles.select}>
+      <div className={selectClassnames}>
         <select
           className={styles.selectResetDefaults}
           defaultValue=""
           {...rest}
         >
-          {placeholder && <option value="">{placeholder}</option>}
+          {placeholder && (
+            <option value="" hidden={true}>
+              {placeholder}
+            </option>
+          )}
           {optionGroups[0].options.map((option, key) => (
             <option key={key} value={option.value}>
               {option.label}
@@ -83,9 +90,13 @@ const SimpleSelect = (props: SimpleSelectProps) => {
   }
 
   return (
-    <div className={styles.select}>
+    <div className={selectClassnames}>
       <select className={styles.selectResetDefaults} defaultValue="" {...rest}>
-        {placeholder && <option value="">{placeholder}</option>}
+        {placeholder && (
+          <option value="" hidden={true}>
+            {placeholder}
+          </option>
+        )}
         {optionGroups.map((optionGroup, optionGroupKey) => {
           return (
             <optgroup label={optionGroup.title} key={optionGroupKey}>
