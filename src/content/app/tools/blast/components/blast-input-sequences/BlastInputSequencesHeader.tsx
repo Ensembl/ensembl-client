@@ -32,6 +32,7 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 
 import styles from './BlastInputSequences.scss';
+import sequenceBoxStyles from './BlastInputSequence.scss';
 
 export type Props = {
   compact: boolean;
@@ -67,9 +68,9 @@ const BlastInputSequencesHeader = (props: Props) => {
   const scrollToLastInputBox = () => {
     if (containerRef.current) {
       // This is more reliable, but requires use of a global selector
-      const inputBox = [
-        ...document.querySelectorAll('[class^=inputSequenceBox]')
-      ].pop();
+      const inputBox = document.querySelector(
+        `.${sequenceBoxStyles.inputSequenceBox}:last-child`
+      );
       inputBox?.scrollIntoView({ block: 'end', behavior: 'smooth' });
 
       // The code below is how I imagined it would work, but seems to work much worse
