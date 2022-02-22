@@ -16,16 +16,25 @@
 
 import React from 'react';
 import noop from 'lodash/noop';
+import { useSelector } from 'react-redux';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
+import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
+import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
+
 const BlastJobSubmit = () => {
   // TODO:
-  // 1) validate the blast form before enabling the button
-  // 2) actually do the job submission
+  // 1) actually do the job submission
+
+  const { sequences } = useBlastInputSequences();
+  const selectedSpecies = useSelector(getSelectedSpeciesIds);
+
+  const isDisabled = !isBlastFormValid(selectedSpecies, sequences);
 
   return (
-    <PrimaryButton onClick={noop} isDisabled={true}>
+    <PrimaryButton onClick={noop} isDisabled={isDisabled}>
       Run
     </PrimaryButton>
   );
