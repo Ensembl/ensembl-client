@@ -25,7 +25,7 @@ export const guessSequenceType = (sequence: string) => {
   sequence = cleanUpSequence(sequence);
 
   if (hasUniqueAminoAcidCharacters(sequence)) {
-    return 'protein';
+    return 'pep';
   }
 
   // an arbitrary threshold meaning that if 90% or more characters in a sequence
@@ -41,13 +41,13 @@ export const guessSequenceType = (sequence: string) => {
     );
   return nucleotideCandidateCount / sequence.length >= nucleotideThreshold
     ? 'dna'
-    : 'protein';
+    : 'pep';
 };
 
 // guess the type of multiple sequences assuming that they are of the same type
 export const guessSequencesType = (sequences: string[]) => {
-  return sequences.some((sequence) => guessSequenceType(sequence) === 'protein')
-    ? 'protein'
+  return sequences.some((sequence) => guessSequenceType(sequence) === 'pep')
+    ? 'pep'
     : 'dna';
 };
 
