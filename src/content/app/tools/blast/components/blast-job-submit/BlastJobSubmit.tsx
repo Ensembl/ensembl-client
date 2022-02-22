@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 import { useSelector } from 'react-redux';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -23,6 +22,8 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
+import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
+import { BlastFormState } from '../../state/blast-form/blastFormSlice';
 
 const BlastJobSubmit = () => {
   // TODO:
@@ -33,8 +34,28 @@ const BlastJobSubmit = () => {
 
   const isDisabled = !isBlastFormValid(selectedSpecies, sequences);
 
+  const blastFormData = useSelector(getBlastFormData);
+
+  const onBlastSubmit = () => {
+    const postData = createBlastSubmissionData(blastFormData);
+    return postData;
+  };
+
+  const createBlastSubmissionData = (blastFormData: BlastFormState) => {
+    return {
+      email: 'blast2020@ebi.ac.uk',
+      genomeIds: blastFormData.selectedSpecies,
+      program: blastFormData.settings.program,
+      parameters: {
+        title: blastFormData.settings.jobName,
+        database: blastFormData.settings.sequenceType,
+        ...blastFormData.settings.parameters
+      }
+    };
+  };
+
   return (
-    <PrimaryButton onClick={noop} isDisabled={isDisabled}>
+    <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
       Run
     </PrimaryButton>
   );
