@@ -1,10 +1,13 @@
 @import 'src/styles/common';
 
 .textarea {
-  border: none;
+  border-color: var(--textarea-border-color, $grey);
+  border-width: var(--textarea-border-width, 1px);
+  border-style: var(--textarea-border-style, solid);
   padding: 7px;
   width: 100%;
   height: var(--textarea-height, 85px); /* To display 5 lines of text */
+
   &:focus,
   &:active {
     outline: none;
@@ -21,6 +24,7 @@
 }
 
 .shadedTextarea {
+  --textarea-border-style: none;
   box-shadow: $form-field-shadow;
   padding: 7px 15px;
   border: none;
