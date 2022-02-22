@@ -49,10 +49,5 @@ export default (): Configuration => ({
     removeAvailableModules: false,
     removeEmptyChunks: false,
     splitChunks: false
-  },
-  // watch ensembl-genome-browser in the node_modules folder; but prevent watching for other modules
-  // (this should reduce memory consumption and also should improve build times)
-  watchOptions: {
-    ignored: /node_modules([\\]+|\/)+(?!ensembl-genome-browser)/
   }
 });
