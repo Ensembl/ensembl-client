@@ -16,8 +16,8 @@
 
 import { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
-const SPECIES_LIMIT = 25;
-const SEQUENCE_LIMIT = 30;
+export const BLAST_SPECIES_LIMIT = 25;
+export const BLAST_SEQUENCE_LIMIT = 30;
 
 export const isBlastFormValid = (
   species: string[],
@@ -25,9 +25,9 @@ export const isBlastFormValid = (
 ) => {
   if (
     !species.length ||
-    species.length > SPECIES_LIMIT ||
+    species.length > BLAST_SPECIES_LIMIT ||
     !sequences.length ||
-    sequences.length > SEQUENCE_LIMIT
+    sequences.length > BLAST_SEQUENCE_LIMIT
   ) {
     return false;
   }

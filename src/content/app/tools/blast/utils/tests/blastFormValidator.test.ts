@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { isBlastFormValid } from '../blastFormValidator';
+import {
+  isBlastFormValid,
+  BLAST_SPECIES_LIMIT,
+  BLAST_SEQUENCE_LIMIT
+} from '../blastFormValidator';
 
 const createFakeSpecies = (times: number) => {
   return Array(times).fill('');
@@ -27,16 +31,16 @@ const createFakeSequences = (times: number) => {
 };
 
 describe('isBlastFormValid', () => {
-  it('fails validation if we have more than 25 species', () => {
-    const species = createFakeSpecies(26);
+  it('fails validation if we have number of species more than the limit', () => {
+    const species = createFakeSpecies(BLAST_SPECIES_LIMIT + 1);
     const sequences = createFakeSequences(1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('fails validation if we have more than 30 sequences', () => {
+  it('fails validation if we have number of sequences more than the limit', () => {
     const species = createFakeSpecies(1);
-    const sequences = createFakeSequences(31);
+    const sequences = createFakeSequences(BLAST_SEQUENCE_LIMIT + 1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
