@@ -33,7 +33,7 @@ const blastParameterNames = [
 ] as const;
 
 export type BlastParameterName = typeof blastParameterNames[number];
-export type SequenceType = 'dna' | 'cdna' | 'pep';
+export type SequenceType = 'dna' | 'protein';
 export type BlastProgram =
   | 'blastn'
   | 'tblastx'

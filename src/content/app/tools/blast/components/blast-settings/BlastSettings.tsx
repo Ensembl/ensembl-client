@@ -256,7 +256,7 @@ const BlastSettings = () => {
             selectedOption: blastParameters.gapopen as string,
             onChange: (value: string) => onBlastParameterChange('gapext', value)
           })}
-          {databaseSequenceType === 'pep' &&
+          {databaseSequenceType === 'protein' &&
             buildSelect({
               ...(getParameterData('matrix') as BlastSelectSetting),
               selectedOption: blastParameters.gapopen as string,

@@ -43,12 +43,14 @@ const BlastJobSubmit = () => {
 
   const createBlastSubmissionData = (blastFormData: BlastFormState) => {
     return {
-      email: 'blast2020@ebi.ac.uk',
+      email: 'ensembl-webteam@ebi.ac.uk',
       genomeIds: blastFormData.selectedSpecies,
       program: blastFormData.settings.program,
+      stype: blastFormData.settings.sequenceType,
+      querySequences: blastFormData.sequences,
       parameters: {
         title: blastFormData.settings.jobName,
-        database: blastFormData.settings.sequenceType,
+        database: blastFormData.settings.parameters.database,
         ...blastFormData.settings.parameters
       }
     };
