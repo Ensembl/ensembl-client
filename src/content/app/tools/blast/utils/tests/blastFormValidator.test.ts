@@ -31,7 +31,7 @@ const createFakeSequences = (times: number) => {
 };
 
 describe('isBlastFormValid', () => {
-  it('fails validation if the number of species more than the limit', () => {
+  it('fails validation if the number of species is more than the limit', () => {
     const species = createFakeSpecies(BLAST_SPECIES_LIMIT + 1);
     const sequences = createFakeSequences(1);
 
@@ -45,7 +45,7 @@ describe('isBlastFormValid', () => {
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('fails validation if there is at least one species and one sequence', () => {
+  it('fails validation if there is not at least one species and one sequence', () => {
     let species = createFakeSpecies(1);
     let sequences = createFakeSequences(0);
 
@@ -57,7 +57,7 @@ describe('isBlastFormValid', () => {
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('passes validation if the correct number of species and sequence', () => {
+  it('passes validation if the number of sequences and species is acceptable', () => {
     const species = createFakeSpecies(1);
     const sequences = createFakeSequences(1);
 

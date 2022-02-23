@@ -23,14 +23,10 @@ export const isBlastFormValid = (
   species: string[],
   sequences: ParsedInputSequence[]
 ) => {
-  if (
-    !species.length ||
-    species.length > BLAST_SPECIES_LIMIT ||
-    !sequences.length ||
-    sequences.length > BLAST_SEQUENCE_LIMIT
-  ) {
-    return false;
-  }
-
-  return true;
+  return (
+    species.length > 0 &&
+    species.length <= BLAST_SPECIES_LIMIT &&
+    sequences.length > 0 &&
+    sequences.length <= BLAST_SEQUENCE_LIMIT
+  );
 };
