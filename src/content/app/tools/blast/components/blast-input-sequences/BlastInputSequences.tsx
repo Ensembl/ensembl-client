@@ -28,7 +28,8 @@ import BlastInputSequence from './BlastInputSequence';
 import styles from './BlastInputSequences.scss';
 
 const BlastInputSequences = () => {
-  const { sequences, sequenceType, updateSequences } = useBlastInputSequences();
+  const { sequences, sequenceType, updateSequences, appendEmptyInputBox } =
+    useBlastInputSequences();
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const onSequenceAdded = (input: string, index: number | null) => {
@@ -44,7 +45,11 @@ const BlastInputSequences = () => {
   };
 
   const onRemoveSequence = (index: number | null) => {
-    if (typeof index === 'number') {
+    if (index === null && sequences.length) {
+      // User has called the function from an added empty input box.
+      // The box can now be removed
+      appendEmptyInputBox(false);
+    } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
     }

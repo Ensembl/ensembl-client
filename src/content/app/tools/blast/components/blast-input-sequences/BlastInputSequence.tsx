@@ -117,12 +117,8 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onClear = () => {
-    if (typeof index === 'number') {
-      props.onRemoveSequence?.(index);
-      forceReadSequenceFromProps();
-    } else {
-      setInput('');
-    }
+    setInput('');
+    props.onRemoveSequence?.(index);
   };
 
   const isInputValid = input
@@ -141,11 +137,9 @@ const BlastInputSequence = (props: Props) => {
     <div className={inputBoxClassnames} ref={dropZoneRef}>
       <div className={styles.header}>
         <span>{title}</span>
-        {input && (
-          <span className={styles.deleteButtonWrapper}>
-            <DeleteButton ref={deleteButtonRef} onClick={onClear} />
-          </span>
-        )}
+        <span className={styles.deleteButtonWrapper}>
+          <DeleteButton ref={deleteButtonRef} onClick={onClear} />
+        </span>
       </div>
       <div className={styles.body}>
         <Textarea

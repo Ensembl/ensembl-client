@@ -98,7 +98,6 @@ const blastFormSlice = createSlice({
     ) {
       const { sequences } = action.payload;
       state.sequences = sequences;
-      state.shouldAppendEmptyInput = Boolean(!sequences.length);
     },
     addSelectedSpecies(state, action: PayloadAction<{ genomeId: string }>) {
       const { genomeId } = action.payload;

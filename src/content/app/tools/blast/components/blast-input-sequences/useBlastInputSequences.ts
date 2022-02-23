@@ -19,7 +19,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
   setSequences,
-  setSequenceType
+  setSequenceType,
+  updateEmptyInputDisplay
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import {
@@ -56,9 +57,14 @@ const useBlastInputSequences = () => {
     ref.current = { sequenceType, sequenceSelectionMode };
   });
 
-  const updateSequences = (sequences: ParsedInputSequence[]) => {
-    dispatch(setSequences({ sequences }));
-    updateSequenceTypeAutomatically(sequences);
+  const updateSequences = (newSequences: ParsedInputSequence[]) => {
+    dispatch(setSequences({ sequences: newSequences }));
+    if (newSequences.length > sequences.length) {
+      dispatch(updateEmptyInputDisplay(false));
+    } else if (!newSequences.length) {
+      dispatch(updateEmptyInputDisplay(true));
+    }
+    updateSequenceTypeAutomatically(newSequences);
   };
 
   const updateSequenceTypeAutomatically = (
@@ -107,12 +113,17 @@ const useBlastInputSequences = () => {
     );
   };
 
+  const appendEmptyInputBox = (shouldAppend: boolean) => {
+    dispatch(updateEmptyInputDisplay(shouldAppend));
+  };
+
   return {
     sequences,
     sequenceType,
     updateSequences,
     clearAllSequences,
-    updateSequenceType
+    updateSequenceType,
+    appendEmptyInputBox
   };
 };
 
