@@ -20,8 +20,9 @@ import { pickBy } from 'lodash';
 import {
   ZmenuContentTranscript,
   ZmenuContentGene,
-  ZmenuFeatureType,
-  ZmenuPayloadVarietyType
+  ZmenuPayloadVariety,
+  ZmenuPayloadVarietyType,
+  ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
@@ -36,8 +37,6 @@ import {
 } from 'src/shared/components/toolbox';
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
-
-import { ZmenuCreatePayload } from '@ensembl/ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
@@ -68,25 +67,21 @@ const Zmenu = (props: ZmenuProps) => {
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
   const { content, variety } = props.payload;
-
-  const transcripts = content.filter(
-    (f) => f.metadata.type === ZmenuFeatureType.TRANSCRIPT
-  ) as ZmenuContentTranscript[];
-  const genes = content.filter(
-    (f) => f.metadata.type === ZmenuFeatureType.GENE
-  ) as ZmenuContentGene[];
-
   const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [];
 
   // get the first variety type
-  const firstVarietyType = variety[0].type;
 
   let featureId = '',
     unversionedTranscriptId = '';
 
-  if (firstVarietyType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
-    const transcript = transcripts.find(
-      (feature) => feature.metadata.type === 'transcript'
+  const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
+    Boolean(variety.type)
+  )?.type;
+
+  if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
+    const transcript = content.find(
+      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+        feature.metadata.type === 'transcript'
     ) as ZmenuContentTranscript;
 
     if (!transcript) {
@@ -95,9 +90,11 @@ const Zmenu = (props: ZmenuProps) => {
 
     features.push(transcript);
 
-    const gene = genes.find(
-      (feature) => feature.metadata.id === transcript.metadata.gene_id
-    );
+    const gene = content.find(
+      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+        feature.metadata.type === 'gene' &&
+        feature.metadata.id === transcript.metadata.gene_id
+    ) as ZmenuContentGene;
 
     if (!gene) {
       return null;
