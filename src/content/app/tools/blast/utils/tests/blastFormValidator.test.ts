@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import faker from 'faker';
 import {
   isBlastFormValid,
   BLAST_SPECIES_LIMIT,
@@ -21,7 +21,7 @@ import {
 } from '../blastFormValidator';
 
 const createFakeSpecies = (times: number) => {
-  return Array(times).fill('');
+  return Array(times).fill(faker.datatype.uuid());
 };
 
 const createFakeSequences = (times: number) => {
@@ -31,21 +31,21 @@ const createFakeSequences = (times: number) => {
 };
 
 describe('isBlastFormValid', () => {
-  it('fails validation if we have number of species more than the limit', () => {
+  it('fails validation if the number of species more than the limit', () => {
     const species = createFakeSpecies(BLAST_SPECIES_LIMIT + 1);
     const sequences = createFakeSequences(1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('fails validation if we have number of sequences more than the limit', () => {
+  it('fails validation if the number of sequences is more than the limit', () => {
     const species = createFakeSpecies(1);
     const sequences = createFakeSequences(BLAST_SEQUENCE_LIMIT + 1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('fails validation if we have do not have at least one species and one sequence', () => {
+  it('fails validation if there is at least one species and one sequence', () => {
     let species = createFakeSpecies(1);
     let sequences = createFakeSequences(0);
 
@@ -57,7 +57,7 @@ describe('isBlastFormValid', () => {
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });
 
-  it('passes validation if we have correct number of species and sequence', () => {
+  it('passes validation if the correct number of species and sequence', () => {
     const species = createFakeSpecies(1);
     const sequences = createFakeSequences(1);
 
