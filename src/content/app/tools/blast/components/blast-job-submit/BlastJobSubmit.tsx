@@ -25,6 +25,26 @@ import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormVal
 import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
 import { BlastFormState } from '../../state/blast-form/blastFormSlice';
 
+import type {
+  BlastParameterName,
+  BlastProgram,
+  SequenceType
+} from 'src/content/app/tools/blast/types/blastSettings';
+import { ParsedInputSequence } from '../../types/parsedInputSequence';
+import { blastJobSubmit } from './ToolsApiCommunicator';
+
+export type PayloadParams = {
+  email: string;
+  genomeIds: string[];
+  program: BlastProgram;
+  stype: SequenceType;
+  querySequences: ParsedInputSequence[];
+  parameters: Partial<Record<BlastParameterName, string>> & {
+    title: string;
+    database: string | undefined;
+  };
+};
+
 const BlastJobSubmit = () => {
   // TODO:
   // 1) actually do the job submission
@@ -36,12 +56,18 @@ const BlastJobSubmit = () => {
 
   const blastFormData = useSelector(getBlastFormData);
 
-  const onBlastSubmit = () => {
-    const postData = createBlastSubmissionData(blastFormData);
-    return postData;
+  const onBlastSubmit = async () => {
+    const payload = createBlastSubmissionData(blastFormData);
+    try {
+      await blastJobSubmit(payload);
+    } catch (e) {
+      // console.log(e)
+    }
   };
 
-  const createBlastSubmissionData = (blastFormData: BlastFormState) => {
+  const createBlastSubmissionData = (
+    blastFormData: BlastFormState
+  ): PayloadParams => {
     return {
       email: 'ensembl-webteam@ebi.ac.uk',
       genomeIds: blastFormData.selectedSpecies,
