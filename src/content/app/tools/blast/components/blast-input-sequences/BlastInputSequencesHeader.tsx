@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MutableRefObject } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -36,11 +36,10 @@ import sequenceBoxStyles from './BlastInputSequence.scss';
 
 export type Props = {
   compact: boolean;
-  containerRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 const BlastInputSequencesHeader = (props: Props) => {
-  const { compact, containerRef } = props;
+  const { compact } = props;
   const sequences = useSelector(getSequences);
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
@@ -66,23 +65,10 @@ const BlastInputSequencesHeader = (props: Props) => {
   };
 
   const scrollToLastInputBox = () => {
-    if (containerRef.current) {
-      // This is more reliable, but requires use of a global selector
-      const inputBox = document.querySelector(
-        `.${sequenceBoxStyles.inputSequenceBox}:last-child`
-      );
-      inputBox?.scrollIntoView({ block: 'end', behavior: 'smooth' });
-
-      // The code below is how I imagined it would work, but seems to work much worse
-
-      // const paddingBottomString = window.getComputedStyle(containerRef.current, null).paddingBottom;
-      // const paddingBottom = parseInt(paddingBottomString.match(/\d+/)?.[0] as string);
-      // const inputBoxHeadingHeight = 50;
-      // containerRef.current.scroll({
-      //   top: containerRef.current.scrollHeight - paddingBottom - inputBoxHeadingHeight,
-      //   behavior: 'smooth'
-      // });
-    }
+    const sequenceTextarea = document
+      .querySelector(`.${sequenceBoxStyles.inputSequenceBox}:last-child`)
+      ?.querySelector('textarea');
+    sequenceTextarea?.focus();
   };
 
   return (
