@@ -31,6 +31,8 @@ import BlastInputSequencesHeader, {
   type Props as BlastInputSequencesHeaderProps
 } from './BlastInputSequencesHeader';
 
+import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
+
 const defaultProps: BlastInputSequencesHeaderProps = {
   compact: false
 };
@@ -145,6 +147,23 @@ describe('BlastInputSequencesHeader', () => {
       ) as HTMLButtonElement;
 
       expect(addSequenceButton.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('is disabled if the number of added sequences has reached the allowed maximum', () => {
+      const sequences = times(MAX_BLAST_SEQUENCE_COUNT, () => ({
+        value: 'ACTG'
+      }));
+      const { container } = renderComponent({
+        state: {
+          shouldAppendEmptyInput: false, // means that the button would be enabled if not for the sequence count
+          sequences
+        }
+      });
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      ) as HTMLButtonElement;
+
+      expect(addSequenceButton.hasAttribute('disabled')).toBe(true);
     });
 
     it('toggles the flag for displaying an empty input box', () => {

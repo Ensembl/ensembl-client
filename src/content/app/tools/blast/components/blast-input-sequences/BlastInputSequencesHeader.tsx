@@ -33,6 +33,8 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
+import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
+
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequences.scss';
@@ -71,7 +73,8 @@ const BlastInputSequencesHeader = (props: Props) => {
   };
 
   const shouldDisableAddButton =
-    isEmptyInputAppended && !isUserTypingInEmptyInput;
+    sequences.length >= MAX_BLAST_SEQUENCE_COUNT ||
+    (isEmptyInputAppended && !isUserTypingInEmptyInput);
 
   const sequencesCount = isUserTypingInEmptyInput
     ? sequences.length + 1
