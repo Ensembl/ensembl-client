@@ -72,9 +72,10 @@ const BlastInputSequencesHeader = (props: Props) => {
     lastTextarea?.focus();
   };
 
-  const shouldDisableAddButton =
-    sequences.length >= MAX_BLAST_SEQUENCE_COUNT ||
-    (isEmptyInputAppended && !isUserTypingInEmptyInput);
+  const shouldEnableAddButton = isEmptyInputAppended
+    ? isUserTypingInEmptyInput &&
+      sequences.length < MAX_BLAST_SEQUENCE_COUNT - 1
+    : sequences.length < MAX_BLAST_SEQUENCE_COUNT;
 
   const sequencesCount = isUserTypingInEmptyInput
     ? sequences.length + 1
@@ -97,7 +98,7 @@ const BlastInputSequencesHeader = (props: Props) => {
         </span>
         <AddAnotherSequence
           onAdd={appendEmptyInput}
-          disabled={shouldDisableAddButton}
+          disabled={!shouldEnableAddButton}
         />
         {compact && (
           <SecondaryButton
