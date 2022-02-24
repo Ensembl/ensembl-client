@@ -33,6 +33,7 @@ import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequences.scss';
+import sequenceBoxStyles from './BlastInputSequence.scss';
 
 export type Props = {
   compact: boolean;
@@ -49,10 +50,20 @@ const BlastInputSequencesHeader = (props: Props) => {
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
+
+    // give React time to add the input box
+    setTimeout(() => scrollToLastInputBox(), 0);
   };
 
   const onSwitchToSpecies = () => {
     dispatch(switchToSpeciesStep());
+  };
+
+  const scrollToLastInputBox = () => {
+    const lastTextarea = document.querySelector(
+      `.${sequenceBoxStyles.inputSequenceBox}:last-child textarea`
+    ) as HTMLTextAreaElement;
+    lastTextarea?.focus();
   };
 
   return (
