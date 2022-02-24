@@ -17,7 +17,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  getEmptyInputVisibility,
+  getUncommittedSequencePresence
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import {
   updateEmptyInputDisplay,
@@ -44,7 +47,8 @@ const BlastInputSequencesHeader = (props: Props) => {
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
     useBlastInputSequences();
 
-  const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
+  const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
+  const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
 
   const dispatch = useDispatch();
 
@@ -66,6 +70,9 @@ const BlastInputSequencesHeader = (props: Props) => {
     lastTextarea?.focus();
   };
 
+  const shouldDisableAddButton =
+    isEmptyInputAppended && !isUserTypingInEmptyInput;
+
   return (
     <div className={styles.header}>
       <div className={styles.headerGroup}>
@@ -83,7 +90,7 @@ const BlastInputSequencesHeader = (props: Props) => {
         </span>
         <AddAnotherSequence
           onAdd={appendEmptyInput}
-          disabled={shouldAppendEmptyInput}
+          disabled={shouldDisableAddButton}
         />
         {compact && (
           <SecondaryButton

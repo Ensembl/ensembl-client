@@ -38,6 +38,7 @@ export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
+  hasUncommittedSequence: boolean;
   selectedSpecies: string[];
   settings: BlastFormSettings;
 };
@@ -55,6 +56,7 @@ export const initialState: BlastFormState = {
   step: 'sequences',
   sequences: [],
   shouldAppendEmptyInput: true,
+  hasUncommittedSequence: false,
   selectedSpecies: [],
   settings: initialBlastFormSettings
 };
@@ -114,6 +116,9 @@ const blastFormSlice = createSlice({
     },
     updateEmptyInputDisplay(state, action: PayloadAction<boolean>) {
       state.shouldAppendEmptyInput = action.payload;
+    },
+    setHasUncommittedSequence(state, action: PayloadAction<boolean>) {
+      state.hasUncommittedSequence = action.payload;
     },
     switchToSequencesStep(state) {
       state.step = 'sequences';
@@ -231,6 +236,7 @@ const blastFormSlice = createSlice({
 export const {
   setSequences,
   updateEmptyInputDisplay,
+  setHasUncommittedSequence,
   switchToSpeciesStep,
   switchToSequencesStep,
   addSelectedSpecies,

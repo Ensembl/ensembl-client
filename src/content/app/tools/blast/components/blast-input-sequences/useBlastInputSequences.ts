@@ -20,13 +20,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   setSequences,
   setSequenceType,
-  updateEmptyInputDisplay
+  updateEmptyInputDisplay,
+  setHasUncommittedSequence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import {
   getSequences,
   getSelectedSequenceType,
-  getSequenceSelectionMode
+  getSequenceSelectionMode,
+  getUncommittedSequencePresence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
@@ -45,6 +47,7 @@ const useBlastInputSequences = () => {
   const sequences = useSelector(getSequences);
   const sequenceType = useSelector(getSelectedSequenceType);
   const sequenceSelectionMode = useSelector(getSequenceSelectionMode);
+  const hasUncommittedSequence = useSelector(getUncommittedSequencePresence);
   const dispatch = useDispatch();
 
   const ref = useRef({
@@ -65,6 +68,7 @@ const useBlastInputSequences = () => {
       dispatch(updateEmptyInputDisplay(true));
     }
     updateSequenceTypeAutomatically(newSequences);
+    setUncommittedSequencePresence(false);
   };
 
   const updateSequenceTypeAutomatically = (
@@ -117,13 +121,20 @@ const useBlastInputSequences = () => {
     dispatch(updateEmptyInputDisplay(shouldAppend));
   };
 
+  const setUncommittedSequencePresence = (isPresent: boolean) => {
+    if (isPresent !== hasUncommittedSequence) {
+      dispatch(setHasUncommittedSequence(isPresent));
+    }
+  };
+
   return {
     sequences,
     sequenceType,
     updateSequences,
     clearAllSequences,
     updateSequenceType,
-    appendEmptyInputBox
+    appendEmptyInputBox,
+    setUncommittedSequencePresence
   };
 };
 

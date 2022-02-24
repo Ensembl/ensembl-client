@@ -28,8 +28,13 @@ import BlastInputSequence from './BlastInputSequence';
 import styles from './BlastInputSequences.scss';
 
 const BlastInputSequences = () => {
-  const { sequences, sequenceType, updateSequences, appendEmptyInputBox } =
-    useBlastInputSequences();
+  const {
+    sequences,
+    sequenceType,
+    updateSequences,
+    appendEmptyInputBox,
+    setUncommittedSequencePresence
+  } = useBlastInputSequences();
   const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
 
   const onSequenceAdded = (input: string, index: number | null) => {
@@ -55,6 +60,10 @@ const BlastInputSequences = () => {
     }
   };
 
+  const onUncommittedSequenceInput = (sequence: string) => {
+    setUncommittedSequencePresence(Boolean(sequence.length));
+  };
+
   return (
     <div className={styles.blastInputSequences}>
       <div className={styles.inputBoxesContainer}>
@@ -74,6 +83,7 @@ const BlastInputSequences = () => {
             title={`Sequence ${sequences.length + 1}`}
             sequenceType={sequenceType}
             onCommitted={onSequenceAdded}
+            onInput={onUncommittedSequenceInput}
             onRemoveSequence={onRemoveSequence}
           />
         )}

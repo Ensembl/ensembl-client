@@ -46,6 +46,7 @@ type Props = {
   sequenceType: SequenceType;
   title?: string;
   onCommitted: (input: string, index: number | null) => void;
+  onInput?: (input: string, index: number | null) => void;
   onRemoveSequence?: (index: number | null) => void;
 };
 
@@ -83,7 +84,9 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onChange = (event: FormEvent<HTMLTextAreaElement>) => {
-    setInput(event.currentTarget.value);
+    const { value } = event.currentTarget;
+    setInput(value);
+    props.onInput?.(value, index);
   };
 
   const onPaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
