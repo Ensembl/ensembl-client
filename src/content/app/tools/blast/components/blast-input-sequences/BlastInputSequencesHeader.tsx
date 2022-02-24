@@ -73,11 +73,15 @@ const BlastInputSequencesHeader = (props: Props) => {
   const shouldDisableAddButton =
     isEmptyInputAppended && !isUserTypingInEmptyInput;
 
+  const sequencesCount = isUserTypingInEmptyInput
+    ? sequences.length + 1
+    : sequences.length;
+
   return (
     <div className={styles.header}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Sequences</span>
-        <span className={styles.sequenceCounter}>{sequences.length}</span>
+        <span className={styles.sequenceCounter}>{sequencesCount}</span>
         <span className={styles.maxSequences}>of 30</span>
       </div>
       <SequenceSwitcher

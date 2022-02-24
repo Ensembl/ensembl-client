@@ -122,6 +122,7 @@ const BlastInputSequence = (props: Props) => {
   const onClear = () => {
     setInput('');
     props.onRemoveSequence?.(index);
+    props.onInput?.('', index);
   };
 
   const isInputValid = input
