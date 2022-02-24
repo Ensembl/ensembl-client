@@ -65,10 +65,10 @@ const BlastInputSequencesHeader = (props: Props) => {
   };
 
   const scrollToLastInputBox = () => {
-    const sequenceTextarea = document
-      .querySelector(`.${sequenceBoxStyles.inputSequenceBox}:last-child`)
-      ?.querySelector('textarea');
-    sequenceTextarea?.focus();
+    const lastTextarea = document.querySelector(
+      `.${sequenceBoxStyles.inputSequenceBox}:last-child textarea`
+    ) as HTMLTextAreaElement;
+    lastTextarea?.focus();
   };
 
   return (
