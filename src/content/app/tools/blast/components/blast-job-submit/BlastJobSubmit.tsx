@@ -36,7 +36,6 @@ export type PayloadParams = {
   genomeIds: string[];
   querySequences: string[];
   parameters: Partial<Record<BlastParameterName, string>> & {
-    email: string;
     title: string;
     stype: SequenceType;
   };
@@ -68,7 +67,6 @@ const BlastJobSubmit = () => {
       genomeIds: blastFormData.selectedSpecies,
       querySequences: sequences,
       parameters: {
-        email: 'ensembl-webteam@ebi.ac.uk',
         title: blastFormData.settings.jobName,
         database: blastFormData.settings.parameters.database,
         program: blastFormData.settings.program,
