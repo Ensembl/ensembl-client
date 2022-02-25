@@ -69,8 +69,8 @@ const prepareLine = (line: string) => {
     return line;
   }
 
-  // remove all digits and spaces from the line
-  line = line.replace(/[\d\s]+/g, '');
+  // remove all spaces from the line
+  line = line.replace(/[\s]+/g, '');
   return line.toUpperCase();
 };
 

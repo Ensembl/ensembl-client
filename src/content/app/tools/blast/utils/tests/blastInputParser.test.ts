@@ -57,10 +57,5 @@ describe('parseBlastInput', () => {
       const input = readFile('./input-sequence-examples/006.txt');
       expect(parseBlastInput(input)).toMatchSnapshot();
     });
-
-    it('removes numbers from numbered sequence lines', () => {
-      const input = readFile('./input-sequence-examples/007.txt');
-      expect(parseBlastInput(input)).toMatchSnapshot();
-    });
   });
 });
