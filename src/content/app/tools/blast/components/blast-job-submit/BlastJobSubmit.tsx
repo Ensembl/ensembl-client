@@ -25,23 +25,20 @@ import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormVal
 import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
 import { BlastFormState } from '../../state/blast-form/blastFormSlice';
 
+import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+
 import type {
   BlastParameterName,
-  BlastProgram,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
-import { ParsedInputSequence } from '../../types/parsedInputSequence';
-import { blastJobSubmit } from './ToolsApiCommunicator';
 
 export type PayloadParams = {
-  email: string;
   genomeIds: string[];
-  program: BlastProgram;
-  stype: SequenceType;
-  querySequences: ParsedInputSequence[];
+  querySequences: string[];
   parameters: Partial<Record<BlastParameterName, string>> & {
+    email: string;
     title: string;
-    database: string | undefined;
+    stype: SequenceType;
   };
 };
 
@@ -57,26 +54,25 @@ const BlastJobSubmit = () => {
   const blastFormData = useSelector(getBlastFormData);
 
   const onBlastSubmit = async () => {
-    const payload = createBlastSubmissionData(blastFormData);
-    try {
-      await blastJobSubmit(payload);
-    } catch (e) {
-      // console.log(e)
-    }
+    createBlastSubmissionData(blastFormData);
   };
 
   const createBlastSubmissionData = (
     blastFormData: BlastFormState
   ): PayloadParams => {
+    const sequences = blastFormData.sequences.map((sequence) =>
+      toFasta(sequence)
+    );
+
     return {
-      email: 'ensembl-webteam@ebi.ac.uk',
       genomeIds: blastFormData.selectedSpecies,
-      program: blastFormData.settings.program,
-      stype: blastFormData.settings.sequenceType,
-      querySequences: blastFormData.sequences,
+      querySequences: sequences,
       parameters: {
+        email: 'ensembl-webteam@ebi.ac.uk',
         title: blastFormData.settings.jobName,
         database: blastFormData.settings.parameters.database,
+        program: blastFormData.settings.program,
+        stype: blastFormData.settings.sequenceType,
         ...blastFormData.settings.parameters
       }
     };
