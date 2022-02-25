@@ -54,77 +54,66 @@ type CommonProps = {
 type OptionsSelectProps = CommonProps & OptionsSpecificProps;
 type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
 
-type SimpleSelectAdapterProps = HTMLSelectProps &
-  (OptionsSelectProps | OptionGroupsSelectProps);
-
 export type SimpleSelectProps = HTMLSelectProps &
-  OptionGroupsSelectProps &
+  (OptionsSelectProps | OptionGroupsSelectProps) &
   CommonProps;
 
 const SimpleSelect = (props: SimpleSelectProps) => {
-  const { optionGroups, placeholder, ...rest } = props;
+  const { className, placeholder, ...rest } = props;
 
-  const selectClassnames = classNames(styles.select, props.className);
+  const selectClassnames = classNames(styles.select, className);
 
-  if (optionGroups.length === 1) {
+  if ('optionGroups' in rest) {
+    const { optionGroups, ...selectProps } = rest;
     return (
       <div className={selectClassnames}>
         <select
           className={styles.selectResetDefaults}
           defaultValue=""
-          {...rest}
+          {...selectProps}
         >
           {placeholder && (
             <option value="" hidden={true}>
               {placeholder}
             </option>
           )}
-          {optionGroups[0].options.map((option, key) => (
-            <option key={key} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          {optionGroups.map((optionGroup, optionGroupKey) => {
+            return (
+              <optgroup label={optionGroup.title} key={optionGroupKey}>
+                {optionGroup.options.map((option, optionKey) => (
+                  <option key={optionKey} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
+            );
+          })}
         </select>
       </div>
     );
   }
 
+  const { options, ...selectProps } = rest;
   return (
     <div className={selectClassnames}>
-      <select className={styles.selectResetDefaults} defaultValue="" {...rest}>
+      <select
+        className={styles.selectResetDefaults}
+        defaultValue=""
+        {...selectProps}
+      >
         {placeholder && (
           <option value="" hidden={true}>
             {placeholder}
           </option>
         )}
-        {optionGroups.map((optionGroup, optionGroupKey) => {
-          return (
-            <optgroup label={optionGroup.title} key={optionGroupKey}>
-              {optionGroup.options.map((option, optionKey) => (
-                <option key={optionKey} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </optgroup>
-          );
-        })}
+        {options.map((option, key) => (
+          <option key={key} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
     </div>
   );
 };
 
-const SimpleSelectAdapter = (props: SimpleSelectAdapterProps) => {
-  if ((props as OptionGroupsSelectProps).optionGroups) {
-    return <SimpleSelect {...(props as OptionGroupsSelectProps)} />;
-  }
-  const { options, title, ...otherProps } = props as OptionsSelectProps;
-  const optionGroups = [
-    {
-      title,
-      options
-    }
-  ];
-  return <SimpleSelect optionGroups={optionGroups} {...otherProps} />;
-};
-
-export default SimpleSelectAdapter;
+export default SimpleSelect;
