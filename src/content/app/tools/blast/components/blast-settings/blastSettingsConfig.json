@@ -47,7 +47,7 @@
       ]
     },
     "alignments": {
-      "label": "Alignments",
+      "label": "Max. alignments",
       "description": "Maximum number of match alignments reported in the result output.",
       "type": "select",
       "options": [
@@ -102,7 +102,7 @@
       ]
     },
     "scores": {
-      "label": "Scores",
+      "label": "Max. scores",
       "description": "Maximum number of match score summaries reported in the result output.",
       "type": "select",
       "options": [
@@ -157,7 +157,7 @@
       ]
     },
     "hsps": {
-      "label": "High-scoring Segment Pair",
+      "label": "HSPs per hit",
       "description": "Maximum number of HSPs (alignments) to keep for any single query-subject pair.",
       "type": "select",
       "options": [
@@ -168,7 +168,7 @@
       ]
     },
     "dropoff": {
-      "label": "Dropoff",
+      "label": "Drop-off",
       "description": "The amount a score can drop before gapped extension of word hits is halted",
       "type": "select",
       "options": [
@@ -217,7 +217,7 @@
       }
     },
     "compstats": {
-      "label": "Composition-based statistics",
+      "label": "Statistical accuracy",
       "description": "Use composition-based statistics.",
       "type": "select",
       "options": [
@@ -244,7 +244,7 @@
       ]
     },
     "exp": {
-      "label": "Expectation value threshold",
+      "label": "E-Threshold",
       "description": "Limits the number of scores and alignments reported based on the expectation value. This is the maximum number of times the match is expected to occur by chance.",
       "type": "select",
       "options": [
@@ -369,7 +369,7 @@
       ]
     },
     "gapopen": {
-      "label": "Gap open",
+      "label": "Gap opening",
       "description": "Penalty taken away from the score when a gap is created in sequence. Increasing the gap openning penalty will decrease the number of gaps in the final alignment.",
       "type": "select",
       "options": [
@@ -472,7 +472,7 @@
       ]
     },
     "gapext": {
-      "label": "Gap extend",
+      "label": "Gap extension",
       "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favors short gaps in the final alignment, conversly decreasing the gap extension penalty favors long gaps in the final alignment.",
       "type": "select",
       "options": [
