@@ -148,7 +148,7 @@ const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
   );
 };
 
-describe('<TranscriptsListItemInfo /', () => {
+describe('<TranscriptsListItemInfo />', () => {
   it('displays amino acid length when transcript has a protein product', () => {
     const { queryByTestId } = renderComponent();
     const expectedProteinLength =

@@ -56,31 +56,31 @@ const BlastJobSubmit = () => {
     createBlastSubmissionData(blastFormData);
   };
 
-  const createBlastSubmissionData = (
-    blastFormData: BlastFormState
-  ): PayloadParams => {
-    const sequences = blastFormData.sequences.map((sequence) =>
-      toFasta(sequence)
-    );
-
-    return {
-      genomeIds: blastFormData.selectedSpecies,
-      querySequences: sequences,
-      parameters: {
-        title: blastFormData.settings.jobName,
-        database: blastFormData.settings.parameters.database,
-        program: blastFormData.settings.program,
-        stype: blastFormData.settings.sequenceType,
-        ...blastFormData.settings.parameters
-      }
-    };
-  };
-
   return (
     <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
       Run
     </PrimaryButton>
   );
+};
+
+export const createBlastSubmissionData = (
+  blastFormData: BlastFormState
+): PayloadParams => {
+  const sequences = blastFormData.sequences.map((sequence) =>
+    toFasta(sequence)
+  );
+
+  return {
+    genomeIds: blastFormData.selectedSpecies,
+    querySequences: sequences,
+    parameters: {
+      title: blastFormData.settings.jobName,
+      database: blastFormData.settings.parameters.database,
+      program: blastFormData.settings.program,
+      stype: blastFormData.settings.sequenceType,
+      ...blastFormData.settings.parameters
+    }
+  };
 };
 
 export default BlastJobSubmit;
