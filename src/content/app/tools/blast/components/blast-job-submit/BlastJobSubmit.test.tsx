@@ -41,9 +41,7 @@ const mockState = merge({}, initialState, {
   settings: {
     jobName,
     sequenceType: 'dna',
-    sequenceSelectionMode: 'automatic',
     program: 'blastn',
-    preset: 'normal',
     parameters: {
       database
     }
@@ -51,7 +49,7 @@ const mockState = merge({}, initialState, {
 });
 
 const expectedPayload = {
-  genomeIds: ['human', 'wheat'],
+  genomeIds: selectedSpecies,
   querySequences: sequences.map((seq) => toFasta(seq)),
   parameters: {
     title: jobName,
