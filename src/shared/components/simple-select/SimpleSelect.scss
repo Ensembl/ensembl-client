@@ -6,41 +6,35 @@
   // Additional resets for further consistency
   background-color: transparent;
   border: none;
+  padding: 3px 25px 3px 10px;
   margin: 0;
   width: 100%;
   font-family: inherit;
   font-size: inherit;
   cursor: inherit;
   line-height: inherit;
-  padding: 4px 10px;
-  z-index: 1;
 }
 
 .select {
+  position: relative;
   min-width: var(--select-min-width, 7ch);
   max-width: var(--select-max-width, 30ch);
   background-color: var(--select-background-color, $white);
   border: 1px solid $blue;
-  display: grid;
-  grid-template-areas: 'select';
-  align-items: center;
+}
 
-  .selectResetDefaults,
-  &::after {
-    grid-area: select;
-  }
-
-  &::after {
-    content: '';
-    justify-self: end;
-    width: 0.8em;
-    height: 0.5em;
-    background-color: $blue;
-    margin-right: 10px;
-    clip-path: polygon(
-      100% 0%,
-      0 0%,
-      50% 100%
-    ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
-  }
+.select::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-25%);
+  width: 0.8em;
+  height: 0.5em;
+  background-color: $blue;
+  clip-path: polygon(
+    100% 0%,
+    0 0%,
+    50% 100%
+  ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
 }
