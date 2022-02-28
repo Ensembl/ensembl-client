@@ -1,8 +1,10 @@
 @import 'src/styles/common';
 
 .selectResetDefaults {
-  // A reset of styles, including removing the default dropdown arrow
+  // Hide the native select element and position it right over the custom one, to catch user's clicks
   appearance: none;
+  position: relative;
+  z-index: 1;
   // Additional resets for further consistency
   background-color: transparent;
   border: none;
@@ -17,6 +19,7 @@
 
 .select {
   position: relative;
+  display: inline-block; // native select's display property is inline-block
   min-width: var(--select-min-width, 7ch);
   max-width: var(--select-max-width, 30ch);
   background-color: var(--select-background-color, $white);
