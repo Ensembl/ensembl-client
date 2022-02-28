@@ -57,7 +57,7 @@ describe('parseBlastInput', () => {
       const input = readFile('./input-sequence-examples/006.txt');
       expect(parseBlastInput(input)).toMatchSnapshot();
     });
-    it('does not remove numbers from numbered sequence lines', () => {
+    it('does not remove non-letter characters from numbered sequence lines', () => {
       const input = readFile('./input-sequence-examples/007.txt');
       expect(parseBlastInput(input)).toMatchSnapshot();
     });
