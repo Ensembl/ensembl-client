@@ -19,7 +19,10 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
-import { MenuItem } from 'src/shared/types/help-and-docs/menu';
+import {
+  MenuItem,
+  MenuCollectionItem
+} from 'src/shared/types/help-and-docs/menu';
 
 import styles from './AboutMenu.scss';
 
@@ -48,30 +51,50 @@ export const TopMenu = (props: Props) => {
 export const SideMenu = (props: Props) => {
   const { menu, currentUrl } = props;
 
-  const menuItem = menu.items.find(
+  const topLevelMenuItem = menu.items.find(
     (menuItem) =>
       menuItem.type === 'collection' &&
-      menuItem.items.find((item) => item.url === currentUrl)
-  );
+      (menuItem.url === currentUrl ||
+        menuItem.items.some((item) => item.url === currentUrl))
+  ) as MenuCollectionItem;
 
-  if (!menuItem || menuItem.type !== 'collection') {
-    // this shouldn't happen
+  if (!topLevelMenuItem) {
     return null;
   }
 
   return (
     <>
-      {menuItem.items.map((item, index) => {
-        const linkClasses = classNames(styles.sideMenuLink, {
-          [styles.activeLink]: item.url === currentUrl
-        });
-        return (
-          <Link className={linkClasses} to={item.url as string} key={index}>
-            {item.name}
-          </Link>
-        );
-      })}
+      {topLevelMenuItem.url &&
+        buildSideMenuLink(
+          topLevelMenuItem as { name: string; url: string },
+          currentUrl,
+          -1
+        )}
+      {topLevelMenuItem.items.map((item, index) =>
+        buildSideMenuLink(
+          item as { name: string; url: string },
+          currentUrl,
+          index
+        )
+      )}
     </>
+  );
+};
+
+const buildSideMenuLink = (
+  menuItem: { name: string; url: string },
+  currentUrl: string,
+  index: number
+) => {
+  const { name, url } = menuItem;
+  const linkClasses = classNames(styles.sideMenuLink, {
+    [styles.activeLink]: url === currentUrl
+  });
+
+  return (
+    <Link className={linkClasses} to={url} key={index}>
+      {name}
+    </Link>
   );
 };
 
