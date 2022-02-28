@@ -35,6 +35,21 @@ const sequences = [
 const selectedSpecies = ['human', 'wheat'];
 const jobName = faker.lorem.words();
 const database = faker.lorem.word();
+const blastParameters = {
+  alignments: '50',
+  scores: '50',
+  hsps: '100',
+  dropoff: '0',
+  gapalign: 'true',
+  filter: 'T',
+  compstats: 'F',
+  exp: '10',
+  gapopen: '5',
+  gapext: '2',
+  wordsize: '11',
+  match_scores: '1,-3'
+};
+
 const mockState = merge({}, initialState, {
   sequences,
   selectedSpecies,
@@ -43,7 +58,8 @@ const mockState = merge({}, initialState, {
     sequenceType: 'dna',
     program: 'blastn',
     parameters: {
-      database
+      database,
+      ...blastParameters
     }
   }
 });
@@ -55,7 +71,8 @@ const expectedPayload = {
     title: jobName,
     database,
     program: 'blastn',
-    stype: 'dna'
+    stype: 'dna',
+    ...blastParameters
   }
 };
 
