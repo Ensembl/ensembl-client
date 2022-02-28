@@ -69,10 +69,8 @@ const Zmenu = (props: ZmenuProps) => {
   const { content, variety } = props.payload;
   const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [];
 
-  // get the first variety type
-
   let featureId = '',
-    unversionedTranscriptId = '';
+    transcriptId = '';
 
   const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
     Boolean(variety.type)
@@ -103,10 +101,8 @@ const Zmenu = (props: ZmenuProps) => {
     if (gene) {
       features.push(gene);
     }
-    // FIXME: we need this hack until ENSWBSITES-1375 is fixed
-    unversionedTranscriptId = transcript.metadata.transcript_id.split(
-      '.'
-    )[0] as string;
+
+    transcriptId = transcript.metadata.transcript_id;
     featureId = `gene:${gene.metadata.id.split('.')[0]}`;
 
     dispatch(changeHighlightedTrackId(gene.metadata.track));
@@ -131,7 +127,7 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(unversionedTranscriptId)}
+            footerContent={getToolboxFooterContent(transcriptId)}
           />
         </Toolbox>
       )}
