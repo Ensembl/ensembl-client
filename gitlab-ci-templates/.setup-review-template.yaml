@@ -13,7 +13,7 @@
 
   before_script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
+    - git -C ensembl-k8s-manifests/ checkout tools-api-integration
     - cd ensembl-k8s-manifests/
     # ensembl-client
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_service.yaml
@@ -52,7 +52,14 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_track_api_ingress.yaml
+    # ensembl-tools-api
+    - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_tools_api_service.yaml
+    - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_tools_api_ingress.yaml
+    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_tools_api_ingress.yaml
   script:
+    # ensembl-tools-api
+    - kubectl apply -f ensembl_tools_api_service.yaml
+    - kubectl apply -f ensembl_tools_api_ingress.yaml
     # ensembl-track-api
     - kubectl apply -f ensembl_track_api_service.yaml
     - kubectl apply -f ensembl_track_api_ingress.yaml
