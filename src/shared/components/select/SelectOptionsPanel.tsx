@@ -92,9 +92,8 @@ const highlightedItemReducer = (
 
 const SelectOptionsPanel = (props: Props) => {
   const [shouldShowTopScrollButton, showTopScrollButton] = useState(false);
-  const [shouldShowBottomScrollButton, showBottomScrollButton] = useState(
-    false
-  );
+  const [shouldShowBottomScrollButton, showBottomScrollButton] =
+    useState(false);
   const [highlightedItemIndex, dispatch] = useReducer(
     highlightedItemReducer,
     null
@@ -161,14 +160,12 @@ const SelectOptionsPanel = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
-    document.addEventListener('touchend', handleClickOutside);
+    setTimeout(() => document.addEventListener('click', handleClickOutside), 0);
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('touchend', handleClickOutside);
     };
-  });
+  }, []);
 
   useLayoutEffect(() => {
     setOptionsPanelHeight(elementRef);

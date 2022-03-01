@@ -1,0 +1,43 @@
+@import 'src/styles/common';
+
+.selectResetDefaults {
+  // Hide the native select element and position it right over the custom one, to catch user's clicks
+  appearance: none;
+  position: relative;
+  z-index: 1;
+  // Additional resets for further consistency
+  background-color: transparent;
+  border: none;
+  padding: 3px 25px 3px 10px;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+}
+
+.select {
+  position: relative;
+  display: inline-block; // native select's display property is inline-block
+  min-width: var(--select-min-width, 7ch);
+  max-width: var(--select-max-width, 30ch);
+  background-color: var(--select-background-color, $white);
+  border: 1px solid $blue;
+}
+
+.select::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-25%);
+  width: 0.8em;
+  height: 0.5em;
+  background-color: $blue;
+  clip-path: polygon(
+    100% 0%,
+    0 0%,
+    50% 100%
+  ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
+}
