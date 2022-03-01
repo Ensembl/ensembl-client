@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 import { useSelector } from 'react-redux';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -23,6 +22,24 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
+import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
+import { BlastFormState } from '../../state/blast-form/blastFormSlice';
+
+import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+
+import type {
+  BlastParameterName,
+  SequenceType
+} from 'src/content/app/tools/blast/types/blastSettings';
+
+export type PayloadParams = {
+  genomeIds: string[];
+  querySequences: string[];
+  parameters: Partial<Record<BlastParameterName, string>> & {
+    title: string;
+    stype: SequenceType;
+  };
+};
 
 const BlastJobSubmit = () => {
   // TODO:
@@ -33,11 +50,37 @@ const BlastJobSubmit = () => {
 
   const isDisabled = !isBlastFormValid(selectedSpecies, sequences);
 
+  const blastFormData = useSelector(getBlastFormData);
+
+  const onBlastSubmit = async () => {
+    createBlastSubmissionData(blastFormData);
+  };
+
   return (
-    <PrimaryButton onClick={noop} isDisabled={isDisabled}>
+    <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
       Run
     </PrimaryButton>
   );
+};
+
+export const createBlastSubmissionData = (
+  blastFormData: BlastFormState
+): PayloadParams => {
+  const sequences = blastFormData.sequences.map((sequence) =>
+    toFasta(sequence)
+  );
+
+  return {
+    genomeIds: blastFormData.selectedSpecies,
+    querySequences: sequences,
+    parameters: {
+      title: blastFormData.settings.jobName,
+      database: blastFormData.settings.parameters.database,
+      program: blastFormData.settings.program,
+      stype: blastFormData.settings.sequenceType,
+      ...blastFormData.settings.parameters
+    }
+  };
 };
 
 export default BlastJobSubmit;
