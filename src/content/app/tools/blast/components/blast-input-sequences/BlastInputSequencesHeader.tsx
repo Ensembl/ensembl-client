@@ -66,10 +66,10 @@ const BlastInputSequencesHeader = (props: Props) => {
   };
 
   const scrollToLastInputBox = () => {
-    const lastTextarea = document.querySelector(
-      `.${sequenceBoxStyles.inputSequenceBox}:last-child textarea`
-    ) as HTMLTextAreaElement;
-    lastTextarea?.focus();
+    const lastInputBox = document.querySelector(
+      `.${sequenceBoxStyles.inputSequenceBox}:last-child`
+    ) as HTMLDivElement;
+    lastInputBox.scrollIntoView({ block: 'end', behavior: 'smooth' }); // Safari doesn't properly support this (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView); but other options scroll just as jerkily on Safari
   };
 
   const shouldEnableAddButton = isEmptyInputAppended
