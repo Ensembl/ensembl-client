@@ -48,7 +48,7 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_help_docs_ingress.yaml
-    # ensembl-help-docs
+    # ensembl-track-api
     - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_track_api_ingress.yaml
