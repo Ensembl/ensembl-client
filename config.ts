@@ -24,6 +24,7 @@ export type BaseApiUrls = {
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
   customDownloadGeneSearch: string;
+  toolsApiBaseUrl: string;
 };
 
 export type PublicKeys = {
@@ -36,7 +37,8 @@ const defaultApiUrls: BaseApiUrls = {
   docsBaseUrl: 'https://2020.ensembl.org/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
-  customDownloadGeneSearch: ''
+  customDownloadGeneSearch: '',
+  toolsApiBaseUrl: '/api/tools'
 };
 
 const defaultKeys = {
@@ -57,7 +59,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
-    customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch // irrelevant for server-side rendering
+    customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch, // irrelevant for server-side rendering
+    toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl
   };
 };
 
