@@ -17,22 +17,29 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
-import faker from 'faker';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import { createZmenuContent } from 'tests/fixtures/browser';
-
-import { ZmenuContentFeature } from 'ensembl-genome-browser';
+import { createZmenuPayload } from 'tests/fixtures/browser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser
+  })
+);
+
+jest.mock(
+  'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts',
+  () => ({
+    changeHighlightedTrackId: jest.fn(() => ({
+      type: 'change-track-highlight'
+    }))
   })
 );
 
@@ -46,19 +53,14 @@ jest.mock('./ZmenuInstantDownload', () => () => (
 ));
 
 const defaultProps: ZmenuProps = {
-  anchor_coordinates: {
-    x: 490,
-    y: 80
-  },
   browserRef: {
     current: document.createElement('div')
   },
-  content: createZmenuContent() as ZmenuContentFeature[],
-  id: faker.lorem.words(),
-  unversioned_id: faker.lorem.words()
+  zmenuId: '1',
+  payload: createZmenuPayload()
 };
 
-const mockStore = configureMockStore();
+const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
 const renderComponent = () => {
   store = mockStore();
@@ -69,10 +71,6 @@ const renderComponent = () => {
   );
 };
 describe('<Zmenu />', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   describe('rendering', () => {
     test('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();

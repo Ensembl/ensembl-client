@@ -15,19 +15,16 @@
  */
 
 import React, { useEffect, memo } from 'react';
-import { useDispatch } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
-  ZmenuAction,
+  ZmenuCreateAction,
   IncomingActionType,
-  ZmenuPayload
-} from 'ensembl-genome-browser';
+  ZmenuCreatePayload
+} from '@ensembl/ensembl-genome-browser';
 
 import Zmenu from './Zmenu';
-
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
@@ -37,12 +34,11 @@ type Props = {
 // and its data is saved in the state keyed by this id
 // (just in case we need to show more than one zmenu at a time)
 export type StateZmenu = {
-  [key: string]: ZmenuPayload;
+  [key: string]: ZmenuCreatePayload;
 };
 
 const ZmenuController = (props: Props) => {
   const { genomeBrowser, zmenus, setZmenus } = useGenomeBrowser();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -53,15 +49,18 @@ const ZmenuController = (props: Props) => {
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const handleZmenuCreate = (action: ZmenuAction) => {
+  const handleZmenuCreate = (action: ZmenuCreateAction) => {
     const payload = action.payload;
 
-    dispatch(changeHighlightedTrackId(payload.content[0].metadata.track));
+    if (!payload.variety.length) {
+      return;
+    }
+    const zmenuId = Object.keys(zmenus).length + 1;
 
     setZmenus &&
       setZmenus({
         ...zmenus,
-        [payload.id]: payload
+        [zmenuId]: payload
       });
   };
 
@@ -69,7 +68,12 @@ const ZmenuController = (props: Props) => {
     return null;
   }
   const zmenuElements = Object.keys(zmenus).map((id) => (
-    <Zmenu key={id} browserRef={props.browserRef} {...zmenus[id]} />
+    <Zmenu
+      key={id}
+      zmenuId={id}
+      browserRef={props.browserRef}
+      payload={zmenus[id]}
+    />
   ));
 
   return <>{zmenuElements}</>;

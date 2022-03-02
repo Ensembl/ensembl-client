@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { OutgoingActionType } from 'ensembl-genome-browser';
+import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 

@@ -21,7 +21,7 @@ import {
   IncomingActionType,
   TrackSummaryList,
   TrackSummary
-} from 'ensembl-genome-browser';
+} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
