@@ -8,6 +8,7 @@
 _Using one or more sentences, describe the proposed changes and the reason for making them._
 -->
 
+
 ## Related JIRA Issue(s)
 <!--_Please provide the URL(s) for any JIRA issues related to this PR._-->
 
@@ -15,7 +16,8 @@ _Using one or more sentences, describe the proposed changes and the reason for m
 <!--
 If applicable, follow instructions here: https://www.ebi.ac.uk/seqdb/confluence/display/ENSWEB/Setting+Up+Review+Apps  on how to deploy.
 -->
-http://<BRANCH_NAME_HERE>.review.ensembl.org
+http://__BRANCH_NAME_HERE__.review.ensembl.org
+
 
 ## Views affected
 <!--
