@@ -73,16 +73,4 @@ describe('<RadioGroup />', () => {
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });
-
-  it('does not respond to interactions when disabled', () => {
-    const { container } = render(
-      <RadioGroup {...defaultProps} disabled={true} />
-    );
-
-    const firstRadioButton = container.querySelector('.radio');
-
-    userEvent.click(firstRadioButton as HTMLElement);
-
-    expect(onChange).not.toHaveBeenCalled();
-  });
 });

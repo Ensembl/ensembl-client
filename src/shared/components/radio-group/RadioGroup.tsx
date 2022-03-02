@@ -33,7 +33,6 @@ export type RadioGroupProps = {
   onChange: (selectedOption: OptionValue) => void;
   options: RadioOptions;
   selectedOption: OptionValue;
-  disabled?: boolean;
   theme?: Theme;
   direction?: Direction;
   className?: string; // optional class name for the whole radio group element
@@ -44,7 +43,7 @@ const RadioGroup = (props: RadioGroupProps) => {
   const theme = props.theme ?? 'light';
 
   const handleChange = (value: OptionValue) => {
-    if (props.disabled || value === props.selectedOption) {
+    if (value === props.selectedOption) {
       return;
     }
     props.onChange(value);
@@ -77,7 +76,6 @@ const RadioGroup = (props: RadioGroupProps) => {
             type="radio"
             onChange={() => handleChange(option.value)}
             checked={option.value === props.selectedOption}
-            disabled={props.disabled}
           />
         </label>
       ))}
