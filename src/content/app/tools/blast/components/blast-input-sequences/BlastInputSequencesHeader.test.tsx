@@ -31,6 +31,8 @@ import BlastInputSequencesHeader, {
   type Props as BlastInputSequencesHeaderProps
 } from './BlastInputSequencesHeader';
 
+import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
+
 const defaultProps: BlastInputSequencesHeaderProps = {
   compact: false
 };
@@ -93,10 +95,27 @@ describe('BlastInputSequencesHeader', () => {
         `${numberOfSequences}`
       );
     });
+
+    it('adds 1 to the number of committed sequences if the user is typing in a new one', () => {
+      const numberOfSequences = random(1, 30);
+      const sequences = times(numberOfSequences, () => ({ value: 'ACTG' }));
+      const { container } = renderComponent({
+        state: {
+          sequences,
+          hasUncommittedSequence: true // flag that gets set when the user is typing a sequence but has not yet committed it
+        }
+      });
+      const sequenceCounter = container.querySelector(
+        '.header .sequenceCounter'
+      );
+      expect(getNodeText(sequenceCounter as HTMLElement)).toBe(
+        `${numberOfSequences + 1}`
+      );
+    });
   });
 
   describe('button for adding sequences', () => {
-    it('is disabled if a flag for appending an empty input box is set', () => {
+    it('is disabled if the list of sequence input boxes ends in an empty one', () => {
       const { container } = renderComponent(); // initial state has shouldAppendEmptyInput set to true
       const addSequenceButton = container.querySelector(
         '.addSequence .plusButton'
@@ -105,7 +124,49 @@ describe('BlastInputSequencesHeader', () => {
       expect(addSequenceButton.hasAttribute('disabled')).toBe(true);
     });
 
-    it('toggles a flag for displaying an empty input box', () => {
+    it('is enabled if there are no empty sequence input boxes in the list', () => {
+      const { container } = renderComponent({
+        state: { shouldAppendEmptyInput: false }
+      });
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      ) as HTMLButtonElement;
+
+      expect(addSequenceButton.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('is enabled when the user starts typing in an empty sequence box', () => {
+      const { container } = renderComponent({
+        state: {
+          shouldAppendEmptyInput: false,
+          hasUncommittedSequence: true // flag that gets set when the user is typing a sequence but has not yet committed it
+        }
+      });
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      ) as HTMLButtonElement;
+
+      expect(addSequenceButton.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('is disabled if the number of added sequences has reached the allowed maximum', () => {
+      const sequences = times(MAX_BLAST_SEQUENCE_COUNT, () => ({
+        value: 'ACTG'
+      }));
+      const { container } = renderComponent({
+        state: {
+          shouldAppendEmptyInput: false, // means that the button would be enabled if not for the sequence count
+          sequences
+        }
+      });
+      const addSequenceButton = container.querySelector(
+        '.addSequence .plusButton'
+      ) as HTMLButtonElement;
+
+      expect(addSequenceButton.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('toggles the flag for displaying an empty input box', () => {
       const { container, store } = renderComponent({
         state: { shouldAppendEmptyInput: false }
       });

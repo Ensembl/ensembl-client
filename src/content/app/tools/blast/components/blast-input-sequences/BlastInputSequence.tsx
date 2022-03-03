@@ -46,6 +46,7 @@ type Props = {
   sequenceType: SequenceType;
   title?: string;
   onCommitted: (input: string, index: number | null) => void;
+  onInput?: (input: string, index: number | null) => void;
   onRemoveSequence?: (index: number | null) => void;
 };
 
@@ -83,7 +84,9 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onChange = (event: FormEvent<HTMLTextAreaElement>) => {
-    setInput(event.currentTarget.value);
+    const { value } = event.currentTarget;
+    setInput(value);
+    props.onInput?.(value, index);
   };
 
   const onPaste = (event: ClipboardEvent<HTMLTextAreaElement>) => {
@@ -117,12 +120,9 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onClear = () => {
-    if (typeof index === 'number') {
-      props.onRemoveSequence?.(index);
-      forceReadSequenceFromProps();
-    } else {
-      setInput('');
-    }
+    setInput('');
+    props.onRemoveSequence?.(index);
+    props.onInput?.('', index);
   };
 
   const isInputValid = input
@@ -141,11 +141,9 @@ const BlastInputSequence = (props: Props) => {
     <div className={inputBoxClassnames} ref={dropZoneRef}>
       <div className={styles.header}>
         <span>{title}</span>
-        {input && (
-          <span className={styles.deleteButtonWrapper}>
-            <DeleteButton ref={deleteButtonRef} onClick={onClear} />
-          </span>
-        )}
+        <span className={styles.deleteButtonWrapper}>
+          <DeleteButton ref={deleteButtonRef} onClick={onClear} />
+        </span>
       </div>
       <div className={styles.body}>
         <Textarea

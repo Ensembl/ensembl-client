@@ -16,8 +16,8 @@
 import faker from 'faker';
 import {
   isBlastFormValid,
-  BLAST_SPECIES_LIMIT,
-  BLAST_SEQUENCE_LIMIT
+  MAX_BLAST_SPECIES_COUNT,
+  MAX_BLAST_SEQUENCE_COUNT
 } from '../blastFormValidator';
 
 const createFakeSpecies = (times: number) => {
@@ -32,7 +32,7 @@ const createFakeSequences = (times: number) => {
 
 describe('isBlastFormValid', () => {
   it('fails validation if the number of species is more than the limit', () => {
-    const species = createFakeSpecies(BLAST_SPECIES_LIMIT + 1);
+    const species = createFakeSpecies(MAX_BLAST_SPECIES_COUNT + 1);
     const sequences = createFakeSequences(1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
@@ -40,7 +40,7 @@ describe('isBlastFormValid', () => {
 
   it('fails validation if the number of sequences is more than the limit', () => {
     const species = createFakeSpecies(1);
-    const sequences = createFakeSequences(BLAST_SEQUENCE_LIMIT + 1);
+    const sequences = createFakeSequences(MAX_BLAST_SEQUENCE_COUNT + 1);
 
     expect(isBlastFormValid(species, sequences)).toBe(false);
   });

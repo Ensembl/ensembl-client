@@ -22,6 +22,9 @@ export const getSequences = (state: RootState) =>
 export const getEmptyInputVisibility = (state: RootState) =>
   state.blast.blastForm.shouldAppendEmptyInput;
 
+export const getUncommittedSequencePresence = (state: RootState) =>
+  state.blast.blastForm.hasUncommittedSequence;
+
 export const getSelectedSequenceType = (state: RootState) =>
   state.blast.blastForm.settings.sequenceType;
 

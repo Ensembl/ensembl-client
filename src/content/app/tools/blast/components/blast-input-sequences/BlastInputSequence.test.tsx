@@ -18,6 +18,7 @@ import React from 'react';
 import { setTimeout } from 'timers/promises';
 import { render, fireEvent, createEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import faker from 'faker';
 import random from 'lodash/random';
 
 import BlastInputSequence from './BlastInputSequence';
@@ -74,11 +75,11 @@ describe('<BlastInputSequence />', () => {
       expect(commonProps.onCommitted).toHaveBeenCalledWith(testFasta, null);
     });
 
-    it('does not contain a control for clearing the input', () => {
+    it('contains a control for clearing the input', () => {
       const { container } = render(<BlastInputSequence {...commonProps} />);
       const deleteButton = container.querySelector('.deleteButton');
 
-      expect(deleteButton).toBe(null);
+      expect(deleteButton).toBeTruthy();
     });
   });
 
@@ -153,11 +154,13 @@ describe('<BlastInputSequence />', () => {
   });
 
   describe('when filled', () => {
-    it('can clear the input locally if the input has not yet been passed to the parent', () => {
+    it('clears the input locally and reports to the parent', () => {
       const onRemoveSequence = jest.fn();
+      const inputIndex = faker.datatype.boolean() ? 1 : undefined; // an input box may receive an index property
       const { container } = render(
         <BlastInputSequence
           {...commonProps}
+          index={inputIndex}
           onRemoveSequence={onRemoveSequence}
         />
       );
@@ -170,7 +173,7 @@ describe('<BlastInputSequence />', () => {
       userEvent.click(deleteButton as HTMLElement);
 
       expect(textarea.value).toBe('');
-      expect(onRemoveSequence).not.toHaveBeenCalled();
+      expect(onRemoveSequence).toHaveBeenCalledWith(inputIndex ?? null);
     });
   });
 });
