@@ -69,10 +69,7 @@ const useBlastAPI = () => {
         .fetch(endpointURL, {
           method: HTTPMethod.POST,
           preserveEndpoint: true,
-          body: dataToSubmit,
-          headers: {
-            'Content-type': 'application/json'
-          }
+          body: dataToSubmit
         })
         .then((response: BlastJobResult) => {
           dispatch(

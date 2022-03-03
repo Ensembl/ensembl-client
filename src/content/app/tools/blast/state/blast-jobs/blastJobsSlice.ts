@@ -58,8 +58,9 @@ const blastJobsSlice = createSlice({
       state,
       action: PayloadAction<SaveBlastJobResultPayload>
     ) {
-      const { jobId, result, status } = action.payload;
+      const { jobId, result, status, error } = action.payload;
       state.jobs[jobId].result = result;
+      state.jobs[jobId].error = error;
       state.jobs[jobId].status = status;
     }
   }
