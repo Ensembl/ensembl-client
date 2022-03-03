@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import blastFormReducer from './blast-form/blastFormSlice';
-import blastJobsReducer from './blast-jobs/blastJobsSlice';
-
-export default combineReducers({
-  blastForm: blastFormReducer,
-  blastJobs: blastJobsReducer
-});
+export const getNextJobId = (state: RootState) =>
+  state.blast.blastJobs.jobs.length;

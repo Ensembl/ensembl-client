@@ -26,7 +26,7 @@ import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormVal
 import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
 
 const BlastJobSubmit = () => {
-  const { createBlastSubmissionData, submitBlastJob } = useBlastAPI();
+  const { submitBlastJob } = useBlastAPI();
 
   const { sequences } = useBlastInputSequences();
   const selectedSpecies = useSelector(getSelectedSpeciesIds);
@@ -36,9 +36,18 @@ const BlastJobSubmit = () => {
   const blastFormData = useSelector(getBlastFormData);
 
   const onBlastSubmit = async () => {
-    createBlastSubmissionData(blastFormData);
+    const result = await submitBlastJob(blastFormData);
 
-    submitBlastJob(blastFormData);
+    if (!result) {
+      return;
+    }
+
+    const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${result.jobIds[0]}`;
+
+    const resultTab = window.open(resultPageUrl, '_blank');
+    if (resultTab !== null) {
+      resultTab.focus();
+    }
   };
 
   return (

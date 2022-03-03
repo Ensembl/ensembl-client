@@ -34,6 +34,7 @@ const blastParameterNames = [
 
 export type BlastParameterName = typeof blastParameterNames[number];
 export type SequenceType = 'dna' | 'protein';
+type DatabaseType = 'cdna' | 'dna' | 'pep';
 export type BlastProgram =
   | 'blastn'
   | 'tblastx'
@@ -80,7 +81,7 @@ export type Presets = {
 
 type ProgramConfiguration = {
   sequence_type: SequenceType;
-  database_type: SequenceType;
+  database_type: DatabaseType;
   programs: BlastProgram[];
 };
 
