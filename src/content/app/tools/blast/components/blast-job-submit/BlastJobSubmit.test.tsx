@@ -17,9 +17,9 @@
 import faker from 'faker';
 import merge from 'lodash/merge';
 
-import { createBlastSubmissionData } from './BlastJobSubmit';
 import { initialState } from '../../state/blast-form/blastFormSlice';
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+import { createBlastSubmissionData } from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 const sequences = [
   {
@@ -76,7 +76,7 @@ const expectedPayload = {
   }
 };
 
-describe('<BlastJobSubmit />', () => {
+describe('createBlastSubmissionData', () => {
   it('transforms form data into blast payload', () => {
     const payload = createBlastSubmissionData(mockState);
     expect(payload).toEqual(expectedPayload);

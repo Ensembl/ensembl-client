@@ -7,7 +7,7 @@
       "options": [
         {
           "label": "Genomic sequence",
-          "value": "genomic"
+          "value": "dna"
         },
         {
           "label": "cDNAs (transcripts/splice variants)",
@@ -15,7 +15,7 @@
         },
         {
           "label": "Proteins",
-          "value": "proteins"
+          "value": "pep"
         }
       ]
     },
@@ -563,9 +563,9 @@
     }
   },
   "database_sequence_types": {
-    "genomic": "dna",
+    "dna": "dna",
     "cdna": "dna",
-    "proteins": "protein"
+    "pep": "protein"
   },
   "programs_configurator": [
     {
@@ -575,7 +575,7 @@
     },
     {
       "sequence_type": "dna",
-      "database_type": "protein",
+      "database_type": "pep",
       "programs": ["blastx"]
     },
     {
@@ -585,13 +585,13 @@
     },
     {
       "sequence_type": "protein",
-      "database_type": "protein",
+      "database_type": "pep",
       "programs": ["blastp"]
     }
   ],
   "defaults": {
     "program": "blastn",
-    "database": "genomic"
+    "database": "dna"
   },
   "presets": {
     "label": "Search sensitivity",

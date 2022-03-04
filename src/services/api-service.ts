@@ -82,7 +82,7 @@ class ApiService {
     }
     return {
       method: options.method || defaultMethod,
-      headers: { ...defaultHeaders, ...options.headers },
+      headers: headers,
       body: options.body,
       signal: options.signal
     };

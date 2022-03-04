@@ -17,17 +17,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import useBlastAPI from 'src/content/app/tools/blast/hooks/useBlastAPI';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
 import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
-import { BlastFormState } from '../../state/blast-form/blastFormSlice';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
-import type {
+import { BlastFormState } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import {
   BlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
@@ -42,8 +43,7 @@ export type PayloadParams = {
 };
 
 const BlastJobSubmit = () => {
-  // TODO:
-  // 1) actually do the job submission
+  const { submitBlastJob } = useBlastAPI();
 
   const { sequences } = useBlastInputSequences();
   const selectedSpecies = useSelector(getSelectedSpeciesIds);
@@ -53,7 +53,22 @@ const BlastJobSubmit = () => {
   const blastFormData = useSelector(getBlastFormData);
 
   const onBlastSubmit = async () => {
-    createBlastSubmissionData(blastFormData);
+    const dataToSubmit = JSON.stringify(
+      createBlastSubmissionData(blastFormData)
+    );
+
+    const result = await submitBlastJob(dataToSubmit);
+
+    if (!result) {
+      return;
+    }
+
+    const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${result.jobIds[0]}`;
+
+    const resultTab = window.open(resultPageUrl, '_blank');
+    if (resultTab !== null) {
+      resultTab.focus();
+    }
   };
 
   return (
