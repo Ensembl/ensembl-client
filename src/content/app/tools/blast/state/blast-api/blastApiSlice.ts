@@ -27,10 +27,6 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         url: `api/tools/blast/config`
       }),
       keepUnusedDataFor: 60 * 60 // one hour
-      // onQueryStarted: async (_, { dispatch, queryFulfilled}) => {
-      //   const { data: config } = await queryFulfilled;
-      //   dispatch(setBlastSettingsConfig());
-      // }
     })
   })
 });
