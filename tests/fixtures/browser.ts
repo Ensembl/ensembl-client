@@ -16,10 +16,13 @@
 
 import faker from 'faker';
 import {
-  ZmenuContentFeature,
   Markup,
-  ZmenuFeatureType
-} from 'ensembl-genome-browser';
+  ZmenuFeatureType,
+  ZmenuContentTranscript,
+  ZmenuContentGene,
+  ZmenuCreatePayload,
+  ZmenuPayloadVarietyType
+} from '@ensembl/ensembl-genome-browser';
 
 import {
   getChrLocationStr,
@@ -72,55 +75,76 @@ export const createTrackConfigNames = () => ({
   'track:variant': true
 });
 
-export const createZmenuContent = (): ZmenuContentFeature[] => [
-  {
-    data: [
-      [
-        {
-          items: [
-            { markup: [Markup.LIGHT], text: 'Transcript' },
-            { markup: [], text: ' ' },
-            { markup: [], text: 'transcript_id' }
-          ],
-          type: 'block'
-        },
-        {
-          items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
-          type: 'block'
+export const createZmenuContentPayload = (): {
+  features: (ZmenuContentTranscript | ZmenuContentGene)[];
+  featureId: string;
+} => {
+  return {
+    features: [
+      {
+        data: [
+          [
+            {
+              items: [
+                { markup: [Markup.LIGHT], text: 'Transcript' },
+                { markup: [], text: ' ' },
+                { markup: [], text: 'transcript_id' }
+              ],
+              type: 'block'
+            },
+            {
+              items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
+              type: 'block'
+            }
+          ]
+        ],
+        metadata: {
+          transcript_id: 'transcript_id.1',
+          designation: 'designation',
+          strand: 'forward',
+          transcript_biotype: 'protein_coding',
+          track: 'track',
+          type: ZmenuFeatureType.TRANSCRIPT,
+          gene_id: 'gene_id'
         }
-      ]
+      },
+      {
+        data: [
+          [
+            {
+              items: [
+                { markup: [Markup.LIGHT], text: 'Gene' },
+                { markup: [], text: ' ' },
+                { markup: [], text: 'gene_id' }
+              ],
+              type: 'block'
+            }
+          ]
+        ],
+        metadata: {
+          id: 'gene_id',
+          symbol: 'symbol',
+          track: 'track_id',
+          type: ZmenuFeatureType.GENE
+        }
+      }
     ],
-    metadata: {
-      transcript_id: 'transcript_id',
-      designation: 'designation',
-      strand: 'forward',
-      transcript_biotype: 'protein_coding',
-      track: 'track',
-      type: ZmenuFeatureType.TRANSCRIPT
-    }
-  },
+    featureId: 'transcript_id'
+  };
+};
 
-  {
-    data: [
-      [
-        {
-          items: [
-            { markup: [Markup.LIGHT], text: 'Gene' },
-            { markup: [], text: ' ' },
-            { markup: [], text: 'gene_id' }
-          ],
-          type: 'block'
-        }
-      ]
-    ],
-    metadata: {
-      id: 'gene_id',
-      symbol: 'symbol',
-      track: 'track_id',
-      type: ZmenuFeatureType.GENE
-    }
-  }
-];
+export const createZmenuPayload = (): ZmenuCreatePayload => {
+  return {
+    x: 100,
+    y: 100,
+    content: [...createZmenuContentPayload().features],
+    variety: [
+      {
+        type: ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT
+      }
+    ]
+  };
+};
 
 export const createRegionValidationInfo = (): RegionValidationResponse => {
   const randomValue = faker.datatype.number();

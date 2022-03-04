@@ -17,6 +17,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { pickBy } from 'lodash';
+import {
+  ZmenuContentTranscript,
+  ZmenuContentGene,
+  ZmenuPayloadVariety,
+  ZmenuPayloadVarietyType,
+  ZmenuCreatePayload
+} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
@@ -31,8 +38,6 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuPayload } from 'ensembl-genome-browser';
-
 import styles from './Zmenu.scss';
 
 enum Direction {
@@ -40,7 +45,9 @@ enum Direction {
   RIGHT = 'right'
 }
 
-export type ZmenuProps = ZmenuPayload & {
+export type ZmenuProps = {
+  zmenuId: string;
+  payload: ZmenuCreatePayload;
   browserRef: React.RefObject<HTMLDivElement>;
 };
 
@@ -51,15 +58,62 @@ const Zmenu = (props: ZmenuProps) => {
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
-    setZmenus && setZmenus(pickBy(zmenus, (value, key) => key !== props.id));
+    setZmenus &&
+      setZmenus(pickBy(zmenus, (value, key) => key !== props.zmenuId));
   };
 
   const direction = chooseDirection(props);
   const toolboxPosition =
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
+  const { content, variety } = props.payload;
+  const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [];
+
+  let featureId = '',
+    transcriptId = '';
+
+  const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
+    Boolean(variety.type)
+  )?.type;
+
+  if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
+    const transcript = content.find(
+      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+        feature.metadata.type === 'transcript'
+    ) as ZmenuContentTranscript;
+
+    if (!transcript) {
+      return null;
+    }
+
+    features.push(transcript);
+
+    const gene = content.find(
+      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+        feature.metadata.type === 'gene' &&
+        feature.metadata.id === transcript.metadata.gene_id
+    ) as ZmenuContentGene;
+
+    if (!gene) {
+      return null;
+    }
+
+    if (gene) {
+      features.push(gene);
+    }
+
+    transcriptId = transcript.metadata.transcript_id;
+    featureId = `gene:${gene.metadata.id.split('.')[0]}`;
+
+    dispatch(changeHighlightedTrackId(gene.metadata.track));
+  }
+
   const mainContent = (
-    <ZmenuContent content={props.content} destroyZmenu={destroyZmenu} />
+    <ZmenuContent
+      features={features}
+      featureId={featureId}
+      destroyZmenu={destroyZmenu}
+    />
   );
   const anchorStyles = getAnchorInlineStyles(props);
 
@@ -73,7 +127,7 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(props.unversioned_id)}
+            footerContent={getToolboxFooterContent(transcriptId)}
           />
         </Toolbox>
       )}
@@ -82,9 +136,7 @@ const Zmenu = (props: ZmenuProps) => {
 };
 
 const getAnchorInlineStyles = (params: ZmenuProps) => {
-  const {
-    anchor_coordinates: { x, y }
-  } = params;
+  const { x, y } = params.payload;
   return {
     left: `${x}px`,
     top: `${y}px`
@@ -95,7 +147,7 @@ const getAnchorInlineStyles = (params: ZmenuProps) => {
 const chooseDirection = (params: ZmenuProps) => {
   const browserElement = params.browserRef.current as HTMLDivElement;
   const { width } = browserElement.getBoundingClientRect();
-  const { x } = params.anchor_coordinates;
+  const { x } = params.payload;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
 };
 

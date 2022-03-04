@@ -17,7 +17,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  getEmptyInputVisibility,
+  getUncommittedSequencePresence
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import {
   updateEmptyInputDisplay,
@@ -29,6 +32,8 @@ import useBlastInputSequences from './useBlastInputSequences';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+
+import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
 
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -44,7 +49,8 @@ const BlastInputSequencesHeader = (props: Props) => {
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
     useBlastInputSequences();
 
-  const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
+  const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
+  const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
 
   const dispatch = useDispatch();
 
@@ -60,17 +66,26 @@ const BlastInputSequencesHeader = (props: Props) => {
   };
 
   const scrollToLastInputBox = () => {
-    const lastTextarea = document.querySelector(
-      `.${sequenceBoxStyles.inputSequenceBox}:last-child textarea`
-    ) as HTMLTextAreaElement;
-    lastTextarea?.focus();
+    const lastInputBox = document.querySelector(
+      `.${sequenceBoxStyles.inputSequenceBox}:last-child`
+    ) as HTMLDivElement;
+    lastInputBox.scrollIntoView({ block: 'end', behavior: 'smooth' }); // Safari doesn't properly support this (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView); but other options scroll just as jerkily on Safari
   };
+
+  const shouldEnableAddButton = isEmptyInputAppended
+    ? isUserTypingInEmptyInput &&
+      sequences.length < MAX_BLAST_SEQUENCE_COUNT - 1
+    : sequences.length < MAX_BLAST_SEQUENCE_COUNT;
+
+  const sequencesCount = isUserTypingInEmptyInput
+    ? sequences.length + 1
+    : sequences.length;
 
   return (
     <div className={styles.header}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Sequences</span>
-        <span className={styles.sequenceCounter}>{sequences.length}</span>
+        <span className={styles.sequenceCounter}>{sequencesCount}</span>
         <span className={styles.maxSequences}>of 30</span>
       </div>
       <SequenceSwitcher
@@ -83,7 +98,7 @@ const BlastInputSequencesHeader = (props: Props) => {
         </span>
         <AddAnotherSequence
           onAdd={appendEmptyInput}
-          disabled={shouldAppendEmptyInput}
+          disabled={!shouldEnableAddButton}
         />
         {compact && (
           <SecondaryButton

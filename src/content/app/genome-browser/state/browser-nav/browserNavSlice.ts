@@ -15,7 +15,7 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { OutgoingActionType } from 'ensembl-genome-browser';
+import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 export enum BrowserNavAction {
   MOVE_UP = 'move_up',
