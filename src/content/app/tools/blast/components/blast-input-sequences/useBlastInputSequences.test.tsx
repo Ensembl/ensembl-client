@@ -20,6 +20,8 @@ import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 
+import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+
 import {
   getSequences,
   getSelectedSequenceType,
@@ -29,6 +31,12 @@ import blastFormReducer, {
   initialState as initialBlastFormState,
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
+  return {
+    useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
+  };
+});
 
 const rootReducer = combineReducers({
   blast: combineReducers({

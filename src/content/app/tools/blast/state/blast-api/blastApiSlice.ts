@@ -22,7 +22,7 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
 
 const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    config: builder.query<BlastSettingsConfig, void>({
+    blastConfig: builder.query<BlastSettingsConfig, void>({
       query: () => ({
         url: `api/tools/blast/config`
       }),
@@ -35,4 +35,4 @@ const blastApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useConfigQuery } = blastApiSlice;
+export const { useBlastConfigQuery } = blastApiSlice;

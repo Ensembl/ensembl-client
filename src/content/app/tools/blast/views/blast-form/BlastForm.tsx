@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { useConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
 import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -35,7 +35,7 @@ import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-s
 import styles from './BlastForm.scss';
 
 const BlastForm = () => {
-  const { data: config } = useConfigQuery();
+  const { data: config } = useBlastConfigQuery();
 
   if (!config) {
     return null;

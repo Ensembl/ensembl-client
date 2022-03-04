@@ -20,12 +20,20 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+
 import blastFormReducer, {
   initialState as initialBlastFormState,
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import BlastInputSequences from './BlastInputSequences';
+
+jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
+  return {
+    useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
+  };
+});
 
 const renderComponent = (
   { state }: { state?: Partial<BlastFormState> } = { state: {} }
