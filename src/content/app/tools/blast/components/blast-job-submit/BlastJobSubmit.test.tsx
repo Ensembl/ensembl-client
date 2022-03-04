@@ -17,9 +17,9 @@
 import faker from 'faker';
 import merge from 'lodash/merge';
 
-import { initialState } from '../state/blast-form/blastFormSlice';
+import { initialState } from '../../state/blast-form/blastFormSlice';
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
-import { createBlastSubmissionData } from 'src/content/app/tools/blast/hooks/useBlastAPI';
+import { createBlastSubmissionData } from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 const sequences = [
   {

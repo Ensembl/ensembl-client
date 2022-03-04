@@ -25,6 +25,23 @@ import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-f
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
 import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
 
+import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+
+import { BlastFormState } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import {
+  BlastParameterName,
+  SequenceType
+} from 'src/content/app/tools/blast/types/blastSettings';
+
+export type PayloadParams = {
+  genomeIds: string[];
+  querySequences: string[];
+  parameters: Partial<Record<BlastParameterName, string>> & {
+    title: string;
+    stype: SequenceType;
+  };
+};
+
 const BlastJobSubmit = () => {
   const { submitBlastJob } = useBlastAPI();
 
@@ -36,7 +53,11 @@ const BlastJobSubmit = () => {
   const blastFormData = useSelector(getBlastFormData);
 
   const onBlastSubmit = async () => {
-    const result = await submitBlastJob(blastFormData);
+    const dataToSubmit = JSON.stringify(
+      createBlastSubmissionData(blastFormData)
+    );
+
+    const result = await submitBlastJob(dataToSubmit);
 
     if (!result) {
       return;
@@ -55,6 +76,26 @@ const BlastJobSubmit = () => {
       Run
     </PrimaryButton>
   );
+};
+
+export const createBlastSubmissionData = (
+  blastFormData: BlastFormState
+): PayloadParams => {
+  const sequences = blastFormData.sequences.map((sequence) =>
+    toFasta(sequence)
+  );
+
+  return {
+    genomeIds: blastFormData.selectedSpecies,
+    querySequences: sequences,
+    parameters: {
+      title: blastFormData.settings.jobName,
+      database: blastFormData.settings.parameters.database,
+      program: blastFormData.settings.program,
+      stype: blastFormData.settings.sequenceType,
+      ...blastFormData.settings.parameters
+    }
+  };
 };
 
 export default BlastJobSubmit;
