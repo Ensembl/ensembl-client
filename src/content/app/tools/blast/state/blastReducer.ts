@@ -17,9 +17,7 @@
 import { combineReducers } from 'redux';
 
 import blastFormReducer from './blast-form/blastFormSlice';
-import blastJobsReducer from './blast-jobs/blastJobsSlice';
 
 export default combineReducers({
-  blastForm: blastFormReducer,
-  blastJobs: blastJobsReducer
+  blastForm: blastFormReducer
 });
