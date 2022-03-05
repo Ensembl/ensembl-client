@@ -575,7 +575,7 @@
     },
     {
       "sequence_type": "dna",
-      "database_type": "pep",
+      "database_type": "protein",
       "programs": ["blastx"]
     },
     {
@@ -585,7 +585,7 @@
     },
     {
       "sequence_type": "protein",
-      "database_type": "pep",
+      "database_type": "protein",
       "programs": ["blastp"]
     }
   ],
