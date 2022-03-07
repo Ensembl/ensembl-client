@@ -242,7 +242,7 @@ const BlastSettings = () => {
             })}
           {buildSelect({
             ...(getParameterData('wordsize') as BlastSelectSetting),
-            selectedOption: blastParameters.match_scores as string,
+            selectedOption: blastParameters.wordsize as string,
             onChange: (value: string) =>
               onBlastParameterChange('wordsize', value)
           })}
@@ -254,13 +254,13 @@ const BlastSettings = () => {
           })}
           {buildSelect({
             ...(getParameterData('gapext') as BlastSelectSetting),
-            selectedOption: blastParameters.gapopen as string,
+            selectedOption: blastParameters.gapext as string,
             onChange: (value: string) => onBlastParameterChange('gapext', value)
           })}
           {databaseSequenceType === 'protein' &&
             buildSelect({
               ...(getParameterData('matrix') as BlastSelectSetting),
-              selectedOption: blastParameters.gapopen as string,
+              selectedOption: blastParameters.matrix as string,
               onChange: (value: string) =>
                 onBlastParameterChange('matrix', value)
             })}
