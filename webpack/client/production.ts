@@ -21,7 +21,7 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
-import WorkboxPlugin from 'workbox-webpack-plugin';
+import { GenerateSW } from 'workbox-webpack-plugin';
 
 import { getPaths } from '../paths';
 const paths = getPaths('production');
@@ -91,7 +91,7 @@ export default (): Configuration => {
       }),
 
       // adds workbox library (from Google) support to enable service workers
-      new WorkboxPlugin.GenerateSW({
+      new GenerateSW({
         clientsClaim: true,
         skipWaiting: true,
         exclude: [
