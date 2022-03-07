@@ -29,8 +29,6 @@ import {
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
-import { ReactComponent as ResetIcon } from 'static/icons/icon_delete.svg';
-
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import FiltersAccordionSection from 'src/content/app/custom-download/containers/content/filter-accordion/sections/FiltersAccordionSection';
@@ -45,7 +43,9 @@ import {
 } from 'src/content/app/custom-download/state/filters/filtersSelector';
 import { getPreviewResult } from 'src/content/app/custom-download/state/customDownloadSelectors';
 
-import JSONValue from 'src/shared/types/JSON';
+import ResetIcon from 'static/icons/icon_delete.svg';
+
+import type JSONValue from 'src/shared/types/JSON';
 import { Status } from 'src/shared/types/status';
 
 import styles from './FiltersAccordion.scss';

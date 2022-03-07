@@ -21,9 +21,9 @@ import { Invitation, Header } from './preform-header/PreformHeader';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
-import { ReactComponent as BlogIcon } from 'static/icons/icon_blog.svg';
-import { ReactComponent as FacebookIcon } from 'static/icons/icon_facebook.svg';
-import { ReactComponent as TwitterIcon } from 'static/icons/icon_twitter.svg';
+import BlogIcon from 'static/icons/icon_blog.svg';
+import FacebookIcon from 'static/icons/icon_facebook.svg';
+import TwitterIcon from 'static/icons/icon_twitter.svg';
 
 import styles from './ContactUs.scss';
 

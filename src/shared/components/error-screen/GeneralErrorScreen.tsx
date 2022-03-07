@@ -25,7 +25,7 @@ import { Topbar } from 'src/header/Header';
 import ShowHide from '../show-hide/ShowHide';
 import { PrimaryButton } from '../button/Button';
 
-import { ReactComponent as InfoIcon } from 'static/icons/icon_alert_circle.svg';
+import InfoIcon from 'static/icons/icon_alert_circle.svg';
 
 import styles from './ErrorScreen.scss';
 

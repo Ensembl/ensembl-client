@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import useFileDrop from './hooks/useFileDrop';
 import { transformFiles, transformFile } from './helpers/uploadHelpers';
 
-import { ReactComponent as UploadIcon } from 'static/icons/icon_upload.svg';
+import UploadIcon from 'static/icons/icon_upload.svg';
 
 import type { FileUploadParams, Options, Result } from './types';
 

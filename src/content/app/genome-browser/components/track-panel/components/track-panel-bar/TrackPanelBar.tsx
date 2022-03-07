@@ -34,12 +34,12 @@ import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as SearchIcon } from 'static/icons/icon_search.svg';
-import { ReactComponent as TracksManagerIcon } from 'static/icons/icon_sliders.svg';
-import { ReactComponent as BookmarkIcon } from 'static/icons/icon_bookmark.svg';
-import { ReactComponent as PersonalDataIcon } from 'static/icons/icon_plus_circle.svg';
-import { ReactComponent as ShareIcon } from 'static/icons/icon_share.svg';
-import { ReactComponent as DownloadIcon } from 'static/icons/icon_download.svg';
+import SearchIcon from 'static/icons/icon_search.svg';
+import TracksManagerIcon from 'static/icons/icon_sliders.svg';
+import BookmarkIcon from 'static/icons/icon_bookmark.svg';
+import PersonalDataIcon from 'static/icons/icon_plus_circle.svg';
+import ShareIcon from 'static/icons/icon_share.svg';
+import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 

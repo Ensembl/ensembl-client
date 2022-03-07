@@ -71,21 +71,45 @@ export default (): Configuration => {
           ]
         },
 
-        // use file-loader on svg's (to be able to require them as a path to the image),
-        // but also use @svgr/webpack to be able to require svg's directly as React components
         {
-          test: /\.svg$/,
-          use: [
-            '@svgr/webpack',
+          test: /\.svg$/i,
+          oneOf: [
             {
-              loader: 'file-loader',
-              options: {
-                outputPath: paths.buildStaticPath,
-                publicPath: '/static/'
+              issuer: /\.scss$/,
+              type: 'asset/resource',
+              generator: {
+                filename: '../static/[hash][ext]'
               }
+            },
+            {
+              resourceQuery: /url/, // will match all imports that end in `.svg?url`
+              type: 'asset',
+              generator: {
+                filename: '../static/[hash][ext]'
+              }
+            },
+            {
+              issuer: /\.[jt]sx?$/,
+              use: ['@svgr/webpack']
             }
           ]
         }
+
+        // use file-loader on svg's (to be able to require them as a path to the image),
+        // but also use @svgr/webpack to be able to require svg's directly as React components
+        // {
+        //   test: /\.svg$/,
+        //   use: [
+        //     '@svgr/webpack',
+        //     {
+        //       loader: 'file-loader',
+        //       options: {
+        //         outputPath: paths.buildStaticPath,
+        //         publicPath: '/static/'
+        //       }
+        //     }
+        //   ]
+        // }
       ]
     },
 

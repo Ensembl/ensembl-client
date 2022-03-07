@@ -18,11 +18,11 @@ import React from 'react';
 
 import { ProteinStats } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
-import structuresUrl from 'static/icons/icon_protein_structures.svg';
-import ligandsUrl from 'static/icons/icon_protein_ligands.svg';
-import interactionsUrl from 'static/icons/icon_protein_interactions.svg';
-import annotationsUrl from 'static/icons/icon_protein_annotations.svg';
-import similarProteinsUrl from 'static/icons/icon_protein_similar.svg';
+import structuresUrl from 'static/icons/icon_protein_structures.svg?url';
+import ligandsUrl from 'static/icons/icon_protein_ligands.svg?url';
+import interactionsUrl from 'static/icons/icon_protein_interactions.svg?url';
+import annotationsUrl from 'static/icons/icon_protein_annotations.svg?url';
+import similarProteinsUrl from 'static/icons/icon_protein_similar.svg?url';
 
 import styles from './ProteinFeaturesCount.scss';
 

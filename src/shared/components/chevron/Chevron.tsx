@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as ChevronDown } from 'static/icons/icon_chevron.svg';
+import ChevronDown from 'static/icons/icon_chevron.svg';
 
 import styles from './Chevron.scss';
 

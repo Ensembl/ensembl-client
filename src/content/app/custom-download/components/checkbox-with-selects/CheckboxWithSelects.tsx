@@ -20,8 +20,8 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import Select, { Option } from 'src/shared/components/select/Select';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as AddIcon } from 'static/icons/icon_plus_circle.svg';
-import { ReactComponent as RemoveIcon } from 'static/icons/icon_close.svg';
+import AddIcon from 'static/icons/icon_plus_circle.svg';
+import RemoveIcon from 'static/icons/icon_close.svg';
 
 import styles from './CheckboxWithSelects.scss';
 
