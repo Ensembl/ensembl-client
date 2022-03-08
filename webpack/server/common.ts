@@ -53,7 +53,7 @@ export default (): Configuration => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: true,
+                url: false,
                 modules: {
                   localIdentName: '[local]__[name]__[hash:base64:5]'
                 }
