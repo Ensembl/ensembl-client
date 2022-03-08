@@ -2,7 +2,4 @@
 // with modifications discussed here:
 // https://github.com/facebook/jest/issues/5258#issuecomment-356251559
 
-module.exports = {
-  default: 'svg',
-  ReactComponent: 'svg'
-};
+module.exports = 'svg';
