@@ -49,11 +49,16 @@ export default (): Configuration => {
         {
           test: /.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                emit: false
+              }
+            },
             {
               loader: 'css-loader',
               options: {
-                sourceMap: true,
+                url: false,
                 modules: {
                   localIdentName: '[local]__[name]__[hash:base64:5]'
                 }
