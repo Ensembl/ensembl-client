@@ -83,7 +83,7 @@ export default (): Configuration => {
             },
             {
               resourceQuery: /url/, // will match all imports that end in `.svg?url`
-              type: 'asset',
+              type: 'asset/resource',
               generator: {
                 filename: '../static/[hash][ext]'
               }
