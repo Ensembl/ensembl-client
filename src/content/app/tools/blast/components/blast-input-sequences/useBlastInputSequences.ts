@@ -103,18 +103,7 @@ const useBlastInputSequences = () => {
   };
 
   const clearAllSequences = () => {
-    dispatch(
-      setSequences({
-        sequences: []
-      })
-    );
-    dispatch(
-      setSequenceType({
-        sequenceType: 'dna',
-        isAutomatic: true,
-        config: blastSettingsConfig
-      })
-    );
+    updateSequences([]);
   };
 
   const appendEmptyInputBox = (shouldAppend: boolean) => {

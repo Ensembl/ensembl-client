@@ -575,7 +575,7 @@
     },
     {
       "sequence_type": "dna",
-      "database_type": "pep",
+      "database_type": "protein",
       "programs": ["blastx"]
     },
     {
@@ -585,7 +585,7 @@
     },
     {
       "sequence_type": "protein",
-      "database_type": "pep",
+      "database_type": "protein",
       "programs": ["blastp"]
     }
   ],
@@ -685,7 +685,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -699,7 +699,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -713,7 +713,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM45"
         }
       },
@@ -729,7 +729,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -743,7 +743,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -757,7 +757,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "11",
+          "wordsize": "6",
           "matrix": "BLOSUM45"
         }
       },
