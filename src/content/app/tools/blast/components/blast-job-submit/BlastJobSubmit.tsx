@@ -17,8 +17,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import useBlastAPI from 'src/content/app/tools/blast/hooks/useBlastAPI';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import config from 'config';
+
+import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
 
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -43,8 +44,6 @@ export type PayloadParams = {
 };
 
 const BlastJobSubmit = () => {
-  const { submitBlastJob } = useBlastAPI();
-
   const { sequences } = useBlastInputSequences();
   const selectedSpecies = useSelector(getSelectedSpeciesIds);
 
@@ -52,18 +51,15 @@ const BlastJobSubmit = () => {
 
   const blastFormData = useSelector(getBlastFormData);
 
-  const onBlastSubmit = async () => {
-    const dataToSubmit = JSON.stringify(
-      createBlastSubmissionData(blastFormData)
-    );
+  const onBlastSubmit = () => {
+    const payload = createBlastSubmissionData(blastFormData);
+    return submitBlastForm(payload);
+  };
 
-    const result = await submitBlastJob(dataToSubmit);
-
-    if (!result) {
-      return;
-    }
-
-    const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${result.jobIds[0]}`;
+  const onSubmitSuccess = (response: { jobIds: string[] }) => {
+    // TODO: change the temporary implementation of this function with a more permanent one
+    const firstJobId = response.jobIds[0];
+    const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${firstJobId}`;
 
     const resultTab = window.open(resultPageUrl, '_blank');
     if (resultTab !== null) {
@@ -72,9 +68,13 @@ const BlastJobSubmit = () => {
   };
 
   return (
-    <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
+    <LoadingButton
+      onClick={onBlastSubmit}
+      onSuccess={onSubmitSuccess as any}
+      isDisabled={isDisabled}
+    >
       Run
-    </PrimaryButton>
+    </LoadingButton>
   );
 };
 
@@ -96,6 +96,26 @@ export const createBlastSubmissionData = (
       ...blastFormData.settings.parameters
     }
   };
+};
+
+const submitBlastForm = async (
+  payload: ReturnType<typeof createBlastSubmissionData>
+) => {
+  const endpointURL = `${config.toolsApiBaseUrl}/blast/job`;
+
+  const response = await fetch(endpointURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (response.ok) {
+    return response.json();
+  } else {
+    throw new Error();
+  }
 };
 
 export default BlastJobSubmit;
