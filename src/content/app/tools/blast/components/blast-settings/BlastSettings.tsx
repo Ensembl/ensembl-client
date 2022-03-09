@@ -23,7 +23,9 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
-import untypedBlastSettingsConfig from './blastSettingsConfig.json';
+import { useConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+
+// import untypedBlastSettingsConfig from './blastSettingsConfig.json';
 
 import {
   getSelectedSequenceType,
@@ -50,36 +52,32 @@ import type {
 
 import styles from './BlastSettings.scss';
 
-const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
+// const blastSettingsConfig = await fetchConfig();
 
-const getParameterData = (name: BlastParameterName) => {
-  return blastSettingsConfig.parameters[name];
-};
+// const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
+// console.log(blastSettingsConfig);
 
-const getPresetsList = () => {
-  const { presets } = blastSettingsConfig;
+const getPresetsList = (config: BlastSettingsConfig) => {
+  const { presets } = config;
   const { label, options } = presets;
   return { label, options };
 };
 
-const getDatabaseSequenceType = (database: string) => {
-  return blastSettingsConfig.database_sequence_types[database];
-};
-
 const getAvailableBlastPrograms = (
   sequenceType: string,
-  databaseSequenceType: string
+  databaseSequenceType: string,
+  config: BlastSettingsConfig
 ) => {
-  const availablePrograms = blastSettingsConfig.programs_configurator.find(
+  const availablePrograms = config.programs_configurator.find(
     (option) =>
       option.sequence_type === sequenceType &&
       option.database_type === databaseSequenceType
   )?.programs as string[];
   const blastProgramSetting = {
-    ...blastSettingsConfig.parameters.program,
-    options: (
-      blastSettingsConfig.parameters.program as BlastSelectSetting
-    ).options.filter(({ value }) => availablePrograms.includes(value))
+    ...config.parameters.program,
+    options: (config.parameters.program as BlastSelectSetting).options.filter(
+      ({ value }) => availablePrograms.includes(value)
+    )
   };
   return blastProgramSetting;
 };
@@ -90,20 +88,29 @@ const BlastSettings = () => {
   const blastProgram = useSelector(getSelectedBlastProgram);
   const searchSensitivity = useSelector(getSelectedSearchSensitivity);
   const blastParameters = useSelector(getBlastSearchParameters);
+  const { data: config, isFetching } = useConfigQuery();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!blastParameters.database) {
-      const defaultDatabase = blastSettingsConfig.defaults.database;
-      onDatabaseChange(defaultDatabase);
-    }
-  }, []);
+  // if(!blastSettingsConfig) {
+  //   dispatch(fetchBlastSettingsConfig);
+  // }
 
-  const onDatabaseChange = (database: string) => {
+  useEffect(() => {
+    if (!blastParameters.database && config) {
+      const defaultDatabase = config.defaults.database;
+      onDatabaseChange(defaultDatabase, config);
+    }
+  }, [config]);
+
+  if (isFetching || !config) {
+    return null;
+  }
+
+  const onDatabaseChange = (database: string, config: BlastSettingsConfig) => {
     dispatch(
       setBlastDatabase({
         database,
-        config: blastSettingsConfig
+        config
       })
     );
   };
@@ -112,7 +119,7 @@ const BlastSettings = () => {
     dispatch(
       setBlastProgram({
         program: program as BlastProgram,
-        config: blastSettingsConfig
+        config
       })
     );
   };
@@ -121,7 +128,7 @@ const BlastSettings = () => {
     dispatch(
       changeSensitivityPresets({
         presetName,
-        config: blastSettingsConfig
+        config
       })
     );
   };
@@ -146,12 +153,14 @@ const BlastSettings = () => {
     return null;
   }
 
-  const databaseSequenceType = getDatabaseSequenceType(
-    blastParameters.database as string
-  );
+  const database = blastParameters.database || config.defaults.database;
+  const databaseSequenceType = config.database_sequence_types[database];
+
+  config.database_sequence_types[database];
   const availableBlastPrograms = getAvailableBlastPrograms(
     sequenceType,
-    databaseSequenceType
+    databaseSequenceType,
+    config
   );
 
   return (
@@ -160,7 +169,7 @@ const BlastSettings = () => {
         Settings
         <div className={styles.mainSettings}>
           {buildSelect({
-            ...(getParameterData('database') as BlastSelectSetting),
+            ...(config.parameters['database'] as BlastSelectSetting),
             selectedOption: blastParameters.database as string,
             onChange: onDatabaseChange
           })}
@@ -170,7 +179,7 @@ const BlastSettings = () => {
             onChange: onBlastProgramChange
           })}
           {buildSelect({
-            ...(getPresetsList() as BlastSelectSetting),
+            ...(getPresetsList(config) as BlastSelectSetting),
             selectedOption: searchSensitivity,
             onChange: onSearchSensitivityChange
           })}
@@ -190,76 +199,76 @@ const BlastSettings = () => {
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
           {buildSelect({
-            ...(getParameterData('alignments') as BlastSelectSetting),
+            ...(config.parameters['alignments'] as BlastSelectSetting),
             selectedOption: blastParameters.alignments as string,
             onChange: (value: string) =>
               onBlastParameterChange('alignments', value)
           })}
           {buildSelect({
-            ...(getParameterData('scores') as BlastSelectSetting),
+            ...(config.parameters['scores'] as BlastSelectSetting),
             selectedOption: blastParameters.scores as string,
             onChange: (value: string) => onBlastParameterChange('scores', value)
           })}
           {buildSelect({
-            ...(getParameterData('hsps') as BlastSelectSetting),
+            ...(config.parameters['hsps'] as BlastSelectSetting),
             selectedOption: blastParameters.scores as string,
             onChange: (value: string) => onBlastParameterChange('hsps', value)
           })}
           {buildSelect({
-            ...(getParameterData('dropoff') as BlastSelectSetting),
+            ...(config.parameters['dropoff'] as BlastSelectSetting),
             selectedOption: blastParameters.scores as string,
             onChange: (value: string) =>
               onBlastParameterChange('dropoff', value)
           })}
           {buildCheckbox({
-            ...(getParameterData('gapalign') as BlastBooleanSetting),
+            ...(config.parameters['gapalign'] as BlastBooleanSetting),
             selectedOption: blastParameters.gapalign as string,
             onChange: (value: string) =>
               onBlastParameterChange('gapalign', value)
           })}
           {buildCheckbox({
-            ...(getParameterData('filter') as BlastBooleanSetting),
+            ...(config.parameters['filter'] as BlastBooleanSetting),
             selectedOption: blastParameters.filter as string,
             onChange: (value: string) => onBlastParameterChange('filter', value)
           })}
           {buildSelect({
-            ...(getParameterData('compstats') as BlastSelectSetting),
+            ...(config.parameters['compstats'] as BlastSelectSetting),
             selectedOption: blastParameters.compstats as string,
             onChange: (value: string) =>
               onBlastParameterChange('compstats', value)
           })}
           {buildSelect({
-            ...(getParameterData('exp') as BlastSelectSetting),
+            ...(config.parameters['exp'] as BlastSelectSetting),
             selectedOption: blastParameters.exp as string,
             onChange: (value: string) => onBlastParameterChange('exp', value)
           })}
           {databaseSequenceType === 'dna' &&
             buildSelect({
-              ...(getParameterData('match_scores') as BlastSelectSetting),
+              ...(config.parameters['match_scores'] as BlastSelectSetting),
               selectedOption: blastParameters.match_scores as string,
               onChange: (value: string) =>
                 onBlastParameterChange('match_scores', value)
             })}
           {buildSelect({
-            ...(getParameterData('wordsize') as BlastSelectSetting),
+            ...(config.parameters['wordsize'] as BlastSelectSetting),
             selectedOption: blastParameters.wordsize as string,
             onChange: (value: string) =>
               onBlastParameterChange('wordsize', value)
           })}
           {buildSelect({
-            ...(getParameterData('gapopen') as BlastSelectSetting),
+            ...(config.parameters['gapopen'] as BlastSelectSetting),
             selectedOption: blastParameters.gapopen as string,
             onChange: (value: string) =>
               onBlastParameterChange('gapopen', value)
           })}
           {buildSelect({
-            ...(getParameterData('gapext') as BlastSelectSetting),
+            ...(config.parameters['gapext'] as BlastSelectSetting),
             selectedOption: blastParameters.gapext as string,
             onChange: (value: string) => onBlastParameterChange('gapext', value)
           })}
           {databaseSequenceType === 'protein' &&
             buildSelect({
-              ...(getParameterData('matrix') as BlastSelectSetting),
+              ...(config.parameters['matrix'] as BlastSelectSetting),
               selectedOption: blastParameters.matrix as string,
               onChange: (value: string) =>
                 onBlastParameterChange('matrix', value)

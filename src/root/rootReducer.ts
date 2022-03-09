@@ -17,7 +17,6 @@
 import { combineReducers } from 'redux';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
-import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 import genome from 'src/shared/state/genome/genomeSlice';
 import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
 import global from 'src/global/globalSlice';
@@ -27,6 +26,9 @@ import speciesSelector from 'src/content/app/species-selector/state/speciesSelec
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
+
+import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 const createRootReducer = () =>
   combineReducers({
@@ -40,7 +42,8 @@ const createRootReducer = () =>
     speciesPage,
     entityViewer,
     blast,
-    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer
+    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer,
+    [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 
 export const createServerSideRootReducer = () =>
