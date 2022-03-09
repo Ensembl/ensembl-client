@@ -23,10 +23,6 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
-import { useConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-
-// import untypedBlastSettingsConfig from './blastSettingsConfig.json';
-
 import {
   getSelectedSequenceType,
   getSelectedBlastProgram,
@@ -51,11 +47,6 @@ import type {
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSettings.scss';
-
-// const blastSettingsConfig = await fetchConfig();
-
-// const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
-// console.log(blastSettingsConfig);
 
 const getPresetsList = (config: BlastSettingsConfig) => {
   const { presets } = config;
@@ -82,31 +73,26 @@ const getAvailableBlastPrograms = (
   return blastProgramSetting;
 };
 
-const BlastSettings = () => {
+type Props = {
+  config: BlastSettingsConfig;
+};
+
+const BlastSettings = ({ config }: Props) => {
   const [parametersExpanded, setParametersExpanded] = useState(false);
   const sequenceType = useSelector(getSelectedSequenceType);
   const blastProgram = useSelector(getSelectedBlastProgram);
   const searchSensitivity = useSelector(getSelectedSearchSensitivity);
   const blastParameters = useSelector(getBlastSearchParameters);
-  const { data: config, isFetching } = useConfigQuery();
   const dispatch = useDispatch();
 
-  // if(!blastSettingsConfig) {
-  //   dispatch(fetchBlastSettingsConfig);
-  // }
-
   useEffect(() => {
-    if (!blastParameters.database && config) {
+    if (!blastParameters.database) {
       const defaultDatabase = config.defaults.database;
-      onDatabaseChange(defaultDatabase, config);
+      onDatabaseChange(defaultDatabase);
     }
-  }, [config]);
+  }, []);
 
-  if (isFetching || !config) {
-    return null;
-  }
-
-  const onDatabaseChange = (database: string, config: BlastSettingsConfig) => {
+  const onDatabaseChange = (database: string) => {
     dispatch(
       setBlastDatabase({
         database,
