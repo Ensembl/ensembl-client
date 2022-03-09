@@ -304,7 +304,7 @@ const buildSelect = (setting: {
       <label>
         <span>{setting.label}</span>
         <SimpleSelect
-          defaultValue={setting.selectedOption}
+          value={setting.selectedOption}
           onInput={onChange}
           options={setting.options}
         />
