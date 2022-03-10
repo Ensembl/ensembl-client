@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import config from 'config';
 
-// import { setBlastSettingsConfig } from '../blast-form/blastFormSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -24,7 +24,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     blastConfig: builder.query<BlastSettingsConfig, void>({
       query: () => ({
-        url: `api/tools/blast/config`
+        url: `${config.toolsApiBaseUrl}/blast/config`
       }),
       keepUnusedDataFor: 60 * 60 // one hour
     })

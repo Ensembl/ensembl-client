@@ -15,9 +15,10 @@
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import fetch from 'cross-fetch';
 
 export default createApi({
   reducerPath: 'restApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: '/', fetchFn: fetch }),
   endpoints: () => ({}) // will inject endpoints in other files
 });
