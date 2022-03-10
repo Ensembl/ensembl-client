@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
+import React, { type SelectHTMLAttributes } from 'react';
 import classNames from 'classnames';
 import styles from './SimpleSelect.scss';
 
-type HTMLSelectProps = HTMLAttributes<HTMLSelectElement>;
+type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 
 // This is just a simple wrapper for the native HTML select element.
 // The purpose of this React component is to style the select button,
@@ -67,11 +67,7 @@ const SimpleSelect = (props: SimpleSelectProps) => {
     const { optionGroups, ...selectProps } = rest;
     return (
       <div className={selectClassnames}>
-        <select
-          className={styles.selectResetDefaults}
-          defaultValue=""
-          {...selectProps}
-        >
+        <select className={styles.selectResetDefaults} {...selectProps}>
           {placeholder && (
             <option value="" hidden={true}>
               {placeholder}
@@ -96,11 +92,7 @@ const SimpleSelect = (props: SimpleSelectProps) => {
   const { options, ...selectProps } = rest;
   return (
     <div className={selectClassnames}>
-      <select
-        className={styles.selectResetDefaults}
-        defaultValue=""
-        {...selectProps}
-      >
+      <select className={styles.selectResetDefaults} {...selectProps}>
         {placeholder && (
           <option value="" hidden={true}>
             {placeholder}
