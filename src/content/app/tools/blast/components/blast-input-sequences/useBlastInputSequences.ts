@@ -17,6 +17,8 @@
 import { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+
 import {
   setSequences,
   setSequenceType,
@@ -33,21 +35,20 @@ import {
 
 import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
 
-import untypedBlastSettingsConfig from 'src/content/app/tools/blast/components/blast-settings/blastSettingsConfig.json';
-
 import type {
   SequenceType,
   BlastSettingsConfig
 } from 'src/content/app/tools/blast/types/blastSettings';
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
-const blastSettingsConfig = untypedBlastSettingsConfig as BlastSettingsConfig;
-
 const useBlastInputSequences = () => {
   const sequences = useSelector(getSequences);
   const sequenceType = useSelector(getSelectedSequenceType);
   const sequenceSelectionMode = useSelector(getSequenceSelectionMode);
   const hasUncommittedSequence = useSelector(getUncommittedSequencePresence);
+  const { data: config } = useBlastConfigQuery() as {
+    data: BlastSettingsConfig;
+  };
   const dispatch = useDispatch();
 
   const ref = useRef({
@@ -87,7 +88,7 @@ const useBlastInputSequences = () => {
         setSequenceType({
           sequenceType: guessedSequenceType,
           isAutomatic: true,
-          config: blastSettingsConfig
+          config
         })
       );
     }
@@ -97,7 +98,7 @@ const useBlastInputSequences = () => {
     dispatch(
       setSequenceType({
         sequenceType,
-        config: blastSettingsConfig
+        config
       })
     );
   };

@@ -21,6 +21,7 @@ import { createEpicMiddleware } from 'redux-observable';
 import config from 'config';
 
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import createRootReducer from './root/rootReducer';
 import rootEpic from './root/rootEpic';
@@ -31,7 +32,11 @@ const rootReducer = createRootReducer();
 
 export type RootState = StateType<typeof rootReducer>;
 
-const middleware = [epicMiddleware, thoasApiSlice.middleware];
+const middleware = [
+  epicMiddleware,
+  thoasApiSlice.middleware,
+  restApiSlice.middleware
+];
 
 const preloadedState = (window as any).__PRELOADED_STATE__ || {};
 

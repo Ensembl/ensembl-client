@@ -22,6 +22,8 @@ import userEvent from '@testing-library/user-event';
 import random from 'lodash/random';
 import times from 'lodash/times';
 
+import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+
 import blastFormReducer, {
   initialState as initialBlastFormState,
   type BlastFormState
@@ -32,6 +34,12 @@ import BlastInputSequencesHeader, {
 } from './BlastInputSequencesHeader';
 
 import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
+
+jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
+  return {
+    useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
+  };
+});
 
 const defaultProps: BlastInputSequencesHeaderProps = {
   compact: false
