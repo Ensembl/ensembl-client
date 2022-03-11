@@ -22,7 +22,7 @@ import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import { ReactComponent as SearchIcon } from 'static/icons/icon_search.svg';
+import SearchIcon from 'static/icons/icon_search.svg';
 
 import styles from './HelpLanding.scss';
 

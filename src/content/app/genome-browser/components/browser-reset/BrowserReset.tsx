@@ -24,7 +24,7 @@ import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/d
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as resetIcon } from 'static/icons/icon_reset.svg';
+import ResetIcon from 'static/icons/icon_reset.svg';
 
 import { Status } from 'src/shared/types/status';
 
@@ -53,7 +53,7 @@ export const BrowserReset = () => {
     <ImageButton
       status={getResetIconStatus()}
       description={'Reset browser image'}
-      image={resetIcon}
+      image={ResetIcon}
       onClick={handleClick}
       className={styles.resetButton}
       statusClasses={{ disabled: styles.imageButtonDisabled }}

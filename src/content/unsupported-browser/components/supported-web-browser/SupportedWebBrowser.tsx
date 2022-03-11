@@ -16,10 +16,10 @@
 
 import React from 'react';
 
-import chromeIconPath from './icons/chrome.svg';
-import edgeIconPath from './icons/edge.svg';
-import firefoxIconPath from './icons/firefox.svg';
-import safariIconPath from './icons/safari.svg';
+import chromeIconPath from './icons/chrome.svg?url';
+import edgeIconPath from './icons/edge.svg?url';
+import firefoxIconPath from './icons/firefox.svg?url';
+import safariIconPath from './icons/safari.svg?url';
 
 import styles from './SupportedWebBrowser.scss';
 

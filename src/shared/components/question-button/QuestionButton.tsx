@@ -21,7 +21,7 @@ import { useQuestionButtonBehaviour } from './useQuestionButtonBehaviour';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { ReactComponent as QuestionIcon } from 'static/icons/icon_question_circle.svg';
+import QuestionIcon from 'static/icons/icon_question_circle.svg';
 
 import defaultStyles from './QuestionButton.scss';
 

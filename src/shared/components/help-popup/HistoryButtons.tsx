@@ -17,8 +17,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as BackIcon } from 'static/icons/navigate-left.svg';
-import { ReactComponent as ForwardIcon } from 'static/icons/navigate-right.svg';
+import BackIcon from 'static/icons/navigate-left.svg';
+import ForwardIcon from 'static/icons/navigate-right.svg';
 
 import styles from '../help-popup/HelpPopupBody.scss';
 

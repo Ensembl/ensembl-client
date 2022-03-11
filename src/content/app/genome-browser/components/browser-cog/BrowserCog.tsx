@@ -23,7 +23,7 @@ import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as cogIcon } from 'static/icons/icon_settings.svg';
+import CogIcon from 'static/icons/icon_settings.svg';
 
 import styles from './BrowserCogList.scss';
 
@@ -62,7 +62,7 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   const cogIconConfig = {
     description: 'Configure Track',
-    icon: cogIcon
+    icon: CogIcon
   };
 
   const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);

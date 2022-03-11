@@ -44,7 +44,15 @@ module.exports = (config) => {
   });
   config.module.rules.push({
     test: /\.svg$/,
-    use: ['@svgr/webpack', 'file-loader'],
+    oneOf: [
+      {
+        resourceQuery: /url/, // will match all imports that end in `.svg?url`
+        type: 'asset/resource',
+      },
+      {
+        use: ['@svgr/webpack']
+      }
+    ]
   });
 
   config.resolve.extensions.push('.ts', '.tsx');

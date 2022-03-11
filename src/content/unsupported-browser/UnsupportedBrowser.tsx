@@ -19,7 +19,7 @@ import React from 'react';
 import Topbar from './components/topbar/Topbar';
 import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 
-import unsupportedBrowsersDiagramPath from 'src/content/unsupported-browser/images/unsupported_browsers_diagram.svg';
+import unsupportedBrowsersDiagramPath from 'src/content/unsupported-browser/images/unsupported_browsers_diagram.svg?url';
 
 import styles from './UnsupportedBrowser.scss';
 

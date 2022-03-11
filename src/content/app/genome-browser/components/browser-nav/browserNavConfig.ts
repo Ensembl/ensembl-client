@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactComponent as zoomInIcon } from 'static/icons/icon_plus_circle.svg';
-import { ReactComponent as zoomOutIcon } from 'static/icons/icon_minus_circle.svg';
-import { ReactComponent as navigateUpIcon } from 'static/icons/navigate-up.svg';
-import { ReactComponent as navigateDownIcon } from 'static/icons/navigate-down.svg';
-import { ReactComponent as navigateLeftIcon } from 'static/icons/navigate-left.svg';
-import { ReactComponent as navigateRightIcon } from 'static/icons/navigate-right.svg';
+import ZoomInIcon from 'static/icons/icon_plus_circle.svg';
+import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
+import NavigateUpIcon from 'static/icons/navigate-up.svg';
+import NavigateDownIcon from 'static/icons/navigate-down.svg';
+import NavigateLeftIcon from 'static/icons/navigate-left.svg';
+import NavigateRightIcon from 'static/icons/navigate-right.svg';
 
 import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
@@ -38,7 +38,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_up_px: 50
     },
-    icon: navigateUpIcon,
+    icon: NavigateUpIcon,
     name: BrowserNavAction.MOVE_UP
   },
   {
@@ -46,7 +46,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_down_px: 50
     },
-    icon: navigateDownIcon,
+    icon: NavigateDownIcon,
     name: BrowserNavAction.MOVE_DOWN
   },
   {
@@ -54,7 +54,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       zoom_by: -0.3
     },
-    icon: zoomOutIcon,
+    icon: ZoomOutIcon,
     name: BrowserNavAction.ZOOM_OUT
   },
   {
@@ -62,7 +62,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       zoom_by: 0.3
     },
-    icon: zoomInIcon,
+    icon: ZoomInIcon,
     name: BrowserNavAction.ZOOM_IN
   },
   {
@@ -70,7 +70,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_left_px: 50
     },
-    icon: navigateLeftIcon,
+    icon: NavigateLeftIcon,
     name: BrowserNavAction.MOVE_LEFT
   },
   {
@@ -78,7 +78,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_right_px: 50
     },
-    icon: navigateRightIcon,
+    icon: NavigateRightIcon,
     name: BrowserNavAction.MOVE_RIGHT
   }
 ];

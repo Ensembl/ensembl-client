@@ -43,7 +43,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import applyUrl from 'static/img/shared/apply.svg';
+import applyUrl from 'static/img/shared/apply.svg?url';
 
 import styles from './BrowserRegionField.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';

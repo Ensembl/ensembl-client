@@ -29,26 +29,22 @@ export default (): Configuration => {
         // then file loader takes over to copy the images into the dist folder
         {
           test: /.*\.(gif|png|jpe?g)$/i,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                emitFile: true,
-                name: '[name].[hash].[ext]',
-                outputPath: 'images'
-              }
-            },
-            'image-webpack-loader'
-          ]
+          type: 'asset/resource',
+          generator: {
+            filename: 'images/[name].[hash][ext]',
+            publicPath: '/static/',
+            emit: false
+          }
         },
 
         // loader for fonts that copies the fonts into the dist folder
         {
           test: /static\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
-          loader: 'file-loader',
-          options: {
-            emitFile: true,
-            name: '[path][name].[hash].[ext]'
+          type: 'asset/resource',
+          generator: {
+            filename: 'fonts/[name].[hash][ext]',
+            publicPath: '/static/',
+            emit: false
           }
         }
       ]

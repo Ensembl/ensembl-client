@@ -34,10 +34,10 @@ import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/en
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as searchIcon } from 'static/icons/icon_search.svg';
-import { ReactComponent as bookmarkIcon } from 'static/icons/icon_bookmark.svg';
-import { ReactComponent as shareIcon } from 'static/icons/icon_share.svg';
-import { ReactComponent as downloadIcon } from 'static/icons/icon_download.svg';
+import SearchIcon from 'static/icons/icon_search.svg';
+import BookmarkIcon from 'static/icons/icon_bookmark.svg';
+import ShareIcon from 'static/icons/icon_share.svg';
+import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
@@ -78,7 +78,7 @@ export const EntityViewerSidebarToolstrip = () => {
         description="Search"
         className={styles.sidebarIcon}
         onClick={() => toggleModalView(SidebarModalView.SEARCH)}
-        image={searchIcon}
+        image={SearchIcon}
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
@@ -86,7 +86,7 @@ export const EntityViewerSidebarToolstrip = () => {
         className={styles.sidebarIcon}
         key={SidebarModalView.BOOKMARKS}
         onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
-        image={bookmarkIcon}
+        image={BookmarkIcon}
       />
       <ImageButton
         status={Status.DISABLED}
@@ -94,14 +94,14 @@ export const EntityViewerSidebarToolstrip = () => {
         className={styles.sidebarIcon}
         key="share"
         onClick={noop}
-        image={shareIcon}
+        image={ShareIcon}
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
         description="Download"
         className={styles.sidebarIcon}
         onClick={() => toggleModalView(SidebarModalView.DOWNLOADS)}
-        image={downloadIcon}
+        image={DownloadIcon}
       />
     </>
   );

@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import Modal from 'src/shared/components/modal/Modal';
 import HelpPopupBody from './HelpPopupBody';
 
-import { ReactComponent as HelpIcon } from 'static/icons/icon_question.svg';
+import HelpIcon from 'static/icons/icon_question.svg';
 
 import styles from './HelpPopupButton.scss';
 

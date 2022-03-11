@@ -27,14 +27,14 @@ import {
   EntityViewerIcon
 } from 'src/shared/components/app-icon';
 
-import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
+import Logotype from 'static/img/brand/logotype.svg';
 
-import speciesStripUrl from 'static/img/home/species-strip.svg';
-import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
-import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
-import facebookIconUrl from 'static/icons/icon_facebook.svg';
-import twitterIconUrl from 'static/icons/icon_twitter.svg';
-import blogIconUrl from 'static/icons/icon_blog.svg';
+import speciesStripUrl from 'static/img/home/species-strip.svg?url';
+import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg?url';
+import elixirLogoUrl from 'static/img/home/elixir-logo.svg?url';
+import facebookIconUrl from 'static/icons/icon_facebook.svg?url';
+import twitterIconUrl from 'static/icons/icon_twitter.svg?url';
+import blogIconUrl from 'static/icons/icon_blog.svg?url';
 
 import styles from './Home.scss';
 

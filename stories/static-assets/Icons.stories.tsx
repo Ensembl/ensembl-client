@@ -22,14 +22,12 @@ import storyStyles from '../common.scss';
 
 function importAllIcons() {
   const iconsContextModule: any = require.context(
-    'static/icons',
+    'static/icons?url',
     true,
     /\.(svg)$/
   );
   const iconFileNames: string[] = iconsContextModule.keys();
-  const iconPaths = iconFileNames
-    .map(iconsContextModule)
-    .map((module) => (module as any).default as string); // svg modules are imported as file paths
+  const iconPaths = iconFileNames.map(iconsContextModule) as string[]; //svg modules are imported as file paths
 
   return iconPaths.map((iconPath, index) => {
     const fileName = iconFileNames[index].split('/').pop() as string;

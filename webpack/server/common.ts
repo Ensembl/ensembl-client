@@ -49,7 +49,12 @@ export default (): Configuration => {
         {
           test: /.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                emit: false
+              }
+            },
             {
               loader: 'css-loader',
               options: {
@@ -71,18 +76,30 @@ export default (): Configuration => {
           ]
         },
 
-        // use file-loader on svg's (to be able to require them as a path to the image),
-        // but also use @svgr/webpack to be able to require svg's directly as React components
         {
-          test: /\.svg$/,
-          use: [
-            '@svgr/webpack',
+          test: /\.svg$/i,
+          oneOf: [
             {
-              loader: 'file-loader',
-              options: {
-                outputPath: paths.buildStaticPath,
-                publicPath: '/static/'
+              issuer: /\.scss$/,
+              type: 'asset/resource',
+              generator: {
+                filename: 'images/[name].[hash][ext]',
+                publicPath: '/static/',
+                emit: false
               }
+            },
+            {
+              resourceQuery: /url/, // will match all imports that end in `.svg?url`
+              type: 'asset/resource',
+              generator: {
+                filename: 'images/[name].[hash][ext]',
+                publicPath: '/static/',
+                emit: false
+              }
+            },
+            {
+              issuer: /\.[jt]sx?$/,
+              use: ['@svgr/webpack']
             }
           ]
         }

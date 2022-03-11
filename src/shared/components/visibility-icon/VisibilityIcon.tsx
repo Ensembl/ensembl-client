@@ -20,8 +20,8 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
-import { ReactComponent as Eye } from 'static/icons/icon_eye.svg';
-import { ReactComponent as EyePartial } from 'static/icons/icon_eye_slashed.svg';
+import Eye from 'static/icons/icon_eye.svg';
+import EyePartial from 'static/icons/icon_eye_slashed.svg';
 
 import { Status } from 'src/shared/types/status';
 

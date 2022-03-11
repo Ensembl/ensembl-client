@@ -18,6 +18,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import {
@@ -31,8 +33,7 @@ import {
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
 
-import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+import Logotype from 'static/img/brand/logotype.svg';
 
 import styles from './Launchbar.scss';
 

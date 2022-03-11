@@ -23,7 +23,7 @@ import { toggleCommunicationPanel } from 'src/shared/state/communication/communi
 
 import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
 
-import { ReactComponent as ConversationImageIcon } from 'static/icons/icon_conversation.svg';
+import ConversationImageIcon from 'static/icons/icon_conversation.svg';
 
 import styles from './ConversationIcon.scss';
 
