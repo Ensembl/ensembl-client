@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import blastFormReducer from './blast-form/blastFormSlice';
-import blastResultsReducer from './blast-results/blastResultsSlice';
-
-export default combineReducers({
-  blastForm: blastFormReducer,
-  blastResults: blastResultsReducer
-});
+export const getBlastSubmissions = (state: RootState) =>
+  state.blast.blastResults;

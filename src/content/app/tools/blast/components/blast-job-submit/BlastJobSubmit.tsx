@@ -15,27 +15,33 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import config from 'config';
+import { useAppSelector } from 'src/store';
+
+import useToolsContext from 'src/content/app/tools/shared/context/useToolsContext';
 
 import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
 
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
-import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
-import { getBlastFormData } from '../../state/blast-form/blastFormSelectors';
+
+import { getBlastFormData } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
-import { BlastFormState } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import {
+import type {
+  Species,
+  BlastFormState
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type {
   BlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
+import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 export type PayloadParams = {
-  genomeIds: string[];
+  species: Species[];
   querySequences: string[];
   parameters: Partial<Record<BlastParameterName, string>> & {
     title: string;
@@ -45,28 +51,32 @@ export type PayloadParams = {
 
 type BlastSubmissionResponse = {
   submissionId: string;
-  jobs: Array<{
-    jobId?: string;
-    error?: string;
-  }>;
+  submission: BlastSubmission;
 };
 
 const BlastJobSubmit = () => {
   const { sequences } = useBlastInputSequences();
-  const selectedSpecies = useSelector(getSelectedSpeciesIds);
+  const selectedSpeciesIds = useAppSelector(getSelectedSpeciesIds);
 
-  const isDisabled = !isBlastFormValid(selectedSpecies, sequences);
+  const { submitBlastForm } = useToolsContext();
 
-  const blastFormData = useSelector(getBlastFormData);
+  const isDisabled = !isBlastFormValid(selectedSpeciesIds, sequences);
 
-  const onBlastSubmit = () => {
+  const blastFormData = useAppSelector(getBlastFormData);
+
+  const onBlastSubmit = async () => {
     const payload = createBlastSubmissionData(blastFormData);
-    return submitBlastForm(payload);
+
+    const response = await submitBlastForm(payload);
+
+    if (response) {
+      onSubmitSuccess(response);
+    }
   };
 
   const onSubmitSuccess = (response: BlastSubmissionResponse) => {
     // TODO: change the temporary implementation of this function with a more permanent one
-    const firstJobId = response.jobs[0].jobId;
+    const firstJobId = response.submission.results[0].jobId;
     if (!firstJobId) {
       return;
     }
@@ -80,11 +90,7 @@ const BlastJobSubmit = () => {
   };
 
   return (
-    <LoadingButton
-      onClick={onBlastSubmit}
-      onSuccess={onSubmitSuccess as any}
-      isDisabled={isDisabled}
-    >
+    <LoadingButton onClick={onBlastSubmit} isDisabled={isDisabled}>
       Run
     </LoadingButton>
   );
@@ -98,7 +104,7 @@ export const createBlastSubmissionData = (
   );
 
   return {
-    genomeIds: blastFormData.selectedSpecies,
+    species: blastFormData.selectedSpecies,
     querySequences: sequences,
     parameters: {
       title: blastFormData.settings.jobName,
@@ -108,26 +114,6 @@ export const createBlastSubmissionData = (
       ...blastFormData.settings.parameters
     }
   };
-};
-
-const submitBlastForm = async (
-  payload: ReturnType<typeof createBlastSubmissionData>
-) => {
-  const endpointURL = `${config.toolsApiBaseUrl}/blast/job`;
-
-  const response = await fetch(endpointURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (response.ok) {
-    return response.json();
-  } else {
-    throw new Error();
-  }
 };
 
 export default BlastJobSubmit;

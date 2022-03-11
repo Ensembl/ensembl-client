@@ -24,6 +24,8 @@ import { BrowserRouter } from 'react-router-dom';
 import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
 
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
+import ToolsContextContainer from 'src/content/app/tools/shared/context/ToolsContextContainer';
+
 import configureStore from './store';
 import Root from './root/Root';
 
@@ -41,9 +43,11 @@ hydrate(
       <IndexedDBProvider>
         <Provider store={store}>
           <BrowserRouter>
-            <HelmetProvider>
-              <Root />
-            </HelmetProvider>
+            <ToolsContextContainer>
+              <HelmetProvider>
+                <Root />
+              </HelmetProvider>
+            </ToolsContextContainer>
           </BrowserRouter>
         </Provider>
       </IndexedDBProvider>

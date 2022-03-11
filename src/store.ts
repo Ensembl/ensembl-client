@@ -15,7 +15,11 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook
+} from 'react-redux';
 import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
@@ -36,7 +40,7 @@ const middleware = [
   restApiSlice.middleware
 ];
 
-const preloadedState = (window as any).__PRELOADED_STATE__ || {};
+const preloadedState = (globalThis as any).__PRELOADED_STATE__ || {};
 
 export default function getReduxStore() {
   const store = configureStore({
@@ -56,3 +60,4 @@ type AppStore = ReturnType<typeof getReduxStore>;
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = AppStore['dispatch'];
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

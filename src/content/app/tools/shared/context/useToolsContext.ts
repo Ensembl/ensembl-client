@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { useContext } from 'react';
 
-import blastFormReducer from './blast-form/blastFormSlice';
-import blastResultsReducer from './blast-results/blastResultsSlice';
+import { ToolsContext } from './ToolsContextContainer';
 
-export default combineReducers({
-  blastForm: blastFormReducer,
-  blastResults: blastResultsReducer
-});
+const useToolsContext = () => {
+  const toolsContext = useContext(ToolsContext);
+  if (!toolsContext) {
+    throw new Error(
+      'useToolsContext must be used within ToolsContext provider'
+    );
+  }
+
+  return toolsContext;
+};
+
+export default useToolsContext;
