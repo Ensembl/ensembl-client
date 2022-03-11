@@ -2,10 +2,12 @@
 
 .wrapper {
   display: grid;
-  grid-template-areas: "title close"
-                       "content content";
+  grid-template-areas:
+    'title close'
+    'content content';
   grid-template-columns: 1fr 20px;
-  grid-template-rows: 38px auto;
+  grid-template-rows: 38px 1fr;
+  height: 100%;
 }
 
 .title {
@@ -14,7 +16,7 @@
   margin-top: 0;
 }
 
-.content { 
+.content {
   grid-area: content;
   overflow: auto;
 }

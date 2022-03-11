@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
+
+import { useAppDispatch } from 'src/store';
 
 import {
   search,
@@ -57,19 +59,22 @@ export type Props = {
 
 const InAppSearch = (props: Props) => {
   const { app, genomeId, mode } = props;
+  const [isLoading, setIsLoading] = useState(false);
   const query = useSelector((state: RootState) =>
     getSearchQuery(state, app, genomeId)
   );
   const searchResult = useSelector((state: RootState) =>
     getSearchResults(state, app, genomeId)
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onQueryChange = (query: string) => {
     dispatch(updateQuery({ app, genomeId, query }));
   };
 
-  const onSearchSubmit = () => {
+  const onSearchSubmit = async () => {
+    setIsLoading(true);
+
     const searchParams = {
       app,
       genome_id: genomeId,
@@ -77,14 +82,19 @@ const InAppSearch = (props: Props) => {
       page: 1,
       per_page: 50
     };
-    dispatch(search(searchParams));
 
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'submit_search',
-        label: query
-      });
+    try {
+      await dispatch(search(searchParams));
+
+      if (app === 'entityViewer') {
+        analyticsTracking.trackEvent({
+          category: `${app}_${mode}_search`,
+          action: 'submit_search',
+          label: query
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -124,7 +134,7 @@ const InAppSearch = (props: Props) => {
         <PrimaryButton
           onClick={onSearchSubmit}
           className={styles.searchButton}
-          isDisabled={!query}
+          isDisabled={!query || isLoading}
         >
           Go
         </PrimaryButton>
