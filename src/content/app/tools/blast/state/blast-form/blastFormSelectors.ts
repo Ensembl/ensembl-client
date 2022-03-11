@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createSelector } from 'reselect';
+
 import { RootState } from 'src/store';
 
 export const getSequences = (state: RootState) =>
@@ -45,7 +47,12 @@ export const getBlastJobName = (state: RootState) =>
 
 export const getStep = (state: RootState) => state.blast.blastForm.step;
 
-export const getSelectedSpeciesIds = (state: RootState) =>
+export const getSelectedSpeciesList = (state: RootState) =>
   state.blast.blastForm.selectedSpecies;
+
+export const getSelectedSpeciesIds = createSelector(
+  getSelectedSpeciesList,
+  (speciesList) => speciesList.map(({ genome_id }) => genome_id)
+);
 
 export const getBlastFormData = (state: RootState) => state.blast.blastForm;

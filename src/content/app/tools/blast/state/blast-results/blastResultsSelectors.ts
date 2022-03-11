@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { combineEpics } from 'redux-observable';
+import { RootState } from 'src/store';
 
-import * as speciesSelectorEpics from 'src/content/app/species-selector/state/speciesSelectorEpics';
-import * as blastEpics from 'src/content/app/tools/blast/state/epics/blastEpics';
-
-export default combineEpics(
-  ...Object.values(speciesSelectorEpics),
-  ...Object.values(blastEpics)
-);
+export const getBlastSubmissions = (state: RootState) =>
+  state.blast.blastResults;

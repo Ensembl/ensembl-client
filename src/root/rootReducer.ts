@@ -49,7 +49,8 @@ const createRootReducer = () =>
 export const createServerSideRootReducer = () =>
   combineReducers({
     speciesSelector,
-    entityViewer
+    entityViewer,
+    blast
   });
 
 export default createRootReducer;

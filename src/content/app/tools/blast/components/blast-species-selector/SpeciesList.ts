@@ -16,7 +16,7 @@
 
 //TODO: hardcoding species list in this file, Once we get it from the API (when we implement search or add more species), this file can be deleted
 // Check if we need the sorting and which field we need to submit a job
-const SpeciesList = [
+const speciesList = [
   {
     assembly_name: 'GRCh38.p13',
     common_name: 'Human',
@@ -63,7 +63,7 @@ const SpeciesList = [
 ];
 // species with common name first and sort alphabetically by common name
 // If no common name, then sort by scientific name alphabetically
-SpeciesList.sort((a, b) => {
+speciesList.sort((a, b) => {
   if (a.common_name) {
     if (a.common_name && b.common_name) {
       return a.common_name > b.common_name ? 1 : -1;
@@ -77,4 +77,4 @@ SpeciesList.sort((a, b) => {
   }
 });
 
-export default SpeciesList;
+export default speciesList;

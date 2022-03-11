@@ -19,6 +19,22 @@ import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
+import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { BlastSubmission } from '../blast-results/blastResultsSlice';
+
+type BlastSubmissionPayload = {
+  species: Species[];
+  querySequences: string[];
+  parameters: Record<string, string>;
+};
+
+type BlastSubmissionResponse = {
+  submissionId: string;
+  jobs: Array<{
+    jobId?: string;
+    error?: string;
+  }>;
+};
 
 const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -27,8 +43,44 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         url: `${config.toolsApiBaseUrl}/blast/config`
       }),
       keepUnusedDataFor: 60 * 60 // one hour
+    }),
+    submitBlast: builder.mutation<
+      { submissionId: string; submission: BlastSubmission },
+      BlastSubmissionPayload
+    >({
+      query(payload) {
+        const body = {
+          genomeIds: payload.species.map(({ genome_id }) => genome_id),
+          querySequences: payload.querySequences,
+          parameters: payload.parameters
+        };
+        return {
+          url: `${config.toolsApiBaseUrl}/blast/job`,
+          method: 'POST',
+          body
+        };
+      },
+      transformResponse(response: BlastSubmissionResponse, _, payload) {
+        const { submissionId, jobs } = response;
+        // TODO: decide what to do when a submission returns error jobs
+        const results = jobs.map((job) => ({
+          jobId: job.jobId as string,
+          status: 'RUNNING',
+          seen: false,
+          data: null
+        }));
+        return {
+          submissionId,
+          submission: {
+            submission: payload,
+            results,
+            submittedAt: Date.now()
+          } as unknown as BlastSubmission
+        };
+      }
     })
   })
 });
 
 export const { useBlastConfigQuery } = blastApiSlice;
+export const { submitBlast } = blastApiSlice.endpoints;
