@@ -42,6 +42,7 @@ import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import { CircleLoader } from 'src/shared/components/loader';
 import InAppSearchMatches from './InAppSearchMatches';
 
 import type { RootState } from 'src/store';
@@ -138,7 +139,7 @@ const InAppSearch = (props: Props) => {
         >
           Go
         </PrimaryButton>
-        {searchResult && (
+        {!isLoading && searchResult && (
           <div className={styles.hitsCount}>
             <span className={styles.hitsNumber}>
               {getCommaSeparatedNumber(searchResult.meta.total_hits)}
@@ -147,8 +148,12 @@ const InAppSearch = (props: Props) => {
           </div>
         )}
       </div>
-      {searchResult && (
-        <InAppSearchMatches {...searchResult} app={app} mode={mode} />
+      {isLoading ? (
+        <CircleLoader className={styles.spinner} />
+      ) : (
+        searchResult && (
+          <InAppSearchMatches {...searchResult} app={app} mode={mode} />
+        )
       )}
     </div>
   );

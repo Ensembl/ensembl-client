@@ -17,10 +17,8 @@
 import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-import apiService from 'src/services/api-service';
 
 import * as inAppSearchSlice from 'src/shared/state/in-app-search/inAppSearchSlice';
 import inAppSearchReducer from 'src/shared/state/in-app-search/inAppSearchSlice';
@@ -99,12 +97,16 @@ describe('<InAppSearch />', () => {
 
   describe('search', () => {
     beforeAll(() => {
-      jest
-        .spyOn(apiService, 'fetch')
-        .mockImplementation(() => Promise.resolve(brca2SearchResults));
+      global.fetch = jest.fn().mockImplementation(
+        () =>
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(brca2SearchResults)
+          }) as any
+      );
     });
 
-    it('handles query submission', () => {
+    it('handles query submission', async () => {
       // check that correct arguments are passed to the search function
       jest
         .spyOn(inAppSearchSlice, 'search')
@@ -119,7 +121,12 @@ describe('<InAppSearch />', () => {
       const searchField = container.querySelector(
         '.searchField input'
       ) as HTMLInputElement;
-      userEvent.type(searchField, 'BRCA2{enter}');
+
+      userEvent.type(searchField, 'BRCA2');
+      await act(async () => {
+        // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
+        userEvent.type(searchField, '{enter}');
+      });
 
       const [search1Args] = (inAppSearchSlice.search as any).mock.calls[0];
       expect(search1Args).toEqual({
@@ -141,7 +148,10 @@ describe('<InAppSearch />', () => {
 
       // also, let's try to submit the search by pressing on the button
       const submitButton = container.querySelector('button') as HTMLElement;
-      userEvent.click(submitButton);
+      await act(async () => {
+        // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
+        userEvent.click(submitButton);
+      });
 
       const [search2Args] = (inAppSearchSlice.search as any).mock.calls[1];
       expect(search2Args).toEqual({

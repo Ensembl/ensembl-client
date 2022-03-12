@@ -48,6 +48,18 @@
   padding: 6px 18px;
 }
 
+.spinner {
+  height: 30px;
+  width: 30px;
+  border-width: 2px;
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.inAppSearchTopInterstitial + .spinner {
+  display: block;
+}
+
 .hitsCount {
   grid-area: hits-count;
   padding: 20px 0 0 20px;
