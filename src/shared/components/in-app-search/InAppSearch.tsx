@@ -149,7 +149,7 @@ const InAppSearch = (props: Props) => {
         )}
       </div>
       {isLoading ? (
-        <CircleLoader className={styles.spinner} />
+        <CircleLoader className={styles.spinner} size="small" />
       ) : (
         searchResult && (
           <InAppSearchMatches {...searchResult} app={app} mode={mode} />
