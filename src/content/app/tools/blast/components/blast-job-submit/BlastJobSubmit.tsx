@@ -43,6 +43,14 @@ export type PayloadParams = {
   };
 };
 
+type BlastSubmissionResponse = {
+  submissionId: string;
+  jobs: Array<{
+    jobId?: string;
+    error?: string;
+  }>;
+};
+
 const BlastJobSubmit = () => {
   const { sequences } = useBlastInputSequences();
   const selectedSpecies = useSelector(getSelectedSpeciesIds);
@@ -56,9 +64,13 @@ const BlastJobSubmit = () => {
     return submitBlastForm(payload);
   };
 
-  const onSubmitSuccess = (response: { jobIds: string[] }) => {
+  const onSubmitSuccess = (response: BlastSubmissionResponse) => {
     // TODO: change the temporary implementation of this function with a more permanent one
-    const firstJobId = response.jobIds[0];
+    const firstJobId = response.jobs[0].jobId;
+    if (!firstJobId) {
+      return;
+    }
+
     const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${firstJobId}`;
 
     const resultTab = window.open(resultPageUrl, '_blank');

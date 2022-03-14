@@ -15,7 +15,28 @@
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import fetch from 'cross-fetch';
+import {
+  fetch as crossFetch,
+  Headers as crossFetchHeaders,
+  Request as crossFetchRequest,
+  Response as crossFetchResponse
+} from 'cross-fetch';
+
+/**
+ * TODO:
+ * Since version 17.5, Node has added its own native implementation of fetch (yay!)
+ * (https://github.com/nodejs/node/commit/6ec225392675c92b102d3caad02ee3a157c9d1b7)
+ * But it is still experimental, and requires the `--experimental-fetch` flag.
+ * Once this feature is stabilized and we update to the new version of Node (new LTS or earlier),
+ * the cross-fetch module will become unnecessary; and the code below, as well as the fetchFn parameter
+ * of the `fetchBaseQuery` function can be deleted.
+ * */
+if (!globalThis.fetch) {
+  globalThis.fetch = crossFetch;
+  globalThis.Headers = crossFetchHeaders;
+  globalThis.Request = crossFetchRequest;
+  globalThis.Response = crossFetchResponse;
+}
 
 export default createApi({
   reducerPath: 'restApi',
