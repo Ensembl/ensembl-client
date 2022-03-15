@@ -27,7 +27,7 @@ type RawSpeciesStats = {
 };
 
 export const sampleData: RawSpeciesStats = {
-  homo_sapiens_GCA_000001405_28: {
+  a7335667-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: 56413054,
       total_genome_length: 3272116950,
@@ -106,7 +106,7 @@ export const sampleData: RawSpeciesStats = {
       promoters: 35191
     }
   },
-  homo_sapiens_GCA_000001405_14: {
+  3704ceb1-948d-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: 38440852,
       total_genome_length: 3234834689,
@@ -185,7 +185,7 @@ export const sampleData: RawSpeciesStats = {
       promoters: 21822
     }
   },
-  escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
+  a73351f7-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 4641652,
@@ -252,7 +252,7 @@ export const sampleData: RawSpeciesStats = {
       coverage: 93.1
     }
   },
-  caenorhabditis_elegans_GCA_000002985_3: {
+  a733550b-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 100272607,
@@ -319,7 +319,7 @@ export const sampleData: RawSpeciesStats = {
       coverage: 87.3
     }
   },
-  plasmodium_falciparum_GCA_000002765_2: {
+  a73356e1-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 23292622,
@@ -386,7 +386,7 @@ export const sampleData: RawSpeciesStats = {
       coverage: 43.3
     }
   },
-  saccharomyces_cerevisiae_GCA_000146045_2: {
+  a733574a-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 12071326,
@@ -461,7 +461,7 @@ export const sampleData: RawSpeciesStats = {
       coverage: 57.7
     }
   },
-  triticum_aestivum_GCA_900519105_1: {
+  a73357ab-93e7-11ec-a39d-005056b38ce3: {
     assembly_stats: {
       contig_n50: 51842,
       total_genome_length: 14547261565,
@@ -607,7 +607,7 @@ type SpeciesSidebarData = {
 };
 
 export const sidebarData: SpeciesSidebarData = {
-  homo_sapiens_GCA_000001405_28: {
+  a7335667-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_000001405.28',
     taxonomy_id: '9606',
     strain: null,
@@ -629,7 +629,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2019-02-01',
     notes: []
   },
-  homo_sapiens_GCA_000001405_14: {
+  3704ceb1-948d-11ec-a39d-005056b38ce3: {
     id: 'GCA_000001405.14',
     taxonomy_id: '9606',
     strain: null,
@@ -651,7 +651,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2013-06-01',
     notes: []
   },
-  escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
+  a73351f7-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_000005845.2',
     taxonomy_id: '511145',
     strain: null,
@@ -673,7 +673,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2013-09-01',
     notes: []
   },
-  caenorhabditis_elegans_GCA_000002985_3: {
+  a733550b-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_000002985.3',
     taxonomy_id: '6239',
     strain: {
@@ -698,7 +698,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2013-02-01',
     notes: []
   },
-  plasmodium_falciparum_GCA_000002765_2: {
+  a73356e1-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_000002765.2',
     taxonomy_id: '36329',
     strain: null,
@@ -720,7 +720,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2016-04-01',
     notes: []
   },
-  saccharomyces_cerevisiae_GCA_000146045_2: {
+  a733574a-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_000146045.2',
     taxonomy_id: '4932',
     strain: {
@@ -745,7 +745,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2014-12-01',
     notes: []
   },
-  triticum_aestivum_GCA_900519105_1: {
+  a73357ab-93e7-11ec-a39d-005056b38ce3: {
     id: 'GCA_900519105.1',
     taxonomy_id: '4565',
     strain: {
