@@ -26,11 +26,11 @@ const hasOutdatedMediaQueryList = () => {
   );
 };
 
-const abortControllerSupport = () => {
+const hasNoAbortController = () => {
   return !('AbortController' in window);
 };
 
-const browserChecks = [hasOutdatedMediaQueryList, abortControllerSupport];
+const browserChecks = [hasOutdatedMediaQueryList, hasNoAbortController];
 
 const ensureBrowserSupport = () => {
   if (browserChecks.some((check) => check())) {
