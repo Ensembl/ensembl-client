@@ -30,8 +30,6 @@ import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
-import styles from './TrackPanelModal.scss';
-
 export const TrackPanelModal = () => {
   const trackPanelModalView = useSelector(getTrackPanelModalView);
   const dispatch = useDispatch();
@@ -65,11 +63,9 @@ export const TrackPanelModal = () => {
 
   const { title, content } = getModalViewData();
   return (
-    <section className={styles.trackPanelModal}>
-      <SidebarModal title={title} onClose={onClose}>
-        {content}
-      </SidebarModal>
-    </section>
+    <SidebarModal title={title} onClose={onClose}>
+      {content}
+    </SidebarModal>
   );
 };
 
