@@ -15,7 +15,7 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import { StateType } from 'typesafe-actions';
+import { useDispatch } from 'react-redux';
 import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
@@ -29,8 +29,6 @@ import rootEpic from './root/rootEpic';
 const epicMiddleware = createEpicMiddleware();
 
 const rootReducer = createRootReducer();
-
-export type RootState = StateType<typeof rootReducer>;
 
 const middleware = [
   epicMiddleware,
@@ -53,3 +51,8 @@ export default function getReduxStore() {
 
   return store;
 }
+
+type AppStore = ReturnType<typeof getReduxStore>;
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = AppStore['dispatch'];
+export const useAppDispatch = () => useDispatch<AppDispatch>();

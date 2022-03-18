@@ -16,15 +16,24 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import upperFirst from 'lodash/upperFirst';
 
 import styles from './CircleLoader.scss';
 
+type Size = 'default' | 'small';
+
 type Props = {
   className?: string;
+  size?: Size;
 };
 
 const CircleLoader = (props: Props) => {
-  const className = classNames(styles.circleLoader, props.className);
+  const loaderSize = props.size ?? 'default';
+  const className = classNames(
+    styles.circleLoader,
+    styles[`circleLoader${upperFirst(loaderSize)}`],
+    props.className
+  );
 
   return <div className={className} />;
 };

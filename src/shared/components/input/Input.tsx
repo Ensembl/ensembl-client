@@ -25,7 +25,9 @@ const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   const { className: classNameFromProps, ...otherProps } = props;
   const className = classNames(styles.input, classNameFromProps);
 
-  return <input className={className} ref={ref} {...otherProps} />;
+  return (
+    <input className={className} ref={ref} spellCheck={false} {...otherProps} />
+  );
 };
 
 export default forwardRef(Input);

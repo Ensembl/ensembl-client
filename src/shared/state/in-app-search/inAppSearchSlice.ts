@@ -16,8 +16,6 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-import apiService, { HTTPMethod } from 'src/services/api-service';
-
 import type { Strand } from 'src/shared/types/thoas/strand';
 
 export type AppName = 'genomeBrowser' | 'entityViewer';
@@ -85,14 +83,18 @@ export const search = createAsyncThunk(
     };
 
     const url = '/api/search';
-    const response: SearchResults = await apiService.fetch(url, {
+    const response: SearchResults = await fetch(url, {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      method: HTTPMethod.POST,
-      noCache: true,
+      method: 'POST',
       body: JSON.stringify(queryParams)
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error();
+      }
+      return response.json();
     });
 
     return {

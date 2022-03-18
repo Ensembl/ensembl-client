@@ -53,7 +53,7 @@ const ExampleLinks = () => {
       <div>
         <div className={styles.exampleLinks__emptyTopbar} />
         <div className={styles.exampleLinks}>
-          <CircleLoader />
+          <CircleLoader size="small" />
         </div>
       </div>
     );
