@@ -43,6 +43,7 @@ import type {
   BlastSelectSetting,
   BlastBooleanSetting,
   BlastParameterName,
+  ParameterRange,
   BlastSettingsConfig
 } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -238,6 +239,8 @@ const BlastSettings = ({ config }: Props) => {
           {buildSelect({
             ...(config.parameters['wordsize'] as BlastSelectSetting),
             selectedOption: blastParameters.wordsize as string,
+            limit: config.programs_parameters_limit['wordsize'],
+            blastProgram: blastProgram,
             onChange: (value: string) =>
               onBlastParameterChange('wordsize', value)
           })}
@@ -287,12 +290,25 @@ const buildSelect = (setting: {
   options: { label: string; value: string }[];
   label: string;
   selectedOption: string;
+  limit?: ParameterRange;
+  blastProgram?: BlastProgram;
   onChange: (value: string) => void;
 }) => {
   const onChange = (e: FormEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
   };
+
+  const blastProgram = setting.blastProgram as BlastProgram;
+  if (setting.limit && setting.limit[blastProgram]) {
+    setting.options = setting.options.filter(
+      (item) =>
+        parseInt(item.value) >=
+          (setting.limit as ParameterRange)[blastProgram].min &&
+        parseInt(item.value) <=
+          (setting.limit as ParameterRange)[blastProgram].max
+    );
+  }
 
   return (
     <div className={styles.select}>

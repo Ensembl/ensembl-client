@@ -85,6 +85,16 @@ type ProgramConfiguration = {
   programs: BlastProgram[];
 };
 
+export type ParameterRange = {
+  [program: string]: {
+    min: number;
+    max: number;
+  };
+};
+type ProgramParametersLimit = {
+  [BlastParameterName: string]: ParameterRange;
+};
+
 type Defaults = {
   database: string;
 };
@@ -92,6 +102,7 @@ type Defaults = {
 export type BlastSettingsConfig = {
   parameters: Record<BlastParameterName, BlastSetting>;
   programs_configurator: ProgramConfiguration[];
+  programs_parameters_limit: ProgramParametersLimit;
   database_sequence_types: Record<string, SequenceType>;
   defaults: Defaults;
   presets: Presets;
