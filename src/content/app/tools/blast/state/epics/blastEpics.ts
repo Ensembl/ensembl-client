@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { from, interval, Subject } from 'rxjs';
+import { from, interval, Subject, pipe } from 'rxjs';
 import { map, mergeMap, concatMap, filter, take, tap } from 'rxjs/operators';
-import type { Action } from '@reduxjs/toolkit';
+import { isFulfilled, type Action } from '@reduxjs/toolkit';
 import type { Epic } from 'redux-observable';
 
 import config from 'config';
@@ -31,10 +31,13 @@ import {
 
 import {
   updateJob,
+  restoreBlastSubmissions,
   type JobStatus
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import type { RootState } from 'src/store';
+
+const POLLING_INTERVAL = 5000; // five seconds
 
 export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
   action$
@@ -54,11 +57,41 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
 
       return results.map(({ jobId }) => ({ submissionId, jobId }));
     }),
-    mergeMap((ids) => {
+    pollForJobStatuses() // this will eventually return updateJob redux actions
+  );
+
+export const blastSubmissionsResroteEpic: Epic<Action, Action, RootState> = (
+  action$
+) =>
+  action$.pipe(
+    filter(isFulfilled(restoreBlastSubmissions)),
+    map(({ payload: submissions }) => {
+      return Object.entries(submissions).flatMap(([submissionId, submission]) =>
+        submission.results
+          .filter((job) => job.status === 'RUNNING')
+          .map(({ jobId }) => ({
+            submissionId,
+            jobId
+          }))
+      );
+    }),
+    pollForJobStatuses()
+  );
+
+/**
+ * Common polling logic: a pipeline that receives an array of objects
+ * of type { submissionId: string; jobId: string; },
+ * polls for status of each job once in a while;
+ * and when a job is finished or failed, updates its status in indexedDB,
+ * and sends a redux action to update its status in redux
+ */
+const pollForJobStatuses = () =>
+  pipe(
+    mergeMap((ids: { submissionId: string; jobId: string }[]) => {
       return from(ids).pipe(
         mergeMap(({ submissionId, jobId }) => {
           const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
-          return interval(5000).pipe(
+          return interval(POLLING_INTERVAL).pipe(
             mergeMap(() => observableApiService.fetch<{ status: string }>(url)),
             filter(
               (result) =>
