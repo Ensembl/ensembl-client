@@ -39,6 +39,14 @@ jest.mock('../global/globalSlice', () => ({
   updateBreakpointWidth: jest.fn(() => ({ type: 'updateBreakpointWidth' }))
 }));
 jest.mock('./useRestoredReduxState', () => jest.fn());
+jest.mock(
+  'src/content/app/tools/blast/state/blast-results/blastResultsSlice',
+  () => ({
+    restoreBlastSubmissions: jest.fn(() => ({
+      type: 'restoreBlastSubmissions'
+    }))
+  })
+);
 
 describe('<Root />', () => {
   const getRenderedRoot = () => {
