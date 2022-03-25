@@ -53,6 +53,12 @@ const blastResultsSlice = createSlice({
   name: 'blast-results',
   initialState: {} as BlastResultsState,
   reducers: {
+    restoreSubmissions(
+      state,
+      action: PayloadAction<Record<string, BlastSubmission>>
+    ) {
+      return action.payload;
+    },
     updateJob(
       state,
       action: PayloadAction<{
@@ -75,6 +81,6 @@ const blastResultsSlice = createSlice({
   }
 });
 
-export const { updateJob } = blastResultsSlice.actions;
+export const { restoreSubmissions, updateJob } = blastResultsSlice.actions;
 
 export default blastResultsSlice.reducer;

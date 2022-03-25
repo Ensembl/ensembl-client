@@ -30,11 +30,19 @@ export const saveBlastSubmission = async (
   await IndexedDB.set(STORE_NAME, submissionId, submission);
 };
 
-export const getAllBlastSubmissions = async (): Promise<BlastSubmission[]> => {
-  const submissionIds = await IndexedDB.keys(STORE_NAME);
-  return Promise.all(
-    submissionIds.map((id) => getBlastSubmission(id as string))
+export const getAllBlastSubmissions = async (): Promise<
+  Record<string, BlastSubmission>
+> => {
+  const submissionIds = (await IndexedDB.keys(STORE_NAME)) as string[];
+  const submissions = await Promise.all(
+    submissionIds.map((id) => getBlastSubmission(id))
   );
+  return submissionIds.reduce((obj, id, index) => {
+    return {
+      ...obj,
+      [id]: submissions[index]
+    };
+  }, {} as Record<string, BlastSubmission>);
 };
 
 export const getBlastSubmission = async (

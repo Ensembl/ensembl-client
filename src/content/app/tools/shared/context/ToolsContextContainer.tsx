@@ -21,10 +21,14 @@ import config from 'config';
 import { useAppDispatch } from 'src/store';
 
 import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import { updateJob } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  restoreSubmissions,
+  updateJob
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import {
   saveBlastSubmission,
-  updateSavedBlastJob
+  updateSavedBlastJob,
+  getAllBlastSubmissions
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
 import type { BlastSubmissionPayload } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
@@ -40,6 +44,7 @@ type ToolsContextType = {
   ) => Promise<
     { submissionId: string; submission: BlastSubmission } | undefined
   >;
+  restoreBlastSubmissions: () => void;
 };
 
 const ToolsContext = createContext<ToolsContextType | undefined>(undefined);
@@ -80,9 +85,15 @@ const ToolContextContainer = (props: Props) => {
       jobId
     }));
 
-    for await (const job of getFinishedJobs({ jobs: jobIds })) {
+    await pollJobStatuses(jobIds);
+  };
+
+  const pollJobStatuses = async (
+    jobs: { submissionId: string; jobId: string }[]
+  ) => {
+    for await (const job of getFinishedJobs({ jobs })) {
       const updatePayload = {
-        submissionId,
+        submissionId: job.submissionId,
         jobId: job.jobId,
         fragment: { status: job.status }
       };
@@ -91,8 +102,31 @@ const ToolContextContainer = (props: Props) => {
     }
   };
 
+  const restoreBlastSubmissions = async () => {
+    const submissions = await getAllBlastSubmissions();
+    dispatch(restoreSubmissions(submissions));
+
+    // resume polling for non-finished jobs
+    const jobIds = Object.entries(submissions).flatMap(
+      ([submissionId, submission]) =>
+        submission.results
+          .filter((job) => job.status === 'RUNNING')
+          .map(({ jobId }) => ({
+            submissionId,
+            jobId
+          }))
+    );
+
+    await pollJobStatuses(jobIds);
+  };
+
+  const contextValue = {
+    submitBlastForm,
+    restoreBlastSubmissions
+  };
+
   return (
-    <ToolsContext.Provider value={{ submitBlastForm }}>
+    <ToolsContext.Provider value={contextValue}>
       {props.children}
     </ToolsContext.Provider>
   );

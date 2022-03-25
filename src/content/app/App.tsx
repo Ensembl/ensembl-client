@@ -19,6 +19,8 @@ import { useLocation, useRoutes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import routesConfig from 'src/routes/routesConfig';
 
+import useToolsContext from 'src/content/app/tools/shared/context/useToolsContext';
+
 import analyticsTracking from 'src/services/analytics-service';
 
 import { changeCurrentApp } from 'src/global/globalSlice';
@@ -28,6 +30,7 @@ import Header from 'src/header/Header';
 const AppContainer = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { restoreBlastSubmissions } = useToolsContext();
 
   useEffect(() => {
     const appName: string = location.pathname.split('/').filter(Boolean)[0];
@@ -39,6 +42,10 @@ const AppContainer = () => {
       dispatch(changeCurrentApp(''));
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    restoreBlastSubmissions();
+  }, []);
 
   useLocationReporting();
 

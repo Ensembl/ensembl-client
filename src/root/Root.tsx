@@ -29,6 +29,7 @@ import App from '../content/app/App';
 import RootMeta from './RootMeta';
 import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import ToolsContextContainer from 'src/content/app/tools/shared/context/ToolsContextContainer';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 
 import styles from './Root.scss';
@@ -63,9 +64,11 @@ export const Root = () => {
   return (
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
-        <RootMeta />
-        <App />
-        {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        <ToolsContextContainer>
+          <RootMeta />
+          <App />
+          {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        </ToolsContextContainer>
       </ErrorBoundary>
     </div>
   );
