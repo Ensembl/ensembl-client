@@ -42,7 +42,7 @@ export type BlastProgram =
   | 'blastp'
   | 'blastx';
 
-type Option = {
+export type Option = {
   label: string;
   value: string;
 };
@@ -85,14 +85,12 @@ type ProgramConfiguration = {
   programs: BlastProgram[];
 };
 
-export type ParameterRange = {
-  [program: string]: {
-    min: number;
-    max: number;
+type ProgramParametersOverride = {
+  [BlastParameterName: string]: {
+    [program: string]: {
+      options: Option[];
+    };
   };
-};
-type ProgramParametersLimit = {
-  [BlastParameterName: string]: ParameterRange;
 };
 
 type Defaults = {
@@ -102,7 +100,7 @@ type Defaults = {
 export type BlastSettingsConfig = {
   parameters: Record<BlastParameterName, BlastSetting>;
   programs_configurator: ProgramConfiguration[];
-  programs_parameters_limit: ProgramParametersLimit;
+  programs_parameters_override: ProgramParametersOverride;
   database_sequence_types: Record<string, SequenceType>;
   defaults: Defaults;
   presets: Presets;

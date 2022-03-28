@@ -43,8 +43,8 @@ import type {
   BlastSelectSetting,
   BlastBooleanSetting,
   BlastParameterName,
-  ParameterRange,
-  BlastSettingsConfig
+  BlastSettingsConfig,
+  Option
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSettings.scss';
@@ -237,10 +237,12 @@ const BlastSettings = ({ config }: Props) => {
                 onBlastParameterChange('match_scores', value)
             })}
           {buildSelect({
-            ...(config.parameters['wordsize'] as BlastSelectSetting),
+            options: config.programs_parameters_override.wordsize[blastProgram]
+              ? config.programs_parameters_override.wordsize[blastProgram]
+                  .options
+              : (config.parameters.wordsize.options as Option[]),
+            label: config.parameters.wordsize.label,
             selectedOption: blastParameters.wordsize as string,
-            limit: config.programs_parameters_limit['wordsize'],
-            blastProgram: blastProgram,
             onChange: (value: string) =>
               onBlastParameterChange('wordsize', value)
           })}
@@ -287,28 +289,15 @@ const BlastJobName = () => {
 
 // to be replaced with a simple select component
 const buildSelect = (setting: {
-  options: { label: string; value: string }[];
+  options: Option[];
   label: string;
   selectedOption: string;
-  limit?: ParameterRange;
-  blastProgram?: BlastProgram;
   onChange: (value: string) => void;
 }) => {
   const onChange = (e: FormEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
   };
-
-  const blastProgram = setting.blastProgram as BlastProgram;
-  if (setting.limit && setting.limit[blastProgram]) {
-    setting.options = setting.options.filter(
-      (item) =>
-        parseInt(item.value) >=
-          (setting.limit as ParameterRange)[blastProgram].min &&
-        parseInt(item.value) <=
-          (setting.limit as ParameterRange)[blastProgram].max
-    );
-  }
 
   return (
     <div className={styles.select}>
