@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-import { from, interval, Subject, pipe } from 'rxjs';
-import { map, mergeMap, concatMap, filter, take, tap } from 'rxjs/operators';
+import {
+  from,
+  timer,
+  Subject,
+  pipe,
+  map,
+  mergeMap,
+  concatMap,
+  filter,
+  expand,
+  tap,
+  toArray,
+  EMPTY
+} from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
 import type { Epic } from 'redux-observable';
 
@@ -32,13 +44,20 @@ import {
 import {
   updateJob,
   restoreBlastSubmissions,
-  type JobStatus
+  type JobStatus,
+  type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import type { RootState } from 'src/store';
 
-const POLLING_INTERVAL = 5000; // five seconds
+const POLLING_INTERVAL = 15000; // fifteen seconds
 
+/**
+ * An epic that listens to redux action with the data from a BLAST form submission.
+ * It saves the submission to IndexedDB, polls for job statuses,
+ * and when a job is finished or failed, updates its status in indexedDB,
+ * and sends a redux action to update its status in redux
+ */
 export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
   action$
 ) =>
@@ -55,11 +74,26 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
         submission: { results }
       } = action.payload;
 
-      return results.map(({ jobId }) => ({ submissionId, jobId }));
+      return results.map((job) => ({ submissionId, job }));
     }),
-    pollForJobStatuses() // this will eventually return updateJob redux actions
+    poll(),
+    tap(databaseUpdaterSubject),
+    map((pollingResult) => {
+      const {
+        submissionId,
+        job: { jobId, status }
+      } = pollingResult;
+      // finish by returning a redux action
+      return updateJob({ submissionId, jobId, fragment: { status } });
+    })
   );
 
+/**
+ * Similar to blastFormSubmissionEpic, but listens to redux action
+ * that reads BLAST submissions back from IndexedDB.
+ * It checks for running jobs among the saved submissions,
+ * and polls their status until their are finished or failed.
+ */
 export const blastSubmissionsResroteEpic: Epic<Action, Action, RootState> = (
   action$
 ) =>
@@ -69,62 +103,80 @@ export const blastSubmissionsResroteEpic: Epic<Action, Action, RootState> = (
       return Object.entries(submissions).flatMap(([submissionId, submission]) =>
         submission.results
           .filter((job) => job.status === 'RUNNING')
-          .map(({ jobId }) => ({
+          .map((job) => ({
             submissionId,
-            jobId
+            job
           }))
       );
     }),
-    pollForJobStatuses()
-  );
-
-/**
- * Common polling logic: a pipeline that receives an array of objects
- * of type { submissionId: string; jobId: string; },
- * polls for status of each job once in a while;
- * and when a job is finished or failed, updates its status in indexedDB,
- * and sends a redux action to update its status in redux
- */
-const pollForJobStatuses = () =>
-  pipe(
-    mergeMap((ids: { submissionId: string; jobId: string }[]) => {
-      return from(ids).pipe(
-        mergeMap(({ submissionId, jobId }) => {
-          const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
-          return interval(POLLING_INTERVAL).pipe(
-            mergeMap(() => observableApiService.fetch<{ status: string }>(url)),
-            filter(
-              (result) =>
-                'status' in result &&
-                ['FINISHED', 'FAILURE'].includes(result.status)
-            ), // TODO: do we need to handle NOT_FOUND (aka 404) or ERROR (aka 500)?
-            map((result) => ({
-              submissionId,
-              jobId,
-              status: (result as { status: JobStatus }).status
-            })),
-            take(1) // stop polling when the final job status is received
-          );
-        })
-      );
-    }),
-    tap(pollingResultSubject),
+    poll(),
+    tap(databaseUpdaterSubject),
     map((pollingResult) => {
-      const { submissionId, jobId, status } = pollingResult;
+      const {
+        submissionId,
+        job: { jobId, status }
+      } = pollingResult;
       // finish by returning a redux action
       return updateJob({ submissionId, jobId, fragment: { status } });
     })
   );
 
+/**
+ * Common polling logic.
+ * The expand operator is recursive: whatever is returned from it (the result of checkJobStatuses),
+ * is fed back in.
+ * Here, as long as checkJobStatuses returns jobs whose status is RUNNING,
+ * they will be fed back into the expand, and then back to checkJobStatuses
+ */
+const poll = () =>
+  pipe(
+    expand((input: { submissionId: string; job: BlastJob }[]) => {
+      const runningJobsList = input.filter(
+        ({ job }) => job.status === 'RUNNING'
+      );
+      return runningJobsList.length
+        ? timer(POLLING_INTERVAL).pipe(
+            concatMap(() => checkJobStatuses(runningJobsList))
+          )
+        : EMPTY;
+    }),
+    mergeMap((results) => from(results)), // transform the array of objects returned from the previous operator into individual objects
+    filter((pollingResult) =>
+      ['FINISHED', 'FAILURE'].includes(pollingResult.job.status)
+    ) // TODO: do we need to handle NOT_FOUND (aka 404) or ERROR (aka 500)?
+  );
+
+// query all running jobs once, one job after the other
+const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
+  return from(input).pipe(
+    concatMap(({ submissionId, job }) => {
+      const { jobId } = job;
+      const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
+      return observableApiService.fetch<{ status: string }>(url).pipe(
+        map((result) => ({
+          submissionId,
+          job: {
+            ...job,
+            status: (result as { status: JobStatus }).status
+          }
+        }))
+      );
+    }),
+    toArray()
+  );
+};
+
 // save polling results to database
-const pollingResultSubject = new Subject<{
+const databaseUpdaterSubject = new Subject<{
   submissionId: string;
-  jobId: string;
-  status: JobStatus;
+  job: BlastJob;
 }>().pipe(
   // make sure to wait until the async job of saving to indexedDb has been completed before starting a new one
   concatMap((pollingResult) => {
-    const { submissionId, jobId, status } = pollingResult;
+    const {
+      submissionId,
+      job: { jobId, status }
+    } = pollingResult;
     return from(
       updateSavedBlastJob({ submissionId, jobId, fragment: { status } })
     );
