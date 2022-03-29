@@ -24,6 +24,8 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
 
+import listenerMiddleware from 'src/root/actionListenerMiddleware';
+
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
@@ -46,7 +48,9 @@ export default function getReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(middleware),
+      getDefaultMiddleware()
+        .prepend(listenerMiddleware.middleware)
+        .concat(middleware),
     devTools: config.isDevelopment,
     preloadedState
   });

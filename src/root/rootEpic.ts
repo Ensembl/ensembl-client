@@ -17,9 +17,5 @@
 import { combineEpics } from 'redux-observable';
 
 import * as speciesSelectorEpics from 'src/content/app/species-selector/state/speciesSelectorEpics';
-import * as blastEpics from 'src/content/app/tools/blast/state/epics/blastEpics';
 
-export default combineEpics(
-  ...Object.values(speciesSelectorEpics),
-  ...Object.values(blastEpics)
-);
+export default combineEpics(...Object.values(speciesSelectorEpics));

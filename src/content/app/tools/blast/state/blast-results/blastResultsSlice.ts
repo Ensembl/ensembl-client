@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction
+} from '@reduxjs/toolkit';
+
+import { getAllBlastSubmissions } from 'src/content/app/tools/blast/services/blastStorageService';
 
 import { submitBlast } from '../blast-api/blastApiSlice';
 
@@ -48,6 +54,11 @@ export type BlastJob = BlastSubmission['results'][number];
 type BlastResultsState = {
   [submissionId: string]: BlastSubmission;
 };
+
+export const restoreBlastSubmissions = createAsyncThunk(
+  'blast-results/restore-blast-submissions',
+  () => getAllBlastSubmissions() || {}
+);
 
 const blastResultsSlice = createSlice({
   name: 'blast-results',
