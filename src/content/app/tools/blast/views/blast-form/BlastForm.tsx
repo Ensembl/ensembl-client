@@ -34,11 +34,6 @@ import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-s
 
 import styles from './BlastForm.scss';
 
-// ToDo: Remove the 2 imports below once PR is approved and revert the testConfig props change on line 53 (Only for development env and review env)
-// Then we need to feedback to backend to update the config file for the tools API and coordinate the master branch update
-import testConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
-import { BlastSettingsConfig } from '../../types/blastSettings';
-
 const BlastForm = () => {
   const { data: config } = useBlastConfigQuery();
 
@@ -50,7 +45,7 @@ const BlastForm = () => {
     <div className={styles.container}>
       <ToolsAppBar />
       <ToolsTopBar>
-        <BlastSettings config={testConfig as BlastSettingsConfig} />
+        <BlastSettings config={config} />
       </ToolsTopBar>
       <Main />
     </div>
