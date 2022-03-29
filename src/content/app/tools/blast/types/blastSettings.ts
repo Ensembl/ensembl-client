@@ -42,7 +42,7 @@ export type BlastProgram =
   | 'blastp'
   | 'blastx';
 
-type Option = {
+export type Option = {
   label: string;
   value: string;
 };
@@ -85,6 +85,14 @@ type ProgramConfiguration = {
   programs: BlastProgram[];
 };
 
+type ProgramParametersOverride = {
+  [BlastParameterName: string]: {
+    [program: string]: {
+      options: Option[];
+    };
+  };
+};
+
 type Defaults = {
   database: string;
 };
@@ -92,6 +100,7 @@ type Defaults = {
 export type BlastSettingsConfig = {
   parameters: Record<BlastParameterName, BlastSetting>;
   programs_configurator: ProgramConfiguration[];
+  programs_parameters_override: ProgramParametersOverride;
   database_sequence_types: Record<string, SequenceType>;
   defaults: Defaults;
   presets: Presets;

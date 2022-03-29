@@ -52,10 +52,6 @@
       "type": "select",
       "options": [
         {
-          "label": "0",
-          "value": "0"
-        },
-        {
           "label": "5",
           "value": "5"
         },
@@ -107,10 +103,6 @@
       "type": "select",
       "options": [
         {
-          "label": "0",
-          "value": "0"
-        },
-        {
           "label": "5",
           "value": "5"
         },
@@ -161,6 +153,26 @@
       "description": "Maximum number of HSPs (alignments) to keep for any single query-subject pair.",
       "type": "select",
       "options": [
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "50",
+          "value": "50"
+        },
         {
           "label": "100",
           "value": "100"
@@ -308,45 +320,41 @@
       "type": "select",
       "options": [
         {
-          "label": "1,-4",
-          "value": "1,-4"
-        },
-        {
-          "label": "2,-7",
-          "value": "2,-7"
-        },
-        {
-          "label": "1,-3",
-          "value": "1,-3"
-        },
-        {
-          "label": "2,-5",
-          "value": "2,-5"
+          "label": "1,-1",
+          "value": "1,-1"
         },
         {
           "label": "1,-2",
           "value": "1,-2"
         },
         {
+          "label": "1,-3",
+          "value": "1,-3"
+        },
+        {
+          "label": "1,-4",
+          "value": "1,-4"
+        },
+        {
           "label": "2,-3",
           "value": "2,-3"
         },
         {
-          "label": "1,-1",
-          "value": "1,-1"
+          "label": "2,-5",
+          "value": "2,-5"
         },
         {
-          "label": "5,-4",
-          "value": "5,-4"
+          "label": "2,-7",
+          "value": "2,-7"
         },
         {
           "label": "4,-5",
           "value": "4,-5"
-        },
+        },        
         {
-          "label": "N/A",
-          "value": ""
-        }
+          "label": "5,-4",
+          "value": "5,-4"
+        }        
       ]
     },
     "wordsize": {
@@ -355,16 +363,32 @@
       "type": "select",
       "options": [
         {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
           "label": "6",
           "value": "6"
         },
         {
-          "label": "11",
-          "value": "11"
+          "label": "7",
+          "value": "7"
         },
         {
-          "label": "28",
-          "value": "28"
+          "label": "8",
+          "value": "8"
         }
       ]
     },
@@ -509,9 +533,17 @@
           "value": "6"
         },
         {
+          "label": "7",
+          "value": "7"
+        },        
+        {
           "label": "8",
           "value": "8"
         },
+        {
+          "label": "9",
+          "value": "9"
+        },        
         {
           "label": "10",
           "value": "10"
@@ -554,10 +586,6 @@
         {
           "label": "PAM250",
           "value": "PAM250"
-        },
-        {
-          "label": "NONE",
-          "value": "NONE"
         }
       ]
     }
@@ -589,6 +617,92 @@
       "programs": ["blastp"]
     }
   ],
+  "programs_parameters_override": {
+    "wordsize": {
+      "blastn" : {
+        "options": [
+          {
+            "label": "2",
+            "value": "2"
+          },
+          {
+            "label": "3",
+            "value": "3"
+          },
+          {
+            "label": "4",
+            "value": "4"
+          },
+          {
+            "label": "5",
+            "value": "5"
+          },
+          {
+            "label": "6",
+            "value": "6"
+          },
+          {
+            "label": "7",
+            "value": "7"
+          },
+          {
+            "label": "8",
+            "value": "8"
+          },
+          {
+            "label": "9",
+            "value": "9"
+          },
+          {
+            "label": "10",
+            "value": "10"
+          },
+          {
+            "label": "11",
+            "value": "11"
+          },
+          {
+            "label": "12",
+            "value": "12"
+          },        {
+            "label": "13",
+            "value": "13"
+          },        {
+            "label": "14",
+            "value": "14"
+          },
+          {
+            "label": "15",
+            "value": "15"
+          }
+        ]
+      },
+      "tblastx": {
+        "options": [
+          {
+            "label": "2",
+            "value": "2"
+          },
+          {
+            "label": "3",
+            "value": "3"
+          },
+          {
+            "label": "4",
+            "value": "4"
+          },
+          {
+            "label": "5",
+            "value": "5"
+          },
+          {
+            "label": "6",
+            "value": "6"
+          }
+        ]
+      }
+    }
+  },
   "defaults": {
     "program": "blastn",
     "database": "dna"
@@ -773,7 +887,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         },
         "near_match": {
@@ -787,7 +901,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         },
         "distant_homologies": {
@@ -801,7 +915,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         }
       },
@@ -817,7 +931,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         },
         "near_match": {
@@ -831,7 +945,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         },
         "distant_homologies": {
@@ -845,7 +959,7 @@
           "exp": "1e-1",
           "gapopen": "2",
           "gapext": "2",
-          "wordsize": "3",
+          "wordsize": "6",
           "match_scores": "1,-1"
         }
       }

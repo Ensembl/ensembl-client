@@ -43,7 +43,8 @@ import type {
   BlastSelectSetting,
   BlastBooleanSetting,
   BlastParameterName,
-  BlastSettingsConfig
+  BlastSettingsConfig,
+  Option
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSettings.scss';
@@ -236,7 +237,11 @@ const BlastSettings = ({ config }: Props) => {
                 onBlastParameterChange('match_scores', value)
             })}
           {buildSelect({
-            ...(config.parameters['wordsize'] as BlastSelectSetting),
+            options: config.programs_parameters_override.wordsize[blastProgram]
+              ? config.programs_parameters_override.wordsize[blastProgram]
+                  .options
+              : (config.parameters.wordsize.options as Option[]),
+            label: config.parameters.wordsize.label,
             selectedOption: blastParameters.wordsize as string,
             onChange: (value: string) =>
               onBlastParameterChange('wordsize', value)
@@ -284,7 +289,7 @@ const BlastJobName = () => {
 
 // to be replaced with a simple select component
 const buildSelect = (setting: {
-  options: { label: string; value: string }[];
+  options: Option[];
   label: string;
   selectedOption: string;
   onChange: (value: string) => void;
