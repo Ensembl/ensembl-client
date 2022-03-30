@@ -120,12 +120,12 @@ const BlastInputSequence = (props: Props) => {
   };
 
   const onClear = () => {
-    if (props.sequence) {
-      props.onRemoveSequence?.(index);
-    } else {
+    if (!props.sequence) {
+      // clear textarea if its content has not yet been sent to the parent
       setInput('');
-      props.onInput?.('', index);
     }
+    props.onRemoveSequence?.(index);
+    props.onInput?.('', index);
   };
 
   const isInputValid = input
