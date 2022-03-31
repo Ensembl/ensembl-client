@@ -94,7 +94,7 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
  * It checks for running jobs among the saved submissions,
  * and polls their status until their are finished or failed.
  */
-export const blastSubmissionsResroteEpic: Epic<Action, Action, RootState> = (
+export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
   action$
 ) =>
   action$.pipe(
