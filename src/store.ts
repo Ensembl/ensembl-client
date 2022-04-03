@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, type Action } from '@reduxjs/toolkit';
 import {
   useDispatch,
   useSelector,
@@ -30,7 +30,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import createRootReducer from './root/rootReducer';
 import rootEpic from './root/rootEpic';
 
-const epicMiddleware = createEpicMiddleware();
+const epicMiddleware = createEpicMiddleware<Action, Action, RootState>();
 
 const rootReducer = createRootReducer();
 
@@ -51,7 +51,7 @@ export default function getReduxStore() {
     preloadedState
   });
 
-  epicMiddleware.run(rootEpic as any);
+  epicMiddleware.run(rootEpic);
 
   return store;
 }

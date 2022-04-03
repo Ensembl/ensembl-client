@@ -28,7 +28,7 @@ type BlastSubmissionPayload = {
   parameters: Record<string, string>;
 };
 
-type BlastSubmissionResponse = {
+export type BlastSubmissionResponse = {
   submissionId: string;
   jobs: Array<{
     jobId?: string;
