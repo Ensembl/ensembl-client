@@ -1,25 +1,101 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { BehaviorSubject } from 'rxjs';
+import { configureStore, type Action } from '@reduxjs/toolkit';
+import { takeUntil, finalize, Subject, type Observable } from 'rxjs';
+import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { createEpicMiddleware, combineEpics, ofType } from 'redux-observable';
+import { createEpicMiddleware, combineEpics, } from 'redux-observable';
 
-import rootReducer from 'src/root/rootReducer';
+import createRootReducer from 'src/root/rootReducer';
 import * as blastEpics from 'src/content/app/tools/blast/state/epics/blastEpics';
+
+import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import { getBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+
 import {
+  createBlastSubmission,
   createBlastSubmissionResponse,
   createSuccessfulBlastJobInSubmissionResponse,
   createRunningJobStatusResponse,
-  createFinishedJobStatusResponse
-} from 'src/content/app/tools/blast/state/epics/tests/fixtures/blastSubmissionFixtures';
+  createFinishedJobStatusResponse,
+  createFailedJobStatusResponse,
+  createStoredBlastSubmission,
+  createStoredBlastJobResult
+} from './fixtures/blastSubmissionFixtures';
+
+import type { RootState } from 'src/store';
+
+jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
+  saveBlastSubmission: jest.fn().mockImplementation(() => Promise.resolve()),
+  updateSavedBlastJob: jest.fn().mockImplementation(() => Promise.resolve()),
+  getAllBlastSubmissions: jest.fn()
+}));
+jest.mock('config', () => ({
+  toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+}));
+jest.mock('../blastEpicConstants', () => ({
+  POLLING_INTERVAL: 0
+}));
+
+const createCancellableEpic = () => {
+  const shutdown$ = new Subject();
+
+  const cancellableRootEpic = (action$: Observable<Action>, state$: Observable<RootState>, deps: any) => {
+    const rootEpic = combineEpics(...Object.values(blastEpics));
+  
+    const output$ = rootEpic(
+      action$.pipe(takeUntil(shutdown$)),
+      state$.pipe(takeUntil(shutdown$)) as any,
+      deps
+    );
+    return output$.pipe(
+      finalize(() => {
+        shutdown$.complete();
+      })
+    );
+  };23
+
+  return {
+    rootEpic: cancellableRootEpic,
+    shutdown$
+  };
+};
+
+const buildReduxStore = () => {
+  const { rootEpic, shutdown$ } = createCancellableEpic();
+  const epicMiddleware = createEpicMiddleware();
+  const middleware = [
+    epicMiddleware,
+    restApiSlice.middleware
+  ];
+
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(middleware),
+  });
+
+  epicMiddleware.run(rootEpic as any);
+
+  return {
+    store,
+    shutdownEpics() {
+      shutdown$.next('');
+      return shutdown$.toPromise();
+    }
+  };
+};
+
 
 const server = setupServer(
-  rest.post('/api/tools//blast/job', (req, res, ctx) => {
+  // create a blast submission
+  rest.post('http://tools-api-url/blast/job', (_, res, ctx) => {
     return res(ctx.json(successfulSubmission));
-  }),
+  })
 );
 
 const firstJobInResponse = createSuccessfulBlastJobInSubmissionResponse();
@@ -29,28 +105,161 @@ const successfulSubmission = createBlastSubmissionResponse({
   jobs: [firstJobInResponse, secondJobInResponse]
 });
 
-const buildReduxStore = () => {
-  const epicMiddleware = createEpicMiddleware();
-  const middleware = [
-    epicMiddleware,
-    restApiSlice.middleware
-  ];
 
-  const rootEpic = combineEpics(...Object.values(blastEpics));
-  const epic$ = new BehaviorSubject(rootEpic);
 
-  const store = configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(middleware) as any,
-  });
-
-  epicMiddleware.run();
-
-  return store;
-};
-
-beforeAll(() => server.listen())
+beforeAll(() => server.listen({
+  onUnhandledRequest(req) {
+    const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+    throw new Error(errorMessage);
+  }
+}))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
+
+describe('blast action listeners', () => {
+  let store: ReturnType<typeof buildReduxStore>['store'];
+  let shutdownEpics: ReturnType<typeof buildReduxStore>['shutdownEpics'];
+
+  beforeEach(() => {
+    const { store: _store, shutdownEpics: _shutdownEpics } = buildReduxStore();
+    store = _store;
+    shutdownEpics = _shutdownEpics;
+  });
+
+  afterEach(() => {
+    shutdownEpics();
+    jest.clearAllMocks();
+  });
+
+  describe('submitBlastListener', () => {
+    it.only('immediately saves submission to indexedDB', async () => {
+      console.log('test 1');
+      server.use(
+        rest.get(
+          'http://tools-api-url/blast/jobs/status/:jobId',
+          (_, res, ctx) => {
+            console.log('i am called');
+            return res(ctx.json(createFinishedJobStatusResponse()));
+          }
+        )
+      );
+
+      await store.dispatch(submitBlast.initiate(createBlastSubmission()));
+      expect(blastStorageService.saveBlastSubmission).toHaveBeenCalled();
+    });
+
+    it.only('polls job status endpoint until the job either finishes or fails', async () => {
+      const firstJobMaxPollCount = 3;
+      const secondJobMaxPollCount = 2;
+      let firstJobPollCount = 0;
+      let secondJobPollCount = 0;
+
+      // finish first job after 3 requests and fail the second job after 2 requests
+      server.use(
+        rest.get(
+          'http://tools-api-url/blast/jobs/status/:jobId',
+          (req, res, ctx) => {
+            const { jobId } = req.params;
+            if (jobId === firstJobInResponse.jobId) {
+              firstJobPollCount++;
+              return firstJobPollCount >= firstJobMaxPollCount
+                ? res(ctx.json(createFinishedJobStatusResponse()))
+                : res(ctx.json(createRunningJobStatusResponse()));
+            } else {
+              secondJobPollCount++;
+              return secondJobPollCount >= secondJobMaxPollCount
+                ? res(ctx.json(createFailedJobStatusResponse()))
+                : res(ctx.json(createRunningJobStatusResponse()));
+            }
+          }
+        )
+      );
+
+      await store.dispatch(submitBlast.initiate(createBlastSubmission()));
+
+      // wait until job statuses in redux have been updated
+      await waitFor(() => {
+        const submissions = getBlastSubmissions(store.getState());
+        const [, submission] = Object.entries(submissions)[0];
+        expect(
+          submission.results.every((job) =>
+            ['FINISHED', 'FAILURE'].includes(job.status)
+          )
+        ).toBe(true);
+      });
+
+      // check how many times endpoints were polled
+      expect(firstJobPollCount).toBe(firstJobMaxPollCount);
+      expect(secondJobPollCount).toBe(secondJobMaxPollCount);
+
+      // check that the job status gets updated in indexedDB
+      expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
+        submissionId: successfulSubmission.submissionId,
+        jobId: firstJobInResponse.jobId,
+        fragment: { status: 'FINISHED' }
+      });
+
+      expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
+        submissionId: successfulSubmission.submissionId,
+        jobId: secondJobInResponse.jobId,
+        fragment: { status: 'FAILURE' }
+      });
+    });
+  });
+
+  describe('resforeBlastSubmissionsListener', () => {
+    const unfinishedJob = createStoredBlastJobResult();
+    const finishedJob = createStoredBlastJobResult({ status: 'FINISHED' });
+    const storedBlastSubmission = createStoredBlastSubmission({
+      results: [unfinishedJob, finishedJob]
+    });
+
+    jest
+      .spyOn(blastStorageService, 'getAllBlastSubmissions')
+      .mockImplementation(async () => ({
+        [successfulSubmission.submissionId]: storedBlastSubmission
+      }));
+
+    it('polls status of unfinished jobs', async () => {
+      const maxJobPollCount = 3;
+      let jobPollCount = 0;
+
+      // finish first job after 3 requests and fail the second job after 2 requests
+      server.use(
+        rest.get(
+          'http://tools-api-url/blast/jobs/status/:jobId',
+          (_, res, ctx) => {
+            jobPollCount++;
+            return jobPollCount === maxJobPollCount
+              ? res(ctx.json(createFinishedJobStatusResponse()))
+              : res(ctx.json(createRunningJobStatusResponse()));
+          }
+        )
+      );
+
+      store.dispatch(restoreBlastSubmissions());
+
+      // wait until job statuses in redux have been updated
+      await waitFor(() => {
+        const submissions = getBlastSubmissions(store.getState());
+        const [, submission] = Object.entries(submissions)[0];
+        expect(
+          submission.results.every((job) =>
+            ['FINISHED', 'FAILURE'].includes(job.status)
+          )
+        ).toBe(true);
+      });
+
+      // check how many times endpoints were polled (notice: we expect that only one job was polled)
+      expect(jobPollCount).toBe(maxJobPollCount);
+
+      // check that the job status gets updated in indexedDB
+      expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
+        submissionId: successfulSubmission.submissionId,
+        jobId: unfinishedJob.jobId,
+        fragment: { status: 'FINISHED' }
+      });
+    });
+  });
+});

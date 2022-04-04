@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import { of, switchMap, catchError } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-
-export const fetch = <T>(url: string) =>
-  fromFetch(url).pipe(
-    switchMap((response) => {
-      if (response.ok) {
-        // OK return data
-        return response.json() as Promise<T>;
-      } else {
-        // Server is returning a status requiring the client to try something else.
-        return of({ error: true, message: `Error ${response.status}` });
-      }
-    }),
-    catchError((err) => {
-      // Network or other error, handle appropriately
-      return of({ error: true, message: err.message });
-    })
-  );
+export const POLLING_INTERVAL = 15 * 1000; // fifteen seconds

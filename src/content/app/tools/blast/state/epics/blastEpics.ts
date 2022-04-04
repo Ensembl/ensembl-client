@@ -48,9 +48,9 @@ import {
   type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
-import type { RootState } from 'src/store';
+import { POLLING_INTERVAL } from './blastEpicConstants';
 
-const POLLING_INTERVAL = 15000; // fifteen seconds
+import type { RootState } from 'src/store';
 
 /**
  * An epic that listens to redux action with the data from a BLAST form submission.
@@ -134,6 +134,7 @@ const poll = () =>
       const runningJobsList = input.filter(
         ({ job }) => job.status === 'RUNNING'
       );
+      console.log('runningJobsList', runningJobsList);
       return runningJobsList.length
         ? timer(POLLING_INTERVAL).pipe(
             concatMap(() => checkJobStatuses(runningJobsList))
@@ -149,10 +150,12 @@ const poll = () =>
 // query all running jobs once, one job after the other
 const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
   return from(input).pipe(
+    tap(input => console.log('input', input)),
     concatMap(({ submissionId, job }) => {
       const { jobId } = job;
       const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
       return observableApiService.fetch<{ status: string }>(url).pipe(
+        tap(response => console.log('response', response)),
         map((result) => ({
           submissionId,
           job: {

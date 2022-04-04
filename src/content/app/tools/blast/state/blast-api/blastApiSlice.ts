@@ -22,7 +22,7 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 
-type BlastSubmissionPayload = {
+export type BlastSubmissionPayload = {
   species: Species[];
   querySequences: string[];
   parameters: Record<string, string>;
