@@ -79,6 +79,9 @@ const blastResultsSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(restoreBlastSubmissions.fulfilled, (state, { payload }) => {
+      return payload;
+    });
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
       state[submissionId] = submission;

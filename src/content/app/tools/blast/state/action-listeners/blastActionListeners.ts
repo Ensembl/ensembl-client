@@ -29,6 +29,8 @@ import {
   updateSavedBlastJob
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
+import { POLLING_INTERVAL } from './blastActionListenerConstants';
+
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { RootState, AppDispatch } from 'src/store';
 
@@ -42,7 +44,7 @@ export const submitBlastListener = {
     listenerApi: ListenerEffectAPI<RootState, AppDispatch>
   ) => {
     const { submissionId, submission } = action.payload;
-    const { dispatch } = listenerApi;
+    const { dispatch, signal } = listenerApi;
 
     await saveBlastSubmission(submissionId, submission);
 
@@ -51,7 +53,7 @@ export const submitBlastListener = {
       jobId
     }));
 
-    for await (const job of pollJobStatuses(jobIds)) {
+    for await (const job of pollJobStatuses({ jobs: jobIds, signal })) {
       dispatch(updateJob(job));
       await updateSavedBlastJob(job);
     }
@@ -64,7 +66,7 @@ export const resforeBlastSubmissionsListener = {
     action: PayloadAction<Record<string, BlastSubmission>>,
     listenerApi: ListenerEffectAPI<RootState, AppDispatch>
   ) => {
-    const { dispatch } = listenerApi;
+    const { dispatch, signal } = listenerApi;
 
     const jobIds = Object.entries(action.payload).flatMap(
       ([submissionId, submission]) =>
@@ -80,43 +82,57 @@ export const resforeBlastSubmissionsListener = {
       return;
     }
 
-    for await (const job of pollJobStatuses(jobIds)) {
+    for await (const job of pollJobStatuses({ jobs: jobIds, signal })) {
       dispatch(updateJob(job));
       await updateSavedBlastJob(job);
     }
   }
 };
 
-async function* pollJobStatuses(
-  jobs: Array<{ submissionId: string; jobId: string }>
-) {
+async function* pollJobStatuses({
+  jobs,
+  signal
+}: {
+  jobs: Array<{ submissionId: string; jobId: string }>;
+  signal: AbortSignal;
+}) {
   while (jobs.length) {
     for (const job of [...jobs]) {
-      const { status } = await fetchJobStatus(job.jobId);
-
-      if (['FINISHED', 'FAILURE'].includes(status)) {
-        jobs = jobs.filter(({ jobId }) => jobId !== job.jobId);
-        yield {
-          ...job,
-          fragment: { status }
-        };
+      try {
+        const { status } = await fetchJobStatus({ jobId: job.jobId, signal });
+        if (['FINISHED', 'FAILURE'].includes(status)) {
+          jobs = jobs.filter(({ jobId }) => jobId !== job.jobId);
+          yield {
+            ...job,
+            fragment: { status }
+          };
+        }
+      } catch {
+        // don't care
       }
     }
 
-    await timer(5000);
+    await timer(POLLING_INTERVAL);
   }
 }
 
 const timer = (time: number) =>
   new Promise((resolve) => setTimeout(resolve, time));
 
-const fetchJobStatus = async (jobId: string) => {
+const fetchJobStatus = async ({
+  jobId,
+  signal
+}: {
+  jobId: string;
+  signal: AbortSignal;
+}) => {
   const endpointURL = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
 
   const response = await fetch(endpointURL, {
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    signal
   });
 
   if (response.ok) {
