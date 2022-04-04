@@ -152,6 +152,36 @@ const TranscriptSummary = (props: Props) => {
         </div>
       </div>
 
+      <div
+        className={classNames(
+          styles.row,
+          styles.spaceAbove,
+          styles.downloadRow
+        )}
+      >
+        <div className={styles.value}>
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
+            onClick={() => showDownload(!shouldShowDownload)}
+          />
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadTranscript
+                genomeId={activeGenomeId}
+                transcript={{
+                  id: transcript.stable_id,
+                  isProteinCoding: isProteinCodingTranscript(transcript)
+                }}
+                gene={{ id: gene.stable_id }}
+                theme="light"
+                layout="vertical"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Transcript length</div>
         <div className={styles.value}>
@@ -211,36 +241,6 @@ const TranscriptSummary = (props: Props) => {
           </div>
         </div>
       )}
-
-      <div
-        className={classNames(
-          styles.row,
-          styles.spaceAbove,
-          styles.downloadRow
-        )}
-      >
-        <div className={styles.value}>
-          <ShowHide
-            label="Download"
-            isExpanded={shouldShowDownload}
-            onClick={() => showDownload(!shouldShowDownload)}
-          />
-          {shouldShowDownload && (
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadTranscript
-                genomeId={activeGenomeId}
-                transcript={{
-                  id: transcript.stable_id,
-                  isProteinCoding: isProteinCodingTranscript(transcript)
-                }}
-                gene={{ id: gene.stable_id }}
-                theme="light"
-                layout="vertical"
-              />
-            </div>
-          )}
-        </div>
-      </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Gene</div>

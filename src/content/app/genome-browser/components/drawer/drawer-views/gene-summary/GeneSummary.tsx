@@ -112,6 +112,27 @@ const GeneSummary = () => {
         </div>
       </div>
 
+      <div className={classNames(rowClasses, styles.downloadRow)}>
+        <div className={styles.value}>
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
+            onClick={() => showDownload(!shouldShowDownload)}
+          />
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadGene
+                genomeId={focusGene.genome_id}
+                gene={{
+                  id: gene.stable_id,
+                  isProteinCoding: isProteinCodingGene(gene)
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.geneName}>
@@ -139,27 +160,6 @@ const GeneSummary = () => {
         <div className={styles.value}>
           {gene.transcripts.length}{' '}
           {pluralise('transcript', gene.transcripts.length)}
-        </div>
-      </div>
-
-      <div className={classNames(rowClasses, styles.downloadRow)}>
-        <div className={styles.value}>
-          <ShowHide
-            label="Download"
-            isExpanded={shouldShowDownload}
-            onClick={() => showDownload(!shouldShowDownload)}
-          />
-          {shouldShowDownload && (
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadGene
-                genomeId={focusGene.genome_id}
-                gene={{
-                  id: gene.stable_id,
-                  isProteinCoding: isProteinCodingGene(gene)
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
