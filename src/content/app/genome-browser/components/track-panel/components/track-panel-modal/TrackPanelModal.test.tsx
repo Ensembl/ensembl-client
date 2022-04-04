@@ -25,7 +25,9 @@ import set from 'lodash/fp/set';
 import { createMockBrowserState } from 'tests/fixtures/browser';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
-import { TrackPanelModal } from './TrackPanelModal';
+import { TrackPanelModal, trackPanelModalTitles } from './TrackPanelModal';
+
+import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 jest.mock('./modal-views/TrackPanelSearch', () => () => (
   <div className="trackPanelSearch" />
@@ -64,20 +66,25 @@ describe('<TrackPanelModal />', () => {
   describe('rendering', () => {
     it('displays track pane modal view for search', () => {
       const { container } = renderComponent();
-      expect(container.querySelector('.trackPanelSearch')).toBeTruthy();
+      expect(container.querySelector('.title')?.innerHTML).toBe(
+        trackPanelModalTitles[TrackPanelModalView.SEARCH]
+      );
     });
 
-    it('displays track pane modal view for downloads', () => {
-      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
+    it('displays track panel modal view for downloads', () => {
+      const { activeGenomeId } = mockState.browser.browserGeneral;
 
       const { container } = renderComponent(
         set(
           `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
-          'downloads',
+          TrackPanelModalView.DOWNLOADS,
           mockState
         )
       );
-      expect(container.querySelector('.trackPanelDownloads')).toBeTruthy();
+
+      expect(container.querySelector('.title')?.innerHTML).toBe(
+        trackPanelModalTitles[TrackPanelModalView.DOWNLOADS]
+      );
     });
   });
 

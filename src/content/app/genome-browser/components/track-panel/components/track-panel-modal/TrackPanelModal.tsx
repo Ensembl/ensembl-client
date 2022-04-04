@@ -49,7 +49,7 @@ const trackPanelSidebarModals: Record<
   )
 };
 
-const trackPanelModalTitles: { [key: string]: string } = {
+export const trackPanelModalTitles: { [key: string]: string } = {
   [TrackPanelModalView.SEARCH]: 'Search',
   [TrackPanelModalView.TRACKS_MANAGER]: 'Tracks manager',
   [TrackPanelModalView.BOOKMARKS]: 'Previously viewed',
