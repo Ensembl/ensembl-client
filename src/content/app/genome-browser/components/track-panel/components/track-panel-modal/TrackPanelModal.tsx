@@ -14,58 +14,74 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { lazy, Suspense, LazyExoticComponent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getTrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { closeTrackPanelModal } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import TrackPanelSearch from './modal-views/TrackPanelSearch';
-import TracksManager from './modal-views/TracksManager';
-import TrackPanelBookmarks from './modal-views/TrackPanelBookmarks';
-import PersonalData from './modal-views/PersonalData';
-import TrackPanelShare from './modal-views/TrackPanelShare';
-import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
-
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
+
+import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
+const trackPanelSidebarModals: Record<
+  string,
+  LazyExoticComponent<() => JSX.Element | null>
+> = {
+  [TrackPanelModalView.SEARCH]: lazy(
+    () => import('./modal-views/TrackPanelSearch')
+  ),
+  [TrackPanelModalView.TRACKS_MANAGER]: lazy(
+    () => import('./modal-views/TracksManager')
+  ),
+  [TrackPanelModalView.BOOKMARKS]: lazy(
+    () => import('./modal-views/TrackPanelBookmarks')
+  ),
+  [TrackPanelModalView.PERSONAL_DATA]: lazy(
+    () => import('./modal-views/PersonalData')
+  ),
+  [TrackPanelModalView.SHARE]: lazy(
+    () => import('./modal-views/TrackPanelShare')
+  ),
+  [TrackPanelModalView.DOWNLOADS]: lazy(
+    () => import('./modal-views/TrackPanelDownloads')
+  )
+};
+
+const trackPanelModalTitles: { [key: string]: string } = {
+  [TrackPanelModalView.SEARCH]: 'Search',
+  [TrackPanelModalView.TRACKS_MANAGER]: 'Tracks manager',
+  [TrackPanelModalView.BOOKMARKS]: 'Previously viewed',
+  [TrackPanelModalView.PERSONAL_DATA]: 'Personal data',
+  [TrackPanelModalView.SHARE]: 'Share',
+  [TrackPanelModalView.DOWNLOADS]: 'Downloads'
+};
 
 export const TrackPanelModal = () => {
   const trackPanelModalView = useSelector(getTrackPanelModalView);
   const dispatch = useDispatch();
 
-  const getModalViewData = () => {
-    switch (trackPanelModalView) {
-      case 'search':
-        return { content: <TrackPanelSearch />, title: 'Search' };
-      case 'tracks-manager':
-        return { content: <TracksManager />, title: 'Tracks manager' };
-      case 'bookmarks':
-        return { content: <TrackPanelBookmarks />, title: 'Previously viewed' };
-      case 'personal-data':
-        return { content: <PersonalData />, title: 'Personal data' };
-      case 'share':
-        return { content: <TrackPanelShare />, title: 'Share' };
-      case 'downloads':
-        return { content: <TrackPanelDownloads />, title: 'Downloads' };
-      default:
-        return {
-          content: null,
-          title: ''
-        };
-    }
-  };
+  if (!trackPanelModalView) {
+    return null;
+  }
+
+  const ModalView = trackPanelSidebarModals[trackPanelModalView];
+  const modalViewTitle = trackPanelModalTitles[trackPanelModalView];
 
   const onClose = () => {
     dispatch(closeDrawer());
     dispatch(closeTrackPanelModal());
   };
 
-  const { title, content } = getModalViewData();
   return (
-    <SidebarModal title={title} onClose={onClose}>
-      {content}
-    </SidebarModal>
+    <section>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SidebarModal title={modalViewTitle} onClose={onClose}>
+          {<ModalView />}
+        </SidebarModal>
+      </Suspense>
+    </section>
   );
 };
 

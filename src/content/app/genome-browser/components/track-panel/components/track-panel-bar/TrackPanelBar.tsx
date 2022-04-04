@@ -27,7 +27,8 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 import {
   toggleTrackPanel,
   closeTrackPanelModal,
-  openTrackPanelModal
+  openTrackPanelModal,
+  TrackPanelModalView
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
@@ -52,7 +53,7 @@ export const TrackPanelBar = () => {
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const dispatch = useDispatch();
 
-  const toggleModalView = (selectedItem: string) => {
+  const toggleModalView = (selectedItem: TrackPanelModalView) => {
     if (!isTrackPanelOpened) {
       dispatch(toggleTrackPanel(true));
     }
@@ -61,7 +62,7 @@ export const TrackPanelBar = () => {
       dispatch(closeDrawer());
     }
 
-    if (selectedItem === 'search') {
+    if (selectedItem === TrackPanelModalView.SEARCH) {
       dispatch(
         clearSearch({
           app: 'genomeBrowser',
@@ -89,42 +90,42 @@ export const TrackPanelBar = () => {
         className={layoutStyles.sidebarIcon}
         status={getViewIconStatus('search')}
         description="Search"
-        onClick={() => toggleModalView('search')}
+        onClick={() => toggleModalView(TrackPanelModalView.SEARCH)}
         image={SearchIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Tracks manager"
-        onClick={() => toggleModalView('tracks-manager')}
+        onClick={() => toggleModalView(TrackPanelModalView.TRACKS_MANAGER)}
         image={TracksManagerIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={getViewIconStatus('bookmarks')}
         description="Previously viewed"
-        onClick={() => toggleModalView('bookmarks')}
+        onClick={() => toggleModalView(TrackPanelModalView.BOOKMARKS)}
         image={BookmarkIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Personal data"
-        onClick={() => toggleModalView('personal-data')}
+        onClick={() => toggleModalView(TrackPanelModalView.PERSONAL_DATA)}
         image={PersonalDataIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Share"
-        onClick={() => toggleModalView('share')}
+        onClick={() => toggleModalView(TrackPanelModalView.SHARE)}
         image={ShareIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Downloads"
-        onClick={() => toggleModalView('downloads')}
+        onClick={() => toggleModalView(TrackPanelModalView.DOWNLOADS)}
         image={DownloadIcon}
       />
     </>

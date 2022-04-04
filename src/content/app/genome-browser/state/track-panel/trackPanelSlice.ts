@@ -45,6 +45,15 @@ export type PreviouslyViewedObject = {
   label: string | string[];
 };
 
+export enum TrackPanelModalView {
+  SEARCH = 'search',
+  TRACKS_MANAGER = 'Tracks manager',
+  BOOKMARKS = 'Previously viewed',
+  PERSONAL_DATA = 'Personal data',
+  SHARE = 'Share',
+  DOWNLOADS = 'Downlods'
+}
+
 export type PreviouslyViewedObjects = {
   [genomeId: string]: PreviouslyViewedObject[];
 };
@@ -53,7 +62,7 @@ export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
-  trackPanelModalView: string;
+  trackPanelModalView: TrackPanelModalView | null;
   bookmarks: PreviouslyViewedObject[];
   previouslyViewedObjects: PreviouslyViewedObject[];
   highlightedTrackId: string;
@@ -69,7 +78,7 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   bookmarks: [],
   previouslyViewedObjects: [],
   selectedTrackPanelTab: TrackSet.GENOMIC,
-  trackPanelModalView: '',
+  trackPanelModalView: null,
   highlightedTrackId: '',
   isTrackPanelOpened: true,
   collapsedTrackIds: []
@@ -123,7 +132,7 @@ export const selectTrackPanelTab =
       ...getActiveTrackPanel(getState()),
       selectedTrackPanelTab,
       isTrackPanelModalOpened: false,
-      trackPanelModalView: ''
+      trackPanelModalView: null
     };
 
     dispatch(
@@ -135,7 +144,9 @@ export const selectTrackPanelTab =
   };
 
 export const changeTrackPanelModalViewForGenome =
-  (trackPanelModalView: string): ThunkAction<void, any, null, Action<string>> =>
+  (
+    trackPanelModalView: TrackPanelModalView
+  ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
@@ -252,7 +263,9 @@ export const changeHighlightedTrackId =
   };
 
 export const openTrackPanelModal =
-  (trackPanelModalView: string): ThunkAction<void, any, null, Action<string>> =>
+  (
+    trackPanelModalView: TrackPanelModalView
+  ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
 
@@ -289,7 +302,7 @@ export const closeTrackPanelModal =
     const data = {
       ...getActiveTrackPanel(state),
       isTrackPanelModalOpened: false,
-      trackPanelModalView: ''
+      trackPanelModalView: null
     };
 
     dispatch(
