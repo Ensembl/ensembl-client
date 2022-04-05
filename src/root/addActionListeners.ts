@@ -15,25 +15,15 @@
  */
 
 import {
-  createListenerMiddleware,
-  addListener,
-  type TypedStartListening,
-  type TypedAddListener
-} from '@reduxjs/toolkit';
+  submitBlastListener,
+  resforeBlastSubmissionsListener
+} from 'src/content/app/tools/blast/state/action-listeners/blastActionListeners';
 
-import type { RootState, AppDispatch } from '../store';
+import type { AppStartListening } from './actionListenerMiddleware';
 
-const listenerMiddleware = createListenerMiddleware();
+const addActionListeners = (startListening: AppStartListening) => {
+  startListening(submitBlastListener);
+  startListening(resforeBlastSubmissionsListener);
+};
 
-export type AppStartListening = TypedStartListening<RootState, AppDispatch>;
-export type Effect = Parameters<AppStartListening>[0]['effect'];
-
-export const startAppListening =
-  listenerMiddleware.startListening as AppStartListening;
-
-export const addAppListener = addListener as TypedAddListener<
-  RootState,
-  AppDispatch
->;
-
-export default listenerMiddleware;
+export default addActionListeners;

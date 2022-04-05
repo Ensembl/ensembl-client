@@ -24,7 +24,10 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
 
-import listenerMiddleware from 'src/root/actionListenerMiddleware';
+import listenerMiddleware, {
+  startAppListening
+} from 'src/root/actionListenerMiddleware';
+import addActionListeners from 'src/root/addActionListeners';
 
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -54,6 +57,8 @@ export default function getReduxStore() {
     devTools: config.isDevelopment,
     preloadedState
   });
+
+  addActionListeners(startAppListening);
 
   epicMiddleware.run(rootEpic as any);
 

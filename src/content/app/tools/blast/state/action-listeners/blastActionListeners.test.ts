@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  configureStore,
-  clearAllListeners,
-  createListenerMiddleware
-} from '@reduxjs/toolkit';
+import { configureStore, clearAllListeners } from '@reduxjs/toolkit';
 import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import createRootReducer from 'src/root/rootReducer';
+import listenerMiddleware, {
+  startAppListening
+} from 'src/root/actionListenerMiddleware';
 
 import {
   submitBlastListener,
@@ -72,9 +71,8 @@ const successfulSubmission = createBlastSubmissionResponse({
 });
 
 const buildReduxStore = () => {
-  const listenerMiddleware = createListenerMiddleware();
-  listenerMiddleware.startListening(submitBlastListener as any);
-  listenerMiddleware.startListening(resforeBlastSubmissionsListener as any);
+  startAppListening(submitBlastListener);
+  startAppListening(resforeBlastSubmissionsListener);
 
   const middleware = [listenerMiddleware.middleware, restApiSlice.middleware];
 
@@ -143,12 +141,12 @@ describe('blast action listeners', () => {
             const { jobId } = req.params;
             if (jobId === firstJobInResponse.jobId) {
               firstJobPollCount++;
-              return firstJobPollCount === firstJobMaxPollCount
+              return firstJobPollCount >= firstJobMaxPollCount
                 ? res(ctx.json(createFinishedJobStatusResponse()))
                 : res(ctx.json(createRunningJobStatusResponse()));
             } else {
               secondJobPollCount++;
-              return secondJobPollCount === secondJobMaxPollCount
+              return secondJobPollCount >= secondJobMaxPollCount
                 ? res(ctx.json(createFailedJobStatusResponse()))
                 : res(ctx.json(createRunningJobStatusResponse()));
             }
@@ -211,7 +209,7 @@ describe('blast action listeners', () => {
           'http://tools-api-url/blast/jobs/status/:jobId',
           (_, res, ctx) => {
             jobPollCount++;
-            return jobPollCount === maxJobPollCount
+            return jobPollCount >= maxJobPollCount
               ? res(ctx.json(createFinishedJobStatusResponse()))
               : res(ctx.json(createRunningJobStatusResponse()));
           }

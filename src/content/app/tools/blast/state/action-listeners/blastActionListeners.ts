@@ -96,7 +96,10 @@ async function* pollJobStatuses({
   jobs: Array<{ submissionId: string; jobId: string }>;
   signal: AbortSignal;
 }) {
-  while (jobs.length) {
+  let shouldRun = true;
+  signal.addEventListener('abort', () => (shouldRun = false));
+
+  while (shouldRun && jobs.length) {
     for (const job of [...jobs]) {
       try {
         const { status } = await fetchJobStatus({ jobId: job.jobId, signal });
@@ -112,12 +115,16 @@ async function* pollJobStatuses({
       }
     }
 
-    await timer(POLLING_INTERVAL);
+    await timer({ time: POLLING_INTERVAL, signal });
   }
 }
 
-const timer = (time: number) =>
-  new Promise((resolve) => setTimeout(resolve, time));
+const timer = ({ time, signal }: { time: number; signal: AbortSignal }) => {
+  return new Promise((resolve) => {
+    signal.addEventListener('abort', resolve);
+    setTimeout(resolve, time);
+  });
+};
 
 const fetchJobStatus = async ({
   jobId,
