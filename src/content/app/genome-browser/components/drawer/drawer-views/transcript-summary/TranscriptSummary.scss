@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: [label] 130px [value] auto;
   grid-column-gap: 10px;
-  margin-bottom:3px;
+  margin-bottom: 3px;
 
   .label {
     grid-column: label;
@@ -27,7 +27,7 @@
       margin-left: 10px;
     }
 
-    & > div + div{
+    & > div + div {
       margin-top: 3px;
     }
   }
@@ -42,11 +42,11 @@
   }
 }
 
-.spaceAbove{
+.spaceAbove {
   margin-top: 30px;
 }
 
-.lightText{
+.lightText {
   font-weight: $light;
 }
 
@@ -55,12 +55,11 @@
   font-weight: 300;
 }
 
-.unit{
+.unit {
   font-weight: $light;
   font-size: 12px;
   margin-left: 5px;
 }
-
 
 .transcriptQuality {
   margin-left: 10px;
@@ -85,10 +84,10 @@
 .featureSymbol {
   font-weight: $bold;
 }
-.stableId{
+.stableId {
   font-weight: $bold;
 }
-.featureSymbol + .stableId{
+.featureSymbol + .stableId {
   margin-left: 12px;
   color: $dark-grey;
   font-weight: $light;
@@ -98,20 +97,23 @@
   margin-right: 12px;
 }
 
-
-.downloadLink{
+.downloadLink {
   color: $blue;
   cursor: pointer;
 }
 
-.downloadWrapper{
+.downloadWrapper {
   display: inline-block;
   margin-left: 40px;
   min-width: 300px;
   position: relative;
 }
 
-.closeButton{
+.sequenceWrapper {
+  margin-top: 20px;
+}
+
+.closeButton {
   position: absolute;
   right: 0;
   top: 0;

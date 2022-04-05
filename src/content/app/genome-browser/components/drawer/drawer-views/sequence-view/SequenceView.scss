@@ -1,0 +1,20 @@
+.layout {
+  display: grid;
+  align-items: start;
+  grid-template-columns: 400px 1fr;
+  grid-column-gap: 24px;
+  grid-template-rows: 20px minmax(200px, 400px);
+  grid-row-gap: 17px;
+}
+
+.selectionWrapper {
+  margin-top: 50px;
+}
+
+.sequenceWrapper {
+  margin-top: 10px;
+}
+
+.reverseWrapper {
+  margin-top: 43px;
+}

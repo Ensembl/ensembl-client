@@ -37,6 +37,7 @@ import {
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import SequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/SequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -56,6 +57,7 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
+  const [shouldShowSequence, showSequence] = useState(false);
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -149,6 +151,34 @@ const TranscriptSummary = (props: Props) => {
               </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div
+        className={classNames(
+          styles.row,
+          styles.spaceAbove,
+          styles.downloadRow
+        )}
+      >
+        <div className={styles.value}>
+          <ShowHide
+            label="Sequences"
+            isExpanded={shouldShowSequence}
+            onClick={() => showSequence(!shouldShowSequence)}
+          />
+        </div>
+        <div className={styles.value}>
+          {shouldShowSequence && (
+            <div className={styles.sequenceWrapper}>
+              <SequenceView
+                isProteinCodingTranscript={isProteinCodingTranscript(
+                  transcript
+                )}
+                transcriptId={transcriptId}
+              />
+            </div>
+          )}
         </div>
       </div>
 

@@ -34,6 +34,7 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import SequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/SequenceView';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -47,6 +48,7 @@ import styles from './GeneSummary.scss';
 const GeneSummary = () => {
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
+  const [shouldShowSequence, showSequence] = useState(false);
 
   const geneQueryParams = {
     geneId: focusGene.stable_id,
@@ -109,6 +111,23 @@ const GeneSummary = () => {
               <span>{getFormattedLocation(focusGene.location)}</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className={classNames(rowClasses, styles.downloadRow)}>
+        <div className={styles.value}>
+          <ShowHide
+            label="Sequences"
+            isExpanded={shouldShowSequence}
+            onClick={() => showSequence(!shouldShowSequence)}
+          />
+        </div>
+        <div className={styles.value}>
+          {shouldShowSequence && (
+            <div className={styles.sequenceWrapper}>
+              <SequenceView isGene={true} />
+            </div>
+          )}
         </div>
       </div>
 
