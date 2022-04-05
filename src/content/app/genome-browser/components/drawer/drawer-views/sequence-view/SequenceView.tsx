@@ -38,7 +38,6 @@ import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import styles from './SequenceView.scss';
 
 type Props = {
-  isGene?: boolean;
   isProteinCodingTranscript?: boolean;
   transcriptId?: string;
 };
@@ -106,7 +105,7 @@ const SequenceView = (props: Props) => {
     setSequenceType(value as string);
   };
 
-  if (props.isGene) {
+  if (!props.transcriptId) {
     radioOptions = radioOptions.filter(
       (item) => item.value === 'genomicSequence'
     );

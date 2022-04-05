@@ -125,7 +125,7 @@ const GeneSummary = () => {
         <div className={styles.value}>
           {shouldShowSequence && (
             <div className={styles.sequenceWrapper}>
-              <SequenceView isGene={true} />
+              <SequenceView />
             </div>
           )}
         </div>
