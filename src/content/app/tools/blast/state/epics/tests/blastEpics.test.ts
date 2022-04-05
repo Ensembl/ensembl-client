@@ -1,5 +1,5 @@
 import { configureStore, type Action } from '@reduxjs/toolkit';
-import { takeUntil, finalize, Subject, type Observable } from 'rxjs';
+import { takeUntil, finalize, tap, Subject, type Observable } from 'rxjs';
 import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -42,7 +42,7 @@ jest.mock('../blastEpicConstants', () => ({
 }));
 
 const createCancellableEpic = () => {
-  const shutdown$ = new Subject();
+  const shutdown$ = new Subject().pipe(tap(() => console.log('subject called')));
 
   const cancellableRootEpic = (action$: Observable<Action>, state$: Observable<RootState>, deps: any) => {
     const rootEpic = combineEpics(...Object.values(blastEpics));
@@ -57,7 +57,7 @@ const createCancellableEpic = () => {
         shutdown$.complete();
       })
     );
-  };23
+  };
 
   return {
     rootEpic: cancellableRootEpic,
@@ -150,6 +150,7 @@ describe('blast action listeners', () => {
     });
 
     it.only('polls job status endpoint until the job either finishes or fails', async () => {
+      console.log('test 2');
       const firstJobMaxPollCount = 3;
       const secondJobMaxPollCount = 2;
       let firstJobPollCount = 0;

@@ -76,7 +76,15 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
 
       return results.map((job) => ({ submissionId, job }));
     }),
+    tap({
+      next: () => console.log('start polling'),
+      complete: () => console.log('COMPLETED BEFORE POLLING')
+    }),
     poll(),
+    tap({
+      next: () => console.log('stop polling'),
+      complete: () => console.log('COMPLETED AFTER POLLING')
+    }),
     tap(databaseUpdaterSubject),
     map((pollingResult) => {
       const {
@@ -137,6 +145,10 @@ const poll = () =>
       console.log('runningJobsList', runningJobsList);
       return runningJobsList.length
         ? timer(POLLING_INTERVAL).pipe(
+            tap({
+              next: () => console.log('i am piping into check job statuses'),
+              complete: () => console.log('I AM COMPLETED AFTER TIMER')
+            }),
             concatMap(() => checkJobStatuses(runningJobsList))
           )
         : EMPTY;
@@ -165,7 +177,8 @@ const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
         }))
       );
     }),
-    toArray()
+    toArray(),
+    tap((arr) => console.log('generated array', arr))
   );
 };
 
