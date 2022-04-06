@@ -24,8 +24,6 @@ import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/en
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
-import styles from './EntityViewerSidebarModal.scss';
-
 const entityViewerSidebarModals: Record<
   SidebarModalView,
   LazyExoticComponent<() => JSX.Element | null>
@@ -63,16 +61,14 @@ export const EntityViewerSidebarModal = () => {
     entityViewerSidebarModalTitles[entityViewerSidebarModalView];
 
   return (
-    <section className={styles.entityViewerSidebarModal}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <SidebarModal
-          title={modalViewTitle}
-          onClose={() => dispatch(closeSidebarModal())}
-        >
-          {<ModalView />}
-        </SidebarModal>
-      </Suspense>
-    </section>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SidebarModal
+        title={modalViewTitle}
+        onClose={() => dispatch(closeSidebarModal())}
+      >
+        {<ModalView />}
+      </SidebarModal>
+    </Suspense>
   );
 };
 

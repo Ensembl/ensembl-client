@@ -75,13 +75,11 @@ export const TrackPanelModal = () => {
   };
 
   return (
-    <section>
-      <Suspense fallback={<div>Loading...</div>}>
-        <SidebarModal title={modalViewTitle} onClose={onClose}>
-          {<ModalView />}
-        </SidebarModal>
-      </Suspense>
-    </section>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SidebarModal title={modalViewTitle} onClose={onClose}>
+        {<ModalView />}
+      </SidebarModal>
+    </Suspense>
   );
 };
 
