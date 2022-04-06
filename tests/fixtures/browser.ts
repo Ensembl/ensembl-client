@@ -41,6 +41,7 @@ import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
+import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -256,7 +257,7 @@ export const createMockBrowserState = () => {
             }
           ],
           selectedTrackPanelTab: TrackSet.GENOMIC,
-          trackPanelModalView: 'search',
+          trackPanelModalView: TrackPanelModalView.SEARCH,
           highlightedTrackId: '',
           isTrackPanelOpened: true,
           collapsedTrackIds: []

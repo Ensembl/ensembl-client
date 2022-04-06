@@ -18,10 +18,8 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import TrackPanelList from './components/track-panel-list/TrackPanelList';
-import TrackPanelModal from './components/track-panel-modal/TrackPanelModal';
 import { SidebarLoader } from 'src/shared/components/loader';
 
-import { getIsTrackPanelModalOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
@@ -32,7 +30,6 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 export const TrackPanel = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeFocusObject = useSelector(getBrowserActiveFocusObject);
-  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
 
   const { genomeBrowser, restoreBrowserTrackStates } = useGenomeBrowser();
 
@@ -45,15 +42,7 @@ export const TrackPanel = () => {
     }
   }, [activeFocusObject]);
 
-  return shouldRenderContent ? (
-    isTrackPanelModalOpened ? (
-      <TrackPanelModal />
-    ) : (
-      <TrackPanelList />
-    )
-  ) : (
-    <SidebarLoader />
-  );
+  return shouldRenderContent ? <TrackPanelList /> : <SidebarLoader />;
 };
 
 export default TrackPanel;

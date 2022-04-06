@@ -46,9 +46,6 @@ jest.mock('./components/track-panel-bar/TrackPanelBar', () => () => (
 jest.mock('./components/track-panel-list/TrackPanelList', () => () => (
   <div className="trackPanelList" />
 ));
-jest.mock('./components/track-panel-modal/TrackPanelModal', () => () => (
-  <div className="trackPanelModal" />
-));
 jest.mock(
   'src/content/app/genome-browser/components/drawer/Drawer',
   () => () => <div className="drawer" />
@@ -88,20 +85,6 @@ describe('<TrackPanel />', () => {
       const { container } = renderComponent();
 
       expect(container.querySelector('.trackPanelList')).toBeTruthy();
-    });
-
-    it('renders track panel modal when necessary requirements are satisfied', () => {
-      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
-
-      const { container } = renderComponent(
-        set(
-          `browser.trackPanel.${activeGenomeId}.isTrackPanelModalOpened`,
-          true,
-          mockState
-        )
-      );
-
-      expect(container.querySelector('.trackPanelModal')).toBeTruthy();
     });
   });
 });

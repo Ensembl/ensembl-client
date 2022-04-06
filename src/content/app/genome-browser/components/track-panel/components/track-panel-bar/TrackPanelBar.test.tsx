@@ -27,6 +27,8 @@ import { TrackPanelBar } from './TrackPanelBar';
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
+import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
 jest.mock(
   'src/shared/components/image-button/ImageButton',
   () => (props: { description: string; onClick: () => void }) =>
@@ -49,7 +51,7 @@ const mockState = {
     trackPanel: {
       [fakeGenomeId]: {
         isTrackPanelOpened: true,
-        trackPanelModalView: 'bookmarks'
+        trackPanelModalView: TrackPanelModalView.BOOKMARKS
       }
     }
   }
@@ -87,7 +89,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === TrackPanelModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -103,7 +105,7 @@ describe('<TrackPanelBar />', () => {
         activeGenomeId: fakeGenomeId,
         data: {
           ...mockState.browser.trackPanel[fakeGenomeId],
-          trackPanelModalView: 'bookmarks',
+          trackPanelModalView: TrackPanelModalView.BOOKMARKS,
           isTrackPanelModalOpened: true
         }
       };
@@ -145,7 +147,7 @@ describe('<TrackPanelBar />', () => {
     it('causes track panel modal to close if a pressed button is clicked again', () => {
       const { container } = renderComponent();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === TrackPanelModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -163,7 +165,7 @@ describe('<TrackPanelBar />', () => {
           ...mockState.browser.trackPanel[fakeGenomeId],
           isTrackPanelModalOpened: false,
           isTrackPanelOpened: true,
-          trackPanelModalView: ''
+          trackPanelModalView: null
         }
       };
 

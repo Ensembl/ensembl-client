@@ -30,7 +30,10 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
-import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import {
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened
+} from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
@@ -40,6 +43,7 @@ import BrowserNavBar from './components/browser-nav/BrowserNavBar';
 import TrackPanel from './components/track-panel/TrackPanel';
 import TrackPanelBar from './components/track-panel/components/track-panel-bar/TrackPanelBar';
 import TrackPanelTabs from './components/track-panel/components/track-panel-tabs/TrackPanelTabs';
+import TrackPanelModal from './components/track-panel/components/track-panel-modal/TrackPanelModal';
 import BrowserAppBar from './components/browser-app-bar/BrowserAppBar';
 import Drawer from './components/drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -54,6 +58,7 @@ export const Browser = () => {
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
+  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
   const viewportWidth = useSelector(getBreakpointWidth);
 
   const { search } = useLocation(); // from document.location provided by the router
@@ -90,13 +95,19 @@ export const Browser = () => {
     </>
   );
 
+  const SideBarContent = isTrackPanelModalOpened ? (
+    <TrackPanelModal />
+  ) : (
+    <TrackPanel />
+  );
+
   return (
     <div className={styles.genomeBrowser}>
       <BrowserAppBar onSpeciesSelect={changeGenomeId} />
       {activeGenomeId && focus ? (
         <StandardAppLayout
           mainContent={mainContent}
-          sidebarContent={<TrackPanel />}
+          sidebarContent={SideBarContent}
           sidebarNavigation={<TrackPanelTabs />}
           sidebarToolstripContent={<TrackPanelBar />}
           onSidebarToggle={onSidebarToggle}
