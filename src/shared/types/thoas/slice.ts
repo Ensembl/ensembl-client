@@ -16,12 +16,14 @@
 
 import { Strand } from './strand';
 import { LocationWithinRegion } from './location';
+import { Sequence } from './sequence';
 
 export type Slice = {
   location: LocationWithinRegion;
   region: {
     name: string;
     assembly: string;
+    sequence: Sequence;
   };
   strand: {
     code: Strand;

@@ -36,7 +36,10 @@ export const createSlice = (): Slice => {
     },
     region: {
       name: faker.lorem.word(),
-      assembly: faker.datatype.uuid()
+      assembly: faker.datatype.uuid(),
+      sequence: {
+        checksum: faker.datatype.uuid()
+      }
     }
   };
 };

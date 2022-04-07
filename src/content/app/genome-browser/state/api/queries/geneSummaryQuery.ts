@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2, Pick3 } from 'ts-multipick';
+import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -36,10 +36,17 @@ export const geneSummaryQuery = gql`
         }
       }
       slice {
+        region {
+          sequence {
+            checksum
+          }
+        }
         strand {
           code
         }
         location {
+          start
+          end
           length
         }
       }
@@ -83,9 +90,9 @@ type GeneSummary = Pick<
 > & {
   metadata: GeneMetadata;
 } & Pick3<FullGene, 'slice', 'strand', 'code'> &
-  Pick3<FullGene, 'slice', 'location', 'length'> & {
+  Pick3<FullGene, 'slice', 'location', 'length' | 'start' | 'end'> & {
     transcripts: Transcript[];
-  };
+  } & Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'>;
 
 export type GeneSummaryQueryResult = {
   gene: GeneSummary;

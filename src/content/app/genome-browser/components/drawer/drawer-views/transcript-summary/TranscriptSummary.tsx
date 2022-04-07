@@ -37,7 +37,7 @@ import {
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import SequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/SequenceView';
+import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -171,12 +171,7 @@ const TranscriptSummary = (props: Props) => {
         <div className={styles.value}>
           {shouldShowSequence && (
             <div className={styles.sequenceWrapper}>
-              <SequenceView
-                isProteinCodingTranscript={isProteinCodingTranscript(
-                  transcript
-                )}
-                transcriptId={transcriptId}
-              />
+              <TranscriptSequenceView transcript={transcript} />
             </div>
           )}
         </div>

@@ -35,7 +35,7 @@ import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
   'cds'
-> & { cds: FullCDS };
+> & { cds: FullCDS | null };
 
 export type ProteinCodingTranscript = Omit<
   Omit<FullTranscript, 'gene'>,
