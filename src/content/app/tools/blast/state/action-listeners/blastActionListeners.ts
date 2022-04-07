@@ -48,12 +48,12 @@ export const submitBlastListener = {
 
     await saveBlastSubmission(submissionId, submission);
 
-    const jobIds = submission.results.map(({ jobId }) => ({
+    const runningJobs = submission.results.map(({ jobId }) => ({
       submissionId,
       jobId
     }));
 
-    for await (const job of pollJobStatuses({ jobs: jobIds, signal })) {
+    for await (const job of pollJobStatuses({ jobs: runningJobs, signal })) {
       dispatch(updateJob(job));
       await updateSavedBlastJob(job);
     }
@@ -68,7 +68,7 @@ export const resforeBlastSubmissionsListener = {
   ) => {
     const { dispatch, signal } = listenerApi;
 
-    const jobIds = Object.entries(action.payload).flatMap(
+    const runningJobs = Object.entries(action.payload).flatMap(
       ([submissionId, submission]) =>
         submission.results
           .filter((job) => job.status === 'RUNNING')
@@ -78,11 +78,11 @@ export const resforeBlastSubmissionsListener = {
           }))
     );
 
-    if (!jobIds.length) {
+    if (!runningJobs.length) {
       return;
     }
 
-    for await (const job of pollJobStatuses({ jobs: jobIds, signal })) {
+    for await (const job of pollJobStatuses({ jobs: runningJobs, signal })) {
       dispatch(updateJob(job));
       await updateSavedBlastJob(job);
     }
