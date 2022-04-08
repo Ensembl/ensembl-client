@@ -18,6 +18,8 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
@@ -114,22 +116,24 @@ const GeneSummary = () => {
         </div>
       </div>
 
-      <div className={classNames(rowClasses, styles.downloadRow)}>
-        <div className={styles.value}>
-          <ShowHide
-            label="Sequences"
-            isExpanded={shouldShowSequence}
-            onClick={() => showSequence(!shouldShowSequence)}
-          />
+      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+        <div className={classNames(rowClasses, styles.downloadRow)}>
+          <div className={styles.value}>
+            <ShowHide
+              label="Sequences"
+              isExpanded={shouldShowSequence}
+              onClick={() => showSequence(!shouldShowSequence)}
+            />
+          </div>
+          <div className={styles.value}>
+            {shouldShowSequence && (
+              <div className={styles.sequenceWrapper}>
+                <GeneSequenceView gene={gene} />
+              </div>
+            )}
+          </div>
         </div>
-        <div className={styles.value}>
-          {shouldShowSequence && (
-            <div className={styles.sequenceWrapper}>
-              <GeneSequenceView gene={gene} />
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       <div className={classNames(rowClasses, styles.downloadRow)}>
         <div className={styles.value}>

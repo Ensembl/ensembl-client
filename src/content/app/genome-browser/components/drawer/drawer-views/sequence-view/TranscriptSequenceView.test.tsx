@@ -17,51 +17,40 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import {
+  createProteinCodingTranscript,
+  createNonCodingTranscript
+} from 'tests/fixtures/entity-viewer/transcript';
 
 import TranscriptSequenceView from './TranscriptSequenceView';
 
-const transcript = createTranscript();
-
-const createNonProteinCodingTranscript = () => {
-  transcript.product_generating_contexts[0].product = null;
-  transcript.product_generating_contexts[0].cds = null;
-  return transcript;
-};
-
-const NonProteinCodingTranscript = createNonProteinCodingTranscript();
 describe('<TranscriptSequenceView />', () => {
-  it('displays genomic sequence, cdna, cds and protein sequence radio', () => {
+  const proteinCodingTranscript = createProteinCodingTranscript();
+  it('displays correct list of sequence options for a protein-coding transcript', () => {
     const { container } = render(
-      <TranscriptSequenceView transcript={transcript} />
+      <TranscriptSequenceView transcript={proteinCodingTranscript} />
     );
 
-    expect(container.querySelectorAll('.radioGroup .label').length).toEqual(4);
-    expect(
-      container.querySelectorAll('.radioGroup .label')[0].innerHTML
-    ).toEqual('Genomic sequence');
-    expect(
-      container.querySelectorAll('.radioGroup .label')[1].innerHTML
-    ).toEqual('cDNA');
-    expect(
-      container.querySelectorAll('.radioGroup .label')[2].innerHTML
-    ).toEqual('CDS');
-    expect(
-      container.querySelectorAll('.radioGroup .label')[3].innerHTML
-    ).toEqual('Protein sequence');
+    const renderedLabels = [
+      ...container.querySelectorAll('.radioGroup .label')
+    ].map((el) => el.innerHTML);
+    expect(renderedLabels).toStrictEqual([
+      'Genomic sequence',
+      'cDNA',
+      'CDS',
+      'Protein sequence'
+    ]);
   });
 
-  it('displays genomic sequence and cdna radio', () => {
+  it('displays correct list of sequence options for a non-coding transcript', () => {
+    const nonCodingTranscript = createNonCodingTranscript();
     const { container } = render(
-      <TranscriptSequenceView transcript={NonProteinCodingTranscript} />
+      <TranscriptSequenceView transcript={nonCodingTranscript} />
     );
 
-    expect(container.querySelectorAll('.radioGroup .label').length).toEqual(4);
-    expect(
-      container.querySelectorAll('.radioGroup .label')[0].innerHTML
-    ).toEqual('Genomic sequence');
-    expect(
-      container.querySelectorAll('.radioGroup .label')[1].innerHTML
-    ).toEqual('cDNA');
+    const renderedLabels = [
+      ...container.querySelectorAll('.radioGroup .label')
+    ].map((el) => el.innerHTML);
+    expect(renderedLabels).toStrictEqual(['Genomic sequence', 'cDNA']);
   });
 });

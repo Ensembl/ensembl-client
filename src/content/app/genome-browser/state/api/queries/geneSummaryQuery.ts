@@ -90,9 +90,10 @@ type GeneSummary = Pick<
 > & {
   metadata: GeneMetadata;
 } & Pick3<FullGene, 'slice', 'strand', 'code'> &
-  Pick3<FullGene, 'slice', 'location', 'length' | 'start' | 'end'> & {
+  Pick3<FullGene, 'slice', 'location', 'length' | 'start' | 'end'> &
+  Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'> & {
     transcripts: Transcript[];
-  } & Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'>;
+  };
 
 export type GeneSummaryQueryResult = {
   gene: GeneSummary;

@@ -25,29 +25,29 @@ import {
 } from '../transcripts-sorter';
 
 import {
-  createTranscript,
+  createProteinCodingTranscript,
   createTranscriptMetadata
 } from 'tests/fixtures/entity-viewer/transcript';
 
 /* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.slice.location.length = 100_000;
   return transcript;
 };
 const createShortProteinCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.slice.location.length = 10_000;
   return transcript;
 };
 const createLongNonCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.slice.location.length = 150_000;
   transcript.product_generating_contexts = [];
   return transcript;
 };
 const createShortNonCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.slice.location.length = 5_000;
   transcript.product_generating_contexts = [];
   return transcript;
@@ -55,7 +55,7 @@ const createShortNonCodingTranscript = () => {
 
 /* Creating dummy transcritps with different spliced length */
 const createTranscriptWithGreatestSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_spliced_length';
   splicedExon.exon.slice.location.length = 15_000;
@@ -63,7 +63,7 @@ const createTranscriptWithGreatestSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithMediumSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.stable_id = 'transcript_with_medium_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -71,7 +71,7 @@ const createTranscriptWithMediumSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithSmallestSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.stable_id = 'transcript_with_smallest_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 5_000;
@@ -81,7 +81,7 @@ const createTranscriptWithSmallestSplicedLength = () => {
 
 /* Creating dummy transcritps with different numbers of Exons */
 const createTranscriptWithGreatestExons = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_exons';
   transcript.spliced_exons = [
@@ -93,7 +93,7 @@ const createTranscriptWithGreatestExons = () => {
   return transcript;
 };
 const createTranscriptWithMediumExons = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.stable_id = 'transcript_with_medium_exons';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -101,7 +101,7 @@ const createTranscriptWithMediumExons = () => {
   return transcript;
 };
 const createTranscriptWithSmallestExons = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.stable_id = 'transcript_with_smallest_exons';
   const splicedExon = transcript.spliced_exons[0];
   transcript.spliced_exons = [splicedExon, splicedExon];
@@ -131,7 +131,7 @@ const createMANETranscript = () => {
     }
   });
 
-  const transcript = createTranscript({ metadata });
+  const transcript = createProteinCodingTranscript({ metadata });
   return transcript;
 };
 
@@ -152,7 +152,7 @@ const createOtherMANETranscript = () => {
       }
     }
   });
-  const transcript = createTranscript({ metadata });
+  const transcript = createProteinCodingTranscript({ metadata });
   return transcript;
 };
 

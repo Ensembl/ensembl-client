@@ -17,12 +17,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import { createProteinCodingTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 import UnsplicedTranscript from './UnsplicedTranscript';
 
 const minimalProps = {
-  transcript: createTranscript(),
+  transcript: createProteinCodingTranscript(),
   width: 600
 };
 
