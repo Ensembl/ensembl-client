@@ -92,9 +92,9 @@ export const createNonCodingTranscript = (
   fragment: Partial<NonCodingTranscript> = {}
 ): NonCodingTranscript => {
   const transcript = createCommonTranscriptFields();
-  const transcriptSlice = transcript.slice;
-  const productGeneratingContext =
-    createNonCodingProductGeneratingContext(transcriptSlice);
+  const productGeneratingContext = createNonCodingProductGeneratingContext(
+    transcript.slice
+  );
 
   return {
     ...transcript,
@@ -107,13 +107,12 @@ export const createProteinCodingTranscript = (
   fragment: Partial<ProteinCodingTranscript> = {}
 ): ProteinCodingTranscript => {
   const transcript = createCommonTranscriptFields();
-  const transcriptSlice = transcript.slice;
   const exons = transcript.spliced_exons.map(({ exon }) => exon);
 
   return {
     ...transcript,
     product_generating_contexts: [
-      createProductGeneratingContext(transcriptSlice, exons)
+      createProductGeneratingContext(transcript.slice, exons)
     ],
     ...fragment
   };

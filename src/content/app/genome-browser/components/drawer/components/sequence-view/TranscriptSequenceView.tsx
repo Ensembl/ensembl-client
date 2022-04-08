@@ -39,9 +39,8 @@ type Props = {
 const TranscriptSequenceView = (props: Props) => {
   const [sequenceType, setSequenceType] = useState('genomicSequence');
 
-  const checksum = props.transcript.slice.region.sequence.checksum;
-  const start = props.transcript.slice.location.start;
-  const end = props.transcript.slice.location.end;
+  const { checksum } = props.transcript.slice.region.sequence;
+  const { start, end } = props.transcript.slice.location;
   const genomicURL = urlFor.refget({ checksum, start, end });
   const [sequenceURL, setSequenceURL] = useState(genomicURL);
 

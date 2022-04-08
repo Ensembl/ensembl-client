@@ -37,7 +37,7 @@ type Props = {
 
 export const GeneSequenceView = (props: Props) => {
   const sequenceType = 'genomicSequence';
-  const checksum = props.gene.slice.region.sequence.checksum;
+  const { checksum } = props.gene.slice.region.sequence;
   const { start, end } = props.gene.slice.location;
   const sequenceURL = urlFor.refget({ checksum, start, end });
 
