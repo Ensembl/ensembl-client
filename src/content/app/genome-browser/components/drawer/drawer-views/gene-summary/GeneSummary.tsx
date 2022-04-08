@@ -36,7 +36,7 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import GeneSequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/GeneSequenceView';
+import GeneSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/GeneSequenceView';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';

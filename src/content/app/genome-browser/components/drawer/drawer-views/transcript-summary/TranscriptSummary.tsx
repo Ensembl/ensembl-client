@@ -39,7 +39,7 @@ import {
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/drawer-views/sequence-view/TranscriptSequenceView';
+import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
