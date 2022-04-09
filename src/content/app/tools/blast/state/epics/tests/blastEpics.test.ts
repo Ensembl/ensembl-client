@@ -1,9 +1,24 @@
-import { configureStore, type Action } from '@reduxjs/toolkit';
-import { takeUntil, finalize, tap, Subject, type Observable } from 'rxjs';
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { configureStore } from '@reduxjs/toolkit';
 import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { createEpicMiddleware, combineEpics, } from 'redux-observable';
+import { createEpicMiddleware } from 'redux-observable';
 
 import createRootReducer from 'src/root/rootReducer';
 import * as blastEpics from 'src/content/app/tools/blast/state/epics/blastEpics';
@@ -16,6 +31,8 @@ import { getBlastSubmissions } from 'src/content/app/tools/blast/state/blast-res
 import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
+import { createCancellableTestEpic } from 'tests/reduxObservableHelpers';
+
 import {
   createBlastSubmission,
   createBlastSubmissionResponse,
@@ -26,8 +43,6 @@ import {
   createStoredBlastSubmission,
   createStoredBlastJobResult
 } from './fixtures/blastSubmissionFixtures';
-
-import type { RootState } from 'src/store';
 
 jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
   saveBlastSubmission: jest.fn().mockImplementation(() => Promise.resolve()),
@@ -41,42 +56,17 @@ jest.mock('../blastEpicConstants', () => ({
   POLLING_INTERVAL: 0
 }));
 
-const createCancellableEpic = () => {
-  const shutdown$ = new Subject().pipe(tap(() => console.log('subject called')));
-
-  const cancellableRootEpic = (action$: Observable<Action>, state$: Observable<RootState>, deps: any) => {
-    const rootEpic = combineEpics(...Object.values(blastEpics));
-  
-    const output$ = rootEpic(
-      action$.pipe(takeUntil(shutdown$)),
-      state$.pipe(takeUntil(shutdown$)) as any,
-      deps
-    );
-    return output$.pipe(
-      finalize(() => {
-        shutdown$.complete();
-      })
-    );
-  };
-
-  return {
-    rootEpic: cancellableRootEpic,
-    shutdown$
-  };
-};
-
 const buildReduxStore = () => {
-  const { rootEpic, shutdown$ } = createCancellableEpic();
+  const { rootEpic, shutdown$ } = createCancellableTestEpic(
+    Object.values(blastEpics)
+  );
   const epicMiddleware = createEpicMiddleware();
-  const middleware = [
-    epicMiddleware,
-    restApiSlice.middleware
-  ];
+  const middleware = [epicMiddleware, restApiSlice.middleware];
 
   const store = configureStore({
     reducer: createRootReducer(),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(middleware),
+      getDefaultMiddleware().concat(middleware)
   });
 
   epicMiddleware.run(rootEpic as any);
@@ -84,12 +74,11 @@ const buildReduxStore = () => {
   return {
     store,
     shutdownEpics() {
-      shutdown$.next('');
+      shutdown$.next();
       return shutdown$.toPromise();
     }
   };
 };
-
 
 const server = setupServer(
   // create a blast submission
@@ -105,17 +94,16 @@ const successfulSubmission = createBlastSubmissionResponse({
   jobs: [firstJobInResponse, secondJobInResponse]
 });
 
-
-
-beforeAll(() => server.listen({
-  onUnhandledRequest(req) {
-    const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
-    throw new Error(errorMessage);
-  }
-}))
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
-
+beforeAll(() =>
+  server.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe('blast action listeners', () => {
   let store: ReturnType<typeof buildReduxStore>['store'];
@@ -133,13 +121,11 @@ describe('blast action listeners', () => {
   });
 
   describe('submitBlastListener', () => {
-    it.only('immediately saves submission to indexedDB', async () => {
-      console.log('test 1');
+    it('immediately saves submission to indexedDB', async () => {
       server.use(
         rest.get(
           'http://tools-api-url/blast/jobs/status/:jobId',
           (_, res, ctx) => {
-            console.log('i am called');
             return res(ctx.json(createFinishedJobStatusResponse()));
           }
         )
@@ -149,8 +135,7 @@ describe('blast action listeners', () => {
       expect(blastStorageService.saveBlastSubmission).toHaveBeenCalled();
     });
 
-    it.only('polls job status endpoint until the job either finishes or fails', async () => {
-      console.log('test 2');
+    it('polls job status endpoint until the job either finishes or fails', async () => {
       const firstJobMaxPollCount = 3;
       const secondJobMaxPollCount = 2;
       let firstJobPollCount = 0;

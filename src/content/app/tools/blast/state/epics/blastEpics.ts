@@ -18,6 +18,7 @@ import {
   from,
   timer,
   Subject,
+  EMPTY,
   pipe,
   map,
   mergeMap,
@@ -25,8 +26,7 @@ import {
   filter,
   expand,
   tap,
-  toArray,
-  EMPTY
+  toArray
 } from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
 import type { Epic } from 'redux-observable';
@@ -76,15 +76,7 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
 
       return results.map((job) => ({ submissionId, job }));
     }),
-    tap({
-      next: () => console.log('start polling'),
-      complete: () => console.log('COMPLETED BEFORE POLLING')
-    }),
     poll(),
-    tap({
-      next: () => console.log('stop polling'),
-      complete: () => console.log('COMPLETED AFTER POLLING')
-    }),
     tap(databaseUpdaterSubject),
     map((pollingResult) => {
       const {
@@ -142,13 +134,8 @@ const poll = () =>
       const runningJobsList = input.filter(
         ({ job }) => job.status === 'RUNNING'
       );
-      console.log('runningJobsList', runningJobsList);
       return runningJobsList.length
         ? timer(POLLING_INTERVAL).pipe(
-            tap({
-              next: () => console.log('i am piping into check job statuses'),
-              complete: () => console.log('I AM COMPLETED AFTER TIMER')
-            }),
             concatMap(() => checkJobStatuses(runningJobsList))
           )
         : EMPTY;
@@ -162,12 +149,10 @@ const poll = () =>
 // query all running jobs once, one job after the other
 const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
   return from(input).pipe(
-    tap(input => console.log('input', input)),
     concatMap(({ submissionId, job }) => {
       const { jobId } = job;
       const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
       return observableApiService.fetch<{ status: string }>(url).pipe(
-        tap(response => console.log('response', response)),
         map((result) => ({
           submissionId,
           job: {
@@ -177,8 +162,7 @@ const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
         }))
       );
     }),
-    toArray(),
-    tap((arr) => console.log('generated array', arr))
+    toArray()
   );
 };
 
