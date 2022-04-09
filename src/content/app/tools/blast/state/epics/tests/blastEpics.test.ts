@@ -75,7 +75,6 @@ const buildReduxStore = () => {
     store,
     shutdownEpics() {
       shutdown$.next();
-      return shutdown$.toPromise();
     }
   };
 };
