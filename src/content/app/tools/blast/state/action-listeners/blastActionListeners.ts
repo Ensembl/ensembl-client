@@ -21,7 +21,8 @@ import config from 'config';
 import { submitBlast } from '../blast-api/blastApiSlice';
 import {
   restoreBlastSubmissions,
-  updateJob
+  updateJob,
+  type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import {
@@ -31,7 +32,6 @@ import {
 
 import { POLLING_INTERVAL } from './blastActionListenerConstants';
 
-import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { RootState, AppDispatch } from 'src/store';
 
 export const submitBlastListener = {

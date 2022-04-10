@@ -29,10 +29,9 @@ import {
   restoreBlastSubmissionsListener
 } from 'src/content/app/tools/blast/state/action-listeners/blastActionListeners';
 
-import restApiSlice from 'src/shared/state/api-slices/restSlice';
-
 import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
 
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import { getBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
