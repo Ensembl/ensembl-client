@@ -247,7 +247,6 @@ describe('blast epics', () => {
       const maxJobPollCount = 3;
       let jobPollCount = 0;
 
-      // finish first job after 3 requests and fail the second job after 2 requests
       server.use(
         rest.get(
           'http://tools-api-url/blast/jobs/status/:jobId',
