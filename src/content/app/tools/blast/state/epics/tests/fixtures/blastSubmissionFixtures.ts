@@ -91,7 +91,7 @@ export const createStoredBlastSubmission = (
   };
 
   const submission = {
-    submission: {
+    submittedData: {
       species: [human],
       sequences: ['ACGT'],
       parameters: {}
