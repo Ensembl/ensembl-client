@@ -153,11 +153,12 @@ const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
       const { jobId } = job;
       const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
       return observableApiService.fetch<{ status: string }>(url).pipe(
-        map((result) => ({
+        map((response) => ({
           submissionId,
           job: {
             ...job,
-            status: (result as { status: JobStatus }).status
+            status:
+              'error' in response ? 'RUNNING' : (response.status as JobStatus)
           }
         }))
       );
