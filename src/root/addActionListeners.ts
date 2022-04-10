@@ -16,14 +16,14 @@
 
 import {
   submitBlastListener,
-  resforeBlastSubmissionsListener
+  restoreBlastSubmissionsListener
 } from 'src/content/app/tools/blast/state/action-listeners/blastActionListeners';
 
 import type { AppStartListening } from './actionListenerMiddleware';
 
 const addActionListeners = (startListening: AppStartListening) => {
   startListening(submitBlastListener);
-  startListening(resforeBlastSubmissionsListener);
+  startListening(restoreBlastSubmissionsListener);
 };
 
 export default addActionListeners;

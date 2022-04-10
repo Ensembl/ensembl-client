@@ -26,7 +26,7 @@ import listenerMiddleware, {
 
 import {
   submitBlastListener,
-  resforeBlastSubmissionsListener
+  restoreBlastSubmissionsListener
 } from 'src/content/app/tools/blast/state/action-listeners/blastActionListeners';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -72,7 +72,7 @@ const successfulSubmission = createBlastSubmissionResponse({
 
 const buildReduxStore = () => {
   startAppListening(submitBlastListener);
-  startAppListening(resforeBlastSubmissionsListener);
+  startAppListening(restoreBlastSubmissionsListener);
 
   const middleware = [listenerMiddleware.middleware, restApiSlice.middleware];
 
@@ -223,7 +223,7 @@ describe('blast action listeners', () => {
     });
   });
 
-  describe('resforeBlastSubmissionsListener', () => {
+  describe('restoreBlastSubmissionsListener', () => {
     const unfinishedJob = createStoredBlastJobResult();
     const finishedJob = createStoredBlastJobResult({ status: 'FINISHED' });
     const storedBlastSubmission = createStoredBlastSubmission({
@@ -240,7 +240,6 @@ describe('blast action listeners', () => {
       const maxJobPollCount = 3;
       let jobPollCount = 0;
 
-      // finish first job after 3 requests and fail the second job after 2 requests
       server.use(
         rest.get(
           'http://tools-api-url/blast/jobs/status/:jobId',

@@ -60,7 +60,7 @@ export const submitBlastListener = {
   }
 };
 
-export const resforeBlastSubmissionsListener = {
+export const restoreBlastSubmissionsListener = {
   actionCreator: restoreBlastSubmissions.fulfilled,
   effect: async (
     action: PayloadAction<Record<string, BlastSubmission>>,
