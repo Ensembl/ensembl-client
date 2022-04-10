@@ -184,6 +184,43 @@ describe('blast action listeners', () => {
         fragment: { status: 'FAILURE' }
       });
     });
+
+    it('is resistant to network errors', async () => {
+      const jobMap: Record<string, boolean> = {};
+
+      // respond with a 404 error or a network error the first time the request is received
+      server.use(
+        rest.get(
+          'http://tools-api-url/blast/jobs/status/:jobId',
+          (req, res, ctx) => {
+            const jobId = req.params.jobId as string;
+            if (!jobMap[jobId]) {
+              jobMap[jobId] = true;
+              if (jobId === firstJobInResponse.jobId) {
+                return res(ctx.status(404));
+              } else {
+                return res.networkError('Failed to connect');
+              }
+            } else {
+              return res(ctx.json(createFinishedJobStatusResponse()));
+            }
+          }
+        )
+      );
+
+      store.dispatch(submitBlast.initiate(createBlastSubmission()));
+
+      // If job statuses in redux have been updated, the test has passed successfully
+      await waitFor(() => {
+        const submissions = getBlastSubmissions(store.getState());
+        const [, submission] = Object.entries(submissions)[0];
+        expect(
+          submission.results.every((job) =>
+            ['FINISHED', 'FAILURE'].includes(job.status)
+          )
+        ).toBe(true);
+      });
+    });
   });
 
   describe('resforeBlastSubmissionsListener', () => {
