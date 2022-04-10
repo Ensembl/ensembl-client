@@ -35,7 +35,7 @@ export type JobStatus =
   | 'NOT_FOUND'; // TODO: ask backend to represent this as a 404 error?
 
 export type BlastSubmission = {
-  submission: {
+  submittedData: {
     species: Species[];
     sequences: string[]; // Or perhaps parsed sequences?
     parameters: Partial<Record<BlastParameterName, string>>;

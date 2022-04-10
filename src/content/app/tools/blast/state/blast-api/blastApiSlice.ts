@@ -73,10 +73,14 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         return {
           submissionId,
           submission: {
-            submission: payload,
+            submittedData: {
+              species: payload.species,
+              sequences: payload.querySequences,
+              parameters: payload.parameters
+            },
             results,
             submittedAt: Date.now()
-          } as unknown as BlastSubmission
+          } as BlastSubmission
         };
       }
     })
