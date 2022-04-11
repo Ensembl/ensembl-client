@@ -23,14 +23,13 @@ import { TrackSet } from '../../trackPanelConfig';
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getSelectedTrackPanelTab,
-  getIsTrackPanelModalOpened,
   getIsTrackPanelOpened
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import {
   selectTrackPanelTab,
   toggleTrackPanel
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-
+import { getIsBrowserSidebarModalOpened } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
@@ -41,7 +40,7 @@ export const TrackPanelTabs = () => {
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
+  const isTrackPanelModalOpened = useSelector(getIsBrowserSidebarModalOpened);
 
   const dispatch = useDispatch();
 

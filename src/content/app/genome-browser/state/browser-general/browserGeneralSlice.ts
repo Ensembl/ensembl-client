@@ -25,7 +25,7 @@ import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
+import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/browser-sidebar-modal-storage-service';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -34,7 +34,7 @@ import {
   setInitialTrackPanelDataForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import {
   getBrowserActiveFocusObjectIds,

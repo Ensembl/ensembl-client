@@ -18,14 +18,14 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 export enum StorageKeys {
-  BOOKMARKS = 'trackPanel.bookmarks',
-  PREVIOUSLY_VIEWED = 'trackPanel.previouslyViewedObjects'
+  BOOKMARKS = 'browserSidebarModal.bookmarks',
+  PREVIOUSLY_VIEWED = 'browserSidebarModal.previouslyViewedObjects'
 }
 
-export class TrackPanelStorageService {
+export class BrowserSidebarModalStorageService {
   private storageService: StorageServiceInterface;
 
   public constructor(storageService: StorageServiceInterface) {
@@ -64,4 +64,4 @@ export class TrackPanelStorageService {
   }
 }
 
-export default new TrackPanelStorageService(storageService);
+export default new BrowserSidebarModalStorageService(storageService);

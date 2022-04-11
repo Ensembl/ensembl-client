@@ -15,28 +15,14 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
-
-const TrackPanelSearch = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-
+const PersonalDataModal = () => {
   return (
-    <section className="trackPanelSearch">
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="genomeBrowser"
-            genomeId={activeGenomeId}
-            mode="sidebar"
-          />
-        )}
-      </div>
+    <section className="personaDataModal">
+      <p>Upload your own data to be displayed in the browser</p>
+      <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TrackPanelSearch;
+export default PersonalDataModal;

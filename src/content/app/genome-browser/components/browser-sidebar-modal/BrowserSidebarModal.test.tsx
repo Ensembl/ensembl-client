@@ -23,11 +23,14 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-import { TrackPanelModal, trackPanelModalTitles } from './TrackPanelModal';
+import {
+  BrowserSidebarModal,
+  browserSidebarModalTitles
+} from './BrowserSidebarModal';
 
-import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock('./modal-views/TrackPanelSearch', () => () => (
   <div className="trackPanelSearch" />
@@ -53,7 +56,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
-      <TrackPanelModal />
+      <BrowserSidebarModal />
     </Provider>
   );
 };
@@ -67,7 +70,7 @@ describe('<TrackPanelModal />', () => {
     it('displays track pane modal view for search', () => {
       const { container } = renderComponent();
       expect(container.querySelector('.title')?.innerHTML).toBe(
-        trackPanelModalTitles[TrackPanelModalView.SEARCH]
+        browserSidebarModalTitles[BrowserSidebarModalView.SEARCH]
       );
     });
 
@@ -77,13 +80,13 @@ describe('<TrackPanelModal />', () => {
       const { container } = renderComponent(
         set(
           `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
-          TrackPanelModalView.DOWNLOADS,
+          BrowserSidebarModalView.DOWNLOADS,
           mockState
         )
       );
 
       expect(container.querySelector('.title')?.innerHTML).toBe(
-        trackPanelModalTitles[TrackPanelModalView.DOWNLOADS]
+        browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOADS]
       );
     });
   });
@@ -93,10 +96,12 @@ describe('<TrackPanelModal />', () => {
       const { container } = renderComponent();
       const closeButton = container.querySelector('button.closeButton');
 
-      jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
+      jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
 
       userEvent.click(closeButton as HTMLElement);
-      expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalledTimes(1);
+      expect(
+        browserSidebarModalActions.closeBrowserSidebarModal
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });

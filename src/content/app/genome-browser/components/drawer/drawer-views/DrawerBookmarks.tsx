@@ -24,10 +24,10 @@ import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { closeTrackPanelModal } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
@@ -47,7 +47,7 @@ const DrawerBookmarks = () => {
       value: index + 1
     });
 
-    dispatch(closeTrackPanelModal());
+    dispatch(closeBrowserSidebarModal());
     dispatch(closeDrawer());
   };
 

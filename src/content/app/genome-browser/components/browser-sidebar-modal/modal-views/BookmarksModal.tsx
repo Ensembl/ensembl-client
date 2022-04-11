@@ -23,12 +23,12 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import styles from './TrackPanelBookmarks.scss';
+import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
@@ -77,7 +77,7 @@ export const PreviouslyViewedLinks = () => {
   );
 };
 
-export const TrackPanelBookmarks = () => {
+export const BookmarksModal = () => {
   const previouslyViewedObjects = useSelector(
     getActiveGenomePreviouslyViewedObjects
   );
@@ -110,4 +110,4 @@ export const TrackPanelBookmarks = () => {
   );
 };
 
-export default TrackPanelBookmarks;
+export default BookmarksModal;

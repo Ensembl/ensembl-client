@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const TrackPanelDownloads = () => {
+const DownloadsModal = () => {
   return (
-    <section className="trackPanelDownloads">
+    <section className="downloadsModal">
       <p>Export your browser configurations as images or data</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TrackPanelDownloads;
+export default DownloadsModal;

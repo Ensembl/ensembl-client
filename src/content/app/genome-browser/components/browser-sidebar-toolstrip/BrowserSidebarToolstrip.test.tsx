@@ -22,12 +22,11 @@ import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 
-import { TrackPanelBar } from './TrackPanelBar';
+import { BrowserSidebarToolstrip } from './BrowserSidebarToolstrip';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-
-import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
@@ -51,7 +50,7 @@ const mockState = {
     trackPanel: {
       [fakeGenomeId]: {
         isTrackPanelOpened: true,
-        trackPanelModalView: TrackPanelModalView.BOOKMARKS
+        trackPanelModalView: BrowserSidebarModalView.BOOKMARKS
       }
     }
   }
@@ -64,7 +63,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
-      <TrackPanelBar />
+      <BrowserSidebarToolstrip />
     </Provider>
   );
 };
@@ -89,7 +88,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === TrackPanelModalView.BOOKMARKS
+        (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -105,7 +104,7 @@ describe('<TrackPanelBar />', () => {
         activeGenomeId: fakeGenomeId,
         data: {
           ...mockState.browser.trackPanel[fakeGenomeId],
-          trackPanelModalView: TrackPanelModalView.BOOKMARKS,
+          trackPanelModalView: BrowserSidebarModalView.BOOKMARKS,
           isTrackPanelModalOpened: true
         }
       };
@@ -147,7 +146,7 @@ describe('<TrackPanelBar />', () => {
     it('causes track panel modal to close if a pressed button is clicked again', () => {
       const { container } = renderComponent();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === TrackPanelModalView.BOOKMARKS
+        (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);

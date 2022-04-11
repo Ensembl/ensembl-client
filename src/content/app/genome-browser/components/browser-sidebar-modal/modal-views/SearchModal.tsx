@@ -15,14 +15,28 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-const TrackPanelShare = () => {
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
+import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+
+const SearchModal = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+
   return (
-    <section className="trackPanelShare">
-      <p>Share your browser configurations or your own data views</p>
-      <p>Not ready yet &hellip;</p>
+    <section className="searchModal">
+      <div>
+        {activeGenomeId && (
+          <InAppSearch
+            app="genomeBrowser"
+            genomeId={activeGenomeId}
+            mode="sidebar"
+          />
+        )}
+      </div>
     </section>
   );
 };
 
-export default TrackPanelShare;
+export default SearchModal;

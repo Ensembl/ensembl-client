@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const TracksManager = () => {
+const ShareModal = () => {
   return (
-    <section className="tracksManager">
-      <p>Save multiple browser configurations</p>
+    <section className="shareModal">
+      <p>Share your browser configurations or your own data views</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TracksManager;
+export default ShareModal;

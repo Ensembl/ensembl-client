@@ -27,6 +27,10 @@ import {
   TrackPanelState,
   TrackPanelStateForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import {
+  BrowserSidebarModalState,
+  BrowserSidebarModalStateForGenome
+} from '../state/browser-sidebar-modal/browserSidebarModalSlice';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',
@@ -34,7 +38,8 @@ export enum StorageKeys {
   CHR_LOCATION = 'browser.chrLocation',
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
-  TRACK_PANELS = 'browser.trackPanels'
+  TRACK_PANELS = 'browser.trackPanels',
+  SIDEBAR_MODAL = 'browser.sidebarModal'
 }
 
 export class BrowserStorageService {
@@ -99,6 +104,18 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
 
+  public getBrowserSidebarModals(): {
+    [genomeId: string]: Partial<BrowserSidebarModalState>;
+  } {
+    return this.storageService.get(StorageKeys.SIDEBAR_MODAL) || {};
+  }
+
+  public updateBrowserSidebarModals(browserSidebarModals: {
+    [genomeId: string]: Partial<BrowserSidebarModalStateForGenome> | undefined;
+  }): void {
+    this.storageService.update(StorageKeys.SIDEBAR_MODAL, browserSidebarModals);
+  }
+
   public deleteGenome(genomeIdToDelete: string): void {
     const activeGenomeId = this.getActiveGenomeId();
     if (activeGenomeId === genomeIdToDelete) {
@@ -112,6 +129,9 @@ export class BrowserStorageService {
       [genomeIdToDelete]: undefined
     });
     this.updateTrackPanels({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateBrowserSidebarModals({
       [genomeIdToDelete]: undefined
     });
     this.saveTrackStates({

@@ -26,9 +26,9 @@ import set from 'lodash/fp/set';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { TrackPanelBookmarks } from './TrackPanelBookmarks';
+import { BookmarksModal } from './BookmarksModal';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -88,8 +88,8 @@ const mockState = {
     },
     trackPanel: {
       [genomeId]: {
-        isTrackPanelModalOpened: true,
-        trackPanelModalView: '',
+        isBrowserSidebarModalOpened: true,
+        browserSidebarModalView: '',
         previouslyViewedObjects
       }
     }
@@ -150,12 +150,12 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
   return render(
     <Provider store={store}>
-      <TrackPanelBookmarks />
+      <BookmarksModal />
     </Provider>
   );
 };
 
-describe('<TrackPanelBookmarks />', () => {
+describe('<BookmarksModal />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -182,7 +182,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector('.bookmarksModal .more')
     ).toBeFalsy();
 
     // Add 21 links to see if ellipsis is shown
@@ -195,7 +195,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector('.bookmarksModal .more')
     ).toBeTruthy();
   });
 
@@ -209,7 +209,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     const moreLink = container.querySelector(
-      '.trackPanelBookmarks .more span'
+      '.bookmarksModal .more span'
     ) as HTMLElement;
 
     userEvent.click(moreLink);

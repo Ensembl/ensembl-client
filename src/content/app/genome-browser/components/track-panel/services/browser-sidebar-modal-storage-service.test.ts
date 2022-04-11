@@ -15,9 +15,9 @@
  */
 
 import {
-  TrackPanelStorageService,
+  BrowserSidebarModalStorageService,
   StorageKeys
-} from './track-panel-storage-service';
+} from './browser-sidebar-modal-storage-service';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -30,7 +30,7 @@ const mockStorageService = {
 
 const bookmarks = { foo: [] };
 
-describe('TrackPanelStorageService', () => {
+describe('BrowserSidebarModalStorageService', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -39,11 +39,10 @@ describe('TrackPanelStorageService', () => {
     it('gets saved bookmarks from storage service', () => {
       jest.spyOn(mockStorageService, 'get').mockImplementation(() => bookmarks);
 
-      const trackPanelStorageService = new TrackPanelStorageService(
-        mockStorageService
-      );
+      const browserSidebarModalStorageService =
+        new BrowserSidebarModalStorageService(mockStorageService);
 
-      const result = trackPanelStorageService.getBookmarks();
+      const result = browserSidebarModalStorageService.getBookmarks();
 
       expect(mockStorageService.get).toHaveBeenCalledWith(
         StorageKeys.BOOKMARKS
@@ -56,10 +55,9 @@ describe('TrackPanelStorageService', () => {
     it('returns an empty object if there are no saved bookmarks', () => {
       jest.spyOn(mockStorageService, 'get').mockImplementation(() => null);
 
-      const trackPanelStorageService = new TrackPanelStorageService(
-        mockStorageService
-      );
-      const result = trackPanelStorageService.getBookmarks();
+      const browserSidebarModalStorageService =
+        new BrowserSidebarModalStorageService(mockStorageService);
+      const result = browserSidebarModalStorageService.getBookmarks();
 
       expect(result).toEqual({});
 
@@ -69,13 +67,14 @@ describe('TrackPanelStorageService', () => {
 
   describe('.updateActiveGenomeBookmarks()', () => {
     it('updates active genome bookmarks via storage service', () => {
-      const trackPanelStorageService = new TrackPanelStorageService(
-        mockStorageService
-      );
+      const browserSidebarModalStorageService =
+        new BrowserSidebarModalStorageService(mockStorageService);
 
       const updatedBookmarks = { bar: [] };
 
-      trackPanelStorageService.updateActiveGenomeBookmarks(updatedBookmarks);
+      browserSidebarModalStorageService.updateActiveGenomeBookmarks(
+        updatedBookmarks
+      );
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.BOOKMARKS,
