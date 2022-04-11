@@ -34,7 +34,7 @@ describe('<TranscriptSequenceView />', () => {
     const renderedLabels = [
       ...container.querySelectorAll('.radioGroup .label')
     ].map((el) => el.innerHTML);
-    expect(renderedLabels).toStrictEqual([
+    expect(renderedLabels).toEqual([
       'Genomic sequence',
       'cDNA',
       'CDS',
@@ -51,6 +51,6 @@ describe('<TranscriptSequenceView />', () => {
     const renderedLabels = [
       ...container.querySelectorAll('.radioGroup .label')
     ].map((el) => el.innerHTML);
-    expect(renderedLabels).toStrictEqual(['Genomic sequence', 'cDNA']);
+    expect(renderedLabels).toEqual(['Genomic sequence', 'cDNA']);
   });
 });
