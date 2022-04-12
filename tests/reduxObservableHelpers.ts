@@ -33,13 +33,12 @@ export const createCancellableTestEpic = (
     const rootEpic = combineEpics(...epics);
 
     const output$ = rootEpic(action$, state$ as any, deps);
-    return output$
-      .pipe(
-        finalize(() => {
-          shutdown$.complete();
-        })
-      )
-      .pipe(takeUntil(shutdown$));
+    return output$.pipe(
+      takeUntil(shutdown$),
+      finalize(() => {
+        shutdown$.complete();
+      })
+    );
   };
 
   return {
