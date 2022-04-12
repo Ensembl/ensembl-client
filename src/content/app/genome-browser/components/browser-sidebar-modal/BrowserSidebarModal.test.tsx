@@ -32,12 +32,12 @@ import {
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('./modal-views/TrackPanelSearch', () => () => (
-  <div className="trackPanelSearch" />
+jest.mock('./modal-views/SearchModal', () => () => (
+  <div className="searchModal" />
 ));
 
-jest.mock('./modal-views/TrackPanelDownloads', () => () => (
-  <div className="trackPanelDownloads" />
+jest.mock('./modal-views/DownloadsModal', () => () => (
+  <div className="downloadsModal" />
 ));
 
 jest.mock(
@@ -79,7 +79,7 @@ describe('<TrackPanelModal />', () => {
 
       const { container } = renderComponent(
         set(
-          `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
           BrowserSidebarModalView.DOWNLOADS,
           mockState
         )

@@ -95,7 +95,7 @@ export const BookmarksModal = () => {
   };
 
   return (
-    <section className={styles.trackPanelBookmarks}>
+    <section className={styles.bookmarksModal}>
       {previouslyViewedObjects.length ? (
         <>
           <PreviouslyViewedLinks />

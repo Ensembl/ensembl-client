@@ -20,7 +20,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import pick from 'lodash/pick';
 
-import browserSidebarModalStorageService from 'src/content/app/genome-browser/components/track-panel/services/browser-sidebar-modal-storage-service';
+import browserSidebarModalStorageService from 'src/content/app/genome-browser/components/browser-sidebar-modal/services/browser-sidebar-modal-storage-service';
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 
 import {
@@ -77,7 +77,7 @@ export const defaultBrowserSidebarModalStateForGenome: BrowserSidebarModalStateF
 export const pickPersistentBrowserSidebarModalProperties = (
   browserSidebarModal: Partial<BrowserSidebarModalStateForGenome>
 ) => {
-  const persistentProperties = ['collapsedTrackIds', 'previouslyViewedObjects'];
+  const persistentProperties = ['previouslyViewedObjects'];
   return pick(browserSidebarModal, persistentProperties);
 };
 
@@ -169,29 +169,6 @@ export const updatePreviouslyViewedObjectsAndSave =
     browserStorageService.updateBrowserSidebarModals({
       [activeGenomeId]: persistentTrackProperties
     });
-
-    dispatch(
-      updateBrowserSidebarModalForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const changeHighlightedTrackId =
-  (highlightedTrackId: string): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...getActiveBrowserSidebarModal(state),
-      highlightedTrackId
-    };
 
     dispatch(
       updateBrowserSidebarModalForGenome({

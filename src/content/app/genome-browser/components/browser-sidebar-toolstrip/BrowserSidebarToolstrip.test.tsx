@@ -21,11 +21,12 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
+import merge from 'lodash/fp/merge';
 
 import { BrowserSidebarToolstrip } from './BrowserSidebarToolstrip';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock(
@@ -48,9 +49,12 @@ const mockState = {
       activeGenomeId: fakeGenomeId
     },
     trackPanel: {
+      isTrackPanelOpened: true
+    },
+    browserSidebarModal: {
       [fakeGenomeId]: {
-        isTrackPanelOpened: true,
-        trackPanelModalView: BrowserSidebarModalView.BOOKMARKS
+        isBrowserSidebarModalOpened: true,
+        browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
       }
     }
   }
@@ -68,7 +72,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-describe('<TrackPanelBar />', () => {
+describe('<BrowserSidebarToolstrip />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -82,8 +86,8 @@ describe('<TrackPanelBar />', () => {
     it('passes correct data to callbacks when buttons are clicked', () => {
       const { container } = renderComponent(
         set(
-          `browser.trackPanel.${fakeGenomeId}.trackPanelModalView`,
-          '',
+          `browser.browserSidebarModal.${fakeGenomeId}.browserSidebarModalView`,
+          null,
           mockState
         )
       );
@@ -93,57 +97,65 @@ describe('<TrackPanelBar />', () => {
 
       userEvent.click(bookmarksButton);
 
-      const toggleTrackPanelAction = store
+      const toggleBrowserSidebarModalAction = store
         .getActions()
         .find(
           (action) =>
-            action.type === trackPanelActions.updateTrackPanelForGenome.type
+            action.type ===
+            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
         );
 
       const expectedPayload = {
         activeGenomeId: fakeGenomeId,
         data: {
-          ...mockState.browser.trackPanel[fakeGenomeId],
-          trackPanelModalView: BrowserSidebarModalView.BOOKMARKS,
-          isTrackPanelModalOpened: true
+          ...mockState.browser.browserSidebarModal[fakeGenomeId],
+          browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS,
+          isBrowserSidebarModalOpened: true
         }
       };
 
-      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
+      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
     it('opens the track panel if it is closed when a button is clicked', () => {
-      const { container } = renderComponent(
-        set(
-          `browser.trackPanel.${fakeGenomeId}.isTrackPanelOpened`,
-          false,
-          mockState
-        )
-      );
+      const newMockState = merge(mockState, {
+        browser: {
+          browserSidebarModal: {
+            [fakeGenomeId]: {
+              isBrowserSidebarModalOpened: false,
+              browserSidebarModalView: null
+            }
+          }
+        }
+      });
+
+      const { container } = renderComponent(newMockState);
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
-      const toggleTrackPanelAction = store
+
+      const toggleBrowserSidebarModalAction = store
         .getActions()
         .find(
           (action) =>
-            action.type === trackPanelActions.updateTrackPanelForGenome.type
+            action.type ===
+            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
         );
 
       const expectedPayload = {
         activeGenomeId: fakeGenomeId,
         data: {
-          ...mockState.browser.trackPanel[fakeGenomeId],
-          isTrackPanelOpened: true
+          ...mockState.browser.browserSidebarModal[fakeGenomeId],
+          isBrowserSidebarModalOpened: true
         }
       };
 
-      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
+      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
-    it('causes track panel modal to close if a pressed button is clicked again', () => {
+    it('causes browser sidebar modal to close if a pressed button is clicked again', () => {
       const { container } = renderComponent();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
@@ -151,24 +163,24 @@ describe('<TrackPanelBar />', () => {
 
       userEvent.click(bookmarksButton);
 
-      const toggleTrackPanelAction = store
+      const toggleBrowserSidebarModalAction = store
         .getActions()
         .find(
           (action) =>
-            action.type === trackPanelActions.updateTrackPanelForGenome.type
+            action.type ===
+            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
         );
 
       const expectedPayload = {
         activeGenomeId: fakeGenomeId,
         data: {
-          ...mockState.browser.trackPanel[fakeGenomeId],
-          isTrackPanelModalOpened: false,
-          isTrackPanelOpened: true,
-          trackPanelModalView: null
+          ...mockState.browser.browserSidebarModal[fakeGenomeId],
+          isBrowserSidebarModalOpened: false,
+          browserSidebarModalView: null
         }
       };
 
-      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
+      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
     it('closes drawer view when the modal view changes', () => {

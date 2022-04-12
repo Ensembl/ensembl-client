@@ -32,6 +32,8 @@ import { RootState } from 'src/store';
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
+  highlightedTrackId: string;
+  collapsedTrackIds: string[];
 }>;
 
 export type TrackPanelState = Readonly<{
@@ -40,7 +42,9 @@ export type TrackPanelState = Readonly<{
 
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   selectedTrackPanelTab: TrackSet.GENOMIC,
-  isTrackPanelOpened: true
+  isTrackPanelOpened: true,
+  highlightedTrackId: '',
+  collapsedTrackIds: []
 };
 
 export const toggleTrackPanel =
@@ -85,6 +89,29 @@ export const selectTrackPanelTab =
       selectedTrackPanelTab,
       isBrowserSidebarModalOpened: false,
       browserSidebarModalView: null
+    };
+
+    dispatch(
+      updateTrackPanelForGenome({
+        activeGenomeId,
+        data
+      })
+    );
+  };
+
+export const changeHighlightedTrackId =
+  (highlightedTrackId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    const data = {
+      ...getActiveTrackPanel(state),
+      highlightedTrackId
     };
 
     dispatch(

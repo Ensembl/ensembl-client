@@ -25,7 +25,7 @@ import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/browser-sidebar-modal-storage-service';
+import trackPanelStorageService from 'src/content/app/genome-browser/components/browser-sidebar-modal/services/browser-sidebar-modal-storage-service';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 

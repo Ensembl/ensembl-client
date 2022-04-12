@@ -51,8 +51,9 @@ jest.mock('./components/interstitial/BrowserInterstitial', () => () => (
   <div className="browserInterstitial">BrowserInterstitial</div>
 ));
 jest.mock(
-  './components/track-panel/components/track-panel-bar/TrackPanelBar',
-  () => () => <div className="trackPanelBar">TrackPanelBar</div>
+  './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip',
+  () => () =>
+    <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
 );
 jest.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',

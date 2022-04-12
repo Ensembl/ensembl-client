@@ -246,7 +246,13 @@ export const createMockBrowserState = () => {
       },
       trackPanel: {
         fake_genome_id_1: {
-          isTrackPanelModalOpened: false,
+          selectedTrackPanelTab: TrackSet.GENOMIC,
+          isTrackPanelOpened: true
+        }
+      },
+      browserSidebarModal: {
+        fake_genome_id_1: {
+          isBrowserSidebarModalOpened: false,
           bookmarks: [],
           previouslyViewedObjects: [
             {
@@ -256,10 +262,8 @@ export const createMockBrowserState = () => {
               label: 'Fake Gene Stable ID 2'
             }
           ],
-          selectedTrackPanelTab: TrackSet.GENOMIC,
-          trackPanelModalView: BrowserSidebarModalView.SEARCH,
+          browserSidebarModalView: BrowserSidebarModalView.SEARCH,
           highlightedTrackId: '',
-          isTrackPanelOpened: true,
           collapsedTrackIds: []
         }
       },

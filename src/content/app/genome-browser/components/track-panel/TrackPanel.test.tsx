@@ -39,10 +39,6 @@ jest.mock(
 jest.mock('src/shared/components/loader', () => ({
   SidebarLoader: () => <div className="sidebarLoader" />
 }));
-
-jest.mock('./components/track-panel-bar/TrackPanelBar', () => () => (
-  <div className="trackPanel" />
-));
 jest.mock('./components/track-panel-list/TrackPanelList', () => () => (
   <div className="trackPanelList" />
 ));
