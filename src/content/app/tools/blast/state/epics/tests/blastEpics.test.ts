@@ -57,7 +57,7 @@ jest.mock('../blastEpicConstants', () => ({
 }));
 
 const buildReduxStore = () => {
-  const { rootEpic, shutdown$ } = createCancellableTestEpic(
+  const { epic, shutdownEpic } = createCancellableTestEpic(
     Object.values(blastEpics)
   );
   const epicMiddleware = createEpicMiddleware();
@@ -69,13 +69,11 @@ const buildReduxStore = () => {
       getDefaultMiddleware().concat(middleware)
   });
 
-  epicMiddleware.run(rootEpic as any);
+  epicMiddleware.run(epic as any);
 
   return {
     store,
-    shutdownEpics() {
-      shutdown$.next();
-    }
+    shutdownEpic
   };
 };
 
@@ -106,16 +104,16 @@ afterAll(() => server.close());
 
 describe('blast epics', () => {
   let store: ReturnType<typeof buildReduxStore>['store'];
-  let shutdownEpics: ReturnType<typeof buildReduxStore>['shutdownEpics'];
+  let shutdownTestEpic: ReturnType<typeof buildReduxStore>['shutdownEpic'];
 
   beforeEach(() => {
-    const { store: _store, shutdownEpics: _shutdownEpics } = buildReduxStore();
+    const { store: _store, shutdownEpic } = buildReduxStore();
     store = _store;
-    shutdownEpics = _shutdownEpics;
+    shutdownTestEpic = shutdownEpic;
   });
 
   afterEach(() => {
-    shutdownEpics();
+    shutdownTestEpic();
     jest.clearAllMocks();
   });
 

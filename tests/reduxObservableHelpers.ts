@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { takeUntil, finalize, Subject, type Observable } from 'rxjs';
+import { takeUntil, Subject, type Observable } from 'rxjs';
 import { combineEpics, type Epic } from 'redux-observable';
 import type { Action } from '@reduxjs/toolkit';
 
@@ -23,7 +23,7 @@ import type { RootState } from 'src/store';
 export const createCancellableTestEpic = (
   epics: Epic<Action, Action, RootState>[]
 ) => {
-  const shutdown$ = new Subject<void>();
+  const shutdown$ = new Subject<void>(); // this will act as a signal for terminating the test epic
 
   const cancellableRootEpic = (
     action$: Observable<Action>,
@@ -33,16 +33,14 @@ export const createCancellableTestEpic = (
     const rootEpic = combineEpics(...epics);
 
     const output$ = rootEpic(action$, state$ as any, deps);
-    return output$.pipe(
-      takeUntil(shutdown$),
-      finalize(() => {
-        shutdown$.complete();
-      })
-    );
+    return output$.pipe(takeUntil(shutdown$));
   };
 
   return {
-    rootEpic: cancellableRootEpic,
-    shutdown$
+    epic: cancellableRootEpic,
+    shutdownEpic: () => {
+      shutdown$.next();
+      shutdown$.complete();
+    }
   };
 };
