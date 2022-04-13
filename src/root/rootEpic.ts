@@ -19,7 +19,11 @@ import { combineEpics } from 'redux-observable';
 import * as speciesSelectorEpics from 'src/content/app/species-selector/state/speciesSelectorEpics';
 import * as blastEpics from 'src/content/app/tools/blast/state/epics/blastEpics';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 export default combineEpics(
   ...Object.values(speciesSelectorEpics),
-  ...Object.values(blastEpics)
+
+  // IMPORTANT! remember to update the database version of indexed db when enabling the below in production
+  ...(isEnvironment([Environment.PRODUCTION]) ? [] : Object.values(blastEpics))
 );
