@@ -16,7 +16,7 @@
 
 import { filterTranscripts } from '../transcripts-filter';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import { createProteinCodingTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 /* Creating filters with different filter set to true/false */
 const proteinCodingFilters = {
@@ -42,20 +42,20 @@ const proteinCodingFilters = {
   }
 };
 
-const createProteinCodingTranscript = () => {
-  const transcript = createTranscript();
+const createProteinTranscript = () => {
+  const transcript = createProteinCodingTranscript();
   transcript.metadata.biotype.value = 'protein_coding';
   return transcript;
 };
 
 const createProcessedTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.metadata.biotype.value = 'processed_transcript';
   return transcript;
 };
 
 const createTSLTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.metadata.tsl = {
     label: 'TSL1',
     value: 'tsl1',
@@ -65,12 +65,12 @@ const createTSLTranscript = () => {
 };
 
 const createNonsenseMediatedDecayTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createProteinCodingTranscript();
   transcript.metadata.biotype.value = 'nonsense_mediated_decay';
   return transcript;
 };
 
-const ProteinCodingTranscript = createProteinCodingTranscript();
+const ProteinCodingTranscript = createProteinTranscript();
 const ProcessedTranscript = createProcessedTranscript();
 const TSLTranscript = createTSLTranscript();
 const NonsenseMediatedDecayTranscript = createNonsenseMediatedDecayTranscript();

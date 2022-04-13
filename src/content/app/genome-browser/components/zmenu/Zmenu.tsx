@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { pickBy } from 'lodash';
+import pickBy from 'lodash/pickBy';
 import {
   ZmenuContentTranscript,
   ZmenuContentGene,

@@ -26,7 +26,7 @@ import {
   DefaultTranscriptListItemProps
 } from './DefaultTranscriptListItem';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import { createProteinCodingTranscript } from 'tests/fixtures/entity-viewer/transcript';
 import {
   createGene,
   createRulerTicks
@@ -84,7 +84,7 @@ describe('<DefaultTranscriptListItem />', () => {
   const defaultProps = {
     transcriptPosition: 1,
     gene: createGene(),
-    transcript: createTranscript(),
+    transcript: createProteinCodingTranscript(),
     rulerTicks: createRulerTicks(),
     expandTranscript: false,
     expandDownload: false,

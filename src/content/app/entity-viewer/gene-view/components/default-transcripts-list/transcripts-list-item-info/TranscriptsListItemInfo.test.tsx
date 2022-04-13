@@ -29,7 +29,7 @@ import {
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import {
-  createTranscript,
+  createProteinCodingTranscript,
   createTranscriptMetadata
 } from 'tests/fixtures/entity-viewer/transcript';
 import { createExternalReference } from 'tests/fixtures/entity-viewer/external-reference';
@@ -46,7 +46,7 @@ jest.mock('src/shared/components/instant-download', () => ({
   )
 }));
 
-const transcript = createTranscript();
+const transcript = createProteinCodingTranscript();
 const gene = createGene({ transcripts: [transcript] });
 const expandDownload = false;
 const expandMoreInfo = false;
@@ -60,7 +60,7 @@ const createGencodeBasicTranscript = () => {
     }
   });
 
-  const transcript = createTranscript({ metadata });
+  const transcript = createProteinCodingTranscript({ metadata });
   return transcript;
 };
 
@@ -77,7 +77,7 @@ const createMANETranscript = () => {
     }
   });
 
-  const transcript = createTranscript({ metadata });
+  const transcript = createProteinCodingTranscript({ metadata });
   return transcript;
 };
 
@@ -89,7 +89,7 @@ const createCCDSXrefTranscript = () => {
       url: faker.internet.url()
     }
   };
-  const transcript = createTranscript({
+  const transcript = createProteinCodingTranscript({
     external_references: [createExternalReference(xref)]
   });
   return transcript;

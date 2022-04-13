@@ -18,6 +18,8 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -37,6 +39,7 @@ import {
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -56,6 +59,7 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
+  const [shouldShowSequence, showSequence] = useState(false);
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -152,6 +156,61 @@ const TranscriptSummary = (props: Props) => {
         </div>
       </div>
 
+      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+        <div
+          className={classNames(
+            styles.row,
+            styles.spaceAbove,
+            styles.downloadRow
+          )}
+        >
+          <div className={styles.value}>
+            <ShowHide
+              label="Sequences"
+              isExpanded={shouldShowSequence}
+              onClick={() => showSequence(!shouldShowSequence)}
+            />
+          </div>
+          <div className={styles.value}>
+            {shouldShowSequence && (
+              <div className={styles.sequenceWrapper}>
+                <TranscriptSequenceView transcript={transcript} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div
+        className={classNames(
+          styles.row,
+          styles.spaceAbove,
+          styles.downloadRow
+        )}
+      >
+        <div className={styles.value}>
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
+            onClick={() => showDownload(!shouldShowDownload)}
+          />
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadTranscript
+                genomeId={activeGenomeId}
+                transcript={{
+                  id: transcript.stable_id,
+                  isProteinCoding: isProteinCodingTranscript(transcript)
+                }}
+                gene={{ id: gene.stable_id }}
+                theme="light"
+                layout="vertical"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Transcript length</div>
         <div className={styles.value}>
@@ -211,36 +270,6 @@ const TranscriptSummary = (props: Props) => {
           </div>
         </div>
       )}
-
-      <div
-        className={classNames(
-          styles.row,
-          styles.spaceAbove,
-          styles.downloadRow
-        )}
-      >
-        <div className={styles.value}>
-          <ShowHide
-            label="Download"
-            isExpanded={shouldShowDownload}
-            onClick={() => showDownload(!shouldShowDownload)}
-          />
-          {shouldShowDownload && (
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadTranscript
-                genomeId={activeGenomeId}
-                transcript={{
-                  id: transcript.stable_id,
-                  isProteinCoding: isProteinCodingTranscript(transcript)
-                }}
-                gene={{ id: gene.stable_id }}
-                theme="light"
-                layout="vertical"
-              />
-            </div>
-          )}
-        </div>
-      </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Gene</div>

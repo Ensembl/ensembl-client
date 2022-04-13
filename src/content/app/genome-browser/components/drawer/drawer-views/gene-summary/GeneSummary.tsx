@@ -18,6 +18,8 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
@@ -34,6 +36,7 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import GeneSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/GeneSequenceView';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -47,6 +50,7 @@ import styles from './GeneSummary.scss';
 const GeneSummary = () => {
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
+  const [shouldShowSequence, showSequence] = useState(false);
 
   const geneQueryParams = {
     geneId: focusGene.stable_id,
@@ -112,6 +116,46 @@ const GeneSummary = () => {
         </div>
       </div>
 
+      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+        <div className={classNames(rowClasses, styles.downloadRow)}>
+          <div className={styles.value}>
+            <ShowHide
+              label="Sequences"
+              isExpanded={shouldShowSequence}
+              onClick={() => showSequence(!shouldShowSequence)}
+            />
+          </div>
+          <div className={styles.value}>
+            {shouldShowSequence && (
+              <div className={styles.sequenceWrapper}>
+                <GeneSequenceView gene={gene} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className={classNames(rowClasses, styles.downloadRow)}>
+        <div className={styles.value}>
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
+            onClick={() => showDownload(!shouldShowDownload)}
+          />
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadGene
+                genomeId={focusGene.genome_id}
+                gene={{
+                  id: gene.stable_id,
+                  isProteinCoding: isProteinCodingGene(gene)
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.geneName}>
@@ -139,27 +183,6 @@ const GeneSummary = () => {
         <div className={styles.value}>
           {gene.transcripts.length}{' '}
           {pluralise('transcript', gene.transcripts.length)}
-        </div>
-      </div>
-
-      <div className={classNames(rowClasses, styles.downloadRow)}>
-        <div className={styles.value}>
-          <ShowHide
-            label="Download"
-            isExpanded={shouldShowDownload}
-            onClick={() => showDownload(!shouldShowDownload)}
-          />
-          {shouldShowDownload && (
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadGene
-                genomeId={focusGene.genome_id}
-                gene={{
-                  id: gene.stable_id,
-                  isProteinCoding: isProteinCodingGene(gene)
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
