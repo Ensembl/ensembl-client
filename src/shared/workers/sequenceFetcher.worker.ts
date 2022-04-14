@@ -30,7 +30,13 @@ export type SequenceFetcherParams = Array<SingleSequenceFetchParams>;
 const downloadSequences = async (params: SequenceFetcherParams) => {
   const sequencePromises = params.map(({ label, url, reverseComplement }) => {
     return fetch(url)
-      .then((response) => response.text())
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error();
+        }
+      })
       .then((sequence) => {
         if (reverseComplement) {
           sequence = getReverseComplement(sequence);
