@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { defaultDrawerStateForGenome } from './drawerSlice';
-
 import type { RootState } from 'src/store';
 
-export const getActiveDrawer = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeDrawer =
-    activeGenomeId && state.browser.drawer.general[activeGenomeId];
-
-  return activeDrawer || defaultDrawerStateForGenome;
+export const isDrawerSequenceVisible = (state: RootState, genomeId: string) => {
+  return state.browser.drawer.sequence[genomeId]?.isVisible ?? false;
 };
 
-export const getActiveDrawerView = (state: RootState) =>
-  getActiveDrawer(state).drawerView;
+export const getDrawerSequenceType = (
+  state: RootState,
+  genomeId: string,
+  featureId: string
+) => {
+  return (
+    state.browser.drawer.sequence[genomeId]?.features?.[featureId]
+      ?.sequenceType ?? 'genomic'
+  );
+};
 
-export const getIsDrawerOpened = (state: RootState) =>
-  getActiveDrawer(state).drawerView !== null;
+export const isDrawerSequenceReverseComplement = (
+  state: RootState,
+  genomeId: string,
+  featureId: string
+) => {
+  return (
+    state.browser.drawer.sequence[genomeId]?.features?.[featureId]
+      ?.isReverseComplement ?? false
+  );
+};

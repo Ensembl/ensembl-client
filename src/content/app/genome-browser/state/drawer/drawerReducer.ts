@@ -15,18 +15,11 @@
  */
 
 import { combineReducers } from '@reduxjs/toolkit';
-import drawer from 'src/content/app/genome-browser/state/drawer/drawerReducer';
-import browserGeneral from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import browserNav from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import trackConfig from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-import trackPanel from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import focusObjects from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
+
+import general from './drawerSlice';
+import sequence from './drawer-sequence/drawerSequenceSlice';
 
 export default combineReducers({
-  drawer,
-  browserGeneral,
-  browserNav,
-  trackConfig,
-  trackPanel,
-  focusObjects
+  general,
+  sequence
 });

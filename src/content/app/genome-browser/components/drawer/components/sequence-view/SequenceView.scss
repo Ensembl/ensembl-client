@@ -1,20 +1,49 @@
+@import 'src/styles/common';
+
 .layout {
   display: grid;
-  align-items: start;
-  grid-template-columns: 400px 1fr;
-  grid-column-gap: 24px;
+  grid-template-areas:
+    'main-top aside-top'
+    'main-bottom aside-bottom';
+  grid-template-columns: 60ch 1fr;
   grid-template-rows: 20px minmax(200px, 400px);
+  grid-column-gap: 24px;
+  align-items: start;
   grid-row-gap: 17px;
 }
 
-.selectionWrapper {
+.mainTop {
+  grid-area: main-top;
+}
+
+.basePairsLabel {
+  font-weight: $light;
+  margin-left: 0.5ch;
+}
+
+.asideTop {
+  grid-area: aside-top;
+}
+
+.sequence {
+  grid-area: main-bottom;
+  margin-top: 10px;
+  width: 60ch;
+  height: 100%;
+  font-family: $font-family-monospace;
+  color: $dark-grey;
+  word-break: break-all;
+  overflow: auto;
+}
+
+.asideBottom {
+  grid-area: aside-bottom;
+}
+
+.sequenceTypeSelection {
   margin-top: 50px;
 }
 
-.sequenceWrapper {
-  margin-top: 10px;
-}
-
-.reverseWrapper {
+.reverseComplement {
   margin-top: 43px;
 }

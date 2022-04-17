@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
+import noop from 'lodash/noop';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import RadioGroup, {
-  OptionValue,
-  RadioOptions
-} from 'src/shared/components/radio-group/RadioGroup';
+import {
+  useRefgetSequenceQuery,
+  type SequenceQueryParams
+} from 'src/shared/state/api-slices/refgetSlice';
 
-import { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
+import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
 
-import styles from './SequenceView.scss';
+import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
+import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
 type Transcript = {
   slice: TranscriptSummaryQueryResult['transcript']['slice'];
@@ -36,82 +37,64 @@ type Props = {
   transcript: Transcript;
 };
 
+const proteinCodingTranscriptSequenceTypes: SequenceType[] = [
+  'genomic',
+  'cdna',
+  'cds',
+  'protein'
+];
+
+const nonCodingTranscriptSequenceTypes: SequenceType[] = ['genomic', 'cdna'];
+
 const TranscriptSequenceView = (props: Props) => {
-  const [sequenceType, setSequenceType] = useState('genomicSequence');
+  const { transcript } = props;
+  const sequenceTypes = isProteinCodingTranscript(props.transcript)
+    ? proteinCodingTranscriptSequenceTypes
+    : nonCodingTranscriptSequenceTypes;
+  const selectedSequenceType = 'genomic';
 
-  const { checksum } = props.transcript.slice.region.sequence;
-  const { start, end } = props.transcript.slice.location;
-  const genomicURL = urlFor.refget({ checksum, start, end });
-  const [sequenceURL, setSequenceURL] = useState(genomicURL);
+  const { data: sequence } = useRefgetSequenceQuery(
+    getSequenceQueryParams(transcript, selectedSequenceType)
+  );
 
-  let radioOptions: RadioOptions = [
-    {
-      value: 'genomicSequence',
-      label: 'Genomic sequence'
-    },
-    {
-      value: 'cdna',
-      label: 'cDNA'
-    },
-    {
-      value: 'cds',
-      label: 'CDS'
-    },
-    {
-      value: 'proteinSequence',
-      label: 'Protein sequence'
-    }
-  ];
+  return sequence ? (
+    <DrawerSequenceView
+      sequence={sequence}
+      sequenceTypes={sequenceTypes}
+      selectedSequenceType={selectedSequenceType}
+      isReverseComplement={false}
+      onSequenceTypeChange={noop}
+      onReverseComplementChange={noop}
+    />
+  ) : null;
+};
 
-  const handleRadioChange = (value: OptionValue) => {
-    setSequenceType(value as string);
+const getSequenceQueryParams = (
+  transcript: Transcript,
+  sequenceType: SequenceType
+): SequenceQueryParams => {
+  const queryParams: Record<string, string | number> = {};
+  const {
+    strand: { code: strand }
+  } = transcript.slice;
+  queryParams.strand = strand;
 
-    if (value === 'genomicSequence') {
-      setSequenceURL(genomicURL);
-    } else if (value === 'proteinSequence') {
-      const product = props.transcript.product_generating_contexts[0].product;
-      setSequenceURL(
-        urlFor.refget({ checksum: product?.sequence.checksum as string })
-      );
-    } else {
-      const productType = value as 'cdna' | 'cds';
-      const product =
-        props.transcript.product_generating_contexts[0][productType];
-      setSequenceURL(
-        urlFor.refget({ checksum: product?.sequence.checksum as string })
-      );
-    }
-  };
-
-  if (!isProteinCodingTranscript(props.transcript)) {
-    radioOptions = radioOptions.filter(
-      (item) => item.value === 'genomicSequence' || item.value === 'cdna'
-    );
+  if (sequenceType === 'genomic') {
+    queryParams.checksum = transcript.slice.region.sequence.checksum;
+    queryParams.start = transcript.slice.location.start;
+    queryParams.end = transcript.slice.location.end;
+  } else if (sequenceType === 'cdna') {
+    queryParams.checksum = transcript.product_generating_contexts[0].cdna
+      ?.sequence.checksum as string; // FIXME: is cdna really nullable?
+  } else if (sequenceType === 'cds') {
+    queryParams.checksum = transcript.product_generating_contexts[0].cds
+      ?.sequence.checksum as string;
+  } else if (sequenceType === 'protein') {
+    queryParams.checksum = transcript.product_generating_contexts[0].product
+      ?.sequence.checksum as string;
   }
 
-  return (
-    <div className={styles.layout}>
-      <div>
-        <div>XXXX bp</div>
-        <div className={styles.sequenceWrapper}>
-          Fetching sequence for {sequenceType} : {sequenceURL}
-        </div>
-      </div>
-      <div>
-        <div>blast control</div>
-        <div className={styles.selectionWrapper}>
-          <RadioGroup
-            options={radioOptions}
-            onChange={handleRadioChange}
-            selectedOption={sequenceType}
-          />
-          <div className={styles.reverseWrapper}>
-            Reverse complement checkbox
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return queryParams as SequenceQueryParams;
 };
 
 export default TranscriptSequenceView;

@@ -17,15 +17,11 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
 
-import RadioGroup, {
-  RadioOptions
-} from 'src/shared/components/radio-group/RadioGroup';
+import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
 
-import { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
-
-import styles from './SequenceView.scss';
+import type { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
 
 type Gene = {
   slice: GeneSummaryQueryResult['gene']['slice'];
@@ -36,41 +32,32 @@ type Props = {
 };
 
 export const GeneSequenceView = (props: Props) => {
-  const sequenceType = 'genomicSequence';
-  const { checksum } = props.gene.slice.region.sequence;
-  const { start, end } = props.gene.slice.location;
-  const sequenceURL = urlFor.refget({ checksum, start, end });
+  const { gene } = props;
+  const {
+    region: {
+      sequence: { checksum }
+    },
+    location: { start, end },
+    strand: { code: strand }
+  } = gene.slice;
 
-  const radioOptions: RadioOptions = [
-    {
-      value: 'genomicSequence',
-      label: 'Genomic sequence'
-    }
-  ];
+  const { data: sequence } = useRefgetSequenceQuery({
+    checksum,
+    start,
+    end,
+    strand
+  });
 
-  return (
-    <div className={styles.layout}>
-      <div>
-        <div>XXXX bp</div>
-        <div className={styles.sequenceWrapper}>
-          Fetching sequence for {sequenceType} : {sequenceURL}
-        </div>
-      </div>
-      <div>
-        <div>blast control</div>
-        <div className={styles.selectionWrapper}>
-          <RadioGroup
-            options={radioOptions}
-            onChange={noop}
-            selectedOption={sequenceType}
-          />
-          <div className={styles.reverseWrapper}>
-            Reverse complement checkbox
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return sequence ? (
+    <DrawerSequenceView
+      sequence={sequence}
+      sequenceTypes={['genomic']}
+      selectedSequenceType="genomic"
+      isReverseComplement={false}
+      onSequenceTypeChange={noop}
+      onReverseComplementChange={noop}
+    />
+  ) : null;
 };
 
 export default GeneSequenceView;
