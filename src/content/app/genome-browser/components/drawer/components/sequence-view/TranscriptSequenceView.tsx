@@ -17,22 +17,31 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
+
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getDrawerSequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSelectors';
 
 import {
   useRefgetSequenceQuery,
   type SequenceQueryParams
 } from 'src/shared/state/api-slices/refgetSlice';
+import { changeSequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
 import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
 
 import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
+import type { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
-type Transcript = {
-  slice: TranscriptSummaryQueryResult['transcript']['slice'];
-  product_generating_contexts: TranscriptSummaryQueryResult['transcript']['product_generating_contexts'];
-};
+type Transcript = Pick<
+  TranscriptSummaryQueryResult['transcript'],
+  'stable_id' | 'slice' | 'product_generating_contexts'
+>;
+
 type Props = {
   transcript: Transcript;
 };
@@ -48,14 +57,30 @@ const nonCodingTranscriptSequenceTypes: SequenceType[] = ['genomic', 'cdna'];
 
 const TranscriptSequenceView = (props: Props) => {
   const { transcript } = props;
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const transcriptId = buildTranscriptId(genomeId, transcript.stable_id);
+  const selectedSequenceType = useAppSelector((state) =>
+    getDrawerSequenceType(state, genomeId, transcriptId)
+  );
+  const dispatch = useAppDispatch();
+
   const sequenceTypes = isProteinCodingTranscript(props.transcript)
     ? proteinCodingTranscriptSequenceTypes
     : nonCodingTranscriptSequenceTypes;
-  const selectedSequenceType = 'genomic';
 
   const { data: sequence } = useRefgetSequenceQuery(
     getSequenceQueryParams(transcript, selectedSequenceType)
   );
+
+  const onSequenceTypeChange = (sequenceType: OptionValue) => {
+    dispatch(
+      changeSequenceType({
+        genomeId,
+        featureId: transcriptId,
+        sequenceType: sequenceType as SequenceType
+      })
+    );
+  };
 
   return sequence ? (
     <DrawerSequenceView
@@ -63,11 +88,18 @@ const TranscriptSequenceView = (props: Props) => {
       sequenceTypes={sequenceTypes}
       selectedSequenceType={selectedSequenceType}
       isReverseComplement={false}
-      onSequenceTypeChange={noop}
+      onSequenceTypeChange={onSequenceTypeChange}
       onReverseComplementChange={noop}
     />
   ) : null;
 };
+
+const buildTranscriptId = (genomeId: string, transcriptStableId: string) =>
+  buildFocusObjectId({
+    genomeId,
+    type: 'transcript',
+    objectId: transcriptStableId
+  });
 
 const getSequenceQueryParams = (
   transcript: Transcript,

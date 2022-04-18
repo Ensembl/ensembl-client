@@ -23,9 +23,7 @@ import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer
 
 import type { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
 
-type Gene = {
-  slice: GeneSummaryQueryResult['gene']['slice'];
-};
+type Gene = Pick<GeneSummaryQueryResult['gene'], 'stable_id' | 'slice'>;
 
 type Props = {
   gene: Gene;

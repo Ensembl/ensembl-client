@@ -52,12 +52,16 @@ const DrawerSequenceView = (props: Props) => {
     label: sequenceLabelsMap[sequenceType]
   }));
 
+  const sequenceLengthUnits = selectedSequenceType === 'protein' ? 'aa' : 'bp';
+
   return (
     <div className={styles.layout}>
       <div className={styles.mainTop}>
         <div>
           <span>{sequence.length}</span>
-          <span className={styles.basePairsLabel}>bp</span>
+          <span className={styles.sequenceLengthUnits}>
+            {sequenceLengthUnits}
+          </span>
         </div>
       </div>
       <div className={styles.sequence}>{sequence}</div>
