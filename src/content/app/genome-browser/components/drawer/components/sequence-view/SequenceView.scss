@@ -14,6 +14,8 @@
 
 .mainTop {
   grid-area: main-top;
+  display: flex;
+  justify-content: space-between;
 }
 
 .sequenceLengthUnits {
@@ -50,4 +52,24 @@
 
 .showHide {
   margin-bottom: 16px;
+}
+
+.copyLozenge {
+  display: inline-block;
+  height: 18px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy {
+  color: $blue;
+  cursor: pointer;
+}
+
+.copyLozengeCopied {
+  color: $white;
+  background-color: $black;
+  border-radius: 30px;
 }

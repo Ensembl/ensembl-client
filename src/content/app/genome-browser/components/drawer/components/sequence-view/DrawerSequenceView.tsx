@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import classNames from 'classnames';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
@@ -128,13 +129,50 @@ const Sequence = (props: {
   return (
     <>
       <div className={styles.mainTop}>
-        <span>{displaySequence.length}</span>
-        <span className={styles.sequenceLengthUnits}>
-          {sequenceLengthUnits}
+        <span>
+          {displaySequence.length}
+          <span className={styles.sequenceLengthUnits}>
+            {sequenceLengthUnits}
+          </span>
         </span>
+        <Copy value={displaySequence} />
       </div>
       <div className={styles.sequence}>{displaySequence}</div>
     </>
+  );
+};
+
+// QUESTION: is this going to become a a standalone component?
+const Copy = (props: { value: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  let timeout: ReturnType<typeof setTimeout>;
+
+  useEffect(() => {
+    return () => timeout && clearTimeout(timeout);
+  }, []);
+
+  const copy = () => {
+    setCopied(true);
+    navigator.clipboard.writeText(props.value);
+
+    timeout = setTimeout(() => setCopied(false), 1500);
+  };
+
+  const componentStyles = classNames(styles.copyLozenge, {
+    [styles.copyLozengeCopied]: copied
+  });
+
+  return (
+    <span className={componentStyles}>
+      {copied ? (
+        'Copied'
+      ) : (
+        <span className={styles.copy} onClick={copy}>
+          Copy
+        </span>
+      )}
+    </span>
   );
 };
 
