@@ -80,7 +80,7 @@ const drawerSequenceSlice = createSlice({
     hideSequence(state, action: PayloadAction<{ genomeId: string }>) {
       const { genomeId } = action.payload;
       ensureGenomePresence(state, genomeId);
-      state[genomeId].isVisible = true;
+      state[genomeId].isVisible = false;
     },
     changeSequenceType(state, action: PayloadAction<SequenceTypeParams>) {
       const { genomeId, featureId, sequenceType } = action.payload;

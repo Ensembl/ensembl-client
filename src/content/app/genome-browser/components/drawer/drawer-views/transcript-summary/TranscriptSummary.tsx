@@ -59,7 +59,6 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
-  const [shouldShowSequence, showSequence] = useState(false);
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -165,18 +164,7 @@ const TranscriptSummary = (props: Props) => {
           )}
         >
           <div className={styles.value}>
-            <ShowHide
-              label="Sequences"
-              isExpanded={shouldShowSequence}
-              onClick={() => showSequence(!shouldShowSequence)}
-            />
-          </div>
-          <div className={styles.value}>
-            {shouldShowSequence && (
-              <div className={styles.sequenceWrapper}>
-                <TranscriptSequenceView transcript={transcript} />
-              </div>
-            )}
+            <TranscriptSequenceView transcript={transcript} />
           </div>
         </div>
       )}

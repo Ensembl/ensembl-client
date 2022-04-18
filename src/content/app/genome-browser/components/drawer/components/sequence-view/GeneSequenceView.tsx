@@ -43,8 +43,8 @@ export const GeneSequenceView = (props: Props) => {
   const transcriptId = buildGeneId(genomeId, gene.stable_id);
 
   const {
-    // isExpanded,
-    // toggleSequenceVisibility,
+    isExpanded,
+    toggleSequenceVisibility,
     isReverseComplement,
     toggleReverseComplement
   } = useDrawerSequenceSettings({ genomeId, featureId: transcriptId });
@@ -64,8 +64,10 @@ export const GeneSequenceView = (props: Props) => {
     strand
   });
 
-  return sequence ? (
+  return (
     <DrawerSequenceView
+      isExpanded={isExpanded}
+      toggleSequenceVisibility={toggleSequenceVisibility}
       sequence={sequence}
       sequenceTypes={['genomic']}
       selectedSequenceType="genomic"
@@ -73,7 +75,7 @@ export const GeneSequenceView = (props: Props) => {
       onSequenceTypeChange={noop}
       onReverseComplementChange={toggleReverseComplement}
     />
-  ) : null;
+  );
 };
 
 const buildGeneId = (genomeId: string, geneStableId: string) =>

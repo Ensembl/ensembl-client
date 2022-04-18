@@ -50,7 +50,6 @@ import styles from './GeneSummary.scss';
 const GeneSummary = () => {
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
-  const [shouldShowSequence, showSequence] = useState(false);
 
   const geneQueryParams = {
     geneId: focusGene.stable_id,
@@ -119,18 +118,7 @@ const GeneSummary = () => {
       {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
         <div className={classNames(rowClasses, styles.downloadRow)}>
           <div className={styles.value}>
-            <ShowHide
-              label="Sequences"
-              isExpanded={shouldShowSequence}
-              onClick={() => showSequence(!shouldShowSequence)}
-            />
-          </div>
-          <div className={styles.value}>
-            {shouldShowSequence && (
-              <div className={styles.sequenceWrapper}>
-                <GeneSequenceView gene={gene} />
-              </div>
-            )}
+            <GeneSequenceView gene={gene} />
           </div>
         </div>
       )}

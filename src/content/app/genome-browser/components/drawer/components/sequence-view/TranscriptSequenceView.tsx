@@ -58,8 +58,8 @@ const TranscriptSequenceView = (props: Props) => {
   const transcriptId = buildTranscriptId(genomeId, transcript.stable_id);
 
   const {
-    // isExpanded,
-    // toggleSequenceVisibility,
+    isExpanded,
+    toggleSequenceVisibility,
     sequenceType,
     onSequenceTypeChange,
     isReverseComplement,
@@ -76,6 +76,8 @@ const TranscriptSequenceView = (props: Props) => {
 
   return sequence ? (
     <DrawerSequenceView
+      isExpanded={isExpanded}
+      toggleSequenceVisibility={toggleSequenceVisibility}
       sequence={sequence}
       sequenceTypes={sequenceTypes}
       selectedSequenceType={sequenceType}
