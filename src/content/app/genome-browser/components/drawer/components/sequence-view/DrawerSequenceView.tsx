@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+
+import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
@@ -44,7 +47,9 @@ const DrawerSequenceView = (props: Props) => {
     sequence,
     sequenceTypes,
     selectedSequenceType,
-    onSequenceTypeChange
+    onSequenceTypeChange,
+    isReverseComplement,
+    onReverseComplementChange
   } = props;
 
   const sequenceTypeOptions = sequenceTypes.map((sequenceType) => ({
@@ -52,19 +57,23 @@ const DrawerSequenceView = (props: Props) => {
     label: sequenceLabelsMap[sequenceType]
   }));
 
+  const displaySequence = useMemo(() => {
+    return isReverseComplement ? getReverseComplement(sequence) : sequence;
+  }, [sequence, isReverseComplement]);
+
   const sequenceLengthUnits = selectedSequenceType === 'protein' ? 'aa' : 'bp';
 
   return (
     <div className={styles.layout}>
       <div className={styles.mainTop}>
         <div>
-          <span>{sequence.length}</span>
+          <span>{displaySequence.length}</span>
           <span className={styles.sequenceLengthUnits}>
             {sequenceLengthUnits}
           </span>
         </div>
       </div>
-      <div className={styles.sequence}>{sequence}</div>
+      <div className={styles.sequence}>{displaySequence}</div>
       <div className={styles.asideTop}>
         <div>blast control</div>
       </div>
@@ -78,7 +87,11 @@ const DrawerSequenceView = (props: Props) => {
             selectedOption={selectedSequenceType}
           />
           <div className={styles.reverseComplement}>
-            Reverse complement checkbox
+            <Checkbox
+              label="Reverse complement"
+              checked={isReverseComplement}
+              onChange={onReverseComplementChange}
+            />
           </div>
         </div>
       </div>
