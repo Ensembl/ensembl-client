@@ -17,7 +17,14 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
+import { useAppSelector } from 'src/store';
+
+import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
+
+import useDrawerSequenceSettings from './useDrawerSequenceSettings';
 import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
 
@@ -31,6 +38,17 @@ type Props = {
 
 export const GeneSequenceView = (props: Props) => {
   const { gene } = props;
+
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const transcriptId = buildGeneId(genomeId, gene.stable_id);
+
+  const {
+    // isExpanded,
+    // toggleSequenceVisibility,
+    isReverseComplement,
+    toggleReverseComplement
+  } = useDrawerSequenceSettings({ genomeId, featureId: transcriptId });
+
   const {
     region: {
       sequence: { checksum }
@@ -51,11 +69,18 @@ export const GeneSequenceView = (props: Props) => {
       sequence={sequence}
       sequenceTypes={['genomic']}
       selectedSequenceType="genomic"
-      isReverseComplement={false}
+      isReverseComplement={isReverseComplement}
       onSequenceTypeChange={noop}
-      onReverseComplementChange={noop}
+      onReverseComplementChange={toggleReverseComplement}
     />
   ) : null;
 };
+
+const buildGeneId = (genomeId: string, geneStableId: string) =>
+  buildFocusObjectId({
+    genomeId,
+    type: 'gene',
+    objectId: geneStableId
+  });
 
 export default GeneSequenceView;

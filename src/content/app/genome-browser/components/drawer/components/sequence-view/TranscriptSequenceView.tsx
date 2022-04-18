@@ -15,27 +15,24 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getDrawerSequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSelectors';
 
+import useDrawerSequenceSettings from './useDrawerSequenceSettings';
 import {
   useRefgetSequenceQuery,
   type SequenceQueryParams
 } from 'src/shared/state/api-slices/refgetSlice';
-import { changeSequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
 import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
 
 import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
-import type { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
 type Transcript = Pick<
   TranscriptSummaryQueryResult['transcript'],
@@ -59,37 +56,32 @@ const TranscriptSequenceView = (props: Props) => {
   const { transcript } = props;
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const transcriptId = buildTranscriptId(genomeId, transcript.stable_id);
-  const selectedSequenceType = useAppSelector((state) =>
-    getDrawerSequenceType(state, genomeId, transcriptId)
-  );
-  const dispatch = useAppDispatch();
+
+  const {
+    // isExpanded,
+    // toggleSequenceVisibility,
+    sequenceType,
+    onSequenceTypeChange,
+    isReverseComplement,
+    toggleReverseComplement
+  } = useDrawerSequenceSettings({ genomeId, featureId: transcriptId });
 
   const sequenceTypes = isProteinCodingTranscript(props.transcript)
     ? proteinCodingTranscriptSequenceTypes
     : nonCodingTranscriptSequenceTypes;
 
   const { data: sequence } = useRefgetSequenceQuery(
-    getSequenceQueryParams(transcript, selectedSequenceType)
+    getSequenceQueryParams(transcript, sequenceType)
   );
-
-  const onSequenceTypeChange = (sequenceType: OptionValue) => {
-    dispatch(
-      changeSequenceType({
-        genomeId,
-        featureId: transcriptId,
-        sequenceType: sequenceType as SequenceType
-      })
-    );
-  };
 
   return sequence ? (
     <DrawerSequenceView
       sequence={sequence}
       sequenceTypes={sequenceTypes}
-      selectedSequenceType={selectedSequenceType}
-      isReverseComplement={false}
+      selectedSequenceType={sequenceType}
+      isReverseComplement={isReverseComplement}
       onSequenceTypeChange={onSequenceTypeChange}
-      onReverseComplementChange={noop}
+      onReverseComplementChange={toggleReverseComplement}
     />
   ) : null;
 };
