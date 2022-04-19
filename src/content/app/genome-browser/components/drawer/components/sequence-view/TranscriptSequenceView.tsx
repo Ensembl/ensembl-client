@@ -39,7 +39,7 @@ type Transcript = Pick<
   'stable_id' | 'slice' | 'product_generating_contexts'
 >;
 
-type Props = {
+export type Props = {
   transcript: Transcript;
 };
 
@@ -74,7 +74,7 @@ const TranscriptSequenceView = (props: Props) => {
     getSequenceQueryParams(transcript, sequenceType)
   );
 
-  return sequence ? (
+  return (
     <DrawerSequenceView
       isExpanded={isExpanded}
       toggleSequenceVisibility={toggleSequenceVisibility}
@@ -85,7 +85,7 @@ const TranscriptSequenceView = (props: Props) => {
       onSequenceTypeChange={onSequenceTypeChange}
       onReverseComplementChange={toggleReverseComplement}
     />
-  ) : null;
+  );
 };
 
 const buildTranscriptId = (genomeId: string, transcriptStableId: string) =>
