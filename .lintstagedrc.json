@@ -4,7 +4,7 @@
     "manage-licence-header add",
     "prettier --write"
   ],
-  "*.{scss}": [
+  "*.scss": [
     "stylelint",
     "prettier --write"
   ]
