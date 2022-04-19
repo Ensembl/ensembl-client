@@ -30,14 +30,23 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 const ToolsAppBar = () => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const speciesListIds = useSelector(getSelectedSpeciesIds);
   const dispatch = useDispatch();
 
-  const speciesLozengeClick = (genomeId: string) => {
-    if (!speciesListIds.includes(genomeId)) {
-      dispatch(addSelectedSpecies({ genomeId }));
+  const speciesLozengeClick = (species: CommittedItem) => {
+    if (!speciesListIds.includes(species.genome_id)) {
+      dispatch(
+        addSelectedSpecies({
+          genome_id: species.genome_id,
+          common_name: species.common_name,
+          scientific_name: species.scientific_name,
+          assembly_name: species.assembly_name
+        })
+      );
     }
   };
 
@@ -45,7 +54,7 @@ const ToolsAppBar = () => {
     <SelectedSpecies
       key={index}
       species={species}
-      onClick={() => speciesLozengeClick(species.genome_id)}
+      onClick={() => speciesLozengeClick(species)}
     />
   ));
   const speciesSelectorLink = useMemo(() => {

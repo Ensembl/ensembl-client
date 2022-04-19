@@ -25,7 +25,9 @@ import blastFormReducer, {
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import SpeciesSelector from './BlastSpeciesSelector';
+import BlastSpeciesSelector from './BlastSpeciesSelector';
+
+import speciesList from './speciesList';
 
 const renderComponent = (
   {
@@ -51,7 +53,7 @@ const renderComponent = (
 
   const renderResult = render(
     <Provider store={store}>
-      <SpeciesSelector />
+      <BlastSpeciesSelector />
     </Provider>
   );
 
@@ -62,22 +64,20 @@ const renderComponent = (
 };
 
 describe('SpeciesSelector', () => {
-  describe('species selection', () => {
-    it('updates the selectedSpecies state', () => {
-      const { container, store } = renderComponent();
+  it('updates the selectedSpecies state', () => {
+    const { container, store } = renderComponent();
 
-      const speciesCheckbox = container.querySelector(
-        'tbody tr [data-test-id="checkbox"]'
-      ) as HTMLElement;
+    const speciesCheckbox = container.querySelector(
+      'tbody tr [data-test-id="checkbox"]'
+    ) as HTMLElement;
 
-      userEvent.click(speciesCheckbox);
+    userEvent.click(speciesCheckbox);
 
-      const updatedState = store.getState();
+    const updatedState = store.getState();
 
-      expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
-      expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
-        'homo_sapiens_GCA_000001405_14'
-      );
-    });
+    expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
+    expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
+      speciesList[0]
+    );
   });
 });
