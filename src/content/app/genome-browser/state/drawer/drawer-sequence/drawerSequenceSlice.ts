@@ -16,6 +16,8 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+
 export type SequenceType = 'genomic' | 'cdna' | 'cds' | 'protein';
 
 type SequenceState = {
@@ -100,6 +102,15 @@ const drawerSequenceSlice = createSlice({
       const { genomeId } = action.payload;
       delete state[genomeId];
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(changeDrawerViewForGenome, (state, action) => {
+      const { genomeId, drawerView } = action.payload;
+      if (!drawerView) {
+        // the drawer is closed; resetting the state for this genome
+        delete state[genomeId];
+      }
+    });
   }
 });
 
