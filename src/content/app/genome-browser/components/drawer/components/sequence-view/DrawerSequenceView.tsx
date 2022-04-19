@@ -63,6 +63,8 @@ const DrawerSequenceView = (props: Props) => {
     label: sequenceLabelsMap[sequenceType]
   }));
 
+  const canHaveReverseComplement = selectedSequenceType === 'genomic';
+
   const showHideStyleProps = isExpanded
     ? {
         classNames: { wrapper: styles.showHide }
@@ -86,9 +88,12 @@ const DrawerSequenceView = (props: Props) => {
               isReverseComplement={isReverseComplement}
             />
           )}
-          <div className={styles.asideTop}>
-            <div>blast control</div>
-          </div>
+          {/* The BLAST button will go here when ready
+
+              <div className={styles.asideTop}>
+                BLAST BUTTON HERE!
+              </div>
+          */}
           <div className={styles.asideBottom}>
             <div className={styles.sequenceTypeSelection}>
               <RadioGroup
@@ -98,13 +103,15 @@ const DrawerSequenceView = (props: Props) => {
                 }
                 selectedOption={selectedSequenceType}
               />
-              <div className={styles.reverseComplement}>
-                <Checkbox
-                  label="Reverse complement"
-                  checked={isReverseComplement}
-                  onChange={onReverseComplementChange}
-                />
-              </div>
+              {canHaveReverseComplement && (
+                <div className={styles.reverseComplement}>
+                  <Checkbox
+                    label="Reverse complement"
+                    checked={isReverseComplement}
+                    onChange={onReverseComplementChange}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

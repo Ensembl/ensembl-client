@@ -34,8 +34,9 @@
   height: 100%;
   font-family: $font-family-monospace;
   color: $dark-grey;
-  word-break: break-all;
-  overflow: auto;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: hidden; // no idea why; but the browser creates a horizontal scrollbar otherwise
 }
 
 .asideBottom {
