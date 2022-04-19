@@ -14,33 +14,18 @@
  * limitations under the License.
  */
 
-import { PayloadAction } from '@reduxjs/toolkit';
-import { ThunkAction } from 'redux-thunk';
-import { createSlice } from '@reduxjs/toolkit';
-import { Action } from 'redux';
-import pick from 'lodash/pick';
-
-import browserSidebarModalStorageService from 'src/content/app/genome-browser/components/browser-sidebar-modal/services/browser-sidebar-modal-storage-service';
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-
 import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveFocusObject
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import {
-  getActiveGenomePreviouslyViewedObjects,
-  getActiveBrowserSidebarModal
-} from './browserSidebarModalSelectors';
+  createSlice,
+  type PayloadAction,
+  type Action,
+  type ThunkAction
+} from '@reduxjs/toolkit';
 
-import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getActiveBrowserSidebarModal } from './browserSidebarModalSelectors';
 
-export type PreviouslyViewedObject = {
-  genome_id: string;
-  object_id: string;
-  type: string;
-  label: string | string[];
-};
+import type { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { RootState } from 'src/store';
 
 export enum BrowserSidebarModalView {
   SEARCH = 'search',
@@ -48,18 +33,11 @@ export enum BrowserSidebarModalView {
   BOOKMARKS = 'Previously viewed',
   PERSONAL_DATA = 'Personal data',
   SHARE = 'Share',
-  DOWNLOADS = 'Downlods'
+  DOWNLOADS = 'Downloads'
 }
 
-export type PreviouslyViewedObjects = {
-  [genomeId: string]: PreviouslyViewedObject[];
-};
-
 export type BrowserSidebarModalStateForGenome = Readonly<{
-  isBrowserSidebarModalOpened: boolean;
   browserSidebarModalView: BrowserSidebarModalView | null;
-  bookmarks: PreviouslyViewedObject[];
-  previouslyViewedObjects: PreviouslyViewedObject[];
 }>;
 
 export type BrowserSidebarModalState = Readonly<{
@@ -68,18 +46,8 @@ export type BrowserSidebarModalState = Readonly<{
 
 export const defaultBrowserSidebarModalStateForGenome: BrowserSidebarModalStateForGenome =
   {
-    isBrowserSidebarModalOpened: false,
-    bookmarks: [],
-    previouslyViewedObjects: [],
     browserSidebarModalView: null
   };
-
-export const pickPersistentBrowserSidebarModalProperties = (
-  browserSidebarModal: Partial<BrowserSidebarModalStateForGenome>
-) => {
-  const persistentProperties = ['previouslyViewedObjects'];
-  return pick(browserSidebarModal, persistentProperties);
-};
 
 export const changeBrowserSidebarModalViewForGenome =
   (
@@ -105,79 +73,6 @@ export const changeBrowserSidebarModalViewForGenome =
     );
   };
 
-export const updatePreviouslyViewedObjectsAndSave =
-  (): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    const activeFocusObject = getBrowserActiveFocusObject(state);
-    if (!activeGenomeId || !activeFocusObject) {
-      return;
-    }
-
-    const previouslyViewedObjects = [
-      ...getActiveGenomePreviouslyViewedObjects(state)
-    ];
-
-    const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
-      (entity) => entity.object_id === activeFocusObject.object_id
-    );
-
-    if (isCurrentEntityPreviouslyViewed) {
-      return;
-    }
-
-    const stable_id =
-      activeFocusObject.type === 'gene'
-        ? activeFocusObject.versioned_stable_id || activeFocusObject.stable_id
-        : null;
-
-    const geneSymbol =
-      activeFocusObject.type === 'gene' &&
-      activeFocusObject.label !== activeFocusObject.stable_id
-        ? activeFocusObject.label
-        : null;
-
-    const label =
-      activeFocusObject.type === 'gene' && geneSymbol
-        ? [geneSymbol, stable_id as string]
-        : activeFocusObject.label;
-
-    const newObject = {
-      genome_id: activeFocusObject.genome_id,
-      object_id: activeFocusObject.object_id,
-      type: activeFocusObject.type,
-      label: label
-    };
-
-    const updatedEntitiesArray = [newObject, ...previouslyViewedObjects];
-
-    // Limit the total number of previously viewed objects to 250
-    const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
-
-    browserSidebarModalStorageService.updatePreviouslyViewedObjects({
-      [activeGenomeId]: previouslyViewedObjectsSlice
-    });
-
-    const data = {
-      ...getActiveBrowserSidebarModal(state),
-      previouslyViewedObjects: previouslyViewedObjectsSlice
-    };
-
-    const persistentTrackProperties =
-      pickPersistentBrowserSidebarModalProperties(data);
-    browserStorageService.updateBrowserSidebarModals({
-      [activeGenomeId]: persistentTrackProperties
-    });
-
-    dispatch(
-      updateBrowserSidebarModalForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
 export const openBrowserSidebarModal =
   (
     browserSidebarModalView: BrowserSidebarModalView
@@ -193,7 +88,6 @@ export const openBrowserSidebarModal =
 
     const data = {
       ...getActiveBrowserSidebarModal(state),
-      isBrowserSidebarModalOpened: true,
       browserSidebarModalView
     };
 
@@ -217,7 +111,6 @@ export const closeBrowserSidebarModal =
 
     const data = {
       ...getActiveBrowserSidebarModal(state),
-      isBrowserSidebarModalOpened: false,
       browserSidebarModalView: null
     };
 
@@ -229,23 +122,6 @@ export const closeBrowserSidebarModal =
     );
   };
 
-export const getBrowserSidebarModalStateForGenome = (
-  genomeId: string
-): BrowserSidebarModalStateForGenome => {
-  return genomeId
-    ? {
-        ...defaultBrowserSidebarModalStateForGenome,
-        ...getPersistentBrowserSidebarModalStateForGenome(genomeId)
-      }
-    : defaultBrowserSidebarModalStateForGenome;
-};
-
-export const getPersistentBrowserSidebarModalStateForGenome = (
-  genomeId: string
-): Partial<BrowserSidebarModalStateForGenome> => {
-  return browserStorageService.getBrowserSidebarModals()[genomeId] || {};
-};
-
 const browserSidebarModal = createSlice({
   name: 'genome-browser-sidebar-modal',
   initialState: {} as BrowserSidebarModalState,
@@ -256,8 +132,7 @@ const browserSidebarModal = createSlice({
     ) {
       const { activeGenomeId } = action.payload;
       if (!state[activeGenomeId]) {
-        state[activeGenomeId] =
-          getBrowserSidebarModalStateForGenome(activeGenomeId);
+        state[activeGenomeId] = defaultBrowserSidebarModalStateForGenome;
       }
     },
     updateBrowserSidebarModalForGenome(
@@ -273,17 +148,13 @@ const browserSidebarModal = createSlice({
         ...state[activeGenomeId],
         ...data
       };
-    },
-    deleteGenomeBrowserSidebarModalData(state, action: PayloadAction<string>) {
-      delete state[action.payload];
     }
   }
 });
 
 export const {
   setInitialBrowserSidebarModalDataForGenome,
-  updateBrowserSidebarModalForGenome,
-  deleteGenomeBrowserSidebarModalData
+  updateBrowserSidebarModalForGenome
 } = browserSidebarModal.actions;
 
 export default browserSidebarModal.reducer;

@@ -26,6 +26,8 @@ import Browser from './Browser';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
+import { BrowserSidebarModalView } from './state/browser-sidebar-modal/browserSidebarModalSlice';
+
 jest.mock('./hooks/useBrowserRouting', () => () => ({
   changeGenomeId: jest.fn()
 }));
@@ -41,9 +43,6 @@ jest.mock('./components/browser-image/BrowserImage', () => () => (
 jest.mock('./components/browser-nav/BrowserNavBar', () => () => (
   <div className="browserNavBar">BrowserNavBar</div>
 ));
-jest.mock('./components/track-panel/TrackPanel', () => () => (
-  <div className="trackPanel">TrackPanel</div>
-));
 jest.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
@@ -55,6 +54,9 @@ jest.mock(
   () => () =>
     <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
 );
+jest.mock('./components/track-panel/TrackPanel', () => () => (
+  <div className="trackPanel">TrackPanel</div>
+));
 jest.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
   () => () => <div className="trackPanelTabs">TrackPanelTabs</div>
@@ -62,7 +64,9 @@ jest.mock(
 jest.mock('./components/drawer/Drawer', () => () => (
   <div className="drawer">Drawer</div>
 ));
-
+jest.mock('src/shared/components/in-app-search/InAppSearch', () => () => (
+  <div className="inAppSearch">Genome browser search</div>
+));
 jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 const mockState = createMockBrowserState();
@@ -114,7 +118,11 @@ describe('<Browser />', () => {
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
       container = renderComponent({
-        state: mockState,
+        state: set(
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          null,
+          mockState
+        ),
         url: '/genome-browser?focus=foo'
       }).container;
 
@@ -122,7 +130,37 @@ describe('<Browser />', () => {
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
     });
 
-    describe('BrowserNavBar', () => {
+    it('renders the browser sidebar modal when a modal is selected', () => {
+      const stateWithModalClosed = set(
+        `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+        null,
+        mockState
+      );
+
+      let { container } = renderComponent({
+        state: stateWithModalClosed,
+        url: '/genome-browser?focus=foo'
+      });
+
+      expect(container.querySelector('.title')).toBeNull();
+
+      const stateWithModalOpened = set(
+        `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+        BrowserSidebarModalView.SHARE,
+        mockState
+      );
+
+      container = renderComponent({
+        state: stateWithModalOpened,
+        url: '/genome-browser?focus=foo'
+      }).container;
+
+      expect(container.querySelector('.title')?.innerHTML).toEqual(
+        BrowserSidebarModalView.SHARE
+      );
+    });
+
+    describe('<BrowserNavBar />', () => {
       const stateWithBrowserNavOpen = set(
         `browser.browserNav.browserNavOpenState.${activeGenomeId}`,
         true,
@@ -134,6 +172,7 @@ describe('<Browser />', () => {
           state: mockState,
           url: '/genome-browser?focus=foo'
         });
+
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
         container = renderComponent({

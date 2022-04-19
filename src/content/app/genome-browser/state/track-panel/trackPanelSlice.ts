@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { PayloadAction } from '@reduxjs/toolkit';
-import { ThunkAction } from 'redux-thunk';
-import { createSlice } from '@reduxjs/toolkit';
-import { Action } from 'redux';
+import {
+  createSlice,
+  type PayloadAction,
+  type ThunkAction,
+  type Action
+} from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
-
 import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { closeBrowserSidebarModal } from '../browser-sidebar-modal/browserSidebarModalSlice';
+
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { RootState } from 'src/store';
+
+import type { RootState } from 'src/store';
 
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
@@ -84,11 +88,11 @@ export const selectTrackPanelTab =
       action: 'selected'
     });
 
+    dispatch(closeBrowserSidebarModal());
+
     const data = {
       ...getActiveTrackPanel(getState()),
-      selectedTrackPanelTab,
-      isBrowserSidebarModalOpened: false,
-      browserSidebarModalView: null
+      selectedTrackPanelTab
     };
 
     dispatch(

@@ -23,7 +23,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';

@@ -17,7 +17,7 @@
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { defaultBrowserSidebarModalStateForGenome } from './browserSidebarModalSlice';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getActiveBrowserSidebarModal = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -28,24 +28,7 @@ export const getActiveBrowserSidebarModal = (state: RootState) => {
 };
 
 export const getIsBrowserSidebarModalOpened = (state: RootState) =>
-  getActiveBrowserSidebarModal(state).isBrowserSidebarModalOpened;
+  Boolean(getActiveBrowserSidebarModal(state).browserSidebarModalView);
 
 export const getBrowserSidebarModalView = (state: RootState) =>
   getActiveBrowserSidebarModal(state).browserSidebarModalView;
-
-export const getActiveGenomeBookmarks = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return (
-    (activeGenomeId && getActiveBrowserSidebarModal(state).bookmarks) || []
-  );
-};
-
-export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return (
-    (activeGenomeId &&
-      getActiveBrowserSidebarModal(state).previouslyViewedObjects) ||
-    []
-  );
-};

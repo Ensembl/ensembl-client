@@ -40,7 +40,9 @@ export const TrackPanelTabs = () => {
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isTrackPanelModalOpened = useSelector(getIsBrowserSidebarModalOpened);
+  const isBrowserSidebarModalOpened = useSelector(
+    getIsBrowserSidebarModalOpened
+  );
 
   const dispatch = useDispatch();
 
@@ -66,7 +68,7 @@ export const TrackPanelTabs = () => {
       focusObject?.genome_id &&
       selectedTrackPanelTab === trackSet &&
       !isDrawerOpened &&
-      !isTrackPanelModalOpened;
+      !isBrowserSidebarModalOpened;
 
     return classNames(styles.trackPanelTab, {
       [styles.trackPanelTabActive]: isTrackPanelTabActive,

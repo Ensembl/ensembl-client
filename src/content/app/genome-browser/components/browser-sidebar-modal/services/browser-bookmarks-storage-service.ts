@@ -18,14 +18,14 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+import type { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
   BOOKMARKS = 'browserSidebarModal.bookmarks',
   PREVIOUSLY_VIEWED = 'browserSidebarModal.previouslyViewedObjects'
 }
 
-export class BrowserSidebarModalStorageService {
+export class BrowserBookmarksStorageService {
   private storageService: StorageServiceInterface;
 
   public constructor(storageService: StorageServiceInterface) {
@@ -64,4 +64,4 @@ export class BrowserSidebarModalStorageService {
   }
 }
 
-export default new BrowserSidebarModalStorageService(storageService);
+export default new BrowserBookmarksStorageService(storageService);

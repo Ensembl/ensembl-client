@@ -21,6 +21,7 @@ import browserNav from 'src/content/app/genome-browser/state/browser-nav/browser
 import trackConfig from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import trackPanel from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import browserSidebarModal from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+import browserBookmarks from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import focusObjects from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 export default combineReducers({
@@ -30,5 +31,6 @@ export default combineReducers({
   trackConfig,
   trackPanel,
   browserSidebarModal,
+  browserBookmarks,
   focusObjects
 });

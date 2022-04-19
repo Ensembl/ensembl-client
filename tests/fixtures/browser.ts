@@ -206,16 +206,18 @@ export const createChrLocationValues = () => {
 };
 
 export const createMockBrowserState = () => {
+  const fakeGenomeId = 'fake_genome_id_1';
+
   return {
     browser: {
       browserGeneral: {
-        activeGenomeId: 'fake_genome_id_1',
+        activeGenomeId: fakeGenomeId,
         activeFocusObjectIds: {
-          fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
+          fake_genome_id_1: `${fakeGenomeId}:gene:fake_gene_stable_id_1`
         },
         trackStates: createTrackStates(),
         chrLocations: {
-          fake_genome_id_1: ['13', 32304804, 32384454]
+          [fakeGenomeId]: ['13', 32304804, 32384454]
         },
         actualChrLocations: {},
         regionEditorActive: false,
@@ -245,48 +247,51 @@ export const createMockBrowserState = () => {
         trackConfigNames: createTrackConfigNames()
       },
       trackPanel: {
-        fake_genome_id_1: {
+        [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,
-          isTrackPanelOpened: true
-        }
-      },
-      browserSidebarModal: {
-        fake_genome_id_1: {
-          isBrowserSidebarModalOpened: false,
-          bookmarks: [],
-          previouslyViewedObjects: [
-            {
-              genome_id: 'fake_genome_id_1',
-              object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_2',
-              type: 'gene',
-              label: 'Fake Gene Stable ID 2'
-            }
-          ],
-          browserSidebarModalView: BrowserSidebarModalView.SEARCH,
+          isTrackPanelOpened: true,
           highlightedTrackId: '',
           collapsedTrackIds: []
         }
       },
+      browserSidebarModal: {
+        [fakeGenomeId]: {
+          browserSidebarModalView: BrowserSidebarModalView.SEARCH
+        }
+      },
+      browserBookmarks: {
+        fake_genome_id_1: {
+          bookmarks: [],
+          previouslyViewedObjects: [
+            {
+              genome_id: fakeGenomeId,
+              object_id: `${fakeGenomeId}:gene:fake_gene_stable_id_2`,
+              type: 'gene',
+              label: 'Fake Gene Stable ID 2'
+            }
+          ]
+        }
+      },
       drawer: {
         isDrawerOpened: {
-          fake_genome_id_1: false
+          [fakeGenomeId]: false
         },
         drawerView: {},
         activeDrawerTrackIds: {}
       },
       focusObjects: {
-        'fake_genome_id_1:gene:fake_gene_stable_id_1': {
+        [`${fakeGenomeId}:gene:fake_gene_stable_id_1`]: {
           data: {
             type: 'gene',
-            object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_1',
-            genome_id: 'fake_genome_id_1',
+            object_id: `${fakeGenomeId}:gene:fake_gene_stable_id_1`,
+            genome_id: fakeGenomeId,
             label: 'BRCA2',
             location: {
               chromosome: '13',
               start: 32315086,
               end: 32400268
             },
-            stable_id: 'fake_gene_stable_id',
+            stable_id: 'fake_gene_stable_id_1',
             versioned_stable_id: 'fake_gene_stable_id.17',
             bio_type: 'Protein coding',
             strand: Strand.FORWARD

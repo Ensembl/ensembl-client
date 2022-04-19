@@ -26,6 +26,7 @@ import merge from 'lodash/fp/merge';
 import { BrowserSidebarToolstrip } from './BrowserSidebarToolstrip';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
@@ -49,11 +50,12 @@ const mockState = {
       activeGenomeId: fakeGenomeId
     },
     trackPanel: {
-      isTrackPanelOpened: true
+      [fakeGenomeId]: {
+        isTrackPanelOpened: true
+      }
     },
     browserSidebarModal: {
       [fakeGenomeId]: {
-        isBrowserSidebarModalOpened: true,
         browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
       }
     }
@@ -91,11 +93,11 @@ describe('<BrowserSidebarToolstrip />', () => {
           mockState
         )
       );
-      const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
+      const shareButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === BrowserSidebarModalView.SHARE
       ) as HTMLButtonElement;
 
-      userEvent.click(bookmarksButton);
+      userEvent.click(shareButton);
 
       const toggleBrowserSidebarModalAction = store
         .getActions()
@@ -109,8 +111,7 @@ describe('<BrowserSidebarToolstrip />', () => {
         activeGenomeId: fakeGenomeId,
         data: {
           ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS,
-          isBrowserSidebarModalOpened: true
+          browserSidebarModalView: BrowserSidebarModalView.SHARE
         }
       };
 
@@ -118,11 +119,17 @@ describe('<BrowserSidebarToolstrip />', () => {
     });
 
     it('opens the track panel if it is closed when a button is clicked', () => {
+      jest.spyOn(trackPanelActions, 'toggleTrackPanel');
+
       const newMockState = merge(mockState, {
         browser: {
+          trackPanel: {
+            [fakeGenomeId]: {
+              isTrackPanelOpened: false
+            }
+          },
           browserSidebarModal: {
             [fakeGenomeId]: {
-              isBrowserSidebarModalOpened: false,
               browserSidebarModalView: null
             }
           }
@@ -148,10 +155,11 @@ describe('<BrowserSidebarToolstrip />', () => {
         activeGenomeId: fakeGenomeId,
         data: {
           ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          isBrowserSidebarModalOpened: true
+          browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
         }
       };
 
+      expect(trackPanelActions.toggleTrackPanel).toHaveBeenCalledWith(true);
       expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
@@ -175,7 +183,6 @@ describe('<BrowserSidebarToolstrip />', () => {
         activeGenomeId: fakeGenomeId,
         data: {
           ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          isBrowserSidebarModalOpened: false,
           browserSidebarModalView: null
         }
       };
@@ -185,6 +192,7 @@ describe('<BrowserSidebarToolstrip />', () => {
 
     it('closes drawer view when the modal view changes', () => {
       jest.spyOn(drawerActions, 'closeDrawer');
+
       const { container } = renderComponent(
         set(`browser.drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
       );

@@ -27,7 +27,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 

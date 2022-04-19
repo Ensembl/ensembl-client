@@ -28,9 +28,9 @@ import {
   TrackPanelStateForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import {
-  BrowserSidebarModalState,
-  BrowserSidebarModalStateForGenome
-} from '../state/browser-sidebar-modal/browserSidebarModalSlice';
+  BrowserBookmarksState,
+  BrowserBookmarksStateForGenome
+} from '../state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
   ACTIVE_GENOME_ID = 'browser.activeGenomeId',
@@ -39,7 +39,7 @@ export enum StorageKeys {
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
   TRACK_PANELS = 'browser.trackPanels',
-  SIDEBAR_MODAL = 'browser.sidebarModal'
+  BOOKMARKS = 'browser.bookmarks'
 }
 
 export class BrowserStorageService {
@@ -104,16 +104,16 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
 
-  public getBrowserSidebarModals(): {
-    [genomeId: string]: Partial<BrowserSidebarModalState>;
+  public getBrowserBookmarks(): {
+    [genomeId: string]: Partial<BrowserBookmarksState>;
   } {
-    return this.storageService.get(StorageKeys.SIDEBAR_MODAL) || {};
+    return this.storageService.get(StorageKeys.BOOKMARKS) || {};
   }
 
-  public updateBrowserSidebarModals(browserSidebarModals: {
-    [genomeId: string]: Partial<BrowserSidebarModalStateForGenome> | undefined;
+  public updateBrowserBookmarks(browserBookmarks: {
+    [genomeId: string]: Partial<BrowserBookmarksStateForGenome> | undefined;
   }): void {
-    this.storageService.update(StorageKeys.SIDEBAR_MODAL, browserSidebarModals);
+    this.storageService.update(StorageKeys.BOOKMARKS, browserBookmarks);
   }
 
   public deleteGenome(genomeIdToDelete: string): void {
@@ -131,7 +131,7 @@ export class BrowserStorageService {
     this.updateTrackPanels({
       [genomeIdToDelete]: undefined
     });
-    this.updateBrowserSidebarModals({
+    this.updateBrowserBookmarks({
       [genomeIdToDelete]: undefined
     });
     this.saveTrackStates({

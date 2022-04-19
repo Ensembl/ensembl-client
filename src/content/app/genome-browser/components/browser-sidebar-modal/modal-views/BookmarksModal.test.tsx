@@ -28,7 +28,7 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 
 import { BookmarksModal } from './BookmarksModal';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -88,8 +88,11 @@ const mockState = {
     },
     browserSidebarModal: {
       [genomeId]: {
-        isBrowserSidebarModalOpened: true,
-        browserSidebarModalView: '',
+        browserSidebarModalView: null
+      }
+    },
+    browserBookmarks: {
+      [genomeId]: {
         previouslyViewedObjects
       }
     }
@@ -175,7 +178,7 @@ describe('<BookmarksModal />', () => {
   it('shows link to view more only when there are more than 20 objects', () => {
     let wrapper = renderComponent(
       set(
-        `browser.browserSidebarModal.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
         times(20, () => createRandomPreviouslyViewedObject()),
         mockState
       )
@@ -188,7 +191,7 @@ describe('<BookmarksModal />', () => {
     // Add 21 links to see if ellipsis is shown
     wrapper = renderComponent(
       set(
-        `browser.browserSidebarModal.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
         times(21, () => createRandomPreviouslyViewedObject()),
         mockState
       )
@@ -202,7 +205,7 @@ describe('<BookmarksModal />', () => {
   it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
     const { container } = renderComponent(
       set(
-        `browser.browserSidebarModal.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
         times(21, () => createRandomPreviouslyViewedObject()),
         mockState
       )

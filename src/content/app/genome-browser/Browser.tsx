@@ -56,7 +56,9 @@ export const Browser = () => {
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isTrackPanelModalOpened = useSelector(getIsBrowserSidebarModalOpened);
+  const isBrowserSidebarModalOpened = useSelector(
+    getIsBrowserSidebarModalOpened
+  );
   const viewportWidth = useSelector(getBreakpointWidth);
 
   const { search } = useLocation(); // from document.location provided by the router
@@ -93,7 +95,7 @@ export const Browser = () => {
     </>
   );
 
-  const SideBarContent = isTrackPanelModalOpened ? (
+  const SideBarContent = isBrowserSidebarModalOpened ? (
     <BrowserSidebarModal />
   ) : (
     <TrackPanel />
