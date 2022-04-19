@@ -104,16 +104,14 @@ afterAll(() => server.close());
 
 describe('blast epics', () => {
   let store: ReturnType<typeof buildReduxStore>['store'];
-  let shutdownTestEpic: ReturnType<typeof buildReduxStore>['shutdownEpic'];
+  let shutdownEpic: ReturnType<typeof buildReduxStore>['shutdownEpic'];
 
   beforeEach(() => {
-    const { store: _store, shutdownEpic } = buildReduxStore();
-    store = _store;
-    shutdownTestEpic = shutdownEpic;
+    ({ store, shutdownEpic } = buildReduxStore());
   });
 
   afterEach(() => {
-    shutdownTestEpic();
+    shutdownEpic();
     jest.clearAllMocks();
   });
 
