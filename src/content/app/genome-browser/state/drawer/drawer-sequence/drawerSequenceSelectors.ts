@@ -36,8 +36,9 @@ export const isDrawerSequenceReverseComplement = (
   genomeId: string,
   featureId: string
 ) => {
-  return (
-    state.browser.drawer.sequence[genomeId]?.features?.[featureId]
-      ?.isReverseComplement ?? false
-  );
+  const { isReverseComplement = false, sequenceType = 'genomic' } =
+    state.browser.drawer.sequence[genomeId]?.features?.[featureId] ?? {};
+
+  // reverse complement option is only meaningful for genomic sequences
+  return sequenceType === 'genomic' && isReverseComplement;
 };
