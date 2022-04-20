@@ -72,3 +72,16 @@
   background-color: $black;
   border-radius: 30px;
 }
+
+.loadingContainer,
+.loadFailureContainer {
+  grid-area: main-bottom;
+  display: flex;
+  justify-content: center;
+  padding-top: 110px;
+  column-gap: 16px;
+}
+
+.errorMessage {
+  color: $red;
+}
