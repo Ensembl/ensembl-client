@@ -25,7 +25,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
-import styles from './SequenceView.scss';
+import styles from './DrawerSequenceView.scss';
 
 const sequenceLabelsMap: Record<SequenceType, string> = {
   genomic: 'Genomic sequence',

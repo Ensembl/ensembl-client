@@ -56,10 +56,9 @@
 }
 
 .copyLozenge {
-  display: inline-block;
+  display: flex;
   height: 18px;
   padding: 0 14px;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
