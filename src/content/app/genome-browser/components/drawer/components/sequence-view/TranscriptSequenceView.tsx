@@ -71,7 +71,8 @@ const TranscriptSequenceView = (props: Props) => {
     : nonCodingTranscriptSequenceTypes;
 
   const { data: sequence } = useRefgetSequenceQuery(
-    getSequenceQueryParams(transcript, sequenceType)
+    getSequenceQueryParams(transcript, sequenceType),
+    { skip: !isExpanded }
   );
 
   return (
@@ -103,12 +104,12 @@ const getSequenceQueryParams = (
   const {
     strand: { code: strand }
   } = transcript.slice;
-  queryParams.strand = strand;
 
   if (sequenceType === 'genomic') {
     queryParams.checksum = transcript.slice.region.sequence.checksum;
     queryParams.start = transcript.slice.location.start;
     queryParams.end = transcript.slice.location.end;
+    queryParams.strand = strand;
   } else if (sequenceType === 'cdna') {
     queryParams.checksum = transcript.product_generating_contexts[0].cdna
       ?.sequence.checksum as string; // FIXME: is cdna really nullable?

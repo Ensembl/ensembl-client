@@ -57,12 +57,15 @@ export const GeneSequenceView = (props: Props) => {
     strand: { code: strand }
   } = gene.slice;
 
-  const { data: sequence } = useRefgetSequenceQuery({
-    checksum,
-    start,
-    end,
-    strand
-  });
+  const { data: sequence } = useRefgetSequenceQuery(
+    {
+      checksum,
+      start,
+      end,
+      strand
+    },
+    { skip: !isExpanded }
+  );
 
   return (
     <DrawerSequenceView
