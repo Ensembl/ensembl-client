@@ -40,14 +40,14 @@ export const GeneSequenceView = (props: Props) => {
   const { gene } = props;
 
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const transcriptId = buildGeneId(genomeId, gene.stable_id);
+  const geneId = buildGeneId(genomeId, gene.stable_id);
 
   const {
     isExpanded,
     toggleSequenceVisibility,
     isReverseComplement,
     toggleReverseComplement
-  } = useDrawerSequenceSettings({ genomeId, featureId: transcriptId });
+  } = useDrawerSequenceSettings({ genomeId, featureId: geneId });
 
   const {
     region: {

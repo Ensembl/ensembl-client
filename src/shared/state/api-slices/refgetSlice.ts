@@ -48,10 +48,6 @@ const refgetApiSlice = restApiSlice.injectEndpoints({
 
         return {
           url: `${config.refgetBaseUrl}/sequence/${checksum}${queryString}`,
-          // headers: {
-          //   'Accept': 'text/plain',
-          //   'Content-type': 'text/plain'
-          // },
           responseHandler: 'text'
         };
       },
