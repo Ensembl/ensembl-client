@@ -21,7 +21,8 @@ import type { RootState } from 'src/store';
 
 export const getActiveDrawer = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeDrawer = activeGenomeId && state.browser.drawer[activeGenomeId];
+  const activeDrawer =
+    activeGenomeId && state.browser.drawer.general[activeGenomeId];
 
   return activeDrawer || defaultDrawerStateForGenome;
 };
