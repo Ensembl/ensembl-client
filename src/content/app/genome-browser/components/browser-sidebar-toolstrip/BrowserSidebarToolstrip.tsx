@@ -86,7 +86,7 @@ export const BrowserSidebarToolstrip = () => {
     <>
       <ImageButton
         className={layoutStyles.sidebarIcon}
-        status={getViewIconStatus('search')}
+        status={getViewIconStatus(BrowserSidebarModalView.SEARCH)}
         description="Search"
         onClick={() => toggleModalView(BrowserSidebarModalView.SEARCH)}
         image={SearchIcon}
@@ -100,7 +100,7 @@ export const BrowserSidebarToolstrip = () => {
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
-        status={getViewIconStatus('bookmarks')}
+        status={getViewIconStatus(BrowserSidebarModalView.BOOKMARKS)}
         description="Previously viewed"
         onClick={() => toggleModalView(BrowserSidebarModalView.BOOKMARKS)}
         image={BookmarkIcon}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { BrowserStorageService, StorageKeys } from './browser-storage-service';
+import { BrowserStorageService, StorageKeys } from './browserStorageService';
 import { Status } from 'src/shared/types/status';
-import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 const mockStorageService = {
   get: jest.fn(),

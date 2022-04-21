@@ -15,20 +15,15 @@
  */
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { defaultBrowserSidebarModalStateForGenome } from './browserSidebarModalSlice';
 
 import type { RootState } from 'src/store';
 
-export const getActiveBrowserSidebarModal = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeBrowserSidebarModal =
-    activeGenomeId && state.browser.browserSidebarModal[activeGenomeId];
-
-  return activeBrowserSidebarModal || defaultBrowserSidebarModalStateForGenome;
-};
-
 export const getIsBrowserSidebarModalOpened = (state: RootState) =>
-  Boolean(getActiveBrowserSidebarModal(state).browserSidebarModalView);
+  Boolean(getBrowserSidebarModalView(state));
 
-export const getBrowserSidebarModalView = (state: RootState) =>
-  getActiveBrowserSidebarModal(state).browserSidebarModalView;
+export const getBrowserSidebarModalView = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.browser.browserSidebarModal[activeGenomeId]?.browserSidebarModalView
+    : null;
+};

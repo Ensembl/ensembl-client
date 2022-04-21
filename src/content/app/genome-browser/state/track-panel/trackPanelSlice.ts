@@ -21,7 +21,7 @@ import {
   type Action
 } from '@reduxjs/toolkit';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';

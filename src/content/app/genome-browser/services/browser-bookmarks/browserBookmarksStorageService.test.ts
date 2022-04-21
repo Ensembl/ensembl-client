@@ -17,7 +17,7 @@
 import {
   BrowserBookmarksStorageService,
   StorageKeys
-} from './browser-bookmarks-storage-service';
+} from './browserBookmarksStorageService';
 
 const mockStorageService = {
   get: jest.fn(),

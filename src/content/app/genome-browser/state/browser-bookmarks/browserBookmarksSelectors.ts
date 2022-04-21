@@ -15,31 +15,22 @@
  */
 
 import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
-import { defaultBrowserBookmarksStateForGenome } from './browserBookmarksSlice';
 
 import type { RootState } from 'src/store';
 
-export const getActiveGenomeBrowserBookmarks = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeGenomeBrowserBookmarks =
-    activeGenomeId && state.browser.browserBookmarks[activeGenomeId];
-
-  return activeGenomeBrowserBookmarks || defaultBrowserBookmarksStateForGenome;
-};
-
 export const getActiveGenomeBookmarks = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return (
-    (activeGenomeId && getActiveGenomeBrowserBookmarks(state).bookmarks) || []
-  );
+
+  return activeGenomeId
+    ? state.browser.browserBookmarks[activeGenomeId]?.bookmarks ?? []
+    : [];
 };
 
 export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
-  return (
-    (activeGenomeId &&
-      getActiveGenomeBrowserBookmarks(state).previouslyViewedObjects) ||
-    []
-  );
+  return activeGenomeId
+    ? state.browser.browserBookmarks[activeGenomeId]?.previouslyViewedObjects ??
+        []
+    : [];
 };

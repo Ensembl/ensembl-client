@@ -15,19 +15,19 @@
  */
 
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
-import {
+import type {
   BrowserTrackStates,
   GenomeTrackStates
 } from '../components/track-panel/trackPanelConfig';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import {
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type {
   TrackPanelState,
   TrackPanelStateForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import {
+import type {
   BrowserBookmarksState,
   BrowserBookmarksStateForGenome
 } from '../state/browser-bookmarks/browserBookmarksSlice';

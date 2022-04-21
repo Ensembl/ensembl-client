@@ -26,13 +26,10 @@ import {
   getBrowserActiveFocusObject,
   getBrowserActiveGenomeId
 } from '../browser-general/browserGeneralSelectors';
-import {
-  getActiveGenomeBrowserBookmarks,
-  getActiveGenomePreviouslyViewedObjects
-} from './browserBookmarksSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from './browserBookmarksSelectors';
 
-import browserBookmarksStorageService from 'src/content/app/genome-browser/components/browser-sidebar-modal/services/browser-bookmarks-storage-service';
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 
 import type { RootState } from 'src/store';
 import type { ParsedUrlPayload } from '../browser-general/browserGeneralSlice';
@@ -131,7 +128,7 @@ export const updatePreviouslyViewedObjectsAndSave =
     });
 
     const data = {
-      ...getActiveGenomeBrowserBookmarks(state),
+      ...state.browser.browserBookmarks[activeGenomeId],
       previouslyViewedObjects: previouslyViewedObjectsSlice
     };
 

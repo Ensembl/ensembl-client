@@ -24,8 +24,8 @@ import {
 import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import trackPanelStorageService from 'src/content/app/genome-browser/components/browser-sidebar-modal/services/browser-bookmarks-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -189,7 +189,7 @@ export const deleteSpeciesInGenomeBrowser = (
     dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
 
     browserStorageService.deleteGenome(genomeIdToRemove);
-    trackPanelStorageService.deleteGenome(genomeIdToRemove);
+    browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
   };
 };
 

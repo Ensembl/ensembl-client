@@ -22,9 +22,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getActiveBrowserSidebarModal } from './browserSidebarModalSelectors';
 
-import type { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RootState } from 'src/store';
 
 export enum BrowserSidebarModalView {
@@ -54,6 +52,7 @@ export const changeBrowserSidebarModalViewForGenome =
     browserSidebarModalView: BrowserSidebarModalView
   ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
+    const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {
@@ -61,7 +60,7 @@ export const changeBrowserSidebarModalViewForGenome =
     }
 
     const data = {
-      ...getActiveBrowserSidebarModal(getState()),
+      ...state.browser.browserSidebarModal[activeGenomeId],
       browserSidebarModalView
     };
 
@@ -79,7 +78,6 @@ export const openBrowserSidebarModal =
   ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
-
     const activeGenomeId = getBrowserActiveGenomeId(state);
 
     if (!activeGenomeId) {
@@ -87,7 +85,7 @@ export const openBrowserSidebarModal =
     }
 
     const data = {
-      ...getActiveBrowserSidebarModal(state),
+      ...state.browser.browserSidebarModal[activeGenomeId],
       browserSidebarModalView
     };
 
@@ -110,7 +108,7 @@ export const closeBrowserSidebarModal =
     }
 
     const data = {
-      ...getActiveBrowserSidebarModal(state),
+      ...state.browser.browserSidebarModal[activeGenomeId],
       browserSidebarModalView: null
     };
 
@@ -126,15 +124,6 @@ const browserSidebarModal = createSlice({
   name: 'genome-browser-sidebar-modal',
   initialState: {} as BrowserSidebarModalState,
   reducers: {
-    setInitialBrowserSidebarModalDataForGenome(
-      state,
-      action: PayloadAction<ParsedUrlPayload>
-    ) {
-      const { activeGenomeId } = action.payload;
-      if (!state[activeGenomeId]) {
-        state[activeGenomeId] = defaultBrowserSidebarModalStateForGenome;
-      }
-    },
     updateBrowserSidebarModalForGenome(
       state,
       action: PayloadAction<{
@@ -152,9 +141,7 @@ const browserSidebarModal = createSlice({
   }
 });
 
-export const {
-  setInitialBrowserSidebarModalDataForGenome,
-  updateBrowserSidebarModalForGenome
-} = browserSidebarModal.actions;
+export const { updateBrowserSidebarModalForGenome } =
+  browserSidebarModal.actions;
 
 export default browserSidebarModal.reducer;

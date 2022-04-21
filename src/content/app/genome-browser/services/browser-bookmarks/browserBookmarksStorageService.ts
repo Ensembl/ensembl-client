@@ -15,14 +15,14 @@
  */
 
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
 
 import type { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
-  BOOKMARKS = 'browserSidebarModal.bookmarks',
-  PREVIOUSLY_VIEWED = 'browserSidebarModal.previouslyViewedObjects'
+  BOOKMARKS = 'genomeBrowser.bookmarks',
+  PREVIOUSLY_VIEWED = 'genomeBrowser.previouslyViewedObjects'
 }
 
 export class BrowserBookmarksStorageService {
