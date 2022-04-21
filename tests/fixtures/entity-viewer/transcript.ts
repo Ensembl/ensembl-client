@@ -22,20 +22,29 @@ import { createProduct } from './product';
 import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { Exon, SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
-import { Slice } from 'src/shared/types/thoas/slice';
-import { FullCDS } from 'src/shared/types/thoas/cds';
-import { CDNA } from 'src/shared/types/thoas/cdna';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { ProductType } from 'src/shared/types/thoas/product';
-import { ExternalReference } from 'src/shared/types/thoas/externalReference';
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { FullTranscript } from 'src/shared/types/thoas/transcript';
+import type {
+  Exon,
+  SplicedExon,
+  PhasedExon
+} from 'src/shared/types/thoas/exon';
+import type { Slice } from 'src/shared/types/thoas/slice';
+import type { FullCDS } from 'src/shared/types/thoas/cds';
+import type { CDNA } from 'src/shared/types/thoas/cdna';
+import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { ProductType, type Product } from 'src/shared/types/thoas/product';
+import type { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+
+type CommonTranscriptFields = Omit<
+  FullTranscript,
+  'gene' | 'product_generating_contexts'
+>;
 
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
-  'cds'
-> & { cds: FullCDS };
+  'cds' | 'product'
+> & { cds: FullCDS; product: Product };
 
 export type ProteinCodingTranscript = Omit<
   Omit<FullTranscript, 'gene'>,
@@ -44,9 +53,19 @@ export type ProteinCodingTranscript = Omit<
   product_generating_contexts: ProteinCodingProductGeneratingContext[];
 };
 
-export const createTranscript = (
-  fragment: Partial<ProteinCodingTranscript> = {}
-): ProteinCodingTranscript => {
+type NonCodingProductGeneratingContext = Omit<
+  FullProductGeneratingContext,
+  'cds' | 'product'
+> & { cds: null; product: null };
+
+export type NonCodingTranscript = Omit<
+  Omit<FullTranscript, 'gene'>,
+  'product_generating_contexts'
+> & {
+  product_generating_contexts: NonCodingProductGeneratingContext[];
+};
+
+const createCommonTranscriptFields = (): CommonTranscriptFields => {
   const transcriptSlice = createSlice();
 
   const unversionedStableId = faker.datatype.uuid();
@@ -69,10 +88,36 @@ export const createTranscript = (
       length: transcriptSlice.location.length
     },
     spliced_exons: createSplicedExons(transcriptSlice, exons),
+    metadata: createTranscriptMetadata()
+  };
+};
+
+export const createNonCodingTranscript = (
+  fragment: Partial<NonCodingTranscript> = {}
+): NonCodingTranscript => {
+  const transcript = createCommonTranscriptFields();
+  const productGeneratingContext = createNonCodingProductGeneratingContext(
+    transcript.slice
+  );
+
+  return {
+    ...transcript,
+    product_generating_contexts: [productGeneratingContext],
+    ...fragment
+  };
+};
+
+export const createProteinCodingTranscript = (
+  fragment: Partial<ProteinCodingTranscript> = {}
+): ProteinCodingTranscript => {
+  const transcript = createCommonTranscriptFields();
+  const exons = transcript.spliced_exons.map(({ exon }) => exon);
+
+  return {
+    ...transcript,
     product_generating_contexts: [
-      createProductGeneratingContext(transcriptSlice, exons)
+      createProductGeneratingContext(transcript.slice, exons)
     ],
-    metadata: createTranscriptMetadata(),
     ...fragment
   };
 };
@@ -226,5 +271,20 @@ const createProductGeneratingContext = (
     product: createProduct({
       length: Math.floor(transcriptSlice.location.length / 3)
     })
+  };
+};
+
+const createNonCodingProductGeneratingContext = (
+  transcriptSlice: Slice
+): NonCodingProductGeneratingContext => {
+  return {
+    product_type: 'rna' as unknown as ProductType, //Thoas has not yet defined product_type for non_coding transcript
+    default: true,
+    cds: null,
+    five_prime_utr: null,
+    three_prime_utr: null,
+    cdna: createCDNA(transcriptSlice),
+    phased_exons: [],
+    product: null
   };
 };

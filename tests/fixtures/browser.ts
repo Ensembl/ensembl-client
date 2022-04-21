@@ -273,11 +273,9 @@ export const createMockBrowserState = () => {
         }
       },
       drawer: {
-        isDrawerOpened: {
-          [fakeGenomeId]: false
-        },
-        drawerView: {},
-        activeDrawerTrackIds: {}
+        general: {
+          drawerView: {}
+        }
       },
       focusObjects: {
         [`${fakeGenomeId}:gene:fake_gene_stable_id_1`]: {

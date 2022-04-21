@@ -54,6 +54,14 @@ export const transcriptSummaryQuery = gql`
         default
         cds {
           protein_length
+          sequence {
+            checksum
+          }
+        }
+        cdna {
+          sequence {
+            checksum
+          }
         }
         phased_exons {
           start_phase
@@ -71,6 +79,9 @@ export const transcriptSummaryQuery = gql`
               id
             }
           }
+          sequence {
+            checksum
+          }
         }
       }
       slice {
@@ -84,6 +95,9 @@ export const transcriptSummaryQuery = gql`
         }
         region {
           name
+          sequence {
+            checksum
+          }
         }
       }
       metadata {
@@ -157,15 +171,33 @@ type ProductGeneratingContextOnSummaryTranscript = Pick<
   FullProductGeneratingContext,
   'product_type' | 'default'
 > & {
-  cds: Pick<
-    NonNullable<FullProductGeneratingContext['cds']>,
-    'protein_length'
+  cds:
+    | (Pick<
+        NonNullable<FullProductGeneratingContext['cds']>,
+        'protein_length'
+      > &
+        Pick2<
+          NonNullable<FullProductGeneratingContext['cds']>,
+          'sequence',
+          'checksum'
+        >)
+    | null;
+  cdna: Pick2<
+    NonNullable<FullProductGeneratingContext['cdna']>,
+    'sequence',
+    'checksum'
   > | null;
   phased_exons: PhasedExonOfDefaultTranscript[];
-  product: {
-    stable_id: string;
-    external_references: RequestedExternalReference[];
-  } | null;
+  product:
+    | ({
+        stable_id: string;
+        external_references: RequestedExternalReference[];
+      } & Pick2<
+        NonNullable<FullProductGeneratingContext['product']>,
+        'sequence',
+        'checksum'
+      >)
+    | null;
 };
 
 type SummaryTranscript = Pick<
@@ -173,6 +205,7 @@ type SummaryTranscript = Pick<
   'stable_id' | 'unversioned_stable_id'
 > &
   Pick3<FullTranscript, 'slice', 'strand', 'code'> &
+  Pick4<FullTranscript, 'slice', 'region', 'sequence', 'checksum'> &
   Pick3<FullTranscript, 'slice', 'location', 'length' | 'start' | 'end'> &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     metadata: SummaryTranscriptMetadata;

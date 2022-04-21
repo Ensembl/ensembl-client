@@ -34,12 +34,19 @@ type BlastFormSettings = {
   parameters: Partial<Record<BlastParameterName, string>>;
 };
 
+export type Species = {
+  genome_id: string;
+  common_name: string | null;
+  scientific_name: string;
+  assembly_name: string;
+};
+
 export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
   hasUncommittedSequence: boolean;
-  selectedSpecies: string[];
+  selectedSpecies: Species[];
   settings: BlastFormSettings;
 };
 
@@ -101,14 +108,14 @@ const blastFormSlice = createSlice({
       const { sequences } = action.payload;
       state.sequences = sequences;
     },
-    addSelectedSpecies(state, action: PayloadAction<{ genomeId: string }>) {
-      const { genomeId } = action.payload;
-      state.selectedSpecies.push(genomeId);
+    addSelectedSpecies(state, action: PayloadAction<Species>) {
+      const species = action.payload;
+      state.selectedSpecies.push(species);
     },
-    removeSelectedSpecies(state, action: PayloadAction<{ genomeId: string }>) {
-      const { genomeId } = action.payload;
+    removeSelectedSpecies(state, action: PayloadAction<string>) {
+      const genomeId = action.payload;
       state.selectedSpecies = state.selectedSpecies.filter(
-        (item) => item !== genomeId
+        (species) => species.genome_id !== genomeId
       );
     },
     clearSelectedSpecies(state) {

@@ -32,7 +32,21 @@ const sequences = [
   }
 ];
 
-const selectedSpecies = ['human', 'wheat'];
+const selectedHuman = {
+  genome_id: 'human-genome-id',
+  common_name: 'Human',
+  scientific_name: 'Homo sapiens',
+  assembly_name: 'GRCh38'
+};
+
+const selectedMouse = {
+  genome_id: 'mouse-genome-id',
+  common_name: 'Mouse',
+  scientific_name: 'Mus musculus',
+  assembly_name: 'GRCm39'
+};
+
+const selectedSpecies = [selectedHuman, selectedMouse];
 const jobName = faker.lorem.words();
 const database = faker.lorem.word();
 const blastParameters = {
@@ -65,7 +79,7 @@ const mockState = merge({}, initialState, {
 });
 
 const expectedPayload = {
-  genomeIds: selectedSpecies,
+  species: selectedSpecies,
   querySequences: sequences.map((seq) => toFasta(seq)),
   parameters: {
     title: jobName,

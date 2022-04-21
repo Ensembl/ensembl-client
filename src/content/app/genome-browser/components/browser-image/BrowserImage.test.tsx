@@ -18,6 +18,7 @@ import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
@@ -64,9 +65,11 @@ let store: ReturnType<typeof mockStore>;
 const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
-    <Provider store={store}>
-      <BrowserImage />
-    </Provider>
+    <MemoryRouter>
+      <Provider store={store}>
+        <BrowserImage />
+      </Provider>
+    </MemoryRouter>
   );
 };
 

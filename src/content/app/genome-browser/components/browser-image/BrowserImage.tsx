@@ -15,15 +15,11 @@
  */
 
 import React, { useRef, useEffect, memo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
-import {
-  BrowserCurrentLocationUpdateAction,
-  BrowserTargetLocationUpdateAction,
-  IncomingActionType
-} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserPosition from 'src/content/app/genome-browser/hooks/useGenomeBrowserPosition';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/genome-browser/components/zmenu';
@@ -36,11 +32,6 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import {
-  updateActualChrLocation,
-  ChrLocation,
-  setChrLocation
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import styles from './BrowserImage.scss';
@@ -51,45 +42,12 @@ export const BrowserImage = () => {
   const { activateGenomeBrowser, clearGenomeBrowser, genomeBrowser } =
     useGenomeBrowser();
 
+  useGenomeBrowserPosition();
+
   const isNavbarOpen = useSelector(getBrowserNavOpenState);
   const isRegionEditorActive = useSelector(getRegionEditorActive);
   const isRegionFieldActive = useSelector(getRegionFieldActive);
   const isDisabled = isRegionEditorActive || isRegionFieldActive;
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const positionUpdate = (
-      action:
-        | BrowserCurrentLocationUpdateAction
-        | BrowserTargetLocationUpdateAction
-    ) => {
-      if (action.type === IncomingActionType.CURRENT_POSITION) {
-        const { stick, start, end } = action.payload;
-        const chromosome = stick.split(':')[1];
-        dispatch(updateActualChrLocation([chromosome, start, end]));
-      } else if (action.type === IncomingActionType.TARGET_POSITION) {
-        const { stick, start, end } = action.payload;
-        const chromosome = stick.split(':')[1];
-        const chrLocation = [chromosome, start, end] as ChrLocation;
-        dispatch(setChrLocation(chrLocation));
-      }
-    };
-
-    const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
-      IncomingActionType.CURRENT_POSITION,
-      positionUpdate
-    );
-    const subscriptionToTargetPotitionMessages = genomeBrowser?.subscribe(
-      IncomingActionType.TARGET_POSITION,
-      positionUpdate
-    );
-
-    return () => {
-      subscriptionToActualPotitionMessages?.unsubscribe();
-      subscriptionToTargetPotitionMessages?.unsubscribe();
-    };
-  }, [genomeBrowser]);
 
   useEffect(() => {
     if (!genomeBrowser) {

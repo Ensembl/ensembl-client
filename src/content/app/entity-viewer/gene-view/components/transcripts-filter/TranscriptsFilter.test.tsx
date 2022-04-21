@@ -23,7 +23,10 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { Status } from 'src/shared/types/status';
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import {
+  createProteinCodingTranscript,
+  createNonCodingTranscript
+} from 'tests/fixtures/entity-viewer/transcript';
 import TranscriptsFilter from './TranscriptsFilter';
 
 jest.mock(
@@ -63,13 +66,6 @@ const mockState = {
 };
 
 const mockStore = configureMockStore([thunk]);
-
-const createProteinCodingTranscript = () => createTranscript();
-const createNonCodingTranscript = () => {
-  const transcript = createTranscript();
-  transcript.product_generating_contexts = [];
-  return transcript;
-};
 
 const proteinCodingTranscript1 = createProteinCodingTranscript();
 const proteinCodingTranscript2 = createProteinCodingTranscript();
