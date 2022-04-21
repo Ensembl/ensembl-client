@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -53,10 +53,21 @@ const useGenomeBrowserPosition = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeFocusId = useSelector(getBrowserActiveFocusObjectId);
 
+  // keep ids in the ref to avoid them turning into stale closures
+  // by the time to use them inside onBrowserLocationChange
+  const idRef = useRef({
+    activeGenomeId,
+    activeFocusId
+  });
+
   const { genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    idRef.current = { activeGenomeId, activeFocusId };
+  }, [activeGenomeId, activeFocusId]);
 
   useEffect(() => {
     const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
@@ -79,6 +90,7 @@ const useGenomeBrowserPosition = () => {
       | BrowserCurrentLocationUpdateAction
       | BrowserTargetLocationUpdateAction
   ) => {
+    const { activeGenomeId, activeFocusId } = idRef.current;
     const { stick, start, end } = action.payload;
     const chromosome = stick.split(':')[1];
 
