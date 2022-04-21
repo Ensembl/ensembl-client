@@ -58,7 +58,7 @@ export const GeneSequenceView = (props: Props) => {
   } = gene.slice;
 
   const {
-    data: sequence,
+    currentData: sequence,
     isError,
     isFetching,
     refetch

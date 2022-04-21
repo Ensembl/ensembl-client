@@ -71,7 +71,7 @@ const TranscriptSequenceView = (props: Props) => {
     : nonCodingTranscriptSequenceTypes;
 
   const {
-    data: sequence,
+    currentData: sequence,
     isError,
     isFetching,
     refetch
