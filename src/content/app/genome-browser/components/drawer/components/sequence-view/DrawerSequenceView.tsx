@@ -144,7 +144,16 @@ const Sequence = (props: {
         </span>
         <Copy value={displaySequence} />
       </div>
-      <div className={styles.sequence}>{displaySequence}</div>
+
+      {/*
+        NOTE: the dangerouslySetInnerHTML on the line below shouldn't be necessary;
+        but for some reason, Chrome has problems wrapping the sequence
+        if it is just passed to the div as a child.
+      */}
+      <div
+        className={styles.sequence}
+        dangerouslySetInnerHTML={{ __html: displaySequence }}
+      />
     </>
   );
 };
