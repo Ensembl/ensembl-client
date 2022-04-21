@@ -5,7 +5,7 @@
   grid-template-areas:
     'main-top aside-top'
     'main-bottom aside-bottom';
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 60ch 1fr;
   grid-template-rows: 20px minmax(200px, 400px);
   grid-column-gap: 24px;
   align-items: start;
@@ -30,7 +30,6 @@
 .sequence {
   grid-area: main-bottom;
   margin-top: 10px;
-  width: 60ch;
   height: 100%;
   font-family: $font-family-monospace;
   color: $dark-grey;
