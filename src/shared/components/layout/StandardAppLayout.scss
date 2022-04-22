@@ -151,4 +151,5 @@ $drawerWindowWidth: 45px;
   position: absolute;
   right: calc(#{$drawerWindowWidth} + 10px);
   top: 10px;
+  z-index: 2;
 }
