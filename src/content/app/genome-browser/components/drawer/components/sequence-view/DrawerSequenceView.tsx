@@ -22,6 +22,8 @@ import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 
@@ -39,6 +41,9 @@ type Props = {
   isExpanded: boolean;
   toggleSequenceVisibility: () => void;
   sequence?: string;
+  isError: boolean;
+  isLoading: boolean;
+  refetch: () => void;
   sequenceTypes: SequenceType[];
   selectedSequenceType: SequenceType;
   isReverseComplement: boolean;
@@ -49,6 +54,9 @@ type Props = {
 const DrawerSequenceView = (props: Props) => {
   const {
     isExpanded,
+    isError,
+    isLoading,
+    refetch,
     toggleSequenceVisibility,
     sequence,
     sequenceTypes,
@@ -88,6 +96,8 @@ const DrawerSequenceView = (props: Props) => {
               isReverseComplement={isReverseComplement}
             />
           )}
+          {isLoading && <Loading />}
+          {isError && <LoadFailure refetch={refetch} />}
           {/* The BLAST button will go here when ready
 
               <div className={styles.asideTop}>
@@ -189,6 +199,23 @@ const Copy = (props: { value: string }) => {
         </span>
       )}
     </span>
+  );
+};
+
+const LoadFailure = (props: { refetch: () => void }) => {
+  return (
+    <div className={styles.loadFailureContainer}>
+      <div className={styles.errorMessage}>Failed to get data</div>
+      <PrimaryButton onClick={props.refetch}>Try again</PrimaryButton>
+    </div>
+  );
+};
+
+const Loading = () => {
+  return (
+    <div className={styles.loadingContainer}>
+      <CircleLoader size="small" />
+    </div>
   );
 };
 

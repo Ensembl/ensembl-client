@@ -70,14 +70,21 @@ const TranscriptSequenceView = (props: Props) => {
     ? proteinCodingTranscriptSequenceTypes
     : nonCodingTranscriptSequenceTypes;
 
-  const { data: sequence } = useRefgetSequenceQuery(
-    getSequenceQueryParams(transcript, sequenceType),
-    { skip: !isExpanded }
-  );
+  const {
+    currentData: sequence,
+    isError,
+    isFetching,
+    refetch
+  } = useRefgetSequenceQuery(getSequenceQueryParams(transcript, sequenceType), {
+    skip: !isExpanded
+  });
 
   return (
     <DrawerSequenceView
       isExpanded={isExpanded}
+      isError={isError}
+      isLoading={isFetching}
+      refetch={refetch}
       toggleSequenceVisibility={toggleSequenceVisibility}
       sequence={sequence}
       sequenceTypes={sequenceTypes}
