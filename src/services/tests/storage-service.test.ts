@@ -15,7 +15,7 @@
  */
 
 import { StorageService, StorageType } from 'src/services/storage-service';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 import mockWindowService from 'tests/mocks/mockWindowService';
 
@@ -250,10 +250,8 @@ describe('storageService', () => {
           storage: StorageType.SESSION_STORAGE
         });
 
-        const [
-          passedKey,
-          passedValue
-        ] = mockSessionStorage.setItem.mock.calls[0];
+        const [passedKey, passedValue] =
+          mockSessionStorage.setItem.mock.calls[0];
 
         expect(passedKey).toBe(key);
         expect(passedValue).toBe(JSON.stringify(value));
@@ -296,10 +294,8 @@ describe('storageService', () => {
           storage: StorageType.SESSION_STORAGE
         });
 
-        const [
-          passedKey,
-          passedValue
-        ] = mockSessionStorage.setItem.mock.calls[0];
+        const [passedKey, passedValue] =
+          mockSessionStorage.setItem.mock.calls[0];
 
         expect(passedKey).toBe(key);
         expect(passedValue).toBe(JSON.stringify(updateObj));
@@ -353,10 +349,8 @@ describe('storageService', () => {
           storage: StorageType.SESSION_STORAGE
         });
 
-        const [
-          passedKey,
-          passedValue
-        ] = mockSessionStorage.setItem.mock.calls[0];
+        const [passedKey, passedValue] =
+          mockSessionStorage.setItem.mock.calls[0];
 
         expect(passedKey).toBe(key);
         expect(passedValue).toBe(JSON.stringify(updateObj));

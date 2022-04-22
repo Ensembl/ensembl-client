@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import merge from 'lodash/merge';
 
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';

@@ -16,7 +16,7 @@
 
 import { getCommaSeparatedNumber } from './numberFormatter';
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 describe('getCommaSeparatedNumber', () => {
   it('returns x,xxx for the input number xxxx', () => {

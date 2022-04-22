@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import {
   isBlastFormValid,
   MAX_BLAST_SPECIES_COUNT,
