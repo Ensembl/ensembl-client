@@ -79,7 +79,11 @@
   display: flex;
   justify-content: center;
   padding-top: 110px;
+}
+
+.loadFailureContainer {
   column-gap: 16px;
+  align-items: center;
 }
 
 .errorMessage {
