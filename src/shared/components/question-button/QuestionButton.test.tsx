@@ -15,12 +15,20 @@
  */
 
 import React from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import QuestionButton from './QuestionButton';
 
 import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
+
+// userEvent has an internal delay function that defaults to a setTimeout of 0ms
+// This confuses fake timers.
+// One way of dealing with this is to pass a delay: null option; the other is to pass a fake advanceTimers function
+// (see https://testing-library.com/docs/user-event/options)
+const userEventWithoutDelay = userEvent.setup({
+  delay: null
+});
 
 describe('<QuestionButton />', () => {
   const helpMessage = 'I am a helpful message that will appear in the tooltip';
@@ -39,12 +47,19 @@ describe('<QuestionButton />', () => {
         '.questionButton'
       ) as HTMLElement;
 
-      userEvent.hover(questionButton);
+      await userEventWithoutDelay.hover(questionButton);
       expect(questionButton.querySelector('.pointerBox')).toBeFalsy();
 
+      // moving the timer to simulate the delay before the tooltip is shown
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
+
+      // moving the timer to allow the tooltip to appear
+      act(() => {
+        jest.advanceTimersByTime(0);
+      });
+
       expect(queryByText(helpMessage)).toBeTruthy();
     });
 
@@ -56,19 +71,20 @@ describe('<QuestionButton />', () => {
         '.questionButton'
       ) as HTMLElement;
 
-      userEvent.hover(questionButton);
+      await userEventWithoutDelay.hover(questionButton);
 
-      act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+      // making sure that the tooltip got shown
+      await waitFor(() => {
+        expect(queryByText(helpMessage)).toBeTruthy();
       });
 
-      userEvent.unhover(questionButton);
+      await userEvent.unhover(questionButton);
       expect(queryByText(helpMessage)).toBeFalsy();
     });
   });
 
   describe('on click', () => {
-    it('toggles the tooltip', () => {
+    it('toggles the tooltip', async () => {
       const { container, queryByText } = render(
         <QuestionButton helpText={helpText} />
       );
@@ -76,20 +92,16 @@ describe('<QuestionButton />', () => {
         '.questionButton'
       ) as HTMLElement;
 
-      userEvent.click(questionButton);
+      await userEventWithoutDelay.click(questionButton);
 
       act(() => {
-        // give the Tooltip component a little time to complete its async tasks
-        jest.advanceTimersByTime(10);
+        jest.advanceTimersByTime(0);
       });
-      expect(queryByText(helpMessage)).toBeTruthy();
 
-      // clicking again to hide the tooltip
-      userEvent.click(questionButton);
-      expect(queryByText(helpMessage)).toBeFalsy();
+      expect(queryByText(helpMessage)).toBeTruthy();
     });
 
-    it('takes precedence over hover', () => {
+    it('takes precedence over hover', async () => {
       const { container, queryByText } = render(
         <QuestionButton helpText={helpText} />
       );
@@ -97,17 +109,16 @@ describe('<QuestionButton />', () => {
         '.questionButton'
       ) as HTMLElement;
 
-      userEvent.hover(questionButton); // would start the timer
-      userEvent.click(questionButton); // would clear the timer and toggle the state to show the tooltip
+      await userEventWithoutDelay.hover(questionButton); // would start the timer
+      await userEventWithoutDelay.click(questionButton); // would clear the timer and toggle the state to show the tooltip
 
       act(() => {
-        // give the Tooltip component a little time to complete its async tasks
-        jest.advanceTimersByTime(10);
+        jest.advanceTimersByTime(0); // the tooltip should appear instantaneously
       });
       expect(queryByText(helpMessage)).toBeTruthy();
     });
 
-    it('does not hide the tooltip on mouseleave', () => {
+    it('does not hide the tooltip on mouseleave', async () => {
       const { container, queryByText } = render(
         <QuestionButton helpText={helpText} />
       );
@@ -115,33 +126,13 @@ describe('<QuestionButton />', () => {
         '.questionButton'
       ) as HTMLElement;
 
-      userEvent.click(questionButton);
+      await userEventWithoutDelay.click(questionButton);
 
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+        jest.advanceTimersByTime(0);
       });
 
-      userEvent.unhover(questionButton); // <-- should have no effect on the tooltip
-      expect(queryByText(helpMessage)).toBeTruthy();
-    });
-
-    it('prevents a new hover from registering', () => {
-      const { container, queryByText } = render(
-        <QuestionButton helpText={helpText} />
-      );
-      const questionButton = container.querySelector(
-        '.questionButton'
-      ) as HTMLElement;
-
-      userEvent.click(questionButton);
-
-      userEvent.hover(questionButton); // <-- notice that the hover starts after a click; we expect it not to have any effect
-
-      act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
-      });
-
-      userEvent.unhover(questionButton); // <-- should have no effect on the tooltip
+      await userEventWithoutDelay.unhover(questionButton); // <-- should have no effect on the tooltip
       expect(queryByText(helpMessage)).toBeTruthy();
     });
   });

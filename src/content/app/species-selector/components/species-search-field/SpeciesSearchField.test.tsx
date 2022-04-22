@@ -137,7 +137,7 @@ describe('<SpeciesSearchField />', () => {
       matches = buildSearchMatchGroups();
     });
 
-    it('triggers the onMatchSelected function when a match is clicked', () => {
+    it('triggers the onMatchSelected function when a match is clicked', async () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       const { container } = renderComponent({
         speciesSelector: {
@@ -152,14 +152,14 @@ describe('<SpeciesSearchField />', () => {
         '.speciesSearchMatch'
       ) as HTMLElement;
 
-      userEvent.click(firstMatchElement);
+      await userEvent.click(firstMatchElement);
 
       expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
         firstMatchData
       );
     });
 
-    it('shows a button for clearing field contents in a non-empty field', () => {
+    it('shows a button for clearing field contents in a non-empty field', async () => {
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
       jest.spyOn(speciesSelectorActions, 'clearSearch');
       const { container } = renderComponent({
@@ -174,7 +174,7 @@ describe('<SpeciesSearchField />', () => {
         '.closeButton'
       ) as HTMLElement;
 
-      userEvent.click(clearButton);
+      await userEvent.click(clearButton);
 
       expect(
         speciesSelectorActions.clearSelectedSearchResult

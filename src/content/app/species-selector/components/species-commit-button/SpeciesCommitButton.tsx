@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getSelectedItem } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -27,8 +27,8 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import styles from './SpeciesCommitButton.scss';
 
 export const SpeciesCommitButton = () => {
-  const currentSpecies = useSelector(getSelectedItem);
-  const dispatch = useDispatch();
+  const currentSpecies = useAppSelector(getSelectedItem);
+  const dispatch = useAppDispatch();
 
   const { trackCommittedSpecies } = useSpeciesSelectorAnalytics();
 

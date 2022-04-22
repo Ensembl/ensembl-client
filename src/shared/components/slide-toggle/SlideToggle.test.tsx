@@ -61,17 +61,17 @@ describe('SlideToggle', () => {
   });
 
   describe('behaviour', () => {
-    it('correctly calls callback when switched on', () => {
+    it('correctly calls callback when switched on', async () => {
       const { container } = render(<SlideToggle {...defaultProps} />);
       const element = container.firstChild as HTMLElement;
 
-      userEvent.click(element);
+      await userEvent.click(element);
 
       expect(defaultProps.onChange).toHaveBeenCalledTimes(1);
       expect(defaultProps.onChange).toHaveBeenCalledWith(true);
     });
 
-    it('correctly calls callback when switched off', () => {
+    it('correctly calls callback when switched off', async () => {
       const props = {
         ...defaultProps,
         isOn: true
@@ -79,7 +79,7 @@ describe('SlideToggle', () => {
       const { container } = render(<SlideToggle {...props} />);
       const element = container.firstChild as HTMLElement;
 
-      userEvent.click(element);
+      await userEvent.click(element);
 
       expect(defaultProps.onChange).toHaveBeenCalledTimes(1);
       expect(defaultProps.onChange).toHaveBeenCalledWith(false);

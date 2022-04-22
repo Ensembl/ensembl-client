@@ -74,12 +74,12 @@ describe('<CheckboxWithSelects />', () => {
     expect(container.querySelectorAll('.select').length).toBe(1);
   });
 
-  it('displays one Select when the checkbox is checked', () => {
+  it('displays one Select when the checkbox is checked', async () => {
     const { container } = renderCheckboxWithSelects();
 
     const checkboxElement = container.querySelector('.checkboxDefault');
 
-    userEvent.click(checkboxElement as HTMLElement);
+    await userEvent.click(checkboxElement as HTMLElement);
 
     expect(container.querySelectorAll('.select').length).toBe(1);
   });
@@ -95,12 +95,12 @@ describe('<CheckboxWithSelects />', () => {
     ).toBeTruthy();
   });
 
-  it('does not display the remove button next to the Select if no option is selected ', () => {
+  it('does not display the remove button next to the Select if no option is selected ', async () => {
     const { container } = renderCheckboxWithSelects();
 
     const checkboxElement = container.querySelector('.checkboxDefault');
 
-    userEvent.click(checkboxElement as HTMLElement);
+    await userEvent.click(checkboxElement as HTMLElement);
 
     expect(container.querySelectorAll('.select').length).toBe(1);
 
@@ -123,7 +123,7 @@ describe('<CheckboxWithSelects />', () => {
     expect(container.querySelectorAll('.addIconHolder').length).toBe(1);
   });
 
-  it('displays another select when the plus button is clicked', () => {
+  it('displays another select when the plus button is clicked', async () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: [defaultProps.options[0].value]
     });
@@ -132,12 +132,12 @@ describe('<CheckboxWithSelects />', () => {
 
     const addIcon = container.querySelector('.addIconHolder .imageButton');
 
-    userEvent.click(addIcon as HTMLElement);
+    await userEvent.click(addIcon as HTMLElement);
 
     expect(container.querySelectorAll('.select').length).toBe(2);
   });
 
-  it('displays all the options when no options are selected', () => {
+  it('displays all the options when no options are selected', async () => {
     const { container } = renderCheckboxWithSelects();
 
     const selectElement = container.querySelector(
@@ -146,27 +146,27 @@ describe('<CheckboxWithSelects />', () => {
 
     const selectControl = selectElement.querySelector('.selectControl');
 
-    userEvent.click(selectControl as HTMLElement);
+    await userEvent.click(selectControl as HTMLElement);
 
     expect(selectElement.querySelectorAll('.option')).toHaveLength(
       defaultProps.options.length
     );
   });
 
-  it('hides the options that are already selected within the new Select', () => {
+  it('hides the options that are already selected within the new Select', async () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: [defaultProps.options[0].value]
     });
 
     const addIcon = container.querySelector('.addIconHolder .imageButton');
 
-    userEvent.click(addIcon as HTMLElement);
+    await userEvent.click(addIcon as HTMLElement);
 
     const allSelects = container.querySelectorAll('.select');
     const lastSelect = allSelects[allSelects.length - 1];
     const lastSelectControl = lastSelect.querySelector('.selectControl');
 
-    userEvent.click(lastSelectControl as HTMLElement);
+    await userEvent.click(lastSelectControl as HTMLElement);
 
     expect(lastSelect.querySelectorAll('.option')).toHaveLength(
       defaultProps.options.length - 1
@@ -185,25 +185,25 @@ describe('<CheckboxWithSelects />', () => {
     expect(container.querySelector('.addIconHolder')).toBeFalsy();
   });
 
-  it('calls the onChange function when an option is selected', () => {
+  it('calls the onChange function when an option is selected', async () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: [defaultProps.options[0].value]
     });
 
     const addIcon = container.querySelector('.addIconHolder .imageButton');
 
-    userEvent.click(addIcon as HTMLElement);
+    await userEvent.click(addIcon as HTMLElement);
 
     const allSelects = container.querySelectorAll('.select');
     const lastSelect = allSelects[allSelects.length - 1];
     const lastSelectControl = lastSelect.querySelector('.selectControl');
 
-    userEvent.click(lastSelectControl as HTMLElement);
+    await userEvent.click(lastSelectControl as HTMLElement);
 
     const lastSelectOptionsPanel = lastSelect.querySelector('.optionsPanel');
 
     const targetOption = lastSelectOptionsPanel?.querySelector('li');
-    userEvent.click(targetOption as HTMLElement);
+    await userEvent.click(targetOption as HTMLElement);
 
     expect(onChange).toHaveBeenCalledWith([
       defaultProps.options[0].value,
@@ -211,7 +211,7 @@ describe('<CheckboxWithSelects />', () => {
     ]);
   });
 
-  it('calls the onChange function when an option is removed', () => {
+  it('calls the onChange function when an option is removed', async () => {
     const selectedOptions = [
       defaultProps.options[0].value,
       defaultProps.options[1].value
@@ -223,7 +223,7 @@ describe('<CheckboxWithSelects />', () => {
 
     const lastRemoveIconButton = lastRemoveIcon.querySelector('.imageButton');
 
-    userEvent.click(lastRemoveIconButton as HTMLElement);
+    await userEvent.click(lastRemoveIconButton as HTMLElement);
 
     expect(onChange).toHaveBeenCalledWith([defaultProps.options[0].value]);
   });

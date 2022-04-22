@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
@@ -47,7 +48,7 @@ type Props = {
 
 const TrackPanelRegularItem = (props: Props) => {
   const { genomeId, category, track_id } = props;
-  const trackVisibilityStatus = useSelector((state: RootState) =>
+  const trackVisibilityStatus = useAppSelector((state: RootState) =>
     getBrowserTrackState(state, {
       genomeId,
       tracksGroup: 'commonTracks',
@@ -56,7 +57,7 @@ const TrackPanelRegularItem = (props: Props) => {
     })
   );
   const { toggleTrack, genomeBrowser } = useGenomeBrowser();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onShowMore = () => {
     dispatch(

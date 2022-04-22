@@ -16,8 +16,9 @@
 
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -42,7 +43,7 @@ type SpeciesPageParams = {
 
 const SpeciesPageContent = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const changeGenomeId = (genomeId: string) => {
@@ -53,7 +54,7 @@ const SpeciesPageContent = () => {
     navigate(urlFor.speciesPage(params), { replace: true });
   };
 
-  const sidebarStatus = useSelector(isSidebarOpen);
+  const sidebarStatus = useAppSelector(isSidebarOpen);
 
   useEffect(() => {
     dispatch(setActiveGenomeId(genomeId));

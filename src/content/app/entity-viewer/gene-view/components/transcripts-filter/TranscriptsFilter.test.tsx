@@ -124,13 +124,13 @@ describe('<TranscriptsFilter />', () => {
     expect(secondSortingRadioButton?.checked).toBe(true);
   });
 
-  it('correctly changes the sorting order', () => {
+  it('correctly changes the sorting order', async () => {
     const { container } = wrapInRedux();
     const label = [...container.querySelectorAll('label')].find(
       (el) => el.textContent === 'Combined exon length: longest – shortest'
     );
 
-    userEvent.click(label as HTMLElement);
+    await userEvent.click(label as HTMLElement);
 
     const sortingActions = store
       .getActions()

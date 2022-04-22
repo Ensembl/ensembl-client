@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   openSidebar,
@@ -48,13 +49,13 @@ Object.values(SidebarTabName).forEach((value) =>
 const DEFAULT_TAB = tabsData[0].title;
 
 const GeneViewSidebarTabs = () => {
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-  const selectedTabName = useSelector(getEntityViewerSidebarTabName);
+  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
+  const selectedTabName = useAppSelector(getEntityViewerSidebarTabName);
   const isSidebarModalViewOpen = Boolean(
-    useSelector(getEntityViewerSidebarModalView)
+    useAppSelector(getEntityViewerSidebarModalView)
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { trackExternalReferencesTabSelection } = useEntityViewerAnalytics();
 
   if (!selectedTabName) {

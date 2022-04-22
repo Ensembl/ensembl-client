@@ -148,7 +148,7 @@ describe('<BookmarksModal />', () => {
     ).toBeTruthy();
   });
 
-  it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
+  it('changes drawer view and toggles drawer when the "more" link is clicked', async () => {
     const { container } = renderComponent(
       set(
         `browser.browserBookmarks.previouslyViewedObjects.${activeGenomeId}`,
@@ -161,7 +161,7 @@ describe('<BookmarksModal />', () => {
       '.bookmarksModal .more span'
     ) as HTMLElement;
 
-    userEvent.click(moreLink);
+    await userEvent.click(moreLink);
 
     const dispatchedDrawerActions = store.getActions();
 

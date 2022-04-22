@@ -72,28 +72,28 @@ describe('<CheckboxWithRadios />', () => {
     expect(container.querySelector('.radio')).toBeFalsy();
   });
 
-  it('displays all the radios when the checkbox is checked', () => {
+  it('displays all the radios when the checkbox is checked', async () => {
     const { container } = renderCheckboxWithRadios();
 
     const checkboxElement = container.querySelector('.checkboxDefault');
 
-    userEvent.click(checkboxElement as HTMLElement);
+    await userEvent.click(checkboxElement as HTMLElement);
 
     expect(container.querySelectorAll('.radio').length).toBe(
       defaultProps.options.length
     );
   });
 
-  it('calls the onChange when the radio is changed with the selected option', () => {
+  it('calls the onChange when the radio is changed with the selected option', async () => {
     const { container } = renderCheckboxWithRadios();
 
     const checkboxElement = container.querySelector('.checkboxDefault');
 
-    userEvent.click(checkboxElement as HTMLInputElement);
+    await userEvent.click(checkboxElement as HTMLInputElement);
 
     const firstRadioInput = container.querySelector('.radio');
 
-    userEvent.click(firstRadioInput as HTMLInputElement);
+    await userEvent.click(firstRadioInput as HTMLInputElement);
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });

@@ -17,7 +17,8 @@
 import React from 'react';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
@@ -34,10 +35,10 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './DrawerBookmarks.scss';
 
 const DrawerBookmarks = () => {
-  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects).slice(
+  const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects).slice(
     20
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({

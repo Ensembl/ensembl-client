@@ -39,6 +39,7 @@ import {
 
 import {
   updateActualChrLocation,
+  updateChrLocation,
   type ChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
@@ -103,6 +104,11 @@ const useGenomeBrowserPosition = () => {
         parseFocusObjectId(activeFocusId as string)
       );
 
+      dispatch(
+        updateChrLocation({
+          [activeGenomeId as string]: [chromosome, start, end]
+        })
+      );
       navigate(
         urlFor.browser({
           genomeId: activeGenomeId,
@@ -113,7 +119,6 @@ const useGenomeBrowserPosition = () => {
           replace: true
         }
       );
-      action;
     }
   };
 };

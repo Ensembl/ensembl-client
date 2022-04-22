@@ -82,12 +82,12 @@ describe('SpeciesSelectionControls', () => {
     jest.clearAllMocks();
   });
 
-  it('correctly toggles removal confirmation dialog', () => {
+  it('correctly toggles removal confirmation dialog', async () => {
     const { container } = wrapInRedux();
     const removeLabel = getByText(container as HTMLElement, 'Remove');
 
     // open removal confitmation dialog
-    userEvent.click(removeLabel);
+    await userEvent.click(removeLabel);
 
     expect(container.querySelector('.speciesRemovalWarning')?.textContent).toBe(
       confirmationMessage
@@ -98,20 +98,20 @@ describe('SpeciesSelectionControls', () => {
       container as HTMLElement,
       'Do not remove'
     );
-    userEvent.click(doNotRemoveLabel);
+    await userEvent.click(doNotRemoveLabel);
 
     expect(container.querySelector('.speciesRemovalWarning')).toBeFalsy();
   });
 
-  it('removes species and redirects to species selector after removal', () => {
+  it('removes species and redirects to species selector after removal', async () => {
     const { container, routerInfo } = wrapInRedux();
 
     // open removal confitmation dialog
     const removeLabel = getByText(container as HTMLElement, 'Remove');
-    userEvent.click(removeLabel);
+    await userEvent.click(removeLabel);
 
     const removeButton = getByText(container as HTMLElement, 'Remove'); // this will be a button element now
-    userEvent.click(removeButton);
+    await userEvent.click(removeButton);
 
     expect(deleteSpeciesAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id

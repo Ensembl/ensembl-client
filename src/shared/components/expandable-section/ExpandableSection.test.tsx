@@ -67,15 +67,15 @@ describe('<ExpandableSection />', () => {
     expect(container.querySelectorAll('.collapsedContent')).toHaveLength(0);
   });
 
-  it('calls onToggle prop when collapsing or expanding', () => {
-    userEvent.click(container.querySelector('.toggle'));
+  it('calls onToggle prop when collapsing or expanding', async () => {
+    await userEvent.click(container.querySelector('.toggle'));
     expect(mockOnToggle).toBeCalledWith(false);
 
     container = renderExpandableSection({
       isExpanded: false
     }).container;
 
-    userEvent.click(container.querySelector('.toggle'));
+    await userEvent.click(container.querySelector('.toggle'));
     expect(mockOnToggle).toBeCalledWith(true);
   });
 

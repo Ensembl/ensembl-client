@@ -43,8 +43,6 @@ jest.mock(
   })
 );
 
-jest.mock('src/gql-client', () => ({ client: jest.fn() }));
-
 jest.mock('./ZmenuContent', () => () => (
   <div data-test-id="zmenuContent">ZmenuContent</div>
 ));

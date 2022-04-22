@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from 'src/store';
 
 import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
 import { updateBreakpointWidth } from 'src/global/globalSlice';
@@ -36,7 +37,7 @@ import styles from './Root.scss';
 
 export const Root = () => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useRestoredReduxState();
   useDisabledDocumentDragover();

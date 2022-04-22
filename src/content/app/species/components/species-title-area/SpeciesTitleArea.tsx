@@ -15,8 +15,9 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
@@ -35,12 +36,12 @@ import { RootState } from 'src/store';
 import styles from './SpeciesTitleArea.scss';
 
 const useSpecies = () => {
-  const activeGenomeId = useSelector(getActiveGenomeId) || '';
-  const popularSpecies = useSelector(getPopularSpecies);
-  const committedSpecies = useSelector((state: RootState) =>
+  const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
+  const popularSpecies = useAppSelector(getPopularSpecies);
+  const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!popularSpecies.length) {
@@ -61,7 +62,7 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
-  const isSidebarOpen = useSelector(getSidebarStatus);
+  const isSidebarOpen = useAppSelector(getSidebarStatus);
   const { species, iconUrl } = useSpecies() || {};
 
   const blockClasses = classNames(styles.speciesTitleArea, {

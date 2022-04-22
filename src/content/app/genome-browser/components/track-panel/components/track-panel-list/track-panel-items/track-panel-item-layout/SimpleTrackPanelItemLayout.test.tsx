@@ -83,7 +83,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
     expect(renderedElement.classList.contains('highlighted')).toBe(true);
   });
 
-  it('renders a visibility button with the correct visibility status if a callback is passed', () => {
+  it('renders a visibility button with the correct visibility status if a callback is passed', async () => {
     const onChangeVisibility = jest.fn();
     const { container } = render(
       <SimpleTrackPanelItemLayout
@@ -98,7 +98,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
     );
     const visibilitySwitch = visibilitySwitchContainer?.querySelector('button');
 
-    userEvent.click(visibilitySwitch as HTMLButtonElement);
+    await userEvent.click(visibilitySwitch as HTMLButtonElement);
 
     expect(visibilitySwitchContainer?.classList.contains('selected')).toBe(
       true
@@ -106,7 +106,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
     expect(onChangeVisibility).toHaveBeenCalledTimes(1);
   });
 
-  it('renders an ellipsis if a callback is passed', () => {
+  it('renders an ellipsis if a callback is passed', async () => {
     const onShowMore = jest.fn();
     const { container } = render(
       <SimpleTrackPanelItemLayout onShowMore={onShowMore}>
@@ -115,7 +115,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
     );
     const showMoreButton = container.querySelector('.showMore button');
 
-    userEvent.click(showMoreButton as HTMLButtonElement);
+    await userEvent.click(showMoreButton as HTMLButtonElement);
 
     expect(onShowMore).toHaveBeenCalledTimes(1);
   });

@@ -95,7 +95,7 @@ describe('<Tabs />', () => {
     ).toBe(true);
   });
 
-  it('calls the onTabChange function when a tab is selected', () => {
+  it('calls the onTabChange function when a tab is selected', async () => {
     const { container } = renderTabs();
     const unselectedTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && !tab.isDisabled
@@ -103,12 +103,12 @@ describe('<Tabs />', () => {
     const unselectedTab =
       container.querySelectorAll('.tab')[unselectedTabIndex];
 
-    userEvent.click(unselectedTab);
+    await userEvent.click(unselectedTab);
 
     expect(onTabChange).toBeCalledWith(tabsData[unselectedTabIndex].title);
   });
 
-  it('does not call the onTabChange if the tab is disabled', () => {
+  it('does not call the onTabChange if the tab is disabled', async () => {
     const { container } = renderTabs();
     const unselectedDisabledTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && tab.isDisabled
@@ -116,7 +116,7 @@ describe('<Tabs />', () => {
     const disabledTab =
       container.querySelectorAll('.tab')[unselectedDisabledTabIndex];
 
-    userEvent.click(disabledTab);
+    await userEvent.click(disabledTab);
 
     expect(onTabChange).not.toBeCalled();
   });

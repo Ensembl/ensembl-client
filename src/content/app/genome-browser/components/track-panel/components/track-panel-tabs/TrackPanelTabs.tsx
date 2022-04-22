@@ -16,7 +16,8 @@
 
 import React, { memo } from 'react';
 import classNames from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { TrackSet } from '../../trackPanelConfig';
 
@@ -36,15 +37,13 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 import styles from './TrackPanelTabs.scss';
 
 export const TrackPanelTabs = () => {
-  const focusObject = useSelector(getBrowserActiveFocusObject);
-  const isDrawerOpened = useSelector(getIsDrawerOpened);
-  const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
-  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isBrowserSidebarModalOpened = useSelector(
-    getIsBrowserSidebarModalOpened
-  );
+  const focusObject = useAppSelector(getBrowserActiveFocusObject);
+  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
+  const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
+  const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
+  const isBrowserSidebarModalOpened = useAppSelector(getIsBrowserSidebarModalOpened);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleTabClick = (value: TrackSet) => {
     if (!focusObject?.genome_id) {

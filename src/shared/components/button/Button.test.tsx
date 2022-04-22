@@ -69,18 +69,18 @@ describe('PrimaryButton', () => {
     expect(button?.textContent).toBe(buttonText);
   });
 
-  it('calls onClick when clicked', () => {
+  it('calls onClick when clicked', async () => {
     const { container } = render(
       <PrimaryButton {...defaultProps}>I am primary button</PrimaryButton>
     );
     const button = container.querySelector('button') as HTMLButtonElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('does not call onClick if disabled', () => {
+  it('does not call onClick if disabled', async () => {
     const { container } = render(
       <PrimaryButton {...defaultProps} isDisabled={true}>
         I am primary button
@@ -88,7 +88,7 @@ describe('PrimaryButton', () => {
     );
     const button = container.querySelector('button') as HTMLButtonElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(onClick).not.toHaveBeenCalled();
   });

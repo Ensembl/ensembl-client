@@ -103,7 +103,7 @@ describe('<CheckboxGrid />', () => {
       '.checkboxDefault'
     ) as HTMLElement;
 
-    userEvent.click(firstCheckbox);
+    await userEvent.click(firstCheckbox);
 
     const checkedStatus = defaultOptions[0].isChecked;
 

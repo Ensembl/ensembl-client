@@ -15,7 +15,8 @@
  */
 
 import React, { lazy, Suspense, LazyExoticComponent } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import {
@@ -60,8 +61,8 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
 };
 
 export const BrowserSidebarModal = () => {
-  const browserSidebarModalView = useSelector(getBrowserSidebarModalView);
-  const dispatch = useDispatch();
+  const browserSidebarModalView = useAppSelector(getBrowserSidebarModalView);
+  const dispatch = useAppDispatch();
 
   if (!browserSidebarModalView) {
     return null;

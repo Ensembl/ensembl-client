@@ -99,7 +99,7 @@ describe('<AutosuggestSearchField />', () => {
         matchGroups: groupsOfMatches
       };
 
-      it('clicking on a suggested match submits its data', () => {
+      it('clicking on a suggested match submits its data', async () => {
         const { container } = render(<AutosuggestSearchField {...props} />);
         const suggestedItems = container.querySelectorAll(
           '.autosuggestionPlateItem'
@@ -113,7 +113,7 @@ describe('<AutosuggestSearchField />', () => {
 
         const expectedItemData = itemsData[randomItemIndex];
 
-        userEvent.click(randomItem);
+        await userEvent.click(randomItem);
 
         expect(onSelect).toHaveBeenCalledWith(expectedItemData);
       });

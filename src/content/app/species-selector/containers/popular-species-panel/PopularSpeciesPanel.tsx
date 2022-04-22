@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
@@ -25,8 +26,8 @@ import { getPopularSpecies } from 'src/content/app/species-selector/state/specie
 import styles from './PopularSpeciesPanel.scss';
 
 const PopularSpeciesPanel = () => {
-  const popularSpecies = useSelector(getPopularSpecies);
-  const dispatch = useDispatch();
+  const popularSpecies = useAppSelector(getPopularSpecies);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchPopularSpecies());

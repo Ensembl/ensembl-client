@@ -65,25 +65,25 @@ describe('<TrackPanelTabs />', () => {
 
   describe('behaviour', () => {
     describe('on track panel tab click', () => {
-      it('selects track panel tab', () => {
+      it('selects track panel tab', async () => {
         const { container } = renderComponent();
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'selectTrackPanelTab');
 
-        userEvent.click(tab);
+        await userEvent.click(tab);
         expect(trackPanelActions.selectTrackPanelTab).toHaveBeenCalledWith(
           Object.values(TrackSet)[0]
         );
       });
 
-      it('opens track panel if it is closed', () => {
+      it('opens track panel if it is closed', async () => {
         let { container } = renderComponent();
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'toggleTrackPanel');
 
-        userEvent.click(tab);
+        await userEvent.click(tab);
         expect(trackPanelActions.toggleTrackPanel).not.toHaveBeenCalled();
 
         container = renderComponent(
@@ -95,18 +95,18 @@ describe('<TrackPanelTabs />', () => {
         ).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-        userEvent.click(tab);
+        await userEvent.click(tab);
         expect(trackPanelActions.toggleTrackPanel).toHaveBeenCalledWith(true);
       });
 
-      it('closes drawer if it is opened', () => {
+      it('closes drawer if it is opened', async () => {
         let { container } = renderComponent();
 
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(drawerActions, 'closeDrawer');
 
-        userEvent.click(tab);
+        await userEvent.click(tab);
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
         container = renderComponent(
@@ -118,7 +118,7 @@ describe('<TrackPanelTabs />', () => {
         ).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-        userEvent.click(tab);
+        await userEvent.click(tab);
         expect(drawerActions.closeDrawer).toHaveBeenCalledTimes(1);
       });
     });

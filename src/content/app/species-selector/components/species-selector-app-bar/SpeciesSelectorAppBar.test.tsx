@@ -96,13 +96,13 @@ describe('<SpeciesSelectorAppBar />', () => {
     );
   });
 
-  it('opens the species page when a SelectedSpecies tab button is clicked', () => {
+  it('opens the species page when a SelectedSpecies tab button is clicked', async () => {
     const { container, routerInfo } = renderComponent();
     const firstSelectedSpecies = container.querySelector(
       '.species'
     ) as HTMLElement;
 
-    userEvent.click(firstSelectedSpecies);
+    await userEvent.click(firstSelectedSpecies);
 
     const firstSpeciesGenomeId = selectedSpecies[0].genome_id;
     const speciesPageUrl = urlFor.speciesPage({

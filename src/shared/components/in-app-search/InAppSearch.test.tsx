@@ -122,10 +122,10 @@ describe('<InAppSearch />', () => {
         '.searchField input'
       ) as HTMLInputElement;
 
-      userEvent.type(searchField, 'BRCA2');
+      await userEvent.type(searchField, 'BRCA2');
       await act(async () => {
         // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
-        userEvent.type(searchField, '{enter}');
+        await userEvent.type(searchField, '{enter}');
       });
 
       const [search1Args] = (inAppSearchSlice.search as any).mock.calls[0];
@@ -144,13 +144,13 @@ describe('<InAppSearch />', () => {
         </Provider>
       );
 
-      userEvent.type(searchField, 'Traes');
+      await userEvent.type(searchField, 'Traes');
 
       // also, let's try to submit the search by pressing on the button
       const submitButton = container.querySelector('button') as HTMLElement;
       await act(async () => {
         // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
       });
 
       const [search2Args] = (inAppSearchSlice.search as any).mock.calls[1];
@@ -174,7 +174,7 @@ describe('<InAppSearch />', () => {
       const searchField = container.querySelector(
         '.searchField input'
       ) as HTMLInputElement;
-      userEvent.type(searchField, 'BRCA2{enter}');
+      await userEvent.type(searchField, 'BRCA2{enter}');
 
       await waitFor(() => {
         const hitsCount = container.querySelector('.hitsCount');

@@ -15,7 +15,8 @@
  */
 
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { isExpandedTranscriptsListModified } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
@@ -39,8 +40,8 @@ type Params = {
 // we can simply find the canonical transcript among gene's transcripts, and expand it in the initial view
 const useExpandedDefaultTranscript = (params: Params) => {
   const { transcripts, skip = false } = params;
-  const dispatch = useDispatch();
-  const haveTranscriptsBeenExpanded = useSelector(
+  const dispatch = useAppDispatch();
+  const haveTranscriptsBeenExpanded = useAppSelector(
     isExpandedTranscriptsListModified
   );
 

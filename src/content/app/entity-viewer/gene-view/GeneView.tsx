@@ -15,10 +15,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
 import { useDefaultEntityViewerGeneQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
@@ -95,10 +95,10 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
-  const isFilterPanelOpen = useSelector(getFilterPanelOpen);
-  const sortingRule = useSelector(getSortingRule);
-  const filters = useSelector(getFilters);
-  const dispatch = useDispatch();
+  const isFilterPanelOpen = useAppSelector(getFilterPanelOpen);
+  const sortingRule = useAppSelector(getSortingRule);
+  const filters = useAppSelector(getFilters);
+  const dispatch = useAppDispatch();
   const { search } = useLocation();
   const { trackFiltersPanelOpen } = useEntityViewerAnalytics();
   const view = new URLSearchParams(search).get('view');
@@ -222,7 +222,7 @@ const isViewParameterValid = (view: string) =>
   Object.values(View).some((value) => value === view);
 
 const useGeneViewRouting = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
@@ -233,9 +233,9 @@ const useGeneViewRouting = () => {
   const urlSearchParams = new URLSearchParams(search);
   const view = urlSearchParams.get('view');
   const proteinId = urlSearchParams.get('protein_id');
-  const viewInRedux = useSelector(getCurrentView) || View.TRANSCRIPTS;
+  const viewInRedux = useAppSelector(getCurrentView) || View.TRANSCRIPTS;
   const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
-  const selectedTabs = useSelector(getSelectedGeneViewTabs);
+  const selectedTabs = useAppSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
     if (view && isViewParameterValid(view) && viewInRedux !== view) {

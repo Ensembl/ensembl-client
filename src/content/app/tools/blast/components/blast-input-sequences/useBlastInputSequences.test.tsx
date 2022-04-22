@@ -18,7 +18,7 @@ import React, { type ReactNode } from 'react';
 import useBlastInputSequences from './useBlastInputSequences';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 
 import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
 
@@ -102,7 +102,10 @@ describe('useBlastInputSequences', () => {
         { header: 'bar', value: 'ACTG' },
         { header: 'baz', value: 'GUAC' }
       ];
-      updateSequences(newSequences);
+
+      act(() => {
+        updateSequences(newSequences);
+      });
 
       expect(getSequences(store.getState() as any)).toEqual(newSequences);
     });
@@ -122,7 +125,10 @@ describe('useBlastInputSequences', () => {
         { value: proteinSequence },
         { value: nucleotideSequence }
       ];
-      updateSequences(newSequences);
+
+      act(() => {
+        updateSequences(newSequences);
+      });
 
       expect(getSelectedSequenceType(store.getState() as any)).toEqual(
         'protein'
@@ -132,7 +138,9 @@ describe('useBlastInputSequences', () => {
         { value: nucleotideSequence },
         { value: proteinSequence }
       ];
-      updateSequences(newSequences);
+      act(() => {
+        updateSequences(newSequences);
+      });
 
       expect(getSelectedSequenceType(store.getState() as any)).toEqual('dna');
     });
@@ -147,13 +155,17 @@ describe('useBlastInputSequences', () => {
       });
       let updateSequences = result1.current.updateSequences;
 
-      updateSequences([{ value: proteinSequence }]);
+      act(() => {
+        updateSequences([{ value: proteinSequence }]);
+      });
 
       expect(getSelectedSequenceType(store1.getState() as any)).toEqual(
         'protein'
       );
 
-      updateSequences([]);
+      act(() => {
+        updateSequences([]);
+      });
 
       expect(getSelectedSequenceType(store1.getState() as any)).toEqual('dna');
 
@@ -173,7 +185,9 @@ describe('useBlastInputSequences', () => {
       });
       updateSequences = result2.current.updateSequences;
 
-      updateSequences([]);
+      act(() => {
+        updateSequences([]);
+      });
 
       expect(getSelectedSequenceType(store2.getState() as any)).toEqual('dna'); // sequence type reset to initial
     });
@@ -195,7 +209,9 @@ describe('useBlastInputSequences', () => {
       const { updateSequences } = result.current;
       expect(getSelectedSequenceType(store.getState() as any)).toEqual('dna'); // initial value
 
-      updateSequences([{ value: proteinSequence }]);
+      act(() => {
+        updateSequences([{ value: proteinSequence }]);
+      });
 
       expect(getSelectedSequenceType(store.getState() as any)).toEqual('dna'); // sequence type should not have changed
     });
@@ -215,7 +231,9 @@ describe('useBlastInputSequences', () => {
       );
 
       const { updateSequenceType } = result.current;
-      updateSequenceType('protein');
+      act(() => {
+        updateSequenceType('protein');
+      });
 
       expect(getSelectedSequenceType(store.getState() as any)).toEqual(
         'protein'
@@ -243,7 +261,9 @@ describe('useBlastInputSequences', () => {
       });
 
       const { clearAllSequences } = result.current;
-      clearAllSequences();
+      act(() => {
+        clearAllSequences();
+      });
 
       expect(getSequences(store.getState() as any)).toEqual([]);
       expect(getSelectedSequenceType(store.getState() as any)).toEqual('dna');

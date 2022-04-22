@@ -103,14 +103,14 @@ describe('<BrowserRegionField />', () => {
       ).toHaveBeenCalledWith(true);
     });
 
-    it('validates region input on submit', () => {
+    it('validates region input on submit', async () => {
       const locationString = createChrLocationValues().stringValue;
       const { container } = renderComponent();
       const input = container.querySelector('input') as HTMLInputElement;
 
-      userEvent.clear(input);
-      userEvent.type(input, locationString);
-      userEvent.type(input, `{enter}`); // to submit the form
+      await userEvent.clear(input);
+      await userEvent.type(input, locationString);
+      await userEvent.type(input, `{enter}`); // to submit the form
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: locationString,
@@ -142,8 +142,8 @@ describe('<BrowserRegionField />', () => {
       const { container } = renderComponent();
       const input = container.querySelector('input') as HTMLInputElement;
 
-      userEvent.clear(input);
-      userEvent.type(input, 'foo{enter}');
+      await userEvent.clear(input);
+      await userEvent.type(input, 'foo{enter}');
 
       const errorMessageElement = await screen.findByText(startError);
       expect(errorMessageElement).toBeTruthy();
@@ -165,13 +165,13 @@ describe('<BrowserRegionField />', () => {
           );
       });
 
-      it('switches to a different chromosome if it exists in the input', () => {
+      it('switches to a different chromosome if it exists in the input', async () => {
         const newChrLocation = ['12', 1, 1000];
         const { container } = renderComponent();
 
         const input = container.querySelector('input') as HTMLInputElement;
 
-        userEvent.type(
+        await userEvent.type(
           input,
           `${newChrLocation[0]}:${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );
@@ -179,15 +179,15 @@ describe('<BrowserRegionField />', () => {
         expect(mockChangeFocusObject).toHaveBeenCalledWith(regionId);
       });
 
-      it('preserves the same chromosome if input contains only new start and end coordinates', () => {
+      it('preserves the same chromosome if input contains only new start and end coordinates', async () => {
         const newChrLocation = ['13', 500, 1000];
 
         const { container } = renderComponent();
 
         const input = container.querySelector('input') as HTMLInputElement;
 
-        userEvent.clear(input);
-        userEvent.type(
+        await userEvent.clear(input);
+        await userEvent.type(
           input,
           `${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );

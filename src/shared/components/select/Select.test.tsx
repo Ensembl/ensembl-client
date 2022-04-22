@@ -58,7 +58,7 @@ describe('<Select />', () => {
 
       // open the select dropdown
       const selectControl = container.querySelector('.selectControl');
-      userEvent.click(selectControl as HTMLElement);
+      await userEvent.click(selectControl as HTMLElement);
 
       // the element visible during closed state is still there
       expect(container.querySelector('.selectControlInvisible')).toBeTruthy();
@@ -73,12 +73,12 @@ describe('<Select />', () => {
       onSelect
     };
 
-    it('shows the list of options', () => {
+    it('shows the list of options', async () => {
       const { container } = render(<Select {...defaultProps} />);
 
       // open the select dropdown
       const selectControl = container.querySelector('.selectControl');
-      userEvent.click(selectControl as HTMLElement);
+      await userEvent.click(selectControl as HTMLElement);
 
       const optionGroups = container.querySelectorAll('ul');
       const options = container.querySelectorAll('li');
@@ -94,12 +94,12 @@ describe('<Select />', () => {
       onSelect
     };
 
-    it('shows the list of groups of options', () => {
+    it('shows the list of groups of options', async () => {
       const { container } = render(<Select {...defaultProps} />);
 
       // open the select dropdown
       const selectControl = container.querySelector('.selectControl');
-      userEvent.click(selectControl as HTMLElement);
+      await userEvent.click(selectControl as HTMLElement);
 
       const optionGroups = container.querySelectorAll('ul');
       const options = container.querySelectorAll('li');
@@ -122,12 +122,12 @@ describe('<Select />', () => {
       onSelect
     };
 
-    it('calls onSelect and passes it the option value', () => {
+    it('calls onSelect and passes it the option value', async () => {
       const { container } = render(<Select {...defaultProps} />);
 
       // open the select dropdown
       const selectControl = container.querySelector('.selectControl');
-      userEvent.click(selectControl as HTMLElement);
+      await userEvent.click(selectControl as HTMLElement);
 
       // choose a random option
       const options = container.querySelectorAll('li');
@@ -135,7 +135,7 @@ describe('<Select />', () => {
       const option = options[optionIndex];
       const optionText = option.textContent;
 
-      userEvent.click(option);
+      await userEvent.click(option);
 
       const expectedValue = get(
         find(defaultProps.options, ({ label }) => label === optionText),

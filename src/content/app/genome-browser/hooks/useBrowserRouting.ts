@@ -16,9 +16,9 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
@@ -71,21 +71,23 @@ const useBrowserRouting = () => {
   const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
   const { search } = useLocation(); // from document.location provided by the router
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { genomeId } = params;
   const urlSearchParams = new URLSearchParams(search);
   const focus = urlSearchParams.get('focus') || null;
   const location = urlSearchParams.get('location') || null;
 
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const committedSpecies = useSelector(getEnabledCommittedSpecies);
-  const allChrLocations = useSelector(getAllChrLocations);
-  const allActiveFocusObjectIds = useSelector(getBrowserActiveFocusObjectIds);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const committedSpecies = useAppSelector(getEnabledCommittedSpecies);
+  const allChrLocations = useAppSelector(getAllChrLocations);
+  const allActiveFocusObjectIds = useAppSelector(
+    getBrowserActiveFocusObjectIds
+  );
   const activeFocusObjectId = genomeId
     ? allActiveFocusObjectIds[genomeId]
     : null;
-  const focusObject = useSelector((state: RootState) =>
+  const focusObject = useAppSelector((state: RootState) =>
     getFocusObjectById(state, activeFocusObjectId || '')
   );
 

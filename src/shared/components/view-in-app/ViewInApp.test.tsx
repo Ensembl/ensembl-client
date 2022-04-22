@@ -93,7 +93,7 @@ describe('<ViewInApp />', () => {
     );
   });
 
-  it('changes url using history push by default', () => {
+  it('changes url using history push by default', async () => {
     const links = {
       genomeBrowser: {
         url: '/genome-browser'
@@ -104,7 +104,7 @@ describe('<ViewInApp />', () => {
 
     const appButtonContainer = screen.getByTestId('genomeBrowser');
 
-    userEvent.click(
+    await userEvent.click(
       appButtonContainer.querySelector('button') as HTMLButtonElement
     );
 
@@ -112,7 +112,7 @@ describe('<ViewInApp />', () => {
     expect(routerInfo.navigationType).toBe('PUSH');
   });
 
-  it('changes url using history replace with appropriate props', () => {
+  it('changes url using history replace with appropriate props', async () => {
     const links = {
       genomeBrowser: {
         url: '/genome-browser',
@@ -124,7 +124,7 @@ describe('<ViewInApp />', () => {
 
     const appButtonContainer = screen.getByTestId('genomeBrowser');
 
-    userEvent.click(
+    await userEvent.click(
       appButtonContainer.querySelector('button') as HTMLButtonElement
     );
 
@@ -133,7 +133,7 @@ describe('<ViewInApp />', () => {
   });
 
   describe('onClick behaviour', () => {
-    it('calls a click handler associated with a single app', () => {
+    it('calls a click handler associated with a single app', async () => {
       const links = {
         entityViewer: { url: '/entity-viewer' },
         genomeBrowser: { url: '/genome-browser' }
@@ -152,14 +152,14 @@ describe('<ViewInApp />', () => {
         'button'
       ) as HTMLButtonElement;
 
-      userEvent.click(entityViewerButton);
+      await userEvent.click(entityViewerButton);
       expect(clickHandlerMock).not.toHaveBeenCalled(); // <-- because click handler is associated with genome browser button
 
-      userEvent.click(genomeBrowserButton);
+      await userEvent.click(genomeBrowserButton);
       expect(clickHandlerMock).toHaveBeenCalled();
     });
 
-    it('calls a click handler associated with any app', () => {
+    it('calls a click handler associated with any app', async () => {
       const links = {
         entityViewer: { url: '/entity-viewer' },
         genomeBrowser: { url: '/genome-browser' }
@@ -178,10 +178,10 @@ describe('<ViewInApp />', () => {
         'button'
       ) as HTMLButtonElement;
 
-      userEvent.click(entityViewerButton);
+      await userEvent.click(entityViewerButton);
       expect(clickHandlerMock).toHaveBeenCalledTimes(1);
 
-      userEvent.click(genomeBrowserButton);
+      await userEvent.click(genomeBrowserButton);
       expect(clickHandlerMock).toHaveBeenCalledTimes(2);
     });
   });

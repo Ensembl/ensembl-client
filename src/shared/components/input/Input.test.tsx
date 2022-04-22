@@ -91,7 +91,7 @@ describe('<Input />', () => {
   });
 
   describe('responding with events', () => {
-    it('passes event to onChange', () => {
+    it('passes event to onChange', async () => {
       const initialInputValue = 'foo';
 
       const StatefulWrapper = () => {
@@ -112,7 +112,7 @@ describe('<Input />', () => {
 
       const inputNode = container.querySelector('input') as HTMLInputElement;
 
-      userEvent.type(inputNode, '1');
+      await userEvent.type(inputNode, '1');
 
       const lastCallArg = commonInputProps.onChange.mock.calls[0].pop();
       expect(lastCallArg).toBe('foo1');

@@ -107,14 +107,14 @@ describe('<DefaultTranscriptListItem />', () => {
     expect(queryByTestId('unsplicedTranscript')).toBeTruthy();
   });
 
-  it('toggles transcript item info onClick', () => {
+  it('toggles transcript item info onClick', async () => {
     const { container } = renderComponent();
     const clickableArea = container.querySelector(
       '.clickableTranscriptArea'
     ) as HTMLElement;
     const transcriptLabel = container.querySelector('.right') as HTMLElement;
 
-    userEvent.click(clickableArea);
+    await userEvent.click(clickableArea);
 
     expect(
       store
@@ -122,7 +122,7 @@ describe('<DefaultTranscriptListItem />', () => {
         .filter((action) => action.type === updateExpandedTranscripts.type)
     ).toHaveLength(1);
 
-    userEvent.click(transcriptLabel);
+    await userEvent.click(transcriptLabel);
     expect(
       store
         .getActions()

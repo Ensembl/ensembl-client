@@ -135,26 +135,26 @@ describe('SpeciesSelectionControls', () => {
     );
   });
 
-  it('disables species by clicking on label', () => {
+  it('disables species by clicking on label', async () => {
     const { container } = wrapInRedux();
     const doNotUseLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === "Don't use"
     );
 
-    userEvent.click(doNotUseLabel as HTMLSpanElement);
+    await userEvent.click(doNotUseLabel as HTMLSpanElement);
 
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
     );
   });
 
-  it('enables species by clicking on label', () => {
+  it('enables species by clicking on label', async () => {
     const { container } = wrapInRedux(stateWithDisabledSpecies);
     const useLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === 'Use'
     );
 
-    userEvent.click(useLabel as HTMLSpanElement);
+    await userEvent.click(useLabel as HTMLSpanElement);
 
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id

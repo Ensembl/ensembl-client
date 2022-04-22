@@ -15,9 +15,10 @@
  */
 
 import React, { useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useParams, useNavigate } from 'react-router';
 import classNames from 'classnames';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -51,8 +52,8 @@ export type Props = {
 
 const ProteinsListItem = (props: Props) => {
   const { gene, transcript, trackLength } = props;
-  const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
-  const dispatch = useDispatch();
+  const expandedTranscriptIds = useAppSelector(getExpandedTranscriptIds);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { trackProteinInfoToggle } = useEntityViewerAnalytics();
 

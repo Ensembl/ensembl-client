@@ -58,7 +58,7 @@ describe('<BrowserTrackConfig />', () => {
   });
 
   describe('behaviour', () => {
-    it('can update all tracks', () => {
+    it('can update all tracks', async () => {
       const { container } = renderComponent();
       const allTracksLabel = [...container.querySelectorAll('label')].find(
         (el) => el.textContent === 'All tracks'
@@ -67,12 +67,12 @@ describe('<BrowserTrackConfig />', () => {
         'input'
       ) as HTMLElement;
       jest.spyOn(trackConfigActions, 'updateApplyToAll');
-      userEvent.click(allTracksInputElement);
+      await userEvent.click(allTracksInputElement);
 
       expect(trackConfigActions.updateApplyToAll).toHaveBeenCalledTimes(1);
     });
 
-    it('toggles track name', () => {
+    it('toggles track name', async () => {
       const { container } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Track name')
@@ -80,7 +80,7 @@ describe('<BrowserTrackConfig />', () => {
 
       jest.spyOn(trackConfigActions, 'updateTrackConfigNames');
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledTimes(
         1
@@ -91,14 +91,14 @@ describe('<BrowserTrackConfig />', () => {
       });
     });
 
-    it('toggles feature labels on the track', () => {
+    it('toggles feature labels on the track', async () => {
       const { container } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
       jest.spyOn(trackConfigActions, 'updateTrackConfigLabel');
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledTimes(
         1

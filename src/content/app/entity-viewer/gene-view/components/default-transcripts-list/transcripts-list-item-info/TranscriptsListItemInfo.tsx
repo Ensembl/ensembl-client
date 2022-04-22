@@ -17,7 +17,8 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from 'src/store';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -66,7 +67,7 @@ export const TranscriptsListItemInfo = (
   const params = useParams<'genomeId' | 'entityId'>();
   const { genomeId, entityId } = params;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const {
     trackTranscriptMoreInfoToggle,

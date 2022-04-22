@@ -76,27 +76,24 @@ type SpeciesPageSidebarState = {
 
 const initialState: SpeciesPageSidebarState = {};
 
-export const fetchSidebarPayload = (): ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
-> => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getActiveGenomeId(state);
-  if (!activeGenomeId) {
-    return;
-  }
+export const fetchSidebarPayload =
+  (): ThunkAction<void, any, void, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
 
-  const sidebarPayload = sidebarData[activeGenomeId];
+    const sidebarPayload = sidebarData[activeGenomeId];
 
-  dispatch(
-    speciesPageSidebarSlice.actions.setSidebarPayloadForGenomeId({
-      genomeId: activeGenomeId,
-      sidebarPayload
-    })
-  );
-};
+    dispatch(
+      speciesPageSidebarSlice.actions.setSidebarPayloadForGenomeId({
+        genomeId: activeGenomeId,
+        sidebarPayload
+      })
+    );
+  };
 
 const updateStateForGenome = (
   state: SpeciesPageSidebarState,

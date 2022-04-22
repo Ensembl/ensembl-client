@@ -64,14 +64,14 @@ const renderComponent = (
 };
 
 describe('SpeciesSelector', () => {
-  it('updates the selectedSpecies state', () => {
+  it('updates the selectedSpecies state', async () => {
     const { container, store } = renderComponent();
 
     const speciesCheckbox = container.querySelector(
       'tbody tr [data-test-id="checkbox"]'
     ) as HTMLElement;
 
-    userEvent.click(speciesCheckbox);
+    await userEvent.click(speciesCheckbox);
 
     const updatedState = store.getState();
 

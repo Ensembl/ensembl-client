@@ -67,7 +67,6 @@ jest.mock('./components/drawer/Drawer', () => () => (
 jest.mock('src/shared/components/in-app-search/InAppSearch', () => () => (
   <div className="inAppSearch">Genome browser search</div>
 ));
-jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 const mockState = createMockBrowserState();
 const mockStore = configureMockStore([thunk]);

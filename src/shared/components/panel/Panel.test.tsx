@@ -77,11 +77,11 @@ describe('<Panel />', () => {
     expect(closeButton).toBeFalsy();
   });
 
-  it('calls the onClose function when the close button is clicked', () => {
+  it('calls the onClose function when the close button is clicked', async () => {
     const { container } = renderPanel({ onClose });
     const closeButton = container.querySelector('.closeButton');
 
-    userEvent.click(closeButton as HTMLElement);
+    await userEvent.click(closeButton as HTMLElement);
 
     expect(onClose).toHaveBeenCalled();
   });

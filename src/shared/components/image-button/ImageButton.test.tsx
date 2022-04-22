@@ -110,20 +110,20 @@ describe('<ImageButton />', () => {
       jest.resetAllMocks();
     });
 
-    it('calls the onClick prop when clicked', () => {
+    it('calls the onClick prop when clicked', async () => {
       const container = renderImageButton({ onClick }).container;
-      userEvent.click(container.querySelectorAll('button')[0]);
+      await userEvent.click(container.querySelectorAll('button')[0]);
 
       expect(onClick).toBeCalled();
     });
 
-    it('does not call the onClick prop when clicked if the status is disabled', () => {
+    it('does not call the onClick prop when clicked if the status is disabled', async () => {
       const container = renderImageButton({
         onClick,
         status: Status.DISABLED
       }).container;
 
-      userEvent.click(container.querySelectorAll('button')[0]);
+      await userEvent.click(container.querySelectorAll('button')[0]);
 
       expect(onClick).not.toBeCalled();
     });
@@ -149,11 +149,11 @@ describe('<ImageButton />', () => {
       expect(tooltip[0].textContent).toBe(description);
     });
 
-    it('does not show tooltip if clicked', () => {
+    it('does not show tooltip if clicked', async () => {
       const container = renderImageButton(props).container;
 
       fireEvent.mouseEnter(container.querySelectorAll('.imageButton')[0]);
-      userEvent.click(container.querySelectorAll('.imageButton')[0]);
+      await userEvent.click(container.querySelectorAll('.imageButton')[0]);
 
       expect(container.querySelectorAll('.tooltip').length).toBe(0);
     });

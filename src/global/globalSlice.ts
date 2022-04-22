@@ -40,7 +40,7 @@ export const defaultState: GlobalState = {
 };
 
 export const updateBreakpointWidth: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > =
   (viewportWidth: BreakpointWidth) =>
   async (dispatch, getState: () => RootState) => {

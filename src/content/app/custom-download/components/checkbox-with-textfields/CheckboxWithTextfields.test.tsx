@@ -99,11 +99,11 @@ describe('<CheckboxWithTextfields />', () => {
     ).toBeTruthy();
   });
 
-  it('calls the onReset prop when the checkbox is unchecked', () => {
+  it('calls the onReset prop when the checkbox is unchecked', async () => {
     const { getByTestId } = renderCheckboxWithTextfields({ textValue: 'foo' });
     const checkboxLabelElement = getByTestId('checkbox-label-grid');
 
-    userEvent.click(checkboxLabelElement as HTMLElement);
+    await userEvent.click(checkboxLabelElement as HTMLElement);
 
     expect(onReset).toBeCalled();
   });
@@ -124,7 +124,7 @@ describe('<CheckboxWithTextfields />', () => {
       .querySelectorAll('.removeFileIcon')
       [randomNumber].querySelector('.imageButton');
 
-    userEvent.click(removeIcon as HTMLElement);
+    await userEvent.click(removeIcon as HTMLElement);
 
     expect(onFilesChange).toBeCalled();
   });

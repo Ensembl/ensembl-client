@@ -214,20 +214,20 @@ describe('StandardAppLayout', () => {
     describe('with closed drawer', () => {
       const props = commonProps;
 
-      it('calls onSidebarToggle when sidebar toggle button is clicked', () => {
+      it('calls onSidebarToggle when sidebar toggle button is clicked', async () => {
         const { rerender, container } = render(
           <StandardAppLayout {...props} />
         );
         const sidebarToggleButton = container.querySelector(
           '.sidebarModeToggle button'
         ) as HTMLElement;
-        userEvent.click(sidebarToggleButton);
+        await userEvent.click(sidebarToggleButton);
 
         expect(props.onSidebarToggle).toHaveBeenCalledTimes(1);
 
         // do the same for closed sidebar
         rerender(<StandardAppLayout {...props} isSidebarOpen={false} />);
-        userEvent.click(sidebarToggleButton);
+        await userEvent.click(sidebarToggleButton);
 
         expect(props.onSidebarToggle).toHaveBeenCalledTimes(2);
         expect(props.onDrawerClose).not.toHaveBeenCalled();
@@ -237,33 +237,33 @@ describe('StandardAppLayout', () => {
     describe('with open drawer', () => {
       const props = { ...commonProps, isDrawerOpen: true };
 
-      it('closes drawer when sidebar toggle button is clicked', () => {
+      it('closes drawer when sidebar toggle button is clicked', async () => {
         const { container } = render(<StandardAppLayout {...props} />);
         const sidebarToggleButton = container.querySelector(
           '.sidebarModeToggle button'
         ) as HTMLElement;
-        userEvent.click(sidebarToggleButton);
+        await userEvent.click(sidebarToggleButton);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
         expect(props.onSidebarToggle).not.toHaveBeenCalled();
       });
 
-      it('closes drawer when drawer close button is clicked', () => {
+      it('closes drawer when drawer close button is clicked', async () => {
         const { container } = render(<StandardAppLayout {...props} />);
         const closeDrawerButton = container.querySelector(
           '.drawerClose'
         ) as HTMLElement;
-        userEvent.click(closeDrawerButton);
+        await userEvent.click(closeDrawerButton);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
       });
 
-      it('closes drawer when drawer’s transparent window is clicked', () => {
+      it('closes drawer when drawer’s transparent window is clicked', async () => {
         const { container } = render(<StandardAppLayout {...props} />);
         const drawerWindow = container.querySelector(
           '.drawerWindow'
         ) as HTMLElement;
-        userEvent.click(drawerWindow);
+        await userEvent.click(drawerWindow);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
       });

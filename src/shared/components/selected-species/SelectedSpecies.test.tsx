@@ -82,21 +82,21 @@ describe('<SelectedSpecies />', () => {
       jest.resetAllMocks();
     });
 
-    it('responds to clicks when inactive', () => {
+    it('responds to clicks when inactive', async () => {
       const props = set('isActive', false, minimalProps);
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
 
-      userEvent.click(lozenge);
+      await userEvent.click(lozenge);
 
       expect(props.onClick).toHaveBeenCalledWith(speciesData.genome_id);
     });
 
-    it('does not respond to clicks when active', () => {
+    it('does not respond to clicks when active', async () => {
       const { container } = renderSelectedSpecies(minimalProps);
       const lozenge = container.firstChild as HTMLElement;
 
-      userEvent.click(lozenge);
+      await userEvent.click(lozenge);
 
       expect(minimalProps.onClick).not.toHaveBeenCalled();
     });

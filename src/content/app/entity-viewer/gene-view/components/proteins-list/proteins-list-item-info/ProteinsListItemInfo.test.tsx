@@ -83,7 +83,7 @@ describe('<ProteinsListItemInfo /', () => {
         expect(queryByText(props.xrefs[2].accession_id)).toBeTruthy();
       });
 
-      it('displays xref with an option to expand if there are more than 3 xrefs', () => {
+      it('displays xref with an option to expand if there are more than 3 xrefs', async () => {
         const props = {
           source: ExternalSource.UNIPROT_TREMBL,
           xrefs: tremblXrefs
@@ -100,7 +100,8 @@ describe('<ProteinsListItemInfo /', () => {
         const chevron = container.querySelector('.chevron') as HTMLElement;
         expect(chevron).toBeTruthy();
 
-        userEvent.click(chevron);
+        await userEvent.click(chevron);
+
         expect(getByText(props.xrefs[1].accession_id)).toBeTruthy();
         expect(getAllByText(props.source)).toHaveLength(4);
         expect(

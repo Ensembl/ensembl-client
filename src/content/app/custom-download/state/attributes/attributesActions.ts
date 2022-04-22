@@ -45,7 +45,7 @@ export const setAttributes = createAsyncAction(
 )<undefined, Attributes, Error>();
 
 export const fetchAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -74,7 +74,7 @@ export const fetchAttributes: ActionCreator<
 };
 
 export const updateSelectedAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (selectedAttributes: JSONValue) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -95,7 +95,7 @@ export const updateSelectedAttributes: ActionCreator<
 };
 
 export const resetSelectedAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -116,7 +116,7 @@ export const resetSelectedAttributes: ActionCreator<
 };
 
 export const updateUi: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (attributesUi: JSONValue) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -137,7 +137,7 @@ export const updateUi: ActionCreator<
 };
 
 export const setOrthologueAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > =
   (orthologues: { [key: string]: AttributeWithOptions }) =>
   (dispatch, getState: () => RootState) => {
@@ -160,7 +160,7 @@ export const setOrthologueAttributes: ActionCreator<
   };
 
 export const setOrthologueShowBestMatches: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (showBestMatches: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -181,7 +181,7 @@ export const setOrthologueShowBestMatches: ActionCreator<
 };
 
 export const setOrthologueShowAll: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (showAll: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -202,7 +202,7 @@ export const setOrthologueShowAll: ActionCreator<
 };
 
 export const setOrthologueApplyToAllSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (applyToAllSpecies: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -223,7 +223,7 @@ export const setOrthologueApplyToAllSpecies: ActionCreator<
 };
 
 export const setOrthologueSearchTerm: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (searchTerm: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -250,7 +250,7 @@ export const setOrthologueSpecies = createAsyncAction(
 )<{ searchTerm: string }, void, Error>();
 
 export const updateOrthologueSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > =
   (orthologueSpecies: CheckboxGridOption[]) =>
   (dispatch, getState: () => RootState) => {
@@ -273,7 +273,7 @@ export const updateOrthologueSpecies: ActionCreator<
   };
 
 export const fetchOrthologueSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > =
   (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) =>
   (dispatch, getState: () => RootState) => {
@@ -335,7 +335,7 @@ export const fetchOrthologueSpecies: ActionCreator<
   };
 
 export const setAttributesAccordionExpandedPanel: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 

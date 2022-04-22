@@ -53,7 +53,7 @@ export const initialState: EntityViewerGeneralState = {
 };
 
 export const setDataFromUrl =
-  (params: EntityViewerParams): ThunkAction<void, any, null, Action<string>> =>
+  (params: EntityViewerParams): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const { genomeId: genomeIdFromUrl } = params;
@@ -111,7 +111,7 @@ export const setDataFromUrl =
   };
 
 export const setDefaultActiveGenomeId =
-  (): ThunkAction<void, any, null, Action<string>> =>
+  (): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const [firstCommittedSpecies] = getCommittedSpecies(state);

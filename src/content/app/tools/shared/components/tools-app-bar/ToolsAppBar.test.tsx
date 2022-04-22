@@ -83,12 +83,12 @@ const renderComponent = () => {
 
 describe('ToolsAppBar', () => {
   describe('Species Lozenge click', () => {
-    it('updates the selectedSpecies state', () => {
+    it('updates the selectedSpecies state', async () => {
       const { container, store } = renderComponent();
 
       const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
-      userEvent.click(speciesLozenge);
+      await userEvent.click(speciesLozenge);
 
       const updatedState = store.getState();
 

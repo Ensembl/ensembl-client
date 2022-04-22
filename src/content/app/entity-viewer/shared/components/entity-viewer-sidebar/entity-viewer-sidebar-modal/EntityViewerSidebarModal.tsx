@@ -15,7 +15,8 @@
  */
 
 import React, { lazy, Suspense, LazyExoticComponent } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
@@ -46,9 +47,9 @@ const entityViewerSidebarModalTitles = {
 };
 
 export const EntityViewerSidebarModal = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const entityViewerSidebarModalView = useSelector(
+  const entityViewerSidebarModalView = useAppSelector(
     getEntityViewerSidebarModalView
   );
 
