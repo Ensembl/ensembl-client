@@ -59,7 +59,7 @@ $drawerWindowWidth: 45px;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% - 46px);
   height: 100%;
   display: flex;
   z-index: 5;
@@ -132,7 +132,8 @@ $drawerWindowWidth: 45px;
   height: 100%;
   flex-grow: 1;
   position: relative;
-  padding: 15px calc(#{$drawerWindowWidth} + 26px) 15px 30px;
+  padding: 15px 26px 15px 30px;
+  width: calc(100% - 366px);
   border-left: solid $medium-light-grey 1px;
   background-color: white;
 }

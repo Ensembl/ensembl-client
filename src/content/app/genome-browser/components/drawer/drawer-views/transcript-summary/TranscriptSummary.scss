@@ -36,6 +36,18 @@
   }
 }
 
+.summary {
+  position: absolute;
+  background: white;
+  z-index: 1;
+  padding: 30px 0 20px;
+  top: 0;
+}
+
+.summary + .row {
+  margin-top: 80px;
+}
+
 .downloadRow {
   > .value {
     display: flex;
@@ -70,7 +82,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  column-gap: 30px;
+  row-gap: 10px;
 }
 
 .featureDetail {
@@ -78,7 +91,6 @@
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  padding-right: 30px;
 }
 
 .featureSymbol {
