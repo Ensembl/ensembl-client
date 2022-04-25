@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import { render, screen } from '@testing-library/react';
 
 import apiService from 'src/services/api-service';
