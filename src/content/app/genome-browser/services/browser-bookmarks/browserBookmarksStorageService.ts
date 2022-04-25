@@ -32,12 +32,14 @@ export class BrowserBookmarksStorageService {
     this.storageService = storageService;
   }
 
-  public getBookmarks(): { [genomeId: string]: PreviouslyViewedObject[] } {
+  public getBookmarks(): {
+    [genomeId: string]: PreviouslyViewedObject[];
+  } {
     return this.storageService.get(StorageKeys.BOOKMARKS) || {};
   }
 
-  public updateActiveGenomeBookmarks(activeGenomeBookmarks: {
-    [genomeId: string]: PreviouslyViewedObject[];
+  public updateBookmarks(activeGenomeBookmarks: {
+    [genomeId: string]: PreviouslyViewedObject[] | undefined;
   }) {
     this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
   }
@@ -59,6 +61,9 @@ export class BrowserBookmarksStorageService {
 
   public deleteGenome(genomeIdToDelete: string): void {
     this.updatePreviouslyViewedObjects({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateBookmarks({
       [genomeIdToDelete]: undefined
     });
   }

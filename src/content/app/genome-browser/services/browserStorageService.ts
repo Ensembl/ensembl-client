@@ -27,19 +27,14 @@ import type {
   TrackPanelState,
   TrackPanelStateForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import type {
-  BrowserBookmarksState,
-  BrowserBookmarksStateForGenome
-} from '../state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
-  ACTIVE_GENOME_ID = 'browser.activeGenomeId',
-  ACTIVE_ENS_OBJECT_ID = 'browser.activeFocusObjectId',
-  CHR_LOCATION = 'browser.chrLocation',
-  DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
-  TRACK_STATES = 'browser.trackStates',
-  TRACK_PANELS = 'browser.trackPanels',
-  BOOKMARKS = 'browser.bookmarks'
+  ACTIVE_GENOME_ID = 'genomeBrowser.activeGenomeId',
+  ACTIVE_ENS_OBJECT_ID = 'genomeBrowser.activeFocusObjectId',
+  CHR_LOCATION = 'genomeBrowser.chrLocation',
+  DEFAULT_CHR_LOCATION = 'genomeBrowser.defaultChrLocation',
+  TRACK_STATES = 'genomeBrowser.trackStates',
+  TRACK_PANELS = 'genomeBrowser.trackPanels'
 }
 
 export class BrowserStorageService {
@@ -104,18 +99,6 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
 
-  public getBrowserBookmarks(): {
-    [genomeId: string]: Partial<BrowserBookmarksState>;
-  } {
-    return this.storageService.get(StorageKeys.BOOKMARKS) || {};
-  }
-
-  public updateBrowserBookmarks(browserBookmarks: {
-    [genomeId: string]: Partial<BrowserBookmarksStateForGenome> | undefined;
-  }): void {
-    this.storageService.update(StorageKeys.BOOKMARKS, browserBookmarks);
-  }
-
   public deleteGenome(genomeIdToDelete: string): void {
     const activeGenomeId = this.getActiveGenomeId();
     if (activeGenomeId === genomeIdToDelete) {
@@ -129,9 +112,6 @@ export class BrowserStorageService {
       [genomeIdToDelete]: undefined
     });
     this.updateTrackPanels({
-      [genomeIdToDelete]: undefined
-    });
-    this.updateBrowserBookmarks({
       [genomeIdToDelete]: undefined
     });
     this.saveTrackStates({

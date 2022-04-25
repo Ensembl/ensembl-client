@@ -28,7 +28,6 @@ import {
 } from '../browser-general/browserGeneralSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from './browserBookmarksSelectors';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 
 import type { RootState } from 'src/store';
@@ -46,7 +45,7 @@ export type PreviouslyViewedObjects = {
 };
 
 export type BrowserBookmarksStateForGenome = {
-  bookmarks: [];
+  bookmarks: PreviouslyViewedObject[];
   previouslyViewedObjects: PreviouslyViewedObject[];
 };
 
@@ -61,16 +60,19 @@ export const defaultBrowserBookmarksStateForGenome: BrowserBookmarksStateForGeno
   };
 
 export const pickPersistentBrowserBookmarksProperties = (
-  browserSidebarModal: Partial<BrowserBookmarksStateForGenome>
+  browserBookmarks: {
+    [genomeId: string]: PreviouslyViewedObject[];
+  },
+  genomeId: string
 ) => {
   const persistentProperties = ['previouslyViewedObjects'];
-  return pick(browserSidebarModal, persistentProperties);
+  return pick(browserBookmarks, persistentProperties)[genomeId];
 };
 
 export const getPersistentBrowserBookmarksStateForGenome = (
   genomeId: string
-): Partial<BrowserBookmarksStateForGenome> => {
-  return browserStorageService.getBrowserBookmarks()[genomeId] || {};
+): PreviouslyViewedObject[] => {
+  return browserBookmarksStorageService.getBookmarks()[genomeId] || {};
 };
 
 export const updatePreviouslyViewedObjectsAndSave =
@@ -131,10 +133,12 @@ export const updatePreviouslyViewedObjectsAndSave =
       ...state.browser.browserBookmarks[activeGenomeId],
       previouslyViewedObjects: previouslyViewedObjectsSlice
     };
+    const persistentTrackProperties = pickPersistentBrowserBookmarksProperties(
+      data,
+      activeGenomeId
+    );
 
-    const persistentTrackProperties =
-      pickPersistentBrowserBookmarksProperties(data);
-    browserStorageService.updateBrowserBookmarks({
+    browserBookmarksStorageService.updateBookmarks({
       [activeGenomeId]: persistentTrackProperties
     });
 

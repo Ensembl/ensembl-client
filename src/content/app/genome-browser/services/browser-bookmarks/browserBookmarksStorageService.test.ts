@@ -74,9 +74,7 @@ describe('BrowserBookmarksStorageService', () => {
 
       const updatedBookmarks = { bar: [] };
 
-      browserBookmarksStorageService.updateActiveGenomeBookmarks(
-        updatedBookmarks
-      );
+      browserBookmarksStorageService.updateBookmarks(updatedBookmarks);
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.BOOKMARKS,
