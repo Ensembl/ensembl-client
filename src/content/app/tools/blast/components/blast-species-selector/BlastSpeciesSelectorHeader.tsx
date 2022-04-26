@@ -26,6 +26,7 @@ import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './BlastSpeciesSelector.scss';
+import blastFormStyles from 'src/content/app/tools/blast/views/blast-form/BlastForm.scss';
 
 export type Props = {
   compact: boolean;
@@ -39,6 +40,15 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
 
   const onSwitchToSequence = () => {
     dispatch(switchToSequencesStep());
+
+    setTimeout(() => scrollSequencesContainerToTop(), 0);
+  };
+
+  const scrollSequencesContainerToTop = () => {
+    const blastFormContainer = document.querySelector(
+      `.${blastFormStyles.mainContainer}`
+    ) as HTMLDivElement;
+    blastFormContainer.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const onClearAll = () => {

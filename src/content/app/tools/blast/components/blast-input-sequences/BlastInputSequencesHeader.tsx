@@ -39,6 +39,7 @@ import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettin
 
 import styles from './BlastInputSequences.scss';
 import sequenceBoxStyles from './BlastInputSequence.scss';
+import blastFormStyles from 'src/content/app/tools/blast/views/blast-form/BlastForm.scss';
 
 export type Props = {
   compact: boolean;
@@ -63,6 +64,14 @@ const BlastInputSequencesHeader = (props: Props) => {
 
   const onSwitchToSpecies = () => {
     dispatch(switchToSpeciesStep());
+    setTimeout(() => scrollSpeciesSelectorToTop(), 0);
+  };
+
+  const scrollSpeciesSelectorToTop = () => {
+    const blastFormContainer = document.querySelector(
+      `.${blastFormStyles.mainContainer}`
+    ) as HTMLDivElement;
+    blastFormContainer.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const scrollToLastInputBox = () => {
