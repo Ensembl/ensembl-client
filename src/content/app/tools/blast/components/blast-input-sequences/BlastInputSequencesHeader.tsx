@@ -39,6 +39,7 @@ import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettin
 
 import styles from './BlastInputSequences.scss';
 import sequenceBoxStyles from './BlastInputSequence.scss';
+
 export type Props = {
   compact: boolean;
 };
