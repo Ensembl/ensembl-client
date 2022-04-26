@@ -45,7 +45,7 @@ export type PreviouslyViewedObjects = {
 };
 
 export type BrowserBookmarksStateForGenome = {
-  bookmarks: PreviouslyViewedObject[];
+  bookmarks: [];
   previouslyViewedObjects: PreviouslyViewedObject[];
 };
 
@@ -133,13 +133,11 @@ export const updatePreviouslyViewedObjectsAndSave =
       ...state.browser.browserBookmarks[activeGenomeId],
       previouslyViewedObjects: previouslyViewedObjectsSlice
     };
-    const persistentTrackProperties = pickPersistentBrowserBookmarksProperties(
-      data,
-      activeGenomeId
-    );
+    const persistentBrowserBookmarksProperties =
+      pickPersistentBrowserBookmarksProperties(data, activeGenomeId);
 
     browserBookmarksStorageService.updateBookmarks({
-      [activeGenomeId]: persistentTrackProperties
+      [activeGenomeId]: persistentBrowserBookmarksProperties
     });
 
     dispatch(
