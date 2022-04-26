@@ -57,7 +57,12 @@ export const GeneSequenceView = (props: Props) => {
     strand: { code: strand }
   } = gene.slice;
 
-  const { data: sequence } = useRefgetSequenceQuery(
+  const {
+    currentData: sequence,
+    isError,
+    isFetching,
+    refetch
+  } = useRefgetSequenceQuery(
     {
       checksum,
       start,
@@ -70,6 +75,9 @@ export const GeneSequenceView = (props: Props) => {
   return (
     <DrawerSequenceView
       isExpanded={isExpanded}
+      isError={isError}
+      isLoading={isFetching}
+      refetch={refetch}
       toggleSequenceVisibility={toggleSequenceVisibility}
       sequence={sequence}
       sequenceTypes={['genomic']}

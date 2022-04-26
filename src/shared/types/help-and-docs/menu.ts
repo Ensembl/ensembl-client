@@ -21,10 +21,10 @@ export type Menu = {
 
 export type MenuItem = MenuArticleItem | MenuCollectionItem;
 
-type MenuCollectionItem = {
+export type MenuCollectionItem = {
   name: string;
   type: 'collection';
-  url?: string; // if a menu directory has an index page associated with it
+  url?: string; // if a menu directory has a page associated with it
   items: MenuItem[];
 };
 

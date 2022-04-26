@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Checkbox from './Checkbox';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 const onChange = jest.fn();
 

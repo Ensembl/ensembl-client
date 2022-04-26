@@ -19,7 +19,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';

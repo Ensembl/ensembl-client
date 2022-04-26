@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
@@ -24,10 +24,7 @@ import {
   RelatedArticles,
   HelpArticleGrid
 } from 'src/shared/components/help-article';
-import {
-  TopMenu,
-  SideMenu
-} from 'src/content/app/about/components/about-menu/AboutMenu';
+import HelpMenu from 'src/content/app/help/components/help-menu/HelpMenu';
 import { CircleLoader } from 'src/shared/components/loader';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
@@ -49,9 +46,7 @@ const About = () => {
   return (
     <div className={helpStyles.help}>
       <AppBar />
-      <TopMenuBar>
-        {menu && <TopMenu menu={menu} currentUrl={location.pathname} />}
-      </TopMenuBar>
+      {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
       <HelpArticleGrid className={styles.grid}>
         {article ? (
           <TextArticle article={article} />
@@ -61,19 +56,12 @@ const About = () => {
           </div>
         )}
         <aside className={styles.aside}>
-          {article?.related_articles.length ? (
+          {!!article?.related_articles.length && (
             <RelatedArticles
               title="More about…"
               articles={article.related_articles}
               highlightActiveArticle={true}
             />
-          ) : (
-            menu && (
-              <>
-                <div className={styles.asideTitle}>More about…</div>
-                <SideMenu menu={menu} currentUrl={location.pathname} />
-              </>
-            )
           )}
         </aside>
       </HelpArticleGrid>
@@ -90,10 +78,6 @@ const AppBar = () => {
       </div>
     </div>
   );
-};
-
-const TopMenuBar = (props: { children: ReactNode }) => {
-  return <div className={styles.topMenuBar}>{props.children}</div>;
 };
 
 export default About;

@@ -17,7 +17,7 @@
 import React, { useState, useRef, MutableRefObject } from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import Textarea from './Textarea';
 
 describe('<Textarea />', () => {

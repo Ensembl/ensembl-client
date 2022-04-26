@@ -19,7 +19,7 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import configureMockStore from 'redux-mock-store';
 
 import {
