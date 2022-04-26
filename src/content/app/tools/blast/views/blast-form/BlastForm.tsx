@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
@@ -82,6 +82,13 @@ const MainLarge = () => {
 const MainSmall = () => {
   const step = useSelector(getStep);
   const containerClasses = `${styles.mainContainer} ${styles.mainContainerSmall}`;
+
+  useEffect(() => {
+    const blastFormContainer = document.querySelector(
+      `.${styles.mainContainer}`
+    ) as HTMLDivElement;
+    blastFormContainer.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
 
   return (
     <div className={containerClasses}>
