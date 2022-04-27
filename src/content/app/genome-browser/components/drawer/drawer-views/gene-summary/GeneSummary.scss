@@ -1,8 +1,23 @@
 @import 'src/styles/common';
 
+$drawerWindowWidth: 45px;
+$sidebarWithToolstripWidth: calc(320px + 46px);
+$summaryLabelWidth: 130px;
+$summaryLabelWithGap: calc(#{$summaryLabelWidth} + 10px);
+$summaryPadding: 56px;
+//  drawerWindowWidth (45px)     summaryPadding left (30px)              summaryPadding right(26px)
+//    |                                |                                              |
+// [----][-------------------------][-----][------------][************************][-----]
+//              |                                |                    |
+//    sidebarWithToolstripWidth (366px)    summaryLabelWithGap   summaryContentWidth
+$summaryContentWidth: calc(
+  100vw - #{$drawerWindowWidth} - #{$sidebarWithToolstripWidth} - #{$summaryLabelWithGap} -
+    #{$summaryPadding}
+);
+
 .row {
   display: grid;
-  grid-template-columns: [label] 130px [value] auto;
+  grid-template-columns: [label] $summaryLabelWidth [value] auto;
   grid-column-gap: 10px;
   margin-bottom: 3px;
 
@@ -50,7 +65,7 @@
   align-items: center;
   column-gap: 30px;
   row-gap: 10px;
-  width: calc(100vw - 320px - 45px - 46px - 220px);
+  width: $summaryContentWidth;
 }
 
 .featureDetail {
