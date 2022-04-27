@@ -29,10 +29,6 @@
     & > div + div {
       margin-top: 3px;
     }
-
-    &.responsive {
-      width: calc(100vw - 320px - 45px - 46px - 220px);
-    }
   }
   .geneName {
     width: 60ch;
@@ -75,7 +71,7 @@
   align-items: center;
   column-gap: 30px;
   row-gap: 10px;
-  width: 100%;
+  width: calc(100vw - 320px - 45px - 46px - 220px);
 }
 
 .featureDetail {

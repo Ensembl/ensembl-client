@@ -118,7 +118,7 @@ const TranscriptSummary = (props: Props) => {
     <div>
       <div className={styles.row}>
         <div className={styles.label}>Transcript</div>
-        <div className={classNames(styles.value, styles.responsive)}>
+        <div className={styles.value}>
           <div className={styles.featureDetails}>
             <div className={styles.featureDetail}>
               <span className={styles.featureSymbol}>{stableId}</span>
