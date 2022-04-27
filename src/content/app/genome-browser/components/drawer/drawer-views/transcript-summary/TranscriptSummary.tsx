@@ -114,13 +114,11 @@ const TranscriptSummary = (props: Props) => {
     defaultProductGeneratingContext?.cds?.protein_length || 0
   );
 
-  const summaryClassNames = classNames(styles.value, styles.summary);
-
   return (
     <div>
       <div className={styles.row}>
         <div className={styles.label}>Transcript</div>
-        <div className={summaryClassNames}>
+        <div className={classNames(styles.value, styles.responsive)}>
           <div className={styles.featureDetails}>
             <div className={styles.featureDetail}>
               <span className={styles.featureSymbol}>{stableId}</span>
