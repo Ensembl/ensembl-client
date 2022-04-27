@@ -15,12 +15,15 @@
  */
 
 import React, { FormEvent, useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
+import noop from 'lodash/noop';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
+import { SecondaryButton } from 'src/shared/components/button/Button';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 import {
@@ -152,118 +155,154 @@ const BlastSettings = ({ config }: Props) => {
 
   return (
     <>
-      <div className={styles.topLevel}>
-        Settings
-        <div className={styles.mainSettings}>
-          {buildSelect({
-            ...(config.parameters['database'] as BlastSelectSetting),
-            selectedOption: blastParameters.database as string,
-            onChange: onDatabaseChange
-          })}
-          {buildSelect({
-            ...(availableBlastPrograms as BlastSelectSetting),
-            selectedOption: blastProgram,
-            onChange: onBlastProgramChange
-          })}
-          {buildSelect({
-            ...(getPresetsList(config) as BlastSelectSetting),
-            selectedOption: searchSensitivity,
-            onChange: onSearchSensitivityChange
-          })}
+      <div className={styles.topLevelContainer}>
+        <div className={styles.topLevel}>
+          <div className={styles.header}>Blast</div>
+          <div className={styles.subHeader}>Run a job</div>
+          <div>
+            {buildSelect({
+              ...(config.parameters['database'] as BlastSelectSetting),
+              selectedOption: blastParameters.database as string,
+              onChange: onDatabaseChange
+            })}
+          </div>
+          <div className={styles.mainSettings}>
+            {buildSelect({
+              ...(availableBlastPrograms as BlastSelectSetting),
+              selectedOption: blastProgram,
+              onChange: onBlastProgramChange
+            })}
+          </div>
+          <div className={styles.mainSettings}>
+            {buildSelect({
+              ...(getPresetsList(config) as BlastSelectSetting),
+              selectedOption: searchSensitivity,
+              onChange: onSearchSensitivityChange
+            })}
+          </div>
+          <div className={styles.parametersLabel}>
+            <ShowHide
+              label="Parameters"
+              isExpanded={parametersExpanded}
+              onClick={onParametersToggle}
+            />
+          </div>
+          <div className={styles.blastJobBlock}>
+            <BlastJobName />
+            <BlastJobSubmit />
+          </div>
         </div>
-        <div>
-          <ShowHide
-            label="Parameters"
-            isExpanded={parametersExpanded}
-            onClick={onParametersToggle}
-          />
-        </div>
-        <div className={styles.blastJobBlock}>
-          <BlastJobName />
-          <BlastJobSubmit />
-        </div>
+        <SecondaryButton className={styles.previousJobs} onClick={noop}>
+          Previous jobs
+        </SecondaryButton>
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
-          {buildSelect({
-            ...(config.parameters['alignments'] as BlastSelectSetting),
-            selectedOption: blastParameters.alignments as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('alignments', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['scores'] as BlastSelectSetting),
-            selectedOption: blastParameters.scores as string,
-            onChange: (value: string) => onBlastParameterChange('scores', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['hsps'] as BlastSelectSetting),
-            selectedOption: blastParameters.scores as string,
-            onChange: (value: string) => onBlastParameterChange('hsps', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['dropoff'] as BlastSelectSetting),
-            selectedOption: blastParameters.scores as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('dropoff', value)
-          })}
-          {buildCheckbox({
-            ...(config.parameters['gapalign'] as BlastBooleanSetting),
-            selectedOption: blastParameters.gapalign as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('gapalign', value)
-          })}
-          {buildCheckbox({
-            ...(config.parameters['filter'] as BlastBooleanSetting),
-            selectedOption: blastParameters.filter as string,
-            onChange: (value: string) => onBlastParameterChange('filter', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['compstats'] as BlastSelectSetting),
-            selectedOption: blastParameters.compstats as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('compstats', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['exp'] as BlastSelectSetting),
-            selectedOption: blastParameters.exp as string,
-            onChange: (value: string) => onBlastParameterChange('exp', value)
-          })}
-          {databaseSequenceType === 'dna' &&
-            buildSelect({
-              ...(config.parameters['match_scores'] as BlastSelectSetting),
-              selectedOption: blastParameters.match_scores as string,
+          <div className={styles.parametersColumn}>
+            {buildSelect({
+              ...(config.parameters['alignments'] as BlastSelectSetting),
+              selectedOption: blastParameters.alignments as string,
               onChange: (value: string) =>
-                onBlastParameterChange('match_scores', value)
+                onBlastParameterChange('alignments', value)
             })}
-          {buildSelect({
-            options: config.programs_parameters_override.wordsize[blastProgram]
-              ? config.programs_parameters_override.wordsize[blastProgram]
-                  .options
-              : (config.parameters.wordsize.options as Option[]),
-            label: config.parameters.wordsize.label,
-            selectedOption: blastParameters.wordsize as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('wordsize', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['gapopen'] as BlastSelectSetting),
-            selectedOption: blastParameters.gapopen as string,
-            onChange: (value: string) =>
-              onBlastParameterChange('gapopen', value)
-          })}
-          {buildSelect({
-            ...(config.parameters['gapext'] as BlastSelectSetting),
-            selectedOption: blastParameters.gapext as string,
-            onChange: (value: string) => onBlastParameterChange('gapext', value)
-          })}
-          {databaseSequenceType === 'protein' &&
-            buildSelect({
-              ...(config.parameters['matrix'] as BlastSelectSetting),
-              selectedOption: blastParameters.matrix as string,
+            {buildSelect({
+              ...(config.parameters['scores'] as BlastSelectSetting),
+              selectedOption: blastParameters.scores as string,
               onChange: (value: string) =>
-                onBlastParameterChange('matrix', value)
+                onBlastParameterChange('scores', value)
             })}
+          </div>
+          <div className={styles.parametersColumn}>
+            {buildSelect({
+              ...(config.parameters['exp'] as BlastSelectSetting),
+              selectedOption: blastParameters.exp as string,
+              onChange: (value: string) => onBlastParameterChange('exp', value)
+            })}
+            {buildSelect({
+              ...(config.parameters['compstats'] as BlastSelectSetting),
+              selectedOption: blastParameters.compstats as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('compstats', value)
+            })}
+          </div>
+          <div className={styles.parametersColumn}>
+            {buildSelect({
+              ...(config.parameters['hsps'] as BlastSelectSetting),
+              selectedOption: blastParameters.scores as string,
+              onChange: (value: string) => onBlastParameterChange('hsps', value)
+            })}
+            {buildSelect({
+              ...(config.parameters['dropoff'] as BlastSelectSetting),
+              selectedOption: blastParameters.scores as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('dropoff', value)
+            })}
+          </div>
+          <div className={styles.parametersColumn}>
+            {buildSelect({
+              ...(config.parameters['gapopen'] as BlastSelectSetting),
+              selectedOption: blastParameters.gapopen as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('gapopen', value)
+            })}
+            {buildSelect({
+              ...(config.parameters['gapext'] as BlastSelectSetting),
+              selectedOption: blastParameters.gapext as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('gapext', value)
+            })}
+          </div>
+
+          <div className={styles.parametersColumn}>
+            {buildSelect({
+              options: config.programs_parameters_override.wordsize[
+                blastProgram
+              ]
+                ? config.programs_parameters_override.wordsize[blastProgram]
+                    .options
+                : (config.parameters.wordsize.options as Option[]),
+              label: config.parameters.wordsize.label,
+              selectedOption: blastParameters.wordsize as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('wordsize', value)
+            })}
+            {databaseSequenceType === 'dna' &&
+              buildSelect({
+                ...(config.parameters['match_scores'] as BlastSelectSetting),
+                selectedOption: blastParameters.match_scores as string,
+                onChange: (value: string) =>
+                  onBlastParameterChange('match_scores', value)
+              })}
+            <div className={styles.matrixSetting}>
+              {databaseSequenceType === 'protein' &&
+                buildSelect({
+                  ...(config.parameters['matrix'] as BlastSelectSetting),
+                  selectedOption: blastParameters.matrix as string,
+                  onChange: (value: string) =>
+                    onBlastParameterChange('matrix', value)
+                })}
+            </div>
+          </div>
+
+          <div
+            className={classNames(
+              styles.parametersColumn,
+              styles.checkboxLeftMargin
+            )}
+          >
+            {buildCheckbox({
+              ...(config.parameters['gapalign'] as BlastBooleanSetting),
+              selectedOption: blastParameters.gapalign as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('gapalign', value)
+            })}
+            {buildCheckbox({
+              ...(config.parameters['filter'] as BlastBooleanSetting),
+              selectedOption: blastParameters.filter as string,
+              onChange: (value: string) =>
+                onBlastParameterChange('filter', value)
+            })}
+          </div>
         </div>
       )}
     </>
@@ -281,7 +320,7 @@ const BlastJobName = () => {
 
   return (
     <div className={styles.blastJobName}>
-      <span>Name the job</span>
+      <span>Name this job</span>
       <ShadedInput value={jobName} onChange={onChange} placeholder="optional" />
     </div>
   );
