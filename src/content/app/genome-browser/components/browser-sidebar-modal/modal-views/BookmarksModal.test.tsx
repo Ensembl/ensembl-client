@@ -92,8 +92,8 @@ const mockState = {
       }
     },
     browserBookmarks: {
-      [genomeId]: {
-        previouslyViewedObjects
+      previouslyViewedObjects: {
+        [genomeId]: previouslyViewedObjects
       }
     }
   },
@@ -178,7 +178,7 @@ describe('<BookmarksModal />', () => {
   it('shows link to view more only when there are more than 20 objects', () => {
     let wrapper = renderComponent(
       set(
-        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.previouslyViewedObjects.${genomeId}`,
         times(20, () => createRandomPreviouslyViewedObject()),
         mockState
       )
@@ -191,7 +191,7 @@ describe('<BookmarksModal />', () => {
     // Add 21 links to see if ellipsis is shown
     wrapper = renderComponent(
       set(
-        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.previouslyViewedObjects.${genomeId}`,
         times(21, () => createRandomPreviouslyViewedObject()),
         mockState
       )
@@ -205,7 +205,7 @@ describe('<BookmarksModal />', () => {
   it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
     const { container } = renderComponent(
       set(
-        `browser.browserBookmarks.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.previouslyViewedObjects.${genomeId}`,
         times(21, () => createRandomPreviouslyViewedObject()),
         mockState
       )

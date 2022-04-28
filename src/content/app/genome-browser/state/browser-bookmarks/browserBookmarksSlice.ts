@@ -20,18 +20,16 @@ import {
   type Action,
   type ThunkAction
 } from '@reduxjs/toolkit';
-import pick from 'lodash/pick';
 
 import {
   getBrowserActiveFocusObject,
   getBrowserActiveGenomeId
 } from '../browser-general/browserGeneralSelectors';
-import { getActiveGenomePreviouslyViewedObjects } from './browserBookmarksSelectors';
+import { getPreviouslyViewedObjects } from './browserBookmarksSelectors';
 
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 
 import type { RootState } from 'src/store';
-import type { ParsedUrlPayload } from '../browser-general/browserGeneralSlice';
 
 export type PreviouslyViewedObject = {
   genome_id: string;
@@ -40,39 +38,22 @@ export type PreviouslyViewedObject = {
   label: string | string[];
 };
 
-export type PreviouslyViewedObjects = {
+export type PreviouslyViewedObjectsForGenome = {
   [genomeId: string]: PreviouslyViewedObject[];
 };
 
-export type BrowserBookmarksStateForGenome = {
-  bookmarks: [];
-  previouslyViewedObjects: PreviouslyViewedObject[];
+export type BookmarksForGenome = {
+  [genomeId: string]: [];
 };
 
-export type BrowserBookmarksState = Readonly<{
-  [genomeId: string]: BrowserBookmarksStateForGenome;
-}>;
-
-export const defaultBrowserBookmarksStateForGenome: BrowserBookmarksStateForGenome =
-  {
-    bookmarks: [],
-    previouslyViewedObjects: []
-  };
-
-export const pickPersistentBrowserBookmarksProperties = (
-  browserBookmarks: {
-    [genomeId: string]: PreviouslyViewedObject[];
-  },
-  genomeId: string
-) => {
-  const persistentProperties = ['previouslyViewedObjects'];
-  return pick(browserBookmarks, persistentProperties)[genomeId];
+export type BrowserBookmarksState = {
+  bookmarks: BookmarksForGenome;
+  previouslyViewedObjects: PreviouslyViewedObjectsForGenome;
 };
 
-export const getPersistentBrowserBookmarksStateForGenome = (
-  genomeId: string
-): PreviouslyViewedObject[] => {
-  return browserBookmarksStorageService.getBookmarks()[genomeId] || {};
+export const initialState: BrowserBookmarksState = {
+  bookmarks: {},
+  previouslyViewedObjects: {}
 };
 
 export const updatePreviouslyViewedObjectsAndSave =
@@ -81,13 +62,12 @@ export const updatePreviouslyViewedObjectsAndSave =
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     const activeFocusObject = getBrowserActiveFocusObject(state);
+
     if (!activeGenomeId || !activeFocusObject) {
       return;
     }
 
-    const previouslyViewedObjects = [
-      ...getActiveGenomePreviouslyViewedObjects(state)
-    ];
+    const previouslyViewedObjects = [...getPreviouslyViewedObjects(state)];
 
     const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
       (entity) => entity.object_id === activeFocusObject.object_id
@@ -113,85 +93,59 @@ export const updatePreviouslyViewedObjectsAndSave =
         ? [geneSymbol, stable_id as string]
         : activeFocusObject.label;
 
-    const newObject = {
+    const newObject: PreviouslyViewedObject = {
       genome_id: activeFocusObject.genome_id,
       object_id: activeFocusObject.object_id,
       type: activeFocusObject.type,
       label: label
     };
 
-    const updatedEntitiesArray = [newObject, ...previouslyViewedObjects];
+    const updatedObjects = [newObject, ...previouslyViewedObjects];
 
     // Limit the total number of previously viewed objects to 250
-    const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
+    const previouslyViewedObjectsSlice = updatedObjects.slice(-250);
 
     browserBookmarksStorageService.updatePreviouslyViewedObjects({
       [activeGenomeId]: previouslyViewedObjectsSlice
     });
 
-    const data = {
-      ...state.browser.browserBookmarks[activeGenomeId],
-      previouslyViewedObjects: previouslyViewedObjectsSlice
-    };
-    const persistentBrowserBookmarksProperties =
-      pickPersistentBrowserBookmarksProperties(data, activeGenomeId);
-
-    browserBookmarksStorageService.updateBookmarks({
-      [activeGenomeId]: persistentBrowserBookmarksProperties
-    });
-
     dispatch(
-      updateBrowserBookmarksForGenome({
+      bookmarksSlice.actions.updatePreviouslyViewedObjects({
         activeGenomeId,
-        data
+        updatedObjects
       })
     );
   };
 
-export const getBrowserBookmarksStateForGenome = (
-  genomeId: string
-): BrowserBookmarksStateForGenome => {
-  return genomeId
-    ? {
-        ...defaultBrowserBookmarksStateForGenome,
-        ...getPersistentBrowserBookmarksStateForGenome(genomeId)
-      }
-    : defaultBrowserBookmarksStateForGenome;
-};
+export const loadPreviouslyViewedObjects =
+  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
+    const previouslyViewedObjects =
+      browserBookmarksStorageService.getPreviouslyViewedObjects();
 
-const browserBookmarks = createSlice({
+    dispatch(bookmarksSlice.actions.setInitialState(previouslyViewedObjects));
+  };
+
+const bookmarksSlice = createSlice({
   name: 'genome-browser-bookmarks',
-  initialState: {} as BrowserBookmarksState,
+  initialState,
   reducers: {
-    setInitialBrowserBookmarksDataForGenome(
+    setInitialState(
       state,
-      action: PayloadAction<ParsedUrlPayload>
+      action: PayloadAction<{ [genomeId: string]: PreviouslyViewedObject[] }>
     ) {
-      const { activeGenomeId } = action.payload;
-      if (!state[activeGenomeId]) {
-        state[activeGenomeId] = defaultBrowserBookmarksStateForGenome;
-      }
+      state.previouslyViewedObjects = action.payload;
     },
-    updateBrowserBookmarksForGenome(
+    updatePreviouslyViewedObjects(
       state,
       action: PayloadAction<{
         activeGenomeId: string;
-        data: Partial<BrowserBookmarksStateForGenome>;
+        updatedObjects: PreviouslyViewedObject[];
       }>
     ) {
-      const { activeGenomeId, data } = action.payload;
-
-      state[activeGenomeId] = {
-        ...state[activeGenomeId],
-        ...data
-      };
+      const { activeGenomeId, updatedObjects } = action.payload;
+      state.previouslyViewedObjects[activeGenomeId] = updatedObjects;
     }
   }
 });
 
-export const {
-  setInitialBrowserBookmarksDataForGenome,
-  updateBrowserBookmarksForGenome
-} = browserBookmarks.actions;
-
-export default browserBookmarks.reducer;
+export default bookmarksSlice.reducer;

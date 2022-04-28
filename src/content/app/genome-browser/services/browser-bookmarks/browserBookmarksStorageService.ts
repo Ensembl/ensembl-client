@@ -33,13 +33,13 @@ export class BrowserBookmarksStorageService {
   }
 
   public getBookmarks(): {
-    [genomeId: string]: PreviouslyViewedObject[];
+    [genomeId: string]: [];
   } {
     return this.storageService.get(StorageKeys.BOOKMARKS) || {};
   }
 
   public updateBookmarks(activeGenomeBookmarks: {
-    [genomeId: string]: PreviouslyViewedObject[] | undefined;
+    [genomeId: string]: [] | undefined;
   }) {
     this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
   }

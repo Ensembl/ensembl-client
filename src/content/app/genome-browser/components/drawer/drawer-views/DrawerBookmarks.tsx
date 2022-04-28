@@ -27,16 +27,16 @@ import analyticsTracking from 'src/services/analytics-service';
 import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
+import { getPreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
 import styles from './DrawerBookmarks.scss';
 
 const DrawerBookmarks = () => {
-  const previouslyViewedObjects = useSelector(
-    getActiveGenomePreviouslyViewedObjects
-  ).slice(20);
+  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects).slice(
+    20
+  );
   const dispatch = useDispatch();
 
   const onClick = (objectType: string, index: number) => {

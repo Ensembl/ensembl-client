@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import type { RootState } from 'src/store';
 
-export const getActiveGenomeBookmarks = (state: RootState) => {
+export const getAllPreviouslyViewedObjects = (state: RootState) =>
+  state.browser.browserBookmarks.previouslyViewedObjects;
+
+export const getPreviouslyViewedObjects = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-
   return activeGenomeId
-    ? state.browser.browserBookmarks[activeGenomeId]?.bookmarks ?? []
-    : [];
-};
-
-export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return activeGenomeId
-    ? state.browser.browserBookmarks[activeGenomeId]?.previouslyViewedObjects ??
-        []
+    ? getAllPreviouslyViewedObjects(state)[activeGenomeId] || []
     : [];
 };

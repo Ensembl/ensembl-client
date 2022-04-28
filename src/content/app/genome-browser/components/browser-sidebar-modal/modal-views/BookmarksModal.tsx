@@ -23,7 +23,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
+import { getPreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
@@ -31,9 +31,10 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
-  const previouslyViewedObjects = useSelector(
-    getActiveGenomePreviouslyViewedObjects
-  ).slice(0, 20);
+  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects).slice(
+    0,
+    20
+  );
 
   const onLinkClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -78,9 +79,7 @@ export const PreviouslyViewedLinks = () => {
 };
 
 export const BookmarksModal = () => {
-  const previouslyViewedObjects = useSelector(
-    getActiveGenomePreviouslyViewedObjects
-  );
+  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects);
   const dispatch = useDispatch();
 
   const onMoreClick = () => {

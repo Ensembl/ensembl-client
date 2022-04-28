@@ -72,9 +72,11 @@ describe('BrowserBookmarksStorageService', () => {
         mockStorageService
       );
 
-      const updatedBookmarks = { bar: [] };
+      const updatedBookmarks: unknown = { bar: [] };
 
-      browserBookmarksStorageService.updateBookmarks(updatedBookmarks);
+      browserBookmarksStorageService.updateBookmarks(
+        updatedBookmarks as { [genomeId: string]: [] }
+      );
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
         StorageKeys.BOOKMARKS,
