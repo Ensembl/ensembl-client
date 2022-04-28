@@ -37,11 +37,13 @@ export type JobStatus =
 export type BlastSubmission = {
   submittedData: {
     species: Species[];
-    sequences: string[]; // Or perhaps parsed sequences?
+    sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     parameters: Partial<Record<BlastParameterName, string>>;
   };
   results: Array<{
     jobId: string;
+    sequenceId: number;
+    genomeId: string;
     status: JobStatus;
     seen: boolean;
     data: null; // TODO: add data type
