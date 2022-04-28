@@ -142,7 +142,7 @@ describe('blast epics', () => {
           'http://tools-api-url/blast/jobs/status/:jobId',
           (req, res, ctx) => {
             const { jobId } = req.params;
-            if (jobId === firstJobInResponse.jobId) {
+            if (jobId === firstJobInResponse.job_id) {
               firstJobPollCount++;
               return firstJobPollCount >= firstJobMaxPollCount
                 ? res(ctx.json(createFinishedJobStatusResponse()))
@@ -176,14 +176,14 @@ describe('blast epics', () => {
 
       // check that the job status gets updated in indexedDB
       expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
-        submissionId: successfulSubmission.submissionId,
-        jobId: firstJobInResponse.jobId,
+        submissionId: successfulSubmission.submission_id,
+        jobId: firstJobInResponse.job_id,
         fragment: { status: 'FINISHED' }
       });
 
       expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
-        submissionId: successfulSubmission.submissionId,
-        jobId: secondJobInResponse.jobId,
+        submissionId: successfulSubmission.submission_id,
+        jobId: secondJobInResponse.job_id,
         fragment: { status: 'FAILURE' }
       });
     });
@@ -199,7 +199,7 @@ describe('blast epics', () => {
             const jobId = req.params.jobId as string;
             if (!jobMap[jobId]) {
               jobMap[jobId] = true;
-              if (jobId === firstJobInResponse.jobId) {
+              if (jobId === firstJobInResponse.job_id) {
                 return res(ctx.status(404));
               } else {
                 return res.networkError('Failed to connect');
@@ -236,7 +236,7 @@ describe('blast epics', () => {
     jest
       .spyOn(blastStorageService, 'getAllBlastSubmissions')
       .mockImplementation(async () => ({
-        [successfulSubmission.submissionId]: storedBlastSubmission
+        [successfulSubmission.submission_id]: storedBlastSubmission
       }));
 
     it('polls status of unfinished jobs', async () => {
@@ -273,7 +273,7 @@ describe('blast epics', () => {
 
       // check that the job status gets updated in indexedDB
       expect(blastStorageService.updateSavedBlastJob).toHaveBeenCalledWith({
-        submissionId: successfulSubmission.submissionId,
+        submissionId: successfulSubmission.submission_id,
         jobId: unfinishedJob.jobId,
         fragment: { status: 'FINISHED' }
       });

@@ -33,13 +33,13 @@ export type BlastSubmissionResponse = {
   jobs: Array<SubmittedJob | RejectedJob>;
 };
 
-type SubmittedJob = {
+export type SubmittedJob = {
   job_id: string;
   sequence_id: number;
   genome_id: string;
 };
 
-type RejectedJob = {
+export type RejectedJob = {
   sequence_id: number;
   genome_id: string;
   error: string;
