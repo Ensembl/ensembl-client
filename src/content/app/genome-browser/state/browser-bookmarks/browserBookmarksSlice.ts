@@ -67,7 +67,7 @@ export const updatePreviouslyViewedObjectsAndSave =
       return;
     }
 
-    const previouslyViewedObjects = [...getPreviouslyViewedObjects(state)];
+    const previouslyViewedObjects = getPreviouslyViewedObjects(state);
 
     const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
       (entity) => entity.object_id === activeFocusObject.object_id
@@ -112,7 +112,7 @@ export const updatePreviouslyViewedObjectsAndSave =
     dispatch(
       bookmarksSlice.actions.updatePreviouslyViewedObjects({
         activeGenomeId,
-        updatedObjects
+        previouslyViewedObjects: previouslyViewedObjectsSlice
       })
     );
   };
@@ -139,11 +139,11 @@ const bookmarksSlice = createSlice({
       state,
       action: PayloadAction<{
         activeGenomeId: string;
-        updatedObjects: PreviouslyViewedObject[];
+        previouslyViewedObjects: PreviouslyViewedObject[];
       }>
     ) {
-      const { activeGenomeId, updatedObjects } = action.payload;
-      state.previouslyViewedObjects[activeGenomeId] = updatedObjects;
+      const { activeGenomeId, previouslyViewedObjects } = action.payload;
+      state.previouslyViewedObjects[activeGenomeId] = previouslyViewedObjects;
     }
   }
 });
