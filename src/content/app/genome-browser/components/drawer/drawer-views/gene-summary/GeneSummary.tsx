@@ -87,7 +87,7 @@ const GeneSummary = () => {
 
   return (
     <div>
-      <div className={classNames(styles.row, styles.responsiveRow)}>
+      <div className={styles.row}>
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>

@@ -21,7 +21,6 @@
 
   .value {
     grid-column: value;
-    min-width: 880px;
     & > span + span {
       margin-left: 10px;
     }
@@ -32,13 +31,6 @@
   }
   .geneName {
     width: 60ch;
-  }
-}
-
-.responsiveRow {
-  > .value {
-    width: 100%;
-    min-width: 100%;
   }
 }
 
