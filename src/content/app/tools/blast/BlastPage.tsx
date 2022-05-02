@@ -22,7 +22,12 @@ import loadable from '@loadable/component';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 const BlastForm = loadable(() => import('./views/blast-form/BlastForm'));
-const BlastJobs = loadable(() => import('./views/blast-jobs/BlastJobs'));
+const BlastUnviewedSubmissions = loadable(
+  () => import('./views/blast-unviewed-submissions/BlastUnviewedSubmissions')
+);
+const BlastJobs = loadable(
+  () => import('./views/blast-submissions/BlastSubmissions')
+);
 
 const pageDescription = `
 BLAST stands for Basic Local Alignment Search Tool.
@@ -41,7 +46,11 @@ const BrowserPage = () => {
       {hasMounted && (
         <Routes>
           <Route index element={<BlastForm />} />
-          <Route path="jobs" element={<BlastJobs />} />
+          <Route
+            path="unviewed-submissions"
+            element={<BlastUnviewedSubmissions />}
+          />
+          <Route path="submissions" element={<BlastJobs />} />
         </Routes>
       )}
     </>

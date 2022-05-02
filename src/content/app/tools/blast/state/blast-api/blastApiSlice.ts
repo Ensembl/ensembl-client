@@ -100,5 +100,5 @@ const blastApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useBlastConfigQuery } = blastApiSlice;
+export const { useBlastConfigQuery, useSubmitBlastMutation } = blastApiSlice;
 export const { submitBlast } = blastApiSlice.endpoints;

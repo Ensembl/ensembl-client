@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { useAppSelector } from 'src/store';
 
-import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
-
+import { useSubmitBlastMutation } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
 
@@ -29,6 +29,8 @@ import { getBlastFormData } from 'src/content/app/tools/blast/state/blast-form/b
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type {
   Species,
@@ -38,7 +40,6 @@ import type {
   BlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
-import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 export type PayloadParams = {
   species: Species[];
@@ -49,51 +50,27 @@ export type PayloadParams = {
   };
 };
 
-type BlastSubmissionResponse = {
-  submissionId: string;
-  submission: BlastSubmission;
-};
-
 const BlastJobSubmit = () => {
   const { sequences } = useBlastInputSequences();
   const selectedSpeciesIds = useAppSelector(getSelectedSpeciesIds);
-  const dispatch = useAppDispatch();
+  const [submitBlast] = useSubmitBlastMutation();
+  const navigate = useNavigate();
 
   const isDisabled = !isBlastFormValid(selectedSpeciesIds, sequences);
 
   const blastFormData = useAppSelector(getBlastFormData);
 
-  const onBlastSubmit = async () => {
+  const onBlastSubmit = () => {
     const payload = createBlastSubmissionData(blastFormData);
-
-    const submission = dispatch(submitBlast.initiate(payload));
-    submission.then((response) => {
-      submission.reset(); // prevent indefinite caching of subscription result
-      if ('data' in response) {
-        onSubmitSuccess(response.data);
-      }
-    });
-  };
-
-  const onSubmitSuccess = (response: BlastSubmissionResponse) => {
-    // TODO: change the temporary implementation of this function with a more permanent one
-    const firstJobId = response.submission.results[0].jobId;
-    if (!firstJobId) {
-      return;
-    }
-
-    const resultPageUrl = `https://wwwdev.ebi.ac.uk/Tools/services/web/toolresult.ebi?jobId=${firstJobId}`;
-
-    const resultTab = window.open(resultPageUrl, '_blank');
-    if (resultTab !== null) {
-      resultTab.focus();
-    }
+    const submission = submitBlast(payload);
+    submission.then(() => submission.reset());
+    navigate(urlFor.blastUnviewedSubmissions());
   };
 
   return (
-    <LoadingButton onClick={onBlastSubmit} isDisabled={isDisabled}>
+    <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
       Run
-    </LoadingButton>
+    </PrimaryButton>
   );
 };
 
