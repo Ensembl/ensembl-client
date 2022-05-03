@@ -25,12 +25,18 @@ import styles from './ButtonLink.scss';
  * Using React-Router's Link component
  */
 
-type Props = NavLinkProps;
+type Props = NavLinkProps & {
+  isDisabled?: boolean;
+};
 
 const ButtonLink = (props: Props) => {
-  const { className, ...otherProps } = props;
+  const { className, isDisabled, ...otherProps } = props;
 
-  const inactiveLinkClasses = classNames(styles.buttonLink, className);
+  const inactiveLinkClasses = classNames(
+    styles.buttonLink,
+    { [styles.buttonLinkDisabled]: isDisabled },
+    className
+  );
 
   const activeLinkClasses = classNames(
     styles.buttonLink,

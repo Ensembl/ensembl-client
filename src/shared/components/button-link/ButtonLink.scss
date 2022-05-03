@@ -17,3 +17,10 @@
   pointer-events: none;
   cursor: default;
 }
+
+.buttonLinkDisabled {
+  border: var(--button-link-disabled-border, 1px solid #{$grey});
+  background-color: var(--button-link-disabled-background-color, #{$grey});
+  pointer-events: none;
+  cursor: default;
+}

@@ -30,6 +30,9 @@ export const ButtonLinkStory = () => (
     <div className={styles.wrapper}>
       <ButtonLink to="/foo">I am a link</ButtonLink>
       <ButtonLink to="/">I am a link</ButtonLink>
+      <ButtonLink to="/bar" isDisabled={true}>
+        I am disabled
+      </ButtonLink>
     </div>
   </MemoryRouter>
 );
