@@ -1,0 +1,26 @@
+@import 'src/styles/common';
+
+.buttonLink {
+  display: inline-block;
+  padding: var(--button-link-padding, 7px 18px);
+  border-radius: var(--button-link-border-radius, 4px);
+  border: var(--button-link-border, 1px solid #{$blue});
+  background-color: var(--button-link-background-color, #{$blue});
+  color: var(--button-link-color, #{$white});
+  font-weight: var(--button-link-font-weight, #{$bold});
+  user-select: none;
+}
+
+.buttonLinkActive {
+  border: var(--button-link-active-border, 1px solid #{$black});
+  background-color: var(--button-link-active-background-color, #{$black});
+  pointer-events: none;
+  cursor: default;
+}
+
+.buttonLinkDisabled {
+  border: var(--button-link-disabled-border, 1px solid #{$grey});
+  background-color: var(--button-link-disabled-background-color, #{$grey});
+  pointer-events: none;
+  cursor: default;
+}
