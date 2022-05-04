@@ -198,12 +198,12 @@ const BlastSettings = ({ config }: Props) => {
           })}
           {buildSelect({
             ...(config.parameters['hsps'] as BlastSelectSetting),
-            selectedOption: blastParameters.scores as string,
+            selectedOption: blastParameters.hsps as string,
             onChange: (value: string) => onBlastParameterChange('hsps', value)
           })}
           {buildSelect({
             ...(config.parameters['dropoff'] as BlastSelectSetting),
-            selectedOption: blastParameters.scores as string,
+            selectedOption: blastParameters.dropoff as string,
             onChange: (value: string) =>
               onBlastParameterChange('dropoff', value)
           })}
