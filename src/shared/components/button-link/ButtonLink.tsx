@@ -30,7 +30,7 @@ type Props = NavLinkProps & {
 };
 
 const ButtonLink = (props: Props) => {
-  const { className, isDisabled, ...otherProps } = props;
+  const { className, isDisabled, children, ...otherProps } = props;
 
   const inactiveLinkClasses = classNames(
     styles.buttonLink,
@@ -44,13 +44,17 @@ const ButtonLink = (props: Props) => {
     className
   );
 
-  return (
+  return isDisabled ? (
+    <span className={inactiveLinkClasses}>{children}</span>
+  ) : (
     <NavLink
       {...otherProps}
       className={({ isActive }) =>
         isActive ? activeLinkClasses : inactiveLinkClasses
       }
-    />
+    >
+      {children}
+    </NavLink>
   );
 };
 
