@@ -80,7 +80,10 @@ const mockState = merge({}, initialState, {
 
 const expectedPayload = {
   species: selectedSpecies,
-  querySequences: sequences.map((seq) => toFasta(seq)),
+  sequences: sequences.map((seq, index) => ({
+    id: index + 1,
+    value: toFasta(seq)
+  })),
   parameters: {
     title: jobName,
     database,

@@ -42,7 +42,7 @@ import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-re
 
 export type PayloadParams = {
   species: Species[];
-  querySequences: string[];
+  sequences: { id: number; value: string }[];
   parameters: Partial<Record<BlastParameterName, string>> & {
     title: string;
     stype: SequenceType;
@@ -100,13 +100,16 @@ const BlastJobSubmit = () => {
 export const createBlastSubmissionData = (
   blastFormData: BlastFormState
 ): PayloadParams => {
-  const sequences = blastFormData.sequences.map((sequence) =>
-    toFasta(sequence)
-  );
+  // labelling sequences with complely artificial identifiers
+  // so that job ids in the response can be matched to individual combinations of sequences and genome ids
+  const sequences = blastFormData.sequences.map((sequence, index) => ({
+    id: index + 1,
+    value: toFasta(sequence)
+  }));
 
   return {
     species: blastFormData.selectedSpecies,
-    querySequences: sequences,
+    sequences,
     parameters: {
       title: blastFormData.settings.jobName,
       database: blastFormData.settings.parameters.database,

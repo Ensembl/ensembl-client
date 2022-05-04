@@ -19,7 +19,8 @@ import times from 'lodash/times';
 
 import type {
   BlastSubmissionPayload,
-  BlastSubmissionResponse
+  BlastSubmissionResponse,
+  SubmittedJob
 } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import type {
   BlastSubmission,
@@ -38,7 +39,7 @@ export const createBlastSubmission = (
 
   const submission = {
     species: [human],
-    querySequences: ['ACGT'],
+    sequences: [{ id: 1, value: 'ACGT' }],
     parameters: {}
   };
 
@@ -52,7 +53,7 @@ export const createBlastSubmissionResponse = (
   fragment: Partial<BlastSubmissionResponse> = {}
 ): BlastSubmissionResponse => {
   const submission = {
-    submissionId: faker.datatype.uuid(),
+    submission_id: faker.datatype.uuid(),
     jobs: times(3, createSuccessfulBlastJobInSubmissionResponse)
   };
 
@@ -62,11 +63,14 @@ export const createBlastSubmissionResponse = (
   };
 };
 
-export const createSuccessfulBlastJobInSubmissionResponse = () => {
-  return {
-    jobId: faker.datatype.uuid()
+export const createSuccessfulBlastJobInSubmissionResponse =
+  (): SubmittedJob => {
+    return {
+      genome_id: 'human-genome-id',
+      sequence_id: 1,
+      job_id: faker.datatype.uuid()
+    };
   };
-};
 
 export const createRunningJobStatusResponse = (): { status: JobStatus } => ({
   status: 'RUNNING'
@@ -93,7 +97,7 @@ export const createStoredBlastSubmission = (
   const submission = {
     submittedData: {
       species: [human],
-      sequences: ['ACGT'],
+      sequences: [{ id: 1, value: 'ACGT' }],
       parameters: {}
     },
     results: [createStoredBlastJobResult()],
@@ -111,6 +115,8 @@ export const createStoredBlastJobResult = (
 ) => {
   return {
     jobId: faker.datatype.uuid(),
+    sequenceId: 1,
+    genomeId: 'human-genome-id',
     status: 'RUNNING' as JobStatus,
     seen: false,
     data: null,

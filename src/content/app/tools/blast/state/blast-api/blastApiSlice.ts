@@ -24,16 +24,25 @@ import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 
 export type BlastSubmissionPayload = {
   species: Species[];
-  querySequences: string[];
+  sequences: { id: number; value: string }[];
   parameters: Record<string, string>;
 };
 
 export type BlastSubmissionResponse = {
-  submissionId: string;
-  jobs: Array<{
-    jobId?: string;
-    error?: string;
-  }>;
+  submission_id: string;
+  jobs: Array<SubmittedJob | RejectedJob>;
+};
+
+export type SubmittedJob = {
+  job_id: string;
+  sequence_id: number;
+  genome_id: string;
+};
+
+export type RejectedJob = {
+  sequence_id: number;
+  genome_id: string;
+  error: string;
 };
 
 const blastApiSlice = restApiSlice.injectEndpoints({
@@ -50,8 +59,8 @@ const blastApiSlice = restApiSlice.injectEndpoints({
     >({
       query(payload) {
         const body = {
-          genomeIds: payload.species.map(({ genome_id }) => genome_id),
-          querySequences: payload.querySequences,
+          genome_ids: payload.species.map(({ genome_id }) => genome_id),
+          query_sequences: payload.sequences,
           parameters: payload.parameters
         };
         return {
@@ -61,20 +70,25 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         };
       },
       transformResponse(response: BlastSubmissionResponse, _, payload) {
-        const { submissionId, jobs } = response;
+        const { submission_id: submissionId, jobs } = response;
         // TODO: decide what to do when a submission returns error jobs
-        const results = jobs.map((job) => ({
-          jobId: job.jobId as string,
-          status: 'RUNNING',
-          seen: false,
-          data: null
-        }));
+        const results = jobs
+          .filter((job): job is SubmittedJob => 'job_id' in job)
+          .map((job) => ({
+            jobId: job.job_id,
+            genomeId: job.genome_id,
+            sequenceId: job.sequence_id,
+            status: 'RUNNING',
+            seen: false,
+            data: null
+          }));
+
         return {
           submissionId,
           submission: {
             submittedData: {
               species: payload.species,
-              sequences: payload.querySequences,
+              sequences: payload.sequences,
               parameters: payload.parameters
             },
             results,
