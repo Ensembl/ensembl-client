@@ -29,27 +29,36 @@ import BrowserCog from './BrowserCog';
 
 import {
   getBrowserCogList,
-  getBrowserCogTrackList,
   getBrowserSelectedCog
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
   CogList,
-  updateCogTrackList,
+  updateCogList,
   updateSelectedCog
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import {
+  getBrowserActiveFocusObjectId,
+  getBrowserActiveGenomeId
+} from '../../state/browser-general/browserGeneralSelectors';
 
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
   const browserCogList = useSelector(getBrowserCogList);
-  const browserCogTrackList = useSelector(getBrowserCogTrackList);
   const selectedCog = useSelector(getBrowserSelectedCog);
+
+  const genomeId = useSelector(getBrowserActiveGenomeId);
+  const objectId = useSelector(getBrowserActiveFocusObjectId);
 
   const dispatch = useDispatch();
 
   const { genomeBrowser } = useGenomeBrowser();
 
   const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
+    if (!genomeId || !objectId) {
+      return;
+    }
+
     const cogList: CogList = {};
 
     trackSummaryList.forEach((trackSummary: TrackSummary) => {
@@ -63,7 +72,7 @@ export const BrowserCogList = () => {
     });
 
     if (cogList) {
-      dispatch(updateCogTrackList(cogList));
+      dispatch(updateCogList({ genomeId, objectId, browserCogList: cogList }));
     }
   };
 
@@ -73,26 +82,33 @@ export const BrowserCogList = () => {
       (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
     );
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  }, [genomeBrowser, genomeId, objectId]);
 
-  const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
-    const posStyle = { top: pos + 'px' };
+  const cogs =
+    browserCogList &&
+    Object.entries(browserCogList).map(([name, pos]) => {
+      const posStyle = { top: pos + 'px' };
 
-    return (
-      <div key={name} className={styles.browserCogOuter} style={posStyle}>
-        <BrowserCog
-          cogActivated={selectedCog === name}
-          trackId={name}
-          updateSelectedCog={(trackId: string | null) =>
-            dispatch(updateSelectedCog(trackId))
-          }
-        />
-      </div>
-    );
-  });
+      if (!genomeId || !objectId) {
+        return;
+      }
+      return (
+        <div key={name} className={styles.browserCogOuter} style={posStyle}>
+          <BrowserCog
+            cogActivated={selectedCog === name}
+            trackId={name}
+            updateSelectedCog={(trackId: string | null) =>
+              dispatch(
+                updateSelectedCog({ genomeId, objectId, selectedCog: trackId })
+              )
+            }
+          />
+        </div>
+      );
+    });
 
   const transformStyle = {
-    transform: 'translate(0,' + browserCogList + 'px)'
+    transform: 'translate(0,' + 0 + 'px)'
   };
 
   return genomeBrowser ? (

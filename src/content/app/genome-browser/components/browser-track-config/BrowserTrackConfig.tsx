@@ -15,163 +15,40 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
-import {
-  updateTrackConfigNames,
-  updateTrackConfigLabel,
-  updateApplyToAll,
-  updateApplyToAllTrackLabels,
-  updateApplyToAllTrackNames
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-
-import {
-  getTrackConfigNames,
-  getTrackConfigLabel,
-  getApplyToAllConfig,
-  getBrowserCogTrackList,
-  getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
-
-import analyticsTracking from 'src/services/analytics-service';
-
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
-
-import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import RadioGroup, {
-  OptionValue,
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
 
 import styles from './BrowserTrackConfig.scss';
+import useBrowserTrackConfig from './useBrowserTrackConfig';
+import GeneTrackConfig from './track-config-views/GeneTrackConfig';
+import RegularTrackConfig from './track-config-views/RegularTrackConfig';
+import {
+  getTrackType,
+  TrackType
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { useSelector } from 'react-redux';
+import {
+  getApplyToAllConfig,
+  getBrowserSelectedCog
+} from '../../state/track-config/trackConfigSelectors';
+
+const getTrackConfigComponent = (trackType: TrackType) => {
+  switch (trackType) {
+    case TrackType.GENE:
+      return <GeneTrackConfig />;
+    case TrackType.REGULAR:
+      return <RegularTrackConfig />;
+  }
+};
 
 export const BrowserTrackConfig = () => {
   const applyToAllConfig = useSelector(getApplyToAllConfig);
-  const browserCogTrackList = useSelector(getBrowserCogTrackList);
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
-  const trackConfigLabel = useSelector(getTrackConfigLabel);
-  const trackConfigNames = useSelector(getTrackConfigNames);
+  const trackType = getTrackType(selectedCog);
 
-  const dispatch = useDispatch();
-
-  const shouldShowTrackName = trackConfigNames[selectedCog] || false;
-  const shouldShowTrackLabels =
-    selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
-
-  const { genomeBrowser } = useGenomeBrowser();
-
-  const updateName = (options: {
-    isTrackNameShown: boolean;
-    applyToAll: boolean;
-  }) => {
-    const { isTrackNameShown, applyToAll } = options;
-
-    const tracksToUpdate = [];
-    if (applyToAll) {
-      dispatch(updateApplyToAllTrackNames(isTrackNameShown));
-
-      Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(
-          updateTrackConfigNames({ selectedCog: name, isTrackNameShown })
-        );
-        tracksToUpdate.push(name);
-      });
-    } else {
-      dispatch(updateTrackConfigNames({ selectedCog, isTrackNameShown }));
-      tracksToUpdate.push(selectedCog);
-    }
-
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
-    });
-
-    genomeBrowser?.send({
-      type: isTrackNameShown
-        ? OutgoingActionType.TURN_ON_NAMES
-        : OutgoingActionType.TURN_OFF_NAMES,
-      payload: {
-        track_ids: tracksToUpdate
-      }
-    });
-  };
-
-  const toggleName = () => {
-    updateName({
-      isTrackNameShown: !shouldShowTrackName,
-      applyToAll: applyToAllConfig.isSelected
-    });
-  };
-
-  const updateLabel = (options: {
-    isTrackLabelShown: boolean;
-    applyToAll: boolean;
-  }) => {
-    const { isTrackLabelShown, applyToAll } = options;
-
-    const tracksToUpdate = [];
-
-    if (applyToAll) {
-      dispatch(updateApplyToAllTrackLabels(isTrackLabelShown));
-
-      Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(
-          updateTrackConfigLabel({ selectedCog: name, isTrackLabelShown })
-        );
-        tracksToUpdate.push(name);
-      });
-    } else {
-      dispatch(updateTrackConfigLabel({ selectedCog, isTrackLabelShown }));
-      tracksToUpdate.push(selectedCog);
-    }
-
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'feature_label_' + (isTrackLabelShown ? 'on' : 'off')
-    });
-
-    genomeBrowser?.send({
-      type: isTrackLabelShown
-        ? OutgoingActionType.TURN_ON_LABELS
-        : OutgoingActionType.TURN_OFF_LABELS,
-      payload: {
-        track_ids: tracksToUpdate
-      }
-    });
-  };
-
-  const toggleLabel = () => {
-    updateLabel({
-      isTrackLabelShown: !shouldShowTrackLabels,
-      applyToAll: applyToAllConfig.isSelected
-    });
-  };
-
-  const handleRadioChange = (value: OptionValue) => {
-    const shouldApplyToAll = value === 'all_tracks';
-
-    dispatch(updateApplyToAll(shouldApplyToAll));
-
-    updateName({
-      isTrackNameShown: shouldShowTrackName,
-      applyToAll: shouldApplyToAll
-    });
-    updateLabel({
-      isTrackLabelShown: shouldShowTrackLabels,
-      applyToAll: shouldApplyToAll
-    });
-
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action:
-        'apply_to_all - ' +
-        (applyToAllConfig.isSelected ? 'unselected' : 'selected')
-    });
-  };
+  const { handleRadioChange } = useBrowserTrackConfig();
 
   const radioOptions: RadioOptions = [
     {
@@ -195,27 +72,7 @@ export const BrowserTrackConfig = () => {
           }
         />
       </div>
-      <div className={styles.section}>
-        <div className={styles.subLabel}>Show</div>
-        <div>
-          <div className={styles.toggleWrapper}>
-            <label>Track name</label>
-            <SlideToggle
-              isOn={shouldShowTrackName}
-              onChange={toggleName}
-              className={styles.slideToggle}
-            />
-          </div>
-          <div className={styles.toggleWrapper}>
-            <label>Feature labels</label>
-            <SlideToggle
-              isOn={shouldShowTrackLabels}
-              onChange={toggleLabel}
-              className={styles.slideToggle}
-            />
-          </div>
-        </div>
-      </div>
+      {getTrackConfigComponent(trackType)}
     </div>
   );
 };

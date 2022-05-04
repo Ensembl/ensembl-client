@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
@@ -30,22 +29,26 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/b
 
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getApplyToAllConfig } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
+import { getAllTrackConfigs } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import {
+  TrackType,
+  type GeneTrackConfig
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { useSelector } from 'react-redux';
 
 const useGenomeBrowser = () => {
   const activeFocusObjectId = useSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const { allTrackLabelsOn, allTrackNamesOn } =
-    useSelector(getApplyToAllConfig);
+  const allTracksInfo = useSelector(getAllTrackConfigs);
 
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   if (!genomeBrowserContext) {
@@ -151,6 +154,69 @@ const useGenomeBrowser = () => {
     }
   };
 
+  const restoreTrackConfigStates = () => {
+    if (!activeGenomeId || !genomeBrowser) {
+      return;
+    }
+
+    type TrackConfigStates = {
+      on: string[];
+      off: string[];
+    };
+    const trackStateForNames: TrackConfigStates = {
+      on: [],
+      off: []
+    };
+    const trackStateForLabels: TrackConfigStates = {
+      on: [],
+      off: []
+    };
+
+    allTracksInfo &&
+      Object.keys(allTracksInfo).forEach((trackId) => {
+        allTracksInfo[trackId].showTrackName
+          ? trackStateForNames.on.push(trackId)
+          : trackStateForNames.off.push(trackId);
+      });
+
+    genomeBrowser?.send({
+      type: OutgoingActionType.TURN_ON_NAMES,
+      payload: {
+        track_ids: trackStateForNames.on
+      }
+    });
+
+    genomeBrowser?.send({
+      type: OutgoingActionType.TURN_OFF_NAMES,
+      payload: {
+        track_ids: trackStateForNames.off
+      }
+    });
+
+    allTracksInfo &&
+      Object.keys(allTracksInfo).forEach((trackId) => {
+        if (allTracksInfo[trackId].trackType === TrackType.GENE) {
+          allTracksInfo[trackId]
+            ? trackStateForLabels.on.push(trackId)
+            : trackStateForLabels.off.push(trackId);
+        }
+      });
+
+    genomeBrowser?.send({
+      type: OutgoingActionType.TURN_ON_LABELS,
+      payload: {
+        track_ids: trackStateForLabels.on
+      }
+    });
+
+    genomeBrowser?.send({
+      type: OutgoingActionType.TURN_OFF_LABELS,
+      payload: {
+        track_ids: trackStateForLabels.off
+      }
+    });
+  };
+
   const changeBrowserLocation = (locationData: {
     genomeId: string;
     focusId?: string;
@@ -178,6 +244,46 @@ const useGenomeBrowser = () => {
     genomeBrowser.send(action);
   };
 
+  const toggleTrackName = (params: {
+    trackId: string;
+    shouldShowTrackName: boolean;
+  }) => {
+    const { trackId, shouldShowTrackName } = params;
+
+    const trackIdWithoutPrefix = trackId.replace('track:', '');
+    const trackIdToSend =
+      trackIdWithoutPrefix === 'gene-feat' ? 'focus' : trackIdWithoutPrefix;
+
+    genomeBrowser?.send({
+      type: shouldShowTrackName
+        ? OutgoingActionType.TURN_ON_NAMES
+        : OutgoingActionType.TURN_OFF_NAMES,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    });
+  };
+
+  const toggleTrackLabel = (params: {
+    trackId: string;
+    shouldShowTrackLabel: boolean;
+  }) => {
+    const { trackId, shouldShowTrackLabel } = params;
+
+    const trackIdWithoutPrefix = trackId.replace('track:', '');
+    const trackIdToSend =
+      trackIdWithoutPrefix === 'gene-feat' ? 'focus' : trackIdWithoutPrefix;
+
+    genomeBrowser?.send({
+      type: shouldShowTrackLabel
+        ? OutgoingActionType.TURN_ON_LABELS
+        : OutgoingActionType.TURN_OFF_LABELS,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    });
+  };
+
   const toggleTrack = (params: { trackId: string; status: Status }) => {
     const { trackId, status } = params;
     const isTurnedOn = status === Status.SELECTED;
@@ -186,19 +292,21 @@ const useGenomeBrowser = () => {
     const trackIdToSend =
       trackIdWithoutPrefix === 'gene-feat' ? 'focus' : trackIdWithoutPrefix;
 
-    const action: OutgoingAction = {
+    genomeBrowser?.send({
       type: isTurnedOn
         ? OutgoingActionType.TURN_ON_TRACKS
         : OutgoingActionType.TURN_OFF_TRACKS,
       payload: {
         track_ids: [trackIdToSend]
       }
-    };
-    genomeBrowser?.send(action);
+    });
 
-    if (allTrackLabelsOn && isTurnedOn) {
+    const trackInfo =
+      allTracksInfo && (allTracksInfo[trackId] as GeneTrackConfig);
+
+    if (trackInfo?.showFeatureLabel && isTurnedOn) {
       genomeBrowser?.send({
-        type: allTrackLabelsOn
+        type: trackInfo?.showFeatureLabel
           ? OutgoingActionType.TURN_ON_LABELS
           : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
@@ -207,6 +315,8 @@ const useGenomeBrowser = () => {
       });
     }
 
+    const allTrackNamesOn =
+      allTracksInfo && allTracksInfo[trackId]?.showTrackName;
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: allTrackNamesOn
@@ -226,8 +336,11 @@ const useGenomeBrowser = () => {
     changeFocusObjectFromZmenu,
     changeBrowserLocation,
     restoreBrowserTrackStates,
+    restoreTrackConfigStates,
     setZmenus,
     toggleTrack,
+    toggleTrackName,
+    toggleTrackLabel,
     genomeBrowser,
     zmenus
   };

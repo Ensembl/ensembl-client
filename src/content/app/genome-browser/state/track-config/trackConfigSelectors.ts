@@ -15,21 +15,44 @@
  */
 
 import { RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
+import { defaultTrackConfigStateForObject } from './trackConfigSlice';
 
-export const getBrowserCogList = (state: RootState) =>
-  state.browser.trackConfig.browserCogList;
+export const getBrowserCogList = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig[genomeId]) {
+    return defaultTrackConfigStateForObject.browserCogList;
+  }
+  return state.browser.trackConfig[genomeId].browserCogList;
+};
 
-export const getBrowserCogTrackList = (state: RootState) =>
-  state.browser.trackConfig.browserCogTrackList;
+export const getBrowserSelectedCog = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig[genomeId]) {
+    return defaultTrackConfigStateForObject.selectedCog;
+  }
+  return state.browser.trackConfig[genomeId].selectedCog;
+};
+export const getTrackConfigForTrackId = (state: RootState, trackId: string) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig[genomeId]) {
+    return null;
+  }
+  return state.browser.trackConfig[genomeId].tracks[trackId];
+};
 
-export const getBrowserSelectedCog = (state: RootState) =>
-  state.browser.trackConfig.selectedCog;
+export const getAllTrackConfigs = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig[genomeId]) {
+    return null;
+  }
+  return state.browser.trackConfig[genomeId].tracks;
+};
 
-export const getTrackConfigNames = (state: RootState) =>
-  state.browser.trackConfig.trackConfigNames;
-
-export const getTrackConfigLabel = (state: RootState) =>
-  state.browser.trackConfig.trackConfigLabel;
-
-export const getApplyToAllConfig = (state: RootState) =>
-  state.browser.trackConfig.applyToAllConfig;
+export const getApplyToAllConfig = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig[genomeId]) {
+    return defaultTrackConfigStateForObject.applyToAllConfig;
+  }
+  return state.browser.trackConfig[genomeId]?.applyToAllConfig;
+};

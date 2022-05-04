@@ -27,7 +27,7 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import { BrowserCogList } from './BrowserCogList';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import { updateCogTrackList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { updateCogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
@@ -83,7 +83,7 @@ describe('<BrowserCogList />', () => {
       expect(container.querySelector('#browserCog')).toBeFalsy();
     });
 
-    it('calls updateCogTrackList when genome browser sends track summary updates', () => {
+    it('calls updateCogList when genome browser sends track summary updates', () => {
       mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
 
       renderComponent();
@@ -104,11 +104,11 @@ describe('<BrowserCogList />', () => {
 
       const dispatchedActions = store.getActions();
 
-      const updateCogTrackListAction = dispatchedActions.find(
-        (action) => action.type === updateCogTrackList.type
+      const updateCogListAction = dispatchedActions.find(
+        (action) => action.type === updateCogList.type
       );
 
-      expect(updateCogTrackListAction.payload).toEqual({
+      expect(updateCogListAction.payload).toEqual({
         'track-1': 100,
         'track-2': 200
       });
