@@ -41,7 +41,6 @@ import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -256,7 +255,7 @@ export const createMockBrowserState = () => {
       },
       browserSidebarModal: {
         [fakeGenomeId]: {
-          browserSidebarModalView: BrowserSidebarModalView.SEARCH
+          browserSidebarModalView: null
         }
       },
       browserBookmarks: {

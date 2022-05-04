@@ -68,7 +68,15 @@ describe('<TrackPanelModal />', () => {
 
   describe('rendering', () => {
     it('displays track pane modal view for search', () => {
-      const { container } = renderComponent();
+      const { activeGenomeId } = mockState.browser.browserGeneral;
+      const { container } = renderComponent(
+        set(
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          BrowserSidebarModalView.SEARCH,
+          mockState
+        )
+      );
+
       expect(container.querySelector('.title')?.innerHTML).toBe(
         browserSidebarModalTitles[BrowserSidebarModalView.SEARCH]
       );
@@ -76,7 +84,6 @@ describe('<TrackPanelModal />', () => {
 
     it('displays track panel modal view for downloads', () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
-
       const { container } = renderComponent(
         set(
           `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
@@ -93,7 +100,14 @@ describe('<TrackPanelModal />', () => {
 
   describe('behaviour', () => {
     it('closes modal when close button is clicked', () => {
-      const { container } = renderComponent();
+      const { activeGenomeId } = mockState.browser.browserGeneral;
+      const { container } = renderComponent(
+        set(
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          BrowserSidebarModalView.SHARE,
+          mockState
+        )
+      );
       const closeButton = container.querySelector('button.closeButton');
 
       jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');

@@ -43,10 +43,10 @@ describe('BrowserBookmarksStorageService', () => {
         mockStorageService
       );
 
-      const result = browserBookmarksStorageService.getBookmarks();
+      const result = browserBookmarksStorageService.getUserBookmarks();
 
       expect(mockStorageService.get).toHaveBeenCalledWith(
-        StorageKeys.BOOKMARKS
+        StorageKeys.USER_BOOKMARKS
       );
       expect(result).toEqual(bookmarks);
 
@@ -58,7 +58,7 @@ describe('BrowserBookmarksStorageService', () => {
 
       const browserSidebarModalStorageService =
         new BrowserBookmarksStorageService(mockStorageService);
-      const result = browserSidebarModalStorageService.getBookmarks();
+      const result = browserSidebarModalStorageService.getUserBookmarks();
 
       expect(result).toEqual({});
 
@@ -74,12 +74,12 @@ describe('BrowserBookmarksStorageService', () => {
 
       const updatedBookmarks: unknown = { bar: [] };
 
-      browserBookmarksStorageService.updateBookmarks(
+      browserBookmarksStorageService.updateUserBookmarks(
         updatedBookmarks as { [genomeId: string]: [] }
       );
 
       expect(mockStorageService.update).toHaveBeenCalledWith(
-        StorageKeys.BOOKMARKS,
+        StorageKeys.USER_BOOKMARKS,
         updatedBookmarks
       );
     });

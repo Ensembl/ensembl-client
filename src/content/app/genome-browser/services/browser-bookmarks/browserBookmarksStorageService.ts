@@ -21,7 +21,7 @@ import storageService, {
 import type { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
-  BOOKMARKS = 'genomeBrowser.bookmarks',
+  USER_BOOKMARKS = 'genomeBrowser.userBookmarks',
   PREVIOUSLY_VIEWED = 'genomeBrowser.previouslyViewedObjects'
 }
 
@@ -32,16 +32,21 @@ export class BrowserBookmarksStorageService {
     this.storageService = storageService;
   }
 
-  public getBookmarks(): {
-    [genomeId: string]: [];
+  // This is a placeholder function for manual bookmarks saved by users
+  public getUserBookmarks(): {
+    [genomeId: string]: unknown[];
   } {
-    return this.storageService.get(StorageKeys.BOOKMARKS) || {};
+    return this.storageService.get(StorageKeys.USER_BOOKMARKS) || {};
   }
 
-  public updateBookmarks(activeGenomeBookmarks: {
+  // This is another placeholder function for manual bookmarks saved by users
+  public updateUserBookmarks(activeGenomeBookmarks: {
     [genomeId: string]: [] | undefined;
   }) {
-    this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
+    this.storageService.update(
+      StorageKeys.USER_BOOKMARKS,
+      activeGenomeBookmarks
+    );
   }
 
   public getPreviouslyViewedObjects(): {
@@ -63,7 +68,7 @@ export class BrowserBookmarksStorageService {
     this.updatePreviouslyViewedObjects({
       [genomeIdToDelete]: undefined
     });
-    this.updateBookmarks({
+    this.updateUserBookmarks({
       [genomeIdToDelete]: undefined
     });
   }
