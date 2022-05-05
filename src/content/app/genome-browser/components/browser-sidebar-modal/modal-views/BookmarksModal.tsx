@@ -23,17 +23,18 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getPreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSelectors';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import styles from './TrackPanelBookmarks.scss';
+import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
-  const previouslyViewedObjects = useSelector(
-    getActiveGenomePreviouslyViewedObjects
-  ).slice(0, 20);
+  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects).slice(
+    0,
+    20
+  );
 
   const onLinkClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -77,10 +78,8 @@ export const PreviouslyViewedLinks = () => {
   );
 };
 
-export const TrackPanelBookmarks = () => {
-  const previouslyViewedObjects = useSelector(
-    getActiveGenomePreviouslyViewedObjects
-  );
+export const BookmarksModal = () => {
+  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects);
   const dispatch = useDispatch();
 
   const onMoreClick = () => {
@@ -95,7 +94,7 @@ export const TrackPanelBookmarks = () => {
   };
 
   return (
-    <section className={styles.trackPanelBookmarks}>
+    <section className={styles.bookmarksModal}>
       {previouslyViewedObjects.length ? (
         <>
           <PreviouslyViewedLinks />
@@ -110,4 +109,4 @@ export const TrackPanelBookmarks = () => {
   );
 };
 
-export default TrackPanelBookmarks;
+export default BookmarksModal;

@@ -15,17 +15,17 @@
  */
 
 import {
-  Action,
-  ActionCreator,
   createSlice,
-  PayloadAction,
-  ThunkAction
+  type Action,
+  type ActionCreator,
+  type PayloadAction,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -34,7 +34,7 @@ import {
   setInitialTrackPanelDataForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 import {
   getBrowserActiveFocusObjectIds,
@@ -43,11 +43,11 @@ import {
   getBrowserActiveFocusObjectId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import {
+import type {
   BrowserTrackStates,
   TrackActivityStatus
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type ChrLocation = [string, number, number];
 
@@ -189,7 +189,7 @@ export const deleteSpeciesInGenomeBrowser = (
     dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
 
     browserStorageService.deleteGenome(genomeIdToRemove);
-    trackPanelStorageService.deleteGenome(genomeIdToRemove);
+    browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
   };
 };
 

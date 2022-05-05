@@ -30,20 +30,18 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
-import {
-  getIsTrackPanelModalOpened,
-  getIsTrackPanelOpened
-} from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getIsBrowserSidebarModalOpened } from './state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './components/browser-bar/BrowserBar';
 import BrowserImage from './components/browser-image/BrowserImage';
 import BrowserNavBar from './components/browser-nav/BrowserNavBar';
+import BrowserSidebarToolstrip from './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip';
+import BrowserSidebarModal from './components/browser-sidebar-modal/BrowserSidebarModal';
 import TrackPanel from './components/track-panel/TrackPanel';
-import TrackPanelBar from './components/track-panel/components/track-panel-bar/TrackPanelBar';
 import TrackPanelTabs from './components/track-panel/components/track-panel-tabs/TrackPanelTabs';
-import TrackPanelModal from './components/track-panel/components/track-panel-modal/TrackPanelModal';
 import BrowserAppBar from './components/browser-app-bar/BrowserAppBar';
 import Drawer from './components/drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -58,7 +56,9 @@ export const Browser = () => {
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
+  const isBrowserSidebarModalOpened = useSelector(
+    getIsBrowserSidebarModalOpened
+  );
   const viewportWidth = useSelector(getBreakpointWidth);
 
   const { search } = useLocation(); // from document.location provided by the router
@@ -95,8 +95,8 @@ export const Browser = () => {
     </>
   );
 
-  const SideBarContent = isTrackPanelModalOpened ? (
-    <TrackPanelModal />
+  const SideBarContent = isBrowserSidebarModalOpened ? (
+    <BrowserSidebarModal />
   ) : (
     <TrackPanel />
   );
@@ -109,7 +109,7 @@ export const Browser = () => {
           mainContent={mainContent}
           sidebarContent={SideBarContent}
           sidebarNavigation={<TrackPanelTabs />}
-          sidebarToolstripContent={<TrackPanelBar />}
+          sidebarToolstripContent={<BrowserSidebarToolstrip />}
           onSidebarToggle={onSidebarToggle}
           topbarContent={<BrowserBar />}
           isSidebarOpen={isTrackPanelOpened}

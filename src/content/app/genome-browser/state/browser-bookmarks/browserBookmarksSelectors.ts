@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-const TrackPanelDownloads = () => {
-  return (
-    <section className="trackPanelDownloads">
-      <p>Export your browser configurations as images or data</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
+import type { RootState } from 'src/store';
+
+export const getAllPreviouslyViewedObjects = (state: RootState) =>
+  state.browser.browserBookmarks.previouslyViewedObjects;
+
+export const getPreviouslyViewedObjects = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? getAllPreviouslyViewedObjects(state)[activeGenomeId] || []
+    : [];
 };
-
-export default TrackPanelDownloads;

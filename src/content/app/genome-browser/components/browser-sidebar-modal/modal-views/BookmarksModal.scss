@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.trackPanelBookmarks {
+.bookmarksModal {
   margin-left: 10px;
 }
 
@@ -31,7 +31,8 @@
 
 .more {
   margin-top: 25px;
-  span { /* stylelint-disable-line no-descending-specificity */
+  span {
+    /* stylelint-disable-line no-descending-specificity */
     font-size: 12px;
     cursor: pointer;
     color: $blue;

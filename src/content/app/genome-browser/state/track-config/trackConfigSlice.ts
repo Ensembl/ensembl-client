@@ -22,7 +22,7 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 
 import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';

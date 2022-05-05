@@ -17,19 +17,17 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  getIsTrackPanelOpened,
-  getTrackPanelModalView
-} from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
+import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import {
-  toggleTrackPanel,
-  closeTrackPanelModal,
-  openTrackPanelModal,
-  TrackPanelModalView
-} from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+  closeBrowserSidebarModal,
+  openBrowserSidebarModal,
+  BrowserSidebarModalView
+} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
@@ -46,14 +44,14 @@ import { Status } from 'src/shared/types/status';
 
 import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export const TrackPanelBar = () => {
+export const BrowserSidebarToolstrip = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const trackPanelModalView = useSelector(getTrackPanelModalView);
+  const browserSidebarModalView = useSelector(getBrowserSidebarModalView);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const dispatch = useDispatch();
 
-  const toggleModalView = (selectedItem: TrackPanelModalView) => {
+  const toggleModalView = (selectedItem: BrowserSidebarModalView) => {
     if (!isTrackPanelOpened) {
       dispatch(toggleTrackPanel(true));
     }
@@ -62,7 +60,7 @@ export const TrackPanelBar = () => {
       dispatch(closeDrawer());
     }
 
-    if (selectedItem === TrackPanelModalView.SEARCH) {
+    if (selectedItem === BrowserSidebarModalView.SEARCH) {
       dispatch(
         clearSearch({
           app: 'genomeBrowser',
@@ -71,15 +69,15 @@ export const TrackPanelBar = () => {
       );
     }
 
-    if (selectedItem === trackPanelModalView) {
-      dispatch(closeTrackPanelModal());
+    if (selectedItem === browserSidebarModalView) {
+      dispatch(closeBrowserSidebarModal());
     } else {
-      dispatch(openTrackPanelModal(selectedItem));
+      dispatch(openBrowserSidebarModal(selectedItem));
     }
   };
 
   const getViewIconStatus = (selectedItem: string) => {
-    return selectedItem === trackPanelModalView && isTrackPanelOpened
+    return selectedItem === browserSidebarModalView && isTrackPanelOpened
       ? Status.SELECTED
       : Status.UNSELECTED;
   };
@@ -88,48 +86,48 @@ export const TrackPanelBar = () => {
     <>
       <ImageButton
         className={layoutStyles.sidebarIcon}
-        status={getViewIconStatus('search')}
+        status={getViewIconStatus(BrowserSidebarModalView.SEARCH)}
         description="Search"
-        onClick={() => toggleModalView(TrackPanelModalView.SEARCH)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.SEARCH)}
         image={SearchIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Tracks manager"
-        onClick={() => toggleModalView(TrackPanelModalView.TRACKS_MANAGER)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.TRACKS_MANAGER)}
         image={TracksManagerIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
-        status={getViewIconStatus('bookmarks')}
+        status={getViewIconStatus(BrowserSidebarModalView.BOOKMARKS)}
         description="Previously viewed"
-        onClick={() => toggleModalView(TrackPanelModalView.BOOKMARKS)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.BOOKMARKS)}
         image={BookmarkIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Personal data"
-        onClick={() => toggleModalView(TrackPanelModalView.PERSONAL_DATA)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.PERSONAL_DATA)}
         image={PersonalDataIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Share"
-        onClick={() => toggleModalView(TrackPanelModalView.SHARE)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.SHARE)}
         image={ShareIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Downloads"
-        onClick={() => toggleModalView(TrackPanelModalView.DOWNLOADS)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOADS)}
         image={DownloadIcon}
       />
     </>
   );
 };
 
-export default TrackPanelBar;
+export default BrowserSidebarToolstrip;

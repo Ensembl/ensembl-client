@@ -15,20 +15,15 @@
  */
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { defaultTrackPanelStateForGenome } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
-export const getActiveTrackPanel = (state: RootState) => {
+export const getIsBrowserSidebarModalOpened = (state: RootState) =>
+  Boolean(getBrowserSidebarModalView(state));
+
+export const getBrowserSidebarModalView = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeTrackPanel =
-    activeGenomeId && state.browser.trackPanel[activeGenomeId];
-
-  return activeTrackPanel || defaultTrackPanelStateForGenome;
+  return activeGenomeId
+    ? state.browser.browserSidebarModal[activeGenomeId]?.browserSidebarModalView
+    : null;
 };
-
-export const getSelectedTrackPanelTab = (state: RootState) =>
-  getActiveTrackPanel(state).selectedTrackPanelTab;
-
-export const getIsTrackPanelOpened = (state: RootState) =>
-  getActiveTrackPanel(state).isTrackPanelOpened;

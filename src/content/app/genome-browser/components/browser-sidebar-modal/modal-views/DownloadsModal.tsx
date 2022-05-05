@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const TrackPanelShare = () => {
+const DownloadsModal = () => {
   return (
-    <section className="trackPanelShare">
-      <p>Share your browser configurations or your own data views</p>
+    <section className="downloadsModal">
+      <p>Export your browser configurations as images or data</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TrackPanelShare;
+export default DownloadsModal;

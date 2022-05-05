@@ -14,57 +14,28 @@
  * limitations under the License.
  */
 
-import { PayloadAction } from '@reduxjs/toolkit';
-import { ThunkAction } from 'redux-thunk';
-import { createSlice } from '@reduxjs/toolkit';
-import { Action } from 'redux';
-import uniq from 'lodash/uniq';
-import pick from 'lodash/pick';
+import {
+  createSlice,
+  type PayloadAction,
+  type ThunkAction,
+  type Action
+} from '@reduxjs/toolkit';
 
-import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import analyticsTracking from 'src/services/analytics-service';
 
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveFocusObject
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import {
-  getActiveGenomePreviouslyViewedObjects,
-  getActiveTrackPanel
-} from './trackPanelSelectors';
-
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getActiveTrackPanel } from './trackPanelSelectors';
 import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { closeBrowserSidebarModal } from '../browser-sidebar-modal/browserSidebarModalSlice';
+
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { RootState } from 'src/store';
 
-export type PreviouslyViewedObject = {
-  genome_id: string;
-  object_id: string;
-  type: string;
-  label: string | string[];
-};
-
-export enum TrackPanelModalView {
-  SEARCH = 'search',
-  TRACKS_MANAGER = 'Tracks manager',
-  BOOKMARKS = 'Previously viewed',
-  PERSONAL_DATA = 'Personal data',
-  SHARE = 'Share',
-  DOWNLOADS = 'Downlods'
-}
-
-export type PreviouslyViewedObjects = {
-  [genomeId: string]: PreviouslyViewedObject[];
-};
+import type { RootState } from 'src/store';
 
 export type TrackPanelStateForGenome = Readonly<{
-  isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
-  trackPanelModalView: TrackPanelModalView | null;
-  bookmarks: PreviouslyViewedObject[];
-  previouslyViewedObjects: PreviouslyViewedObject[];
   highlightedTrackId: string;
   collapsedTrackIds: string[];
 }>;
@@ -74,21 +45,10 @@ export type TrackPanelState = Readonly<{
 }>;
 
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
-  isTrackPanelModalOpened: false,
-  bookmarks: [],
-  previouslyViewedObjects: [],
   selectedTrackPanelTab: TrackSet.GENOMIC,
-  trackPanelModalView: null,
-  highlightedTrackId: '',
   isTrackPanelOpened: true,
+  highlightedTrackId: '',
   collapsedTrackIds: []
-};
-
-export const pickPersistentTrackPanelProperties = (
-  trackPanel: Partial<TrackPanelStateForGenome>
-) => {
-  const persistentProperties = ['collapsedTrackIds', 'previouslyViewedObjects'];
-  return pick(trackPanel, persistentProperties);
 };
 
 export const toggleTrackPanel =
@@ -128,108 +88,12 @@ export const selectTrackPanelTab =
       action: 'selected'
     });
 
-    const data = {
-      ...getActiveTrackPanel(getState()),
-      selectedTrackPanelTab,
-      isTrackPanelModalOpened: false,
-      trackPanelModalView: null
-    };
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const changeTrackPanelModalViewForGenome =
-  (
-    trackPanelModalView: TrackPanelModalView
-  ): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const activeGenomeId = getBrowserActiveGenomeId(getState());
-
-    if (!activeGenomeId) {
-      return;
-    }
+    dispatch(closeBrowserSidebarModal());
 
     const data = {
       ...getActiveTrackPanel(getState()),
-      trackPanelModalView
+      selectedTrackPanelTab
     };
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const updatePreviouslyViewedObjectsAndSave =
-  (): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    const activeFocusObject = getBrowserActiveFocusObject(state);
-    if (!activeGenomeId || !activeFocusObject) {
-      return;
-    }
-
-    const previouslyViewedObjects = [
-      ...getActiveGenomePreviouslyViewedObjects(state)
-    ];
-
-    const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
-      (entity) => entity.object_id === activeFocusObject.object_id
-    );
-
-    if (isCurrentEntityPreviouslyViewed) {
-      return;
-    }
-
-    const stable_id =
-      activeFocusObject.type === 'gene'
-        ? activeFocusObject.versioned_stable_id || activeFocusObject.stable_id
-        : null;
-
-    const geneSymbol =
-      activeFocusObject.type === 'gene' &&
-      activeFocusObject.label !== activeFocusObject.stable_id
-        ? activeFocusObject.label
-        : null;
-
-    const label =
-      activeFocusObject.type === 'gene' && geneSymbol
-        ? [geneSymbol, stable_id as string]
-        : activeFocusObject.label;
-
-    const newObject = {
-      genome_id: activeFocusObject.genome_id,
-      object_id: activeFocusObject.object_id,
-      type: activeFocusObject.type,
-      label: label
-    };
-
-    const updatedEntitiesArray = [newObject, ...previouslyViewedObjects];
-
-    // Limit the total number of previously viewed objects to 250
-    const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
-
-    trackPanelStorageService.updatePreviouslyViewedObjects({
-      [activeGenomeId]: previouslyViewedObjectsSlice
-    });
-
-    const data = {
-      ...getActiveTrackPanel(state),
-      previouslyViewedObjects: previouslyViewedObjectsSlice
-    };
-
-    const persistentTrackProperties = pickPersistentTrackPanelProperties(data);
-    browserStorageService.updateTrackPanels({
-      [activeGenomeId]: persistentTrackProperties
-    });
 
     dispatch(
       updateTrackPanelForGenome({
@@ -258,97 +122,6 @@ export const changeHighlightedTrackId =
       updateTrackPanelForGenome({
         activeGenomeId,
         data
-      })
-    );
-  };
-
-export const openTrackPanelModal =
-  (
-    trackPanelModalView: TrackPanelModalView
-  ): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...getActiveTrackPanel(state),
-      isTrackPanelModalOpened: true,
-      trackPanelModalView
-    };
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const closeTrackPanelModal =
-  (): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...getActiveTrackPanel(state),
-      isTrackPanelModalOpened: false,
-      trackPanelModalView: null
-    };
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const updateCollapsedTrackIds =
-  (payload: {
-    trackId: string;
-    isCollapsed: boolean;
-  }): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    const trackPanel = getActiveTrackPanel(state);
-    let { collapsedTrackIds } = trackPanel;
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    if (payload.isCollapsed) {
-      collapsedTrackIds = uniq([...collapsedTrackIds, payload.trackId]);
-    } else {
-      collapsedTrackIds = collapsedTrackIds.filter(
-        (id) => id !== payload.trackId
-      );
-    }
-
-    const persistentTrackProperties = pickPersistentTrackPanelProperties({
-      collapsedTrackIds
-    });
-    browserStorageService.updateTrackPanels({
-      [activeGenomeId]: persistentTrackProperties
-    });
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data: {
-          collapsedTrackIds
-        }
       })
     );
   };

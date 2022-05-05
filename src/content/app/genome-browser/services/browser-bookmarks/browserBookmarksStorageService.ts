@@ -15,31 +15,38 @@
  */
 
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import type { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 export enum StorageKeys {
-  BOOKMARKS = 'trackPanel.bookmarks',
-  PREVIOUSLY_VIEWED = 'trackPanel.previouslyViewedObjects'
+  USER_BOOKMARKS = 'genomeBrowser.userBookmarks',
+  PREVIOUSLY_VIEWED = 'genomeBrowser.previouslyViewedObjects'
 }
 
-export class TrackPanelStorageService {
+export class BrowserBookmarksStorageService {
   private storageService: StorageServiceInterface;
 
   public constructor(storageService: StorageServiceInterface) {
     this.storageService = storageService;
   }
 
-  public getBookmarks(): { [genomeId: string]: PreviouslyViewedObject[] } {
-    return this.storageService.get(StorageKeys.BOOKMARKS) || {};
+  // This is a placeholder function for manual bookmarks saved by users
+  public getUserBookmarks(): {
+    [genomeId: string]: unknown[];
+  } {
+    return this.storageService.get(StorageKeys.USER_BOOKMARKS) || {};
   }
 
-  public updateActiveGenomeBookmarks(activeGenomeBookmarks: {
-    [genomeId: string]: PreviouslyViewedObject[];
+  // This is another placeholder function for manual bookmarks saved by users
+  public updateUserBookmarks(activeGenomeBookmarks: {
+    [genomeId: string]: [] | undefined;
   }) {
-    this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
+    this.storageService.update(
+      StorageKeys.USER_BOOKMARKS,
+      activeGenomeBookmarks
+    );
   }
 
   public getPreviouslyViewedObjects(): {
@@ -61,7 +68,10 @@ export class TrackPanelStorageService {
     this.updatePreviouslyViewedObjects({
       [genomeIdToDelete]: undefined
     });
+    this.updateUserBookmarks({
+      [genomeIdToDelete]: undefined
+    });
   }
 }
 
-export default new TrackPanelStorageService(storageService);
+export default new BrowserBookmarksStorageService(storageService);

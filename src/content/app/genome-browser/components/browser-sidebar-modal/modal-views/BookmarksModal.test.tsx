@@ -23,12 +23,16 @@ import userEvent from '@testing-library/user-event';
 import faker from '@faker-js/faker';
 import times from 'lodash/times';
 import set from 'lodash/fp/set';
+import merge from 'lodash/fp/merge';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import { TrackPanelBookmarks } from './TrackPanelBookmarks';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { BookmarksModal } from './BookmarksModal';
+
+import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
+import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -38,13 +42,6 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
-const genomeId = 'triticum_aestivum_GCA_900519105_1';
-const geneId = 'TraesCS3D02G273600';
-const versionedStableId = 'TraesCS3D02G273600.1';
-const region = '3D:2585940-2634711';
-const geneObjectId = `${genomeId}:gene:${geneId}`;
-const regionObjectId = `${genomeId}:region:${region}`;
-
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
@@ -52,164 +49,116 @@ const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   label: [faker.random.word(), faker.random.word()]
 });
 
-const previouslyViewedObjects = [
-  {
-    genome_id: genomeId,
-    object_id: geneObjectId,
-    type: 'gene',
-    label: [geneId, versionedStableId]
-  },
-  {
-    genome_id: genomeId,
-    object_id: regionObjectId,
-    type: 'region',
-    label: [region]
-  }
-];
-
-const example_objects = [
-  {
-    id: geneId,
-    type: 'gene'
-  },
-  {
-    id: region,
-    type: 'region'
-  }
-];
-
-const mockState = {
-  browser: {
-    browserGeneral: {
-      activeGenomeId: genomeId,
-      activeFocusObjectIds: {
-        [genomeId]: geneObjectId
-      }
-    },
-    trackPanel: {
-      [genomeId]: {
-        isTrackPanelModalOpened: true,
-        trackPanelModalView: '',
-        previouslyViewedObjects
-      }
-    }
-  },
-  drawer: {
-    [genomeId]: {
-      isDrawerOpened: false,
-      drawerView: null
-    }
-  },
-  focusObjects: {
-    [geneObjectId]: {
-      data: {
-        description: 'Heat shock protein 101',
-        genome_id: genomeId,
-        label: geneId,
-        location: {
-          chromosome: '3D',
-          end: 379539827,
-          start: 379535906
-        },
-        stable_id: geneId,
-        type: 'gene',
-        object_id: geneObjectId
-      }
-    },
-    [regionObjectId]: {
-      data: {
-        genome_id: genomeId,
-        label: region,
-        location: {
-          chromosome: '3D',
-          start: 2585940,
-          end: 2634711
-        },
-        type: 'region',
-        object_id: regionObjectId
-      }
-    }
-  },
-  genome: {
-    genomeInfo: {
-      genomeInfoData: {
-        [genomeId]: {
-          example_objects,
-          genome_id: genomeId
-        }
-      }
-    }
-  }
-};
-
+const mockState = createMockBrowserState();
 const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
+
+const { activeGenomeId } = mockState.browser.browserGeneral;
 
 const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
 
   return render(
     <Provider store={store}>
-      <TrackPanelBookmarks />
+      <BookmarksModal />
     </Provider>
   );
 };
 
-describe('<TrackPanelBookmarks />', () => {
+describe('<BookmarksModal />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('renders previously viewed links', () => {
-    renderComponent();
+    const geneId = 'TraesCS3D02G273600';
+    const region = '3D:2585940-2634711';
+    const geneObjectId = `${activeGenomeId}:gene:${geneId}`;
+    const regionObjectId = `${activeGenomeId}:region:${region}`;
+    const nonRandomPreviouslyViewedObjects = [
+      {
+        genome_id: activeGenomeId,
+        object_id: geneObjectId,
+        type: 'gene',
+        label: [geneId, faker.random.word()]
+      },
+      {
+        genome_id: activeGenomeId,
+        object_id: regionObjectId,
+        type: 'region',
+        label: [region]
+      }
+    ];
+    const newMockState = merge(mockState, {
+      browser: {
+        browserBookmarks: {
+          previouslyViewedObjects: {
+            [activeGenomeId]: nonRandomPreviouslyViewedObjects
+          }
+        }
+      }
+    });
+
+    renderComponent(newMockState);
+
     const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
     const regionLink = screen.getByText(region).closest('a') as HTMLElement;
 
-    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
-    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+    const expectedGeneHref = `/genome-browser/${activeGenomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${activeGenomeId}?focus=region:${region}`;
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
     expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
   });
 
   it('shows link to view more only when there are more than 20 objects', () => {
-    let wrapper = renderComponent(
-      set(
-        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
-        times(20, () => createRandomPreviouslyViewedObject()),
-        mockState
-      )
-    );
+    const newMockState = merge(mockState, {
+      browser: {
+        browserSidebarModal: {
+          [activeGenomeId]: {
+            browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
+          }
+        },
+        browserBookmarks: {
+          previouslyViewedObjects: {
+            [activeGenomeId]: times(20, () =>
+              createRandomPreviouslyViewedObject()
+            )
+          }
+        }
+      }
+    });
+    let wrapper = renderComponent(newMockState);
 
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector('.bookmarksModal .more')
     ).toBeFalsy();
 
     // Add 21 links to see if ellipsis is shown
     wrapper = renderComponent(
       set(
-        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.previouslyViewedObjects.${activeGenomeId}`,
         times(21, () => createRandomPreviouslyViewedObject()),
-        mockState
+        newMockState
       )
     );
 
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector('.bookmarksModal .more')
     ).toBeTruthy();
   });
 
   it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
     const { container } = renderComponent(
       set(
-        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        `browser.browserBookmarks.previouslyViewedObjects.${activeGenomeId}`,
         times(21, () => createRandomPreviouslyViewedObject()),
         mockState
       )
     );
 
     const moreLink = container.querySelector(
-      '.trackPanelBookmarks .more span'
+      '.bookmarksModal .more span'
     ) as HTMLElement;
 
     userEvent.click(moreLink);
@@ -221,7 +170,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     expect(updateDrawerViewAction.payload).toEqual({
-      genomeId,
+      genomeId: activeGenomeId,
       drawerView: { name: 'bookmarks' }
     });
   });

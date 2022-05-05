@@ -21,11 +21,11 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
-const TrackPanelSearch = () => {
+const SearchModal = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
   return (
-    <section className="trackPanelSearch">
+    <section className="searchModal">
       <div>
         {activeGenomeId && (
           <InAppSearch
@@ -39,4 +39,4 @@ const TrackPanelSearch = () => {
   );
 };
 
-export default TrackPanelSearch;
+export default SearchModal;

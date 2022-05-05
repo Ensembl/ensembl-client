@@ -24,9 +24,9 @@ import EnsemblGenomeBrowser, {
 import config from 'config';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
+import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 

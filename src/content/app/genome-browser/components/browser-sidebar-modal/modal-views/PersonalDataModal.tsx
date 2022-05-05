@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const TracksManager = () => {
+const PersonalDataModal = () => {
   return (
-    <section className="tracksManager">
-      <p>Save multiple browser configurations</p>
+    <section className="personaDataModal">
+      <p>Upload your own data to be displayed in the browser</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TracksManager;
+export default PersonalDataModal;

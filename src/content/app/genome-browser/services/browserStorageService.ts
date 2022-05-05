@@ -15,26 +15,26 @@
  */
 
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
-import {
+import type {
   BrowserTrackStates,
   GenomeTrackStates
 } from '../components/track-panel/trackPanelConfig';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import {
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type {
   TrackPanelState,
   TrackPanelStateForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 export enum StorageKeys {
-  ACTIVE_GENOME_ID = 'browser.activeGenomeId',
-  ACTIVE_ENS_OBJECT_ID = 'browser.activeFocusObjectId',
-  CHR_LOCATION = 'browser.chrLocation',
-  DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
-  TRACK_STATES = 'browser.trackStates',
-  TRACK_PANELS = 'browser.trackPanels'
+  ACTIVE_GENOME_ID = 'genomeBrowser.activeGenomeId',
+  ACTIVE_ENS_OBJECT_ID = 'genomeBrowser.activeFocusObjectId',
+  CHR_LOCATION = 'genomeBrowser.chrLocation',
+  DEFAULT_CHR_LOCATION = 'genomeBrowser.defaultChrLocation',
+  TRACK_STATES = 'genomeBrowser.trackStates',
+  TRACK_PANELS = 'genomeBrowser.trackPanels'
 }
 
 export class BrowserStorageService {

@@ -26,7 +26,7 @@ import { ZmenuController } from 'src/content/app/genome-browser/components/zmenu
 import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
 import {
   getRegionEditorActive,

@@ -23,18 +23,21 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-import { TrackPanelModal, trackPanelModalTitles } from './TrackPanelModal';
+import {
+  BrowserSidebarModal,
+  browserSidebarModalTitles
+} from './BrowserSidebarModal';
 
-import { TrackPanelModalView } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('./modal-views/TrackPanelSearch', () => () => (
-  <div className="trackPanelSearch" />
+jest.mock('./modal-views/SearchModal', () => () => (
+  <div className="searchModal" />
 ));
 
-jest.mock('./modal-views/TrackPanelDownloads', () => () => (
-  <div className="trackPanelDownloads" />
+jest.mock('./modal-views/DownloadsModal', () => () => (
+  <div className="downloadsModal" />
 ));
 
 jest.mock(
@@ -53,7 +56,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
-      <TrackPanelModal />
+      <BrowserSidebarModal />
     </Provider>
   );
 };
@@ -65,38 +68,54 @@ describe('<TrackPanelModal />', () => {
 
   describe('rendering', () => {
     it('displays track pane modal view for search', () => {
-      const { container } = renderComponent();
-      expect(container.querySelector('.title')?.innerHTML).toBe(
-        trackPanelModalTitles[TrackPanelModalView.SEARCH]
-      );
-    });
-
-    it('displays track panel modal view for downloads', () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
-
       const { container } = renderComponent(
         set(
-          `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
-          TrackPanelModalView.DOWNLOADS,
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          BrowserSidebarModalView.SEARCH,
           mockState
         )
       );
 
       expect(container.querySelector('.title')?.innerHTML).toBe(
-        trackPanelModalTitles[TrackPanelModalView.DOWNLOADS]
+        browserSidebarModalTitles[BrowserSidebarModalView.SEARCH]
+      );
+    });
+
+    it('displays track panel modal view for downloads', () => {
+      const { activeGenomeId } = mockState.browser.browserGeneral;
+      const { container } = renderComponent(
+        set(
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          BrowserSidebarModalView.DOWNLOADS,
+          mockState
+        )
+      );
+
+      expect(container.querySelector('.title')?.innerHTML).toBe(
+        browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOADS]
       );
     });
   });
 
   describe('behaviour', () => {
     it('closes modal when close button is clicked', () => {
-      const { container } = renderComponent();
+      const { activeGenomeId } = mockState.browser.browserGeneral;
+      const { container } = renderComponent(
+        set(
+          `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
+          BrowserSidebarModalView.SHARE,
+          mockState
+        )
+      );
       const closeButton = container.querySelector('button.closeButton');
 
-      jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
+      jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
 
       userEvent.click(closeButton as HTMLElement);
-      expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalledTimes(1);
+      expect(
+        browserSidebarModalActions.closeBrowserSidebarModal
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });
