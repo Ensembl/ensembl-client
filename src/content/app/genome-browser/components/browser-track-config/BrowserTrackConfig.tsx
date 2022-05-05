@@ -47,7 +47,6 @@ export const BrowserTrackConfig = () => {
   const applyToAllConfig = useSelector(getApplyToAllConfig);
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
   const trackType = getTrackType(selectedCog);
-
   const { handleRadioChange } = useBrowserTrackConfig();
 
   const radioOptions: RadioOptions = [

@@ -105,6 +105,15 @@ export const getTracksStateInfo = (
   trackCategories: GenomeTrackCategory[]
 ) => {
   const tracksInfo: TrackInfo = {};
+
+  tracksInfo['gene-focus'] = {
+    showMoreTranscripts: false,
+    showTranscriptIds: false,
+    showTrackName: false,
+    showFeatureLabel: true,
+    trackType: TrackType.GENE
+  };
+
   trackCategories.forEach((category) => {
     category.track_list.forEach((track) => {
       const trackId = track.track_id.replace('track:', '');

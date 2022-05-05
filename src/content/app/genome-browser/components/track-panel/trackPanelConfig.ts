@@ -62,5 +62,5 @@ export type BrowserTrackStates = {
 };
 
 export enum TrackId {
-  GENE = 'track:gene-feat'
+  GENE = 'track:focus'
 }

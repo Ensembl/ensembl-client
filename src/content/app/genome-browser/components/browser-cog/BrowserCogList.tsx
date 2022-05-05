@@ -49,7 +49,6 @@ export const BrowserCogList = () => {
 
   const genomeId = useSelector(getBrowserActiveGenomeId);
   const objectId = useSelector(getBrowserActiveFocusObjectId);
-
   const dispatch = useDispatch();
 
   const { genomeBrowser } = useGenomeBrowser();
@@ -67,7 +66,11 @@ export const BrowserCogList = () => {
         trackSummary['switch-id'] &&
         !cogList[trackSummary['switch-id']]
       ) {
-        cogList[trackSummary['switch-id']] = Number(trackSummary.offset);
+        const trackId =
+          trackSummary['switch-id'] === 'focus'
+            ? 'gene-focus'
+            : trackSummary['switch-id'];
+        cogList[trackId] = Number(trackSummary.offset);
       }
     });
 

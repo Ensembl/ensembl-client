@@ -29,7 +29,7 @@ const mockStorageService = {
 
 const trackStates = {
   main: {
-    'gene-feat': 'active'
+    'gene-focus': 'active'
   },
   Assembly: {
     gc: 'inactive'

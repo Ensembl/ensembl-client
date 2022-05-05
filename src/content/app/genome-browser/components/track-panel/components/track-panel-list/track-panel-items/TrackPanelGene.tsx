@@ -45,7 +45,7 @@ type TrackPanelGeneProps = {
 };
 
 // TODO: figure out proper gene and transcript track naming conventions
-const GENE_TRACK_ID = 'track:gene-feat';
+const GENE_TRACK_ID = 'track:gene-focus';
 const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
