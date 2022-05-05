@@ -21,23 +21,28 @@ import {
   addSelectedSpecies,
   removeSelectedSpecies
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
-import SpeciesList from './SpeciesList';
+import speciesList from './speciesList';
+
+import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSpeciesSelector.scss';
 
 const BlastSpeciesSelector = () => {
   const dispatch = useDispatch();
-  const selectedSpecies = useSelector(getSelectedSpeciesIds);
+  const selectedSpeciesList = useSelector(getSelectedSpeciesList);
+  const selectedGenomeIds = selectedSpeciesList.map(
+    ({ genome_id }) => genome_id
+  );
 
-  const onSpeciesSelection = (isChecked: boolean, genomeId: string) => {
+  const onSpeciesSelection = (isChecked: boolean, species: Species) => {
     if (isChecked) {
-      dispatch(addSelectedSpecies({ genomeId }));
+      dispatch(addSelectedSpecies(species));
     } else {
-      dispatch(removeSelectedSpecies({ genomeId }));
+      dispatch(removeSelectedSpecies(species.genome_id));
     }
   };
 
@@ -53,19 +58,19 @@ const BlastSpeciesSelector = () => {
           </tr>
         </thead>
         <tbody>
-          {SpeciesList.map((item, index) => {
+          {speciesList.map((species, index) => {
             return (
               <tr key={index}>
-                <td>{item.common_name ? item.common_name : '-'}</td>
+                <td>{species.common_name ?? '-'}</td>
                 <td className={styles.scientificNameCol}>
-                  {item.scientific_name}
+                  {species.scientific_name}
                 </td>
-                <td className={styles.assemblyCol}>{item.assembly_name}</td>
+                <td className={styles.assemblyCol}>{species.assembly_name}</td>
                 <td className={styles.selectCol}>
                   <Checkbox
-                    checked={selectedSpecies.includes(item.genome_id)}
+                    checked={selectedGenomeIds.includes(species.genome_id)}
                     onChange={(isChecked) =>
-                      onSpeciesSelection(isChecked, item.genome_id)
+                      onSpeciesSelection(isChecked, species)
                     }
                   />
                 </td>

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
+import { configureStore, type Action } from '@reduxjs/toolkit';
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook
+} from 'react-redux';
 import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
@@ -26,7 +30,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import createRootReducer from './root/rootReducer';
 import rootEpic from './root/rootEpic';
 
-const epicMiddleware = createEpicMiddleware();
+const epicMiddleware = createEpicMiddleware<Action, Action, RootState>();
 
 const rootReducer = createRootReducer();
 
@@ -36,7 +40,7 @@ const middleware = [
   restApiSlice.middleware
 ];
 
-const preloadedState = (window as any).__PRELOADED_STATE__ || {};
+const preloadedState = (globalThis as any).__PRELOADED_STATE__ || {};
 
 export default function getReduxStore() {
   const store = configureStore({
@@ -47,7 +51,7 @@ export default function getReduxStore() {
     preloadedState
   });
 
-  epicMiddleware.run(rootEpic as any);
+  epicMiddleware.run(rootEpic);
 
   return store;
 }
@@ -56,3 +60,4 @@ type AppStore = ReturnType<typeof getReduxStore>;
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = AppStore['dispatch'];
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -19,7 +19,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import RadioGroup from './RadioGroup';
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import times from 'lodash/times';
 
 const onChange = jest.fn();

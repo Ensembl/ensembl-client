@@ -18,8 +18,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -59,7 +57,6 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
-  const [shouldShowSequence, showSequence] = useState(false);
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -155,32 +152,17 @@ const TranscriptSummary = (props: Props) => {
           </div>
         </div>
       </div>
-
-      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-        <div
-          className={classNames(
-            styles.row,
-            styles.spaceAbove,
-            styles.downloadRow
-          )}
-        >
-          <div className={styles.value}>
-            <ShowHide
-              label="Sequences"
-              isExpanded={shouldShowSequence}
-              onClick={() => showSequence(!shouldShowSequence)}
-            />
-          </div>
-          <div className={styles.value}>
-            {shouldShowSequence && (
-              <div className={styles.sequenceWrapper}>
-                <TranscriptSequenceView transcript={transcript} />
-              </div>
-            )}
-          </div>
+      <div
+        className={classNames(
+          styles.row,
+          styles.spaceAbove,
+          styles.downloadRow
+        )}
+      >
+        <div className={styles.value}>
+          <TranscriptSequenceView transcript={transcript} />
         </div>
-      )}
-
+      </div>
       <div
         className={classNames(
           styles.row,

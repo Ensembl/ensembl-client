@@ -111,7 +111,7 @@ describe('<TrackPanelTabs />', () => {
 
         container = renderComponent(
           set(
-            `browser.drawer.${activeGenomeId}.isDrawerOpened`,
+            `browser.drawer.general.${activeGenomeId}.isDrawerOpened`,
             true,
             mockState
           )

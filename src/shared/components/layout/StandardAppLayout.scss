@@ -59,16 +59,14 @@ $drawerWindowWidth: 45px;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% - 46px);
   height: 100%;
   display: flex;
   z-index: 5;
   transition: transform 0.3s ease-in-out;
 
   &Open {
-    transform: translateX(
-      calc(100% - #{$sidebarContentWidth} - #{$sidebarToolstripWidth})
-    );
+    transform: translateX(calc(100% - #{$sidebarContentWidth}));
   }
 
   &DrawerOpen {
@@ -76,7 +74,7 @@ $drawerWindowWidth: 45px;
   }
 
   &Closed {
-    transform: translateX(calc(100% - #{$sidebarToolstripWidth}));
+    transform: translateX(100%);
   }
 }
 
@@ -132,9 +130,12 @@ $drawerWindowWidth: 45px;
   height: 100%;
   flex-grow: 1;
   position: relative;
-  padding: 15px calc(#{$drawerWindowWidth} + 26px) 15px 30px;
+  padding: 15px 30px;
   border-left: solid $medium-light-grey 1px;
   background-color: white;
+  width: calc(
+    100% - #{$drawerWindowWidth} - #{$sidebarToolstripWidth} - #{$sidebarContentWidth}
+  );
 }
 
 .drawerWindow {
@@ -148,6 +149,6 @@ $drawerWindowWidth: 45px;
 
 .drawerClose {
   position: absolute;
-  right: calc(#{$drawerWindowWidth} + 10px);
-  top: 10px;
+  right: 14px;
+  top: 15px;
 }

@@ -19,6 +19,31 @@ import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
+import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { BlastSubmission } from '../blast-results/blastResultsSlice';
+
+export type BlastSubmissionPayload = {
+  species: Species[];
+  sequences: { id: number; value: string }[];
+  parameters: Record<string, string>;
+};
+
+export type BlastSubmissionResponse = {
+  submission_id: string;
+  jobs: Array<SubmittedJob | RejectedJob>;
+};
+
+export type SubmittedJob = {
+  job_id: string;
+  sequence_id: number;
+  genome_id: string;
+};
+
+export type RejectedJob = {
+  sequence_id: number;
+  genome_id: string;
+  error: string;
+};
 
 const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -27,8 +52,53 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         url: `${config.toolsApiBaseUrl}/blast/config`
       }),
       keepUnusedDataFor: 60 * 60 // one hour
+    }),
+    submitBlast: builder.mutation<
+      { submissionId: string; submission: BlastSubmission },
+      BlastSubmissionPayload
+    >({
+      query(payload) {
+        const body = {
+          genome_ids: payload.species.map(({ genome_id }) => genome_id),
+          query_sequences: payload.sequences,
+          parameters: payload.parameters
+        };
+        return {
+          url: `${config.toolsApiBaseUrl}/blast/job`,
+          method: 'POST',
+          body
+        };
+      },
+      transformResponse(response: BlastSubmissionResponse, _, payload) {
+        const { submission_id: submissionId, jobs } = response;
+        // TODO: decide what to do when a submission returns error jobs
+        const results = jobs
+          .filter((job): job is SubmittedJob => 'job_id' in job)
+          .map((job) => ({
+            jobId: job.job_id,
+            genomeId: job.genome_id,
+            sequenceId: job.sequence_id,
+            status: 'RUNNING',
+            seen: false,
+            data: null
+          }));
+
+        return {
+          submissionId,
+          submission: {
+            submittedData: {
+              species: payload.species,
+              sequences: payload.sequences,
+              parameters: payload.parameters
+            },
+            results,
+            submittedAt: Date.now()
+          } as BlastSubmission
+        };
+      }
     })
   })
 });
 
 export const { useBlastConfigQuery } = blastApiSlice;
+export const { submitBlast } = blastApiSlice.endpoints;

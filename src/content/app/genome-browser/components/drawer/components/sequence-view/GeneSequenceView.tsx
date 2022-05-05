@@ -17,60 +17,83 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { useAppSelector } from 'src/store';
 
-import RadioGroup, {
-  RadioOptions
-} from 'src/shared/components/radio-group/RadioGroup';
+import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
-import { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
+import useDrawerSequenceSettings from './useDrawerSequenceSettings';
+import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
 
-import styles from './SequenceView.scss';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-type Gene = {
-  slice: GeneSummaryQueryResult['gene']['slice'];
-};
+import DrawerSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/DrawerSequenceView';
+
+import type { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
+
+type Gene = Pick<GeneSummaryQueryResult['gene'], 'stable_id' | 'slice'>;
 
 type Props = {
   gene: Gene;
 };
 
 export const GeneSequenceView = (props: Props) => {
-  const sequenceType = 'genomicSequence';
-  const { checksum } = props.gene.slice.region.sequence;
-  const { start, end } = props.gene.slice.location;
-  const sequenceURL = urlFor.refget({ checksum, start, end });
+  const { gene } = props;
 
-  const radioOptions: RadioOptions = [
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const geneId = buildGeneId(genomeId, gene.stable_id);
+
+  const {
+    isExpanded,
+    toggleSequenceVisibility,
+    isReverseComplement,
+    toggleReverseComplement
+  } = useDrawerSequenceSettings({ genomeId, featureId: geneId });
+
+  const {
+    region: {
+      sequence: { checksum }
+    },
+    location: { start, end },
+    strand: { code: strand }
+  } = gene.slice;
+
+  const {
+    currentData: sequence,
+    isError,
+    isFetching,
+    refetch
+  } = useRefgetSequenceQuery(
     {
-      value: 'genomicSequence',
-      label: 'Genomic sequence'
-    }
-  ];
+      checksum,
+      start,
+      end,
+      strand
+    },
+    { skip: !isExpanded }
+  );
 
   return (
-    <div className={styles.layout}>
-      <div>
-        <div>XXXX bp</div>
-        <div className={styles.sequenceWrapper}>
-          Fetching sequence for {sequenceType} : {sequenceURL}
-        </div>
-      </div>
-      <div>
-        <div>blast control</div>
-        <div className={styles.selectionWrapper}>
-          <RadioGroup
-            options={radioOptions}
-            onChange={noop}
-            selectedOption={sequenceType}
-          />
-          <div className={styles.reverseWrapper}>
-            Reverse complement checkbox
-          </div>
-        </div>
-      </div>
-    </div>
+    <DrawerSequenceView
+      isExpanded={isExpanded}
+      isError={isError}
+      isLoading={isFetching}
+      refetch={refetch}
+      toggleSequenceVisibility={toggleSequenceVisibility}
+      sequence={sequence}
+      sequenceTypes={['genomic']}
+      selectedSequenceType="genomic"
+      isReverseComplement={isReverseComplement}
+      onSequenceTypeChange={noop}
+      onReverseComplementChange={toggleReverseComplement}
+    />
   );
 };
+
+const buildGeneId = (genomeId: string, geneStableId: string) =>
+  buildFocusObjectId({
+    genomeId,
+    type: 'gene',
+    objectId: geneStableId
+  });
 
 export default GeneSequenceView;

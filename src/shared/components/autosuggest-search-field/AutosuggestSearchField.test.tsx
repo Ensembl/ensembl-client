@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import times from 'lodash/times';
 import random from 'lodash/random';
 

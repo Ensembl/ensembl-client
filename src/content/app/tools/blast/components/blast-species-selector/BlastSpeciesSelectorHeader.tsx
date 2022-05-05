@@ -21,7 +21,7 @@ import {
   switchToSequencesStep,
   clearSelectedSpecies
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import { getSelectedSpeciesIds } from 'src/content/app/tools/blast//state/blast-form/blastFormSelectors';
+import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
@@ -35,7 +35,7 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
   const { compact } = props;
   const dispatch = useDispatch();
 
-  const selectedSpecies = useSelector(getSelectedSpeciesIds);
+  const selectedSpeciesList = useSelector(getSelectedSpeciesList);
 
   const onSwitchToSequence = () => {
     dispatch(switchToSequencesStep());
@@ -49,7 +49,9 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
     <div className={styles.header}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Blast against</span>
-        <span className={styles.speciesCounter}>{selectedSpecies.length}</span>
+        <span className={styles.speciesCounter}>
+          {selectedSpeciesList.length}
+        </span>
         <span className={styles.maxSpecies}>of 7 species</span>
         {compact && (
           <span className={styles.clearAll} onClick={onClearAll}>

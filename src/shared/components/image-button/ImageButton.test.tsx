@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 import { ImageButton, Props as ImageButtonProps } from './ImageButton';
 
@@ -25,9 +25,9 @@ import { Status } from 'src/shared/types/status';
 
 jest.mock(
   'src/shared/components/tooltip/Tooltip',
-  () => ({ children }: { children: any }) => (
-    <div className="tooltip">{children}</div>
-  )
+  () =>
+    ({ children }: { children: any }) =>
+      <div className="tooltip">{children}</div>
 );
 
 const defaultProps = {
@@ -96,8 +96,9 @@ describe('<ImageButton />', () => {
     });
 
     it('applies the respective className depending on the button status', () => {
-      const container = renderImageButton({ status: Status.SELECTED })
-        .container;
+      const container = renderImageButton({
+        status: Status.SELECTED
+      }).container;
 
       expect(container.querySelectorAll('.selected')).toHaveLength(1);
     });
@@ -158,8 +159,10 @@ describe('<ImageButton />', () => {
     });
 
     it('does not show tooltip if description is not provided', () => {
-      const container = renderImageButton({ ...props, description: '' })
-        .container;
+      const container = renderImageButton({
+        ...props,
+        description: ''
+      }).container;
 
       fireEvent.mouseEnter(container.querySelectorAll('.imageButton')[0]);
 

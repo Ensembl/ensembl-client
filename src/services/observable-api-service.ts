@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
+import { of, switchMap, catchError } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
 
 export const fetch = <T>(url: string) =>
-  ajax(url).pipe(
-    map((ajaxResponse) => ajaxResponse.response as T),
+  fromFetch(url).pipe(
+    switchMap((response) => {
+      if (response.ok) {
+        // OK return data
+        return response.json() as Promise<T>;
+      } else {
+        // Server is returning a status requiring the client to try something else.
+        return of({ error: true, message: `Error ${response.status}` });
+      }
+    }),
     catchError((err) => {
       // Network or other error, handle appropriately
       return of({ error: true, message: err.message });

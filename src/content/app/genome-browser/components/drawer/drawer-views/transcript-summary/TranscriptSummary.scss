@@ -21,8 +21,6 @@
 
   .value {
     grid-column: value;
-    // width: calc(100vw - 320px - 45px - 46px - 220px); // FIXME: decide whether we want to explicitly set the max-width
-
     & > span + span {
       margin-left: 10px;
     }
@@ -70,7 +68,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  column-gap: 30px;
+  row-gap: 10px;
 }
 
 .featureDetail {
@@ -78,7 +77,6 @@
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  padding-right: 30px;
 }
 
 .featureSymbol {

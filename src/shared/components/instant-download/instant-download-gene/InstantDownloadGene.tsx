@@ -133,8 +133,9 @@ const InstantDownloadGene = (props: Props) => {
     try {
       await fetchForGene(payload);
       props.onDownloadSuccess?.(payload);
-    } catch {
+    } catch (error) {
       props.onDownloadFailure?.(payload);
+      throw error;
     } finally {
       resetCheckboxes();
     }

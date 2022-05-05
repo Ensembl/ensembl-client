@@ -22,8 +22,12 @@ const DB_VERSION = 1;
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
     upgrade(db) {
+      // FIXME use constants for object store names
       if (!db.objectStoreNames.contains('contact-forms')) {
         db.createObjectStore('contact-forms');
+      }
+      if (!db.objectStoreNames.contains('blast-submissions')) {
+        db.createObjectStore('blast-submissions');
       }
     }
   });
@@ -39,17 +43,17 @@ class IndexedDB {
     return this.db;
   }
 
-  static async get(store: string, key: string) {
+  static async get(store: string, key: IDBValidKey) {
     const db = await this.getDB();
     return db.get(store, key);
   }
 
-  static async set(store: string, key: string, value: any) {
+  static async set(store: string, key: IDBValidKey, value: any) {
     const db = await this.getDB();
     return db.put(store, value, key);
   }
 
-  static async delete(store: string, key: string) {
+  static async delete(store: string, key: IDBValidKey) {
     const db = await this.getDB();
     return db.delete(store, key);
   }

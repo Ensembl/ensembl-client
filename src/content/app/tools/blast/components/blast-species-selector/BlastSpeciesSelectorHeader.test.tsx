@@ -70,6 +70,20 @@ const renderComponent = (
   };
 };
 
+const selectedHuman = {
+  genome_id: 'human-genome-id',
+  common_name: 'Human',
+  scientific_name: 'Homo sapiens',
+  assembly_name: 'GRCh38'
+};
+
+const selectedMouse = {
+  genome_id: 'mouse-genome-id',
+  common_name: 'Mouse',
+  scientific_name: 'Mus musculus',
+  assembly_name: 'GRCm39'
+};
+
 describe('SpeciesSelectorHeader', () => {
   describe('species counter', () => {
     it('starts with 0', () => {
@@ -79,7 +93,7 @@ describe('SpeciesSelectorHeader', () => {
     });
 
     it('displays the number of added species', () => {
-      const selectedSpecies = ['human', 'mouse'];
+      const selectedSpecies = [selectedHuman, selectedMouse];
       const { container } = renderComponent({ state: { selectedSpecies } });
       const speciesCounter = container.querySelector('.header .speciesCounter');
       expect(getNodeText(speciesCounter as HTMLElement)).toBe(
@@ -90,7 +104,7 @@ describe('SpeciesSelectorHeader', () => {
 
   describe('clear all control', () => {
     it('clears all selected species', () => {
-      const selectedSpecies = ['human', 'mouse'];
+      const selectedSpecies = [selectedHuman, selectedMouse];
       const { container, store } = renderComponent({
         state: { selectedSpecies }
       });

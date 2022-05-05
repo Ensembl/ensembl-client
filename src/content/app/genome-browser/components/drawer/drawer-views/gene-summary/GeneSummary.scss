@@ -15,7 +15,6 @@
 
   .value {
     grid-column: value;
-
     & > span + span {
       margin-left: 10px;
     }
@@ -48,7 +47,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  column-gap: 30px;
+  row-gap: 10px;
 }
 
 .featureDetail {
@@ -56,7 +56,6 @@
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  padding-right: 30px;
 }
 
 .featureSymbol {
@@ -84,10 +83,6 @@
 .downloadWrapper {
   margin-left: 40px;
   position: relative;
-}
-
-.sequenceWrapper {
-  margin-top: 20px;
 }
 
 .closeButton {

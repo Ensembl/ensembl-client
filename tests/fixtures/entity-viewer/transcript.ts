@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import times from 'lodash/times';
 
 import { createSlice } from './slice';
@@ -22,15 +22,19 @@ import { createProduct } from './product';
 import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { Exon, SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
-import { Slice } from 'src/shared/types/thoas/slice';
-import { FullCDS } from 'src/shared/types/thoas/cds';
-import { CDNA } from 'src/shared/types/thoas/cdna';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { ProductType } from 'src/shared/types/thoas/product';
-import { ExternalReference } from 'src/shared/types/thoas/externalReference';
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { FullTranscript } from 'src/shared/types/thoas/transcript';
+import type {
+  Exon,
+  SplicedExon,
+  PhasedExon
+} from 'src/shared/types/thoas/exon';
+import type { Slice } from 'src/shared/types/thoas/slice';
+import type { FullCDS } from 'src/shared/types/thoas/cds';
+import type { CDNA } from 'src/shared/types/thoas/cdna';
+import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { ProductType, type Product } from 'src/shared/types/thoas/product';
+import type { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 type CommonTranscriptFields = Omit<
   FullTranscript,
@@ -39,8 +43,8 @@ type CommonTranscriptFields = Omit<
 
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
-  'cds'
-> & { cds: FullCDS };
+  'cds' | 'product'
+> & { cds: FullCDS; product: Product };
 
 export type ProteinCodingTranscript = Omit<
   Omit<FullTranscript, 'gene'>,

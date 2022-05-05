@@ -18,8 +18,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
@@ -50,7 +48,6 @@ import styles from './GeneSummary.scss';
 const GeneSummary = () => {
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
-  const [shouldShowSequence, showSequence] = useState(false);
 
   const geneQueryParams = {
     geneId: focusGene.stable_id,
@@ -115,26 +112,11 @@ const GeneSummary = () => {
           </div>
         </div>
       </div>
-
-      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-        <div className={classNames(rowClasses, styles.downloadRow)}>
-          <div className={styles.value}>
-            <ShowHide
-              label="Sequences"
-              isExpanded={shouldShowSequence}
-              onClick={() => showSequence(!shouldShowSequence)}
-            />
-          </div>
-          <div className={styles.value}>
-            {shouldShowSequence && (
-              <div className={styles.sequenceWrapper}>
-                <GeneSequenceView gene={gene} />
-              </div>
-            )}
-          </div>
+      <div className={classNames(rowClasses, styles.downloadRow)}>
+        <div className={styles.value}>
+          <GeneSequenceView gene={gene} />
         </div>
-      )}
-
+      </div>
       <div className={classNames(rowClasses, styles.downloadRow)}>
         <div className={styles.value}>
           <ShowHide

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import times from 'lodash/times';
 
 import { createExternalReference } from './external-reference';
@@ -27,7 +27,7 @@ import {
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
   const length =
-    fragment?.length || faker.datatype.number({ min: 10, max: 100 });
+    fragment?.length || faker.datatype.number({ min: 50, max: 100 });
   const unversionedStableId = faker.datatype.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
@@ -54,8 +54,9 @@ const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
   return times(numberOfDomains, (index: number) => {
     const minCoordinate = maxDomainLength * index + 1;
     const maxCoordinate = maxDomainLength * (index + 1);
-    const middleCoordinate =
-      maxCoordinate - (maxCoordinate - minCoordinate) / 2;
+    const middleCoordinate = Math.floor(
+      maxCoordinate - (maxCoordinate - minCoordinate) / 2
+    );
     const start = faker.datatype.number({
       min: minCoordinate,
       max: middleCoordinate
