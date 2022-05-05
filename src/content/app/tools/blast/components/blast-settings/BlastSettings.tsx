@@ -166,21 +166,21 @@ const BlastSettings = ({ config }: Props) => {
               onChange: onDatabaseChange
             })}
           </div>
-          <div className={styles.mainSettings}>
+          <div>
             {buildSelect({
               ...(availableBlastPrograms as BlastSelectSetting),
               selectedOption: blastProgram,
               onChange: onBlastProgramChange
             })}
           </div>
-          <div className={styles.mainSettings}>
+          <div>
             {buildSelect({
               ...(getPresetsList(config) as BlastSelectSetting),
               selectedOption: searchSensitivity,
               onChange: onSearchSensitivityChange
             })}
           </div>
-          <div className={styles.parametersLabel}>
+          <div>
             <ShowHide
               label="Parameters"
               isExpanded={parametersExpanded}
