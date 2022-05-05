@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
@@ -44,12 +45,12 @@ import { Status } from 'src/shared/types/status';
 
 import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export const BrowserSidebarToolstrip = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const browserSidebarModalView = useSelector(getBrowserSidebarModalView);
-  const isDrawerOpened = useSelector(getIsDrawerOpened);
-  const dispatch = useDispatch();
+const BrowserSidebarToolstrip = () => {
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
+  const browserSidebarModalView = useAppSelector(getBrowserSidebarModalView);
+  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
+  const dispatch = useAppDispatch();
 
   const toggleModalView = (selectedItem: BrowserSidebarModalView) => {
     if (!isTrackPanelOpened) {

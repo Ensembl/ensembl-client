@@ -72,7 +72,7 @@ const TestingComponent = (props: TestingComponentProps) => {
   }
 
   if (error) {
-    return <div className="error">{error.message}</div>;
+    return <div className="error">{error.message as string}</div>;
   }
 
   return null;

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -67,7 +67,7 @@ describe('<TrackPanelModal />', () => {
   });
 
   describe('rendering', () => {
-    it('displays track pane modal view for search', () => {
+    it('displays sidebar modal view for search', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
@@ -77,12 +77,14 @@ describe('<TrackPanelModal />', () => {
         )
       );
 
-      expect(container.querySelector('.title')?.innerHTML).toBe(
-        browserSidebarModalTitles[BrowserSidebarModalView.SEARCH]
-      );
+      await waitFor(() => {
+        expect(container.querySelector('.title')?.innerHTML).toBe(
+          browserSidebarModalTitles[BrowserSidebarModalView.SEARCH]
+        );
+      });
     });
 
-    it('displays track panel modal view for downloads', () => {
+    it('displays track panel modal view for downloads', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
@@ -92,27 +94,34 @@ describe('<TrackPanelModal />', () => {
         )
       );
 
-      expect(container.querySelector('.title')?.innerHTML).toBe(
-        browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOADS]
-      );
+      await waitFor(() => {
+        expect(container.querySelector('.title')?.innerHTML).toBe(
+          browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOADS]
+        );
+      });
     });
   });
 
   describe('behaviour', () => {
-    it('closes modal when close button is clicked', () => {
+    it('closes the modal when the close button is clicked', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
           `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
-          BrowserSidebarModalView.SHARE,
+          BrowserSidebarModalView.SEARCH,
           mockState
         )
       );
+
+      await waitFor(() => {
+        expect(container.querySelector('.searchModal')).toBeTruthy();
+      });
+
       const closeButton = container.querySelector('button.closeButton');
 
       jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
 
-      userEvent.click(closeButton as HTMLElement);
+      await userEvent.click(closeButton as HTMLElement);
       expect(
         browserSidebarModalActions.closeBrowserSidebarModal
       ).toHaveBeenCalledTimes(1);

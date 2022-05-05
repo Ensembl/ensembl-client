@@ -23,7 +23,7 @@ import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
 
-import { BrowserSidebarToolstrip } from './BrowserSidebarToolstrip';
+import BrowserSidebarToolstrip from './BrowserSidebarToolstrip';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -87,7 +87,7 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(container.querySelectorAll('button').length).toBe(6);
     });
 
-    it('passes correct data to callbacks when buttons are clicked', () => {
+    it('passes correct data to callbacks when buttons are clicked', async () => {
       const { container } = renderComponent(
         set(
           `browser.browserSidebarModal.${fakeGenomeId}.browserSidebarModalView`,
@@ -99,7 +99,7 @@ describe('<BrowserSidebarToolstrip />', () => {
         (button) => button.innerHTML === BrowserSidebarModalView.SHARE
       ) as HTMLButtonElement;
 
-      userEvent.click(shareButton);
+      await userEvent.click(shareButton);
 
       const toggleBrowserSidebarModalAction = store
         .getActions()
@@ -120,7 +120,7 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
-    it('opens the track panel if it is closed when a button is clicked', () => {
+    it('opens the track panel if it is closed when a button is clicked', async () => {
       jest.spyOn(trackPanelActions, 'toggleTrackPanel');
 
       const newMockState = merge(mockState, {
@@ -143,7 +143,7 @@ describe('<BrowserSidebarToolstrip />', () => {
         (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
-      userEvent.click(bookmarksButton);
+      await userEvent.click(bookmarksButton);
 
       const toggleBrowserSidebarModalAction = store
         .getActions()
@@ -165,13 +165,13 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
-    it('causes browser sidebar modal to close if a pressed button is clicked again', () => {
+    it('causes browser sidebar modal to close if a pressed button is clicked again', async () => {
       const { container } = renderComponent();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
-      userEvent.click(bookmarksButton);
+      await userEvent.click(bookmarksButton);
 
       const toggleBrowserSidebarModalAction = store
         .getActions()
@@ -192,7 +192,7 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
-    it('closes drawer view when the modal view changes', () => {
+    it('closes drawer view when the modal view changes', async () => {
       jest.spyOn(drawerActions, 'closeDrawer');
 
       const { container } = renderComponent(
@@ -206,7 +206,7 @@ describe('<BrowserSidebarToolstrip />', () => {
         (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
 
-      userEvent.click(bookmarksButton);
+      await userEvent.click(bookmarksButton);
 
       expect(drawerActions.closeDrawer).toHaveBeenCalled();
     });

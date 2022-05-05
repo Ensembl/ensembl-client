@@ -49,7 +49,9 @@ describe('<BlastInputSequence />', () => {
         }
       });
 
-      fireEvent(textarea, pasteEvent);
+      act(() => {
+        fireEvent(textarea, pasteEvent);
+      });
 
       expect(commonProps.onCommitted).toHaveBeenCalledWith(testInput, null);
     });
@@ -68,7 +70,7 @@ describe('<BlastInputSequence />', () => {
       ) as HTMLInputElement;
 
       await act(async () => {
-        userEvent.upload(fileInput, file);
+        await userEvent.upload(fileInput, file);
         await setTimeout(0); // parsing file input is an asynchronous process; jumping to the back of event loop
       });
 
@@ -121,7 +123,7 @@ describe('<BlastInputSequence />', () => {
       expect(textarea.value).toBe(expectedTextareaContent);
     });
 
-    it('accepts typed-in input, and passes it to parent when user leaves the textarea', () => {
+    it('accepts typed-in input, and passes it to parent when user leaves the textarea', async () => {
       const elementIndex = random(0, 5);
       const { container, rerender } = render(
         <BlastInputSequence {...commonProps} index={elementIndex} />
@@ -131,10 +133,12 @@ describe('<BlastInputSequence />', () => {
       ) as HTMLTextAreaElement;
       const typedInSequence = 'AGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT';
 
-      userEvent.type(textarea, typedInSequence);
+      await userEvent.type(textarea, typedInSequence);
       expect(commonProps.onCommitted).not.toHaveBeenCalled();
 
-      textarea.blur();
+      act(() => {
+        textarea.blur();
+      });
       expect(commonProps.onCommitted).toHaveBeenCalledWith(
         typedInSequence,
         elementIndex
@@ -143,9 +147,13 @@ describe('<BlastInputSequence />', () => {
 
       // if index is not passed at all
       rerender(<BlastInputSequence {...commonProps} />);
-      textarea.focus();
-      userEvent.type(textarea, typedInSequence); // the previously typed in sequence has been overridden by synchronizing with the props after the blur event
-      textarea.blur();
+      act(() => {
+        textarea.focus();
+      });
+      await userEvent.type(textarea, typedInSequence); // the previously typed in sequence has been overridden by synchronizing with the props after the blur event
+      act(() => {
+        textarea.blur();
+      });
       expect(commonProps.onCommitted).toHaveBeenCalledWith(
         typedInSequence,
         null
@@ -154,7 +162,7 @@ describe('<BlastInputSequence />', () => {
   });
 
   describe('when filled', () => {
-    it('clears the input locally and reports to the parent', () => {
+    it('clears the input locally and reports to the parent', async () => {
       const onRemoveSequence = jest.fn();
       const inputIndex = faker.datatype.boolean() ? 1 : undefined; // an input box may receive an index property
       const { container } = render(
@@ -167,10 +175,10 @@ describe('<BlastInputSequence />', () => {
       const textarea = container.querySelector(
         'textarea'
       ) as HTMLTextAreaElement;
-      userEvent.type(textarea, 'AAAA');
+      await userEvent.type(textarea, 'AAAA');
 
       const deleteButton = container.querySelector('.deleteButton');
-      userEvent.click(deleteButton as HTMLElement);
+      await userEvent.click(deleteButton as HTMLElement);
 
       expect(textarea.value).toBe('');
       expect(onRemoveSequence).toHaveBeenCalledWith(inputIndex ?? null);

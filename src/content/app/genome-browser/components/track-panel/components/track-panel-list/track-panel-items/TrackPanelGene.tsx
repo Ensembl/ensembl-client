@@ -15,10 +15,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -56,7 +56,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     genomeId,
     geneId
   });
-  const trackStatus = useSelector((state: RootState) =>
+  const trackStatus = useAppSelector((state: RootState) =>
     getBrowserTrackState(state, {
       genomeId,
       objectId: focusObjectId,
@@ -67,7 +67,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   );
   const { toggleTrack, genomeBrowser } = useGenomeBrowser();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });

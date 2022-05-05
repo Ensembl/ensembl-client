@@ -72,7 +72,7 @@ describe('BrowserNavBarMain', () => {
     expect(container.querySelector('.browserNavBarRegionSwitcher')).toBeFalsy();
   });
 
-  it('renders RegionSwitcher when user clicks on Change', () => {
+  it('renders RegionSwitcher when user clicks on Change', async () => {
     const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
@@ -80,7 +80,7 @@ describe('BrowserNavBarMain', () => {
     const changeButton = container.querySelector(
       '.contentSwitcher'
     ) as HTMLSpanElement;
-    userEvent.click(changeButton);
+    await userEvent.click(changeButton);
 
     expect(container.querySelector('.chromosomeNavigator')).toBeFalsy();
     expect(
@@ -88,7 +88,7 @@ describe('BrowserNavBarMain', () => {
     ).toBeTruthy();
   });
 
-  it('renders chromosome visualization when user closes RegionSwitcher', () => {
+  it('renders chromosome visualization when user closes RegionSwitcher', async () => {
     const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
@@ -96,12 +96,12 @@ describe('BrowserNavBarMain', () => {
     const changeButton = container.querySelector(
       '.contentSwitcher'
     ) as HTMLSpanElement;
-    userEvent.click(changeButton);
+    await userEvent.click(changeButton);
 
     const closeButton = container.querySelector(
       '.closeButton'
     ) as HTMLSpanElement;
-    userEvent.click(closeButton);
+    await userEvent.click(closeButton);
 
     expect(container.querySelector('.chromosomeNavigator')).toBeTruthy();
     expect(container.querySelector('.browserNavBarRegionSwitcher')).toBeFalsy();

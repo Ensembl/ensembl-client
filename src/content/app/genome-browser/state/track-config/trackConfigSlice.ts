@@ -61,7 +61,7 @@ export const defaultTrackConfigState: TrackConfigState = {
 };
 
 export const updateTrackStatesAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());

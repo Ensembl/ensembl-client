@@ -113,7 +113,7 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('does not select a species when clicked', () => {
+    it('does not select a species when clicked', async () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
 
       const props = set('species.is_available', false, defaultProps);
@@ -122,7 +122,7 @@ describe('<PopularSpeciesButton />', () => {
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
-      userEvent.click(button);
+      await userEvent.click(button);
 
       expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
     });
@@ -137,7 +137,7 @@ describe('<PopularSpeciesButton />', () => {
       expect(button.classList.length).toBe(1); // has only .popularSpeciesButton class
     });
 
-    it('selects the species received from props when clicked', () => {
+    it('selects the species received from props when clicked', async () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
 
       const { container } = renderComponent({ props: defaultProps });
@@ -145,7 +145,7 @@ describe('<PopularSpeciesButton />', () => {
         '.popularSpeciesButton'
       ) as HTMLElement;
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
         defaultProps.species
@@ -172,7 +172,7 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('clears selected species when clicked', () => {
+    it('clears selected species when clicked', async () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
@@ -183,7 +183,7 @@ describe('<PopularSpeciesButton />', () => {
         '.popularSpeciesButton'
       ) as HTMLElement;
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       expect(
         speciesSelectorActions.clearSelectedSearchResult
@@ -212,7 +212,7 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('opens species page when clicked', () => {
+    it('opens species page when clicked', async () => {
       jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
@@ -223,7 +223,7 @@ describe('<PopularSpeciesButton />', () => {
         '.popularSpeciesButton'
       ) as HTMLElement;
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       expect(routerInfo.location?.pathname).toBe(
         urlFor.speciesPage({

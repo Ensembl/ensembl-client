@@ -86,14 +86,14 @@ describe('<Chevron />', () => {
       expect(chevron.classList.contains(iconClass)).toBe(true);
     });
 
-    it('registers clicks', () => {
+    it('registers clicks', async () => {
       const clickHandler = jest.fn();
       const { container } = render(
         <Chevron direction="down" onClick={clickHandler} />
       );
 
       const chevronButton = container.firstChild as HTMLElement;
-      userEvent.click(chevronButton);
+      await userEvent.click(chevronButton);
 
       expect(clickHandler).toHaveBeenCalledTimes(1);
     });

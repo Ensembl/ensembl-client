@@ -69,18 +69,18 @@ describe('RoundButton', () => {
     expect(button?.textContent).toBe(buttonText);
   });
 
-  it('calls onClick when clicked', () => {
+  it('calls onClick when clicked', async () => {
     const { container } = render(
       <RoundButton {...defaultProps}>I am round button</RoundButton>
     );
     const button = container.querySelector('button') as HTMLElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('does not call onClick if disabled', () => {
+  it('does not call onClick if disabled', async () => {
     const { container } = render(
       <RoundButton {...defaultProps} status={RoundButtonStatus.DISABLED}>
         I am round button
@@ -88,7 +88,7 @@ describe('RoundButton', () => {
     );
     const button = container.querySelector('button') as HTMLElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(onClick).not.toHaveBeenCalled();
   });

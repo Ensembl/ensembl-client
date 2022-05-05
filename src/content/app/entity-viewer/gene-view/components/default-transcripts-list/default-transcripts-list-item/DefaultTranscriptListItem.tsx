@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from 'src/store';
 
 import {
   getTranscriptMetadata,
@@ -57,7 +58,7 @@ export const DefaultTranscriptListItem = (
   const transcriptStartX = scale(relativeTranscriptStart) as number;
   const transcriptWidth = scale(transcriptLength) as number;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
 
   const handleTranscriptClick = () => {

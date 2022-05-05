@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect, ReactNode } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
 import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
@@ -162,14 +162,14 @@ const getExpandedContent = (props: ContentProps) => {
 };
 
 const SpeciesMainViewStats = () => {
-  const dispatch = useDispatch();
-  const activeGenomeId = useSelector(getActiveGenomeId);
-  const genomeStats = useSelector(getActiveGenomeStats);
-  const genomeUIState = useSelector(getActiveGenomeUIState);
-  const exampleFocusObjects = useSelector((state: RootState) =>
+  const dispatch = useAppDispatch();
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const genomeStats = useAppSelector(getActiveGenomeStats);
+  const genomeUIState = useAppSelector(getActiveGenomeUIState);
+  const exampleFocusObjects = useAppSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId)
   );
-  const species = useSelector((state: RootState) =>
+  const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
 

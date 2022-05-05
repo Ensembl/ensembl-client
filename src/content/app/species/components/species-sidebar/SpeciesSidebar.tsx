@@ -15,8 +15,9 @@
  */
 
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
@@ -28,9 +29,9 @@ import { fetchSidebarPayload } from 'src/content/app/species/state/sidebar/speci
 import styles from './SpeciesSidebar.scss';
 
 const SpeciesSidebar = () => {
-  const dispatch = useDispatch();
-  const activeGenomeId = useSelector(getActiveGenomeId);
-  const sidebarPayload = useSelector(getActiveGenomeSidebarPayload);
+  const dispatch = useAppDispatch();
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const sidebarPayload = useAppSelector(getActiveGenomeSidebarPayload);
   useEffect(() => {
     if (!sidebarPayload) {
       dispatch(fetchSidebarPayload());

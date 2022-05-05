@@ -15,11 +15,11 @@
  */
 
 import React, { useEffect, useState, memo, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 
@@ -52,20 +52,20 @@ import { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/Zmen
 import styles from './Browser.scss';
 
 export const Browser = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const browserNavOpenState = useSelector(getBrowserNavOpenState);
-  const isDrawerOpened = useSelector(getIsDrawerOpened);
-  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
-  const isBrowserSidebarModalOpened = useSelector(
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const browserNavOpenState = useAppSelector(getBrowserNavOpenState);
+  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
+  const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
+  const isBrowserSidebarModalOpened = useAppSelector(
     getIsBrowserSidebarModalOpened
   );
-  const viewportWidth = useSelector(getBreakpointWidth);
+  const viewportWidth = useAppSelector(getBreakpointWidth);
 
   const { search } = useLocation(); // from document.location provided by the router
   const urlSearchParams = new URLSearchParams(search);
   const focus = urlSearchParams.get('focus') || null;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { changeGenomeId } = useBrowserRouting();
 
   const { genomeBrowser } = useGenomeBrowser();

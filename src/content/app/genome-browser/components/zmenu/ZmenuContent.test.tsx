@@ -126,10 +126,10 @@ describe('<ZmenuContent />', () => {
   });
 
   describe('<ZmenuContentItem />', () => {
-    it('calls function to change focus feature when feature link is clicked', () => {
+    it('calls function to change focus feature when feature link is clicked', async () => {
       const { container } = renderZmenuContentItem();
 
-      userEvent.click(container.firstChild as HTMLDivElement);
+      await userEvent.click(container.firstChild as HTMLDivElement);
 
       expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledWith(
         defaultZmenuContentItemProps.featureId

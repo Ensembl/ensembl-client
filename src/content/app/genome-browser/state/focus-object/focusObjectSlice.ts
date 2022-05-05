@@ -113,7 +113,7 @@ const buildRegionObject = (payload: FocusObjectIdConstituents): FocusRegion => {
 };
 
 export const fetchExampleFocusObjects =
-  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
   async (dispatch, getState: () => RootState) => {
     const state = getState();
     const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);

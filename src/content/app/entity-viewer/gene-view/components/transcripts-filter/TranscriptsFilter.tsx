@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
@@ -102,14 +102,14 @@ const createInitialFilters = (transcripts: Props['transcripts']) => {
 };
 
 const TranscriptsFilter = (props: Props) => {
-  const filters = useSelector(getFilters);
-  const sortingRule = useSelector(getSortingRule);
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+  const filters = useAppSelector(getFilters);
+  const sortingRule = useAppSelector(getSortingRule);
+  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
+  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
   const { trackAppliedFilters, trackAppliedSorting } =
     useEntityViewerAnalytics();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const initialFilters: Filters = createInitialFilters(props.transcripts);
 

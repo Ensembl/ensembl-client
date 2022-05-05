@@ -55,11 +55,11 @@ describe('<SidebarModal />', () => {
     expect(content?.textContent).toBe(defaultProps.children);
   });
 
-  it('calls the onClose function when the close button is clicked', () => {
+  it('calls the onClose function when the close button is clicked', async () => {
     const { container } = renderSidebarModal();
     const closeButton = container.querySelector('.closeButton');
 
-    userEvent.click(closeButton as HTMLElement);
+    await userEvent.click(closeButton as HTMLElement);
 
     expect(onClose).toHaveBeenCalled();
   });

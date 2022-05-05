@@ -78,7 +78,7 @@ export const defaultGenomeKaryotypeState: GenomeKaryotypeState = {
 };
 
 export const fetchGenomeData =
-  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
   async (dispatch) => {
     await Promise.all([
       dispatch(fetchGenomeInfo(genomeId)),

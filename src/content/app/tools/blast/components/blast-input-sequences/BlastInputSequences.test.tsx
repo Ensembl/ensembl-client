@@ -17,7 +17,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
@@ -78,7 +78,7 @@ describe('<BlastInputSequences />', () => {
     // The tests in this section check how BlastInputSequences will update the redux state
     // when new sequences are added
 
-    it('adds a single sequence', () => {
+    it('adds a single sequence', async () => {
       const { container, store } = renderComponent();
       const textarea = container.querySelector(
         '.inputSequenceBox textarea'
@@ -89,8 +89,10 @@ describe('<BlastInputSequences />', () => {
         'GATC' // adding a piece of sequence on another line to make sure that it will be joined to the previous line
       ].join('{enter}');
 
-      userEvent.type(textarea, inputText);
-      textarea.blur();
+      await userEvent.type(textarea, inputText);
+      act(() => {
+        textarea.blur();
+      });
 
       const reduxState = store.getState();
 
@@ -102,7 +104,7 @@ describe('<BlastInputSequences />', () => {
       ]);
     });
 
-    it('adds multiple sequences', () => {
+    it('adds multiple sequences', async () => {
       const { container, store } = renderComponent();
       const textarea = container.querySelector(
         '.inputSequenceBox textarea'
@@ -114,8 +116,10 @@ describe('<BlastInputSequences />', () => {
         'GATC'
       ].join('{enter}');
 
-      userEvent.type(textarea, inputText);
-      textarea.blur();
+      await userEvent.type(textarea, inputText);
+      act(() => {
+        textarea.blur();
+      });
 
       const reduxState = store.getState();
 

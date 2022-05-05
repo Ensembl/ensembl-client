@@ -39,7 +39,7 @@ describe('<SearchField />', () => {
   });
 
   describe('behaviour', () => {
-    it('calls onChange handler for every search change', () => {
+    it('calls onChange handler for every search change', async () => {
       const search = 'fo';
       const { container } = render(
         <SearchField {...commonProps} search={search} />
@@ -48,20 +48,20 @@ describe('<SearchField />', () => {
 
       // since the input is a controlled element,
       // changing its value by a single letter is the only meaningful change we can check
-      userEvent.type(input, 'o');
+      await userEvent.type(input, 'o');
 
       expect(commonProps.onChange).toHaveBeenCalled();
       expect(commonProps.onChange.mock.calls[0][0]).toBe('foo');
     });
 
-    it('calls onSubmit passing it the search value if enter is pressed', () => {
+    it('calls onSubmit passing it the search value if enter is pressed', async () => {
       const search = 'foo';
       const { container } = render(
         <SearchField {...commonProps} search={search} />
       );
       const input = container.querySelector('input') as HTMLElement;
 
-      userEvent.type(input, '{enter}');
+      await userEvent.type(input, '{enter}');
       expect(commonProps.onSubmit).toHaveBeenCalled();
       expect(commonProps.onSubmit.mock.calls[0][0]).toBe(search);
     });

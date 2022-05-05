@@ -50,7 +50,7 @@ describe('useOutsideClick', () => {
     const { container } = render(<TestComponent />);
     const outerElement = container.querySelector('.wrapper') as HTMLElement;
 
-    userEvent.click(outerElement);
+    await userEvent.click(outerElement);
 
     expect(clickHandler).toHaveBeenCalled();
   });
@@ -67,9 +67,9 @@ describe('useOutsideClick', () => {
       '.test-element3'
     ) as HTMLElement;
 
-    userEvent.click(innerElement1);
-    userEvent.click(innerElement2);
-    userEvent.click(innerElement3);
+    await userEvent.click(innerElement1);
+    await userEvent.click(innerElement2);
+    await userEvent.click(innerElement3);
 
     expect(clickHandler).not.toHaveBeenCalled();
   });

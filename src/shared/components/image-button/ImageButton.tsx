@@ -35,7 +35,7 @@ export type ImageButtonStatus =
 export type Props = {
   status: ImageButtonStatus;
   description: string;
-  image: FunctionComponent<unknown> | string;
+  image: FunctionComponent | string;
   className?: string;
   statusClasses?: { [key in ImageButtonStatus]?: string };
   onClick?: () => void;

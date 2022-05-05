@@ -15,9 +15,10 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -31,7 +32,7 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
-  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects).slice(
+  const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects).slice(
     0,
     20
   );
@@ -79,8 +80,8 @@ export const PreviouslyViewedLinks = () => {
 };
 
 export const BookmarksModal = () => {
-  const previouslyViewedObjects = useSelector(getPreviouslyViewedObjects);
-  const dispatch = useDispatch();
+  const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects);
+  const dispatch = useAppDispatch();
 
   const onMoreClick = () => {
     analyticsTracking.trackEvent({

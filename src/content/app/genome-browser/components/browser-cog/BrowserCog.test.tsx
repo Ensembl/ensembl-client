@@ -44,10 +44,12 @@ describe('<BrowserCog />', () => {
   });
 
   describe('behaviour', () => {
-    test('renders close button when track config is open', () => {
+    test('renders close button when track config is open', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
       const cogButton = container.querySelector('.closeButton');
-      userEvent.click(cogButton as HTMLButtonElement);
+
+      await userEvent.click(cogButton as HTMLButtonElement);
+
       expect(defaultProps.updateSelectedCog).toHaveBeenCalledTimes(1);
     });
   });

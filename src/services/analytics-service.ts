@@ -14,38 +14,39 @@
  * limitations under the License.
  */
 
-import ReactGA from 'react-ga';
-import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
+import { CustomDimensions, type AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
+
+import GoogleAnalytics from 'src/services/google-analytics';
 
 const { googleAnalyticsKey } = config;
 
 class AnalyticsTracking {
-  private reactGA: typeof ReactGA;
+  private googleAnalytics: typeof GoogleAnalytics;
 
   public constructor() {
-    ReactGA.initialize(googleAnalyticsKey, {
-      titleCase: false
-    });
-    this.reactGA = ReactGA;
+    if (typeof window === 'undefined') {
+      // we don't need google analytics on the server
+      this.googleAnalytics = {} as any; // to make typescript happy
+      return;
+    }
+
+    GoogleAnalytics.initialize(googleAnalyticsKey);
+    this.googleAnalytics = GoogleAnalytics;
     this.setReporting();
   }
 
   private setReporting() {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     // don't send analytics other than in production deployment
     if (!config.shouldReportAnalytics) {
-      this.reactGA.ga('set', 'sendHitTask', null);
+      this.googleAnalytics.ga('set', 'sendHitTask', null);
     }
   }
 
   // Track a pageview
-  public trackPageView(pathToTrack: string) {
-    this.reactGA.pageview(pathToTrack);
+  public trackPageView(pagePath: string) {
+    this.googleAnalytics.pageview(pagePath);
   }
 
   // Track an event
@@ -54,13 +55,11 @@ class AnalyticsTracking {
     ga.app && this.setAppDimension(ga.app);
     ga.feature && this.setFeatureDimension(ga.feature);
 
-    this.reactGA.event({
-      action: ga.action,
-      category: ga.category,
-      label: ga.label,
-      nonInteraction: ga.nonInteraction,
-      transport: 'xhr',
-      value: ga.value
+    this.googleAnalytics.event({
+      eventAction: ga.action,
+      eventCategory: ga.category,
+      eventLabel: ga.label,
+      eventValue: ga.value
     });
 
     ga.species && this.setSpeciesDimension(null);
@@ -69,17 +68,21 @@ class AnalyticsTracking {
 
   // Set app custom dimension
   public setAppDimension(app: string | null) {
-    this.reactGA.ga('set', CustomDimensions.APP, app);
+    this.googleAnalytics.ga('set', CustomDimensions.APP, app);
   }
 
   // Set species custom dimension
   public setSpeciesDimension(speciesAnalyticsName: string | null) {
-    this.reactGA.ga('set', CustomDimensions.SPECIES, speciesAnalyticsName);
+    this.googleAnalytics.ga(
+      'set',
+      CustomDimensions.SPECIES,
+      speciesAnalyticsName
+    );
   }
 
   // Set feature custom dimension
   public setFeatureDimension(featureType: string | null) {
-    this.reactGA.ga('set', CustomDimensions.FEATURE, featureType);
+    this.googleAnalytics.ga('set', CustomDimensions.FEATURE, featureType);
   }
 }
 

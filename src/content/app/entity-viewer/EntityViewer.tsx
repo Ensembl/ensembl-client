@@ -15,12 +15,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
@@ -52,8 +52,8 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 import styles from './EntityViewer.scss';
 
 const EntityViewer = () => {
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const dispatch = useDispatch();
+  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const dispatch = useAppDispatch();
 
   useEntityViewerRouting();
 
@@ -76,13 +76,13 @@ const EntityViewer = () => {
 };
 
 const EntityViewerForGene = () => {
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
   const isSidebarModalOpen = Boolean(
-    useSelector(getEntityViewerSidebarModalView)
+    useAppSelector(getEntityViewerSidebarModalView)
   );
-  const viewportWidth = useSelector(getBreakpointWidth);
+  const viewportWidth = useAppSelector(getBreakpointWidth);
   const { genomeId, entityId } = useParams<'genomeId' | 'entityId'>();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const SideBarContent = isSidebarModalOpen ? (
     <EntityViewerSidebarModal />
@@ -111,11 +111,11 @@ const EntityViewerForGene = () => {
 };
 
 const useEntityViewerRouting = () => {
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const params = useUrlParams<'genomeId' | 'entityId'>([
     '/entity-viewer/:genomeId',

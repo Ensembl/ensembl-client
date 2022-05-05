@@ -48,7 +48,7 @@ describe('<RadioGroup />', () => {
     );
   });
 
-  it('does not call the onChange function when clicking on already selected option', () => {
+  it('does not call onChange when clicking on already selected option', async () => {
     // pre-select the first option, then click on the first radio button
     const selectedOption = defaultProps.options[0].value;
     const { container } = render(
@@ -56,12 +56,12 @@ describe('<RadioGroup />', () => {
     );
     const firstRadioButton = container.querySelector('.radio');
 
-    userEvent.click(firstRadioButton as HTMLElement);
+    await userEvent.click(firstRadioButton as HTMLElement);
 
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('calls the onChange function when option is changed', () => {
+  it('calls the onChange function when option is changed', async () => {
     // pre-select the second option, then click on the first radio button
     const selectedOption = defaultProps.options[1].value;
     const { container } = render(
@@ -69,7 +69,7 @@ describe('<RadioGroup />', () => {
     );
     const firstRadioButton = container.querySelector('.radio');
 
-    userEvent.click(firstRadioButton as HTMLElement);
+    await userEvent.click(firstRadioButton as HTMLElement);
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });

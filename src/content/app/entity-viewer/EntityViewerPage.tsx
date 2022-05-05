@@ -16,8 +16,9 @@
 
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useDispatch, useSelector } from 'react-redux';
 import loadable from '@loadable/component';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import {
   parseFocusObjectId,
@@ -39,11 +40,11 @@ import type { ServerFetch } from 'src/routes/routesConfig';
 const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
 
 const EntityViewerPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const hasMounted = useHasMounted();
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
-  const pageMeta = useSelector(getEntityViewerPageMeta);
+  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
+  const pageMeta = useAppSelector(getEntityViewerPageMeta);
 
   const { title } = pageMeta;
 

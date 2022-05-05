@@ -18,7 +18,6 @@ export type AnalyticsOptions = {
   category: string;
   action: string;
   label?: string;
-  nonInteraction?: boolean;
   value?: number;
   species?: string;
   app?: string;

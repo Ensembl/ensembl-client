@@ -15,7 +15,8 @@
  */
 
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useAppDispatch } from 'src/store';
 
 import { loadStoredSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { loadPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
@@ -27,7 +28,7 @@ import { loadPreviouslyViewedObjects as loadPreviouslyViewedGenomeBrowserObjects
 
 // load redux state from browser storage once when the application mounts
 const useRestoredReduxState = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     // Species Selector

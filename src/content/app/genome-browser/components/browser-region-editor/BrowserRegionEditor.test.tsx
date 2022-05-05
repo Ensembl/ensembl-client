@@ -110,7 +110,7 @@ describe('<BrowserRegionEditor />', () => {
       ).toHaveBeenCalledTimes(1);
     });
 
-    it('validates region input on submit', () => {
+    it('validates region input on submit', async () => {
       const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
       const [stick] = (mockState.browser.browserGeneral.chrLocations as any)[
         activeGenomeId
@@ -126,13 +126,13 @@ describe('<BrowserRegionEditor />', () => {
         'button[type="submit"]'
       ) as HTMLButtonElement;
 
-      userEvent.clear(firstInput);
-      userEvent.type(firstInput, locationStartInput);
+      await userEvent.clear(firstInput);
+      await userEvent.type(firstInput, locationStartInput);
 
-      userEvent.clear(secondInput);
-      userEvent.type(secondInput, locationEndInput);
+      await userEvent.clear(secondInput);
+      await userEvent.type(secondInput, locationEndInput);
 
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
@@ -180,13 +180,13 @@ describe('<BrowserRegionEditor />', () => {
           'button[type="submit"]'
         ) as HTMLButtonElement;
 
-        userEvent.clear(firstInput);
-        userEvent.type(firstInput, locationStartInput);
+        await userEvent.clear(firstInput);
+        await userEvent.type(firstInput, locationStartInput);
 
-        userEvent.clear(secondInput);
-        userEvent.type(secondInput, locationEndInput);
+        await userEvent.clear(secondInput);
+        await userEvent.type(secondInput, locationEndInput);
 
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
 
         const errorMessageElement = await screen.findByText(startError);
         expect(errorMessageElement).toBeTruthy();
@@ -215,13 +215,13 @@ describe('<BrowserRegionEditor />', () => {
           'button[type="submit"]'
         ) as HTMLButtonElement;
 
-        userEvent.clear(firstInput);
-        userEvent.type(firstInput, locationStartInput);
+        await userEvent.clear(firstInput);
+        await userEvent.type(firstInput, locationStartInput);
 
-        userEvent.clear(secondInput);
-        userEvent.type(secondInput, locationEndInput);
+        await userEvent.clear(secondInput);
+        await userEvent.type(secondInput, locationEndInput);
 
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
 
         const errorMessageElement = await screen.findByText(endError);
         expect(errorMessageElement).toBeTruthy();
@@ -252,7 +252,7 @@ describe('<BrowserRegionEditor />', () => {
       // TODO:
       // Test focus object change on submission. This can be done if <Select /> value can be changed.
 
-      it('changes the browser location in same region if stick is the same', () => {
+      it('changes the browser location in same region if stick is the same', async () => {
         const { container } = renderComponent();
 
         const [firstInput, secondInput] = container.querySelectorAll('input');
@@ -261,13 +261,13 @@ describe('<BrowserRegionEditor />', () => {
           'button[type="submit"]'
         ) as HTMLButtonElement;
 
-        userEvent.clear(firstInput);
-        userEvent.type(firstInput, locationStartInput);
+        await userEvent.clear(firstInput);
+        await userEvent.type(firstInput, locationStartInput);
 
-        userEvent.clear(secondInput);
-        userEvent.type(secondInput, locationEndInput);
+        await userEvent.clear(secondInput);
+        await userEvent.type(secondInput, locationEndInput);
 
-        userEvent.click(submitButton);
+        await userEvent.click(submitButton);
         expect(mockChangeBrowserLocation).toHaveBeenCalled();
 
         const { chrLocation } = mockChangeBrowserLocation.mock.calls[0][0];

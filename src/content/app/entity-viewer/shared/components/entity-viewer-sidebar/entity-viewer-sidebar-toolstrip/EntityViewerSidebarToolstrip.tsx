@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import noop from 'lodash/noop';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import {
@@ -44,9 +44,9 @@ import { Status } from 'src/shared/types/status';
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export const EntityViewerSidebarToolstrip = () => {
-  const dispatch = useDispatch();
-  const sidebarModalView = useSelector(getEntityViewerSidebarModalView);
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const dispatch = useAppDispatch();
+  const sidebarModalView = useAppSelector(getEntityViewerSidebarModalView);
+  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
 
   const params = useParams<'genomeId' | 'entityId'>();
 

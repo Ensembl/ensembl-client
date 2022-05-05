@@ -15,7 +15,7 @@
  */
 
 import React, { StrictMode } from 'react';
-import { hydrate } from 'react-dom';
+import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
 import { HelmetProvider } from 'react-helmet-async';
@@ -35,7 +35,8 @@ ensureBrowserSupport();
 
 const store = configureStore();
 
-hydrate(
+hydrateRoot(
+  document.getElementById('ens-app') as HTMLElement,
   <StrictMode>
     <CookiesProvider>
       <IndexedDBProvider>
@@ -48,8 +49,7 @@ hydrate(
         </Provider>
       </IndexedDBProvider>
     </CookiesProvider>
-  </StrictMode>,
-  document.getElementById('ens-app')
+  </StrictMode>
 );
 
 if (module.hot) {

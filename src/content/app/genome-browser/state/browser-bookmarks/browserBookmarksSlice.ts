@@ -57,7 +57,7 @@ export const initialState: BrowserBookmarksState = {
 };
 
 export const updatePreviouslyViewedObjectsAndSave =
-  (): ThunkAction<void, any, null, Action<string>> =>
+  (): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -118,7 +118,7 @@ export const updatePreviouslyViewedObjectsAndSave =
   };
 
 export const loadPreviouslyViewedObjects =
-  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
+  (): ThunkAction<void, any, void, Action<string>> => (dispatch) => {
     const previouslyViewedObjects =
       browserBookmarksStorageService.getPreviouslyViewedObjects();
 

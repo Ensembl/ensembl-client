@@ -76,7 +76,7 @@ describe('<Textarea />', () => {
   });
 
   describe('responding with events', () => {
-    it('passes event to onChange', () => {
+    it('passes event to onChange', async () => {
       const initialText = 'Hello worl';
       const spy = jest.fn();
 
@@ -96,7 +96,7 @@ describe('<Textarea />', () => {
       const { container } = render(<StatefulTextareaWrapper />);
       const textarea = container.firstChild as HTMLElement;
 
-      userEvent.type(textarea, 'd');
+      await userEvent.type(textarea, 'd');
       expect(spy.mock.calls[0][0].target.value).toBe('Hello world');
     });
 

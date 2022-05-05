@@ -50,13 +50,13 @@ describe('<HelpMenu>', () => {
       ).toBe(true);
     });
 
-    it('opens the megamenu when clicked', () => {
+    it('opens the megamenu when clicked', async () => {
       const { container, getByText } = renderMenu();
       expect(container.querySelector('.expandedMenuPanel')).toBeFalsy(); // start with a closed megamenu
       expect(() => getByText('Viewing Ensembl data')).toThrow(); // getByText will throw if it can't find an element
       const itemWithSubmenu = getByText('Using Ensembl');
 
-      userEvent.click(itemWithSubmenu);
+      await userEvent.click(itemWithSubmenu);
 
       const expandedMenuPanel = container.querySelector('.expandedMenuPanel');
       const submenuItem = getByText('Viewing Ensembl data');
@@ -67,11 +67,11 @@ describe('<HelpMenu>', () => {
   });
 
   describe('expanded menu', () => {
-    it('contains expandable submenus', () => {
+    it('contains expandable submenus', async () => {
       const { container, getByText } = renderMenu();
       const itemWithSubmenu = getByText('Using Ensembl');
 
-      userEvent.click(itemWithSubmenu);
+      await userEvent.click(itemWithSubmenu);
       const expandedMenuPanel = container.querySelector(
         '.expandedMenuPanel'
       ) as HTMLElement;
@@ -79,7 +79,7 @@ describe('<HelpMenu>', () => {
       expect(expandedMenuPanel.querySelectorAll('.submenu').length).toBe(1);
 
       const submenuItem = getByText('Viewing Ensembl data'); // this item corresponds to a collection of other menu items
-      userEvent.hover(submenuItem);
+      await userEvent.hover(submenuItem);
 
       // hovering over a submenu collection item should expand another submenu
       expect(expandedMenuPanel.querySelectorAll('.submenu').length).toBe(2);

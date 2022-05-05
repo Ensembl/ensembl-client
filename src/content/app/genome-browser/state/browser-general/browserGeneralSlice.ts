@@ -77,7 +77,7 @@ export type UpdateTrackStatesPayload = {
 };
 
 export const fetchDataForLastVisitedObjects: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeFocusObjectIdsMap = getBrowserActiveFocusObjectIds(state);
@@ -87,7 +87,7 @@ export const fetchDataForLastVisitedObjects: ActionCreator<
 };
 
 export const updateTrackStatesAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
@@ -95,7 +95,7 @@ export const updateTrackStatesAndSave: ActionCreator<
 };
 
 export const setDataFromUrlAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (payload: ParsedUrlPayload) => (dispatch, getState: () => RootState) => {
   const { activeGenomeId, activeFocusObjectId, chrLocation } = payload;
   const state = getState();
@@ -129,7 +129,7 @@ export const setDataFromUrlAndSave: ActionCreator<
 
 export const updateBrowserActiveFocusObjectIdsAndSave = (
   activeFocusObjectId: string
-): ThunkAction<void, any, null, Action<string>> => {
+): ThunkAction<void, any, void, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -174,7 +174,7 @@ export const setChrLocation: ActionCreator<
 
 export const deleteSpeciesInGenomeBrowser = (
   genomeIdToRemove: string
-): ThunkAction<void, any, null, Action<string>> => {
+): ThunkAction<void, any, void, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
 
@@ -196,7 +196,7 @@ export const deleteSpeciesInGenomeBrowser = (
 export const loadBrowserGeneralState = (): ThunkAction<
   void,
   any,
-  null,
+  void,
   Action<string>
 > => {
   return (dispatch) => {

@@ -103,14 +103,14 @@ describe('SpeciesSelectorHeader', () => {
   });
 
   describe('clear all control', () => {
-    it('clears all selected species', () => {
+    it('clears all selected species', async () => {
       const selectedSpecies = [selectedHuman, selectedMouse];
       const { container, store } = renderComponent({
         state: { selectedSpecies }
       });
       const clearAll = container.querySelector('.clearAll');
 
-      userEvent.click(clearAll as HTMLElement);
+      await userEvent.click(clearAll as HTMLElement);
 
       const updatedState = store.getState();
 

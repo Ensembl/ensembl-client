@@ -38,6 +38,7 @@ import styles from './BrowserImage.scss';
 
 export const BrowserImage = () => {
   const browserRef = useRef<HTMLDivElement>(null);
+  const browserActivatedRef = useRef(false);
 
   const { activateGenomeBrowser, clearGenomeBrowser, genomeBrowser } =
     useGenomeBrowser();
@@ -50,8 +51,11 @@ export const BrowserImage = () => {
   const isDisabled = isRegionEditorActive || isRegionFieldActive;
 
   useEffect(() => {
-    if (!genomeBrowser) {
+    if (!genomeBrowser && !browserActivatedRef.current) {
       activateGenomeBrowser();
+      // a hack to avoid repeated genome browser activation in Strict Mode
+      // (which renders every component twice in dev mode)
+      browserActivatedRef.current = true;
     }
 
     return () => clearGenomeBrowser();

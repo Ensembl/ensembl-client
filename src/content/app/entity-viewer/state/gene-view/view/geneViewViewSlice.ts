@@ -142,47 +142,44 @@ const initialStatePerGene: ViewStatePerGene = {
   }
 };
 
-export const updateView = (
-  view: View
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-  const activeObjectId = getEntityViewerActiveEntityId(getState());
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-  const primaryTabName = GeneViewTabMap.get(view)?.primaryTab;
-  const primaryTab =
-    primaryTabName === GeneViewTabName.GENE_FUNCTION
-      ? 'geneFunctionTab'
-      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
-      ? 'geneRelationshipsTab'
-      : null;
-  const tabView: {
-    selectedTabViews?: Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
-  } = {};
-  if (primaryTab) {
-    tabView.selectedTabViews = { [primaryTab]: view } as Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
-  }
-  dispatch(
-    viewSlice.actions.setView({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        current: view,
-        ...tabView
-      }
-    })
-  );
-};
+export const updateView =
+  (view: View): ThunkAction<void, any, void, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getEntityViewerActiveGenomeId(getState());
+    const activeObjectId = getEntityViewerActiveEntityId(getState());
+    if (!activeGenomeId || !activeObjectId) {
+      return;
+    }
+    const primaryTabName = GeneViewTabMap.get(view)?.primaryTab;
+    const primaryTab =
+      primaryTabName === GeneViewTabName.GENE_FUNCTION
+        ? 'geneFunctionTab'
+        : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
+        ? 'geneRelationshipsTab'
+        : null;
+    const tabView: {
+      selectedTabViews?: Record<
+        'geneFunctionTab' | 'geneRelationshipsTab',
+        View | null
+      >;
+    } = {};
+    if (primaryTab) {
+      tabView.selectedTabViews = { [primaryTab]: view } as Record<
+        'geneFunctionTab' | 'geneRelationshipsTab',
+        View | null
+      >;
+    }
+    dispatch(
+      viewSlice.actions.setView({
+        activeGenomeId,
+        activeObjectId,
+        fragment: {
+          current: view,
+          ...tabView
+        }
+      })
+    );
+  };
 
 type SetViewPayload = {
   activeGenomeId: string;

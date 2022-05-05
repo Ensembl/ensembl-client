@@ -70,10 +70,10 @@ describe('<BrowserReset />', () => {
   });
 
   describe('behaviour', () => {
-    it('changes focus object when clicked', () => {
+    it('changes focus object when clicked', async () => {
       const { container } = renderComponent();
       const button = container.querySelector('button') as HTMLButtonElement;
-      userEvent.click(button);
+      await userEvent.click(button);
 
       expect(mockChangeFocusObject).toHaveBeenCalledWith(
         (mockState.browser.browserGeneral.activeFocusObjectIds as any)[

@@ -75,7 +75,7 @@ describe('<Checkbox />', () => {
   });
 
   describe('behaviour on change', () => {
-    it('calls the onChange prop when clicked', () => {
+    it('calls the onChange prop when clicked', async () => {
       const { container } = render(
         <Checkbox checked={false} onChange={onChange} />
       );
@@ -83,12 +83,12 @@ describe('<Checkbox />', () => {
         '.checkboxDefault'
       ) as HTMLElement;
 
-      userEvent.click(checkbox);
+      await userEvent.click(checkbox);
 
       expect(onChange).toHaveBeenCalledWith(true);
     });
 
-    it('does not call the onChange prop when disabled', () => {
+    it('does not call the onChange prop when disabled', async () => {
       const { container } = render(
         <Checkbox checked={false} onChange={onChange} disabled={true} />
       );
@@ -96,19 +96,19 @@ describe('<Checkbox />', () => {
         '.checkboxDefault'
       ) as HTMLElement;
 
-      userEvent.click(checkbox);
+      await userEvent.click(checkbox);
 
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('calls the onChange function if the label is clicked', () => {
+    it('calls the onChange function if the label is clicked', async () => {
       const label = faker.lorem.words();
       const { container } = render(
         <Checkbox checked={false} label={label} onChange={onChange} />
       );
       const renderedLabel = container.querySelector('.label') as HTMLElement;
 
-      userEvent.click(renderedLabel);
+      await userEvent.click(renderedLabel);
 
       expect(onChange).toHaveBeenCalled();
     });

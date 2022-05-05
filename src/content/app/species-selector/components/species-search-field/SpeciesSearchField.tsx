@@ -15,8 +15,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import {
@@ -63,10 +63,10 @@ type RightCornerProps = {
 
 export const SpeciesSearchField = () => {
   const [isFocused, setIsFocused] = useState(false);
-  const searchText = useSelector(getSearchText);
-  const matches = useSelector(getSearchResults);
-  const selectedItemText = useSelector(getSelectedItemText);
-  const dispatch = useDispatch();
+  const searchText = useAppSelector(getSearchText);
+  const matches = useAppSelector(getSearchResults);
+  const selectedItemText = useAppSelector(getSelectedItemText);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     return () => clear();

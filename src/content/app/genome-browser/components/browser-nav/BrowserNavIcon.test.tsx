@@ -37,7 +37,7 @@ jest.mock(
 describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];
 
-  test('sends navigation message when clicked', () => {
+  test('sends navigation message when clicked', async () => {
     jest.spyOn(mockGenomeBrowser, 'send');
 
     const { container } = render(
@@ -45,7 +45,8 @@ describe('<BrowserNavAction />', () => {
     );
     const button = container.querySelector('button') as HTMLButtonElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
+
     expect(mockGenomeBrowser.send).toHaveBeenCalledTimes(1);
     expect(mockGenomeBrowser.send).toHaveBeenCalledWith({
       payload: { move_up_px: 50 },

@@ -15,10 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
@@ -34,11 +35,11 @@ import styles from './SpeciesRemove.scss';
 
 const SpeciesRemove = () => {
   const [isRemoving, setIsRemoving] = useState(false);
-  const genomeId = useSelector(getActiveGenomeId);
-  const species = useSelector((state: RootState) =>
+  const genomeId = useAppSelector(getActiveGenomeId);
+  const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, genomeId || '')
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const { trackDeletedSpecies } = useSpeciesAnalytics();

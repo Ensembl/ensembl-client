@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
@@ -37,11 +37,11 @@ type LabelProps = {
 };
 
 const SpeciesUsageToggle = () => {
-  const genomeId = useSelector(getActiveGenomeId);
-  const species = useSelector((state: RootState) =>
+  const genomeId = useAppSelector(getActiveGenomeId);
+  const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, genomeId || '')
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { trackSpeciesUse } = useSpeciesAnalytics();
 

@@ -77,14 +77,14 @@ describe('<SpeciesCommitButton />', () => {
     expect(container.querySelector('button')).toBeFalsy();
   });
 
-  it('calls the onCommit prop if clicked', () => {
+  it('calls the onCommit prop if clicked', async () => {
     jest
       .spyOn(speciesSelectorActions, 'commitSelectedSpeciesAndSave')
       .mockImplementation(() => jest.fn());
     const { container } = renderComponent();
     const button = container.querySelector('button') as HTMLElement;
 
-    userEvent.click(button);
+    await userEvent.click(button);
 
     expect(
       speciesSelectorActions.commitSelectedSpeciesAndSave

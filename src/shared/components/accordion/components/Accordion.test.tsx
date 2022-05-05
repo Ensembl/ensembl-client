@@ -60,7 +60,7 @@ describe('Accordion', () => {
   });
 
   describe('expanding and collapsing: ', () => {
-    it('permits multiple items to be expanded when allowMultipleExpanded is true', () => {
+    it('permits multiple items to be expanded when allowMultipleExpanded is true', async () => {
       const [FooHeader, BarHeader] = [
         (): JSX.Element => <AccordionItemButton className="foo" />,
         (): JSX.Element => <AccordionItemButton className="bar" />
@@ -81,8 +81,12 @@ describe('Accordion', () => {
         </Accordion>
       );
 
-      userEvent.click(container.querySelector('.foo') as HTMLButtonElement);
-      userEvent.click(container.querySelector('.bar') as HTMLButtonElement);
+      await userEvent.click(
+        container.querySelector('.foo') as HTMLButtonElement
+      );
+      await userEvent.click(
+        container.querySelector('.bar') as HTMLButtonElement
+      );
 
       expect(
         container
@@ -99,7 +103,7 @@ describe('Accordion', () => {
       ).toBe('true');
     });
 
-    it('does not permit multiple items to be expanded when allowMultipleExpanded is false', () => {
+    it('does not permit multiple items to be expanded when allowMultipleExpanded is false', async () => {
       const [FooHeader, BarHeader] = [
         (): JSX.Element => <AccordionItemButton className="foo" />,
         (): JSX.Element => <AccordionItemButton className="bar" />
@@ -120,8 +124,12 @@ describe('Accordion', () => {
         </Accordion>
       );
 
-      userEvent.click(container.querySelector('.foo') as HTMLButtonElement);
-      userEvent.click(container.querySelector('.bar') as HTMLButtonElement);
+      await userEvent.click(
+        container.querySelector('.foo') as HTMLButtonElement
+      );
+      await userEvent.click(
+        container.querySelector('.bar') as HTMLButtonElement
+      );
 
       expect(
         container
@@ -139,7 +147,7 @@ describe('Accordion', () => {
     });
 
     describe('allowZeroExpanded prop', () => {
-      it('permits the last-expanded item to be collapsed when explicitly true', () => {
+      it('permits the last-expanded item to be collapsed when explicitly true', async () => {
         const { container } = render(
           <Accordion allowZeroExpanded={true}>
             <AccordionItem>
@@ -150,12 +158,12 @@ describe('Accordion', () => {
           </Accordion>
         );
 
-        userEvent.click(
+        await userEvent.click(
           container.querySelector(
             '.accordionButtonDefault'
           ) as HTMLButtonElement
         );
-        userEvent.click(
+        await userEvent.click(
           container.querySelector(
             '.accordionButtonDefault'
           ) as HTMLButtonElement
@@ -169,7 +177,7 @@ describe('Accordion', () => {
         ).toBe('false');
       });
 
-      it('prevents the last-expanded item being collapsed by default', () => {
+      it('prevents the last-expanded item being collapsed by default', async () => {
         const { container } = render(
           <Accordion allowZeroExpanded={false}>
             <AccordionItem>
@@ -184,8 +192,8 @@ describe('Accordion', () => {
           '.accordionButtonDefault'
         ) as HTMLButtonElement;
 
-        userEvent.click(accordionButtonDefault);
-        userEvent.click(accordionButtonDefault);
+        await userEvent.click(accordionButtonDefault);
+        await userEvent.click(accordionButtonDefault);
 
         expect(
           container
@@ -237,7 +245,7 @@ describe('Accordion', () => {
     });
 
     describe('onChange prop', () => {
-      it('is invoked with an array of expanded items’ uuids, if there are any', () => {
+      it('is invoked with an array of expanded items’ uuids, if there are any', async () => {
         const onChange = jest.fn();
         const { container } = render(
           <Accordion onChange={onChange}>
@@ -249,7 +257,7 @@ describe('Accordion', () => {
           </Accordion>
         );
 
-        userEvent.click(
+        await userEvent.click(
           container.querySelector(
             '.accordionButtonDefault'
           ) as HTMLButtonElement
@@ -258,7 +266,7 @@ describe('Accordion', () => {
         expect(onChange).toHaveBeenCalledWith([UUIDS.FOO]);
       });
 
-      it('is invoked with an empty array, if no items are expanded', () => {
+      it('is invoked with an empty array, if no items are expanded', async () => {
         const onChange = jest.fn();
         const { container } = render(
           <Accordion
@@ -274,7 +282,7 @@ describe('Accordion', () => {
           </Accordion>
         );
 
-        userEvent.click(
+        await userEvent.click(
           container.querySelector(
             '.accordionButtonDefault'
           ) as HTMLButtonElement

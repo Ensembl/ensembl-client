@@ -45,7 +45,7 @@ export const updateActiveGenomeId = createAction(
 )<string | null>();
 
 export const setActiveGenomeId: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
   dispatch(updateActiveGenomeId(activeGenomeId));
 
@@ -72,7 +72,7 @@ export const updateActiveConfigurationForGenome = createAction(
 )();
 
 export const updateSelectedPreFilter: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -93,7 +93,7 @@ export const updateSelectedPreFilter: ActionCreator<
 };
 
 export const togglePreFiltersPanel: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (showPreFiltersPanel: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -120,7 +120,7 @@ export const setPreviewResult = createAsyncAction(
 )<undefined, JSONValue, Error>();
 
 export const fetchPreviewResult: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (endpointURL: string) => (dispatch) => {
   try {
     apiService
@@ -143,7 +143,7 @@ export const setIsLoadingResult = createAction(
 )<boolean>();
 
 export const setShowPreview: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -164,7 +164,7 @@ export const setShowPreview: ActionCreator<
 };
 
 export const setShowExampleData: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
@@ -185,7 +185,7 @@ export const setShowExampleData: ActionCreator<
 };
 
 export const setDownloadType: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
+  ThunkAction<void, any, void, Action<string>>
 > = (downloadType: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 

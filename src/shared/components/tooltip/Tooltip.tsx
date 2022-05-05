@@ -46,7 +46,7 @@ const Tooltip = (props: PropsWithNullableAnchor) => {
 
 const TooltipWithAnchor = (props: Props) => {
   const [isWaiting, setIsWaiting] = useState(true);
-  let timeoutId: NodeJS.Timeout;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     timeoutId = setTimeout(() => {

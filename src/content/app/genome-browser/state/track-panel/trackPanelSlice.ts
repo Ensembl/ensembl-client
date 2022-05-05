@@ -52,7 +52,7 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
 };
 
 export const toggleTrackPanel =
-  (isTrackPanelOpened: boolean): ThunkAction<void, any, null, Action<string>> =>
+  (isTrackPanelOpened: boolean): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
@@ -74,7 +74,7 @@ export const toggleTrackPanel =
 export const selectTrackPanelTab =
   (
     selectedTrackPanelTab: TrackSet
-  ): ThunkAction<void, any, null, Action<string>> =>
+  ): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
@@ -104,7 +104,7 @@ export const selectTrackPanelTab =
   };
 
 export const changeHighlightedTrackId =
-  (highlightedTrackId: string): ThunkAction<void, any, null, Action<string>> =>
+  (highlightedTrackId: string): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);

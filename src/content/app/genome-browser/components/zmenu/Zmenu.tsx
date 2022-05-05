@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import {
   ZmenuContentTranscript,
@@ -25,6 +24,7 @@ import {
   ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
+import { useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
@@ -54,7 +54,7 @@ export type ZmenuProps = {
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));

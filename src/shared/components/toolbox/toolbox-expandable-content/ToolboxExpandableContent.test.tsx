@@ -47,11 +47,11 @@ describe('<ToolboxExpandableContent />', () => {
     expect(footerContent).toBeFalsy();
   });
 
-  it('shows footer content when ToggleButton is clicked', () => {
+  it('shows footer content when ToggleButton is clicked', async () => {
     render(<ToolboxExpandableContent {...minimalProps} />);
     const toggleButton = screen.getByText('Click me!');
 
-    userEvent.click(toggleButton as HTMLElement);
+    await userEvent.click(toggleButton as HTMLElement);
 
     const footerContent = screen.queryByTestId('footer content');
     expect(footerContent).toBeTruthy();

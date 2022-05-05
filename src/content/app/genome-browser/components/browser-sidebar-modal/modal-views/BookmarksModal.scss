@@ -31,8 +31,9 @@
 
 .more {
   margin-top: 25px;
+
+  /* stylelint-disable no-descending-specificity */
   span {
-    /* stylelint-disable-line no-descending-specificity */
     font-size: 12px;
     cursor: pointer;
     color: $blue;

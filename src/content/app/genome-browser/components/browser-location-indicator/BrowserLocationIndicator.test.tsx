@@ -128,15 +128,15 @@ describe('BrowserLocationIndicator', () => {
   });
 
   describe('behaviour', () => {
-    it('calls toggleBrowserNav when clicked', () => {
+    it('calls toggleBrowserNav when clicked', async () => {
       const { container } = renderComponent();
       const indicator = container.querySelector('.chrLocationView');
 
-      userEvent.click(indicator as HTMLDivElement);
+      await userEvent.click(indicator as HTMLDivElement);
       expect(toggleBrowserNav).toHaveBeenCalled();
     });
 
-    it('does not call toggleBrowserNav if disabled', () => {
+    it('does not call toggleBrowserNav if disabled', async () => {
       const { container, rerender } = renderComponent();
       const indicator = container.querySelector('.chrLocationView');
 
@@ -147,7 +147,8 @@ describe('BrowserLocationIndicator', () => {
       );
 
       rerender(wrappedComponent);
-      userEvent.click(indicator as HTMLDivElement);
+
+      await userEvent.click(indicator as HTMLDivElement);
       expect(toggleBrowserNav).not.toHaveBeenCalled();
     });
   });

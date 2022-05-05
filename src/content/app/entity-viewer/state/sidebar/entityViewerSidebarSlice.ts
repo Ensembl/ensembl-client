@@ -69,7 +69,7 @@ export type EntityViewerSidebarUIState = {
 };
 
 export const setSidebarTabName =
-  (tabName: SidebarTabName): ThunkAction<void, any, null, Action<string>> =>
+  (tabName: SidebarTabName): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const genomeId = getEntityViewerActiveGenomeId(getState());
 
@@ -86,7 +86,7 @@ export const setSidebarTabName =
   };
 
 export const toggleSidebar =
-  (status?: ToggleStatus): ThunkAction<void, any, null, Action<string>> =>
+  (status?: ToggleStatus): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
 
@@ -111,7 +111,7 @@ export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 export const updateEntityUI =
   (
     fragment: Partial<EntityViewerSidebarUIState>
-  ): ThunkAction<void, any, null, Action<string>> =>
+  ): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);
@@ -127,7 +127,7 @@ export const updateEntityUI =
 export const openSidebarModal =
   (
     sidebarModalView: SidebarModalView
-  ): ThunkAction<void, any, null, Action<string>> =>
+  ): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
 
@@ -147,7 +147,7 @@ export const openSidebarModal =
   };
 
 export const closeSidebarModal =
-  (): ThunkAction<void, any, null, Action<string>> =>
+  (): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);

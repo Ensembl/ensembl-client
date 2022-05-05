@@ -174,7 +174,7 @@ describe('BlastInputSequencesHeader', () => {
       expect(addSequenceButton.hasAttribute('disabled')).toBe(true);
     });
 
-    it('toggles the flag for displaying an empty input box', () => {
+    it('toggles the flag for displaying an empty input box', async () => {
       const { container, store } = renderComponent({
         state: { shouldAppendEmptyInput: false }
       });
@@ -182,7 +182,7 @@ describe('BlastInputSequencesHeader', () => {
         '.addSequence .plusButton'
       );
 
-      userEvent.click(addSequenceButton as HTMLButtonElement);
+      await userEvent.click(addSequenceButton as HTMLButtonElement);
 
       const updatedState = store.getState();
 
@@ -191,12 +191,12 @@ describe('BlastInputSequencesHeader', () => {
   });
 
   describe('clear all control', () => {
-    it('clears all sequences', () => {
+    it('clears all sequences', async () => {
       const sequences = times(10, () => ({ value: 'ACTG' }));
       const { container, store } = renderComponent({ state: { sequences } });
       const clearAll = container.querySelector('.clearAll');
 
-      userEvent.click(clearAll as HTMLElement);
+      await userEvent.click(clearAll as HTMLElement);
 
       const updatedState = store.getState();
 
