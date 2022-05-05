@@ -1,7 +1,10 @@
 @import 'src/styles/common';
 .topLevelContainer {
   display: grid;
-  grid-template-columns: minmax(100px, 1660px) 140px;
+  grid-template-columns: 1fr auto;
+  column-gap: 20px;
+  max-width: 1810px;
+  padding-right: 20px;
 }
 
 .topLevel {
@@ -11,9 +14,9 @@
 }
 
 .header {
-  font-weight: $bold;
   margin-right: 45px;
-  font-size: 17px;
+  font-size: 16px;
+  margin-top: 0px;
 }
 
 .subHeader {
@@ -23,9 +26,8 @@
 }
 
 .previousJobs {
-  height: 30px;
+  height: 32px;
   width: 120px;
-  margin-left: 20px;
 }
 
 .mainSettings {

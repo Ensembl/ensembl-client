@@ -157,7 +157,7 @@ const BlastSettings = ({ config }: Props) => {
     <>
       <div className={styles.topLevelContainer}>
         <div className={styles.topLevel}>
-          <div className={styles.header}>Blast</div>
+          <h1 className={styles.header}>Blast</h1>
           <div className={styles.subHeader}>Run a job</div>
           <div>
             {buildSelect({
@@ -193,7 +193,7 @@ const BlastSettings = ({ config }: Props) => {
           </div>
         </div>
         <SecondaryButton className={styles.previousJobs} onClick={noop}>
-          Previous jobs
+          Jobs list
         </SecondaryButton>
       </div>
       {parametersExpanded && (
@@ -228,12 +228,12 @@ const BlastSettings = ({ config }: Props) => {
           <div className={styles.parametersColumn}>
             {buildSelect({
               ...(config.parameters['hsps'] as BlastSelectSetting),
-              selectedOption: blastParameters.scores as string,
+              selectedOption: blastParameters.hsps as string,
               onChange: (value: string) => onBlastParameterChange('hsps', value)
             })}
             {buildSelect({
               ...(config.parameters['dropoff'] as BlastSelectSetting),
-              selectedOption: blastParameters.scores as string,
+              selectedOption: blastParameters.dropoff as string,
               onChange: (value: string) =>
                 onBlastParameterChange('dropoff', value)
             })}
