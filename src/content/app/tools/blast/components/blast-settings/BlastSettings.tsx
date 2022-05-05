@@ -157,8 +157,8 @@ const BlastSettings = ({ config }: Props) => {
     <>
       <div className={styles.topLevelContainer}>
         <div className={styles.topLevel}>
-          <h1 className={styles.header}>Blast</h1>
-          <div className={styles.subHeader}>Run a job</div>
+          <h1 className={styles.title}>Blast</h1>
+          <div className={styles.runJob}>Run a job</div>
           <div>
             {buildSelect({
               ...(config.parameters['database'] as BlastSelectSetting),
