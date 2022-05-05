@@ -45,7 +45,7 @@ import { Status } from 'src/shared/types/status';
 
 import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export const TrackPanelBar = () => {
+const BrowserSidebarToolstrip = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
   const browserSidebarModalView = useAppSelector(getBrowserSidebarModalView);

@@ -23,7 +23,7 @@ import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
 
-import { BrowserSidebarToolstrip } from './BrowserSidebarToolstrip';
+import BrowserSidebarToolstrip from './BrowserSidebarToolstrip';
 
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -120,7 +120,7 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
     });
 
-    it('opens the track panel if it is closed when a button is clicked', () => {
+    it('opens the track panel if it is closed when a button is clicked', async () => {
       jest.spyOn(trackPanelActions, 'toggleTrackPanel');
 
       const newMockState = merge(mockState, {

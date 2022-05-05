@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -25,8 +25,9 @@ import styles from './ButtonLink.scss';
  * Using React-Router's Link component
  */
 
-type Props = NavLinkProps & {
+type Props = Omit<NavLinkProps, 'children'> & {
   isDisabled?: boolean;
+  children: ReactNode;
 };
 
 const ButtonLink = (props: Props) => {

@@ -17,7 +17,7 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import configureMockStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
@@ -129,14 +129,14 @@ describe('<Browser />', () => {
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
     });
 
-    it('renders the browser sidebar modal when a modal is selected', () => {
+    it('renders the browser sidebar modal when a modal is selected', async () => {
       const stateWithModalClosed = set(
         `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
         null,
         mockState
       );
 
-      let { container } = renderComponent({
+      const { container } = renderComponent({
         state: stateWithModalClosed,
         url: '/genome-browser?focus=foo'
       });
@@ -145,18 +145,18 @@ describe('<Browser />', () => {
 
       const stateWithModalOpened = set(
         `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
-        BrowserSidebarModalView.SHARE,
+        BrowserSidebarModalView.SEARCH,
         mockState
       );
 
-      container = renderComponent({
+      const { getByText } = renderComponent({
         state: stateWithModalOpened,
         url: '/genome-browser?focus=foo'
-      }).container;
+      });
 
-      expect(container.querySelector('.title')?.innerHTML).toEqual(
-        BrowserSidebarModalView.SHARE
-      );
+      await waitFor(() => {
+        getByText('Genome browser search'); // errors while the text is missing; succeeds when the text is available
+      });
     });
 
     describe('<BrowserNavBar />', () => {

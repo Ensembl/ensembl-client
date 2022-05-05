@@ -40,6 +40,6 @@ button {
 
 @media print {
   body {
-    color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

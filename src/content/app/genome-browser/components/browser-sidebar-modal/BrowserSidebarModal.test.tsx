@@ -67,7 +67,7 @@ describe('<TrackPanelModal />', () => {
   });
 
   describe('rendering', () => {
-    it('displays sidebar modal view for search', () => {
+    it('displays sidebar modal view for search', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
@@ -103,15 +103,20 @@ describe('<TrackPanelModal />', () => {
   });
 
   describe('behaviour', () => {
-    it('closes modal when close button is clicked', async () => {
+    it('closes the modal when the close button is clicked', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
           `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
-          BrowserSidebarModalView.SHARE,
+          BrowserSidebarModalView.SEARCH,
           mockState
         )
       );
+
+      await waitFor(() => {
+        expect(container.querySelector('.searchModal')).toBeTruthy();
+      });
+
       const closeButton = container.querySelector('button.closeButton');
 
       jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
