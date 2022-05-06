@@ -211,7 +211,7 @@
       ]
     },
     "gapalign": {
-      "label": "Gapalign",
+      "label": "Gap align",
       "description": "This is a true/false setting that tells the program the perform optimised alignments within regions involving gaps. If set to true, the program will perform an alignment using gaps. Otherwise, if it is set to false, it will report only individual HSP where two sequence match each other, and thus will not produce alignments with gaps.",
       "type": "boolean",
       "options": {
@@ -220,7 +220,7 @@
       }
     },
     "filter": {
-      "label": "Filter",
+      "label": "Filter low complexity regions",
       "description": "Filter regions of low sequence complexity. This can avoid issues with low complexity sequences where matches are found due to composition rather than meaningful sequence similarity. However in some cases filtering also masks regions of interest and so should be used with caution.",
       "type": "boolean",
       "options": {
@@ -708,7 +708,7 @@
     "database": "dna"
   },
   "presets": {
-    "label": "Search sensitivity",
+    "label": "Sensitivity",
     "defaultPreset": "normal",
     "options": [
       {

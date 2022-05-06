@@ -59,9 +59,8 @@ const TestingComponent = (props: TestingComponentProps) => {
     endpoint: mockEndpoint,
     ...props
   };
-  const { loadingState, data, error } = useApiService<{ message: string }>(
-    params
-  );
+  const { loadingState, data, error } =
+    useApiService<{ message: string }>(params);
 
   if (loadingState === LoadingState.NOT_REQUESTED) {
     return <div>Data not requested</div>;

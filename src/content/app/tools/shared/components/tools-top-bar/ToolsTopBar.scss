@@ -3,7 +3,7 @@
 .topBar {
   min-height: 74px;
   background-color: $light-grey;
-  padding-left: 36px; // TODO: does this value repeat across Genome Browser, Entity Viewer, and Tools?
+  padding: 24px 20px 20px 30px;
   box-shadow: 0 3px 5px $global-box-shadow;
   margin-bottom: 21px;
 }

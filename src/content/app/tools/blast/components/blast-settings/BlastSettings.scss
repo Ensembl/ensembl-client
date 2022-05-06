@@ -1,27 +1,46 @@
 @import 'src/styles/common';
+.topLevelContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 20px;
+  max-width: 1800px;
+}
 
 .topLevel {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
 }
 
-.mainSettings {
-  display: flex;
-  gap: 1rem;
+.title {
+  margin: 0 25px 3px 0;
+  font-size: 16px;
 }
 
-.mainSettings > * {
-  flex: 0 0 auto;
+.runJob {
+  font-weight: $bold;
+  margin-right: 35px;
 }
 
-.mainSettings select {
-  flex: 0 0 auto;
+.previousJobs {
+  height: 32px;
+  width: 120px;
 }
 
 .select label {
   display: grid;
   grid-template-columns: repeat(2, auto);
   column-gap: 10px;
+}
+
+.parametersColumn .select label {
+  grid-template-columns: 140px 70px;
+  text-align: right;
+}
+
+.parametersColumn .matrixSetting .select label {
+  grid-template-columns: 140px 110px;
 }
 
 .select label span {
@@ -32,8 +51,12 @@
 .bottomLevel {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding-top: 0.6rem;
+  gap: 15px;
+  padding-top: 20px;
+  margin-left: 104px;
+  @media (max-width: 1610px) {
+    margin-left: -10px;
+  }
 }
 
 .bottomLevel > * {
@@ -41,15 +64,28 @@
   white-space: nowrap;
 }
 
+.parametersColumn {
+  display: grid;
+  grid-template-rows: 40px 40px;
+}
+
 .blastJobBlock {
   display: inline-flex;
   align-items: center;
-  column-gap: 32px;
+  column-gap: 30px;
+  margin-left: 20px;
 }
 
 .blastJobName {
   display: inline-flex;
-  column-gap: 24px;
+  column-gap: 11px;
   align-items: center;
   white-space: nowrap;
+}
+
+.checkboxesColumn {
+  margin-left: 60px;
+  @media (min-width: 1190px) and (max-width: 1490px) {
+    margin-left: 150px;
+  }
 }
