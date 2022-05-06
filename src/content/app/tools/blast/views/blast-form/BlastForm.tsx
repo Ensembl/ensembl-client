@@ -15,12 +15,19 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
+import { SecondaryButton } from 'src/shared/components/button/Button';
+
 import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  switchToSequencesStep,
+  switchToSpeciesStep
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
@@ -93,15 +100,54 @@ const MainSmall = () => {
     <div className={containerClasses} ref={containerRef}>
       {step === 'sequences' ? (
         <>
+          <BlastSequenceSpeciesSelector />
           <BlastInputSequencesHeader compact={true} />
           <BlastInputSequences />
         </>
       ) : (
         <>
+          <BlastSequenceSpeciesSelector />
           <BlastSpeciesSelectorHeader compact={true} />
           <BlastSpeciesSelector />
         </>
       )}
+    </div>
+  );
+};
+
+const BlastSequenceSpeciesSelector = () => {
+  const dispatch = useDispatch();
+  const step = useSelector(getStep);
+
+  const onSwitchToSpecies = () => {
+    dispatch(switchToSpeciesStep());
+  };
+
+  const onSwitchToSequence = () => {
+    dispatch(switchToSequencesStep());
+  };
+
+  const sequenceButtonClass = classNames(styles.blastAgainstButton, {
+    [styles.selectedSequenceSpeciesButton]: step === 'sequences'
+  });
+  const speciesButtonClass = classNames(styles.blastAgainstButton, {
+    [styles.selectedSequenceSpeciesButton]: step === 'species'
+  });
+
+  return (
+    <div className={styles.sequenceSpeciesSelector}>
+      <SecondaryButton
+        className={sequenceButtonClass}
+        onClick={onSwitchToSequence}
+      >
+        Add sequence(s)
+      </SecondaryButton>
+      <SecondaryButton
+        className={speciesButtonClass}
+        onClick={onSwitchToSpecies}
+      >
+        Select species
+      </SecondaryButton>
     </div>
   );
 };

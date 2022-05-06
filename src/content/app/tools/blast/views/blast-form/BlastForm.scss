@@ -31,3 +31,20 @@
   display: flex;
   flex-direction: column;
 }
+
+.sequenceSpeciesSelector {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 1660px;
+  padding: 0 20px 20px 0;
+  background-color: white;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
+.selectedSequenceSpeciesButton {
+  background-color: $black;
+  border-color: $black;
+}
