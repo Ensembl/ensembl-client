@@ -16,17 +16,24 @@
 
 import React from 'react';
 
-import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
+import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 
-const BlastResults = () => {
+const BlastUnviewedSubmission = () => {
   return (
     <div>
-      <ToolsAppBar />
-      <ToolsTopBar>stuff</ToolsTopBar>
-      <div>This is Blast results view</div>
+      <BlastAppBar view="unviewed-submissions" />
+      <ToolsTopBar>
+        <BlastViewsNavigation />
+      </ToolsTopBar>
+      <Main />
     </div>
   );
 };
 
-export default BlastResults;
+const Main = () => {
+  return <main>The submissions list will go here</main>;
+};
+
+export default BlastUnviewedSubmission;
