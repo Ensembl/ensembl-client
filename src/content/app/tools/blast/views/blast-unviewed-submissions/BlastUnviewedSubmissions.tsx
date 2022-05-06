@@ -33,7 +33,7 @@ const BlastUnviewedSubmission = () => {
 };
 
 const Main = () => {
-  return <div>The submissions list will go here</div>;
+  return <main>The submissions list will go here</main>;
 };
 
 export default BlastUnviewedSubmission;

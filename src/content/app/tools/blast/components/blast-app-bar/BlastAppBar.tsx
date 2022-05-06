@@ -70,8 +70,6 @@ const BlastAppBar = (props: Props) => {
     />
   ));
 
-  // TODO: this is not a proper way of expressing disabled species lozenges in this context
-  // Consider either refactoring of SelectedSpecies component, or extracting a SpeciesLozenge component out of it
   const disabledSpecies = speciesList.map((species, index) => (
     <SelectedSpecies
       key={index}
