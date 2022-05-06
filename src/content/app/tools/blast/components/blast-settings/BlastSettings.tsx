@@ -287,7 +287,7 @@ const BlastSettings = ({ config }: Props) => {
           <div
             className={classNames(
               styles.parametersColumn,
-              styles.checkboxLeftMargin
+              styles.checkboxesColumn
             )}
           >
             {buildCheckbox({
