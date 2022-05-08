@@ -1,0 +1,31 @@
+@import 'src/styles/common';
+
+.sequenceBox {
+  display: grid;
+  grid-template-columns: 1fr 566px;
+  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
+  border: 1px solid $grey;
+  max-width: 1800px;
+}
+
+.submissionIdLabel {
+  font-weight: $light;
+  margin-right: 1ch;
+}
+
+.rerun {
+  color: $blue;
+  cursor: pointer;
+  margin: 0 32px;
+}
+
+.timeZone {
+  font-weight: $light;
+  margin-left: 1ch;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  column-gap: 40px;
+}

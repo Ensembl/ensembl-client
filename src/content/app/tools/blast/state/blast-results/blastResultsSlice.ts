@@ -24,7 +24,10 @@ import { getAllBlastSubmissions } from 'src/content/app/tools/blast/services/bla
 
 import { submitBlast } from '../blast-api/blastApiSlice';
 
-import type { BlastParameterName } from 'src/content/app/tools/blast/types/blastSettings';
+import type {
+  MandatoryBlastParameterName,
+  OptionalBlastParameterName
+} from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 export type JobStatus =
@@ -34,11 +37,21 @@ export type JobStatus =
   | 'ERROR' // an error occurred attempting to get the job status — TODO: ask backend to represent this as a 500 error?
   | 'NOT_FOUND'; // TODO: ask backend to represent this as a 404 error?
 
+export type MandatorySubmissionParameters = Record<
+  MandatoryBlastParameterName,
+  string
+>;
+export type OptionalSubmissionParameters = Partial<
+  Record<OptionalBlastParameterName, string>
+>;
+export type BlastSubmissionParameters = MandatorySubmissionParameters &
+  OptionalSubmissionParameters;
+
 export type BlastSubmission = {
   submittedData: {
     species: Species[];
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
-    parameters: Partial<Record<BlastParameterName, string>>;
+    parameters: BlastSubmissionParameters;
   };
   results: Array<{
     jobId: string;

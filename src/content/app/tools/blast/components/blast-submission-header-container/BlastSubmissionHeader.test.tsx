@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+describe('BlastSubmissionHeader', () => {
+  it.todo('shows BLAST program');
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+  it.todo('shows submission id');
 
-// FIXME: actually return unvewed submissions, and use reselect
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.entries(getBlastSubmissions(state)).map(([id, submission]) => ({
-    id,
-    ...submission
-  }));
-};
+  it.todo('shows submission date');
+
+  it.todo('can fold submission jobs');
+
+  it.todo('has submission control buttons');
+  // delete, share, download, Results
+
+  it.todo('can delete a submission');
+});

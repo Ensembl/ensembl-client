@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import React, { type ReactNode } from 'react';
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+import styles from './BlastSubmissionHeaderGrid.scss';
 
-// FIXME: actually return unvewed submissions, and use reselect
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.entries(getBlastSubmissions(state)).map(([id, submission]) => ({
-    id,
-    ...submission
-  }));
+/**
+ * This is a dumb component whose sole purpose is to arrange the children into a grid
+ */
+
+// TODO: consider which interface is better: a single "children" prop,
+// or individual "first", "second", "third" props. With individual props,
+// the consumer of the component will know that this component accepts only three children
+type Props = {
+  children: ReactNode;
 };
+
+const BlastSubmissionHeaderGrid = ({ children }: Props) => {
+  return <div className={styles.grid}>{children}</div>;
+};
+
+export default BlastSubmissionHeaderGrid;
