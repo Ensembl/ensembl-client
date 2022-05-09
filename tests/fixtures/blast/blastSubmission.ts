@@ -21,7 +21,11 @@ import faker from '@faker-js/faker';
 import { certainAminoAcids } from 'src/content/app/tools/blast/utils/sequenceAlphabets';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastSubmission,
+  BlastJob,
+  JobStatus
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 export const createBlastSubmission = (
   fragment: Partial<BlastSubmission> = {}
@@ -64,20 +68,40 @@ export const createBlastJobs = ({
 
   for (const species of speciesList) {
     for (const sequence of sequences) {
-      const job = {
-        jobId: faker.datatype.uuid(),
+      const job = createBlastJob({
         sequenceId: sequence.id,
-        genomeId: species.genome_id,
-        status: 'RUNNING',
-        seen: false,
-        data: null
-      } as const;
+        genomeId: species.genome_id
+      });
       jobs.push(job);
     }
   }
 
   return jobs;
 };
+
+export const createBlastJob = (fragment: Partial<BlastJob> = {}): BlastJob => {
+  return {
+    jobId: faker.datatype.uuid(),
+    sequenceId: parseInt(faker.random.numeric()),
+    genomeId: faker.datatype.uuid(),
+    status: 'RUNNING',
+    seen: false,
+    data: null,
+    ...fragment
+  };
+};
+
+export const createRunningJobStatusResponse = (): { status: JobStatus } => ({
+  status: 'RUNNING'
+});
+
+export const createFinishedJobStatusResponse = (): { status: JobStatus } => ({
+  status: 'FINISHED'
+});
+
+export const createFailedJobStatusResponse = (): { status: JobStatus } => ({
+  status: 'FAILURE'
+});
 
 export const createDNASequence = (length: number): string => {
   const alphabet = ['A', 'G', 'C', 'T'];
