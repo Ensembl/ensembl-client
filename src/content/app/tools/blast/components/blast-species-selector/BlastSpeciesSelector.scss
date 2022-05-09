@@ -20,6 +20,7 @@
 .headerGroup {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .headerTitle {
@@ -34,6 +35,7 @@
 
 .clearAll {
   margin-right: 30px;
+  margin-left: auto;
   color: $blue;
   cursor: pointer;
   user-select: none;

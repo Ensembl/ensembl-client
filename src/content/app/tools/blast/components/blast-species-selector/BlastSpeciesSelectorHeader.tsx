@@ -49,19 +49,10 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
           {selectedSpeciesList.length}
         </span>
         <span className={styles.maxSpecies}>of 7 species</span>
-      </div>
-      {compact && (
         <span className={styles.clearAll} onClick={onClearAll}>
           Clear all
         </span>
-      )}
-      {!compact && (
-        <div className={styles.headerGroup}>
-          <span className={styles.clearAll} onClick={onClearAll}>
-            Clear all
-          </span>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

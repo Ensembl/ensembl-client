@@ -100,13 +100,13 @@ const MainSmall = () => {
     <div className={containerClasses} ref={containerRef}>
       {step === 'sequences' ? (
         <>
-          <BlastSequenceSpeciesSelector />
+          <BlastFormStepToggle />
           <BlastInputSequencesHeader compact={true} />
           <BlastInputSequences />
         </>
       ) : (
         <>
-          <BlastSequenceSpeciesSelector />
+          <BlastFormStepToggle />
           <BlastSpeciesSelectorHeader compact={true} />
           <BlastSpeciesSelector />
         </>
@@ -115,7 +115,7 @@ const MainSmall = () => {
   );
 };
 
-const BlastSequenceSpeciesSelector = () => {
+const BlastFormStepToggle = () => {
   const dispatch = useDispatch();
   const step = useSelector(getStep);
 
@@ -128,14 +128,14 @@ const BlastSequenceSpeciesSelector = () => {
   };
 
   const sequenceButtonClass = classNames(styles.blastAgainstButton, {
-    [styles.selectedSequenceSpeciesButton]: step === 'sequences'
+    [styles.buttonActive]: step === 'sequences'
   });
   const speciesButtonClass = classNames(styles.blastAgainstButton, {
-    [styles.selectedSequenceSpeciesButton]: step === 'species'
+    [styles.buttonActive]: step === 'species'
   });
 
   return (
-    <div className={styles.sequenceSpeciesSelector}>
+    <div className={styles.blastFormStepToggle}>
       <SecondaryButton
         className={sequenceButtonClass}
         onClick={onSwitchToSequence}
