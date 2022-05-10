@@ -21,6 +21,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
+
 import ListedBlastSubmission, {
   type Props
 } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
@@ -31,6 +33,8 @@ import blastResultsReducer, {
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { createBlastSubmission } from 'tests/fixtures/blast/blastSubmission';
+
+jest.mock('src/content/app/tools/blast/services/blastStorageService');
 
 const defaultProps = {
   submission: createBlastSubmission()
@@ -123,7 +127,7 @@ describe('BlastSubmissionHeader', () => {
         }
       });
 
-      it('does not show control buttons while at least one job is running', () => {
+      it('does not show control buttons', () => {
         const { container } = renderComponent({
           props: { submission }
         });
@@ -159,6 +163,9 @@ describe('BlastSubmissionHeader', () => {
 
       await userEvent.click(deleteButton);
 
+      expect(blastStorageService.deleteBlastSubmission).toHaveBeenCalledWith(
+        submissionId
+      );
       expect(
         store.getState().blast.blastResults[submissionId]
       ).not.toBeTruthy();

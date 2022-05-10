@@ -26,7 +26,7 @@ import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputPar
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
-  deleteSubmission,
+  deleteBlastSubmission,
   type BlastSubmission,
   type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -109,7 +109,7 @@ const Header = (
   };
 
   const handleDeletion = () => {
-    dispatch(deleteSubmission(submissionId));
+    dispatch(deleteBlastSubmission(submissionId));
   };
 
   return (

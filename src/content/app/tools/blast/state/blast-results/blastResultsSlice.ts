@@ -20,7 +20,10 @@ import {
   type PayloadAction
 } from '@reduxjs/toolkit';
 
-import { getAllBlastSubmissions } from 'src/content/app/tools/blast/services/blastStorageService';
+import {
+  getAllBlastSubmissions,
+  deleteBlastSubmission as deleteBlastSubmissionFromStorage
+} from 'src/content/app/tools/blast/services/blastStorageService';
 
 import { submitBlast } from '../blast-api/blastApiSlice';
 
@@ -80,6 +83,14 @@ export const restoreBlastSubmissions = createAsyncThunk(
   () => getAllBlastSubmissions() || {}
 );
 
+export const deleteBlastSubmission = createAsyncThunk(
+  'blast-results/delete-blast-submissions',
+  async (submissionId: string) => {
+    await deleteBlastSubmissionFromStorage(submissionId);
+    return submissionId;
+  }
+);
+
 const blastResultsSlice = createSlice({
   name: 'blast-results',
   initialState: {} as BlastResultsState,
@@ -96,15 +107,15 @@ const blastResultsSlice = createSlice({
       const submission = state[submissionId];
       const job = submission.results.find((job) => job.jobId === jobId);
       Object.assign(job, fragment);
-    },
-    deleteSubmission(state, action: PayloadAction<string>) {
-      const submissionId = action.payload;
-      delete state[submissionId];
     }
   },
   extraReducers: (builder) => {
     builder.addCase(restoreBlastSubmissions.fulfilled, (_, { payload }) => {
       return payload;
+    });
+    builder.addCase(deleteBlastSubmission.fulfilled, (state, { payload }) => {
+      const submissionId = payload;
+      delete state[submissionId];
     });
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
@@ -113,6 +124,6 @@ const blastResultsSlice = createSlice({
   }
 });
 
-export const { updateJob, deleteSubmission } = blastResultsSlice.actions;
+export const { updateJob } = blastResultsSlice.actions;
 
 export default blastResultsSlice.reducer;
