@@ -1,8 +1,12 @@
 @import 'src/styles/common';
 
+/*
+NOTE: Regarding the grid for .sequenceBox — remember that job status may either be shown or not,
+and also that it can be of variable width
+*/
 .sequenceBox {
   display: grid;
-  grid-template-columns: 1fr 566px;
+  grid-template-columns: 68% auto 1fr;
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
   max-width: 1765px;
@@ -28,4 +32,12 @@
   display: flex;
   align-items: center;
   column-gap: 40px;
+}
+
+.jobStatus {
+  justify-self: end;
+}
+
+.jobStatusProminent {
+  color: $red;
 }

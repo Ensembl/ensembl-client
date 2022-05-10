@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router';
+import classNames from 'classnames';
 
 import { useAppDispatch } from 'src/store';
 
@@ -155,13 +156,17 @@ const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
   const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
   const hasFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
+  const elementClasses = classNames(styles.jobStatus, {
+    [styles.jobStatusProminent]: hasRunningJobs || hasFailedJobs
+  });
+
   if (hasRunningJobs) {
-    return <span>Running...</span>;
+    return <span className={elementClasses}>Running...</span>;
   } else if (hasFailedJobs) {
     if (jobs.length === 1 || jobs.every((job) => job.status === 'FAILURE')) {
-      return <span>Failed</span>;
+      return <span className={elementClasses}>Failed</span>;
     } else {
-      return <span>Some jobs failed</span>;
+      return <span className={elementClasses}>Some jobs failed</span>;
     }
   } else {
     return null;
