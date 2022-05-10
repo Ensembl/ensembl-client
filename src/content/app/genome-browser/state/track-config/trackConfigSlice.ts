@@ -54,17 +54,17 @@ export type GeneTrackConfig = {
   showTranscriptIds: boolean;
   showTrackName: boolean;
   showFeatureLabel: boolean;
-  // trackType: TrackType.GENE
+  trackType: TrackType.GENE;
 };
 
 export type RegularTrackConfig = {
   showTrackName: boolean;
-  // trackType: TrackType.REGULAR
+  trackType: TrackType.REGULAR;
 };
-
-export type TrackConfig =
-  | ({ trackType: TrackType.GENE } & GeneTrackConfig)
-  | ({ trackType: TrackType.REGULAR } & RegularTrackConfig);
+export type TrackConfig = GeneTrackConfig | RegularTrackConfig;
+// export type TrackConfig =
+//   | ({ trackType: TrackType.GENE } & GeneTrackConfig)
+//   | ({ trackType: TrackType.REGULAR } & RegularTrackConfig);
 
 export type TrackInfo = {
   [trackId: string]: TrackConfig;
@@ -128,7 +128,7 @@ export const getTracksStateInfo = (
         };
       } else {
         tracksInfo[trackId] = {
-          showTrackName: true,
+          showTrackName: false,
           trackType
         };
       }
@@ -203,7 +203,6 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        objectId: string;
         selectedCog: string | null;
       }>
     ) {
@@ -264,10 +263,14 @@ const browserTrackConfigSlice = createSlice({
     ) {
       const { genomeId, selectedCog, isTrackLabelShown } = action.payload;
       const trackConfigState = state[genomeId].tracks[selectedCog];
-      if (trackConfigState.trackType === TrackType.GENE) {
-        // TODO: check if trackConfigState is a reference and the actual state is not getting updated
-        trackConfigState.showFeatureLabel = isTrackLabelShown;
+
+      if (trackConfigState.trackType !== TrackType.GENE) {
+        return;
       }
+
+      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
+      trackConfigState.showFeatureLabel = isTrackLabelShown;
+
       const fragment = {
         tracks: {
           [selectedCog]: {

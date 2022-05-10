@@ -171,8 +171,12 @@ const useGenomeBrowser = () => {
     };
 
     allTracksInfo &&
-      Object.keys(allTracksInfo).forEach((trackId) => {
-        allTracksInfo[trackId].showTrackName
+      Object.keys(allTracksInfo).forEach((key) => {
+        let trackId = key;
+        if (trackId.match('focus')) {
+          trackId = 'focus';
+        }
+        allTracksInfo[key].showTrackName
           ? trackStateForNames.on.push(trackId)
           : trackStateForNames.off.push(trackId);
       });
@@ -191,10 +195,16 @@ const useGenomeBrowser = () => {
       }
     });
 
+    // const allTracksInfoGene = allTracksInfo ? allTracksInfo as GeneTrackConfig : null;
     allTracksInfo &&
-      Object.keys(allTracksInfo).forEach((trackId) => {
-        if (allTracksInfo[trackId].trackType === TrackType.GENE) {
-          allTracksInfo[trackId]
+      Object.keys(allTracksInfo).forEach((key) => {
+        let trackId = key;
+        if (trackId.match('focus')) {
+          trackId = 'focus';
+        }
+        const trackInfo = allTracksInfo[key];
+        if (trackInfo.trackType === TrackType.GENE) {
+          trackInfo.showFeatureLabel
             ? trackStateForLabels.on.push(trackId)
             : trackStateForLabels.off.push(trackId);
         }

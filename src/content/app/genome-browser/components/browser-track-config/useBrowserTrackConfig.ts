@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import analyticsTracking from 'src/services/analytics-service';
 import { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
@@ -43,41 +44,17 @@ const useBrowserTrackConfig = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeObjectId = useSelector(getBrowserActiveFocusObjectId);
   const shouldApplyToAll = applyToAllConfig.isSelected;
+  const shouldApplyToAllRef = useRef(shouldApplyToAll);
+
   const selectedTrackConfigInfo = useSelector((state: RootState) =>
     getTrackConfigForTrackId(state, selectedCog)
   );
 
-  const dispatch = useDispatch();
-  // type TracksToUpdate = {
-  //   names: {
-  //     on: string[];
-  //     off: string[];
-  //   },
-  //   labels: {
-  //     on: string[];
-  //     off: string[];
-  //   }
-  // }
-  // tracksInfo && Object.keys(tracksInfo).forEach((trackId) => {
-  //   const tracksToUpdate: TracksToUpdate = {
-  //     names: {
-  //       on: [],
-  //       off: []
-  //     },
-  //     labels: {
-  //       on: [],
-  //       off: []
-  //     }
-  //   };
-  //   if(tracksInfo[trackId].trackType === TrackType.GENE) {
-  //     tracksInfo[trackId].showTrackName ? tracksToUpdate.names.on.push(trackId) : tracksToUpdate.names.off.push(trackId);
-  //     tracksInfo[trackId].showTrackLabel ? tracksToUpdate.labels.on.push(trackId) : tracksToUpdate.labels.off.push(trackId);
-  //   }
-  //   else {
-  //     tracksInfo[trackId].showTrackName ? tracksToUpdate.names.on.push(trackId) : tracksToUpdate.names.off.push(trackId);
-  //   }
+  useEffect(() => {
+    shouldApplyToAllRef.current = shouldApplyToAll;
+  }, [shouldApplyToAll]);
 
-  // })
+  const dispatch = useDispatch();
 
   const { toggleTrackName, toggleTrackLabel } = useGenomeBrowser();
 
@@ -86,7 +63,7 @@ const useBrowserTrackConfig = () => {
       return;
     }
 
-    if (shouldApplyToAll) {
+    if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
           updateTrackConfigNames({
@@ -125,7 +102,7 @@ const useBrowserTrackConfig = () => {
       return;
     }
 
-    if (shouldApplyToAll) {
+    if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
           updateTrackConfigLabel({
@@ -168,7 +145,7 @@ const useBrowserTrackConfig = () => {
     const shouldShowTrackLabel =
       selectedTrackConfigInfo.trackType === TrackType.GENE
         ? selectedTrackConfigInfo.showFeatureLabel
-        : null;
+        : false;
 
     dispatch(
       updateApplyToAll({
@@ -177,7 +154,7 @@ const useBrowserTrackConfig = () => {
         isSelected: value === 'all_tracks'
       })
     );
-
+    shouldApplyToAllRef.current = value === 'all_tracks';
     updateTrackName(shouldShowTrackName);
     shouldShowTrackLabel && updateTrackLabel(shouldShowTrackLabel);
 

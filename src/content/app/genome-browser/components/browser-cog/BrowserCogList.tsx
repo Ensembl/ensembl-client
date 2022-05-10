@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
+import React, { useEffect, memo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   UpdateTrackSummaryAction,
@@ -48,13 +48,18 @@ export const BrowserCogList = () => {
   const selectedCog = useSelector(getBrowserSelectedCog);
 
   const genomeId = useSelector(getBrowserActiveGenomeId);
+  const genomeIdRef = useRef(genomeId);
   const objectId = useSelector(getBrowserActiveFocusObjectId);
   const dispatch = useDispatch();
 
   const { genomeBrowser } = useGenomeBrowser();
 
+  useEffect(() => {
+    genomeIdRef.current = genomeId;
+  }, [genomeId]);
+
   const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
-    if (!genomeId || !objectId) {
+    if (!genomeIdRef.current || !objectId) {
       return;
     }
 
@@ -75,7 +80,13 @@ export const BrowserCogList = () => {
     });
 
     if (cogList) {
-      dispatch(updateCogList({ genomeId, objectId, browserCogList: cogList }));
+      dispatch(
+        updateCogList({
+          genomeId: genomeIdRef.current,
+          objectId,
+          browserCogList: cogList
+        })
+      );
     }
   };
 
@@ -92,7 +103,7 @@ export const BrowserCogList = () => {
     Object.entries(browserCogList).map(([name, pos]) => {
       const posStyle = { top: pos + 'px' };
 
-      if (!genomeId || !objectId) {
+      if (!genomeIdRef.current || !objectId) {
         return;
       }
       return (
@@ -102,7 +113,10 @@ export const BrowserCogList = () => {
             trackId={name}
             updateSelectedCog={(trackId: string | null) =>
               dispatch(
-                updateSelectedCog({ genomeId, objectId, selectedCog: trackId })
+                updateSelectedCog({
+                  genomeId: genomeIdRef.current as string,
+                  selectedCog: trackId
+                })
               )
             }
           />
