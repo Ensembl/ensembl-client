@@ -32,12 +32,6 @@ import {
   getSelectedBlastProgram
 } from '../../state/blast-form/blastFormSelectors';
 
-// jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
-//   return {
-//     useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
-//   };
-// });
-
 const rootReducer = combineReducers({
   blast: combineReducers({
     blastForm: blastFormReducer
