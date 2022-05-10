@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
 import {
   setSequences,
-  setSequenceType,
   updateEmptyInputDisplay,
   setHasUncommittedSequence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -29,37 +25,20 @@ import {
 import {
   getSequences,
   getSelectedSequenceType,
-  getSequenceSelectionMode,
   getUncommittedSequencePresence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
-
-import type {
-  SequenceType,
-  BlastSettingsConfig
-} from 'src/content/app/tools/blast/types/blastSettings';
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import useBlastSettings from '../blast-settings/useBlastSettings';
 
 const useBlastInputSequences = () => {
   const sequences = useSelector(getSequences);
   const sequenceType = useSelector(getSelectedSequenceType);
-  const sequenceSelectionMode = useSelector(getSequenceSelectionMode);
   const hasUncommittedSequence = useSelector(getUncommittedSequencePresence);
-  const { data: config } = useBlastConfigQuery() as {
-    data: BlastSettingsConfig;
-  };
+
+  const { updateSequenceTypeAutomatically } = useBlastSettings();
+
   const dispatch = useDispatch();
-
-  const ref = useRef({
-    sequenceType,
-    sequenceSelectionMode
-  });
-
-  // to avoid stale closures persisting in functions returned from the hook
-  useEffect(() => {
-    ref.current = { sequenceType, sequenceSelectionMode };
-  });
 
   const updateSequences = (newSequences: ParsedInputSequence[]) => {
     dispatch(setSequences({ sequences: newSequences }));
@@ -68,39 +47,10 @@ const useBlastInputSequences = () => {
     } else if (!newSequences.length) {
       dispatch(updateEmptyInputDisplay(true));
     }
+
     updateSequenceTypeAutomatically(newSequences);
+
     setUncommittedSequencePresence(false);
-  };
-
-  const updateSequenceTypeAutomatically = (
-    sequences: ParsedInputSequence[]
-  ) => {
-    if (sequences.length && ref.current.sequenceSelectionMode === 'manual') {
-      return;
-    }
-
-    const guessedSequenceType = sequences.length
-      ? guessSequenceType(sequences[0].value)
-      : 'dna';
-
-    if (guessedSequenceType !== ref.current.sequenceType) {
-      dispatch(
-        setSequenceType({
-          sequenceType: guessedSequenceType,
-          isAutomatic: true,
-          config
-        })
-      );
-    }
-  };
-
-  const updateSequenceType = (sequenceType: SequenceType) => {
-    dispatch(
-      setSequenceType({
-        sequenceType,
-        config
-      })
-    );
   };
 
   const clearAllSequences = () => {
@@ -122,7 +72,6 @@ const useBlastInputSequences = () => {
     sequenceType,
     updateSequences,
     clearAllSequences,
-    updateSequenceType,
     appendEmptyInputBox,
     setUncommittedSequencePresence
   };

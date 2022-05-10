@@ -33,6 +33,12 @@ export const getSelectedSequenceType = (state: RootState) =>
 export const getSequenceSelectionMode = (state: RootState) =>
   state.blast.blastForm.settings.sequenceSelectionMode;
 
+export const getDatabaseSelectionMode = (state: RootState) =>
+  state.blast.blastForm.settings.databaseSelectionMode;
+
+export const getProgramSelectionMode = (state: RootState) =>
+  state.blast.blastForm.settings.programSelectionMode;
+
 export const getSelectedBlastProgram = (state: RootState) =>
   state.blast.blastForm.settings.program;
 

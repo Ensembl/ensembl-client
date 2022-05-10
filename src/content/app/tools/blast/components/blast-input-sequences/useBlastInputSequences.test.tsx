@@ -21,6 +21,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { renderHook, act } from '@testing-library/react';
 
 import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+import useBlastSettings from '../blast-settings/useBlastSettings';
 
 import {
   getSequences,
@@ -31,6 +32,9 @@ import blastFormReducer, {
   initialState as initialBlastFormState,
   type BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import { BlastSettingsConfig } from '../../types/blastSettings';
+import { BlastConfigContext } from '../../views/blast-form/BlastForm';
 
 jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
   return {
@@ -44,6 +48,18 @@ const rootReducer = combineReducers({
   })
 });
 
+const testBlastConfigContext = {
+  config: mockBlastSettingsConfig as unknown as BlastSettingsConfig
+};
+
+const WrapInContext = ({ children }: { children: ReactNode }) => {
+  return (
+    <BlastConfigContext.Provider value={testBlastConfigContext}>
+      {children}
+    </BlastConfigContext.Provider>
+  );
+};
+
 const getWrapper = (
   { state }: { state?: Partial<BlastFormState> } = { state: {} }
 ) => {
@@ -51,14 +67,15 @@ const getWrapper = (
   const initialState = {
     blast: { blastForm: blastFormState }
   };
-
   const store = configureStore({
     reducer: rootReducer,
     preloadedState: initialState
   });
 
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <Provider store={store}>{children}</Provider>
+    <Provider store={store}>
+      <WrapInContext>{children}</WrapInContext>
+    </Provider>
   );
 
   return {
@@ -220,7 +237,7 @@ describe('useBlastInputSequences', () => {
   describe('updateSequenceType', () => {
     it('changes sequence type and sets the change type to manual', () => {
       const { wrapper, store } = getWrapper();
-      const { result } = renderHook(() => useBlastInputSequences(), {
+      const { result } = renderHook(() => useBlastSettings(), {
         wrapper
       });
 

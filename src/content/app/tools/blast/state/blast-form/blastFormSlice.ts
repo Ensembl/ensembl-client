@@ -25,10 +25,14 @@ import type {
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
 
+type AutomaticOrManual = 'automatic' | 'manual';
+
 type BlastFormSettings = {
   jobName: string;
   sequenceType: SequenceType;
-  sequenceSelectionMode: 'automatic' | 'manual';
+  sequenceSelectionMode: AutomaticOrManual;
+  databaseSelectionMode: AutomaticOrManual;
+  programSelectionMode: AutomaticOrManual;
   program: BlastProgram;
   preset: string;
   parameters: Partial<Record<BlastParameterName, string>>;
@@ -54,6 +58,8 @@ const initialBlastFormSettings: BlastFormSettings = {
   jobName: '',
   sequenceType: 'dna',
   sequenceSelectionMode: 'automatic',
+  databaseSelectionMode: 'automatic',
+  programSelectionMode: 'automatic',
   program: 'blastn',
   preset: 'normal',
   parameters: {}
@@ -66,35 +72,6 @@ export const initialState: BlastFormState = {
   hasUncommittedSequence: false,
   selectedSpecies: [],
   settings: initialBlastFormSettings
-};
-
-const getProgamName = ({
-  sequenceType,
-  databaseSequenceType,
-  config
-}: {
-  sequenceType: SequenceType;
-  databaseSequenceType: SequenceType;
-  config: BlastSettingsConfig;
-}) => {
-  const programs = config.programs_configurator.find(
-    ({ sequence_type, database_type }) => {
-      return (
-        sequence_type === sequenceType && database_type === databaseSequenceType
-      );
-    }
-  )?.programs as BlastProgram[];
-  return programs[0];
-};
-
-const getDatabaseSequenceType = ({
-  database,
-  config
-}: {
-  database: string;
-  config: BlastSettingsConfig;
-}) => {
-  return config.database_sequence_types[database];
 };
 
 const blastFormSlice = createSlice({
@@ -137,66 +114,48 @@ const blastFormSlice = createSlice({
       state,
       action: PayloadAction<{
         sequenceType: SequenceType;
-        isAutomatic?: boolean;
-        config: BlastSettingsConfig;
+        isAutomatic: boolean;
       }>
     ) {
-      const { sequenceType, config, isAutomatic } = action.payload;
-      const selectedDatabase =
-        state.settings.parameters.database ?? config.defaults.database;
-      const databaseSequenceType = getDatabaseSequenceType({
-        database: selectedDatabase,
-        config
-      });
-      const programName = getProgamName({
-        sequenceType,
-        databaseSequenceType,
-        config
-      });
-      const presetName = initialBlastFormSettings.preset;
-      const parameters = config.presets.settings[programName][presetName];
+      const { sequenceType, isAutomatic } = action.payload;
+
       state.settings.sequenceType = sequenceType;
       state.settings.sequenceSelectionMode = isAutomatic
         ? 'automatic'
         : 'manual';
-      state.settings.program = programName;
-      state.settings.preset = presetName;
-      state.settings.parameters = { ...parameters, database: selectedDatabase };
     },
     setBlastDatabase(
       state,
       action: PayloadAction<{
         database: string;
-        config: BlastSettingsConfig;
+        isAutomatic: boolean;
       }>
     ) {
-      const { database, config } = action.payload;
-      const sequenceType = state.settings.sequenceType;
-      const databaseSequenceType = getDatabaseSequenceType({
-        database,
-        config
-      });
-      const programName = getProgamName({
-        sequenceType,
-        databaseSequenceType,
-        config
-      });
-      const presetName = initialBlastFormSettings.preset;
-      const parameters = config.presets.settings[programName][presetName];
-      state.settings.program = programName;
-      state.settings.preset = presetName;
-      state.settings.parameters = { ...parameters, database };
+      const { database, isAutomatic } = action.payload;
+
+      state.settings.preset = initialBlastFormSettings.preset;
+      state.settings.parameters.database = database;
+
+      state.settings.databaseSelectionMode = isAutomatic
+        ? 'automatic'
+        : 'manual';
     },
     setBlastProgram(
       state,
       action: PayloadAction<{
         program: BlastProgram;
         config: BlastSettingsConfig;
+        isAutomatic: boolean;
       }>
     ) {
-      const { program, config } = action.payload;
+      const { program, config, isAutomatic } = action.payload;
       const presetName = initialBlastFormSettings.preset;
       const parameters = config.presets.settings[program][presetName];
+
+      state.settings.programSelectionMode = isAutomatic
+        ? 'automatic'
+        : 'manual';
+
       state.settings.program = program;
       state.settings.preset = presetName;
       state.settings.parameters = {

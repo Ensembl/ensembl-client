@@ -41,6 +41,13 @@ jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
   };
 });
 
+jest.mock(
+  'src/content/app/tools/blast/components/blast-settings/useBlastSettings',
+  () => () => ({
+    updateSequenceTypeAutomatically: jest.fn()
+  })
+);
+
 const defaultProps: BlastInputSequencesHeaderProps = {
   compact: false
 };

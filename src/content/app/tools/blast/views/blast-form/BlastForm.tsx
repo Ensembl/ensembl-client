@@ -28,11 +28,19 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
 import BlastSettings from 'src/content/app/tools/blast/components/blast-settings/BlastSettings';
+import { type BlastSettingsConfig } from '../../types/blastSettings';
 
 import BlastSpeciesSelectorHeader from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelectorHeader';
 import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelector';
 
 import styles from './BlastForm.scss';
+
+export const BlastConfigContext = React.createContext<
+  | {
+      config: BlastSettingsConfig;
+    }
+  | undefined
+>(undefined);
 
 const BlastForm = () => {
   const { data: config } = useBlastConfigQuery();
@@ -43,11 +51,13 @@ const BlastForm = () => {
 
   return (
     <div className={styles.container}>
-      <BlastAppBar view="blast-form" />
-      <ToolsTopBar>
-        <BlastSettings config={config} />
-      </ToolsTopBar>
-      <Main />
+      <BlastConfigContext.Provider value={{ config }}>
+        <BlastAppBar view="blast-form" />
+        <ToolsTopBar>
+          <BlastSettings />
+        </ToolsTopBar>
+        <Main />
+      </BlastConfigContext.Provider>
     </div>
   );
 };

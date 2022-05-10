@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import noop from 'lodash/noop';
@@ -26,26 +26,14 @@ import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
-import {
-  getSelectedSequenceType,
-  getSelectedBlastProgram,
-  getSelectedSearchSensitivity,
-  getBlastSearchParameters,
-  getBlastJobName
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-import {
-  setBlastDatabase,
-  setBlastProgram,
-  changeSensitivityPresets,
-  setBlastParameter,
-  setBlastJobName
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import useBlastSettings from './useBlastSettings';
+
+import { getBlastJobName } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { setBlastJobName } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import type {
-  BlastProgram,
   BlastSelectSetting,
   BlastBooleanSetting,
-  BlastParameterName,
   BlastSettingsConfig,
   Option
 } from 'src/content/app/tools/blast/types/blastSettings';
@@ -76,64 +64,20 @@ const getAvailableBlastPrograms = (
   };
   return blastProgramSetting;
 };
-
-type Props = {
-  config: BlastSettingsConfig;
-};
-
-const BlastSettings = ({ config }: Props) => {
+const BlastSettings = () => {
   const [parametersExpanded, setParametersExpanded] = useState(false);
-  const sequenceType = useSelector(getSelectedSequenceType);
-  const blastProgram = useSelector(getSelectedBlastProgram);
-  const searchSensitivity = useSelector(getSelectedSearchSensitivity);
-  const blastParameters = useSelector(getBlastSearchParameters);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!blastParameters.database) {
-      const defaultDatabase = config.defaults.database;
-      onDatabaseChange(defaultDatabase);
-    }
-  }, []);
-
-  const onDatabaseChange = (database: string) => {
-    dispatch(
-      setBlastDatabase({
-        database,
-        config
-      })
-    );
-  };
-
-  const onBlastProgramChange = (program: string) => {
-    dispatch(
-      setBlastProgram({
-        program: program as BlastProgram,
-        config
-      })
-    );
-  };
-
-  const onSearchSensitivityChange = (presetName: string) => {
-    dispatch(
-      changeSensitivityPresets({
-        presetName,
-        config
-      })
-    );
-  };
-
-  const onBlastParameterChange = (
-    parameterName: string,
-    parameterValue: string
-  ) => {
-    dispatch(
-      setBlastParameter({
-        parameterName: parameterName as BlastParameterName,
-        parameterValue
-      })
-    );
-  };
+  const {
+    config,
+    sequenceType,
+    blastProgram,
+    searchSensitivity,
+    blastParameters,
+    onDatabaseChange,
+    onBlastProgramChange,
+    onSearchSensitivityChange,
+    onBlastParameterChange
+  } = useBlastSettings();
 
   const onParametersToggle = () => {
     setParametersExpanded(!parametersExpanded);

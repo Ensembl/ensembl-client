@@ -28,6 +28,7 @@ import {
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import useBlastInputSequences from './useBlastInputSequences';
+import useBlastSettings from '../blast-settings/useBlastSettings';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
@@ -46,8 +47,10 @@ export type Props = {
 
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
-  const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
+  const { sequences, sequenceType, clearAllSequences } =
     useBlastInputSequences();
+
+  const { updateSequenceType } = useBlastSettings();
 
   const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
   const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
