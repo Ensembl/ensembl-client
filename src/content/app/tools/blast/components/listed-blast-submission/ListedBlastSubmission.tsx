@@ -121,8 +121,10 @@ const Header = (
         <span className={styles.editSubmission} onClick={editSubmission}>
           Edit/rerun
         </span>
-        <span>{submmissionTime}</span>
-        <span className={styles.timeZone}>GMT</span>
+        <span className={styles.timeStamp}>
+          <span>{submmissionTime}</span>
+          <span className={styles.timeZone}>GMT</span>
+        </span>
       </div>
       <div className={styles.controlButtons}>
         {!props.isAnyJobRunning && (

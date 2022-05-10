@@ -31,6 +31,10 @@ and also that it can be of variable width
   margin: 0 32px;
 }
 
+.timeStamp {
+  white-space: nowrap;
+}
+
 .timeZone {
   font-weight: $light;
   margin-left: 1ch;
