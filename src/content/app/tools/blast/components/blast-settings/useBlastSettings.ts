@@ -159,19 +159,15 @@ const useBlastSettings = () => {
       config
     });
 
-    setBlastProgram({
-      program: newProgramName,
-      isAutomatic: true,
-      config
-    });
+    onBlastProgramChange(newProgramName, true);
   };
 
-  const onBlastProgramChange = (program: string) => {
+  const onBlastProgramChange = (program: string, isAutomatic = false) => {
     dispatch(
       setBlastProgram({
         program: program as BlastProgram,
         config,
-        isAutomatic: false
+        isAutomatic
       })
     );
   };
@@ -184,9 +180,11 @@ const useBlastSettings = () => {
       return;
     }
     if (
-      sequenceSelectionMode === 'manual' ||
-      programSelectionMode === 'manual' ||
-      databaseSelectionMode === 'manual'
+      [
+        sequenceSelectionMode,
+        programSelectionMode,
+        databaseSelectionMode
+      ].includes('manual')
     ) {
       return;
     }
