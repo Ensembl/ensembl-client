@@ -86,6 +86,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         return {
           submissionId,
           submission: {
+            id: submissionId,
             submittedData: {
               species: payload.species,
               sequences: payload.sequences,

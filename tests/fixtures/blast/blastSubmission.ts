@@ -27,13 +27,20 @@ import type {
   JobStatus
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
-export const createBlastSubmission = (
-  fragment: Partial<BlastSubmission> = {}
-): BlastSubmission => {
-  const species = [createSelectedSpecies()];
-  const sequences = createSubmittedSequences(2);
+export const createBlastSubmission = (params?: {
+  fragment?: Partial<BlastSubmission>;
+  options?: {
+    sequencesCount?: number;
+    speciesCount?: number;
+  };
+}): BlastSubmission => {
+  const fragment = params?.fragment;
+  const { sequencesCount = 2, speciesCount = 1 } = params?.options ?? {};
+  const species = times(speciesCount, () => createSelectedSpecies());
+  const sequences = createSubmittedSequences(sequencesCount);
 
   return {
+    id: faker.datatype.uuid(),
     submittedData: {
       species,
       sequences,
@@ -116,6 +123,7 @@ export const createProteinSequence = (length: number): string => {
 const defaultBlastParameters = {
   title: '',
   database: 'dna',
+  stype: 'dna',
   program: 'blastn',
   alignments: '100',
   scores: '50',
@@ -129,4 +137,4 @@ const defaultBlastParameters = {
   wordsize: '8',
   gapopen: '1',
   gapext: '2'
-};
+} as const;

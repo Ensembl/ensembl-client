@@ -236,7 +236,9 @@ describe('blast epics', () => {
     const unfinishedJob = createBlastJob();
     const finishedJob = createBlastJob({ status: 'FINISHED' });
     const storedBlastSubmission = createBlastSubmission({
-      results: [unfinishedJob, finishedJob]
+      fragment: {
+        results: [unfinishedJob, finishedJob]
+      }
     });
 
     jest

@@ -26,7 +26,8 @@ import { submitBlast } from '../blast-api/blastApiSlice';
 
 import type {
   MandatoryBlastParameterName,
-  OptionalBlastParameterName
+  OptionalBlastParameterName,
+  SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
@@ -45,9 +46,13 @@ export type OptionalSubmissionParameters = Partial<
   Record<OptionalBlastParameterName, string>
 >;
 export type BlastSubmissionParameters = MandatorySubmissionParameters &
-  OptionalSubmissionParameters;
+  OptionalSubmissionParameters & {
+    title: string;
+    stype: SequenceType;
+  };
 
 export type BlastSubmission = {
+  id: string;
   submittedData: {
     species: Species[];
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
@@ -66,7 +71,7 @@ export type BlastSubmission = {
 
 export type BlastJob = BlastSubmission['results'][number];
 
-type BlastResultsState = {
+export type BlastResultsState = {
   [submissionId: string]: BlastSubmission;
 };
 
@@ -91,6 +96,10 @@ const blastResultsSlice = createSlice({
       const submission = state[submissionId];
       const job = submission.results.find((job) => job.jobId === jobId);
       Object.assign(job, fragment);
+    },
+    deleteSubmission(state, action: PayloadAction<string>) {
+      const submissionId = action.payload;
+      delete state[submissionId];
     }
   },
   extraReducers: (builder) => {
@@ -104,6 +113,6 @@ const blastResultsSlice = createSlice({
   }
 });
 
-export const { updateJob } = blastResultsSlice.actions;
+export const { updateJob, deleteSubmission } = blastResultsSlice.actions;
 
 export default blastResultsSlice.reducer;

@@ -15,20 +15,31 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
+
+import { useAppDispatch } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+
+import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import {
+  deleteSubmission,
+  type BlastSubmission,
+  type BlastJob
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
-import type {
-  BlastSubmission,
-  BlastJob
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './ListedBlastSubmission.scss';
 
-type Props = {
-  submission: BlastSubmission & { id: string }; // TODO: probably should just add id field to the submission
+export type Props = {
+  submission: BlastSubmission;
 };
 
 const ListedBlastSubmission = (props: Props) => {
@@ -64,6 +75,9 @@ const Header = (
   }
 ) => {
   const { submission } = props;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
   const submissionId = submission.id;
@@ -71,18 +85,45 @@ const Header = (
     withTime: true
   });
 
+  const editSubmission = () => {
+    const { sequences, species, parameters } = submission.submittedData;
+    const parsedSequences = sequences.flatMap((sequence) =>
+      parseBlastInput(sequence.value)
+    );
+    const { title, program, stype, ...otherParameters } = parameters;
+
+    const payload = {
+      sequences: parsedSequences,
+      selectedSpecies: species,
+      settings: {
+        jobName: title,
+        sequenceType: stype,
+        program: program as BlastProgram,
+        parameters: otherParameters
+      }
+    };
+    dispatch(fillBlastForm(payload));
+    navigate(urlFor.blastForm());
+  };
+
+  const handleDeletion = () => {
+    dispatch(deleteSubmission(submissionId));
+  };
+
   return (
     <BlastSubmissionHeaderGrid>
       <div>{blastProgram}</div>
       <div>
         <span className={styles.submissionIdLabel}>Submission</span>
         <span>{submissionId}</span>
-        <span className={styles.rerun}>Edit/rerun</span>
+        <span className={styles.editSubmission} onClick={editSubmission}>
+          Edit/rerun
+        </span>
         <span>{submmissionTime}</span>
         <span className={styles.timeZone}>GMT</span>
       </div>
       <div className={styles.controlButtons}>
-        <DeleteButton />
+        <DeleteButton onClick={handleDeletion} />
         <ButtonLink to={'/'} isDisabled={props.isAnyJobRunning}>
           Results
         </ButtonLink>
