@@ -1,5 +1,9 @@
 @import 'src/styles/common';
 
+.listedBlastSubmission:not(:last-child) {
+  margin-bottom: 48px;
+}
+
 /*
 NOTE: Regarding the grid for .sequenceBox — remember that job status may either be shown or not,
 and also that it can be of variable width
@@ -10,6 +14,10 @@ and also that it can be of variable width
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
   max-width: 1765px;
+}
+
+.sequenceBox + .sequenceBox {
+  border-top: none;
 }
 
 .submissionIdLabel {
@@ -32,6 +40,10 @@ and also that it can be of variable width
   display: flex;
   align-items: center;
   column-gap: 40px;
+}
+
+.inactiveButton {
+  --download-button-background: #{$grey};
 }
 
 .jobStatus {

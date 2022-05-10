@@ -108,15 +108,40 @@ describe('BlastSubmissionHeader', () => {
     it.todo('shows submission id');
 
     it.todo('shows submission date');
+
+    describe('while at least one job is running', () => {
+      const submission = createBlastSubmission({
+        options: { sequencesCount: 5 }
+      });
+
+      // make sure there is only one one running job
+      submission.results.forEach((job, index) => {
+        if (index === 0) {
+          job.status = 'RUNNING';
+        } else {
+          job.status = 'FINISHED';
+        }
+      });
+
+      it('does not show control buttons while at least one job is running', () => {
+        const { container } = renderComponent({
+          props: { submission }
+        });
+
+        expect(container.querySelector('.deleteButton')).toBeFalsy();
+      });
+    });
   });
 
   describe('behaviour', () => {
     // define this beehaviour better
-    it.todo('can fold submissions jobs');
+    it.todo('can fold jobs of a submission into a single box');
 
     // TODO: make sure that deleting a sequence stops polling for this sequence
     it('can delete a submission', async () => {
       const submission = createBlastSubmission();
+      submission.results.forEach((job) => (job.status = 'FINISHED'));
+
       const { id: submissionId } = submission;
       const submissionInRedux = {
         [submissionId]: submission

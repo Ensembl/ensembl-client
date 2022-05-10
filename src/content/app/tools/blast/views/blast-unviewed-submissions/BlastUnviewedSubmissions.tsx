@@ -42,6 +42,11 @@ const BlastUnviewedSubmission = () => {
 const Main = () => {
   const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
 
+  // sort the submissions in reverse chronological order
+  unviewedBlastSubmissions.sort((a, b) => {
+    return b.submittedAt - a.submittedAt;
+  });
+
   const submissionElements = unviewedBlastSubmissions.map((submission) => (
     <ListedBlastSubmission key={submission.id} submission={submission} />
   ));

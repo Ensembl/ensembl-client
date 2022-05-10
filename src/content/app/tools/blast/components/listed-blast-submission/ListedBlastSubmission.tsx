@@ -34,6 +34,7 @@ import {
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -63,10 +64,10 @@ const ListedBlastSubmission = (props: Props) => {
   ));
 
   return (
-    <>
+    <div className={styles.listedBlastSubmission}>
       <Header {...props} isAnyJobRunning={isAnyJobRunning} />
       {sequenceBoxes}
-    </>
+    </div>
   );
 };
 
@@ -124,7 +125,12 @@ const Header = (
         <span className={styles.timeZone}>GMT</span>
       </div>
       <div className={styles.controlButtons}>
-        <DeleteButton onClick={handleDeletion} />
+        {!props.isAnyJobRunning && (
+          <>
+            <DeleteButton onClick={handleDeletion} />
+            <DownloadButton className={styles.inactiveButton} />
+          </>
+        )}
         <ButtonLink to={'/'} isDisabled={props.isAnyJobRunning}>
           Results
         </ButtonLink>
