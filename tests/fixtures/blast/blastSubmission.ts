@@ -48,6 +48,7 @@ export const createBlastSubmission = (params?: {
     },
     results: createBlastJobs({ species, sequences }),
     submittedAt: Date.now(),
+    seen: false,
     ...fragment
   };
 };
@@ -92,7 +93,6 @@ export const createBlastJob = (fragment: Partial<BlastJob> = {}): BlastJob => {
     sequenceId: parseInt(faker.random.numeric()),
     genomeId: faker.datatype.uuid(),
     status: 'RUNNING',
-    seen: false,
     data: null,
     ...fragment
   };

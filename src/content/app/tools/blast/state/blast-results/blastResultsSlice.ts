@@ -66,10 +66,10 @@ export type BlastSubmission = {
     sequenceId: number;
     genomeId: string;
     status: JobStatus;
-    seen: boolean;
     data: null; // TODO: add data type
   }>;
   submittedAt: number; // timestamp
+  seen: boolean; // whether the user has viewed the results of this submission
 };
 
 export type BlastJob = BlastSubmission['results'][number];
