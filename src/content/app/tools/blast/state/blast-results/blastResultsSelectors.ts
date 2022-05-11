@@ -19,11 +19,8 @@ import { RootState } from 'src/store';
 export const getBlastSubmissions = (state: RootState) =>
   state.blast.blastResults;
 
-// FIXME: actually return unvewed submissions, and use reselect
 export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state));
-  // return Object.entries(getBlastSubmissions(state)).map(([id, submission]) => ({
-  //   id,
-  //   ...submission
-  // }));
+  return Object.values(getBlastSubmissions(state)).filter(
+    (submission) => !submission.seen
+  );
 };

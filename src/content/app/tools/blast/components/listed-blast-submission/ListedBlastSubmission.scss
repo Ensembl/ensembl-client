@@ -52,7 +52,9 @@ and also that it can be of variable width
 .controlButtons {
   display: flex;
   align-items: center;
+  justify-content: end;
   column-gap: 40px;
+  width: 268px;
 }
 
 .inactiveButton {
