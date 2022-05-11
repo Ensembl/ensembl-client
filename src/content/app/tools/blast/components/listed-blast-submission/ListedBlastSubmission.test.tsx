@@ -134,6 +134,44 @@ describe('BlastSubmissionHeader', () => {
 
         expect(container.querySelector('.deleteButton')).toBeFalsy();
       });
+
+      it('has a disabled link to submission results page', () => {
+        const { container } = renderComponent({
+          props: { submission }
+        });
+
+        const buttonLink = container.querySelector(
+          '.buttonLink'
+        ) as HTMLElement;
+        expect(buttonLink).toBeTruthy();
+        expect(buttonLink.classList.contains('buttonLinkDisabled')).toBe(true);
+        expect(buttonLink.tagName.toLowerCase()).toBe('span');
+      });
+    });
+
+    describe('when all jobs are finished', () => {
+      const submission = createBlastSubmission({
+        options: { sequencesCount: 5 }
+      });
+
+      submission.results.forEach((job) => {
+        job.status = 'FINISHED';
+      });
+
+      it('activates link to submission results', () => {
+        const { container } = renderComponent({
+          props: { submission }
+        });
+
+        const buttonLink = container.querySelector(
+          '.buttonLink'
+        ) as HTMLElement;
+        expect(buttonLink).toBeTruthy();
+        expect(buttonLink.tagName.toLowerCase()).toBe('a');
+        expect(buttonLink.getAttribute('href')).toBe(
+          `/blast/submissions/${submission.id}`
+        );
+      });
     });
   });
 
@@ -193,7 +231,5 @@ describe('BlastSubmissionHeader', () => {
         Object.keys(blastFormReduxState.settings.parameters).length
       ).toBeGreaterThan(0);
     });
-
-    it.todo('opens a page with detailed submission results');
   });
 });

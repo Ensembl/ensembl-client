@@ -133,7 +133,10 @@ const Header = (
             <DownloadButton className={styles.inactiveButton} />
           </>
         )}
-        <ButtonLink to={'/'} isDisabled={props.isAnyJobRunning}>
+        <ButtonLink
+          to={urlFor.blastSubmission(submission.id)}
+          isDisabled={props.isAnyJobRunning}
+        >
           Results
         </ButtonLink>
       </div>
