@@ -20,6 +20,7 @@ import { renderHook, act } from '@testing-library/react';
 
 import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
 import useBlastSettings from './useBlastSettings';
+import useBlastInputSequences from '../blast-input-sequences/useBlastInputSequences';
 
 import blastFormReducer, {
   initialState as initialBlastFormState,
@@ -73,23 +74,12 @@ const getWrapper = (
   };
 };
 
+const nucleotideSequence =
+  'CGGACCAGACGGACACAGGGAGAAGCTAGTTTCTTTCATGTGATTGANATNATGACTCTACTCCTAAAAG';
+const proteinSequence =
+  'MENLNMDLLYMAAAVMMGLAAIGAAIGIGILGGKFLEGAARQPDLIPLLRTQFFIVMGLVDAIPMIAVGL';
+
 describe('useBlastSettings', () => {
-  it('changes the relevant program and database when the sequence type is changed', () => {
-    const { wrapper, store } = getWrapper();
-    const { result } = renderHook(() => useBlastSettings(), { wrapper });
-
-    const { updateSequenceType } = result.current;
-
-    act(() => {
-      updateSequenceType('protein');
-    });
-
-    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
-      'pep'
-    );
-    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
-  });
-
   it('sets the relevant program when the database is manually changed', () => {
     const { wrapper, store } = getWrapper();
     const { result } = renderHook(() => useBlastSettings(), { wrapper });
@@ -101,5 +91,148 @@ describe('useBlastSettings', () => {
     });
 
     expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastx');
+  });
+
+  it('changes the relevant program and database when the sequence type is changed', () => {
+    const { wrapper, store } = getWrapper();
+    const { result } = renderHook(() => useBlastSettings(), { wrapper });
+
+    const { onDatabaseChange, updateSequenceType } = result.current;
+
+    act(() => {
+      onDatabaseChange('cdna');
+    });
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastn');
+
+    act(() => {
+      updateSequenceType('protein');
+    });
+
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'pep'
+    );
+  });
+
+  it('does not override manually selected database and program on protein sequence input', () => {
+    const { wrapper, store } = getWrapper();
+    const { result } = renderHook(
+      () => ({ ...useBlastSettings(), ...useBlastInputSequences() }),
+      { wrapper }
+    );
+
+    const { onDatabaseChange, onBlastProgramChange, updateSequences } =
+      result.current;
+
+    act(() => {
+      onDatabaseChange('cdna');
+      // Manually change the program
+      onBlastProgramChange('blastx');
+    });
+    act(() => {
+      updateSequences([{ value: proteinSequence }]);
+    });
+
+    // Program and database should remain the same after inputting a protein sequence
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastx');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'cdna'
+    );
+  });
+
+  it('does not override manually selected database and program on nucleotide sequence input', () => {
+    const { wrapper, store } = getWrapper();
+    const { result } = renderHook(
+      () => ({ ...useBlastSettings(), ...useBlastInputSequences() }),
+      { wrapper }
+    );
+
+    const { onDatabaseChange, updateSequenceType, updateSequences } =
+      result.current;
+
+    act(() => {
+      onDatabaseChange('cdna');
+      updateSequenceType('protein');
+    });
+
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'pep'
+    );
+
+    act(() => {
+      updateSequences([{ value: nucleotideSequence }]);
+    });
+
+    // Program and database should remain the same after inputting a nucleotide sequence
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'pep'
+    );
+  });
+
+  it('overrides guessed nucleotide database and program when sequence type is changed manually', () => {
+    const { wrapper, store } = getWrapper();
+    const { result } = renderHook(
+      () => ({ ...useBlastSettings(), ...useBlastInputSequences() }),
+      { wrapper }
+    );
+
+    const { updateSequenceType, updateSequences } = result.current;
+
+    act(() => {
+      // Input nucleotide sequence
+      updateSequences([{ value: nucleotideSequence }]);
+
+      // Manually select protein sequence type
+      updateSequenceType('protein');
+    });
+
+    // Program and database should change according to the sequence type selected
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'pep'
+    );
+  });
+
+  it('overrides guessed protein database and program when sequence type is changed manually', () => {
+    const { wrapper, store } = getWrapper();
+    const { result } = renderHook(
+      () => ({ ...useBlastSettings(), ...useBlastInputSequences() }),
+      { wrapper }
+    );
+
+    const { updateSequenceType, updateSequences, onDatabaseChange } =
+      result.current;
+
+    act(() => {
+      // Input protein sequence
+      updateSequences([{ value: proteinSequence }]);
+    });
+
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastp');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'pep'
+    );
+
+    act(() => {
+      onDatabaseChange('cdna');
+    });
+
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('tblastn');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'cdna'
+    );
+
+    act(() => {
+      // Manually select protein sequence type
+      updateSequenceType('dna');
+    });
+
+    // Program and database should change according to the sequence type selected
+    expect(getSelectedBlastProgram(store.getState() as any)).toEqual('blastn');
+    expect(getBlastSearchParameters(store.getState() as any).database).toEqual(
+      'dna'
+    );
   });
 });

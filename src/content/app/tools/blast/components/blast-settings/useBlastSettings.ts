@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
-  setBlastDatabase,
   changeSensitivityPresets,
-  setBlastParameter,
-  setBlastProgram,
-  setSequenceType
+  updateSettings
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import {
@@ -36,7 +33,6 @@ import {
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import type {
-  BlastParameterName,
   BlastProgram,
   BlastSettingsConfig,
   SequenceType
@@ -90,7 +86,29 @@ const useBlastSettings = () => {
   const programSelectionMode = useSelector(getProgramSelectionMode);
   const searchSensitivity = useSelector(getSelectedSearchSensitivity);
   const blastParameters = useSelector(getBlastSearchParameters);
+
   const dispatch = useDispatch();
+
+  const ref = useRef({
+    sequenceSelectionMode,
+    databaseSelectionMode,
+    programSelectionMode,
+    sequenceType
+  });
+
+  useEffect(() => {
+    ref.current = {
+      sequenceSelectionMode,
+      databaseSelectionMode,
+      programSelectionMode,
+      sequenceType
+    };
+  }, [
+    sequenceSelectionMode,
+    databaseSelectionMode,
+    programSelectionMode,
+    sequenceType
+  ]);
 
   useEffect(() => {
     if (!blastParameters.database) {
@@ -100,53 +118,40 @@ const useBlastSettings = () => {
   }, []);
 
   const updateSequenceType = (
-    sequenceType: SequenceType,
+    newSequenceType: SequenceType,
     isAutomatic = false
   ) => {
-    dispatch(
-      setSequenceType({
-        sequenceType,
-        isAutomatic
-      })
-    );
-
     // Update the program and the database
-    const newDatabse = sequenceType === 'protein' ? 'pep' : 'dna';
+    const newDatabse = newSequenceType === 'protein' ? 'pep' : 'dna';
     const databaseSequenceType = getDatabaseSequenceType({
       database: newDatabse,
       config
     });
 
     const newProgramName = getProgamName({
-      sequenceType,
+      sequenceType: newSequenceType,
       databaseSequenceType,
       config
     });
 
     dispatch(
-      setBlastProgram({
-        program: newProgramName,
-        config,
-        isAutomatic: true
-      })
-    );
-
-    dispatch(
-      setBlastDatabase({
-        database: newDatabse,
-        isAutomatic: true
+      updateSettings({
+        settingsFragment: {
+          sequenceType: newSequenceType,
+          program: newProgramName,
+          parameters: {
+            database: newDatabse
+          },
+          sequenceSelectionMode: isAutomatic ? 'automatic' : 'manual',
+          programSelectionMode: 'automatic',
+          databaseSelectionMode: 'automatic'
+        },
+        config
       })
     );
   };
 
   const onDatabaseChange = (database: string, isAutomatic = false) => {
-    dispatch(
-      setBlastDatabase({
-        database,
-        isAutomatic
-      })
-    );
-
     // Auto update the program
     const databaseSequenceType = getDatabaseSequenceType({
       database: database,
@@ -154,20 +159,34 @@ const useBlastSettings = () => {
     });
 
     const newProgramName = getProgamName({
-      sequenceType,
+      sequenceType: ref.current.sequenceType,
       databaseSequenceType,
       config
     });
 
-    onBlastProgramChange(newProgramName, true);
+    dispatch(
+      updateSettings({
+        settingsFragment: {
+          program: newProgramName,
+          parameters: {
+            database
+          },
+          programSelectionMode: 'automatic',
+          databaseSelectionMode: isAutomatic ? 'automatic' : 'manual'
+        },
+        config
+      })
+    );
   };
 
   const onBlastProgramChange = (program: string, isAutomatic = false) => {
     dispatch(
-      setBlastProgram({
-        program: program as BlastProgram,
-        config,
-        isAutomatic
+      updateSettings({
+        settingsFragment: {
+          program: program as BlastProgram,
+          programSelectionMode: isAutomatic ? 'automatic' : 'manual'
+        },
+        config
       })
     );
   };
@@ -181,9 +200,9 @@ const useBlastSettings = () => {
     }
     if (
       [
-        sequenceSelectionMode,
-        programSelectionMode,
-        databaseSelectionMode
+        ref.current.sequenceSelectionMode,
+        ref.current.programSelectionMode,
+        ref.current.databaseSelectionMode
       ].includes('manual')
     ) {
       return;
@@ -210,9 +229,13 @@ const useBlastSettings = () => {
     parameterValue: string
   ) => {
     dispatch(
-      setBlastParameter({
-        parameterName: parameterName as BlastParameterName,
-        parameterValue
+      updateSettings({
+        settingsFragment: {
+          parameters: {
+            [parameterName]: parameterValue
+          }
+        },
+        config
       })
     );
   };

@@ -110,58 +110,26 @@ const blastFormSlice = createSlice({
     switchToSpeciesStep(state) {
       state.step = 'species';
     },
-    setSequenceType(
+    updateSettings(
       state,
       action: PayloadAction<{
-        sequenceType: SequenceType;
-        isAutomatic: boolean;
-      }>
-    ) {
-      const { sequenceType, isAutomatic } = action.payload;
-
-      state.settings.sequenceType = sequenceType;
-      state.settings.sequenceSelectionMode = isAutomatic
-        ? 'automatic'
-        : 'manual';
-    },
-    setBlastDatabase(
-      state,
-      action: PayloadAction<{
-        database: string;
-        isAutomatic: boolean;
-      }>
-    ) {
-      const { database, isAutomatic } = action.payload;
-
-      state.settings.preset = initialBlastFormSettings.preset;
-      state.settings.parameters.database = database;
-
-      state.settings.databaseSelectionMode = isAutomatic
-        ? 'automatic'
-        : 'manual';
-    },
-    setBlastProgram(
-      state,
-      action: PayloadAction<{
-        program: BlastProgram;
+        settingsFragment: Partial<BlastFormSettings>;
         config: BlastSettingsConfig;
-        isAutomatic: boolean;
       }>
     ) {
-      const { program, config, isAutomatic } = action.payload;
+      const { config, settingsFragment } = action.payload;
+      const currentSettings = { ...state.settings };
+      const newSettings = { ...currentSettings, ...settingsFragment };
+      const { program } = newSettings;
       const presetName = initialBlastFormSettings.preset;
       const parameters = config.presets.settings[program][presetName];
-
-      state.settings.programSelectionMode = isAutomatic
-        ? 'automatic'
-        : 'manual';
-
-      state.settings.program = program;
-      state.settings.preset = presetName;
-      state.settings.parameters = {
+      newSettings.preset = presetName;
+      newSettings.parameters = {
+        ...currentSettings.parameters,
         ...parameters,
-        database: state.settings.parameters.database
+        ...settingsFragment.parameters
       };
+      state.settings = newSettings;
     },
     changeSensitivityPresets(
       state,
@@ -178,16 +146,6 @@ const blastFormSlice = createSlice({
         ...parameters,
         database: state.settings.parameters.database
       };
-    },
-    setBlastParameter(
-      state,
-      action: PayloadAction<{
-        parameterName: BlastParameterName;
-        parameterValue: string;
-      }>
-    ) {
-      const { parameterName, parameterValue } = action.payload;
-      state.settings.parameters[parameterName] = parameterValue;
     },
     setBlastJobName(state, action: PayloadAction<string>) {
       state.settings.jobName = action.payload;
@@ -208,11 +166,8 @@ export const {
   addSelectedSpecies,
   removeSelectedSpecies,
   clearSelectedSpecies,
-  setSequenceType,
-  setBlastDatabase,
-  setBlastProgram,
+  updateSettings,
   changeSensitivityPresets,
-  setBlastParameter,
   setBlastJobName
 } = blastFormSlice.actions;
 export default blastFormSlice.reducer;
