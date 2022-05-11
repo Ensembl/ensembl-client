@@ -15,24 +15,27 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import RadioGroup, {
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
-
-import styles from './BrowserTrackConfig.scss';
-import useBrowserTrackConfig from './useBrowserTrackConfig';
 import GeneTrackConfig from './track-config-views/GeneTrackConfig';
 import RegularTrackConfig from './track-config-views/RegularTrackConfig';
+
 import {
   getTrackType,
   TrackType
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-import { useSelector } from 'react-redux';
+
 import {
   getApplyToAllConfig,
   getBrowserSelectedCog
 } from '../../state/track-config/trackConfigSelectors';
+
+import useBrowserTrackConfig from './useBrowserTrackConfig';
+
+import styles from './BrowserTrackConfig.scss';
 
 const getTrackConfigComponent = (trackType: TrackType) => {
   switch (trackType) {

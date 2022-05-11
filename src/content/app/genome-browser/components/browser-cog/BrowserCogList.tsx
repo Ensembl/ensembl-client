@@ -124,16 +124,10 @@ export const BrowserCogList = () => {
       );
     });
 
-  const transformStyle = {
-    transform: 'translate(0,' + 0 + 'px)'
-  };
-
   return genomeBrowser ? (
     <div className={styles.browserTrackConfigOuter}>
       <div className={styles.browserCogListOuter}>
-        <div className={styles.browserCogListInner} style={transformStyle}>
-          {cogs}
-        </div>
+        <div className={styles.browserCogListInner}>{cogs}</div>
       </div>
     </div>
   ) : null;

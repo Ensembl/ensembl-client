@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
+import { RootState } from 'src/store';
 import { useLocation, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
@@ -47,10 +48,7 @@ import {
   getBrowserActiveFocusObjectIds
 } from '../state/browser-general/browserGeneralSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
-
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
-
-import { RootState } from 'src/store';
 import { setInitialTrackConfigDataForObject } from '../state/track-config/trackConfigSlice';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 

@@ -21,15 +21,15 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
+import { RootState } from 'src/store';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import browserTrackConfigStorageService from '../../components/browser-track-config/services/browser-track-config-storage-service';
+import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { RootState } from 'src/store';
-import browserTrackConfigStorageService from '../../components/browser-track-config/services/browser-track-config-storage-service';
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 
 export type CogList = {
@@ -61,10 +61,8 @@ export type RegularTrackConfig = {
   showTrackName: boolean;
   trackType: TrackType.REGULAR;
 };
+
 export type TrackConfig = GeneTrackConfig | RegularTrackConfig;
-// export type TrackConfig =
-//   | ({ trackType: TrackType.GENE } & GeneTrackConfig)
-//   | ({ trackType: TrackType.REGULAR } & RegularTrackConfig);
 
 export type TrackInfo = {
   [trackId: string]: TrackConfig;
@@ -291,8 +289,6 @@ export const {
   updateCogList,
   updateSelectedCog,
   updateApplyToAll,
-  // updateApplyToAllTrackNames,
-  // updateApplyToAllTrackLabels,
   updateTrackConfigNames,
   updateTrackConfigLabel
 } = browserTrackConfigSlice.actions;

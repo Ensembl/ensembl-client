@@ -15,11 +15,11 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import analyticsTracking from 'src/services/analytics-service';
-import { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 import { RootState } from 'src/store';
-import useGenomeBrowser from '../../hooks/useGenomeBrowser';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
+
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObjectId
@@ -36,6 +36,9 @@ import {
   updateApplyToAll,
   TrackType
 } from '../../state/track-config/trackConfigSlice';
+
+import analyticsTracking from 'src/services/analytics-service';
+import useGenomeBrowser from '../../hooks/useGenomeBrowser';
 
 const useBrowserTrackConfig = () => {
   const applyToAllConfig = useSelector(getApplyToAllConfig);

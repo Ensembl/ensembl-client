@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
@@ -40,7 +41,6 @@ import { TrackType } from 'src/content/app/genome-browser/state/track-config/tra
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-import { useSelector } from 'react-redux';
 
 const useGenomeBrowser = () => {
   const activeFocusObjectId = useSelector(getBrowserActiveFocusObjectId);
@@ -195,7 +195,6 @@ const useGenomeBrowser = () => {
       }
     });
 
-    // const allTracksInfoGene = allTracksInfo ? allTracksInfo as GeneTrackConfig : null;
     allTracksInfo &&
       Object.keys(allTracksInfo).forEach((key) => {
         let trackId = key;

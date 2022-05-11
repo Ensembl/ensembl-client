@@ -15,21 +15,22 @@
  */
 
 import React from 'react';
+import { RootState } from 'src/store';
 import { useSelector } from 'react-redux';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import { RootState } from 'src/store';
+
+import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import {
   getBrowserSelectedCog,
   getTrackConfigForTrackId
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
-import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
-import styles from '../BrowserTrackConfig.scss';
 import useBrowserTrackConfig from '../useBrowserTrackConfig';
 
+import styles from '../BrowserTrackConfig.scss';
+
 export const TranscriptTrackConfig = () => {
-  const { updateTrackName, updateTrackLabel } = useBrowserTrackConfig();
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
   const selectedTrackConfigInfo = useSelector((state: RootState) =>
     getTrackConfigForTrackId(state, selectedCog)
@@ -38,6 +39,8 @@ export const TranscriptTrackConfig = () => {
   const shouldShowTrackLabel =
     selectedTrackConfigInfo?.trackType === TrackType.GENE &&
     selectedTrackConfigInfo.showFeatureLabel;
+
+  const { updateTrackName, updateTrackLabel } = useBrowserTrackConfig();
 
   return (
     <div className={styles.section}>
