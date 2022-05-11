@@ -20,6 +20,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
+
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
@@ -35,7 +37,6 @@ import {
   getBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
-  setBlastDatabase,
   setBlastProgram,
   changeSensitivityPresets,
   setBlastParameter,
@@ -88,22 +89,24 @@ const BlastSettings = ({ config }: Props) => {
   const blastProgram = useSelector(getSelectedBlastProgram);
   const searchSensitivity = useSelector(getSelectedSearchSensitivity);
   const blastParameters = useSelector(getBlastSearchParameters);
+  const { updateBlastDatabase } = useBlastForm();
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (!blastParameters.database) {
       const defaultDatabase = config.defaults.database;
-      onDatabaseChange(defaultDatabase);
+      onDatabaseChange(defaultDatabase, { isAutomatic: true });
     }
   }, []);
 
-  const onDatabaseChange = (database: string) => {
-    dispatch(
-      setBlastDatabase({
-        database,
-        config
-      })
-    );
+  const onDatabaseChange = (
+    database: string,
+    options: { isAutomatic?: boolean } = {}
+  ) => {
+    updateBlastDatabase({
+      database,
+      isAutomatic: options.isAutomatic
+    });
   };
 
   const onBlastProgramChange = (program: string) => {

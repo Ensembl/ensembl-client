@@ -22,7 +22,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { useAppSelector } from 'src/store';
 
 import { useSubmitBlastMutation } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import useBlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/useBlastInputSequences';
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormValidator';
 
 import { getBlastFormData } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -51,7 +51,7 @@ export type PayloadParams = {
 };
 
 const BlastJobSubmit = () => {
-  const { sequences } = useBlastInputSequences();
+  const { sequences } = useBlastForm();
   const selectedSpeciesIds = useAppSelector(getSelectedSpeciesIds);
   const [submitBlast] = useSubmitBlastMutation({
     // Using a fixed cache key means that any subsequent request

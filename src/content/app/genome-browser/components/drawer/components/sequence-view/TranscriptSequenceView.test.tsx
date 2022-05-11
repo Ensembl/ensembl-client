@@ -37,6 +37,12 @@ import TranscriptSequenceView, { type Props } from './TranscriptSequenceView';
 jest.mock('config', () => ({
   refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
 }));
+jest.mock(
+  'src/shared/components/blast-sequence-button/BlastSequenceButton',
+  () => () => {
+    return <button className="blast-sequence-button" />;
+  }
+);
 
 const renderTranscriptSequenceView = (props: Props) => {
   const genomeId = 'human';

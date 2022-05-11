@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.container {
+  display: flex;
+  align-items: center;
+  column-gap: var(--blast-sequence-button-label-distance, 24px);
+}
+
+.label {
+  font-weight: var(--blast-sequence-button-label-font-weight, #{$light});
+}
+
+.button {
+  --app-icon-size: var(--blast-sequence-button-size, 24px);
+  background: $blue;
+
+  svg {
+    fill: $white;
+  }
+}
