@@ -2,11 +2,10 @@
 
 .listedBlastSubmission {
   /*
-    The max-width of 1770px must be derivable as:
-      "small" left padding of 30px
-      plus the max width of the top bar content (1800px)
-      minus the 60px left padding of the main container
-    Therefore, 1800 + 30 - 60 = 1770px
+    The max-width of 1770px is a result of the following calculation:
+      take the max width of the top bar content (1800px),
+      and subtract from it the extra left padding that the main container has over the top bar (60px - 30px)
+    Thus, 1800 - 60 + 30 = 1770px
   */
   max-width: 1770px;
 }
