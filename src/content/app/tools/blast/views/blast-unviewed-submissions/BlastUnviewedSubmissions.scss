@@ -1,3 +1,10 @@
 .container {
   padding: 0 30px 90px 60px; // TODO: these 30px, 60px and 90px should either become a reusable constant or be included in some sort of BlastMainContainer component
 }
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  max-width: 1765px; // same as the width of a sequence box (see ListedBlastSubmission component); does it want to be a constant?
+  padding: 1rem 0 2rem;
+}

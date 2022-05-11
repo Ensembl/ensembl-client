@@ -53,7 +53,13 @@ export type PayloadParams = {
 const BlastJobSubmit = () => {
   const { sequences } = useBlastInputSequences();
   const selectedSpeciesIds = useAppSelector(getSelectedSpeciesIds);
-  const [submitBlast] = useSubmitBlastMutation();
+  const [submitBlast] = useSubmitBlastMutation({
+    // Using a fixed cache key means that any subsequent request
+    // will overwrite the current request if it hasn't yet completed;
+    // but in order for this to be a problem, the api endpoint must be fantastically slow,
+    // and the user must be fantastically fast; so it is most likely a non-issue
+    fixedCacheKey: 'submit-blast-form'
+  });
   const navigate = useNavigate();
 
   const isDisabled = !isBlastFormValid(selectedSpeciesIds, sequences);
