@@ -1,5 +1,16 @@
 @import 'src/styles/common';
 
+.listedBlastSubmission {
+  /*
+    The max-width of 1770px must be derivable as:
+      "small" left padding of 30px
+      plus the max width of the top bar content (1800px)
+      minus the 60px left padding of the main container
+    Therefore, 1800 + 30 - 60 = 1770px
+  */
+  max-width: 1770px;
+}
+
 .listedBlastSubmission:not(:last-child) {
   margin-bottom: 48px;
 }
@@ -13,7 +24,6 @@ and also that it can be of variable width
   grid-template-columns: 68% auto 1fr;
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
-  max-width: 1765px;
 }
 
 .sequenceBox + .sequenceBox {

@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: [left] auto [right] 1fr;
   align-items: center;
-  max-width: 1810px; // TODO: this is max width of the two-column blast form; set it to a constant
+  max-width: 1800px; // TODO: this is max width of the two-column blast form; set it to a constant
 }
 
 .title {
