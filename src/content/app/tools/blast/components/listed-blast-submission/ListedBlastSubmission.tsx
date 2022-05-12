@@ -83,7 +83,7 @@ const Header = (
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
   const submissionId = submission.id;
-  const submmissionTime = getDateString(new Date(submission.submittedAt), {
+  const submissionTime = getDateString(new Date(submission.submittedAt), {
     withTime: true
   });
 
@@ -122,7 +122,7 @@ const Header = (
           Edit/rerun
         </span>
         <span className={styles.timeStamp}>
-          <span>{submmissionTime}</span>
+          <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
       </div>

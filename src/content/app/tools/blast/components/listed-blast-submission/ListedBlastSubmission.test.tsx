@@ -107,10 +107,6 @@ describe('BlastSubmissionHeader', () => {
       expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
     });
 
-    it.todo('shows BLAST program');
-
-    it.todo('shows submission id');
-
     it.todo('shows submission date');
 
     describe('while at least one job is running', () => {
@@ -176,7 +172,7 @@ describe('BlastSubmissionHeader', () => {
   });
 
   describe('behaviour', () => {
-    // define this beehaviour better
+    // define this behaviour better
     it.todo('can fold jobs of a submission into a single box');
 
     // TODO: make sure that deleting a sequence stops polling for this sequence
