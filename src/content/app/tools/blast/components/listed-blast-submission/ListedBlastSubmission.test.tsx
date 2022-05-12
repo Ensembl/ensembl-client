@@ -24,7 +24,7 @@ import userEvent from '@testing-library/user-event';
 import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
 
 import ListedBlastSubmission, {
-  type Props
+  type Props as ListedBlastSubmissionProps
 } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
 
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -44,7 +44,7 @@ const renderComponent = ({
   props,
   state
 }: {
-  props?: Partial<Props>;
+  props?: Partial<ListedBlastSubmissionProps>;
   state?: Partial<BlastResultsState>;
 }) => {
   const initialState = {

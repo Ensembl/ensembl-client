@@ -134,7 +134,7 @@ const Header = (
           </>
         )}
         <ButtonLink
-          to={urlFor.blastSubmission(submission.id)}
+          to={urlFor.blastSubmission(submissionId)}
           isDisabled={props.isAnyJobRunning}
         >
           Results

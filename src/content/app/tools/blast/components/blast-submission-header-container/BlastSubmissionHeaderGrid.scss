@@ -5,4 +5,5 @@
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
   margin-bottom: 14px;
+  white-space: nowrap;
 }
