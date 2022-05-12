@@ -17,8 +17,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'src/store';
+
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
+import BlastSequenceButton from 'src/shared/components/blast-sequence-button/BlastSequenceButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
@@ -26,6 +31,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './DrawerSequenceView.scss';
 
@@ -38,6 +44,7 @@ const sequenceLabelsMap: Record<SequenceType, string> = {
 
 // TODO: we probably also want to pass a sequence header in order to be able to blast it
 type Props = {
+  genomeId: string;
   isExpanded: boolean;
   toggleSequenceVisibility: () => void;
   sequence?: string;
@@ -53,6 +60,7 @@ type Props = {
 
 const DrawerSequenceView = (props: Props) => {
   const {
+    genomeId,
     isExpanded,
     isError,
     isLoading,
@@ -65,6 +73,9 @@ const DrawerSequenceView = (props: Props) => {
     isReverseComplement,
     onReverseComplementChange
   } = props;
+  const species = useAppSelector((state) =>
+    getCommittedSpeciesById(state, genomeId)
+  ) as CommittedItem;
 
   const sequenceTypeOptions = sequenceTypes.map((sequenceType) => ({
     value: sequenceType,
@@ -98,12 +109,13 @@ const DrawerSequenceView = (props: Props) => {
           )}
           {isLoading && <Loading />}
           {isError && <LoadFailure refetch={refetch} />}
-          {/* The BLAST button will go here when ready
-
-              <div className={styles.asideTop}>
-                BLAST BUTTON HERE!
-              </div>
-          */}
+          <div className={styles.asideTop}>
+            <BlastSequenceButton
+              sequence={sequence}
+              species={species}
+              sequenceType="dna"
+            />
+          </div>
           <div className={styles.asideBottom}>
             <div className={styles.sequenceTypeSelection}>
               <RadioGroup

@@ -238,7 +238,7 @@ const blastFormSlice = createSlice({
       action: PayloadAction<{
         sequences: ParsedInputSequence[];
         selectedSpecies: Species[];
-        settings: Partial<BlastFormSettings>;
+        settings?: Partial<BlastFormSettings>;
       }>
     ) {
       const { sequences, selectedSpecies, settings } = action.payload;
