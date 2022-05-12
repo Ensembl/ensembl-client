@@ -19,6 +19,8 @@ import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
 
+import { Environment, isEnvironment } from 'src/shared/helpers/environment';
+
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
@@ -109,13 +111,15 @@ const DrawerSequenceView = (props: Props) => {
           )}
           {isLoading && <Loading />}
           {isError && <LoadFailure refetch={refetch} />}
-          <div className={styles.asideTop}>
-            <BlastSequenceButton
-              sequence={sequence}
-              species={species}
-              sequenceType="dna"
-            />
-          </div>
+          {!isEnvironment([Environment.PRODUCTION]) && (
+            <div className={styles.asideTop}>
+              <BlastSequenceButton
+                sequence={sequence}
+                species={species}
+                sequenceType="dna"
+              />
+            </div>
+          )}
           <div className={styles.asideBottom}>
             <div className={styles.sequenceTypeSelection}>
               <RadioGroup
