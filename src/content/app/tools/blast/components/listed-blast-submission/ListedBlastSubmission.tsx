@@ -22,6 +22,7 @@ import { useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -83,9 +84,7 @@ const Header = (
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
   const submissionId = submission.id;
-  const submissionTime = getDateString(new Date(submission.submittedAt), {
-    withTime: true
-  });
+  const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
 
   const editSubmission = () => {
     const { sequences, species, parameters } = submission.submittedData;
@@ -182,29 +181,6 @@ const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
   } else {
     return null;
   }
-};
-
-// TODO: this could belong in a helper file
-const getDateString = (
-  date: Date,
-  options: {
-    withTime?: boolean;
-  } = {}
-) => {
-  const { withTime = false } = options;
-  const year = date.getUTCFullYear();
-  const monthAsNumber = date.getUTCMonth() + 1; // month returned from date.getMonth() is zero-based
-  const month = String(monthAsNumber).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
-
-  if (!withTime) {
-    return `${year}-${month}-${day}`;
-  }
-
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-
-  return `${year}-${month}-${day}, ${hours}:${minutes}`;
 };
 
 export default ListedBlastSubmission;
