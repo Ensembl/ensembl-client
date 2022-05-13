@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import { getFormattedDate, getFormattedDateTime } from './dateFormatter';
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+const testDateInput = new Date('December 17, 2020 03:24:47'); // just an arbitrary date
 
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
-  );
-};
+describe('getFormattedDate', () => {
+  it('returns a formatted date', () => {
+    expect(getFormattedDate(testDateInput)).toBe('2020-12-17');
+  });
+});
+
+describe('getFormattedDateTime', () => {
+  it('returns a formatted date with time', () => {
+    expect(getFormattedDateTime(testDateInput)).toBe('2020-12-17, 03:24');
+  });
+});

@@ -35,13 +35,15 @@ import { createCancellableTestEpic } from 'tests/reduxObservableHelpers';
 
 import {
   createBlastSubmission,
+  createBlastJob
+} from 'tests/fixtures/blast/blastSubmission';
+import {
+  createBlastSubmissionPayload,
   createBlastSubmissionResponse,
   createSuccessfulBlastJobInSubmissionResponse,
   createRunningJobStatusResponse,
   createFinishedJobStatusResponse,
-  createFailedJobStatusResponse,
-  createStoredBlastSubmission,
-  createStoredBlastJobResult
+  createFailedJobStatusResponse
 } from './fixtures/blastSubmissionFixtures';
 
 jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
@@ -126,7 +128,9 @@ describe('blast epics', () => {
         )
       );
 
-      await store.dispatch(submitBlast.initiate(createBlastSubmission()));
+      await store.dispatch(
+        submitBlast.initiate(createBlastSubmissionPayload())
+      );
       expect(blastStorageService.saveBlastSubmission).toHaveBeenCalled();
     });
 
@@ -157,7 +161,9 @@ describe('blast epics', () => {
         )
       );
 
-      await store.dispatch(submitBlast.initiate(createBlastSubmission()));
+      await store.dispatch(
+        submitBlast.initiate(createBlastSubmissionPayload())
+      );
 
       // wait until job statuses in redux have been updated
       await waitFor(() => {
@@ -211,7 +217,7 @@ describe('blast epics', () => {
         )
       );
 
-      store.dispatch(submitBlast.initiate(createBlastSubmission()));
+      store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
 
       // If job statuses in redux have been updated, the test has passed successfully
       await waitFor(() => {
@@ -227,10 +233,12 @@ describe('blast epics', () => {
   });
 
   describe('blastSubmissionsRestoreEpic', () => {
-    const unfinishedJob = createStoredBlastJobResult();
-    const finishedJob = createStoredBlastJobResult({ status: 'FINISHED' });
-    const storedBlastSubmission = createStoredBlastSubmission({
-      results: [unfinishedJob, finishedJob]
+    const unfinishedJob = createBlastJob();
+    const finishedJob = createBlastJob({ status: 'FINISHED' });
+    const storedBlastSubmission = createBlastSubmission({
+      fragment: {
+        results: [unfinishedJob, finishedJob]
+      }
     });
 
     jest

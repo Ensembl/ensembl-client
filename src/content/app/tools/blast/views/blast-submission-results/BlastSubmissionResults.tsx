@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import React from 'react';
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
+import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
+const BlastSubmissionResults = () => {
+  return (
+    <div>
+      <BlastAppBar view="submission-results" />
+      <ToolsTopBar>
+        <BlastViewsNavigation />
+      </ToolsTopBar>
+      <Main />
+    </div>
   );
 };
+
+const Main = () => {
+  return <div>Here will be submission details</div>;
+};
+
+export default BlastSubmissionResults;

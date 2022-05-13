@@ -28,6 +28,9 @@ const BlastUnviewedSubmissions = loadable(
 const BlastJobs = loadable(
   () => import('./views/blast-submissions/BlastSubmissions')
 );
+const BlastSubmissionResults = loadable(
+  () => import('./views/blast-submission-results/BlastSubmissionResults')
+);
 
 const pageDescription = `
 BLAST stands for Basic Local Alignment Search Tool.
@@ -49,6 +52,10 @@ const BrowserPage = () => {
           <Route
             path="unviewed-submissions"
             element={<BlastUnviewedSubmissions />}
+          />
+          <Route
+            path="submissions/:submissionId"
+            element={<BlastSubmissionResults />}
           />
           <Route path="submissions" element={<BlastJobs />} />
         </Routes>

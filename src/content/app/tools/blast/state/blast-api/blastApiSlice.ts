@@ -79,20 +79,21 @@ const blastApiSlice = restApiSlice.injectEndpoints({
             genomeId: job.genome_id,
             sequenceId: job.sequence_id,
             status: 'RUNNING',
-            seen: false,
             data: null
           }));
 
         return {
           submissionId,
           submission: {
+            id: submissionId,
             submittedData: {
               species: payload.species,
               sequences: payload.sequences,
               parameters: payload.parameters
             },
             results,
-            submittedAt: Date.now()
+            submittedAt: Date.now(),
+            seen: false
           } as BlastSubmission
         };
       }

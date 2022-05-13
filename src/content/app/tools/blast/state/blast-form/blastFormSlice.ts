@@ -233,7 +233,27 @@ const blastFormSlice = createSlice({
     setBlastJobName(state, action: PayloadAction<string>) {
       state.settings.jobName = action.payload;
     },
-    clearForm() {
+    fillBlastForm(
+      _,
+      action: PayloadAction<{
+        sequences: ParsedInputSequence[];
+        selectedSpecies: Species[];
+        settings: Partial<BlastFormSettings>;
+      }>
+    ) {
+      const { sequences, selectedSpecies, settings } = action.payload;
+      return cloneDeep({
+        ...initialState,
+        sequences,
+        selectedSpecies,
+        shouldAppendEmptyInput: false,
+        settings: {
+          ...cloneDeep(initialBlastFormSettings),
+          ...settings
+        }
+      });
+    },
+    clearBlastForm() {
       // TODO: apply default settings to the form
       return cloneDeep(initialState);
     }
@@ -254,6 +274,8 @@ export const {
   setBlastProgram,
   changeSensitivityPresets,
   setBlastParameter,
-  setBlastJobName
+  setBlastJobName,
+  fillBlastForm,
+  clearBlastForm
 } = blastFormSlice.actions;
 export default blastFormSlice.reducer;
