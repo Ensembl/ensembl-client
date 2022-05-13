@@ -27,11 +27,11 @@ import {
   SpeciesSelectorIcon,
   GlobalSearchIcon,
   EntityViewerIcon,
-  BlastIcon,
   CustomDownloadIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
+import BlastLaunchbarButton from './BlastLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
@@ -80,12 +80,7 @@ const Launchbar = () => {
           </div>
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
-              <LaunchbarButton
-                app="blast"
-                description="BLAST"
-                icon={BlastIcon}
-                enabled={true}
-              />
+              <BlastLaunchbarButton />
             </div>
           )}
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (

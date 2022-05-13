@@ -91,3 +91,24 @@
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
+
+.toolsIconWrapper {
+  position: relative;
+}
+
+.jobStatus {
+  border-radius: 10px;
+  height: 18px;
+  width: 18px;
+  position: absolute;
+  top: -9px;
+  left: 23px;
+
+  &Running {
+    background-color: #d90000;
+  }
+
+  &Finished {
+    background-color: #47d147;
+  }
+}
