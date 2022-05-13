@@ -21,8 +21,6 @@ import classNames from 'classnames';
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
-import { SecondaryButton } from 'src/shared/components/button/Button';
-
 import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
   switchToSequencesStep,
@@ -31,6 +29,7 @@ import {
 
 import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
@@ -98,15 +97,14 @@ const MainSmall = () => {
 
   return (
     <div className={containerClasses} ref={containerRef}>
+      <BlastFormStepToggle />
       {step === 'sequences' ? (
         <>
-          <BlastFormStepToggle />
           <BlastInputSequencesHeader compact={true} />
           <BlastInputSequences />
         </>
       ) : (
         <>
-          <BlastFormStepToggle />
           <BlastSpeciesSelectorHeader compact={true} />
           <BlastSpeciesSelector />
         </>
