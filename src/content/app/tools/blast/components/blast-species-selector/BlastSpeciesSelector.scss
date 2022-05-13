@@ -2,9 +2,10 @@
 
 .header {
   display: flex;
-  width: 860px;
+  width: 862px;
   justify-content: space-between;
   align-items: center;
+  margin-left: -1px;
   padding-left: 28px;
   padding-bottom: 12px;
   position: sticky;
@@ -14,7 +15,7 @@
 }
 
 .smallScreenHeader {
-  top: 49px;
+  top: 48px;
 }
 
 .headerGroup {
