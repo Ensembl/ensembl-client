@@ -5,5 +5,6 @@
   background-color: $light-grey;
   padding: 24px 20px 20px 30px;
   box-shadow: 0 3px 5px $global-box-shadow;
-  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
 }
