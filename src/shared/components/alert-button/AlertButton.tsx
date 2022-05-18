@@ -15,43 +15,26 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
+
+import AlertIcon from 'static/icons/icon_alert_circle.svg';
 
 import { useShowTooltip } from 'src/shared/hooks/useShowTooltip';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import QuestionIcon from 'static/icons/icon_question_circle.svg';
-
-import defaultStyles from './QuestionButton.scss';
-
-// Extra styling options based on where the button is located
-export enum QuestionButtonOption {
-  INPUT = 'in-input-field',
-  INLINE = 'inline'
-}
+import styles from './AlertButton.scss';
 
 type Props = {
   helpText: React.ReactNode;
-  styleOption: QuestionButtonOption;
-  className?: { [key in QuestionButtonOption]?: string };
 };
 
-const QuestionButton = (props: Props) => {
+const AlertButton = (props: Props) => {
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
     useShowTooltip();
 
-  const className = classNames(
-    defaultStyles.questionButton,
-    {
-      [defaultStyles[props.styleOption as string]]: props.styleOption
-    },
-    props.className
-  );
-
   return (
-    <div ref={elementRef} className={className} onClick={onClick}>
-      <QuestionIcon />
+    <div ref={elementRef} className={styles.alertButton} onClick={onClick}>
+      <AlertIcon />
       {shouldShowTooltip && (
         <Tooltip
           anchor={elementRef.current}
@@ -66,8 +49,4 @@ const QuestionButton = (props: Props) => {
   );
 };
 
-QuestionButton.defaultProps = {
-  styleOption: QuestionButtonOption.INLINE
-};
-
-export default QuestionButton;
+export default AlertButton;
