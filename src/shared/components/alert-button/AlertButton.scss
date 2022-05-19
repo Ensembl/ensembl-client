@@ -1,16 +1,22 @@
 @import 'src/styles/common';
 
 .alertButton {
-  display: inline-block;
-  position: relative;
-  top: 4px;
   cursor: pointer;
   padding: 2px;
-  font-size: 0;
+  user-select: none;
 
   > svg {
-    width: 18px;
-    height: 18px;
-    fill: $red;
+    --alert-icon-width: 18px;
+    --alert-icon-height: 18px;
+    width: var(--alert-icon-width);
+    height: var(--alert-icon-height);
   }
+}
+
+.errorIcon svg {
+  fill: $red;
+}
+
+.warningIcon svg {
+  fill: $orange;
 }

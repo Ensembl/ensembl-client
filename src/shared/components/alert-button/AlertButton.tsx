@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import AlertIcon from 'static/icons/icon_alert_circle.svg';
 
@@ -25,15 +26,20 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import styles from './AlertButton.scss';
 
 type Props = {
-  helpText: React.ReactNode;
+  tooltipText: React.ReactNode;
+  warningIcon?: boolean;
 };
 
 const AlertButton = (props: Props) => {
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
     useShowTooltip();
+  const alertButtonClass = classNames(
+    styles.alertButton,
+    props.warningIcon ? styles.warningIcon : styles.errorIcon
+  );
 
   return (
-    <div ref={elementRef} className={styles.alertButton} onClick={onClick}>
+    <div ref={elementRef} className={alertButtonClass} onClick={onClick}>
       <AlertIcon />
       {shouldShowTooltip && (
         <Tooltip
@@ -42,7 +48,7 @@ const AlertButton = (props: Props) => {
           onClose={onTooltipCloseSignal}
           delay={0}
         >
-          {props.helpText}
+          {props.tooltipText}
         </Tooltip>
       )}
     </div>

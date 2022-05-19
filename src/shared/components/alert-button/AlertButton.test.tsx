@@ -41,7 +41,7 @@ describe('<AlertButton />', () => {
   describe('on hover', () => {
     it('shows the tooltip after a delay', async () => {
       const { container, queryByText } = render(
-        <AlertButton helpText={helpText} />
+        <AlertButton tooltipText={helpText} />
       );
       const alertButton = container.querySelector(
         '.alertButton'
@@ -65,7 +65,7 @@ describe('<AlertButton />', () => {
 
     it('hides the tooltip on mouseleave', async () => {
       const { container, queryByText } = render(
-        <AlertButton helpText={helpText} />
+        <AlertButton tooltipText={helpText} />
       );
       const alertButton = container.querySelector(
         '.alertButton'
@@ -86,7 +86,7 @@ describe('<AlertButton />', () => {
   describe('on click', () => {
     it('toggles the tooltip', async () => {
       const { container, queryByText } = render(
-        <AlertButton helpText={helpText} />
+        <AlertButton tooltipText={helpText} />
       );
       const alertButton = container.querySelector(
         '.alertButton'
@@ -103,7 +103,7 @@ describe('<AlertButton />', () => {
 
     it('takes precedence over hover', async () => {
       const { container, queryByText } = render(
-        <AlertButton helpText={helpText} />
+        <AlertButton tooltipText={helpText} />
       );
       const alertButton = container.querySelector(
         '.alertButton'
@@ -120,7 +120,7 @@ describe('<AlertButton />', () => {
 
     it('does not hide the tooltip on mouseleave', async () => {
       const { container, queryByText } = render(
-        <AlertButton helpText={helpText} />
+        <AlertButton tooltipText={helpText} />
       );
       const alertButton = container.querySelector(
         '.alertButton'
