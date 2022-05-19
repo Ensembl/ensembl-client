@@ -24,11 +24,24 @@ export default {
   title: 'Components/Shared Components/Alert button'
 };
 
-export const AlertButtonTooltip = () => (
+export const ErrorIconTooltip = () => (
   <div>
     <span className={styles.text}>Some error has occured</span>
-    <AlertButton helpText="This is a hint" />
+    <div className={styles.alertIcon}>
+      <AlertButton tooltipText="This is a hint" />
+    </div>
   </div>
 );
 
-AlertButtonTooltip.storyName = 'Alert icon with tooltip';
+ErrorIconTooltip.storyName = 'Error icon with tooltip';
+
+export const WarningIconTooltip = () => (
+  <div>
+    <span className={styles.text}>Some warning to show</span>
+    <div className={styles.alertIcon}>
+      <AlertButton tooltipText="This is a hint" warningIcon={true} />
+    </div>
+  </div>
+);
+
+WarningIconTooltip.storyName = 'Warning icon with tooltip';
