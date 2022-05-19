@@ -26,8 +26,8 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './Launchbar.scss';
 
-type LaunchbarButtonProps = {
-  app: string;
+export type LaunchbarButtonProps = {
+  path: string;
   description: string;
   icon: FunctionComponent<unknown> | string;
   enabled: boolean;
@@ -37,8 +37,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
   const location = useLocation();
-  const pathTo = `/${props.app}`;
-  const isActive = new RegExp(`^${pathTo}`).test(location.pathname);
+  const isActive = new RegExp(`^${props.path}`).test(location.pathname);
   const imageButtonStatus = getImageButtonStatus({
     isDisabled: !props.enabled,
     isActive
@@ -68,7 +67,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       className={({ isActive }) =>
         isActive ? activeButtonClass : styles.launchbarButton
       }
-      to={pathTo}
+      to={props.path}
     >
       {imageButton}
     </NavLink>

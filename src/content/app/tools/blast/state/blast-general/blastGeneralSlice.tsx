@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import blastGeneralReducer from './blast-general/blastGeneralSlice';
-import blastFormReducer from './blast-form/blastFormSlice';
-import blastResultsReducer from './blast-results/blastResultsSlice';
+type BrowserGeneralState = {
+  lastVisitedView: string;
+};
 
-export default combineReducers({
-  blastGeneral: blastGeneralReducer,
-  blastForm: blastFormReducer,
-  blastResults: blastResultsReducer
+const initialState: BrowserGeneralState = {
+  lastVisitedView: ''
+};
+
+const blastGeneralSlice = createSlice({
+  name: 'blast-general',
+  initialState,
+  reducers: {
+    updateLastVisitedBlastView(state, action: PayloadAction<string>) {
+      state.lastVisitedView = action.payload;
+    }
+  }
 });
+
+export const { updateLastVisitedBlastView } = blastGeneralSlice.actions;
+
+export default blastGeneralSlice.reducer;

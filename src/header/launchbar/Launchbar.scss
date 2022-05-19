@@ -102,13 +102,13 @@
   width: 18px;
   position: absolute;
   top: -9px;
-  left: 23px;
+  right: -9px;
 
   &Running {
-    background-color: #d90000;
+    background-color: $red;
   }
 
   &Finished {
-    background-color: #47d147;
+    background-color: $green;
   }
 }

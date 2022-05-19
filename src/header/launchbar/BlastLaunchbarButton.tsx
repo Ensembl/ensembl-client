@@ -14,50 +14,46 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react';
-import classNames from 'classnames';
+import React from 'react';
 
 import { useAppSelector } from 'src/store';
 
 import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
-import LaunchbarButton from './LaunchbarButton';
+import LaunchbarButtonWithNotification from './LaunchbarIconWithNotification';
 import { BlastIcon } from 'src/shared/components/app-icon';
+
+import { JobStatus } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import styles from './Launchbar.scss';
 
 const BlastLaunchbarButton = () => {
   const unviewedSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const isAnyJobRunning = useRef(false);
+  let isAnyJobRunning = false;
 
-  isAnyJobRunning.current = unviewedSubmissions
+  isAnyJobRunning = unviewedSubmissions
     .flatMap((submission) =>
       submission.results.map((job) => job.status === 'RUNNING')
     )
     .some(Boolean);
 
-  const getStatusClass = () =>
-    classNames(
-      styles.jobStatus,
-      isAnyJobRunning.current
-        ? styles.jobStatusRunning
-        : styles.jobStatusFinished
-    );
+  const buttonConfig = {
+    path: '/blast',
+    description: 'BLAST',
+    icon: BlastIcon,
+    enabled: true
+  };
 
-  const WrappedBlastIcon = () => (
-    <div className={styles.toolsIconWrapper}>
-      <BlastIcon />
-      {!!unviewedSubmissions.length && <div className={getStatusClass()}></div>}
-    </div>
-  );
+  const notificationConfig = {
+    jobStatus: (isAnyJobRunning ? 'RUNNING' : 'FINISHED') as JobStatus,
+    shouldShowNotification: Boolean(unviewedSubmissions.length)
+  };
 
   return (
     <div className={styles.category}>
-      <LaunchbarButton
-        app="blast"
-        description="BLAST"
-        icon={WrappedBlastIcon}
-        enabled={true}
+      <LaunchbarButtonWithNotification
+        buttonConfig={buttonConfig}
+        notificationConfig={notificationConfig}
       />
     </div>
   );

@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import blastGeneralReducer from './blast-general/blastGeneralSlice';
-import blastFormReducer from './blast-form/blastFormSlice';
-import blastResultsReducer from './blast-results/blastResultsSlice';
-
-export default combineReducers({
-  blastGeneral: blastGeneralReducer,
-  blastForm: blastFormReducer,
-  blastResults: blastResultsReducer
-});
+export const getLastVisitedBlastView = (state: RootState) =>
+  state.blast.blastGeneral.lastVisitedView;
