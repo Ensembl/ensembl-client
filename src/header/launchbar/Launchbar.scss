@@ -96,7 +96,7 @@
   position: relative;
 }
 
-.jobStatus {
+.notificationIndicator {
   border-radius: 10px;
   height: 18px;
   width: 18px;
@@ -104,11 +104,11 @@
   top: -9px;
   right: -9px;
 
-  &Running {
+  &Red {
     background-color: $red;
   }
 
-  &Finished {
+  &Green {
     background-color: $green;
   }
 }

@@ -14,46 +14,53 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
 import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
-import LaunchbarButtonWithNotification from './LaunchbarIconWithNotification';
+import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
 import { BlastIcon } from 'src/shared/components/app-icon';
-
-import { JobStatus } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import styles from './Launchbar.scss';
 
+const BLAST_APP_ROOT_PATH = '/blast';
+
 const BlastLaunchbarButton = () => {
   const unviewedSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  let isAnyJobRunning = false;
+  const location = useLocation();
+  const [blastAppPath, setBlastAppPath] = useState(BLAST_APP_ROOT_PATH);
 
-  isAnyJobRunning = unviewedSubmissions
+  useEffect(() => {
+    if (location.pathname.includes(BLAST_APP_ROOT_PATH)) {
+      setBlastAppPath(location.pathname);
+    }
+  }, [[location.pathname]]);
+
+  const isAnyJobRunning = unviewedSubmissions
     .flatMap((submission) =>
       submission.results.map((job) => job.status === 'RUNNING')
     )
     .some(Boolean);
 
-  const buttonConfig = {
-    path: '/blast',
-    description: 'BLAST',
-    icon: BlastIcon,
-    enabled: true
-  };
-
-  const notificationConfig = {
-    jobStatus: (isAnyJobRunning ? 'RUNNING' : 'FINISHED') as JobStatus,
-    shouldShowNotification: Boolean(unviewedSubmissions.length)
+  const getNotificationIndicatorColour = () => {
+    if (Boolean(unviewedSubmissions.length)) {
+      return isAnyJobRunning ? 'red' : 'green';
+    } else {
+      return null;
+    }
   };
 
   return (
     <div className={styles.category}>
       <LaunchbarButtonWithNotification
-        buttonConfig={buttonConfig}
-        notificationConfig={notificationConfig}
+        path={blastAppPath}
+        description="BLAST"
+        icon={BlastIcon}
+        enabled={true}
+        notificationIndicatorColour={getNotificationIndicatorColour()}
       />
     </div>
   );

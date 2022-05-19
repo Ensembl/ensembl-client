@@ -19,43 +19,39 @@ import classNames from 'classnames';
 
 import LaunchbarButton, { LaunchbarButtonProps } from './LaunchbarButton';
 
-import { JobStatus } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-
 import styles from './Launchbar.scss';
 
-type LaunchbarButtonWithNotificationProps = {
-  buttonConfig: LaunchbarButtonProps;
-  notificationConfig: {
-    jobStatus: JobStatus;
-    shouldShowNotification: boolean;
-  };
+type NotificationIndicatorColour = 'red' | 'green';
+
+type LaunchbarButtonWithNotificationProps = LaunchbarButtonProps & {
+  notificationIndicatorColour: NotificationIndicatorColour | null;
 };
 
 const LaunchbarButtonWithNotification = (
   props: LaunchbarButtonWithNotificationProps
 ) => {
-  const { jobStatus, shouldShowNotification } = props.notificationConfig;
-
-  const getStatusClass = () =>
-    classNames(
-      styles.jobStatus,
-      jobStatus === 'RUNNING'
-        ? styles.jobStatusRunning
-        : styles.jobStatusFinished
-    );
+  const getIndicatorClasses = () =>
+    classNames(styles.notificationIndicator, {
+      [styles.notificationIndicatorRed]:
+        props.notificationIndicatorColour === 'red',
+      [styles.notificationIndicatorGreen]:
+        props.notificationIndicatorColour === 'green'
+    });
 
   const WrappedIcon = () => {
-    const { icon: ToolsIcon } = props.buttonConfig;
+    const { icon: Icon } = props;
 
     return (
       <div className={styles.toolsIconWrapper}>
-        <ToolsIcon />
-        {shouldShowNotification && <div className={getStatusClass()}></div>}
+        <Icon />
+        {Boolean(props.notificationIndicatorColour) && (
+          <div className={getIndicatorClasses()}></div>
+        )}
       </div>
     );
   };
 
-  return <LaunchbarButton {...props.buttonConfig} icon={WrappedIcon} />;
+  return <LaunchbarButton {...props} icon={WrappedIcon} />;
 };
 
 export default LaunchbarButtonWithNotification;

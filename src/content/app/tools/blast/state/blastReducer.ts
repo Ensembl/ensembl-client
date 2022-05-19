@@ -16,12 +16,10 @@
 
 import { combineReducers } from 'redux';
 
-import blastGeneralReducer from './blast-general/blastGeneralSlice';
 import blastFormReducer from './blast-form/blastFormSlice';
 import blastResultsReducer from './blast-results/blastResultsSlice';
 
 export default combineReducers({
-  blastGeneral: blastGeneralReducer,
   blastForm: blastFormReducer,
   blastResults: blastResultsReducer
 });

@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import loadable from '@loadable/component';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
-
-import { updateLastVisitedBlastView } from './state/blast-general/blastGeneralSlice';
-import { getLastVisitedBlastView } from './state/blast-general/blastGeneralSelectors';
 
 const BlastForm = loadable(() => import('./views/blast-form/BlastForm'));
 const BlastUnviewedSubmissions = loadable(
@@ -42,19 +38,7 @@ The emphasis of this tool is to find regions of sequence similarity, which will 
 `;
 
 const BrowserPage = () => {
-  const lastVisitedBlastView = useAppSelector(getLastVisitedBlastView);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
   const hasMounted = useHasMounted();
-
-  useEffect(() => {
-    navigate(lastVisitedBlastView);
-  }, []);
-
-  useEffect(() => {
-    dispatch(updateLastVisitedBlastView(location.pathname));
-  }, [location.pathname]);
 
   return (
     <>
