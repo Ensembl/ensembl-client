@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
 
 import {
   getEmptyInputVisibility,
@@ -81,12 +82,18 @@ const BlastInputSequencesHeader = (props: Props) => {
     ? sequences.length + 1
     : sequences.length;
 
+  const sequenceCounterClass = classNames(styles.sequenceCounter, {
+    [styles.sequenceCounterError]: sequences.length > MAX_BLAST_SEQUENCE_COUNT
+  });
+
   return (
     <div className={styles.header}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Sequences</span>
-        <span className={styles.sequenceCounter}>{sequencesCount}</span>
-        <span className={styles.maxSequences}>of 30</span>
+        <span className={sequenceCounterClass}>{sequencesCount}</span>
+        <span className={styles.maxSequences}>
+          of {MAX_BLAST_SEQUENCE_COUNT}
+        </span>
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}

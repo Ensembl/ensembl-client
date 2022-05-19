@@ -17,7 +17,7 @@
 import { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
 export const MAX_BLAST_SPECIES_COUNT = 25;
-export const MAX_BLAST_SEQUENCE_COUNT = 30;
+export const MAX_BLAST_SEQUENCE_COUNT = 50;
 
 export const isBlastFormValid = (
   species: string[],
