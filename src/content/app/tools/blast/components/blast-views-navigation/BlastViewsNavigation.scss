@@ -1,0 +1,32 @@
+.blastViewsNavigation {
+  display: grid;
+  grid-template-columns: [left] auto [right] 1fr;
+  align-items: center;
+  max-width: 1800px; // TODO: this is max width of the two-column blast form; set it to a constant
+}
+
+.title {
+  font-size: 16px; // TODO: this is a title repeated in another component; extract as a common variable
+  font-weight: bold;
+  margin: 0;
+}
+
+.wrapperLeft {
+  display: flex;
+  column-gap: 46px;
+  align-items: center;
+}
+
+.wrapperRight {
+  display: flex;
+  column-gap: 12px;
+}
+
+.leftColumn {
+  grid-column: left;
+}
+
+.rightColumn {
+  grid-column: right;
+  justify-self: end;
+}

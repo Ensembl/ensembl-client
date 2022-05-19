@@ -27,7 +27,7 @@ import {
   switchToSpeciesStep
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
+import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
@@ -49,7 +49,7 @@ const BlastForm = () => {
 
   return (
     <div className={styles.container}>
-      <ToolsAppBar />
+      <BlastAppBar view="blast-form" />
       <ToolsTopBar>
         <BlastSettings config={config} />
       </ToolsTopBar>

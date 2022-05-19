@@ -20,11 +20,18 @@ import {
   type PayloadAction
 } from '@reduxjs/toolkit';
 
-import { getAllBlastSubmissions } from 'src/content/app/tools/blast/services/blastStorageService';
+import {
+  getAllBlastSubmissions,
+  deleteBlastSubmission as deleteBlastSubmissionFromStorage
+} from 'src/content/app/tools/blast/services/blastStorageService';
 
 import { submitBlast } from '../blast-api/blastApiSlice';
 
-import type { BlastParameterName } from 'src/content/app/tools/blast/types/blastSettings';
+import type {
+  MandatoryBlastParameterName,
+  OptionalBlastParameterName,
+  SequenceType
+} from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 export type JobStatus =
@@ -34,32 +41,54 @@ export type JobStatus =
   | 'ERROR' // an error occurred attempting to get the job status — TODO: ask backend to represent this as a 500 error?
   | 'NOT_FOUND'; // TODO: ask backend to represent this as a 404 error?
 
+export type MandatorySubmissionParameters = Record<
+  MandatoryBlastParameterName,
+  string
+>;
+export type OptionalSubmissionParameters = Partial<
+  Record<OptionalBlastParameterName, string>
+>;
+export type BlastSubmissionParameters = MandatorySubmissionParameters &
+  OptionalSubmissionParameters & {
+    title: string;
+    stype: SequenceType;
+  };
+
 export type BlastSubmission = {
+  id: string;
   submittedData: {
     species: Species[];
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
-    parameters: Partial<Record<BlastParameterName, string>>;
+    parameters: BlastSubmissionParameters;
   };
   results: Array<{
     jobId: string;
     sequenceId: number;
     genomeId: string;
     status: JobStatus;
-    seen: boolean;
     data: null; // TODO: add data type
   }>;
   submittedAt: number; // timestamp
+  seen: boolean; // whether the user has viewed the results of this submission
 };
 
 export type BlastJob = BlastSubmission['results'][number];
 
-type BlastResultsState = {
+export type BlastResultsState = {
   [submissionId: string]: BlastSubmission;
 };
 
 export const restoreBlastSubmissions = createAsyncThunk(
   'blast-results/restore-blast-submissions',
   () => getAllBlastSubmissions() || {}
+);
+
+export const deleteBlastSubmission = createAsyncThunk(
+  'blast-results/delete-blast-submissions',
+  async (submissionId: string) => {
+    await deleteBlastSubmissionFromStorage(submissionId);
+    return submissionId;
+  }
 );
 
 const blastResultsSlice = createSlice({
@@ -83,6 +112,10 @@ const blastResultsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(restoreBlastSubmissions.fulfilled, (_, { payload }) => {
       return payload;
+    });
+    builder.addCase(deleteBlastSubmission.fulfilled, (state, { payload }) => {
+      const submissionId = payload;
+      delete state[submissionId];
     });
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;

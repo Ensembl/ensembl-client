@@ -29,7 +29,7 @@ import speciesSelectorReducer, {
   SpeciesSelectorState
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
-import ToolsAppBar from './ToolsAppBar';
+import BlastAppBar from './BlastAppBar';
 
 jest.mock(
   'src/shared/components/communication-framework/ConversationIcon',
@@ -70,7 +70,7 @@ const renderComponent = () => {
   const renderResult = render(
     <Provider store={store}>
       <MemoryRouter>
-        <ToolsAppBar />
+        <BlastAppBar view="blast-form" />
       </MemoryRouter>
     </Provider>
   );
@@ -81,7 +81,7 @@ const renderComponent = () => {
   };
 };
 
-describe('ToolsAppBar', () => {
+describe('BlastAppBar', () => {
   describe('Species Lozenge click', () => {
     it('updates the selectedSpecies state', async () => {
       const { container, store } = renderComponent();

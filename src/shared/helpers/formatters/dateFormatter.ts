@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+export const getFormattedDate = (date: Date) => {
+  const year = date.getUTCFullYear();
+  const monthAsNumber = date.getUTCMonth() + 1; // month returned from date.getMonth() is zero-based
+  const month = String(monthAsNumber).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+  return `${year}-${month}-${day}`;
+};
 
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
-  );
+export const getFormattedDateTime = (date: Date) => {
+  const formattedDate = getFormattedDate(date);
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+  return `${formattedDate}, ${hours}:${minutes}`;
 };

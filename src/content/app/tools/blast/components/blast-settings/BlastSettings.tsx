@@ -17,13 +17,14 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
-import noop from 'lodash/noop';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
-import { SecondaryButton } from 'src/shared/components/button/Button';
+import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 import {
@@ -192,9 +193,12 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <SecondaryButton className={styles.previousJobs} onClick={noop}>
+        <ButtonLink
+          className={styles.previousJobs}
+          to={urlFor.blastSubmissionsList()}
+        >
           Jobs list
-        </SecondaryButton>
+        </ButtonLink>
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>

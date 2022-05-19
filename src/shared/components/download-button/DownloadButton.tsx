@@ -14,13 +14,29 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import React, {
+  forwardRef,
+  type HTMLAttributes,
+  type ForwardedRef
+} from 'react';
+import classNames from 'classnames';
 
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+import DownloadIcon from 'static/icons/icon_download.svg';
 
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
+import styles from './DownloadButton.scss';
+
+type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
+
+const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+  const { className, ...otherProps } = props;
+
+  const elementClasses = classNames(styles.downloadButton, className);
+
+  return (
+    <button {...otherProps} ref={ref} className={elementClasses}>
+      <DownloadIcon />
+    </button>
   );
 };
+
+export default forwardRef(DownloadButton);

@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { getFormattedDate, getFormattedDateTime } from './dateFormatter';
 
-import ToolsAppBar from 'src/content/app/tools/shared/components/tools-app-bar/ToolsAppBar';
-import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+const testDateInput = new Date('December 17, 2020 03:24:47'); // just an arbitrary date
 
-const BlastResults = () => {
-  return (
-    <div>
-      <ToolsAppBar />
-      <ToolsTopBar>stuff</ToolsTopBar>
-      <div>This is Blast results view</div>
-    </div>
-  );
-};
+describe('getFormattedDate', () => {
+  it('returns a formatted date', () => {
+    expect(getFormattedDate(testDateInput)).toBe('2020-12-17');
+  });
+});
 
-export default BlastResults;
+describe('getFormattedDateTime', () => {
+  it('returns a formatted date with time', () => {
+    expect(getFormattedDateTime(testDateInput)).toBe('2020-12-17, 03:24');
+  });
+});

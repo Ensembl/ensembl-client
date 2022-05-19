@@ -1,0 +1,70 @@
+@import 'src/styles/common';
+
+.listedBlastSubmission {
+  /*
+    The max-width of 1770px is a result of the following calculation:
+      take the max width of the top bar content (1800px),
+      and subtract from it the extra left padding that the main container has over the top bar (60px - 30px)
+    Thus, 1800 - 60 + 30 = 1770px
+  */
+  max-width: 1770px;
+}
+
+.listedBlastSubmission:not(:last-child) {
+  margin-bottom: 48px;
+}
+
+/*
+NOTE: Regarding the grid for .sequenceBox — remember that job status may either be shown or not,
+and also that it can be of variable width
+*/
+.sequenceBox {
+  display: grid;
+  grid-template-columns: 68% auto 1fr;
+  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
+  border: 1px solid $grey;
+}
+
+.sequenceBox + .sequenceBox {
+  border-top: none;
+}
+
+.submissionIdLabel {
+  font-weight: $light;
+  margin-right: 1ch;
+}
+
+.editSubmission {
+  color: $blue;
+  cursor: pointer;
+  margin: 0 32px;
+}
+
+.timeStamp {
+  white-space: nowrap;
+}
+
+.timeZone {
+  font-weight: $light;
+  margin-left: 1ch;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 40px;
+  width: 268px;
+}
+
+.inactiveButton {
+  --download-button-background: #{$grey};
+}
+
+.jobStatus {
+  justify-self: end;
+}
+
+.jobStatusProminent {
+  color: $red;
+}

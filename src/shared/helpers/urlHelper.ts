@@ -94,6 +94,15 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   return query ? `${path}?${query}` : path;
 };
 
+export const blastForm = () => '/blast';
+
+export const blastUnviewedSubmissions = () => '/blast/unviewed-submissions';
+
+export const blastSubmissionsList = () => '/blast/submissions';
+
+export const blastSubmission = (submissionId: string) =>
+  `/blast/submissions/${submissionId}`;
+
 type RefgetUrlParams = {
   checksum: string;
   start?: number;

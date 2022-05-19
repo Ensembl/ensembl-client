@@ -17,6 +17,7 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
@@ -32,7 +33,18 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-const ToolsAppBar = () => {
+type BlastView =
+  | 'blast-form'
+  | 'unviewed-submissions'
+  | 'submissions-list'
+  | 'submission-results';
+
+type Props = {
+  view: BlastView;
+};
+
+const BlastAppBar = (props: Props) => {
+  const { view } = props;
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const speciesListIds = useSelector(getSelectedSpeciesIds);
   const dispatch = useDispatch();
@@ -50,13 +62,25 @@ const ToolsAppBar = () => {
     }
   };
 
-  const speciesTabs = speciesList.map((species, index) => (
+  const enabledSpecies = speciesList.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}
       onClick={() => speciesLozengeClick(species)}
     />
   ));
+
+  const disabledSpecies = speciesList.map((species, index) => (
+    <SelectedSpecies
+      key={index}
+      isActive={true}
+      species={{ ...species, isEnabled: false }}
+      onClick={noop}
+    />
+  ));
+
+  const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;
+
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);
@@ -68,4 +92,4 @@ const ToolsAppBar = () => {
   return <AppBar appName={AppName.TOOLS} mainContent={wrappedSpecies} />;
 };
 
-export default ToolsAppBar;
+export default BlastAppBar;
