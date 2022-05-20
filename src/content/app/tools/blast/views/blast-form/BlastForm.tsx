@@ -15,15 +15,21 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
 import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  switchToSequencesStep,
+  switchToSpeciesStep
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
@@ -91,6 +97,7 @@ const MainSmall = () => {
 
   return (
     <div className={containerClasses} ref={containerRef}>
+      <BlastFormStepToggle />
       {step === 'sequences' ? (
         <>
           <BlastInputSequencesHeader compact={true} />
@@ -102,6 +109,43 @@ const MainSmall = () => {
           <BlastSpeciesSelector />
         </>
       )}
+    </div>
+  );
+};
+
+const BlastFormStepToggle = () => {
+  const dispatch = useDispatch();
+  const step = useSelector(getStep);
+
+  const onSwitchToSpecies = () => {
+    dispatch(switchToSpeciesStep());
+  };
+
+  const onSwitchToSequence = () => {
+    dispatch(switchToSequencesStep());
+  };
+
+  const sequenceButtonClass = classNames(styles.blastAgainstButton, {
+    [styles.buttonActive]: step === 'sequences'
+  });
+  const speciesButtonClass = classNames(styles.blastAgainstButton, {
+    [styles.buttonActive]: step === 'species'
+  });
+
+  return (
+    <div className={styles.blastFormStepToggle}>
+      <SecondaryButton
+        className={sequenceButtonClass}
+        onClick={onSwitchToSequence}
+      >
+        Add sequence(s)
+      </SecondaryButton>
+      <SecondaryButton
+        className={speciesButtonClass}
+        onClick={onSwitchToSpecies}
+      >
+        Select species
+      </SecondaryButton>
     </div>
   );
 };

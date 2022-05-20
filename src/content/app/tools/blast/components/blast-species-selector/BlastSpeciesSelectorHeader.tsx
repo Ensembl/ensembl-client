@@ -15,15 +15,11 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import {
-  switchToSequencesStep,
-  clearSelectedSpecies
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { clearSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-
-import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './BlastSpeciesSelector.scss';
 
@@ -37,42 +33,25 @@ const BlastSpeciesSelectorHeader = (props: Props) => {
 
   const selectedSpeciesList = useSelector(getSelectedSpeciesList);
 
-  const onSwitchToSequence = () => {
-    dispatch(switchToSequencesStep());
-  };
-
   const onClearAll = () => {
     dispatch(clearSelectedSpecies());
   };
 
+  const headerClass = classNames(styles.header, {
+    [styles.smallScreenHeader]: compact
+  });
+
   return (
-    <div className={styles.header}>
+    <div className={headerClass}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Blast against</span>
         <span className={styles.speciesCounter}>
           {selectedSpeciesList.length}
         </span>
         <span className={styles.maxSpecies}>of 7 species</span>
-        {compact && (
-          <span className={styles.clearAll} onClick={onClearAll}>
-            Clear all
-          </span>
-        )}
-      </div>
-      <div className={styles.headerGroup}>
-        {!compact && (
-          <span className={styles.clearAll} onClick={onClearAll}>
-            Clear all
-          </span>
-        )}
-        {compact && (
-          <SecondaryButton
-            className={styles.sequencesButton}
-            onClick={onSwitchToSequence}
-          >
-            Sequences
-          </SecondaryButton>
-        )}
+        <span className={styles.clearAll} onClick={onClearAll}>
+          Clear all
+        </span>
       </div>
     </div>
   );
