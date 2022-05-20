@@ -186,7 +186,6 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        objectId: string;
         browserCogList: CogList;
       }>
     ) {
@@ -215,7 +214,6 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        objectId: string;
         isSelected: boolean;
       }>
     ) {
@@ -230,7 +228,6 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        objectId: string;
         selectedCog: string;
         isTrackNameShown: boolean;
       }>
@@ -254,7 +251,6 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        objectId: string;
         selectedCog: string;
         isTrackLabelShown: boolean;
       }>

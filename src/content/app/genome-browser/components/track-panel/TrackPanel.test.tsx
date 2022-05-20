@@ -32,7 +32,8 @@ jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser,
-    restoreBrowserTrackStates: jest.fn()
+    restoreBrowserTrackStates: jest.fn(),
+    restoreTrackConfigStates: jest.fn()
   })
 );
 

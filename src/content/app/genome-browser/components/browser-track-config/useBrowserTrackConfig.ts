@@ -20,10 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveFocusObjectId
-} from '../../state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveGenomeId } from '../../state/browser-general/browserGeneralSelectors';
 import {
   getTrackConfigForTrackId,
   getApplyToAllConfig,
@@ -45,7 +42,6 @@ const useBrowserTrackConfig = () => {
   const browserCogList = useSelector(getBrowserCogList);
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeObjectId = useSelector(getBrowserActiveFocusObjectId);
   const shouldApplyToAll = applyToAllConfig.isSelected;
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
 
@@ -62,16 +58,14 @@ const useBrowserTrackConfig = () => {
   const { toggleTrackName, toggleTrackLabel } = useGenomeBrowser();
 
   const updateTrackName = (isTrackNameShown: boolean) => {
-    if (!activeGenomeId || !activeObjectId) {
+    if (!activeGenomeId) {
       return;
     }
-
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
           updateTrackConfigNames({
             genomeId: activeGenomeId,
-            objectId: activeObjectId,
             selectedCog: trackId,
             isTrackNameShown
           })
@@ -82,7 +76,6 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigNames({
           genomeId: activeGenomeId,
-          objectId: activeObjectId,
           selectedCog,
           isTrackNameShown
         })
@@ -101,7 +94,7 @@ const useBrowserTrackConfig = () => {
   };
 
   const updateTrackLabel = (isTrackLabelShown: boolean) => {
-    if (!activeGenomeId || !activeObjectId) {
+    if (!activeGenomeId) {
       return;
     }
 
@@ -110,7 +103,6 @@ const useBrowserTrackConfig = () => {
         dispatch(
           updateTrackConfigLabel({
             genomeId: activeGenomeId,
-            objectId: activeObjectId,
             selectedCog: trackId,
             isTrackLabelShown
           })
@@ -121,7 +113,6 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigLabel({
           genomeId: activeGenomeId,
-          objectId: activeObjectId,
           selectedCog,
           isTrackLabelShown
         })
@@ -140,10 +131,9 @@ const useBrowserTrackConfig = () => {
   };
 
   const handleRadioChange = (value: OptionValue) => {
-    if (!activeGenomeId || !activeObjectId || !selectedTrackConfigInfo) {
+    if (!activeGenomeId || !selectedTrackConfigInfo) {
       return;
     }
-
     const shouldShowTrackName = selectedTrackConfigInfo.showTrackName;
     const shouldShowTrackLabel =
       selectedTrackConfigInfo.trackType === TrackType.GENE
@@ -153,7 +143,6 @@ const useBrowserTrackConfig = () => {
     dispatch(
       updateApplyToAll({
         genomeId: activeGenomeId,
-        objectId: activeObjectId,
         isSelected: value === 'all_tracks'
       })
     );

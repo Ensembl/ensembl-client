@@ -28,6 +28,7 @@ import * as browserGeneralActions from '../state/browser-general/browserGeneralS
 import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
+import { createGenomeCategories } from 'tests/fixtures/genomes';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
@@ -81,6 +82,13 @@ const mockState = {
       },
       chrLocations: {
         human: ['13', 100, 200]
+      }
+    }
+  },
+  genome: {
+    genomeTrackCategories: {
+      genomeTrackCategoriesData: {
+        fake_genome_id_1: createGenomeCategories()
       }
     }
   },

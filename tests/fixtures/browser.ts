@@ -43,36 +43,27 @@ import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 export const createCogTrackList = (): CogList => ({
-  'track:contig': faker.datatype.number(),
-  'track:gc': faker.datatype.number(),
-  'track:gene-feat': faker.datatype.number(),
-  'track:gene-other-fwd': faker.datatype.number(),
-  'track:gene-other-rev': faker.datatype.number(),
-  'track:gene-pc-fwd': faker.datatype.number(),
-  'track:gene-pc-rev': faker.datatype.number(),
-  'track:variant': faker.datatype.number()
+  'gene-focus': faker.datatype.number(),
+  contig: faker.datatype.number(),
+  gc: faker.datatype.number()
 });
 
-export const createTrackConfigLabel = () => ({
-  'track:contig': true,
-  'track:gc': true,
-  'track:gene-feat': true,
-  'track:gene-other-fwd': true,
-  'track:gene-other-rev': true,
-  'track:gene-pc-fwd': true,
-  'track:gene-pc-rev': true,
-  'track:variant': true
-});
-
-export const createTrackConfigNames = () => ({
-  'track:contig': true,
-  'track:gc': true,
-  'track:gene-feat': true,
-  'track:gene-other-fwd': true,
-  'track:gene-other-rev': true,
-  'track:gene-pc-fwd': true,
-  'track:gene-pc-rev': true,
-  'track:variant': true
+export const createTracksInfo = () => ({
+  'gene-focus': {
+    showMoreTranscripts: false,
+    showTranscriptIds: false,
+    showTrackName: true,
+    showFeatureLabel: true,
+    trackType: 'gene'
+  },
+  contig: {
+    showTrackName: true,
+    trackType: 'regular'
+  },
+  gc: {
+    showTrackName: true,
+    trackType: 'regular'
+  }
 });
 
 export const createZmenuContentPayload = (): {
@@ -234,16 +225,18 @@ export const createMockBrowserState = () => {
         }
       },
       trackConfig: {
-        applyToAllConfig: {
-          isSelected: false,
-          allTrackNamesOn: false,
-          allTrackLabelsOn: false
-        },
-        browserCogList: 0,
-        browserCogTrackList: createCogTrackList(),
-        selectedCog: 'track:gc',
-        trackConfigLabel: createTrackConfigLabel(),
-        trackConfigNames: createTrackConfigNames()
+        [fakeGenomeId]: {
+          applyToAllConfig: {
+            isSelected: true
+          },
+          browserCogList: {
+            'gene-focus': 0,
+            contig: 192,
+            gc: 384
+          },
+          selectedCog: 'gene-focus',
+          tracks: createTracksInfo()
+        }
       },
       trackPanel: {
         [fakeGenomeId]: {

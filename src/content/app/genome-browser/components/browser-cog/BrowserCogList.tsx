@@ -83,7 +83,6 @@ export const BrowserCogList = () => {
       dispatch(
         updateCogList({
           genomeId: genomeIdRef.current,
-          objectId,
           browserCogList: cogList
         })
       );
