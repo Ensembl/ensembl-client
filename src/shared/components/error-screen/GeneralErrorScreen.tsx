@@ -25,7 +25,7 @@ import { Topbar } from 'src/header/Header';
 import ShowHide from '../show-hide/ShowHide';
 import { PrimaryButton } from '../button/Button';
 
-import InfoIcon from 'static/icons/icon_alert_circle.svg';
+import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import styles from './ErrorScreen.scss';
 
@@ -61,7 +61,7 @@ const GeneralErrorScreen = () => {
           >
             <div className={styles.vennIntersection}>
               <div className={styles.infoIcon}>
-                <InfoIcon />
+                <AlertButton />
               </div>
             </div>
             <span>...now we need you to do something</span>
