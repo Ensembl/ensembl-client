@@ -17,7 +17,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
-import classNames from 'classnames';
 
 import {
   getEmptyInputVisibility,
@@ -78,7 +77,7 @@ const BlastInputSequencesHeader = (props: Props) => {
   const sequenceCounterClass = classNames(styles.sequenceCounter, {
     [styles.sequenceCounterError]: sequences.length > MAX_BLAST_SEQUENCE_COUNT
   });
-  
+
   const headerClass = classNames(styles.header, {
     [styles.smallScreenHeader]: compact
   });
