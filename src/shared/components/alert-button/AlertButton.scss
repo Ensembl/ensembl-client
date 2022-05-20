@@ -1,15 +1,13 @@
 @import 'src/styles/common';
 
 .alertButton {
-  cursor: pointer;
   padding: 2px;
   user-select: none;
 
   > svg {
-    --alert-icon-width: 18px;
-    --alert-icon-height: 18px;
-    width: var(--alert-icon-width);
-    height: var(--alert-icon-height);
+    width: var(--alert-icon-width, 18px);
+    height: var(--alert-icon-height, 18px);
+    cursor: pointer;
   }
 }
 
@@ -19,4 +17,8 @@
 
 .warningIcon svg {
   fill: $orange;
+}
+
+.noTooltip svg {
+  cursor: auto;
 }

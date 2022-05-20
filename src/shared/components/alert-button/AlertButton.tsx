@@ -26,7 +26,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import styles from './AlertButton.scss';
 
 type Props = {
-  tooltipText: React.ReactNode;
+  tooltipContent?: React.ReactNode;
   warningIcon?: boolean;
 };
 
@@ -35,20 +35,21 @@ const AlertButton = (props: Props) => {
     useShowTooltip();
   const alertButtonClass = classNames(
     styles.alertButton,
+    { [styles.noTooltip]: !props.tooltipContent },
     props.warningIcon ? styles.warningIcon : styles.errorIcon
   );
 
   return (
     <div ref={elementRef} className={alertButtonClass} onClick={onClick}>
       <AlertIcon />
-      {shouldShowTooltip && (
+      {props.tooltipContent && shouldShowTooltip && (
         <Tooltip
           anchor={elementRef.current}
           autoAdjust={true}
           onClose={onTooltipCloseSignal}
           delay={0}
         >
-          {props.tooltipText}
+          {props.tooltipContent}
         </Tooltip>
       )}
     </div>
