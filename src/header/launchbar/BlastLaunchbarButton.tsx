@@ -34,19 +34,18 @@ const BlastLaunchbarButton = () => {
   const [blastAppPath, setBlastAppPath] = useState(BLAST_APP_ROOT_PATH);
 
   useEffect(() => {
-    if (location.pathname.includes(BLAST_APP_ROOT_PATH)) {
+    if (location.pathname.startsWith(BLAST_APP_ROOT_PATH)) {
       setBlastAppPath(location.pathname);
     }
   }, [[location.pathname]]);
 
-  const isAnyJobRunning = unviewedSubmissions
-    .flatMap((submission) =>
-      submission.results.map((job) => job.status === 'RUNNING')
-    )
-    .some(Boolean);
+  const getNotification = () => {
+    if (unviewedSubmissions.length > 0) {
+      const isAnyJobRunning =
+        unviewedSubmissions.filter((submission) =>
+          submission.results.some((job) => job.status === 'RUNNING')
+        ).length > 0;
 
-  const getNotificationIndicatorColour = () => {
-    if (Boolean(unviewedSubmissions.length)) {
       return isAnyJobRunning ? 'red' : 'green';
     } else {
       return null;
@@ -59,8 +58,7 @@ const BlastLaunchbarButton = () => {
         path={blastAppPath}
         description="BLAST"
         icon={BlastIcon}
-        enabled={true}
-        notificationIndicatorColour={getNotificationIndicatorColour()}
+        notification={getNotification()}
       />
     </div>
   );

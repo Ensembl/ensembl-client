@@ -21,21 +21,19 @@ import LaunchbarButton, { LaunchbarButtonProps } from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
-type NotificationIndicatorColour = 'red' | 'green';
+type Notification = 'red' | 'green';
 
 type LaunchbarButtonWithNotificationProps = LaunchbarButtonProps & {
-  notificationIndicatorColour: NotificationIndicatorColour | null;
+  notification: Notification | null;
 };
 
 const LaunchbarButtonWithNotification = (
   props: LaunchbarButtonWithNotificationProps
 ) => {
-  const getIndicatorClasses = () =>
-    classNames(styles.notificationIndicator, {
-      [styles.notificationIndicatorRed]:
-        props.notificationIndicatorColour === 'red',
-      [styles.notificationIndicatorGreen]:
-        props.notificationIndicatorColour === 'green'
+  const getNotificationClasses = () =>
+    classNames(styles.notification, {
+      [styles.notificationRed]: props.notification === 'red',
+      [styles.notificationGreen]: props.notification === 'green'
     });
 
   const WrappedIcon = () => {
@@ -44,14 +42,16 @@ const LaunchbarButtonWithNotification = (
     return (
       <div className={styles.toolsIconWrapper}>
         <Icon />
-        {Boolean(props.notificationIndicatorColour) && (
-          <div className={getIndicatorClasses()}></div>
-        )}
+        {props.notification && <div className={getNotificationClasses()}></div>}
       </div>
     );
   };
 
   return <LaunchbarButton {...props} icon={WrappedIcon} />;
+};
+
+LaunchbarButtonWithNotification.defaultProps = {
+  enabled: true
 };
 
 export default LaunchbarButtonWithNotification;
