@@ -28,7 +28,7 @@ export const ErrorIconTooltip = () => (
   <div>
     <span className={styles.text}>Some error has occured</span>
     <div className={styles.alertIcon}>
-      <AlertButton tooltipText="This is a hint" />
+      <AlertButton tooltipContent="This is a hint" />
     </div>
   </div>
 );
@@ -39,9 +39,20 @@ export const WarningIconTooltip = () => (
   <div>
     <span className={styles.text}>Some warning to show</span>
     <div className={styles.alertIcon}>
-      <AlertButton tooltipText="This is a hint" warningIcon={true} />
+      <AlertButton tooltipContent="This is a hint" warningIcon={true} />
     </div>
   </div>
 );
 
 WarningIconTooltip.storyName = 'Warning icon with tooltip';
+
+export const ErrorIconOnly = () => (
+  <div>
+    <span className={styles.text}>Bigger error icon</span>
+    <div className={styles.largeAlertIcon}>
+      <AlertButton />
+    </div>
+  </div>
+);
+
+ErrorIconOnly.storyName = 'Error icon with no tooltip';
