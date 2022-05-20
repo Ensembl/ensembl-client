@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -23,14 +24,10 @@ import {
   getUncommittedSequencePresence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import {
-  updateEmptyInputDisplay,
-  switchToSpeciesStep
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import useBlastInputSequences from './useBlastInputSequences';
 
-import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
@@ -62,10 +59,6 @@ const BlastInputSequencesHeader = (props: Props) => {
     setTimeout(() => scrollToLastInputBox(), 0);
   };
 
-  const onSwitchToSpecies = () => {
-    dispatch(switchToSpeciesStep());
-  };
-
   const scrollToLastInputBox = () => {
     const lastInputBox = document.querySelector(
       `.${sequenceBoxStyles.inputSequenceBox}:last-child`
@@ -85,9 +78,13 @@ const BlastInputSequencesHeader = (props: Props) => {
   const sequenceCounterClass = classNames(styles.sequenceCounter, {
     [styles.sequenceCounterError]: sequences.length > MAX_BLAST_SEQUENCE_COUNT
   });
+  
+  const headerClass = classNames(styles.header, {
+    [styles.smallScreenHeader]: compact
+  });
 
   return (
-    <div className={styles.header}>
+    <div className={headerClass}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Sequences</span>
         <span className={sequenceCounterClass}>{sequencesCount}</span>
@@ -107,14 +104,6 @@ const BlastInputSequencesHeader = (props: Props) => {
           onAdd={appendEmptyInput}
           disabled={!shouldEnableAddButton}
         />
-        {compact && (
-          <SecondaryButton
-            className={styles.blastAgainstButton}
-            onClick={onSwitchToSpecies}
-          >
-            Blast against
-          </SecondaryButton>
-        )}
       </div>
     </div>
   );

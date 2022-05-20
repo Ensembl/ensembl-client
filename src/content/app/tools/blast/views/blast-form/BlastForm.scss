@@ -4,11 +4,12 @@
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
   height: 100%;
+  position: relative;
 }
 
 .mainContainer {
   height: 100%;
-  padding-left: 65px;
+  padding: 0 6px 0 65px;
 }
 
 .mainContainerSmall {
@@ -30,4 +31,22 @@
 .speciesSelectorContainer {
   display: flex;
   flex-direction: column;
+}
+
+.blastFormStepToggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 1770px; //TODO: To replace with global variables for spaces on the blast form (see ENSWBSITES-1602)
+  margin-left: -2px;
+  padding-top: 20px;
+  background-color: $white;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
+.buttonActive {
+  background-color: $black;
+  border-color: $black;
 }

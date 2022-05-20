@@ -2,20 +2,25 @@
 
 .header {
   display: flex;
-  width: 860px;
+  width: 862px;
   justify-content: space-between;
   align-items: center;
-  padding-left: 28px;
-  padding-bottom: 12px;
+  margin-left: -1px;
+  padding: 20px 0 12px 28px;
   position: sticky;
   top: 0px;
   z-index: 1;
   background-color: $white;
 }
 
+.smallScreenHeader {
+  top: 49px;
+}
+
 .headerGroup {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .headerTitle {
@@ -30,6 +35,7 @@
 
 .clearAll {
   margin-right: 30px;
+  margin-left: auto;
   color: $blue;
   cursor: pointer;
   user-select: none;
