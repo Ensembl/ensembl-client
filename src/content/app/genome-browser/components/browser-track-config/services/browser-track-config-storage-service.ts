@@ -18,8 +18,8 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 import {
-  TrackConfigState,
-  TrackConfigStateForObject
+  GenomeTrackConfigs,
+  TrackConfigsPerGenome
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 export enum StorageKeys {
@@ -33,13 +33,13 @@ export class TrackConfigStorageService {
     this.storageService = storageService;
   }
 
-  public getTrackConfigState(): TrackConfigState {
+  public getTrackConfigState(): GenomeTrackConfigs {
     return this.storageService.get(StorageKeys.TRACK_CONFIG_STATES) || {};
   }
 
   public setTrackConfigState(params: {
     genomeId: string;
-    fragment: Partial<TrackConfigStateForObject>;
+    fragment: Partial<TrackConfigsPerGenome>;
   }) {
     const { genomeId, fragment } = params;
     this.storageService.update(StorageKeys.TRACK_CONFIG_STATES, {
