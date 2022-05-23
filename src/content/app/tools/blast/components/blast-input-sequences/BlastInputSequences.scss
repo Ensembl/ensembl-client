@@ -48,6 +48,10 @@
   border-radius: 100%;
   font-size: 15px;
   margin: 0 0.6rem 0 0.6rem;
+
+  &Error {
+    background-color: $red;
+  }
 }
 
 .maxSequences {
