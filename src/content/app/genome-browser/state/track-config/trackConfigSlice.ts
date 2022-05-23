@@ -50,7 +50,7 @@ export const getTrackType = (trackId: string) => {
 };
 
 export type GeneTrackConfig = {
-  showMoreTranscripts: boolean;
+  showSeveralTranscripts: boolean;
   showTranscriptIds: boolean;
   showTrackName: boolean;
   showFeatureLabel: boolean;
@@ -64,24 +64,24 @@ export type RegularTrackConfig = {
 
 export type TrackConfig = GeneTrackConfig | RegularTrackConfig;
 
-export type TrackInfo = {
+export type TrackConfigs = {
   [trackId: string]: TrackConfig;
 };
 
-export type TrackConfigStateForObject = Readonly<{
+export type TrackConfigsPerGenome = Readonly<{
   applyToAllConfig: {
     isSelected?: boolean;
   };
   browserCogList: CogList;
   selectedCog: string | null;
-  tracks: TrackInfo;
+  tracks: TrackConfigs;
 }>;
 
-export type TrackConfigState = {
-  [genomeId: string]: TrackConfigStateForObject;
+export type GenomeTrackConfigs = {
+  [genomeId: string]: TrackConfigsPerGenome;
 };
 
-export const defaultTrackConfigStateForObject: TrackConfigStateForObject = {
+export const defaultTrackConfigsPerGenome: TrackConfigsPerGenome = {
   applyToAllConfig: {
     isSelected: false
   },
@@ -102,10 +102,10 @@ export const getTracksStateInfo = (
   genomeId: string,
   trackCategories: GenomeTrackCategory[]
 ) => {
-  const tracksInfo: TrackInfo = {};
+  const tracksInfo: TrackConfigs = {};
 
   tracksInfo['gene-focus'] = {
-    showMoreTranscripts: false,
+    showSeveralTranscripts: false,
     showTranscriptIds: false,
     showTrackName: false,
     showFeatureLabel: true,
@@ -118,7 +118,7 @@ export const getTracksStateInfo = (
       const trackType = getTrackType(trackId);
       if (trackType === TrackType.GENE) {
         tracksInfo[trackId] = {
-          showMoreTranscripts: false,
+          showSeveralTranscripts: false,
           showTranscriptIds: false,
           showTrackName: false,
           showFeatureLabel: true,
@@ -135,22 +135,22 @@ export const getTracksStateInfo = (
   return { tracks: tracksInfo };
 };
 
-export const getTrackConfigStateForObject = (
+export const getTrackConfigsPerGenome = (
   genomeId: string,
   trackCategories: GenomeTrackCategory[]
-): TrackConfigStateForObject => {
+): TrackConfigsPerGenome => {
   return genomeId
     ? {
-        ...defaultTrackConfigStateForObject,
+        ...defaultTrackConfigsPerGenome,
         ...getTracksStateInfo(genomeId, trackCategories),
-        ...getPersistentTrackConfigStateForObject(genomeId)
+        ...getPersistentTrackConfigsPerGenome(genomeId)
       }
-    : defaultTrackConfigStateForObject;
+    : defaultTrackConfigsPerGenome;
 };
 
-export const getPersistentTrackConfigStateForObject = (
+export const getPersistentTrackConfigsPerGenome = (
   genomeId: string
-): Partial<TrackConfigStateForObject> => {
+): Partial<TrackConfigsPerGenome> => {
   const trackConfigState =
     browserTrackConfigStorageService.getTrackConfigState();
   if (!genomeId || !trackConfigState[genomeId]) {
@@ -161,9 +161,9 @@ export const getPersistentTrackConfigStateForObject = (
 
 const browserTrackConfigSlice = createSlice({
   name: 'genome-browser-track-config',
-  initialState: {} as TrackConfigState,
+  initialState: {} as GenomeTrackConfigs,
   reducers: {
-    setInitialTrackConfigDataForObject(
+    setInitialTrackConfigsPerGenome(
       state,
       action: PayloadAction<{
         genomeId: string;
@@ -172,10 +172,7 @@ const browserTrackConfigSlice = createSlice({
     ) {
       const { genomeId, trackCategories } = action.payload;
       if (!state[genomeId]) {
-        state[genomeId] = getTrackConfigStateForObject(
-          genomeId,
-          trackCategories
-        );
+        state[genomeId] = getTrackConfigsPerGenome(genomeId, trackCategories);
       }
       browserTrackConfigStorageService.setTrackConfigState({
         genomeId: genomeId,
@@ -281,7 +278,7 @@ const browserTrackConfigSlice = createSlice({
 });
 
 export const {
-  setInitialTrackConfigDataForObject,
+  setInitialTrackConfigsPerGenome,
   updateCogList,
   updateSelectedCog,
   updateApplyToAll,

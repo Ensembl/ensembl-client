@@ -40,7 +40,7 @@ const renderComponent = () => {
     selectedCog: selectedTrackId,
     tracks: {
       [selectedTrackId]: {
-        showMoreTranscripts: false,
+        showSeveralTranscripts: false,
         showTranscriptIds: false,
         showTrackName: false,
         showFeatureLabel: false,
@@ -59,7 +59,7 @@ const renderComponent = () => {
       trackConfig: {
         [genomeId]: Object.assign(
           {},
-          trackConfigActions.defaultTrackConfigStateForObject,
+          trackConfigActions.defaultTrackConfigsPerGenome,
           fragment
         )
       }

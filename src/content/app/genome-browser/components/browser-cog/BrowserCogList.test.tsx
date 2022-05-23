@@ -44,16 +44,6 @@ jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
 const mockState = createMockBrowserState();
 
-// mockState = set('browser.trackConfig.trackConfigNames', {}, mockState);
-// mockState = set('browser.trackConfig.trackConfigLabel', {}, mockState);
-// mockState = set(
-//   'browser.trackConfig.browserCogTrackList',
-//   {
-//     'track:gc': 100
-//   },
-//   mockState
-// );
-
 const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
