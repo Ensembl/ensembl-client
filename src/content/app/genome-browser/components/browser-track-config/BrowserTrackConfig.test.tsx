@@ -126,14 +126,12 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateTrackConfigNames');
+      jest.spyOn(trackConfigActions, 'updateTrackName');
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledTimes(
-        1
-      );
-      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledWith({
+      expect(trackConfigActions.updateTrackName).toHaveBeenCalledTimes(1);
+      expect(trackConfigActions.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
         selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog
@@ -150,13 +148,11 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateTrackConfigLabel');
+      jest.spyOn(trackConfigActions, 'updateFeatureLabel');
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledTimes(
-        1
-      );
-      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledWith({
+      expect(trackConfigActions.updateFeatureLabel).toHaveBeenCalledTimes(1);
+      expect(trackConfigActions.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
         isTrackLabelShown: true,
         selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog

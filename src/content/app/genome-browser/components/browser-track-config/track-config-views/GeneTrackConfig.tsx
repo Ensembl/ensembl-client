@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
-import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { type GeneTrackConfig as GeneTrackConfigType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import {
   getBrowserSelectedCog,
   getTrackConfigForTrackId
@@ -32,20 +32,46 @@ import styles from '../BrowserTrackConfig.scss';
 
 export const GeneTrackConfig = () => {
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
-  const selectedTrackConfigInfo = useSelector((state: RootState) =>
-    getTrackConfigForTrackId(state, selectedCog)
+  const selectedTrackConfig = useSelector(
+    (state: RootState) =>
+      getTrackConfigForTrackId(state, selectedCog) as GeneTrackConfigType
   );
-  const shouldShowTrackName = selectedTrackConfigInfo?.showTrackName ?? false;
-  const shouldShowTrackLabel =
-    selectedTrackConfigInfo?.trackType === TrackType.GENE &&
-    selectedTrackConfigInfo.showFeatureLabel;
 
-  const { updateTrackName, updateTrackLabel } = useBrowserTrackConfig();
+  const shouldShowTrackName = selectedTrackConfig.showTrackName;
+  const shouldShowTrackLabel = selectedTrackConfig.showFeatureLabel;
+  const shouldShowSeveralTranscripts =
+    selectedTrackConfig.showSeveralTranscripts;
+  const shouldShowTranscriptIDs = selectedTrackConfig.showTranscriptIds;
+
+  const {
+    updateTrackName,
+    updateTrackLabel,
+    updateShowSeveralTranscripts,
+    updateShowTranscriptIds
+  } = useBrowserTrackConfig();
 
   return (
     <div className={styles.section}>
       <div className={styles.subLabel}>Show</div>
       <div>
+        <div className={styles.toggleWrapper}>
+          <label>5 transcripts</label>
+          <SlideToggle
+            isOn={shouldShowSeveralTranscripts}
+            onChange={() =>
+              updateShowSeveralTranscripts(!shouldShowSeveralTranscripts)
+            }
+            className={styles.slideToggle}
+          />
+        </div>
+        <div className={styles.toggleWrapper}>
+          <label>Transcript IDs</label>
+          <SlideToggle
+            isOn={shouldShowTranscriptIDs}
+            onChange={() => updateShowTranscriptIds(!shouldShowTranscriptIDs)}
+            className={styles.slideToggle}
+          />
+        </div>
         <div className={styles.toggleWrapper}>
           <label>Track name</label>
           <SlideToggle
