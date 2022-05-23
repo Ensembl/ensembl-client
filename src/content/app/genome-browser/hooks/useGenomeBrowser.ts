@@ -273,16 +273,16 @@ const useGenomeBrowser = () => {
 
   const toggleTrackLabel = (params: {
     trackId: string;
-    shouldShowTrackLabel: boolean;
+    shouldShowFeatureLabel: boolean;
   }) => {
-    const { trackId, shouldShowTrackLabel } = params;
+    const { trackId, shouldShowFeatureLabel } = params;
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
       trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
-      type: shouldShowTrackLabel
+      type: shouldShowFeatureLabel
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {

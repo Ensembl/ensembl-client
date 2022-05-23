@@ -107,7 +107,10 @@ const useBrowserTrackConfig = () => {
             isTrackLabelShown
           })
         );
-        toggleTrackLabel({ trackId, shouldShowTrackLabel: isTrackLabelShown });
+        toggleTrackLabel({
+          trackId,
+          shouldShowFeatureLabel: isTrackLabelShown
+        });
       });
     } else {
       dispatch(
@@ -119,7 +122,7 @@ const useBrowserTrackConfig = () => {
       );
       toggleTrackLabel({
         trackId: selectedCog,
-        shouldShowTrackLabel: isTrackLabelShown
+        shouldShowFeatureLabel: isTrackLabelShown
       });
     }
 
@@ -135,7 +138,7 @@ const useBrowserTrackConfig = () => {
       return;
     }
     const shouldShowTrackName = selectedTrackConfigInfo.showTrackName;
-    const shouldShowTrackLabel =
+    const shouldShowFeatureLabel =
       selectedTrackConfigInfo.trackType === TrackType.GENE
         ? selectedTrackConfigInfo.showFeatureLabel
         : false;
@@ -148,7 +151,7 @@ const useBrowserTrackConfig = () => {
     );
     shouldApplyToAllRef.current = value === 'all_tracks';
     updateTrackName(shouldShowTrackName);
-    shouldShowTrackLabel && updateTrackLabel(shouldShowTrackLabel);
+    updateTrackLabel(shouldShowFeatureLabel);
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
