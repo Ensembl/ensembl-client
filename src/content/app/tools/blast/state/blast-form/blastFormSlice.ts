@@ -113,7 +113,7 @@ const autoUpdateSettings = (
     state.settings.sequenceSelectionMode === 'automatic'
   ) {
     const firstSequence = state.sequences[0].value;
-    const sequenceType = guessSequenceType(firstSequence); // FIXME — should this only be done if there were no sequences before?
+    const sequenceType = guessSequenceType(firstSequence);
     state.settings.sequenceType = sequenceType;
   }
 
@@ -197,7 +197,7 @@ const blastFormSlice = createSlice({
 
       if (!sequences.length) {
         resetSettings(state, config);
-        autoUpdateSettings(state, config); // FIXME is this required?
+        autoUpdateSettings(state, config); // to fill in individual blast parameters
       } else if (
         guessSequenceType(sequences[0].value) !== state.settings.sequenceType &&
         state.settings.sequenceSelectionMode === 'automatic'
