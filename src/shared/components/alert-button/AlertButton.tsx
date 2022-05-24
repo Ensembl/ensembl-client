@@ -27,7 +27,8 @@ import styles from './AlertButton.scss';
 
 type Props = {
   tooltipContent?: React.ReactNode;
-  warningIcon?: boolean;
+  level?: 'red' | 'amber';
+  className: string;
 };
 
 const AlertButton = (props: Props) => {
@@ -35,8 +36,10 @@ const AlertButton = (props: Props) => {
     useShowTooltip();
   const alertButtonClass = classNames(
     styles.alertButton,
-    { [styles.noTooltip]: !props.tooltipContent },
-    props.warningIcon ? styles.warningIcon : styles.errorIcon
+    props.className,
+    { [styles.alertButtonRed]: props.level === 'red' || !props.level },
+    { [styles.alertButtonAmber]: props.level === 'amber' },
+    { [styles.noTooltip]: !props.tooltipContent }
   );
 
   return (
