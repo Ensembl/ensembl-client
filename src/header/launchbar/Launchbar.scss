@@ -98,11 +98,12 @@
 
 .notification {
   border-radius: 10px;
-  height: 18px;
-  width: 18px;
+  height: var(--launchbar-notification-dimension, 18px);
+  width: var(--launchbar-notification-dimension, 18px);
   position: absolute;
-  top: -9px;
-  right: -9px;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
 
   &Red {
     background-color: $red;
