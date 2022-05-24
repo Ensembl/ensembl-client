@@ -234,8 +234,6 @@ describe('blastFormSlice', () => {
   });
 
   describe('updating database setting', () => {
-    // NOTE: the behavour described in this test is irrational;
-    // hope we will change it in the future
     it('prevents subsequent guessing of sequence type', () => {
       const store = createReduxStore({
         sequences: [{ value: createDNASequence(50) }],
@@ -254,7 +252,7 @@ describe('blastFormSlice', () => {
       const blastFormState = store.getState().blast.blastForm;
       expect(blastFormState.settings.sequenceType).toBe('dna'); // stays as it was
       expect(blastFormState.settings.parameters.database).toBe('pep');
-      expect(blastFormState.settings.sequenceSelectionMode).toBe('manual'); // (╯°□°)╯︵ ┻━┻   This is deeply irrational
+      expect(blastFormState.settings.sequenceSelectionMode).toBe('manual'); // as per UX team requirement
       expect(blastFormState.settings.databaseSelectionMode).toBe('manual');
       expect(blastFormState.settings.program).toBe('blastx');
     });

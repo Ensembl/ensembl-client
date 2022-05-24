@@ -260,8 +260,8 @@ const blastFormSlice = createSlice({
       state.settings.parameters = { ...state.settings.parameters, database };
       if (!isAutomatic) {
         state.settings.databaseSelectionMode = 'manual';
-        // NOTE: disabling the automatic guessing of sequence type in response to a manual choice of the database is deeply irrational;
-        // but it a requirement from the UX team. Hoping that we will undo this behaviour in the future
+        // NOTE: disabling the automatic guessing of sequence type in response to a manual choice of the database
+        // is a requirement from the UX team. There's a good chance we'll want to undo this in the future
         state.settings.sequenceSelectionMode = 'manual';
       }
       autoUpdateSettings(state, config);
@@ -349,7 +349,7 @@ const blastFormSlice = createSlice({
       state.selectedSpecies = [species];
       state.shouldAppendEmptyInput = false;
       state.settings.sequenceType = sequenceType;
-      state.settings.sequenceSelectionMode = 'manual'; // FIXME: does this suggest the need for a better flag name?
+      state.settings.sequenceSelectionMode = 'manual'; // to prevent sequence guessing (abusing the 'manual' keyword here)
       autoUpdateSettings(state, config);
     },
     clearBlastForm() {
