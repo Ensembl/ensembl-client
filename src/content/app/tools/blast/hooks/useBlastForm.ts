@@ -28,6 +28,8 @@ import {
   changeSensitivityPresets as changeSensitivityPresetsAction,
   setHasUncommittedSequence as setHasUncommittedSequenceAction,
   clearBlastForm as clearBlastFormAction,
+  setBlastJobName as setBlastJobNameAction,
+  setBlastParameter as setBlastParameterAction,
   type Species
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
@@ -39,7 +41,8 @@ import {
 
 import type {
   SequenceType,
-  BlastProgram
+  BlastProgram,
+  BlastParameterName
 } from 'src/content/app/tools/blast/types/blastSettings';
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
@@ -166,6 +169,17 @@ const useBlastForm = () => {
     );
   };
 
+  const setBlastJobName = (name: string) => {
+    dispatch(setBlastJobNameAction(name));
+  };
+
+  const setBlastParameter = (params: {
+    parameterName: BlastParameterName;
+    parameterValue: string;
+  }) => {
+    dispatch(setBlastParameterAction(params));
+  };
+
   return {
     sequences,
     sequenceType,
@@ -177,7 +191,9 @@ const useBlastForm = () => {
     appendEmptyInputBox,
     updateBlastProgram,
     updateSensitivityPresets,
-    setUncommittedSequencePresence
+    setUncommittedSequencePresence,
+    setBlastJobName,
+    setBlastParameter
   };
 };
 

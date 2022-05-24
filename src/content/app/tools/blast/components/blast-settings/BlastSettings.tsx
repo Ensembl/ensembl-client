@@ -16,7 +16,8 @@
 
 import React, { FormEvent, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -36,12 +37,6 @@ import {
   getBlastSearchParameters,
   getBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-import {
-  setBlastProgram,
-  changeSensitivityPresets,
-  setBlastParameter,
-  setBlastJobName
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import type {
   BlastProgram,
@@ -85,12 +80,16 @@ type Props = {
 
 const BlastSettings = ({ config }: Props) => {
   const [parametersExpanded, setParametersExpanded] = useState(false);
-  const sequenceType = useSelector(getSelectedSequenceType);
-  const blastProgram = useSelector(getSelectedBlastProgram);
-  const searchSensitivity = useSelector(getSelectedSearchSensitivity);
-  const blastParameters = useSelector(getBlastSearchParameters);
-  const { updateBlastDatabase } = useBlastForm();
-  const dispatch = useDispatch();
+  const sequenceType = useAppSelector(getSelectedSequenceType);
+  const blastProgram = useAppSelector(getSelectedBlastProgram);
+  const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
+  const blastParameters = useAppSelector(getBlastSearchParameters);
+  const {
+    updateBlastDatabase,
+    updateBlastProgram,
+    updateSensitivityPresets,
+    setBlastParameter
+  } = useBlastForm();
 
   useEffect(() => {
     if (!blastParameters.database) {
@@ -110,33 +109,21 @@ const BlastSettings = ({ config }: Props) => {
   };
 
   const onBlastProgramChange = (program: string) => {
-    dispatch(
-      setBlastProgram({
-        program: program as BlastProgram,
-        config
-      })
-    );
+    updateBlastProgram(program as BlastProgram);
   };
 
   const onSearchSensitivityChange = (presetName: string) => {
-    dispatch(
-      changeSensitivityPresets({
-        presetName,
-        config
-      })
-    );
+    updateSensitivityPresets(presetName);
   };
 
   const onBlastParameterChange = (
     parameterName: string,
     parameterValue: string
   ) => {
-    dispatch(
-      setBlastParameter({
-        parameterName: parameterName as BlastParameterName,
-        parameterValue
-      })
-    );
+    setBlastParameter({
+      parameterName: parameterName as BlastParameterName,
+      parameterValue
+    });
   };
 
   const onParametersToggle = () => {
@@ -317,12 +304,12 @@ const BlastSettings = ({ config }: Props) => {
 };
 
 const BlastJobName = () => {
-  const jobName = useSelector(getBlastJobName);
-  const dispatch = useDispatch();
+  const jobName = useAppSelector(getBlastJobName);
+  const { setBlastJobName } = useBlastForm();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value;
-    dispatch(setBlastJobName(name));
+    setBlastJobName(name);
   };
 
   return (
