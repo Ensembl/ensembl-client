@@ -24,16 +24,16 @@ export default {
   title: 'Components/Shared Components/Alert button'
 };
 
-export const ErrorIconTooltip = () => (
+export const ErrorAlertButtonStory = () => (
   <div>
     <span className={styles.text}>Some error has occured</span>
     <AlertButton tooltipContent="This is a hint" className={styles.alertIcon} />
   </div>
 );
 
-ErrorIconTooltip.storyName = 'Error icon with tooltip';
+ErrorAlertButtonStory.storyName = 'Error icon with tooltip';
 
-export const WarningIconTooltip = () => (
+export const WarningAlertButtonStory = () => (
   <div>
     <span className={styles.text}>Some warning to show</span>
     <AlertButton
@@ -44,13 +44,13 @@ export const WarningIconTooltip = () => (
   </div>
 );
 
-WarningIconTooltip.storyName = 'Warning icon with tooltip';
+WarningAlertButtonStory.storyName = 'Warning icon with tooltip';
 
-export const ErrorIconOnly = () => (
+export const ErrorAlertButtonOnlyStory = () => (
   <div>
     <span className={styles.text}>Bigger error icon</span>
     <AlertButton className={styles.largeAlertIcon} />
   </div>
 );
 
-ErrorIconOnly.storyName = 'Error icon with no tooltip';
+ErrorAlertButtonOnlyStory.storyName = 'Error icon with no tooltip';
