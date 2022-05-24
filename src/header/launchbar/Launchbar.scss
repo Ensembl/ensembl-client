@@ -98,8 +98,8 @@
 
 .notification {
   border-radius: 10px;
-  height: var(--launchbar-notification-dimension, 18px);
-  width: var(--launchbar-notification-dimension, 18px);
+  height: var(--launchbar-notification-size, 18px);
+  width: var(--launchbar-notification-size, 18px);
   position: absolute;
   top: 0;
   right: 0;
