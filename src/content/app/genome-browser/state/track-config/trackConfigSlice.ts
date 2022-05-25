@@ -221,7 +221,7 @@ const browserTrackConfigSlice = createSlice({
         fragment: { applyToAllConfig: { isSelected } }
       });
     },
-    updateTrackConfigNames(
+    updateTrackName(
       state,
       action: PayloadAction<{
         genomeId: string;
@@ -244,7 +244,7 @@ const browserTrackConfigSlice = createSlice({
         fragment
       });
     },
-    updateTrackConfigLabel(
+    updateFeatureLabel(
       state,
       action: PayloadAction<{
         genomeId: string;
@@ -273,6 +273,67 @@ const browserTrackConfigSlice = createSlice({
         genomeId,
         fragment
       });
+    },
+    updateShowSeveralTranscripts(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        selectedCog: string;
+        isSeveralTranscriptsShown: boolean;
+      }>
+    ) {
+      const { genomeId, selectedCog, isSeveralTranscriptsShown } =
+        action.payload;
+      const trackConfigState = state[genomeId].tracks[selectedCog];
+
+      if (trackConfigState.trackType !== TrackType.GENE) {
+        return;
+      }
+
+      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
+      trackConfigState.showSeveralTranscripts = isSeveralTranscriptsShown;
+
+      const fragment = {
+        tracks: {
+          [selectedCog]: {
+            ...trackConfigState
+          }
+        }
+      };
+      browserTrackConfigStorageService.setTrackConfigState({
+        genomeId,
+        fragment
+      });
+    },
+    updateShowTranscriptIds(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        selectedCog: string;
+        isTranscriptIdsShown: boolean;
+      }>
+    ) {
+      const { genomeId, selectedCog, isTranscriptIdsShown } = action.payload;
+      const trackConfigState = state[genomeId].tracks[selectedCog];
+
+      if (trackConfigState.trackType !== TrackType.GENE) {
+        return;
+      }
+
+      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
+      trackConfigState.showTranscriptIds = isTranscriptIdsShown;
+
+      const fragment = {
+        tracks: {
+          [selectedCog]: {
+            ...trackConfigState
+          }
+        }
+      };
+      browserTrackConfigStorageService.setTrackConfigState({
+        genomeId,
+        fragment
+      });
     }
   }
 });
@@ -282,8 +343,10 @@ export const {
   updateCogList,
   updateSelectedCog,
   updateApplyToAll,
-  updateTrackConfigNames,
-  updateTrackConfigLabel
+  updateTrackName,
+  updateFeatureLabel,
+  updateShowSeveralTranscripts,
+  updateShowTranscriptIds
 } = browserTrackConfigSlice.actions;
 
 export default browserTrackConfigSlice.reducer;

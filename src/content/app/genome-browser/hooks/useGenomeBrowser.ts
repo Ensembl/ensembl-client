@@ -291,6 +291,47 @@ const useGenomeBrowser = () => {
     });
   };
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+
+  const toggleSeveralTranscripts = (params: {
+    trackId: string;
+    shouldShowSeveralTranscripts: boolean;
+  }) => {
+    const { trackId, shouldShowSeveralTranscripts } = params;
+    const trackIdWithoutPrefix = trackId.replace('track:', '');
+    const trackIdToSend =
+      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+
+    // genomeBrowser?.send({
+    //   type: shouldShowSeveralTranscripts
+    //     ? OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS
+    //     : OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
+    //   payload: {
+    //     track_ids: [trackIdToSend]
+    //   }
+    // });
+  };
+
+  const toggleTranscriptIds = (params: {
+    trackId: string;
+    shouldShowTranscriptIds: boolean;
+  }) => {
+    const { trackId, shouldShowTranscriptIds } = params;
+    const trackIdWithoutPrefix = trackId.replace('track:', '');
+    const trackIdToSend =
+      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+
+    // genomeBrowser?.send({
+    //   type: shouldShowTranscriptIds
+    //     ? OutgoingActionType.TURN_ON_TRANSCRIPT_IDS
+    //     : OutgoingActionType.TURN_OFF_TRANSCRIPT_IDS,
+    //   payload: {
+    //     track_ids: [trackIdToSend]
+    //   }
+    // });
+  };
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+
   const toggleTrack = (params: { trackId: string; status: Status }) => {
     const { trackId, status } = params;
     const isTurnedOn = status === Status.SELECTED;
@@ -347,6 +388,8 @@ const useGenomeBrowser = () => {
     toggleTrack,
     toggleTrackName,
     toggleTrackLabel,
+    toggleSeveralTranscripts,
+    toggleTranscriptIds,
     genomeBrowser,
     zmenus
   };
