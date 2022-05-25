@@ -16,7 +16,7 @@
 
 import { useReducer, useEffect } from 'react';
 
-import useHover from 'src/shared/hooks/useHover';
+import useHover from './useHover';
 
 import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
 
@@ -57,7 +57,7 @@ const initialState: State = {
   isTooltipShown: false
 };
 
-export const useQuestionButtonBehaviour = () => {
+export const useShowTooltip = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
@@ -102,7 +102,7 @@ export const useQuestionButtonBehaviour = () => {
   };
 
   return {
-    questionButtonRef: hoverRef,
+    elementRef: hoverRef,
     onClick: handleClick,
     onTooltipCloseSignal,
     shouldShowTooltip: state.isTooltipShown
