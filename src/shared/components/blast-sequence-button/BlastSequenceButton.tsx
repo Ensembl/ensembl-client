@@ -67,7 +67,12 @@ const BlastSequenceButton = (props: Props) => {
     navigate(urlFor.blastForm());
   };
 
+  const isButtonEnabled = Boolean(sequence);
   const componentClasses = classNames(styles.container, className);
+  const buttonClasses = classNames(
+    styles.button,
+    isButtonEnabled ? styles.buttonEnabled : styles.buttonDisabled
+  );
   const imageButtonProps = !sequence
     ? ({
         status: Status.DEFAULT
@@ -81,7 +86,7 @@ const BlastSequenceButton = (props: Props) => {
         image={BlastIcon}
         description={label}
         onClick={onClick}
-        className={styles.button}
+        className={buttonClasses}
         {...imageButtonProps}
       />
     </div>

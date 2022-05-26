@@ -13,9 +13,16 @@
 
 .button {
   --app-icon-size: var(--blast-sequence-button-size, 24px);
-  background: $blue;
 
   svg {
     fill: $white;
   }
+}
+
+.buttonEnabled {
+  background: $blue;
+}
+
+.buttonDisabled {
+  background: $grey;
 }
