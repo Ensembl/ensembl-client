@@ -194,6 +194,7 @@ const blastFormSlice = createSlice({
       updateEmptyInputVisibility(state, sequences);
 
       state.sequences = sequences;
+      state.hasUncommittedSequence = false;
 
       if (!sequences.length) {
         resetSettings(state, config);
