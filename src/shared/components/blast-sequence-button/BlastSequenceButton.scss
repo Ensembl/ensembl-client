@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.container {
+  display: flex;
+  align-items: center;
+  column-gap: var(--blast-sequence-button-label-distance, 24px);
+  white-space: nowrap;
+}
+
+.label {
+  font-weight: var(--blast-sequence-button-label-font-weight, #{$light});
+}
+
+.button {
+  --app-icon-size: var(--blast-sequence-button-size, 24px);
+
+  svg {
+    fill: $white;
+  }
+}
+
+.buttonEnabled {
+  background: $blue;
+}
+
+.buttonDisabled {
+  background: $grey;
+}
