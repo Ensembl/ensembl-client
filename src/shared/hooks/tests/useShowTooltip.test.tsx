@@ -145,7 +145,7 @@ describe('useShowTooltip', () => {
         expect(queryByText('TooltipText')).toBeTruthy();
       });
 
-      await userEvent.unhover(testElement);
+      await userEventWithoutDelay.unhover(testElement);
       expect(queryByText('TooltipText')).toBeFalsy();
     });
   });
