@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import ExternalLink, { ExternalLinkProps } from './ExternalLink';
 

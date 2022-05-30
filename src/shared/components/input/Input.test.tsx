@@ -17,7 +17,7 @@
 import React, { useState, useRef, MutableRefObject } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import Input, { Props as InputProps } from './Input';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 
 import { createSlice } from './slice';

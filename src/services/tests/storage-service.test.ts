@@ -15,7 +15,7 @@
  */
 
 import { StorageService, StorageType } from 'src/services/storage-service';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import mockWindowService from 'tests/mocks/mockWindowService';
 

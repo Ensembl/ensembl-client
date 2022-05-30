@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 

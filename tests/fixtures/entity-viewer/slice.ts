@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { Slice } from 'src/shared/types/thoas/slice';
 import { Strand } from 'src/shared/types/thoas/strand';

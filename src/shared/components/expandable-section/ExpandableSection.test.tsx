@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import ExpandableSection, { ExpandableSectionProps } from './ExpandableSection';
 

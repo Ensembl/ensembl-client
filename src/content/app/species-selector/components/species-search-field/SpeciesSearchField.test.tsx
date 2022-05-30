@@ -20,7 +20,7 @@ import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 import merge from 'lodash/merge';
 

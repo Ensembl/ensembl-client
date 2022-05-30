@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 export const createPopularSpecies = () => ({
   genome_id: faker.datatype.uuid(),
