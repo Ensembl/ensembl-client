@@ -173,35 +173,31 @@ describe('<TranscriptSequenceView />', () => {
         transcript: proteinCodingTranscript
       });
 
-      waitFor(() => {
-        const sequenceContainer = container.querySelector(
-          '.sequence'
-        ) as HTMLElement;
-        expect(sequenceContainer.textContent).toBe(mockGenomicSequence);
+      await waitFor(() => {
+        const sequenceContainer = container.querySelector('.sequence');
+        expect(sequenceContainer?.textContent).toBe(mockGenomicSequence);
       });
 
       const cdsSequenceLabel = getByLabelText('CDS');
 
       await userEvent.click(cdsSequenceLabel);
 
-      waitFor(() => {
-        const sequenceContainer = container.querySelector(
-          '.sequence'
-        ) as HTMLElement;
-        expect(sequenceContainer.textContent).toBe(mockCDSSequence);
+      await waitFor(() => {
+        const sequenceContainer = container.querySelector('.sequence');
+        expect(sequenceContainer?.textContent).toBe(mockCDSSequence);
       });
     });
   });
 
   describe('reverse complement', () => {
     it('only shows the reverse complement checkbox for the genomic sequence', async () => {
-      const { getByLabelText, findByLabelText } = renderTranscriptSequenceView({
-        transcript: proteinCodingTranscript
-      });
-
-      const reverseComplementLabel = await findByLabelText(
-        'Reverse complement'
+      const { getByLabelText, queryByLabelText } = renderTranscriptSequenceView(
+        {
+          transcript: proteinCodingTranscript
+        }
       );
+
+      const reverseComplementLabel = queryByLabelText('Reverse complement');
 
       expect(reverseComplementLabel).not.toBe(null);
 
@@ -210,9 +206,7 @@ describe('<TranscriptSequenceView />', () => {
       for (const labelText of otherLabels) {
         const label = getByLabelText(labelText);
         await userEvent.click(label);
-        const reverseComplementLabel = await findByLabelText(
-          'Reverse complement'
-        );
+        const reverseComplementLabel = queryByLabelText('Reverse complement');
         expect(reverseComplementLabel).toBe(null);
       }
     });
@@ -222,20 +216,16 @@ describe('<TranscriptSequenceView />', () => {
         transcript: proteinCodingTranscript
       });
 
-      waitFor(() => {
-        const sequenceContainer = container.querySelector(
-          '.sequence'
-        ) as HTMLElement;
-        expect(sequenceContainer.textContent).toBe(mockGenomicSequence);
+      await waitFor(() => {
+        const sequenceContainer = container.querySelector('.sequence');
+        expect(sequenceContainer?.textContent).toBe(mockGenomicSequence);
       });
 
       await userEvent.click(getByLabelText('Reverse complement'));
 
-      waitFor(() => {
-        const sequenceContainer = container.querySelector(
-          '.sequence'
-        ) as HTMLElement;
-        expect(sequenceContainer.textContent).toBe(
+      await waitFor(() => {
+        const sequenceContainer = container.querySelector('.sequence');
+        expect(sequenceContainer?.textContent).toBe(
           getReverseComplement(mockGenomicSequence)
         );
       });

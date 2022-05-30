@@ -32,7 +32,7 @@ export const createSlice = (): Slice => {
       length
     },
     strand: {
-      code: faker.datatype.boolean() ? Strand.FORWARD : Strand.REVERSE
+      code: Strand.FORWARD
     },
     region: {
       name: faker.lorem.word(),
