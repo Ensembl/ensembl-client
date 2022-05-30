@@ -195,11 +195,13 @@ describe('<TranscriptSequenceView />', () => {
 
   describe('reverse complement', () => {
     it('only shows the reverse complement checkbox for the genomic sequence', async () => {
-      const { getByLabelText, queryByLabelText } = renderTranscriptSequenceView(
-        { transcript: proteinCodingTranscript }
-      );
+      const { getByLabelText, findByLabelText } = renderTranscriptSequenceView({
+        transcript: proteinCodingTranscript
+      });
 
-      const reverseComplementLabel = queryByLabelText('Reverse complement');
+      const reverseComplementLabel = await findByLabelText(
+        'Reverse complement'
+      );
 
       expect(reverseComplementLabel).not.toBe(null);
 
@@ -208,7 +210,10 @@ describe('<TranscriptSequenceView />', () => {
       for (const labelText of otherLabels) {
         const label = getByLabelText(labelText);
         await userEvent.click(label);
-        expect(queryByLabelText('Reverse complement')).toBe(null);
+        const reverseComplementLabel = await findByLabelText(
+          'Reverse complement'
+        );
+        expect(reverseComplementLabel).toBe(null);
       }
     });
 
