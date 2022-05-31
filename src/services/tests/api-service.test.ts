@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import apiService, { HTTPMethod } from '../api-service';
 import config from 'config';

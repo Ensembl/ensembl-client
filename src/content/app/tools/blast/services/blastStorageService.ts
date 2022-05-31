@@ -59,6 +59,11 @@ export const updateSavedBlastJob = async (params: {
   const { submissionId, jobId, fragment } = params;
   const submission = await getBlastSubmission(submissionId);
   const job = submission.results.find((job) => job.jobId === jobId);
+
+  if (!job) {
+    return;
+  }
+
   Object.assign(job, fragment); // this will mutate the object
   await saveBlastSubmission(submissionId, submission);
 };

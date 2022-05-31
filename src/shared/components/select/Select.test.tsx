@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 import random from 'lodash/random';
 import find from 'lodash/find';
