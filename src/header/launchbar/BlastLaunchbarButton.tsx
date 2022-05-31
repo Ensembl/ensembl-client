@@ -24,8 +24,6 @@ import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/b
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
 import { BlastIcon } from 'src/shared/components/app-icon';
 
-import styles from './Launchbar.scss';
-
 const BLAST_APP_ROOT_PATH = '/blast';
 
 const BlastLaunchbarButton = () => {
@@ -53,14 +51,12 @@ const BlastLaunchbarButton = () => {
   };
 
   return (
-    <div className={styles.category}>
-      <LaunchbarButtonWithNotification
-        path={blastAppPath}
-        description="BLAST"
-        icon={BlastIcon}
-        notification={getNotification()}
-      />
-    </div>
+    <LaunchbarButtonWithNotification
+      path={blastAppPath}
+      description="BLAST"
+      icon={BlastIcon}
+      notification={getNotification()}
+    />
   );
 };
 
