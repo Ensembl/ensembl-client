@@ -15,75 +15,60 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import SelectedSpeciesContent from './SelectedSpeciesContent';
+import SelectedSpeciesLozenge from './SelectedSpeciesLozenge';
 
-import styles from './SelectedSpecies.scss';
-
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 export type Props = {
   species: CommittedItem;
-  isActive: boolean;
+  isActive?: boolean;
   onClick: (genomeId: string) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
 };
 
-const chooseClassName = (props: Props) => {
+const SelectedSpecies = (props: Props) => {
+  return (
+    <SelectedSpeciesLozenge
+      species={props.species}
+      className={props.className}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
+      {...getSpeciesLozengeProps(props)}
+    />
+  );
+};
+
+const getSpeciesLozengeProps = (props: Props) => {
   const {
-    isActive,
-    species: { isEnabled }
+    isActive = false,
+    species: { isEnabled },
+    onClick
   } = props;
 
+  // TODO: add invalid (red) species
+
   if (isActive && isEnabled) {
-    return styles.inUseActive;
+    return {
+      theme: 'black'
+    } as const;
   } else if (isActive && !isEnabled) {
-    return styles.notInUseActive;
+    return {
+      theme: 'grey'
+    } as const;
   } else if (!isActive && isEnabled) {
-    return styles.inUseInactive;
+    return {
+      theme: 'blue',
+      onClick
+    } as const;
   } else {
-    return styles.notInUseInactive;
+    return {
+      theme: 'ice-blue',
+      onClick
+    } as const;
   }
-};
-
-const SelectedSpecies = (props: Props) => {
-  const handleMouseEnter = () => {
-    props.onMouseEnter && props.onMouseEnter();
-  };
-
-  const handleMouseLeave = () => {
-    props.onMouseLeave && props.onMouseLeave();
-  };
-
-  const handleClick = () => {
-    if (!props.isActive) {
-      props.onClick(props.species.genome_id);
-    }
-  };
-
-  const className = classNames(
-    styles.species,
-    chooseClassName(props),
-    props.className
-  );
-
-  return (
-    <div
-      className={className}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-    >
-      <SelectedSpeciesContent species={props.species} />
-    </div>
-  );
-};
-
-SelectedSpecies.defaultProps = {
-  isActive: false
 };
 
 export default SelectedSpecies;

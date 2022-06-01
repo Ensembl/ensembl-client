@@ -16,7 +16,8 @@
 
 import React from 'react';
 
-import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+// import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import SelectedSpeciesLozenge from 'src/shared/components/selected-species/SelectedSpeciesLozenge';
 
 import speciesData from '../species-tabs-wrapper/speciesData';
 
@@ -32,33 +33,45 @@ type StoryArgs = {
 };
 
 export const SelectedSpeciesStory = (args: StoryArgs) => {
-  const enabledSpecies = speciesData[0];
-  const disabledSpecies = {
-    ...enabledSpecies,
-    isEnabled: false
-  };
+  const species = speciesData[0];
 
   return (
-    <div className={styles.wrapper}>
-      <SelectedSpecies
-        species={enabledSpecies}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={enabledSpecies}
-        isActive={true}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={disabledSpecies}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={disabledSpecies}
-        isActive={true}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-    </div>
+    <>
+      <div className={styles.wrapper}>
+        <div className={styles.innerWrapper}>
+          <SelectedSpeciesLozenge theme="blue" species={species} />
+          <span>blue theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SelectedSpeciesLozenge theme="black" species={species} />
+          <span>black theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SelectedSpeciesLozenge theme="ice-blue" species={species} />
+          <span>ice-blue theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SelectedSpeciesLozenge theme="grey" species={species} />
+          <span>grey theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SelectedSpeciesLozenge theme="red" species={species} />
+          <span>red theme</span>
+        </div>
+      </div>
+      <p>A clickable lozenge will change the cursor to hover, like so:</p>
+      <div>
+        <SelectedSpeciesLozenge
+          theme="blue"
+          species={species}
+          onClick={args.onClick}
+        />
+      </div>
+    </>
   );
 };
 

@@ -1,0 +1,55 @@
+@import 'src/styles/common';
+@import 'src/styles/mixins';
+
+.species {
+  @include lozenge;
+  border-width: 1px;
+  border-style: solid;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.themeBlue {
+  border-color: var(--species-lozenge-bg-color, #{$blue});
+  background-color: var(--species-lozenge-bg-color, #{$blue});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeBlack {
+  border-color: var(--species-lozenge-bg-color, #{$black});
+  background-color: var(--species-lozenge-bg-color, #{$black});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeIceBlue {
+  border-color: var(--species-lozenge-bg-color, #{$ice-blue});
+  background-color: var(--species-lozenge-bg-color, #{$ice-blue});
+  color: var(--species-lozenge-text-color, #{$blue});
+}
+
+.themeGrey {
+  border-color: var(--species-lozenge-bg-color, #{$grey});
+  background-color: var(--species-lozenge-bg-color, #{$grey});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeRed {
+  border-color: var(--species-lozenge-bg-color, #{$red});
+  background-color: var(--species-lozenge-bg-color, #{$red});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: $bold;
+  margin-right: 0.5rem;
+}
+
+.assembly {
+  font-size: 11px;
+}
