@@ -48,7 +48,7 @@ const getSpeciesLozengeProps = (props: Props) => {
     onClick
   } = props;
 
-  // TODO: add invalid (red) species
+  // TODO: add invalid (red) species when we start having them
 
   if (isActive && isEnabled) {
     return {
