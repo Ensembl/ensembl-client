@@ -643,10 +643,10 @@ const buildHeaderStat = (
 
 const getExampleLinks = (props: {
   section: SpeciesStatsSection;
-  genome_id: string;
+  genomeIdForUrl: string;
   exampleFocusObjects: ExampleFocusObject[];
 }) => {
-  const { section, genome_id, exampleFocusObjects } = props;
+  const { section, genomeIdForUrl, exampleFocusObjects } = props;
 
   let exampleLinks: UrlObj = {};
 
@@ -666,13 +666,13 @@ const getExampleLinks = (props: {
       exampleLinks = {
         genomeBrowser: {
           url: urlFor.browser({
-            genomeId: genome_id,
+            genomeId: genomeIdForUrl,
             focus: focusId
           })
         },
         entityViewer: {
           url: urlFor.entityViewer({
-            genomeId: genome_id,
+            genomeId: genomeIdForUrl,
             entityId: focusId
           })
         }
@@ -709,10 +709,11 @@ const getExampleLinks = (props: {
 
 export const getStatsForSection = (props: {
   genome_id: string;
+  genomeIdForUrl: string;
   section: SpeciesStatsSection;
   exampleFocusObjects: ExampleFocusObject[];
 }): StatsSection | undefined => {
-  const { section, genome_id, exampleFocusObjects } = props;
+  const { section, genome_id, genomeIdForUrl, exampleFocusObjects } = props;
 
   const data = sampleData[genome_id][section];
 
@@ -758,7 +759,7 @@ export const getStatsForSection = (props: {
   const exampleLinks = exampleLinkText
     ? getExampleLinks({
         section,
-        genome_id,
+        genomeIdForUrl,
         exampleFocusObjects
       })
     : undefined;

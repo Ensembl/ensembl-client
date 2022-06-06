@@ -35,6 +35,8 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
@@ -57,6 +59,7 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const [shouldShowDownload, showDownload] = useState(false);
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -92,7 +95,7 @@ const TranscriptSummary = (props: Props) => {
   });
 
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: activeGenomeId,
+    genomeId: genomeIdForUrl,
     entityId: focusId
   });
 

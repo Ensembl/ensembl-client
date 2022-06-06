@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
+import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getExampleGenes } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
@@ -33,7 +37,17 @@ import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 import styles from './BrowserInterstitial.scss';
 
 const BrowserInterstitial = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const { genomeIdForUrl } = useGenomeBrowserIds();
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!activeGenomeId) {
+      return;
+    }
+    dispatch(fetchExampleFocusObjects(activeGenomeId));
+  }, [activeGenomeId]);
 
   if (!activeGenomeId) {
     return <BrowserInterstitialInstructions />;
@@ -45,6 +59,7 @@ const BrowserInterstitial = () => {
         <InAppSearch
           app="genomeBrowser"
           genomeId={activeGenomeId}
+          genomeIdForUrl={genomeIdForUrl as string}
           mode="interstitial"
         />
       </div>
@@ -54,14 +69,14 @@ const BrowserInterstitial = () => {
 };
 
 const ExampleLinks = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const focusObjects = useSelector(getExampleGenes);
+  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const focusObjects = useAppSelector(getExampleGenes);
 
   const links = focusObjects.map((exampleObject) => {
     const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
     const focusId = buildFocusIdForUrl(parsedFocusObjectId);
     const path = urlFor.browser({
-      genomeId: activeGenomeId,
+      genomeId: genomeIdForUrl,
       focus: focusId
     });
 

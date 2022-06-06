@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
-import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { useAppDispatch } from 'src/store';
 
@@ -38,19 +37,18 @@ import {
 import styles from './GeneOverview.scss';
 
 const GeneOverview = () => {
-  const { entityId, genomeId } = useParams<'genomeId' | 'entityId'>();
-  const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
+  const { genomeId, geneId } = useGeneViewIds();
   const dispatch = useAppDispatch();
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
   const { currentData, isFetching } = useGeneOverviewQuery(
     {
-      geneId: geneId || '',
-      genomeId: genomeId as string
+      geneId: geneId ?? '',
+      genomeId: genomeId ?? ''
     },
     {
-      skip: !geneId
+      skip: !genomeId || !geneId
     }
   );
 

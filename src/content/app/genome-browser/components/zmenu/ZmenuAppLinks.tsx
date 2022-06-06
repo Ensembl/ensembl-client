@@ -21,6 +21,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
@@ -35,6 +37,7 @@ type Props = {
 
 const ZmenuAppLinks = (props: Props) => {
   const genomeId = useSelector(getBrowserActiveGenomeId);
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const parsedFeatureId = parseFeatureId(`${genomeId}:${props.featureId}`);
 
@@ -44,17 +47,17 @@ const ZmenuAppLinks = (props: Props) => {
 
   const featureIdForUrl = buildFocusIdForUrl(parsedFeatureId);
 
-  const getBrowserLink = () =>
-    urlFor.browser({ genomeId, focus: featureIdForUrl });
-
   const links: UrlObj = {
     genomeBrowser: {
-      url: getBrowserLink(),
+      url: urlFor.browser({
+        genomeId: genomeIdForUrl,
+        focus: featureIdForUrl
+      }),
       replaceState: true
     },
     entityViewer: {
       url: urlFor.entityViewer({
-        genomeId,
+        genomeId: genomeIdForUrl,
         entityId: featureIdForUrl
       })
     }

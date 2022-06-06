@@ -23,6 +23,7 @@ export type BaseApiUrls = {
   docsBaseUrl: string;
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
+  tracksApiBaseUrl: string;
   customDownloadGeneSearch: string;
   toolsApiBaseUrl: string;
 };
@@ -32,11 +33,12 @@ export type PublicKeys = {
 };
 
 const defaultApiUrls: BaseApiUrls = {
-  thoasBaseUrl: 'https://2020.ensembl.org/api/thoas',
-  genomeSearchBaseUrl: 'https://2020.ensembl.org/api/genomesearch',
-  docsBaseUrl: 'https://2020.ensembl.org/api/docs',
+  thoasBaseUrl: '/api/thoas',
+  genomeSearchBaseUrl: '/api/genomesearch',
+  docsBaseUrl: '/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
+  tracksApiBaseUrl: '/api/tracks',
   customDownloadGeneSearch: '',
   toolsApiBaseUrl: '/api/tools'
 };
@@ -59,6 +61,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
+    tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
     customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch, // irrelevant for server-side rendering
     toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl
   };

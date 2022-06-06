@@ -68,7 +68,7 @@ jest.mock(
 
 jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 
-describe('<BrowserRegionEditor />', () => {
+describe.skip('<BrowserRegionEditor />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.spyOn(browserGeneralActions, 'toggleRegionEditorActive');

@@ -27,6 +27,7 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
@@ -36,12 +37,11 @@ import { RootState } from 'src/store';
 import styles from './EntityViewerBookmarks.scss';
 
 type PreviouslyViewedLinksProps = {
-  activeGenomeId: string;
-  activeEntityId: string;
   previouslyViewedEntities: ReturnType<typeof getPreviouslyViewedEntities>;
 };
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  const { genomeIdForUrl } = useEntityViewerIds();
   const { trackPreviouslyViewedLinkClick } = useEntityViewerAnalytics();
 
   const handleClick = (linkLabel: string | string[], index: number) => {
@@ -56,7 +56,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
     <div data-test-id="previously viewed links">
       {props.previouslyViewedEntities.map((entity, index) => {
         const path = urlFor.entityViewer({
-          genomeId: props.activeGenomeId,
+          genomeId: genomeIdForUrl,
           entityId: buildFocusIdForUrl({
             type: 'gene',
             objectId: entity.unversioned_stable_id
@@ -93,8 +93,6 @@ export const EntityViewerSidebarBookmarks = () => {
       {previouslyViewedEntities.length ? (
         <>
           <PreviouslyViewedLinks
-            activeGenomeId={activeGenomeId}
-            activeEntityId={activeEntityId}
             previouslyViewedEntities={previouslyViewedEntities}
           />
         </>

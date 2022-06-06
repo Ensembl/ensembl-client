@@ -65,7 +65,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-describe('<BookmarksModal />', () => {
+describe.skip('<BookmarksModal />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });

@@ -19,10 +19,11 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import { useGenomeInfoQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
+import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
@@ -42,9 +43,12 @@ type SpeciesPageParams = {
 };
 
 const SpeciesPageContent = () => {
-  const { genomeId } = useParams() as SpeciesPageParams;
+  const { genomeId: genomeIdInUrl } = useParams() as SpeciesPageParams;
+  const { data: genomeInfo } = useGenomeInfoQuery(genomeIdInUrl);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const genomeId = genomeInfo?.genomeId;
 
   const changeGenomeId = (genomeId: string) => {
     const params = {
@@ -57,9 +61,16 @@ const SpeciesPageContent = () => {
   const sidebarStatus = useAppSelector(isSidebarOpen);
 
   useEffect(() => {
+    if (!genomeId) {
+      return;
+    }
     dispatch(setActiveGenomeId(genomeId));
-    dispatch(fetchGenomeData(genomeId));
+    dispatch(fetchExampleFocusObjects(genomeId));
   }, [genomeId]);
+
+  if (!genomeId) {
+    return null; // TODO: consider some kind of a spinner?
+  }
 
   return (
     <div className={styles.speciesPage}>

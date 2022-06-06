@@ -20,10 +20,11 @@ import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 
 import styles from './BrowserLocationIndicator.scss';
 
@@ -33,8 +34,9 @@ type Props = {
 
 export const BrowserLocationIndicator = (props: Props) => {
   const actualChrLocation = useSelector(getActualChrLocation);
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const genomeKaryotype = useSelector(getGenomeKaryotype);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId) as string;
+
+  const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
 
   const dispatch = useDispatch();
 
@@ -50,11 +52,9 @@ export const BrowserLocationIndicator = (props: Props) => {
     ? {}
     : { onClick: () => dispatch(toggleBrowserNav({ activeGenomeId })) };
 
-  const activeChromosome =
-    genomeKaryotype &&
-    genomeKaryotype.find((karyotype) => {
-      return karyotype.name === chrCode;
-    });
+  const activeChromosome = genomeKaryotype?.find((karyotype) => {
+    return karyotype.name === chrCode;
+  });
 
   return (
     <div className={className}>

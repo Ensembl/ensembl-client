@@ -45,7 +45,6 @@ jest.mock(
 
 const buildSearchMatch = (): SearchMatch => ({
   genome_id: faker.lorem.word(),
-  reference_genome_id: null,
   common_name: faker.lorem.words(),
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),
@@ -55,7 +54,8 @@ const buildSearchMatch = (): SearchMatch => ({
       offset: 1,
       match: MatchedFieldName.COMMON_NAME
     }
-  ]
+  ],
+  url_slug: null
 });
 
 const buildSearchMatchGroup = (matches = 2): SearchMatches =>

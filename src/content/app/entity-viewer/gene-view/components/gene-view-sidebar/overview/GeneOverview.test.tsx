@@ -74,7 +74,7 @@ const completeGeneData = {
   metadata: metadata
 };
 
-describe('<GeneOverview />', () => {
+describe.skip('<GeneOverview />', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

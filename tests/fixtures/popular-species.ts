@@ -16,13 +16,15 @@
 
 import { faker } from '@faker-js/faker';
 
-export const createPopularSpecies = () => ({
+import type { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
+
+export const createPopularSpecies = (): PopularSpecies => ({
   genome_id: faker.datatype.uuid(),
-  reference_genome_id: null,
   common_name: null,
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),
   image: faker.image.imageUrl(),
   division_ids: [],
-  is_available: true
+  is_available: true,
+  url_slug: null
 });

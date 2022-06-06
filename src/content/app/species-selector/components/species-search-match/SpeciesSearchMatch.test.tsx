@@ -23,7 +23,6 @@ import { MatchedFieldName } from 'src/content/app/species-selector/types/species
 
 const matchTemplate = {
   genome_id: 'homo_sapiens_38',
-  reference_genome_id: null,
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
   assembly_name: 'GRCh38.p12',
@@ -33,7 +32,8 @@ const matchTemplate = {
       offset: 0,
       match: MatchedFieldName.COMMON_NAME
     }
-  ]
+  ],
+  url_slug: null
 };
 
 describe('<SpeciesSearchMatch />', () => {
@@ -60,9 +60,8 @@ describe('<SpeciesSearchMatch />', () => {
     const renderedScientificName = container.querySelector(
       '.scientificName'
     ) as HTMLElement;
-    const highlightedFragments = renderedScientificName.querySelectorAll(
-      '.matched'
-    );
+    const highlightedFragments =
+      renderedScientificName.querySelectorAll('.matched');
 
     expect(highlightedFragments.length).toBe(1);
     // highlighting Hom in Homo sapiens

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import config from 'config';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import trackPanelGeneQuery from './queries/trackPanelGeneQuery';
@@ -30,6 +32,7 @@ import {
   TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
 
+import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import type { TrackPanelGene } from '../types/track-panel-gene';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
@@ -71,6 +74,23 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
   })
 });
 
+type GenomeTrackCategoriesResponse = {
+  track_categories: GenomeTrackCategory[];
+};
+
+const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    genomeTracks: builder.query<GenomeTrackCategory[], string>({
+      query: (genomeId) => ({
+        url: `${config.tracksApiBaseUrl}/track_categories/${genomeId}`
+      }),
+      transformResponse: (response: GenomeTrackCategoriesResponse) => {
+        return response.track_categories;
+      }
+    })
+  })
+});
+
 export const { getTrackPanelGene } = genomeBrowserApiSlice.endpoints;
 export const {
   useGetTrackPanelGeneQuery,
@@ -78,3 +98,5 @@ export const {
   useGbTranscriptSummaryQuery,
   useGbTranscriptInZmenuQuery
 } = genomeBrowserApiSlice;
+
+export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;

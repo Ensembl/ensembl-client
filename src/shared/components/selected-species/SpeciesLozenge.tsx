@@ -31,7 +31,7 @@ export type Props = {
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
   className?: string;
-  onClick?: (genomeId: string) => void;
+  onClick?: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 };
@@ -46,7 +46,7 @@ const SpeciesLozenge = (props: Props) => {
   };
 
   const handleClick = () => {
-    props?.onClick?.(props.species.genome_id);
+    props?.onClick?.(props.species);
   };
 
   const displayName = getDisplayName(props.species);

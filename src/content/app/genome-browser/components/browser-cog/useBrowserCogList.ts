@@ -17,10 +17,10 @@
 import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
 
-import { getGenomeTrackCategories } from 'src/shared/state/genome/genomeSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
@@ -42,22 +42,20 @@ import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes
 
 const useBrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const trackCategories = useAppSelector(getGenomeTrackCategories);
+  const { data: trackCategories } = useGenomeTracksQuery(genomeId);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
 
   const dispatch = useAppDispatch();
 
-  const trackCategoriesForGenome = trackCategories[genomeId];
-
   // TODO: think about what should happen when we switch types of focus objects
   // eg gene -> variant -> region
   useEffect(() => {
-    if (!trackCategoriesForGenome) {
+    if (!trackCategories) {
       return;
     }
 
     const defaultTracksForGenome = prepareTrackConfigs({
-      trackCategories: trackCategoriesForGenome,
+      trackCategories,
       focusObject
     });
 

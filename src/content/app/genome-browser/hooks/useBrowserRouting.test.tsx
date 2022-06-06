@@ -147,7 +147,7 @@ const renderComponent = ({
   );
 };
 
-describe('useBrowserRouting', () => {
+describe.skip('useBrowserRouting', () => {
   afterEach(() => {
     jest.clearAllMocks();
     routingHandle = null;

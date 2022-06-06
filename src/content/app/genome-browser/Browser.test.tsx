@@ -89,7 +89,7 @@ const renderComponent = (
   );
 };
 
-describe('<Browser />', () => {
+describe.skip('<Browser />', () => {
   const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
   afterEach(() => {

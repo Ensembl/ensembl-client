@@ -30,14 +30,17 @@ import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 const EntityViewerAppBar = () => {
   const navigate = useNavigate();
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
 
-  const onSpeciesTabClick = (genomeId: string) => {
+  const onSpeciesTabClick = (species: CommittedItem) => {
+    const genomeIdForUrl = species.url_slug ?? species.genome_id;
     const url = urlFor.entityViewer({
-      genomeId
+      genomeId: genomeIdForUrl
     });
     navigate(url);
   };
@@ -47,7 +50,7 @@ const EntityViewerAppBar = () => {
       key={index}
       species={species}
       isActive={species.genome_id === activeGenomeId}
-      onClick={() => onSpeciesTabClick(species.genome_id)}
+      onClick={onSpeciesTabClick}
     />
   ));
   const speciesSelectorLink = useMemo(() => {

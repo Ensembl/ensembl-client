@@ -99,7 +99,7 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
   );
 };
 
-describe('<EntityViewerSidebarBookmarks />', () => {
+describe.skip('<EntityViewerSidebarBookmarks />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });

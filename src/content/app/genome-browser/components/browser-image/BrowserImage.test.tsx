@@ -73,7 +73,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-describe('<BrowserImage />', () => {
+describe.skip('<BrowserImage />', () => {
   beforeEach(() => {
     // running this in before each, because it looks that
     // afterEach completes before cleanup functions called at component's unmounting get executed

@@ -19,10 +19,11 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
-import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
+
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 
 import { CircleLoader } from 'src/shared/components/loader';
@@ -33,7 +34,7 @@ import styles from './ExampleLinks.scss';
 
 // NOTE: the component currently handles only example gene
 const ExampleLinks = () => {
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+  const { activeGenomeId, genomeIdForUrl } = useEntityViewerIds();
   const exampleEntities = useSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId || '')
   );
@@ -69,7 +70,7 @@ const ExampleLinks = () => {
     objectId: currentData.gene.unversioned_stable_id
   });
   const path = urlHelper.entityViewer({
-    genomeId: activeGenomeId,
+    genomeId: genomeIdForUrl,
     entityId: featureIdInUrl
   });
 
