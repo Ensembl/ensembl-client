@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { RootState } from 'src/store';
-import { useSelector } from 'react-redux';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
+import { useAppSelector, type RootState } from 'src/store';
 import { type GeneTrackConfig as GeneTrackConfigType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import {
   getBrowserSelectedCog,
@@ -31,8 +30,8 @@ import useBrowserTrackConfig from '../useBrowserTrackConfig';
 import styles from '../BrowserTrackConfig.scss';
 
 export const GeneTrackConfig = () => {
-  const selectedCog = useSelector(getBrowserSelectedCog) || '';
-  const selectedTrackConfig = useSelector(
+  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
+  const selectedTrackConfig = useAppSelector(
     (state: RootState) =>
       getTrackConfigForTrackId(state, selectedCog) as GeneTrackConfigType
   );

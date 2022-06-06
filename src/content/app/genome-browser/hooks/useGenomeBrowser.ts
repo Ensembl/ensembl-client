@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
@@ -30,24 +29,25 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/b
 
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
+import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
+
+import { useAppSelector } from 'src/store';
 import { getAllTrackConfigs } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-
-import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
-import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 
 const useGenomeBrowser = () => {
-  const activeFocusObjectId = useSelector(getBrowserActiveFocusObjectId);
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const allTracksInfo = useSelector(getAllTrackConfigs);
-
+  const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const allTracksInfo = useAppSelector(getAllTrackConfigs);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
+
   if (!genomeBrowserContext) {
     throw new Error(
       'useGenomeBrowser must be used with GenomeBrowserContext Provider'
@@ -157,15 +157,15 @@ const useGenomeBrowser = () => {
       return;
     }
 
-    type TrackConfigStates = {
+    type TrackConfig = {
       on: string[];
       off: string[];
     };
-    const trackStateForNames: TrackConfigStates = {
+    const trackStateForNames: TrackConfig = {
       on: [],
       off: []
     };
-    const trackStateForLabels: TrackConfigStates = {
+    const trackStateForLabels: TrackConfig = {
       on: [],
       off: []
     };
@@ -181,14 +181,14 @@ const useGenomeBrowser = () => {
           : trackStateForNames.off.push(trackId);
       });
 
-    genomeBrowser?.send({
+    genomeBrowser.send({
       type: OutgoingActionType.TURN_ON_NAMES,
       payload: {
         track_ids: trackStateForNames.on
       }
     });
 
-    genomeBrowser?.send({
+    genomeBrowser.send({
       type: OutgoingActionType.TURN_OFF_NAMES,
       payload: {
         track_ids: trackStateForNames.off
@@ -209,14 +209,14 @@ const useGenomeBrowser = () => {
         }
       });
 
-    genomeBrowser?.send({
+    genomeBrowser.send({
       type: OutgoingActionType.TURN_ON_LABELS,
       payload: {
         track_ids: trackStateForLabels.on
       }
     });
 
-    genomeBrowser?.send({
+    genomeBrowser.send({
       type: OutgoingActionType.TURN_OFF_LABELS,
       payload: {
         track_ids: trackStateForLabels.off
@@ -291,8 +291,6 @@ const useGenomeBrowser = () => {
     });
   };
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-
   const toggleSeveralTranscripts = (params: {
     trackId: string;
     shouldShowSeveralTranscripts: boolean;
@@ -302,16 +300,17 @@ const useGenomeBrowser = () => {
     const trackIdToSend =
       trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
 
-    // genomeBrowser?.send({
-    //   type: shouldShowSeveralTranscripts
-    //     ? OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS
-    //     : OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
-    //   payload: {
-    //     track_ids: [trackIdToSend]
-    //   }
-    // });
+    genomeBrowser?.send({
+      type: shouldShowSeveralTranscripts
+        ? OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS
+        : OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    });
   };
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const toggleTranscriptIds = (params: {
     trackId: string;
     shouldShowTranscriptIds: boolean;

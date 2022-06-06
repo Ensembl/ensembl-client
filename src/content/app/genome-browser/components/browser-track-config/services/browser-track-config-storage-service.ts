@@ -15,15 +15,15 @@
  */
 
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
-import {
+import type {
   GenomeTrackConfigs,
-  TrackConfigsPerGenome
+  TrackConfigsForGenome
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 export enum StorageKeys {
-  TRACK_CONFIG_STATES = 'browser.trackConfigStates'
+  TRACK_CONFIGS = 'browser.trackConfig'
 }
 
 export class TrackConfigStorageService {
@@ -33,17 +33,24 @@ export class TrackConfigStorageService {
     this.storageService = storageService;
   }
 
-  public getTrackConfigState(): GenomeTrackConfigs {
-    return this.storageService.get(StorageKeys.TRACK_CONFIG_STATES) || {};
+  public getTrackConfigs(): GenomeTrackConfigs {
+    return this.storageService.get(StorageKeys.TRACK_CONFIGS) || {};
   }
 
-  public setTrackConfigState(params: {
+  public setTrackConfigs(params: {
     genomeId: string;
-    fragment: Partial<TrackConfigsPerGenome>;
+    fragment: Partial<TrackConfigsForGenome> | undefined;
   }) {
     const { genomeId, fragment } = params;
-    this.storageService.update(StorageKeys.TRACK_CONFIG_STATES, {
+    this.storageService.update(StorageKeys.TRACK_CONFIGS, {
       [genomeId]: fragment
+    });
+  }
+
+  public deleteTrackConfigs(genomeId: string): void {
+    this.setTrackConfigs({
+      genomeId,
+      fragment: undefined
     });
   }
 }

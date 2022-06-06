@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import RadioGroup, {
-  RadioOptions
+  type RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
 import GeneTrackConfig from './track-config-views/GeneTrackConfig';
 import RegularTrackConfig from './track-config-views/RegularTrackConfig';
 
+import { useAppSelector } from 'src/store';
 import {
   getTrackType,
   TrackType
@@ -31,7 +31,7 @@ import {
 import {
   getApplyToAllConfig,
   getBrowserSelectedCog
-} from '../../state/track-config/trackConfigSelectors';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 
 import useBrowserTrackConfig from './useBrowserTrackConfig';
 
@@ -47,10 +47,10 @@ const getTrackConfigComponent = (trackType: TrackType) => {
 };
 
 export const BrowserTrackConfig = () => {
-  const applyToAllConfig = useSelector(getApplyToAllConfig);
-  const selectedCog = useSelector(getBrowserSelectedCog) || '';
+  const applyToAllConfig = useAppSelector(getApplyToAllConfig);
+  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const trackType = getTrackType(selectedCog);
-  const { handleRadioChange } = useBrowserTrackConfig();
+  const { toggleApplyToAll } = useBrowserTrackConfig();
 
   const radioOptions: RadioOptions = [
     {
@@ -68,7 +68,7 @@ export const BrowserTrackConfig = () => {
       <div className={styles.section}>
         <RadioGroup
           options={radioOptions}
-          onChange={handleRadioChange}
+          onChange={toggleApplyToAll}
           selectedOption={
             applyToAllConfig.isSelected ? 'all_tracks' : 'this_track'
           }

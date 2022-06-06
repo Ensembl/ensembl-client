@@ -49,8 +49,6 @@ import {
 } from '../state/browser-general/browserGeneralSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
-import { setInitialTrackConfigsPerGenome } from '../state/track-config/trackConfigSlice';
-import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -84,7 +82,6 @@ const useBrowserRouting = () => {
   const allActiveFocusObjectIds = useAppSelector(
     getBrowserActiveFocusObjectIds
   );
-  const trackCategoriesForGenome = useAppSelector(getGenomeTrackCategoriesById);
 
   const activeFocusObjectId = genomeId
     ? allActiveFocusObjectIds[genomeId]
@@ -172,17 +169,6 @@ const useBrowserRouting = () => {
       dispatch(fetchGenomeData(genomeId));
     }
   }, [genomeId]);
-
-  useEffect(() => {
-    if (genomeId && trackCategoriesForGenome) {
-      dispatch(
-        setInitialTrackConfigsPerGenome({
-          genomeId,
-          trackCategories: trackCategoriesForGenome
-        })
-      );
-    }
-  }, [genomeId, trackCategoriesForGenome]);
 
   useEffect(() => {
     if (!focusObject && activeFocusObjectId) {

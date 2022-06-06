@@ -15,43 +15,43 @@
  */
 
 import React, { useEffect, memo, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import {
-  UpdateTrackSummaryAction,
   IncomingActionType,
-  TrackSummaryList,
-  TrackSummary
+  type UpdateTrackSummaryAction,
+  type TrackSummaryList,
+  type TrackSummary
 } from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import BrowserCog from './BrowserCog';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   getBrowserCogList,
   getBrowserSelectedCog
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
-  CogList,
+  type CogList,
   updateCogList,
   updateSelectedCog
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
-} from '../../state/browser-general/browserGeneralSelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
-  const browserCogList = useSelector(getBrowserCogList);
-  const selectedCog = useSelector(getBrowserSelectedCog);
+  const browserCogList = useAppSelector(getBrowserCogList);
+  const selectedCog = useAppSelector(getBrowserSelectedCog);
+  const genomeId = useAppSelector(getBrowserActiveGenomeId);
+  const objectId = useAppSelector(getBrowserActiveFocusObjectId);
+  const dispatch = useAppDispatch();
 
-  const genomeId = useSelector(getBrowserActiveGenomeId);
   const genomeIdRef = useRef(genomeId);
-  const objectId = useSelector(getBrowserActiveFocusObjectId);
-  const dispatch = useDispatch();
-
   const { genomeBrowser } = useGenomeBrowser();
 
   useEffect(() => {
@@ -100,24 +100,27 @@ export const BrowserCogList = () => {
   const cogs =
     browserCogList &&
     Object.entries(browserCogList).map(([name, pos]) => {
-      const posStyle = { top: pos + 'px' };
+      const posStyle = { top: `${pos}px` };
 
       if (!genomeIdRef.current || !objectId) {
         return;
       }
+
+      const handleCogSelect = (trackId: string | null) => {
+        dispatch(
+          updateSelectedCog({
+            genomeId: genomeIdRef.current as string,
+            selectedCog: trackId
+          })
+        );
+      };
+
       return (
         <div key={name} className={styles.browserCogOuter} style={posStyle}>
           <BrowserCog
             cogActivated={selectedCog === name}
             trackId={name}
-            updateSelectedCog={(trackId: string | null) =>
-              dispatch(
-                updateSelectedCog({
-                  genomeId: genomeIdRef.current as string,
-                  selectedCog: trackId
-                })
-              )
-            }
+            updateSelectedCog={handleCogSelect}
           />
         </div>
       );

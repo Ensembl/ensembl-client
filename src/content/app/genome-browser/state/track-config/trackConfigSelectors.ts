@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
-import { defaultTrackConfigsPerGenome } from './trackConfigSlice';
+import { defaultTrackConfigsForGenome } from './trackConfigSlice';
+
+import type { RootState } from 'src/store';
 
 export const getBrowserCogList = (state: RootState) => {
   const genomeId = getBrowserActiveGenomeId(state);
   if (!genomeId || !state.browser.trackConfig[genomeId]) {
-    return defaultTrackConfigsPerGenome.browserCogList;
+    return defaultTrackConfigsForGenome.browserCogList;
   }
   return state.browser.trackConfig[genomeId].browserCogList;
 };
@@ -29,7 +30,7 @@ export const getBrowserCogList = (state: RootState) => {
 export const getBrowserSelectedCog = (state: RootState) => {
   const genomeId = getBrowserActiveGenomeId(state);
   if (!genomeId || !state.browser.trackConfig[genomeId]) {
-    return defaultTrackConfigsPerGenome.selectedCog;
+    return defaultTrackConfigsForGenome.selectedCog;
   }
   return state.browser.trackConfig[genomeId].selectedCog;
 };
@@ -52,7 +53,7 @@ export const getAllTrackConfigs = (state: RootState) => {
 export const getApplyToAllConfig = (state: RootState) => {
   const genomeId = getBrowserActiveGenomeId(state);
   if (!genomeId || !state.browser.trackConfig[genomeId]) {
-    return defaultTrackConfigsPerGenome.applyToAllConfig;
+    return defaultTrackConfigsForGenome.applyToAllConfig;
   }
   return state.browser.trackConfig[genomeId]?.applyToAllConfig;
 };

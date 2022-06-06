@@ -24,6 +24,7 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import * as trackConfigActions from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+
 import BrowserTrackConfig from './BrowserTrackConfig';
 
 const genomeId = 'fake_genome_id_1';
@@ -59,7 +60,7 @@ const renderComponent = () => {
       trackConfig: {
         [genomeId]: Object.assign(
           {},
-          trackConfigActions.defaultTrackConfigsPerGenome,
+          trackConfigActions.defaultTrackConfigsForGenome,
           fragment
         )
       }
@@ -151,7 +152,6 @@ describe('<BrowserTrackConfig />', () => {
       jest.spyOn(trackConfigActions, 'updateFeatureLabel');
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateFeatureLabel).toHaveBeenCalledTimes(1);
       expect(trackConfigActions.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
         isTrackLabelShown: true,

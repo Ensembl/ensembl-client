@@ -18,15 +18,15 @@ import faker from '@faker-js/faker';
 import {
   Markup,
   ZmenuFeatureType,
-  ZmenuContentTranscript,
-  ZmenuContentGene,
-  ZmenuCreatePayload,
-  ZmenuPayloadVarietyType
+  ZmenuPayloadVarietyType,
+  type ZmenuContentTranscript,
+  type ZmenuContentGene,
+  type ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
 import {
   getChrLocationStr,
-  RegionValidationMessages
+  type RegionValidationMessages
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
   createGenomeCategories,
@@ -34,9 +34,14 @@ import {
 } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { CogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+import {
+  getDefaultGeneTrackConfig,
+  getDefaultRegularTrackConfig,
+  type CogList
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
@@ -48,22 +53,10 @@ export const createCogTrackList = (): CogList => ({
   gc: faker.datatype.number()
 });
 
-export const createTracksInfo = () => ({
-  'gene-focus': {
-    showMoreTranscripts: false,
-    showTranscriptIds: false,
-    showTrackName: true,
-    showFeatureLabel: true,
-    trackType: 'gene'
-  },
-  contig: {
-    showTrackName: true,
-    trackType: 'regular'
-  },
-  gc: {
-    showTrackName: true,
-    trackType: 'regular'
-  }
+export const createTrackConfigs = () => ({
+  'gene-focus': getDefaultGeneTrackConfig(),
+  contig: getDefaultRegularTrackConfig(),
+  gc: getDefaultRegularTrackConfig()
 });
 
 export const createZmenuContentPayload = (): {
@@ -235,7 +228,7 @@ export const createMockBrowserState = () => {
             gc: 384
           },
           selectedCog: 'gene-focus',
-          tracks: createTracksInfo()
+          tracks: createTrackConfigs()
         }
       },
       trackPanel: {

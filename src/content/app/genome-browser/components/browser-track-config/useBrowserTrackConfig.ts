@@ -15,18 +15,15 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { RootState } from 'src/store';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
-
-import { getBrowserActiveGenomeId } from '../../state/browser-general/browserGeneralSelectors';
+import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getTrackConfigForTrackId,
   getApplyToAllConfig,
   getBrowserCogList,
   getBrowserSelectedCog
-} from '../../state/track-config/trackConfigSelectors';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
   updateTrackName as updateTrackConfigTrackName,
   updateFeatureLabel as updateTrackConfigFeatureLabel,
@@ -34,28 +31,28 @@ import {
   updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
   updateApplyToAll,
   TrackType
-} from '../../state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 import analyticsTracking from 'src/services/analytics-service';
-import useGenomeBrowser from '../../hooks/useGenomeBrowser';
+
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+
+import { type OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
 const useBrowserTrackConfig = () => {
-  const applyToAllConfig = useSelector(getApplyToAllConfig);
-  const browserCogList = useSelector(getBrowserCogList);
-  const selectedCog = useSelector(getBrowserSelectedCog) || '';
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const shouldApplyToAll = applyToAllConfig.isSelected;
-  const shouldApplyToAllRef = useRef(shouldApplyToAll);
-
-  const selectedTrackConfigInfo = useSelector((state: RootState) =>
+  const browserCogList = useAppSelector(getBrowserCogList);
+  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const selectedTrackConfigInfo = useAppSelector((state: RootState) =>
     getTrackConfigForTrackId(state, selectedCog)
   );
+  const shouldApplyToAll = useAppSelector(getApplyToAllConfig).isSelected;
+  const shouldApplyToAllRef = useRef(shouldApplyToAll);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     shouldApplyToAllRef.current = shouldApplyToAll;
   }, [shouldApplyToAll]);
-
-  const dispatch = useDispatch();
 
   const {
     toggleTrackName,
@@ -68,6 +65,7 @@ const useBrowserTrackConfig = () => {
     if (!activeGenomeId) {
       return;
     }
+
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
@@ -219,10 +217,11 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const handleRadioChange = (value: OptionValue) => {
+  const toggleApplyToAll = (value: OptionValue) => {
     if (!activeGenomeId || !selectedTrackConfigInfo) {
       return;
     }
+
     const shouldShowTrackName = selectedTrackConfigInfo.showTrackName;
     const shouldShowFeatureLabel =
       selectedTrackConfigInfo.trackType === TrackType.GENE
@@ -235,7 +234,9 @@ const useBrowserTrackConfig = () => {
         isSelected: value === 'all_tracks'
       })
     );
+
     shouldApplyToAllRef.current = value === 'all_tracks';
+
     updateTrackName(shouldShowTrackName);
     updateTrackLabel(shouldShowFeatureLabel);
 
@@ -251,7 +252,7 @@ const useBrowserTrackConfig = () => {
     updateTrackLabel,
     updateShowSeveralTranscripts,
     updateShowTranscriptIds,
-    handleRadioChange
+    toggleApplyToAll
   };
 };
 
