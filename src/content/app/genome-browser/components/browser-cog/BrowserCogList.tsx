@@ -28,6 +28,8 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import BrowserCog from './BrowserCog';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
+import useBrowserCogList from './useBrowserCogList';
+
 import {
   getBrowserCogList,
   getBrowserSelectedCog
@@ -54,9 +56,19 @@ export const BrowserCogList = () => {
   const genomeIdRef = useRef(genomeId);
   const { genomeBrowser } = useGenomeBrowser();
 
+  useBrowserCogList();
+
   useEffect(() => {
     genomeIdRef.current = genomeId;
   }, [genomeId]);
+
+  useEffect(() => {
+    const subscription = genomeBrowser?.subscribe(
+      IncomingActionType.TRACK_SUMMARY,
+      (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
+    );
+    return () => subscription?.unsubscribe();
+  }, [genomeBrowser, genomeId, objectId]);
 
   const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
     if (!genomeIdRef.current || !objectId) {
@@ -89,31 +101,19 @@ export const BrowserCogList = () => {
     }
   };
 
-  useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.TRACK_SUMMARY,
-      (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
+  const handleCogSelect = (trackId: string | null) => {
+    dispatch(
+      updateSelectedCog({
+        genomeId: genomeIdRef.current as string,
+        selectedCog: trackId
+      })
     );
-    return () => subscription?.unsubscribe();
-  }, [genomeBrowser, genomeId, objectId]);
+  };
 
   const cogs =
     browserCogList &&
     Object.entries(browserCogList).map(([name, pos]) => {
       const posStyle = { top: `${pos}px` };
-
-      if (!genomeIdRef.current || !objectId) {
-        return;
-      }
-
-      const handleCogSelect = (trackId: string | null) => {
-        dispatch(
-          updateSelectedCog({
-            genomeId: genomeIdRef.current as string,
-            selectedCog: trackId
-          })
-        );
-      };
 
       return (
         <div key={name} className={styles.browserCogOuter} style={posStyle}>

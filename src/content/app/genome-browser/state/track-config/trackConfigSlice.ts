@@ -23,16 +23,12 @@ import {
 } from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
-import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
 
 import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
-import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 
 import type { RootState } from 'src/store';
 import type { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 
 export type CogList = {
   [key: string]: number;
@@ -63,9 +59,7 @@ export type TrackConfigs = {
 };
 
 export type TrackConfigsForGenome = Readonly<{
-  applyToAllConfig: {
-    isSelected?: boolean;
-  };
+  shouldApplyToAll: boolean;
   browserCogList: CogList;
   selectedCog: string | null;
   tracks: TrackConfigs;
@@ -76,9 +70,7 @@ export type GenomeTrackConfigs = {
 };
 
 export const defaultTrackConfigsForGenome: TrackConfigsForGenome = {
-  applyToAllConfig: {
-    isSelected: false
-  },
+  shouldApplyToAll: false,
   browserCogList: {},
   selectedCog: null,
   tracks: {}
@@ -97,21 +89,6 @@ export const getDefaultRegularTrackConfig = (): RegularTrackConfig => ({
   trackType: TrackType.REGULAR
 });
 
-export const loadTrackConfigsState: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const genomeId = getActiveGenomeId(state);
-
-  if (!genomeId) {
-    return;
-  }
-
-  const trackCategories = getGenomeTrackCategoriesById(state);
-
-  dispatch(setInitialTrackConfigsForGenome({ genomeId, trackCategories }));
-};
-
 export const updateTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, void, Action<string>>
 > = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
@@ -120,30 +97,14 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const getTrackConfigsForGenome = (
-  genomeId: string,
-  trackCategories: GenomeTrackCategory[]
-): TrackConfigsForGenome => {
-  return genomeId
-    ? {
-        ...defaultTrackConfigsForGenome,
-        ...prepareTrackConfigs(trackCategories),
-        ...getPersistentTrackConfigsForGenome(genomeId)
-      }
-    : defaultTrackConfigsForGenome;
+// TODO: get proper data from the backend in order not to hack track id
+export const getTrackType = (trackId: string) => {
+  if (trackId.startsWith('gene')) {
+    return TrackType.GENE;
+  } else {
+    return TrackType.REGULAR;
+  }
 };
-
-// export const getPersistentTrackConfigsForGenome = (
-//   genomeId: string
-// ): Partial<TrackConfigsForGenome> => {
-//   const trackConfigs = browserTrackConfigStorageService.getTrackConfigs();
-
-//   if (!genomeId || !trackConfigs[genomeId]) {
-//     return {};
-//   }
-
-//   return trackConfigs[genomeId];
-// };
 
 const browserTrackConfigSlice = createSlice({
   name: 'genome-browser-track-config',
@@ -153,19 +114,14 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        trackCategories: GenomeTrackCategory[] | null;
+        trackConfigs: Partial<TrackConfigsForGenome>;
       }>
     ) {
-      const { genomeId, trackCategories } = action.payload;
-
-      if (!state[genomeId] && trackCategories) {
-        state[genomeId] = getTrackConfigsForGenome(genomeId, trackCategories);
-
-        // browserTrackConfigStorageService.setTrackConfigs({
-        //   genomeId,
-        //   fragment: state[genomeId]
-        // });
-      }
+      const { genomeId, trackConfigs } = action.payload;
+      state[genomeId] = {
+        ...defaultTrackConfigsForGenome,
+        ...trackConfigs
+      };
     },
     updateCogList(
       state,
@@ -176,10 +132,6 @@ const browserTrackConfigSlice = createSlice({
     ) {
       const { genomeId, browserCogList } = action.payload;
       state[genomeId].browserCogList = browserCogList;
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment: { browserCogList }
-      });
     },
     updateSelectedCog(
       state,
@@ -190,10 +142,6 @@ const browserTrackConfigSlice = createSlice({
     ) {
       const { genomeId, selectedCog } = action.payload;
       state[genomeId].selectedCog = selectedCog;
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment: { selectedCog }
-      });
     },
     updateApplyToAll(
       state,
@@ -203,11 +151,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, isSelected } = action.payload;
-      state[genomeId].applyToAllConfig.isSelected = isSelected;
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment: { applyToAllConfig: { isSelected } }
-      });
+      state[genomeId].shouldApplyToAll = isSelected;
     },
     updateTrackName(
       state,
@@ -220,17 +164,6 @@ const browserTrackConfigSlice = createSlice({
       const { genomeId, selectedCog, isTrackNameShown } = action.payload;
       const trackConfigState = state[genomeId].tracks[selectedCog];
       trackConfigState.showTrackName = isTrackNameShown;
-      const fragment = {
-        tracks: {
-          [selectedCog]: {
-            ...trackConfigState
-          }
-        }
-      };
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment
-      });
     },
     updateFeatureLabel(
       state,
@@ -247,20 +180,7 @@ const browserTrackConfigSlice = createSlice({
         return;
       }
 
-      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
       trackConfigState.showFeatureLabel = isTrackLabelShown;
-
-      const fragment = {
-        tracks: {
-          [selectedCog]: {
-            ...trackConfigState
-          }
-        }
-      };
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment
-      });
     },
     updateShowSeveralTranscripts(
       state,
@@ -278,20 +198,7 @@ const browserTrackConfigSlice = createSlice({
         return;
       }
 
-      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
       trackConfigState.showSeveralTranscripts = isSeveralTranscriptsShown;
-
-      const fragment = {
-        tracks: {
-          [selectedCog]: {
-            ...trackConfigState
-          }
-        }
-      };
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment
-      });
     },
     updateShowTranscriptIds(
       state,
@@ -308,20 +215,7 @@ const browserTrackConfigSlice = createSlice({
         return;
       }
 
-      // TODO: check if trackConfigState is a reference and the actual state is not getting updated
       trackConfigState.showTranscriptIds = isTranscriptIdsShown;
-
-      const fragment = {
-        tracks: {
-          [selectedCog]: {
-            ...trackConfigState
-          }
-        }
-      };
-      browserTrackConfigStorageService.setTrackConfigs({
-        genomeId,
-        fragment
-      });
     },
     deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;

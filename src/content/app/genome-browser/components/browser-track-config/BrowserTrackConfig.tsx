@@ -47,7 +47,7 @@ const getTrackConfigComponent = (trackType: TrackType) => {
 };
 
 export const BrowserTrackConfig = () => {
-  const applyToAllConfig = useAppSelector(getApplyToAllConfig);
+  const shouldApplyToAll = useAppSelector(getApplyToAllConfig);
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const trackType = getTrackType(selectedCog);
   const { toggleApplyToAll } = useBrowserTrackConfig();
@@ -69,9 +69,7 @@ export const BrowserTrackConfig = () => {
         <RadioGroup
           options={radioOptions}
           onChange={toggleApplyToAll}
-          selectedOption={
-            applyToAllConfig.isSelected ? 'all_tracks' : 'this_track'
-          }
+          selectedOption={shouldApplyToAll ? 'all_tracks' : 'this_track'}
         />
       </div>
       {getTrackConfigComponent(trackType)}

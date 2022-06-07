@@ -19,6 +19,7 @@ import EnsemblGenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
 } from '@ensembl/ensembl-genome-browser';
+import cloneDeep from 'lodash/cloneDeep';
 
 import config from 'config';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
@@ -45,7 +46,7 @@ import { Status } from 'src/shared/types/status';
 const useGenomeBrowser = () => {
   const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const allTracksInfo = useAppSelector(getAllTrackConfigs);
+  const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
 
   if (!genomeBrowserContext) {
@@ -157,26 +158,21 @@ const useGenomeBrowser = () => {
       return;
     }
 
-    type TrackConfig = {
-      on: string[];
-      off: string[];
-    };
-    const trackStateForNames: TrackConfig = {
-      on: [],
-      off: []
-    };
-    const trackStateForLabels: TrackConfig = {
-      on: [],
-      off: []
+    const emptyOnOffLists = {
+      on: [] as string[],
+      off: [] as string[]
     };
 
-    allTracksInfo &&
-      Object.keys(allTracksInfo).forEach((key) => {
+    const trackStateForNames = cloneDeep(emptyOnOffLists);
+    const trackStateForLabels = cloneDeep(emptyOnOffLists);
+
+    trackConfigsForGenome &&
+      Object.keys(trackConfigsForGenome).forEach((key) => {
         let trackId = key;
         if (trackId.match('focus')) {
           trackId = 'focus';
         }
-        allTracksInfo[key].showTrackName
+        trackConfigsForGenome[key].showTrackName
           ? trackStateForNames.on.push(trackId)
           : trackStateForNames.off.push(trackId);
       });
@@ -195,13 +191,13 @@ const useGenomeBrowser = () => {
       }
     });
 
-    allTracksInfo &&
-      Object.keys(allTracksInfo).forEach((key) => {
+    trackConfigsForGenome &&
+      Object.keys(trackConfigsForGenome).forEach((key) => {
         let trackId = key;
         if (trackId.match('focus')) {
           trackId = 'focus';
         }
-        const trackInfo = allTracksInfo[key];
+        const trackInfo = trackConfigsForGenome[key];
         if (trackInfo.trackType === TrackType.GENE) {
           trackInfo.showFeatureLabel
             ? trackStateForLabels.on.push(trackId)
@@ -348,7 +344,7 @@ const useGenomeBrowser = () => {
       }
     });
 
-    const trackInfo = allTracksInfo && allTracksInfo[trackId];
+    const trackInfo = trackConfigsForGenome && trackConfigsForGenome[trackId];
 
     if (trackInfo && 'showFeatureLabel' in trackInfo && isTurnedOn) {
       genomeBrowser?.send({
@@ -362,7 +358,7 @@ const useGenomeBrowser = () => {
     }
 
     const allTrackNamesOn =
-      allTracksInfo && allTracksInfo[trackId]?.showTrackName;
+      trackConfigsForGenome && trackConfigsForGenome[trackId]?.showTrackName;
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: allTrackNamesOn

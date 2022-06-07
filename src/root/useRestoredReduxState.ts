@@ -25,7 +25,6 @@ import { loadInitialState as loadEntityViewerGeneralState } from 'src/content/ap
 import { restoreGeneViewTranscripts } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { loadBrowserGeneralState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { loadPreviouslyViewedObjects as loadPreviouslyViewedGenomeBrowserObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
-import { loadTrackConfigsState } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 // load redux state from browser storage once when the application mounts
 const useRestoredReduxState = () => {
@@ -41,7 +40,6 @@ const useRestoredReduxState = () => {
     // Genome browser
     dispatch(loadBrowserGeneralState());
     dispatch(loadPreviouslyViewedGenomeBrowserObjects());
-    dispatch(loadTrackConfigsState());
 
     // Entity Viewer
     dispatch(loadPreviouslyViewedEntities());

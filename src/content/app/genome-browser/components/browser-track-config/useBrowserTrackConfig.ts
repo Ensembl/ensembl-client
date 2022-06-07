@@ -46,7 +46,7 @@ const useBrowserTrackConfig = () => {
   const selectedTrackConfigInfo = useAppSelector((state: RootState) =>
     getTrackConfigForTrackId(state, selectedCog)
   );
-  const shouldApplyToAll = useAppSelector(getApplyToAllConfig).isSelected;
+  const shouldApplyToAll = useAppSelector(getApplyToAllConfig);
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
   const dispatch = useAppDispatch();
 

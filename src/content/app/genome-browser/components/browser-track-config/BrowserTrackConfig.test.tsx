@@ -22,8 +22,8 @@ import { Provider } from 'react-redux';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import * as trackConfigActions from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-import * as browserGeneralActions from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import * as trackConfigSlice from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import BrowserTrackConfig from './BrowserTrackConfig';
 
@@ -32,8 +32,8 @@ const selectedTrackId = 'gene-focus';
 const renderComponent = () => {
   const rootReducer = combineReducers({
     browser: combineReducers({
-      browserGeneral: browserGeneralActions.default,
-      trackConfig: trackConfigActions.default
+      browserGeneral: browserGeneralSlice.default,
+      trackConfig: trackConfigSlice.default
     })
   });
 
@@ -45,7 +45,7 @@ const renderComponent = () => {
         showTranscriptIds: false,
         showTrackName: false,
         showFeatureLabel: false,
-        trackType: trackConfigActions.TrackType.GENE
+        trackType: trackConfigSlice.TrackType.GENE
       }
     }
   };
@@ -54,13 +54,13 @@ const renderComponent = () => {
     browser: {
       browserGeneral: Object.assign(
         {},
-        browserGeneralActions.defaultBrowserGeneralState,
+        browserGeneralSlice.defaultBrowserGeneralState,
         { activeGenomeId: genomeId }
       ),
       trackConfig: {
         [genomeId]: Object.assign(
           {},
-          trackConfigActions.defaultTrackConfigsForGenome,
+          trackConfigSlice.defaultTrackConfigsForGenome,
           fragment
         )
       }
@@ -108,16 +108,16 @@ describe('<BrowserTrackConfig />', () => {
       const allTracksInputElement = allTracksLabel?.querySelector(
         'input'
       ) as HTMLElement;
-      jest.spyOn(trackConfigActions, 'updateApplyToAll');
+      jest.spyOn(trackConfigSlice, 'updateApplyToAll');
 
       await userEvent.click(allTracksInputElement);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateApplyToAll).toHaveBeenCalledWith({
+      expect(trackConfigSlice.updateApplyToAll).toHaveBeenCalledWith({
         genomeId,
         isSelected: true
       });
       expect(
-        updatedState.browser.trackConfig[genomeId].applyToAllConfig.isSelected
+        updatedState.browser.trackConfig[genomeId].shouldApplyToAll
       ).toBeTruthy();
     });
 
@@ -127,12 +127,12 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateTrackName');
+      jest.spyOn(trackConfigSlice, 'updateTrackName');
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateTrackName).toHaveBeenCalledTimes(1);
-      expect(trackConfigActions.updateTrackName).toHaveBeenCalledWith({
+      expect(trackConfigSlice.updateTrackName).toHaveBeenCalledTimes(1);
+      expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
         selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog
@@ -149,17 +149,17 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateFeatureLabel');
+      jest.spyOn(trackConfigSlice, 'updateFeatureLabel');
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigActions.updateFeatureLabel).toHaveBeenCalledWith({
+      expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
         isTrackLabelShown: true,
         selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog
       });
       const trackInfo =
         updatedState.browser.trackConfig[genomeId].tracks[selectedTrackId];
-      if (trackInfo.trackType === trackConfigActions.TrackType.GENE) {
+      if (trackInfo.trackType === trackConfigSlice.TrackType.GENE) {
         expect(trackInfo.showFeatureLabel).toBeTruthy();
       }
     });
