@@ -48,6 +48,7 @@ const useGenomeBrowser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
+  const trackConfigs = trackConfigsForGenome?.tracks;
 
   if (!genomeBrowserContext) {
     throw new Error(
@@ -166,13 +167,13 @@ const useGenomeBrowser = () => {
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
-    trackConfigsForGenome &&
-      Object.keys(trackConfigsForGenome).forEach((key) => {
+    trackConfigs &&
+      Object.keys(trackConfigs).forEach((key) => {
         let trackId = key;
         if (trackId.match('focus')) {
           trackId = 'focus';
         }
-        trackConfigsForGenome[key].showTrackName
+        trackConfigs[key].showTrackName
           ? trackStateForNames.on.push(trackId)
           : trackStateForNames.off.push(trackId);
       });
@@ -191,13 +192,13 @@ const useGenomeBrowser = () => {
       }
     });
 
-    trackConfigsForGenome &&
-      Object.keys(trackConfigsForGenome).forEach((key) => {
+    trackConfigs &&
+      Object.keys(trackConfigs).forEach((key) => {
         let trackId = key;
         if (trackId.match('focus')) {
           trackId = 'focus';
         }
-        const trackInfo = trackConfigsForGenome[key];
+        const trackInfo = trackConfigs[key];
         if (trackInfo.trackType === TrackType.GENE) {
           trackInfo.showFeatureLabel
             ? trackStateForLabels.on.push(trackId)
@@ -344,7 +345,7 @@ const useGenomeBrowser = () => {
       }
     });
 
-    const trackInfo = trackConfigsForGenome && trackConfigsForGenome[trackId];
+    const trackInfo = trackConfigs && trackConfigs[trackId];
 
     if (trackInfo && 'showFeatureLabel' in trackInfo && isTurnedOn) {
       genomeBrowser?.send({
@@ -358,7 +359,7 @@ const useGenomeBrowser = () => {
     }
 
     const allTrackNamesOn =
-      trackConfigsForGenome && trackConfigsForGenome[trackId]?.showTrackName;
+      trackConfigs && trackConfigs[trackId]?.showTrackName;
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: allTrackNamesOn

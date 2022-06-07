@@ -39,7 +39,7 @@ export class TrackConfigStorageService {
 
   public setTrackConfigs(params: {
     genomeId: string;
-    fragment: Partial<TrackConfigsForGenome> | undefined;
+    fragment: Partial<TrackConfigsForGenome>;
   }) {
     const { genomeId, fragment } = params;
     this.storageService.update(StorageKeys.TRACK_CONFIGS, {

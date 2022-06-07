@@ -47,7 +47,7 @@ export const getAllTrackConfigs = (state: RootState) => {
   if (!genomeId || !state.browser.trackConfig[genomeId]) {
     return null;
   }
-  return state.browser.trackConfig[genomeId].tracks;
+  return state.browser.trackConfig[genomeId];
 };
 
 export const getApplyToAllConfig = (state: RootState) => {

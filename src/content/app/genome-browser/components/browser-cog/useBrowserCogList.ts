@@ -79,7 +79,6 @@ const useBrowserCogList = () => {
       'shouldApplyToAll',
       'tracks'
     ]);
-
     browserTrackConfigStorageService.setTrackConfigs({
       genomeId,
       fragment
