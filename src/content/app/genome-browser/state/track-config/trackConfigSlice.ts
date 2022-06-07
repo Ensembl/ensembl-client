@@ -23,7 +23,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
-import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browser-track-config-storage-service';
+import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
 
 import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -356,6 +356,10 @@ const browserTrackConfigSlice = createSlice({
         genomeId,
         fragment
       });
+    },
+    deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
+      const genomeId = action.payload;
+      delete state[genomeId];
     }
   }
 });
@@ -368,7 +372,8 @@ export const {
   updateTrackName,
   updateFeatureLabel,
   updateShowSeveralTranscripts,
-  updateShowTranscriptIds
+  updateShowTranscriptIds,
+  deleteTrackConfigsForGenome
 } = browserTrackConfigSlice.actions;
 
 export default browserTrackConfigSlice.reducer;

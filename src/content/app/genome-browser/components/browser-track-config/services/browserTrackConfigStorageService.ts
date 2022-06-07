@@ -48,10 +48,7 @@ export class TrackConfigStorageService {
   }
 
   public deleteTrackConfigs(genomeId: string): void {
-    this.setTrackConfigs({
-      genomeId,
-      fragment: undefined
-    });
+    return this.storageService.removeAt(StorageKeys.TRACK_CONFIGS, genomeId);
   }
 }
 
