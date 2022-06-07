@@ -2,12 +2,16 @@
 @import 'src/styles/mixins';
 
 .species {
-  @include lozenge;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 20px;
   border-width: 1px;
+  border-radius: 20px;
   border-style: solid;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  user-select: none;
 }
 
 .themeBlue {
@@ -44,12 +48,20 @@
   cursor: pointer;
 }
 
+.inner {
+  display: flex;
+  align-items: baseline;
+  column-gap: 10px;
+  white-space: nowrap;
+}
+
 .name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: $bold;
-  margin-right: 0.5rem;
+  line-height: 1;
 }
 
 .assembly {
   font-size: 11px;
+  line-height: 1;
 }

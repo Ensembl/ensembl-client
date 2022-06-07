@@ -65,8 +65,10 @@ const SelectedSpeciesLozenge = (props: Props) => {
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <span className={styles.name}>{displayName}</span>
-      <span className={styles.assembly}>{props.species.assembly_name}</span>
+      <div className={styles.inner}>
+        <span className={styles.name}>{displayName}</span>
+        <span className={styles.assembly}>{props.species.assembly_name}</span>
+      </div>
     </div>
   );
 };
