@@ -43,14 +43,6 @@ export enum TrackType {
   REGULAR = 'regular'
 }
 
-export const getTrackType = (trackId: string) => {
-  if (trackId.startsWith('gene')) {
-    return TrackType.GENE;
-  } else {
-    return TrackType.REGULAR;
-  }
-};
-
 export type GeneTrackConfig = {
   showSeveralTranscripts: boolean;
   showTranscriptIds: boolean;
@@ -128,32 +120,6 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const prepareTrackConfigs = (trackCategories: GenomeTrackCategory[]) => {
-  const defaultTrackConfigs: TrackConfigs = {};
-
-  defaultTrackConfigs['gene-focus'] = {
-    showSeveralTranscripts: false,
-    showTranscriptIds: false,
-    showTrackName: false,
-    showFeatureLabel: true,
-    trackType: TrackType.GENE
-  };
-
-  trackCategories.forEach((category) => {
-    category.track_list.forEach((track) => {
-      const trackId = track.track_id.replace('track:', '');
-      const trackType = getTrackType(trackId);
-
-      if (trackType === TrackType.GENE) {
-        defaultTrackConfigs[trackId] = getDefaultGeneTrackConfig();
-      } else {
-        defaultTrackConfigs[trackId] = getDefaultRegularTrackConfig();
-      }
-    });
-  });
-  return { tracks: defaultTrackConfigs };
-};
-
 export const getTrackConfigsForGenome = (
   genomeId: string,
   trackCategories: GenomeTrackCategory[]
@@ -167,17 +133,17 @@ export const getTrackConfigsForGenome = (
     : defaultTrackConfigsForGenome;
 };
 
-export const getPersistentTrackConfigsForGenome = (
-  genomeId: string
-): Partial<TrackConfigsForGenome> => {
-  const trackConfigs = browserTrackConfigStorageService.getTrackConfigs();
+// export const getPersistentTrackConfigsForGenome = (
+//   genomeId: string
+// ): Partial<TrackConfigsForGenome> => {
+//   const trackConfigs = browserTrackConfigStorageService.getTrackConfigs();
 
-  if (!genomeId || !trackConfigs[genomeId]) {
-    return {};
-  }
+//   if (!genomeId || !trackConfigs[genomeId]) {
+//     return {};
+//   }
 
-  return trackConfigs[genomeId];
-};
+//   return trackConfigs[genomeId];
+// };
 
 const browserTrackConfigSlice = createSlice({
   name: 'genome-browser-track-config',
@@ -195,10 +161,10 @@ const browserTrackConfigSlice = createSlice({
       if (!state[genomeId] && trackCategories) {
         state[genomeId] = getTrackConfigsForGenome(genomeId, trackCategories);
 
-        browserTrackConfigStorageService.setTrackConfigs({
-          genomeId,
-          fragment: state[genomeId]
-        });
+        // browserTrackConfigStorageService.setTrackConfigs({
+        //   genomeId,
+        //   fragment: state[genomeId]
+        // });
       }
     },
     updateCogList(
