@@ -16,7 +16,7 @@
 
 import { PrivacyBannerService } from './privacy-banner-service';
 import privacyConfig from './privacyConfig';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 const mockStorageService = {
   get: jest.fn(),

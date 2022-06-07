@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { render, screen } from '@testing-library/react';
 
 import apiService from 'src/services/api-service';
@@ -59,8 +59,9 @@ const TestingComponent = (props: TestingComponentProps) => {
     endpoint: mockEndpoint,
     ...props
   };
-  const { loadingState, data, error } =
-    useApiService<{ message: string }>(params);
+  const { loadingState, data, error } = useApiService<{ message: string }>(
+    params
+  );
 
   if (loadingState === LoadingState.NOT_REQUESTED) {
     return <div>Data not requested</div>;

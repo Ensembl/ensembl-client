@@ -91,3 +91,25 @@
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
+
+.toolsIconWrapper {
+  position: relative;
+}
+
+.notification {
+  border-radius: 10px;
+  height: var(--launchbar-notification-size, 18px);
+  width: var(--launchbar-notification-size, 18px);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+
+  &Red {
+    background-color: $red;
+  }
+
+  &Green {
+    background-color: $green;
+  }
+}

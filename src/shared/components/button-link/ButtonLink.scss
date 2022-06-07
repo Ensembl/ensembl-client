@@ -3,6 +3,7 @@
 .buttonLink {
   display: inline-block;
   padding: var(--button-link-padding, 7px 18px);
+  line-height: var(--button-link-line-height, 1);
   border-radius: var(--button-link-border-radius, 4px);
   border: var(--button-link-border, 1px solid #{$blue});
   background-color: var(--button-link-background-color, #{$blue});

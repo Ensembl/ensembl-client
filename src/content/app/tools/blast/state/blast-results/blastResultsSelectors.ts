@@ -18,3 +18,9 @@ import { RootState } from 'src/store';
 
 export const getBlastSubmissions = (state: RootState) =>
   state.blast.blastResults;
+
+export const getUnviewedBlastSubmissions = (state: RootState) => {
+  return Object.values(getBlastSubmissions(state)).filter(
+    (submission) => !submission.seen
+  );
+};

@@ -74,6 +74,7 @@ export const GeneSequenceView = (props: Props) => {
 
   return (
     <DrawerSequenceView
+      genomeId={genomeId}
       isExpanded={isExpanded}
       isError={isError}
       isLoading={isFetching}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 
 import type {
@@ -22,12 +22,9 @@ import type {
   BlastSubmissionResponse,
   SubmittedJob
 } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import type {
-  BlastSubmission,
-  JobStatus
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type { JobStatus } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
-export const createBlastSubmission = (
+export const createBlastSubmissionPayload = (
   fragment: Partial<BlastSubmissionPayload> = {}
 ): BlastSubmissionPayload => {
   const human = {
@@ -83,43 +80,3 @@ export const createFinishedJobStatusResponse = (): { status: JobStatus } => ({
 export const createFailedJobStatusResponse = (): { status: JobStatus } => ({
   status: 'FAILURE'
 });
-
-export const createStoredBlastSubmission = (
-  fragment: Partial<BlastSubmission> = {}
-): BlastSubmission => {
-  const human = {
-    genome_id: 'human-genome-id',
-    common_name: 'Human',
-    scientific_name: 'Homo sapiens',
-    assembly_name: 'grch38'
-  };
-
-  const submission = {
-    submittedData: {
-      species: [human],
-      sequences: [{ id: 1, value: 'ACGT' }],
-      parameters: {}
-    },
-    results: [createStoredBlastJobResult()],
-    submittedAt: Date.now()
-  };
-
-  return {
-    ...submission,
-    ...fragment
-  };
-};
-
-export const createStoredBlastJobResult = (
-  fragment: Partial<BlastSubmission['results'][0]> = {}
-) => {
-  return {
-    jobId: faker.datatype.uuid(),
-    sequenceId: 1,
-    genomeId: 'human-genome-id',
-    status: 'RUNNING' as JobStatus,
-    seen: false,
-    data: null,
-    ...fragment
-  };
-};

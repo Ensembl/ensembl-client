@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useQuestionButtonBehaviour } from './useQuestionButtonBehaviour';
+import { useShowTooltip } from 'src/shared/hooks/useShowTooltip';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
@@ -38,12 +38,8 @@ type Props = {
 };
 
 const QuestionButton = (props: Props) => {
-  const {
-    questionButtonRef,
-    onClick,
-    onTooltipCloseSignal,
-    shouldShowTooltip
-  } = useQuestionButtonBehaviour();
+  const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
+    useShowTooltip();
 
   const className = classNames(
     defaultStyles.questionButton,
@@ -54,11 +50,11 @@ const QuestionButton = (props: Props) => {
   );
 
   return (
-    <div ref={questionButtonRef} className={className} onClick={onClick}>
+    <div ref={elementRef} className={className} onClick={onClick}>
       <QuestionIcon />
       {shouldShowTooltip && (
         <Tooltip
-          anchor={questionButtonRef.current}
+          anchor={elementRef.current}
           autoAdjust={true}
           onClose={onTooltipCloseSignal}
           delay={0}

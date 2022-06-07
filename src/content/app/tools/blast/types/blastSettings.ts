@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-const blastParameterNames = [
-  'database',
-  'program',
-  'alignments',
-  'scores',
-  'hsps',
-  'dropoff',
-  'gapalign',
-  'gapopen',
-  'gapext',
-  'filter',
-  'compstats',
-  'exp',
-  'match_scores',
-  'wordsize',
-  'matrix'
-] as const;
+export type MandatoryBlastParameterName =
+  | 'database'
+  | 'program'
+  | 'alignments'
+  | 'scores'
+  | 'hsps'
+  | 'dropoff'
+  | 'gapalign'
+  | 'gapopen'
+  | 'gapext'
+  | 'filter'
+  | 'compstats'
+  | 'exp'
+  | 'wordsize';
 
-export type BlastParameterName = typeof blastParameterNames[number];
+export type OptionalBlastParameterName =
+  | 'match_scores' // only for searches against nucleotide databases
+  | 'matrix'; // only for searches against protein databases
+
+export type BlastParameterName =
+  | MandatoryBlastParameterName
+  | OptionalBlastParameterName;
 export type SequenceType = 'dna' | 'protein';
 type DatabaseType = 'cdna' | 'dna' | 'pep';
 export type BlastProgram =
@@ -86,7 +89,7 @@ type ProgramConfiguration = {
 };
 
 type ProgramParametersOverride = {
-  [BlastParameterName: string]: {
+  [blastParameterName: string]: {
     [program: string]: {
       options: Option[];
     };

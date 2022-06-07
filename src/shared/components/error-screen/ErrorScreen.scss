@@ -46,7 +46,8 @@
   font-size: 12px;
 }
 
-.reloadButton, .homeButton {
+.reloadButton,
+.homeButton {
   padding-top: 40px;
 }
 
@@ -91,21 +92,19 @@
       margin-left: 25px;
     }
   }
-  
-  .vennIntersection{
+
+  .vennIntersection {
     padding-left: 19px;
-    .infoText{
+    .infoText {
       font-size: 18px;
       font-weight: bold;
     }
-    
+
     .infoIcon {
       svg {
-        fill: $red;
-        width: 24px;
-        height: 24px;
+        --alert-icon-width: 20px;
+        --alert-icon-height: 20px;
       }
     }
   }
-  
 }

@@ -1,10 +1,8 @@
 .blastViewsNavigation {
   display: grid;
   grid-template-columns: [left] auto [right] 1fr;
-  height: 74px; // this isn't ideal; but 100% won't work because the parent container only has a min-height
   align-items: center;
-  max-width: 1810px; // TODO: this is max width of the two-column blast form; set it to a constant
-  padding-right: 20px; // same as in the app bar above
+  max-width: 1800px; // TODO: this is max width of the two-column blast form; set it to a constant
 }
 
 .title {

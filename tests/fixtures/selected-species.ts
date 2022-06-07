@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
-export const createSelectedSpecies = () => ({
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+export const createSelectedSpecies = (
+  fragment: Partial<CommittedItem> = {}
+) => ({
   genome_id: faker.datatype.uuid(),
   reference_genome_id: null,
   common_name: null,
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),
-  isEnabled: true
+  isEnabled: true,
+  ...fragment
 });

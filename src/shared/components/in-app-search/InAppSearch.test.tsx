@@ -17,7 +17,7 @@
 import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { render, waitFor, act } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as inAppSearchSlice from 'src/shared/state/in-app-search/inAppSearchSlice';
@@ -123,10 +123,7 @@ describe('<InAppSearch />', () => {
       ) as HTMLInputElement;
 
       await userEvent.type(searchField, 'BRCA2');
-      await act(async () => {
-        // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
-        await userEvent.type(searchField, '{enter}');
-      });
+      await userEvent.type(searchField, '{enter}');
 
       const [search1Args] = (inAppSearchSlice.search as any).mock.calls[0];
       expect(search1Args).toEqual({
@@ -148,10 +145,7 @@ describe('<InAppSearch />', () => {
 
       // also, let's try to submit the search by pressing on the button
       const submitButton = container.querySelector('button') as HTMLElement;
-      await act(async () => {
-        // this starts an async process that causes component's state update; therefore should be wrapped in 'act'
-        await userEvent.click(submitButton);
-      });
+      await userEvent.click(submitButton);
 
       const [search2Args] = (inAppSearchSlice.search as any).mock.calls[1];
       expect(search2Args).toEqual({

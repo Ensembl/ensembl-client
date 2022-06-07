@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import Panel from 'src/shared/components/panel/Panel';
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';

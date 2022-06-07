@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';

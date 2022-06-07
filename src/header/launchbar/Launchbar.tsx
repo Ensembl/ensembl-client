@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+
+import { useAppSelector } from 'src/store';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -27,11 +28,11 @@ import {
   SpeciesSelectorIcon,
   GlobalSearchIcon,
   EntityViewerIcon,
-  BlastIcon,
   CustomDownloadIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
+import BlastLaunchbarButton from './BlastLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
@@ -42,7 +43,7 @@ export const getCategoryClass = (separator: boolean): string => {
 };
 
 const Launchbar = () => {
-  const committedSpecies = useSelector(getEnabledCommittedSpecies);
+  const committedSpecies = useAppSelector(getEnabledCommittedSpecies);
 
   return (
     <div className={styles.launchbar}>
@@ -50,13 +51,13 @@ const Launchbar = () => {
         <div className={styles.categories}>
           <div className={styles.category}>
             <LaunchbarButton
-              app="global-search"
+              path="/global-search"
               description="Site search"
               icon={GlobalSearchIcon}
               enabled={false}
             />
             <LaunchbarButton
-              app="species-selector"
+              path="/species-selector"
               description="Species selector"
               icon={SpeciesSelectorIcon}
               enabled={true}
@@ -64,7 +65,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <LaunchbarButton
-              app="genome-browser"
+              path="/genome-browser"
               description="Genome browser"
               icon={GenomeBrowserIcon}
               enabled={true}
@@ -72,7 +73,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <LaunchbarButton
-              app="entity-viewer"
+              path="/entity-viewer"
               description="Entity Viewer"
               icon={EntityViewerIcon}
               enabled={true}
@@ -80,18 +81,13 @@ const Launchbar = () => {
           </div>
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
-              <LaunchbarButton
-                app="blast"
-                description="BLAST"
-                icon={BlastIcon}
-                enabled={true}
-              />
+              <BlastLaunchbarButton />
             </div>
           )}
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
               <LaunchbarButton
-                app="custom-download"
+                path="/custom-download"
                 description="Downloads"
                 icon={CustomDownloadIcon}
                 enabled={committedSpecies.length > 0}
@@ -100,7 +96,7 @@ const Launchbar = () => {
           )}
           <div className={styles.category}>
             <LaunchbarButton
-              app="help"
+              path="/help"
               description="Help & documentation"
               icon={HelpIcon}
               enabled={true}

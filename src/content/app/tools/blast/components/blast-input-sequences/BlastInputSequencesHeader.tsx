@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -22,14 +23,10 @@ import {
   getUncommittedSequencePresence
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import {
-  updateEmptyInputDisplay,
-  switchToSpeciesStep
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import useBlastInputSequences from './useBlastInputSequences';
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
-import { SecondaryButton } from 'src/shared/components/button/Button';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
@@ -47,7 +44,7 @@ export type Props = {
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
-    useBlastInputSequences();
+    useBlastForm();
 
   const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
   const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
@@ -61,8 +58,8 @@ const BlastInputSequencesHeader = (props: Props) => {
     setTimeout(() => scrollToLastInputBox(), 0);
   };
 
-  const onSwitchToSpecies = () => {
-    dispatch(switchToSpeciesStep());
+  const onSequenceTypeChange = (sequenceType: SequenceType) => {
+    updateSequenceType({ sequenceType });
   };
 
   const scrollToLastInputBox = () => {
@@ -81,16 +78,26 @@ const BlastInputSequencesHeader = (props: Props) => {
     ? sequences.length + 1
     : sequences.length;
 
+  const sequenceCounterClass = classNames(styles.sequenceCounter, {
+    [styles.sequenceCounterError]: sequences.length > MAX_BLAST_SEQUENCE_COUNT
+  });
+
+  const headerClass = classNames(styles.header, {
+    [styles.smallScreenHeader]: compact
+  });
+
   return (
-    <div className={styles.header}>
+    <div className={headerClass}>
       <div className={styles.headerGroup}>
         <span className={styles.headerTitle}>Sequences</span>
-        <span className={styles.sequenceCounter}>{sequencesCount}</span>
-        <span className={styles.maxSequences}>of 30</span>
+        <span className={sequenceCounterClass}>{sequencesCount}</span>
+        <span className={styles.maxSequences}>
+          of {MAX_BLAST_SEQUENCE_COUNT}
+        </span>
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
-        onChange={updateSequenceType}
+        onChange={onSequenceTypeChange}
       />
       <div className={styles.headerGroup}>
         <span className={styles.clearAll} onClick={clearAllSequences}>
@@ -100,14 +107,6 @@ const BlastInputSequencesHeader = (props: Props) => {
           onAdd={appendEmptyInput}
           disabled={!shouldEnableAddButton}
         />
-        {compact && (
-          <SecondaryButton
-            className={styles.blastAgainstButton}
-            onClick={onSwitchToSpecies}
-          >
-            Blast against
-          </SecondaryButton>
-        )}
       </div>
     </div>
   );
