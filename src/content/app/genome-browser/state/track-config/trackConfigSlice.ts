@@ -21,8 +21,10 @@ import {
   type PayloadAction,
   type ThunkAction
 } from '@reduxjs/toolkit';
+import pick from 'lodash/pick';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
 
 import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -95,6 +97,22 @@ export const updateTrackStatesAndSave: ActionCreator<
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
+};
+
+export const saveTrackConfigsForGenome: ActionCreator<
+  ThunkAction<void, any, void, Action<string>>
+> = (genomeId: string) => (_, getState: () => RootState) => {
+  const state = getState();
+  const trackConfigsForGenome = state.browser.trackConfig[genomeId];
+  const fieldsForSaving = pick(trackConfigsForGenome, [
+    'shouldApplyToAll',
+    'tracks'
+  ]);
+
+  browserTrackConfigStorageService.setTrackConfigs({
+    genomeId,
+    fragment: fieldsForSaving
+  });
 };
 
 // TODO: get proper data from the backend in order not to hack track id

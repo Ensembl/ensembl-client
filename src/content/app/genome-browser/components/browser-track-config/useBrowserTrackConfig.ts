@@ -30,6 +30,7 @@ import {
   updateShowSeveralTranscripts as updateTrackConfigShowSeveralTranscripts,
   updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
   updateApplyToAll,
+  saveTrackConfigsForGenome,
   TrackType
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
@@ -91,6 +92,8 @@ const useBrowserTrackConfig = () => {
       });
     }
 
+    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
@@ -131,6 +134,8 @@ const useBrowserTrackConfig = () => {
       });
     }
 
+    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
@@ -169,6 +174,8 @@ const useBrowserTrackConfig = () => {
         shouldShowSeveralTranscripts: isSeveralTranscriptsShown
       });
     }
+
+    dispatch(saveTrackConfigsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -209,6 +216,8 @@ const useBrowserTrackConfig = () => {
         shouldShowTranscriptIds: isTranscriptIdsShown
       });
     }
+
+    dispatch(saveTrackConfigsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',

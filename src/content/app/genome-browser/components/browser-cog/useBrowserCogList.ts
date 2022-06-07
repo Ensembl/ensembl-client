@@ -15,7 +15,6 @@
  */
 
 import { useEffect } from 'react';
-import pick from 'lodash/pick';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -26,7 +25,6 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getAllTrackConfigs } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 
 import {
   setInitialTrackConfigsForGenome,
@@ -45,7 +43,6 @@ const useBrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const trackCategories = useAppSelector(getGenomeTrackCategories);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
-  const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
 
   const dispatch = useAppDispatch();
 
@@ -73,17 +70,6 @@ const useBrowserCogList = () => {
 
     dispatch(setInitialTrackConfigsForGenome({ genomeId, trackConfigs }));
   }, [trackCategories, focusObject]);
-
-  useEffect(() => {
-    const fragment = pick(trackConfigsForGenome, [
-      'shouldApplyToAll',
-      'tracks'
-    ]);
-    browserTrackConfigStorageService.setTrackConfigs({
-      genomeId,
-      fragment
-    });
-  }, [trackConfigsForGenome]);
 };
 
 export const getPersistentTrackConfigsForGenome = (
