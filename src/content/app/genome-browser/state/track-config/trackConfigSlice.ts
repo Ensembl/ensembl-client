@@ -162,24 +162,12 @@ const browserTrackConfigSlice = createSlice({
         ...trackConfigs
       };
     },
-    updateCogList(
-      state,
-      action: PayloadAction<{
-        genomeId: string; // FIXME: not needed
-        browserCogList: CogList;
-      }>
-    ) {
-      const { browserCogList } = action.payload;
+    updateCogList(state, action: PayloadAction<CogList>) {
+      const browserCogList = action.payload;
       state.browserTrackCogs.cogList = browserCogList;
     },
-    updateSelectedCog(
-      state,
-      action: PayloadAction<{
-        genomeId: string; // FIXME: not needed
-        selectedCog: string | null;
-      }>
-    ) {
-      const { selectedCog } = action.payload;
+    updateSelectedCog(state, action: PayloadAction<string | null>) {
+      const selectedCog = action.payload;
       state.browserTrackCogs.selectedCog = selectedCog;
     },
     updateApplyToAll(

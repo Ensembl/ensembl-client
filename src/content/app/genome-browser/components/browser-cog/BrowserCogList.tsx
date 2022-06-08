@@ -89,21 +89,16 @@ export const BrowserCogList = () => {
       }
     });
 
-    dispatch(
-      updateCogList({
-        genomeId,
-        browserCogList: cogList
-      })
-    );
+    dispatch(updateCogList(cogList));
   };
 
+  useEffect(() => {
+    // make sure to close the floating track config panel if the user switches to a different species
+    dispatch(updateSelectedCog(null));
+  }, [genomeId]);
+
   const handleCogSelect = (trackId: string | null) => {
-    dispatch(
-      updateSelectedCog({
-        genomeId,
-        selectedCog: trackId
-      })
-    );
+    dispatch(updateSelectedCog(trackId));
   };
 
   const cogs =

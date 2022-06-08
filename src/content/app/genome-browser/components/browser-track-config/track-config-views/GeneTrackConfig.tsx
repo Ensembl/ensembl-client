@@ -33,14 +33,11 @@ export const GeneTrackConfig = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const selectedTrackConfig = useAppSelector(
     (state: RootState) =>
-      getTrackConfigsForTrackId(state, selectedCog) as GeneTrackConfigType
+      getTrackConfigsForTrackId(
+        state,
+        selectedCog
+      ) as GeneTrackConfigType | null
   );
-
-  const shouldShowTrackName = selectedTrackConfig.showTrackName;
-  const shouldShowTrackLabel = selectedTrackConfig.showFeatureLabel;
-  const shouldShowSeveralTranscripts =
-    selectedTrackConfig.showSeveralTranscripts;
-  const shouldShowTranscriptIDs = selectedTrackConfig.showTranscriptIds;
 
   const {
     updateTrackName,
@@ -48,6 +45,16 @@ export const GeneTrackConfig = () => {
     updateShowSeveralTranscripts,
     updateShowTranscriptIds
   } = useBrowserTrackConfig();
+
+  if (!selectedTrackConfig) {
+    return null;
+  }
+
+  const shouldShowTrackName = selectedTrackConfig.showTrackName;
+  const shouldShowTrackLabel = selectedTrackConfig.showFeatureLabel;
+  const shouldShowSeveralTranscripts =
+    selectedTrackConfig.showSeveralTranscripts;
+  const shouldShowTranscriptIDs = selectedTrackConfig.showTranscriptIds;
 
   return (
     <div className={styles.section}>
