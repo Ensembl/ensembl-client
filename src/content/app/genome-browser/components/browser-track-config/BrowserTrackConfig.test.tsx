@@ -58,11 +58,17 @@ const renderComponent = () => {
         { activeGenomeId: genomeId }
       ),
       trackConfig: {
-        [genomeId]: Object.assign(
-          {},
-          trackConfigSlice.defaultTrackConfigsForGenome,
-          fragment
-        )
+        browserTrackCogs: {
+          cogList: {},
+          selectedCog: null
+        },
+        configs: {
+          [genomeId]: Object.assign(
+            {},
+            trackConfigSlice.defaultTrackConfigsForGenome,
+            fragment
+          )
+        }
       }
     }
   };
@@ -117,7 +123,7 @@ describe('<BrowserTrackConfig />', () => {
         isSelected: true
       });
       expect(
-        updatedState.browser.trackConfig[genomeId].shouldApplyToAll
+        updatedState.browser.trackConfig.configs[genomeId].shouldApplyToAll
       ).toBeTruthy();
     });
 
@@ -135,11 +141,13 @@ describe('<BrowserTrackConfig />', () => {
       expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog
+        selectedCog:
+          updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       expect(
-        updatedState.browser.trackConfig[genomeId].tracks[selectedTrackId]
-          .showTrackName
+        updatedState.browser.trackConfig.configs[genomeId].tracks[
+          selectedTrackId
+        ].showTrackName
       ).toBeTruthy();
     });
 
@@ -155,10 +163,13 @@ describe('<BrowserTrackConfig />', () => {
       expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
         isTrackLabelShown: true,
-        selectedCog: updatedState.browser.trackConfig[genomeId].selectedCog
+        selectedCog:
+          updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       const trackInfo =
-        updatedState.browser.trackConfig[genomeId].tracks[selectedTrackId];
+        updatedState.browser.trackConfig.configs[genomeId].tracks[
+          selectedTrackId
+        ];
       if (trackInfo.trackType === trackConfigSlice.TrackType.GENE) {
         expect(trackInfo.showFeatureLabel).toBeTruthy();
       }
