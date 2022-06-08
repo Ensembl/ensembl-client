@@ -34,7 +34,10 @@ export const getBrowserSelectedCog = (state: RootState) => {
   }
   return state.browser.trackConfig[genomeId].selectedCog;
 };
-export const getTrackConfigForTrackId = (state: RootState, trackId: string) => {
+export const getTrackConfigsForTrackId = (
+  state: RootState,
+  trackId: string
+) => {
   const genomeId = getBrowserActiveGenomeId(state);
   if (!genomeId || !state.browser.trackConfig[genomeId]) {
     return null;

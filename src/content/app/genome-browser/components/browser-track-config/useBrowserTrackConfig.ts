@@ -19,7 +19,7 @@ import { useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
-  getTrackConfigForTrackId,
+  getTrackConfigsForTrackId,
   getApplyToAllConfig,
   getBrowserCogList,
   getBrowserSelectedCog
@@ -44,8 +44,8 @@ const useBrowserTrackConfig = () => {
   const browserCogList = useAppSelector(getBrowserCogList);
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const selectedTrackConfigInfo = useAppSelector((state: RootState) =>
-    getTrackConfigForTrackId(state, selectedCog)
+  const selectedTrackConfigs = useAppSelector((state: RootState) =>
+    getTrackConfigsForTrackId(state, selectedCog)
   );
   const shouldApplyToAll = useAppSelector(getApplyToAllConfig);
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
@@ -227,14 +227,19 @@ const useBrowserTrackConfig = () => {
   };
 
   const toggleApplyToAll = (value: OptionValue) => {
-    if (!activeGenomeId || !selectedTrackConfigInfo) {
+    if (!activeGenomeId || !selectedTrackConfigs) {
       return;
     }
 
-    const shouldShowTrackName = selectedTrackConfigInfo.showTrackName;
+    const shouldShowTrackName = selectedTrackConfigs.showTrackName;
     const shouldShowFeatureLabel =
-      selectedTrackConfigInfo.trackType === TrackType.GENE
-        ? selectedTrackConfigInfo.showFeatureLabel
+      selectedTrackConfigs.trackType === TrackType.GENE
+        ? selectedTrackConfigs.showFeatureLabel
+        : false;
+
+    const shouldShowSeveralTranscripts =
+      selectedTrackConfigs.trackType === TrackType.GENE
+        ? selectedTrackConfigs.showSeveralTranscripts
         : false;
 
     dispatch(
@@ -248,6 +253,7 @@ const useBrowserTrackConfig = () => {
 
     updateTrackName(shouldShowTrackName);
     updateTrackLabel(shouldShowFeatureLabel);
+    updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
 
     analyticsTracking.trackEvent({
       category: 'track_settings',

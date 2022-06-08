@@ -22,7 +22,7 @@ import { useAppSelector, type RootState } from 'src/store';
 import { type GeneTrackConfig as GeneTrackConfigType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import {
   getBrowserSelectedCog,
-  getTrackConfigForTrackId
+  getTrackConfigsForTrackId
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 
 import useBrowserTrackConfig from '../useBrowserTrackConfig';
@@ -33,7 +33,7 @@ export const GeneTrackConfig = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const selectedTrackConfig = useAppSelector(
     (state: RootState) =>
-      getTrackConfigForTrackId(state, selectedCog) as GeneTrackConfigType
+      getTrackConfigsForTrackId(state, selectedCog) as GeneTrackConfigType
   );
 
   const shouldShowTrackName = selectedTrackConfig.showTrackName;

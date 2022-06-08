@@ -21,7 +21,7 @@ import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import { useAppSelector, type RootState } from 'src/store';
 import {
   getBrowserSelectedCog,
-  getTrackConfigForTrackId
+  getTrackConfigsForTrackId
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 
 import useBrowserTrackConfig from '../useBrowserTrackConfig';
@@ -31,7 +31,7 @@ import styles from '../BrowserTrackConfig.scss';
 export const RegularTrackConfig = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const selectedTrackConfigInfo = useAppSelector((state: RootState) =>
-    getTrackConfigForTrackId(state, selectedCog)
+    getTrackConfigsForTrackId(state, selectedCog)
   );
   const shouldShowTrackName = selectedTrackConfigInfo?.showTrackName ?? false;
 
