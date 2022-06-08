@@ -168,6 +168,7 @@ const useGenomeBrowser = () => {
       off: [] as string[]
     };
 
+    const trackStateForSeveralTranscripts = cloneDeep(emptyOnOffLists);
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
@@ -177,9 +178,22 @@ const useGenomeBrowser = () => {
         if (trackId.match('focus')) {
           trackId = 'focus';
         }
-        trackConfigs[key].showTrackName
+
+        const config = trackConfigs[key];
+
+        config.showTrackName
           ? trackStateForNames.on.push(trackId)
           : trackStateForNames.off.push(trackId);
+
+        if (config.trackType === TrackType.GENE) {
+          config.showFeatureLabel
+            ? trackStateForLabels.on.push(trackId)
+            : trackStateForLabels.off.push(trackId);
+
+          config.showSeveralTranscripts
+            ? trackStateForSeveralTranscripts.on.push(trackId)
+            : trackStateForSeveralTranscripts.off.push(trackId);
+        }
       });
 
     genomeBrowser.send({
@@ -196,20 +210,6 @@ const useGenomeBrowser = () => {
       }
     });
 
-    trackConfigs &&
-      Object.keys(trackConfigs).forEach((key) => {
-        let trackId = key;
-        if (trackId.match('focus')) {
-          trackId = 'focus';
-        }
-        const trackInfo = trackConfigs[key];
-        if (trackInfo.trackType === TrackType.GENE) {
-          trackInfo.showFeatureLabel
-            ? trackStateForLabels.on.push(trackId)
-            : trackStateForLabels.off.push(trackId);
-        }
-      });
-
     genomeBrowser.send({
       type: OutgoingActionType.TURN_ON_LABELS,
       payload: {
@@ -221,6 +221,20 @@ const useGenomeBrowser = () => {
       type: OutgoingActionType.TURN_OFF_LABELS,
       payload: {
         track_ids: trackStateForLabels.off
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS,
+      payload: {
+        track_ids: trackStateForSeveralTranscripts.on
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
+      payload: {
+        track_ids: trackStateForSeveralTranscripts.off
       }
     });
   };
