@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo, useRef } from 'react';
+import React, { useEffect, memo } from 'react';
 
 import {
   IncomingActionType,
@@ -49,29 +49,26 @@ import styles from './BrowserCogList.scss';
 export const BrowserCogList = () => {
   const browserCogList = useAppSelector(getBrowserCogList);
   const selectedCog = useAppSelector(getBrowserSelectedCog);
-  const genomeId = useAppSelector(getBrowserActiveGenomeId);
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const objectId = useAppSelector(getBrowserActiveFocusObjectId);
   const dispatch = useAppDispatch();
 
-  const genomeIdRef = useRef(genomeId);
   const { genomeBrowser } = useGenomeBrowser();
 
   useBrowserCogList();
 
   useEffect(() => {
-    genomeIdRef.current = genomeId;
-  }, [genomeId]);
-
-  useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.TRACK_SUMMARY,
-      (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
+      (action: UpdateTrackSummaryAction) => {
+        updateTrackSummary(action.payload);
+      }
     );
     return () => subscription?.unsubscribe();
   }, [genomeBrowser, genomeId, objectId]);
 
   const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
-    if (!genomeIdRef.current || !objectId) {
+    if (!objectId) {
       return;
     }
 
@@ -91,20 +88,18 @@ export const BrowserCogList = () => {
       }
     });
 
-    if (cogList) {
-      dispatch(
-        updateCogList({
-          genomeId: genomeIdRef.current,
-          browserCogList: cogList
-        })
-      );
-    }
+    dispatch(
+      updateCogList({
+        genomeId,
+        browserCogList: cogList
+      })
+    );
   };
 
   const handleCogSelect = (trackId: string | null) => {
     dispatch(
       updateSelectedCog({
-        genomeId: genomeIdRef.current as string,
+        genomeId,
         selectedCog: trackId
       })
     );

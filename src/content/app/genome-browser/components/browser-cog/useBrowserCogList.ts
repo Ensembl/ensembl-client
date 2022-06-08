@@ -69,7 +69,7 @@ const useBrowserCogList = () => {
     };
 
     dispatch(setInitialTrackConfigsForGenome({ genomeId, trackConfigs }));
-  }, [trackCategories, focusObject]);
+  }, [trackCategories, focusObject, genomeId]);
 };
 
 export const getPersistentTrackConfigsForGenome = (
