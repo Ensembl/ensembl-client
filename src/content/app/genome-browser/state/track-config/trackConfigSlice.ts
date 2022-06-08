@@ -184,24 +184,24 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        selectedCog: string;
+        trackId: string;
         isTrackNameShown: boolean;
       }>
     ) {
-      const { genomeId, selectedCog, isTrackNameShown } = action.payload;
-      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
+      const { genomeId, trackId, isTrackNameShown } = action.payload;
+      const trackConfigState = state.configs[genomeId].tracks[trackId];
       trackConfigState.showTrackName = isTrackNameShown;
     },
     updateFeatureLabel(
       state,
       action: PayloadAction<{
         genomeId: string;
-        selectedCog: string;
+        trackId: string;
         isTrackLabelShown: boolean;
       }>
     ) {
-      const { genomeId, selectedCog, isTrackLabelShown } = action.payload;
-      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
+      const { genomeId, trackId, isTrackLabelShown } = action.payload;
+      const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
@@ -213,13 +213,12 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        selectedCog: string;
+        trackId: string;
         isSeveralTranscriptsShown: boolean;
       }>
     ) {
-      const { genomeId, selectedCog, isSeveralTranscriptsShown } =
-        action.payload;
-      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
+      const { genomeId, trackId, isSeveralTranscriptsShown } = action.payload;
+      const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
@@ -231,12 +230,12 @@ const browserTrackConfigSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        selectedCog: string;
+        trackId: string;
         isTranscriptIdsShown: boolean;
       }>
     ) {
-      const { genomeId, selectedCog, isTranscriptIdsShown } = action.payload;
-      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
+      const { genomeId, trackId, isTranscriptIdsShown } = action.payload;
+      const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;

@@ -72,7 +72,7 @@ const useBrowserTrackConfig = () => {
         dispatch(
           updateTrackConfigTrackName({
             genomeId: activeGenomeId,
-            selectedCog: trackId,
+            trackId,
             isTrackNameShown
           })
         );
@@ -82,7 +82,7 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigTrackName({
           genomeId: activeGenomeId,
-          selectedCog,
+          trackId: selectedCog,
           isTrackNameShown
         })
       );
@@ -111,7 +111,7 @@ const useBrowserTrackConfig = () => {
         dispatch(
           updateTrackConfigFeatureLabel({
             genomeId: activeGenomeId,
-            selectedCog: trackId,
+            trackId,
             isTrackLabelShown
           })
         );
@@ -124,7 +124,7 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigFeatureLabel({
           genomeId: activeGenomeId,
-          selectedCog,
+          trackId: selectedCog,
           isTrackLabelShown
         })
       );
@@ -152,7 +152,7 @@ const useBrowserTrackConfig = () => {
         dispatch(
           updateTrackConfigShowSeveralTranscripts({
             genomeId: activeGenomeId,
-            selectedCog: trackId,
+            trackId,
             isSeveralTranscriptsShown
           })
         );
@@ -165,7 +165,7 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigShowSeveralTranscripts({
           genomeId: activeGenomeId,
-          selectedCog,
+          trackId: selectedCog,
           isSeveralTranscriptsShown
         })
       );
@@ -194,7 +194,7 @@ const useBrowserTrackConfig = () => {
         dispatch(
           updateTrackConfigShowTranscriptIds({
             genomeId: activeGenomeId,
-            selectedCog: trackId,
+            trackId,
             isTranscriptIdsShown
           })
         );
@@ -207,7 +207,7 @@ const useBrowserTrackConfig = () => {
       dispatch(
         updateTrackConfigShowTranscriptIds({
           genomeId: activeGenomeId,
-          selectedCog,
+          trackId: selectedCog,
           isTranscriptIdsShown
         })
       );
