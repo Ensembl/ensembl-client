@@ -43,6 +43,7 @@ import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './BrowserCogList.scss';
 
@@ -82,7 +83,7 @@ export const BrowserCogList = () => {
       ) {
         const trackId =
           trackSummary['switch-id'] === 'focus'
-            ? 'gene-focus'
+            ? TrackId.GENE
             : trackSummary['switch-id'];
         cogList[trackId] = Number(trackSummary.offset);
       }

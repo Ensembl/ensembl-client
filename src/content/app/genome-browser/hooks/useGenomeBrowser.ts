@@ -39,7 +39,10 @@ import {
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import type { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import {
+  TrackId,
+  TrackStates
+} from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 import { Status } from 'src/shared/types/status';
 
@@ -49,6 +52,7 @@ const useGenomeBrowser = () => {
   const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   const trackConfigs = trackConfigsForGenome?.tracks;
+  const GENE_TRACK_ID = TrackId.GENE;
 
   if (!genomeBrowserContext) {
     throw new Error(
@@ -120,15 +124,15 @@ const useGenomeBrowser = () => {
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
-        const track_id =
-          trackId === 'track:gene-focus' ||
-          trackId === 'track:transcript-feat-1'
+        const trackIdWithoutPrefix = trackId.replace('track:', '');
+        const trackIdToSend =
+          trackIdWithoutPrefix === GENE_TRACK_ID
             ? 'focus'
-            : trackId.replace('track:', '');
+            : trackIdWithoutPrefix;
 
         trackStates[trackId] === Status.SELECTED
-          ? tracksToTurnOn.push(track_id)
-          : tracksToTurnOff.push(track_id);
+          ? tracksToTurnOn.push(trackIdToSend)
+          : tracksToTurnOff.push(trackIdToSend);
       });
     });
 
@@ -256,7 +260,7 @@ const useGenomeBrowser = () => {
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: shouldShowTrackName
@@ -276,7 +280,7 @@ const useGenomeBrowser = () => {
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: shouldShowFeatureLabel
@@ -295,7 +299,7 @@ const useGenomeBrowser = () => {
     const { trackId, shouldShowSeveralTranscripts } = params;
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: shouldShowSeveralTranscripts
@@ -315,7 +319,7 @@ const useGenomeBrowser = () => {
     const { trackId, shouldShowTranscriptIds } = params;
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     // genomeBrowser?.send({
     //   type: shouldShowTranscriptIds
@@ -334,7 +338,7 @@ const useGenomeBrowser = () => {
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-focus' ? 'focus' : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: isTurnedOn

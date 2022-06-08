@@ -35,6 +35,7 @@ import {
   type TrackConfigs,
   type TrackConfigsForGenome
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -89,7 +90,7 @@ export const prepareTrackConfigs = ({
   const defaultTrackConfigs: TrackConfigs = {};
 
   if (focusObject?.type === TrackType.GENE) {
-    defaultTrackConfigs['gene-focus'] = getDefaultGeneTrackConfig();
+    defaultTrackConfigs[TrackId.GENE] = getDefaultGeneTrackConfig();
   }
 
   trackCategories.forEach((category) => {
