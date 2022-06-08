@@ -59,11 +59,10 @@ export type TrackConfig = GeneTrackConfig | RegularTrackConfig;
 export type TrackConfigs = {
   [trackId: string]: TrackConfig;
 };
+4;
 
 export type TrackConfigsForGenome = Readonly<{
   shouldApplyToAll: boolean;
-  browserCogList: CogList;
-  selectedCog: string | null;
   tracks: TrackConfigs;
 }>;
 
@@ -71,10 +70,24 @@ export type GenomeTrackConfigs = {
   [genomeId: string]: TrackConfigsForGenome;
 };
 
+/**
+ *
+ * The cogs, which rely on the information about tracks sent from the genome browser,
+ * are genome-independent. I.e. if a genome changes, but both the list of the tracks
+ * and the height of the tracks remains the same, from the genome browser’s point of view,
+ * nothing has really changed.
+ * Hopefully, we’ll be able to to remove the cogs from the redux state altogether
+ */
+type TrackConfigState = {
+  browserTrackCogs: {
+    cogList: CogList;
+    selectedCog: string | null;
+  };
+  configs: GenomeTrackConfigs;
+};
+
 export const defaultTrackConfigsForGenome: TrackConfigsForGenome = {
   shouldApplyToAll: false,
-  browserCogList: {},
-  selectedCog: null,
   tracks: {}
 };
 
@@ -103,7 +116,7 @@ export const saveTrackConfigsForGenome: ActionCreator<
   ThunkAction<void, any, void, Action<string>>
 > = (genomeId: string) => (_, getState: () => RootState) => {
   const state = getState();
-  const trackConfigsForGenome = state.browser.trackConfig[genomeId];
+  const trackConfigsForGenome = state.browser.trackConfig.configs[genomeId];
   const fieldsForSaving = pick(trackConfigsForGenome, [
     'shouldApplyToAll',
     'tracks'
@@ -124,9 +137,17 @@ export const getTrackType = (trackId: string) => {
   }
 };
 
+const initialState: TrackConfigState = {
+  browserTrackCogs: {
+    cogList: {},
+    selectedCog: null
+  },
+  configs: {}
+};
+
 const browserTrackConfigSlice = createSlice({
   name: 'genome-browser-track-config',
-  initialState: {} as GenomeTrackConfigs,
+  initialState: initialState,
   reducers: {
     setInitialTrackConfigsForGenome(
       state,
@@ -136,7 +157,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, trackConfigs } = action.payload;
-      state[genomeId] = {
+      state.configs[genomeId] = {
         ...defaultTrackConfigsForGenome,
         ...trackConfigs
       };
@@ -144,22 +165,22 @@ const browserTrackConfigSlice = createSlice({
     updateCogList(
       state,
       action: PayloadAction<{
-        genomeId: string;
+        genomeId: string; // FIXME: not needed
         browserCogList: CogList;
       }>
     ) {
-      const { genomeId, browserCogList } = action.payload;
-      state[genomeId].browserCogList = browserCogList;
+      const { browserCogList } = action.payload;
+      state.browserTrackCogs.cogList = browserCogList;
     },
     updateSelectedCog(
       state,
       action: PayloadAction<{
-        genomeId: string;
+        genomeId: string; // FIXME: not needed
         selectedCog: string | null;
       }>
     ) {
-      const { genomeId, selectedCog } = action.payload;
-      state[genomeId].selectedCog = selectedCog;
+      const { selectedCog } = action.payload;
+      state.browserTrackCogs.selectedCog = selectedCog;
     },
     updateApplyToAll(
       state,
@@ -169,7 +190,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, isSelected } = action.payload;
-      state[genomeId].shouldApplyToAll = isSelected;
+      state.configs[genomeId].shouldApplyToAll = isSelected;
     },
     updateTrackName(
       state,
@@ -180,7 +201,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, selectedCog, isTrackNameShown } = action.payload;
-      const trackConfigState = state[genomeId].tracks[selectedCog];
+      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
       trackConfigState.showTrackName = isTrackNameShown;
     },
     updateFeatureLabel(
@@ -192,7 +213,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, selectedCog, isTrackLabelShown } = action.payload;
-      const trackConfigState = state[genomeId].tracks[selectedCog];
+      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
@@ -210,7 +231,7 @@ const browserTrackConfigSlice = createSlice({
     ) {
       const { genomeId, selectedCog, isSeveralTranscriptsShown } =
         action.payload;
-      const trackConfigState = state[genomeId].tracks[selectedCog];
+      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
@@ -227,7 +248,7 @@ const browserTrackConfigSlice = createSlice({
       }>
     ) {
       const { genomeId, selectedCog, isTranscriptIdsShown } = action.payload;
-      const trackConfigState = state[genomeId].tracks[selectedCog];
+      const trackConfigState = state.configs[genomeId].tracks[selectedCog];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
@@ -237,7 +258,7 @@ const browserTrackConfigSlice = createSlice({
     },
     deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
-      delete state[genomeId];
+      delete state.configs[genomeId];
     }
   }
 });
