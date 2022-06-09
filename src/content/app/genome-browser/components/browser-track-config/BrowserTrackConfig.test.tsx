@@ -38,7 +38,6 @@ const renderComponent = () => {
   });
 
   const fragment = {
-    selectedCog: selectedTrackId,
     tracks: {
       [selectedTrackId]: {
         showSeveralTranscripts: false,
@@ -60,7 +59,7 @@ const renderComponent = () => {
       trackConfig: {
         browserTrackCogs: {
           cogList: {},
-          selectedCog: null
+          selectedCog: selectedTrackId
         },
         configs: {
           [genomeId]: Object.assign(
@@ -141,8 +140,7 @@ describe('<BrowserTrackConfig />', () => {
       expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        selectedCog:
-          updatedState.browser.trackConfig.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       expect(
         updatedState.browser.trackConfig.configs[genomeId].tracks[
@@ -163,8 +161,7 @@ describe('<BrowserTrackConfig />', () => {
       expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
         isTrackLabelShown: true,
-        selectedCog:
-          updatedState.browser.trackConfig.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       const trackInfo =
         updatedState.browser.trackConfig.configs[genomeId].tracks[
