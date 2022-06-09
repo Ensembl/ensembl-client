@@ -99,11 +99,8 @@ describe('<BrowserCogList />', () => {
       );
 
       expect(updateCogListAction.payload).toEqual({
-        genomeId: 'fake_genome_id_1',
-        browserCogList: {
-          'gene-focus': 100,
-          contig: 200
-        }
+        'gene-focus': 100,
+        contig: 200
       });
     });
   });

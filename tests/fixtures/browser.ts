@@ -218,16 +218,18 @@ export const createMockBrowserState = () => {
         }
       },
       trackConfig: {
-        [fakeGenomeId]: {
-          applyToAllConfig: {
-            isSelected: true
-          },
-          browserCogList: {
+        browserTrackCogs: {
+          cogList: {
             'gene-focus': 0,
             contig: 192,
             gc: 384
           },
-          selectedCog: 'gene-focus',
+          selectedCog: 'gene-focus'
+        },
+        [fakeGenomeId]: {
+          applyToAllConfig: {
+            isSelected: true
+          },
           tracks: createTrackConfigs()
         }
       },
