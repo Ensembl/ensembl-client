@@ -82,7 +82,7 @@ export const fetchGenomeData =
   async (dispatch) => {
     await Promise.all([
       dispatch(fetchGenomeInfo(genomeId)),
-      dispatch(fetchGenomeTrackCategories(genomeId)), // <--
+      dispatch(fetchGenomeTrackCategories(genomeId)),
       dispatch(fetchGenomeKaryotype(genomeId))
     ]);
 

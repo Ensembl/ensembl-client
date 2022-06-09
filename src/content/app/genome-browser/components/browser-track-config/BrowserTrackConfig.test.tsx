@@ -136,7 +136,6 @@ describe('<BrowserTrackConfig />', () => {
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigSlice.updateTrackName).toHaveBeenCalledTimes(1);
       expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,

@@ -147,7 +147,7 @@ const initialState: TrackConfigState = {
 
 const browserTrackConfigSlice = createSlice({
   name: 'genome-browser-track-config',
-  initialState: initialState,
+  initialState,
   reducers: {
     setInitialTrackConfigsForGenome(
       state,

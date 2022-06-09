@@ -335,6 +335,7 @@ const useGenomeBrowser = () => {
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
+    // Below lines will be enabled when we have the relevant functionality in genome browser.
     // genomeBrowser?.send({
     //   type: shouldShowTranscriptIds
     //     ? OutgoingActionType.TURN_ON_TRANSCRIPT_IDS
