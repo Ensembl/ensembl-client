@@ -14,22 +14,42 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
+import { defaultTrackConfigsForGenome } from './trackConfigSlice';
 
-export const getBrowserCogList = (state: RootState) =>
-  state.browser.trackConfig.browserCogList;
+import type { RootState } from 'src/store';
 
-export const getBrowserCogTrackList = (state: RootState) =>
-  state.browser.trackConfig.browserCogTrackList;
+export const getBrowserCogList = (state: RootState) => {
+  return state.browser.trackConfig.browserTrackCogs.cogList;
+};
 
-export const getBrowserSelectedCog = (state: RootState) =>
-  state.browser.trackConfig.selectedCog;
+export const getBrowserSelectedCog = (state: RootState) => {
+  return state.browser.trackConfig.browserTrackCogs.selectedCog;
+};
 
-export const getTrackConfigNames = (state: RootState) =>
-  state.browser.trackConfig.trackConfigNames;
+export const getTrackConfigsForTrackId = (
+  state: RootState,
+  trackId: string
+) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
+    return null;
+  }
+  return state.browser.trackConfig.configs[genomeId].tracks[trackId];
+};
 
-export const getTrackConfigLabel = (state: RootState) =>
-  state.browser.trackConfig.trackConfigLabel;
+export const getAllTrackConfigs = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
+    return null;
+  }
+  return state.browser.trackConfig.configs[genomeId];
+};
 
-export const getApplyToAllConfig = (state: RootState) =>
-  state.browser.trackConfig.applyToAllConfig;
+export const getApplyToAllConfig = (state: RootState) => {
+  const genomeId = getBrowserActiveGenomeId(state);
+  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
+    return defaultTrackConfigsForGenome.shouldApplyToAll;
+  }
+  return state.browser.trackConfig.configs[genomeId]?.shouldApplyToAll ?? false;
+};

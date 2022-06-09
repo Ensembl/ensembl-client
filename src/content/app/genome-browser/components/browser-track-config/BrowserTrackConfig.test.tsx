@@ -15,32 +15,77 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 
-import { createMockBrowserState } from 'tests/fixtures/browser';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import * as trackConfigActions from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import * as trackConfigSlice from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import { BrowserTrackConfig } from './BrowserTrackConfig';
+import BrowserTrackConfig from './BrowserTrackConfig';
 
-const mockState = createMockBrowserState();
-
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
-
+const genomeId = 'fake_genome_id_1';
+const selectedTrackId = 'gene-focus';
 const renderComponent = () => {
-  store = mockStore(mockState);
-  return render(
+  const rootReducer = combineReducers({
+    browser: combineReducers({
+      browserGeneral: browserGeneralSlice.default,
+      trackConfig: trackConfigSlice.default
+    })
+  });
+
+  const fragment = {
+    tracks: {
+      [selectedTrackId]: {
+        showSeveralTranscripts: false,
+        showTranscriptIds: false,
+        showTrackName: false,
+        showFeatureLabel: false,
+        trackType: trackConfigSlice.TrackType.GENE
+      }
+    }
+  };
+
+  const initialState = {
+    browser: {
+      browserGeneral: Object.assign(
+        {},
+        browserGeneralSlice.defaultBrowserGeneralState,
+        { activeGenomeId: genomeId }
+      ),
+      trackConfig: {
+        browserTrackCogs: {
+          cogList: {},
+          selectedCog: selectedTrackId
+        },
+        configs: {
+          [genomeId]: Object.assign(
+            {},
+            trackConfigSlice.defaultTrackConfigsForGenome,
+            fragment
+          )
+        }
+      }
+    }
+  };
+
+  const store = configureStore({
+    reducer: rootReducer,
+    preloadedState: initialState
+  });
+
+  const renderResult = render(
     <Provider store={store}>
       <BrowserTrackConfig />
     </Provider>
   );
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 const mockGenomeBrowser = new MockGenomeBrowser();
@@ -48,7 +93,9 @@ const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
-    genomeBrowser: mockGenomeBrowser
+    genomeBrowser: mockGenomeBrowser,
+    toggleTrackName: jest.fn(),
+    toggleTrackLabel: jest.fn()
   })
 );
 
@@ -58,55 +105,70 @@ describe('<BrowserTrackConfig />', () => {
   });
 
   describe('behaviour', () => {
-    it('can update all tracks', async () => {
-      const { container } = renderComponent();
+    it('updates state when clicking All Tracks option', async () => {
+      const { container, store } = renderComponent();
       const allTracksLabel = [...container.querySelectorAll('label')].find(
         (el) => el.textContent === 'All tracks'
       );
       const allTracksInputElement = allTracksLabel?.querySelector(
         'input'
       ) as HTMLElement;
-      jest.spyOn(trackConfigActions, 'updateApplyToAll');
-      await userEvent.click(allTracksInputElement);
+      jest.spyOn(trackConfigSlice, 'updateApplyToAll');
 
-      expect(trackConfigActions.updateApplyToAll).toHaveBeenCalledTimes(1);
+      await userEvent.click(allTracksInputElement);
+      const updatedState = store.getState();
+      expect(trackConfigSlice.updateApplyToAll).toHaveBeenCalledWith({
+        genomeId,
+        isSelected: true
+      });
+      expect(
+        updatedState.browser.trackConfig.configs[genomeId].shouldApplyToAll
+      ).toBeTruthy();
     });
 
     it('toggles track name', async () => {
-      const { container } = renderComponent();
+      const { container, store } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateTrackConfigNames');
+      jest.spyOn(trackConfigSlice, 'updateTrackName');
 
       await userEvent.click(toggle);
-
-      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledTimes(
-        1
-      );
-      expect(trackConfigActions.updateTrackConfigNames).toHaveBeenCalledWith({
-        isTrackNameShown: false,
-        selectedCog: mockState.browser.trackConfig.selectedCog
+      const updatedState = store.getState();
+      expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
+        genomeId,
+        isTrackNameShown: true,
+        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
+      expect(
+        updatedState.browser.trackConfig.configs[genomeId].tracks[
+          selectedTrackId
+        ].showTrackName
+      ).toBeTruthy();
     });
 
     it('toggles feature labels on the track', async () => {
-      const { container } = renderComponent();
+      const { container, store } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigActions, 'updateTrackConfigLabel');
+      jest.spyOn(trackConfigSlice, 'updateFeatureLabel');
       await userEvent.click(toggle);
-
-      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledTimes(
-        1
-      );
-      expect(trackConfigActions.updateTrackConfigLabel).toHaveBeenCalledWith({
-        isTrackLabelShown: false,
-        selectedCog: mockState.browser.trackConfig.selectedCog
+      const updatedState = store.getState();
+      expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
+        genomeId,
+        isTrackLabelShown: true,
+        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
+      const trackInfo =
+        updatedState.browser.trackConfig.configs[genomeId].tracks[
+          selectedTrackId
+        ];
+      if (trackInfo.trackType === trackConfigSlice.TrackType.GENE) {
+        expect(trackInfo.showFeatureLabel).toBeTruthy();
+      }
     });
   });
 });
