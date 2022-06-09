@@ -10,7 +10,6 @@
   border-radius: 20px;
   border-style: solid;
   overflow: hidden;
-  text-overflow: ellipsis;
   user-select: none;
 }
 
@@ -49,16 +48,16 @@
 }
 
 .inner {
-  display: flex;
-  align-items: baseline;
-  column-gap: 10px;
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .name {
   font-size: 15px;
   font-weight: $bold;
   line-height: 1;
+  margin-right: 10px;
 }
 
 .assembly {
