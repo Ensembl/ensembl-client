@@ -51,16 +51,15 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  line-height: 1;
 }
 
 .name {
   font-size: 15px;
   font-weight: $bold;
-  line-height: 1;
   margin-right: 10px;
 }
 
 .assembly {
   font-size: 11px;
-  line-height: 1;
 }
