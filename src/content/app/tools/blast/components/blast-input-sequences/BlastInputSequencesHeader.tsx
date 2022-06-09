@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getEmptyInputVisibility,
@@ -29,6 +29,7 @@ import useBlastInputSequences from './useBlastInputSequences';
 
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
 
@@ -46,10 +47,12 @@ const BlastInputSequencesHeader = (props: Props) => {
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
     useBlastInputSequences();
 
-  const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
-  const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
+  const isEmptyInputAppended = useAppSelector(getEmptyInputVisibility);
+  const isUserTypingInEmptyInput = useAppSelector(
+    getUncommittedSequencePresence
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
@@ -90,6 +93,7 @@ const BlastInputSequencesHeader = (props: Props) => {
         <span className={styles.maxSequences}>
           of {MAX_BLAST_SEQUENCE_COUNT}
         </span>
+        <AlertLabel />
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
@@ -143,6 +147,38 @@ const SequenceSwitcher = (props: {
       selectedOption={props.sequenceType}
       onChange={(val) => props.onChange(val as SequenceType)}
     />
+  );
+};
+
+type SequenceValidity = {
+  updateValidity: (index: number, status: boolean) => void;
+  validityStatus: { [key: number]: boolean };
+};
+
+export const SequenceValidityContext = React.createContext<
+  SequenceValidity | undefined
+>(undefined);
+
+const AlertLabel = () => {
+  const [validityStatus, setValidityStatus] = useState({});
+  const errorTooltipDescription =
+    'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+
+  const updateValidity = (index: number, status: boolean) => {
+    //check each sequence validaty and push status
+    //console.log(index+"====="+status);
+    setValidityStatus({ ...validityStatus, [index]: status });
+  };
+  //console.log(validityStatus);
+  return (
+    <SequenceValidityContext.Provider
+      value={{ updateValidity, validityStatus }}
+    >
+      <AlertButton
+        className={styles.alertButton}
+        tooltipContent={errorTooltipDescription}
+      />
+    </SequenceValidityContext.Provider>
   );
 };
 
