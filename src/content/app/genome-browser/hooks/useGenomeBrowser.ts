@@ -169,6 +169,7 @@ const useGenomeBrowser = () => {
     };
 
     const trackStateForSeveralTranscripts = cloneDeep(emptyOnOffLists);
+    const trackStateForTranscriptLabels = cloneDeep(emptyOnOffLists);
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
@@ -193,6 +194,10 @@ const useGenomeBrowser = () => {
           config.showSeveralTranscripts
             ? trackStateForSeveralTranscripts.on.push(trackId)
             : trackStateForSeveralTranscripts.off.push(trackId);
+
+          config.showTranscriptLabels
+            ? trackStateForTranscriptLabels.on.push(trackId)
+            : trackStateForTranscriptLabels.off.push(trackId);
         }
       });
 
@@ -235,6 +240,20 @@ const useGenomeBrowser = () => {
       type: OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
       payload: {
         track_ids: trackStateForSeveralTranscripts.off
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: trackStateForTranscriptLabels.on
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: trackStateForTranscriptLabels.off
       }
     });
   };
@@ -325,27 +344,24 @@ const useGenomeBrowser = () => {
     });
   };
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const toggleTranscriptIds = (params: {
+  const toggleTranscriptLabels = (params: {
     trackId: string;
-    shouldShowTranscriptIds: boolean;
+    shouldShowTranscriptLabels: boolean;
   }) => {
-    const { trackId, shouldShowTranscriptIds } = params;
+    const { trackId, shouldShowTranscriptLabels } = params;
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
-    // Below lines will be enabled when we have the relevant functionality in genome browser.
-    // genomeBrowser?.send({
-    //   type: shouldShowTranscriptIds
-    //     ? OutgoingActionType.TURN_ON_TRANSCRIPT_IDS
-    //     : OutgoingActionType.TURN_OFF_TRANSCRIPT_IDS,
-    //   payload: {
-    //     track_ids: [trackIdToSend]
-    //   }
-    // });
+    genomeBrowser?.send({
+      type: shouldShowTranscriptLabels
+        ? OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS
+        : OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    });
   };
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   const toggleTrack = (params: { trackId: string; status: Status }) => {
     const { trackId, status } = params;
@@ -404,7 +420,7 @@ const useGenomeBrowser = () => {
     toggleTrackName,
     toggleTrackLabel,
     toggleSeveralTranscripts,
-    toggleTranscriptIds,
+    toggleTranscriptLabels,
     genomeBrowser,
     zmenus
   };

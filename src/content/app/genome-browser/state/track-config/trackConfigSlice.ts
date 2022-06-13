@@ -43,7 +43,7 @@ export enum TrackType {
 
 export type GeneTrackConfig = {
   showSeveralTranscripts: boolean;
-  showTranscriptIds: boolean;
+  showTranscriptLabels: boolean;
   showTrackName: boolean;
   showFeatureLabel: boolean;
   trackType: TrackType.GENE;
@@ -93,7 +93,7 @@ export const defaultTrackConfigsForGenome: TrackConfigsForGenome = {
 
 export const getDefaultGeneTrackConfig = (): GeneTrackConfig => ({
   showSeveralTranscripts: false,
-  showTranscriptIds: false,
+  showTranscriptLabels: false,
   showTrackName: false,
   showFeatureLabel: true,
   trackType: TrackType.GENE
@@ -226,22 +226,22 @@ const browserTrackConfigSlice = createSlice({
 
       trackConfigState.showSeveralTranscripts = isSeveralTranscriptsShown;
     },
-    updateShowTranscriptIds(
+    updateShowTranscriptLabels(
       state,
       action: PayloadAction<{
         genomeId: string;
         trackId: string;
-        isTranscriptIdsShown: boolean;
+        isTranscripLabelsShown: boolean;
       }>
     ) {
-      const { genomeId, trackId, isTranscriptIdsShown } = action.payload;
+      const { genomeId, trackId, isTranscripLabelsShown } = action.payload;
       const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
       }
 
-      trackConfigState.showTranscriptIds = isTranscriptIdsShown;
+      trackConfigState.showTranscriptLabels = isTranscripLabelsShown;
     },
     deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -258,7 +258,7 @@ export const {
   updateTrackName,
   updateFeatureLabel,
   updateShowSeveralTranscripts,
-  updateShowTranscriptIds,
+  updateShowTranscriptLabels,
   deleteTrackConfigsForGenome
 } = browserTrackConfigSlice.actions;
 

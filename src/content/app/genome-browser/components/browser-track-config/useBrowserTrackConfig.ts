@@ -28,7 +28,7 @@ import {
   updateTrackName as updateTrackConfigTrackName,
   updateFeatureLabel as updateTrackConfigFeatureLabel,
   updateShowSeveralTranscripts as updateTrackConfigShowSeveralTranscripts,
-  updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
+  updateShowTranscriptLabels as updateTrackConfigShowTranscriptLabels,
   updateApplyToAll,
   saveTrackConfigsForGenome,
   TrackType
@@ -59,7 +59,7 @@ const useBrowserTrackConfig = () => {
     toggleTrackName,
     toggleTrackLabel,
     toggleSeveralTranscripts,
-    toggleTranscriptIds
+    toggleTranscriptLabels
   } = useGenomeBrowser();
 
   const updateTrackName = (isTrackNameShown: boolean) => {
@@ -185,35 +185,35 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const updateShowTranscriptIds = (isTranscriptIdsShown: boolean) => {
+  const updateShowTranscriptLabels = (isTranscripLabelsShown: boolean) => {
     if (!activeGenomeId) {
       return;
     }
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigShowTranscriptIds({
+          updateTrackConfigShowTranscriptLabels({
             genomeId: activeGenomeId,
             trackId,
-            isTranscriptIdsShown
+            isTranscripLabelsShown
           })
         );
-        toggleTranscriptIds({
+        toggleTranscriptLabels({
           trackId,
-          shouldShowTranscriptIds: isTranscriptIdsShown
+          shouldShowTranscriptLabels: isTranscripLabelsShown
         });
       });
     } else {
       dispatch(
-        updateTrackConfigShowTranscriptIds({
+        updateTrackConfigShowTranscriptLabels({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isTranscriptIdsShown
+          isTranscripLabelsShown
         })
       );
-      toggleTranscriptIds({
+      toggleTranscriptLabels({
         trackId: selectedCog,
-        shouldShowTranscriptIds: isTranscriptIdsShown
+        shouldShowTranscriptLabels: isTranscripLabelsShown
       });
     }
 
@@ -222,7 +222,7 @@ const useBrowserTrackConfig = () => {
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'several_transcripts_' + (isTranscriptIdsShown ? 'on' : 'off')
+      action: 'several_transcripts_' + (isTranscripLabelsShown ? 'on' : 'off')
     });
   };
 
@@ -242,6 +242,11 @@ const useBrowserTrackConfig = () => {
         ? selectedTrackConfigs.showSeveralTranscripts
         : false;
 
+    const shouldShowTranscriptLabels =
+      selectedTrackConfigs.trackType === TrackType.GENE
+        ? selectedTrackConfigs.showTranscriptLabels
+        : false;
+
     dispatch(
       updateApplyToAll({
         genomeId: activeGenomeId,
@@ -254,6 +259,7 @@ const useBrowserTrackConfig = () => {
     updateTrackName(shouldShowTrackName);
     updateTrackLabel(shouldShowFeatureLabel);
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
+    updateShowTranscriptLabels(shouldShowTranscriptLabels);
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -266,7 +272,7 @@ const useBrowserTrackConfig = () => {
     updateTrackName,
     updateTrackLabel,
     updateShowSeveralTranscripts,
-    updateShowTranscriptIds,
+    updateShowTranscriptLabels,
     toggleApplyToAll
   };
 };

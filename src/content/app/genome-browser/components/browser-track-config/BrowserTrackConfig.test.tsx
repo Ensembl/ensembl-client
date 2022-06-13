@@ -41,7 +41,7 @@ const renderComponent = () => {
     tracks: {
       [selectedTrackId]: {
         showSeveralTranscripts: false,
-        showTranscriptIds: false,
+        showTranscriptLabels: false,
         showTrackName: false,
         showFeatureLabel: false,
         trackType: trackConfigSlice.TrackType.GENE
