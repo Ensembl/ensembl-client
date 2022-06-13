@@ -185,7 +185,7 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const updateShowTranscriptLabels = (isTranscripLabelsShown: boolean) => {
+  const updateShowTranscriptLabels = (shouldShowTranscriptLabels: boolean) => {
     if (!activeGenomeId) {
       return;
     }
@@ -195,12 +195,12 @@ const useBrowserTrackConfig = () => {
           updateTrackConfigShowTranscriptLabels({
             genomeId: activeGenomeId,
             trackId,
-            isTranscripLabelsShown
+            shouldShowTranscriptLabels
           })
         );
         toggleTranscriptLabels({
           trackId,
-          shouldShowTranscriptLabels: isTranscripLabelsShown
+          shouldShowTranscriptLabels
         });
       });
     } else {
@@ -208,12 +208,12 @@ const useBrowserTrackConfig = () => {
         updateTrackConfigShowTranscriptLabels({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isTranscripLabelsShown
+          shouldShowTranscriptLabels
         })
       );
       toggleTranscriptLabels({
         trackId: selectedCog,
-        shouldShowTranscriptLabels: isTranscripLabelsShown
+        shouldShowTranscriptLabels
       });
     }
 
@@ -222,7 +222,8 @@ const useBrowserTrackConfig = () => {
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'several_transcripts_' + (isTranscripLabelsShown ? 'on' : 'off')
+      action:
+        'several_transcripts_' + (shouldShowTranscriptLabels ? 'on' : 'off')
     });
   };
 

@@ -231,17 +231,17 @@ const browserTrackConfigSlice = createSlice({
       action: PayloadAction<{
         genomeId: string;
         trackId: string;
-        isTranscripLabelsShown: boolean;
+        shouldShowTranscriptLabels: boolean;
       }>
     ) {
-      const { genomeId, trackId, isTranscripLabelsShown } = action.payload;
+      const { genomeId, trackId, shouldShowTranscriptLabels } = action.payload;
       const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
       }
 
-      trackConfigState.showTranscriptLabels = isTranscripLabelsShown;
+      trackConfigState.showTranscriptLabels = shouldShowTranscriptLabels;
     },
     deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
