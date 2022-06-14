@@ -56,6 +56,21 @@ export const GeneTrackConfig = () => {
     selectedTrackConfig.showSeveralTranscripts;
   const shouldShowTranscriptLabels = selectedTrackConfig.showTranscriptLabels;
 
+  const handleSeveralTranscriptsToggle = () => {
+    updateShowSeveralTranscripts(!shouldShowSeveralTranscripts);
+  };
+
+  const handleTranscriptLabelsToggle = () => {
+    updateShowTranscriptLabels(!shouldShowTranscriptLabels);
+  };
+
+  const handleTrackNameToggle = () => {
+    updateTrackName(!shouldShowTrackName);
+  };
+
+  const handleTrackLabelToggle = () => {
+    updateTrackLabel(!shouldShowTrackLabel);
+  };
   return (
     <div className={styles.section}>
       <div className={styles.subLabel}>Show</div>
@@ -64,9 +79,7 @@ export const GeneTrackConfig = () => {
           <label>5 transcripts</label>
           <SlideToggle
             isOn={shouldShowSeveralTranscripts}
-            onChange={() =>
-              updateShowSeveralTranscripts(!shouldShowSeveralTranscripts)
-            }
+            onChange={handleSeveralTranscriptsToggle}
             className={styles.slideToggle}
           />
         </div>
@@ -74,9 +87,7 @@ export const GeneTrackConfig = () => {
           <label>Transcript IDs</label>
           <SlideToggle
             isOn={shouldShowTranscriptLabels}
-            onChange={() =>
-              updateShowTranscriptLabels(!shouldShowTranscriptLabels)
-            }
+            onChange={handleTranscriptLabelsToggle}
             className={styles.slideToggle}
           />
         </div>
@@ -84,7 +95,7 @@ export const GeneTrackConfig = () => {
           <label>Track name</label>
           <SlideToggle
             isOn={shouldShowTrackName}
-            onChange={() => updateTrackName(!shouldShowTrackName)}
+            onChange={handleTrackNameToggle}
             className={styles.slideToggle}
           />
         </div>
@@ -92,7 +103,7 @@ export const GeneTrackConfig = () => {
           <label>Feature labels</label>
           <SlideToggle
             isOn={shouldShowTrackLabel}
-            onChange={() => updateTrackLabel(!shouldShowTrackLabel)}
+            onChange={handleTrackLabelToggle}
             className={styles.slideToggle}
           />
         </div>
