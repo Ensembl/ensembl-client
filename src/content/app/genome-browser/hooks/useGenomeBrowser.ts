@@ -169,7 +169,7 @@ const useGenomeBrowser = () => {
     };
 
     const trackStateForSeveralTranscripts = cloneDeep(emptyOnOffLists);
-    const trackStateForTranscriptLabels = cloneDeep(emptyOnOffLists);
+    const trackStateForTranscriptIds = cloneDeep(emptyOnOffLists);
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
@@ -195,9 +195,9 @@ const useGenomeBrowser = () => {
             ? trackStateForSeveralTranscripts.on.push(trackId)
             : trackStateForSeveralTranscripts.off.push(trackId);
 
-          config.showTranscriptLabels
-            ? trackStateForTranscriptLabels.on.push(trackId)
-            : trackStateForTranscriptLabels.off.push(trackId);
+          config.showTranscriptIds
+            ? trackStateForTranscriptIds.on.push(trackId)
+            : trackStateForTranscriptIds.off.push(trackId);
         }
       });
 
@@ -246,14 +246,14 @@ const useGenomeBrowser = () => {
     genomeBrowser.send({
       type: OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS,
       payload: {
-        track_ids: trackStateForTranscriptLabels.on
+        track_ids: trackStateForTranscriptIds.on
       }
     });
 
     genomeBrowser.send({
       type: OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
       payload: {
-        track_ids: trackStateForTranscriptLabels.off
+        track_ids: trackStateForTranscriptIds.off
       }
     });
   };
@@ -305,7 +305,7 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleTrackLabel = (params: {
+  const toggleFeatureLabel = (params: {
     trackId: string;
     shouldShowFeatureLabel: boolean;
   }) => {
@@ -344,17 +344,17 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleTranscriptLabels = (params: {
+  const toggleTranscriptIds = (params: {
     trackId: string;
-    shouldShowTranscriptLabels: boolean;
+    shouldShowTranscriptIds: boolean;
   }) => {
-    const { trackId, shouldShowTranscriptLabels } = params;
+    const { trackId, shouldShowTranscriptIds } = params;
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
-      type: shouldShowTranscriptLabels
+      type: shouldShowTranscriptIds
         ? OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS
         : OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
       payload: {
@@ -418,9 +418,9 @@ const useGenomeBrowser = () => {
     setZmenus,
     toggleTrack,
     toggleTrackName,
-    toggleTrackLabel,
+    toggleFeatureLabel,
     toggleSeveralTranscripts,
-    toggleTranscriptLabels,
+    toggleTranscriptIds,
     genomeBrowser,
     zmenus
   };

@@ -28,7 +28,7 @@ import {
   updateTrackName as updateTrackConfigTrackName,
   updateFeatureLabel as updateTrackConfigFeatureLabel,
   updateShowSeveralTranscripts as updateTrackConfigShowSeveralTranscripts,
-  updateShowTranscriptLabels as updateTrackConfigShowTranscriptLabels,
+  updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
   updateApplyToAll,
   saveTrackConfigsForGenome,
   TrackType
@@ -57,9 +57,9 @@ const useBrowserTrackConfig = () => {
 
   const {
     toggleTrackName,
-    toggleTrackLabel,
+    toggleFeatureLabel,
     toggleSeveralTranscripts,
-    toggleTranscriptLabels
+    toggleTranscriptIds
   } = useGenomeBrowser();
 
   const updateTrackName = (isTrackNameShown: boolean) => {
@@ -101,7 +101,7 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const updateTrackLabel = (isTrackLabelShown: boolean) => {
+  const updateFeatureLabel = (isFeatureLabelShown: boolean) => {
     if (!activeGenomeId) {
       return;
     }
@@ -112,12 +112,12 @@ const useBrowserTrackConfig = () => {
           updateTrackConfigFeatureLabel({
             genomeId: activeGenomeId,
             trackId,
-            isTrackLabelShown
+            isFeatureLabelShown
           })
         );
-        toggleTrackLabel({
+        toggleFeatureLabel({
           trackId,
-          shouldShowFeatureLabel: isTrackLabelShown
+          shouldShowFeatureLabel: isFeatureLabelShown
         });
       });
     } else {
@@ -125,12 +125,12 @@ const useBrowserTrackConfig = () => {
         updateTrackConfigFeatureLabel({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isTrackLabelShown
+          isFeatureLabelShown
         })
       );
-      toggleTrackLabel({
+      toggleFeatureLabel({
         trackId: selectedCog,
-        shouldShowFeatureLabel: isTrackLabelShown
+        shouldShowFeatureLabel: isFeatureLabelShown
       });
     }
 
@@ -139,7 +139,7 @@ const useBrowserTrackConfig = () => {
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'feature_label_' + (isTrackLabelShown ? 'on' : 'off')
+      action: 'feature_label_' + (isFeatureLabelShown ? 'on' : 'off')
     });
   };
 
@@ -185,35 +185,35 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const updateShowTranscriptLabels = (shouldShowTranscriptLabels: boolean) => {
+  const updateShowTranscriptIds = (shouldShowTranscriptIds: boolean) => {
     if (!activeGenomeId) {
       return;
     }
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigShowTranscriptLabels({
+          updateTrackConfigShowTranscriptIds({
             genomeId: activeGenomeId,
             trackId,
-            shouldShowTranscriptLabels
+            shouldShowTranscriptIds
           })
         );
-        toggleTranscriptLabels({
+        toggleTranscriptIds({
           trackId,
-          shouldShowTranscriptLabels
+          shouldShowTranscriptIds
         });
       });
     } else {
       dispatch(
-        updateTrackConfigShowTranscriptLabels({
+        updateTrackConfigShowTranscriptIds({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          shouldShowTranscriptLabels
+          shouldShowTranscriptIds
         })
       );
-      toggleTranscriptLabels({
+      toggleTranscriptIds({
         trackId: selectedCog,
-        shouldShowTranscriptLabels
+        shouldShowTranscriptIds
       });
     }
 
@@ -222,8 +222,7 @@ const useBrowserTrackConfig = () => {
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action:
-        'several_transcripts_' + (shouldShowTranscriptLabels ? 'on' : 'off')
+      action: 'transcript_labels_' + (shouldShowTranscriptIds ? 'on' : 'off')
     });
   };
 
@@ -243,9 +242,9 @@ const useBrowserTrackConfig = () => {
         ? selectedTrackConfigs.showSeveralTranscripts
         : false;
 
-    const shouldShowTranscriptLabels =
+    const shouldShowTranscriptIds =
       selectedTrackConfigs.trackType === TrackType.GENE
-        ? selectedTrackConfigs.showTranscriptLabels
+        ? selectedTrackConfigs.showTranscriptIds
         : false;
 
     dispatch(
@@ -258,9 +257,9 @@ const useBrowserTrackConfig = () => {
     shouldApplyToAllRef.current = value === 'all_tracks';
 
     updateTrackName(shouldShowTrackName);
-    updateTrackLabel(shouldShowFeatureLabel);
+    updateFeatureLabel(shouldShowFeatureLabel);
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
-    updateShowTranscriptLabels(shouldShowTranscriptLabels);
+    updateShowTranscriptIds(shouldShowTranscriptIds);
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -271,9 +270,9 @@ const useBrowserTrackConfig = () => {
 
   return {
     updateTrackName,
-    updateTrackLabel,
+    updateFeatureLabel,
     updateShowSeveralTranscripts,
-    updateShowTranscriptLabels,
+    updateShowTranscriptIds,
     toggleApplyToAll
   };
 };

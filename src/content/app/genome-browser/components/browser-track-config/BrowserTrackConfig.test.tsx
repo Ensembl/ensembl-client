@@ -41,7 +41,7 @@ const renderComponent = () => {
     tracks: {
       [selectedTrackId]: {
         showSeveralTranscripts: false,
-        showTranscriptLabels: false,
+        showTranscriptIds: false,
         showTrackName: false,
         showFeatureLabel: false,
         trackType: trackConfigSlice.TrackType.GENE
@@ -95,7 +95,7 @@ jest.mock(
   () => () => ({
     genomeBrowser: mockGenomeBrowser,
     toggleTrackName: jest.fn(),
-    toggleTrackLabel: jest.fn()
+    toggleFeatureLabel: jest.fn()
   })
 );
 
@@ -159,7 +159,7 @@ describe('<BrowserTrackConfig />', () => {
       const updatedState = store.getState();
       expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
         genomeId,
-        isTrackLabelShown: true,
+        isFeatureLabelShown: true,
         trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       const trackInfo =

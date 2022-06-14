@@ -41,9 +41,9 @@ export const GeneTrackConfig = () => {
 
   const {
     updateTrackName,
-    updateTrackLabel,
+    updateFeatureLabel,
     updateShowSeveralTranscripts,
-    updateShowTranscriptLabels
+    updateShowTranscriptIds
   } = useBrowserTrackConfig();
 
   if (!selectedTrackConfig) {
@@ -51,25 +51,25 @@ export const GeneTrackConfig = () => {
   }
 
   const shouldShowTrackName = selectedTrackConfig.showTrackName;
-  const shouldShowTrackLabel = selectedTrackConfig.showFeatureLabel;
+  const shouldShowFeatureLabel = selectedTrackConfig.showFeatureLabel;
   const shouldShowSeveralTranscripts =
     selectedTrackConfig.showSeveralTranscripts;
-  const shouldShowTranscriptLabels = selectedTrackConfig.showTranscriptLabels;
+  const shouldShowTranscriptIds = selectedTrackConfig.showTranscriptIds;
 
   const handleSeveralTranscriptsToggle = () => {
     updateShowSeveralTranscripts(!shouldShowSeveralTranscripts);
   };
 
-  const handleTranscriptLabelsToggle = () => {
-    updateShowTranscriptLabels(!shouldShowTranscriptLabels);
+  const handleTranscriptIdsToggle = () => {
+    updateShowTranscriptIds(!shouldShowTranscriptIds);
   };
 
   const handleTrackNameToggle = () => {
     updateTrackName(!shouldShowTrackName);
   };
 
-  const handleTrackLabelToggle = () => {
-    updateTrackLabel(!shouldShowTrackLabel);
+  const handleFeatureLabelToggle = () => {
+    updateFeatureLabel(!shouldShowFeatureLabel);
   };
   return (
     <div className={styles.section}>
@@ -86,8 +86,8 @@ export const GeneTrackConfig = () => {
         <div className={styles.toggleWrapper}>
           <label>Transcript IDs</label>
           <SlideToggle
-            isOn={shouldShowTranscriptLabels}
-            onChange={handleTranscriptLabelsToggle}
+            isOn={shouldShowTranscriptIds}
+            onChange={handleTranscriptIdsToggle}
             className={styles.slideToggle}
           />
         </div>
@@ -102,8 +102,8 @@ export const GeneTrackConfig = () => {
         <div className={styles.toggleWrapper}>
           <label>Feature labels</label>
           <SlideToggle
-            isOn={shouldShowTrackLabel}
-            onChange={handleTrackLabelToggle}
+            isOn={shouldShowFeatureLabel}
+            onChange={handleFeatureLabelToggle}
             className={styles.slideToggle}
           />
         </div>
