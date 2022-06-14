@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -60,12 +60,23 @@ const BlastForm = () => {
 
 const Main = () => {
   const isSmallViewport = useMediaQuery('(max-width: 1900px)');
+  const [sequenceValidityStatus, setSequenceValidityStatus] = useState({});
+
+  const updateSequenceValidity = (index: number, status: boolean) => {
+    setSequenceValidityStatus({ ...sequenceValidityStatus, [index]: status });
+  };
 
   if (isSmallViewport === null) {
     return null;
   }
 
-  return isSmallViewport ? <MainSmall /> : <MainLarge />;
+  return (
+    <BlastFormContext.Provider
+      value={{ updateSequenceValidity, sequenceValidityStatus }}
+    >
+      {isSmallViewport ? <MainSmall /> : <MainLarge />}
+    </BlastFormContext.Provider>
+  );
 };
 
 const MainLarge = () => {
@@ -149,5 +160,14 @@ const BlastFormStepToggle = () => {
     </div>
   );
 };
+
+type SequenceValidity = {
+  updateSequenceValidity: (index: number, status: boolean) => void;
+  sequenceValidityStatus: { [key: number]: boolean };
+};
+
+export const BlastFormContext = React.createContext<
+  SequenceValidity | undefined
+>(undefined);
 
 export default BlastForm;

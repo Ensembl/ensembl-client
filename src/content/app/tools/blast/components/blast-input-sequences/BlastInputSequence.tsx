@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
-import { SequenceValidityContext } from './BlastInputSequencesHeader';
+import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastForm';
 
 import useBlastInputSequences from './useBlastInputSequences';
 
@@ -46,7 +46,7 @@ import { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequence.scss';
 
-type Props = {
+export type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;
   sequenceType: SequenceType;
@@ -143,11 +143,13 @@ const BlastInputSequence = (props: Props) => {
 
   const { sequences } = useBlastInputSequences();
   const sequenceValidityKey = index === null ? sequences.length : index;
-  const sequenceValidityContext = useContext(SequenceValidityContext);
-  //console.log(sequenceValidityContext);
+  const sequenceValidityContext = useContext(BlastFormContext);
 
   useEffect(() => {
-    sequenceValidityContext?.updateValidity(sequenceValidityKey, isInputValid);
+    sequenceValidityContext?.updateSequenceValidity(
+      sequenceValidityKey,
+      isInputValid
+    );
   }, [isInputValid]);
 
   const inputBoxClassnames = classNames(styles.inputSequenceBox, {

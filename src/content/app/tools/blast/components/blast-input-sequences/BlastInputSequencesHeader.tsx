@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -24,6 +24,8 @@ import {
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastForm';
 
 import useBlastInputSequences from './useBlastInputSequences';
 
@@ -53,6 +55,15 @@ const BlastInputSequencesHeader = (props: Props) => {
   );
 
   const dispatch = useAppDispatch();
+
+  const sequenceValidityContext = useContext(BlastFormContext);
+  let shouldShowAlert = false;
+
+  if (sequenceValidityContext) {
+    shouldShowAlert = Object.values(
+      sequenceValidityContext.sequenceValidityStatus
+    ).includes(false);
+  }
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
@@ -85,6 +96,9 @@ const BlastInputSequencesHeader = (props: Props) => {
     [styles.smallScreenHeader]: compact
   });
 
+  const errorTooltipDescription =
+    'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+
   return (
     <div className={headerClass}>
       <div className={styles.headerGroup}>
@@ -93,7 +107,12 @@ const BlastInputSequencesHeader = (props: Props) => {
         <span className={styles.maxSequences}>
           of {MAX_BLAST_SEQUENCE_COUNT}
         </span>
-        <AlertLabel />
+        {shouldShowAlert && (
+          <AlertButton
+            className={styles.alertButton}
+            tooltipContent={errorTooltipDescription}
+          />
+        )}
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
@@ -147,38 +166,6 @@ const SequenceSwitcher = (props: {
       selectedOption={props.sequenceType}
       onChange={(val) => props.onChange(val as SequenceType)}
     />
-  );
-};
-
-type SequenceValidity = {
-  updateValidity: (index: number, status: boolean) => void;
-  validityStatus: { [key: number]: boolean };
-};
-
-export const SequenceValidityContext = React.createContext<
-  SequenceValidity | undefined
->(undefined);
-
-const AlertLabel = () => {
-  const [validityStatus, setValidityStatus] = useState({});
-  const errorTooltipDescription =
-    'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
-
-  const updateValidity = (index: number, status: boolean) => {
-    //check each sequence validaty and push status
-    //console.log(index+"====="+status);
-    setValidityStatus({ ...validityStatus, [index]: status });
-  };
-  //console.log(validityStatus);
-  return (
-    <SequenceValidityContext.Provider
-      value={{ updateValidity, validityStatus }}
-    >
-      <AlertButton
-        className={styles.alertButton}
-        tooltipContent={errorTooltipDescription}
-      />
-    </SequenceValidityContext.Provider>
   );
 };
 
