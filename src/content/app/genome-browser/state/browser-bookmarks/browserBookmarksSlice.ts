@@ -83,8 +83,7 @@ export const updatePreviouslyViewedObjectsAndSave =
         : null;
 
     const geneSymbol =
-      activeFocusObject.type === 'gene' &&
-      activeFocusObject.label !== activeFocusObject.stable_id
+      activeFocusObject.type === 'gene' && activeFocusObject.label !== stable_id
         ? activeFocusObject.label
         : null;
 

@@ -19,7 +19,6 @@ import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import set from 'lodash/fp/set';
 import { IncomingActionType } from '@ensembl/ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
@@ -27,7 +26,8 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import { BrowserCogList } from './BrowserCogList';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
-import { updateCogTrackList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+
+import { updateCogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
@@ -40,17 +40,7 @@ jest.mock(
 
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
-let mockState = createMockBrowserState();
-
-mockState = set('browser.trackConfig.trackConfigNames', {}, mockState);
-mockState = set('browser.trackConfig.trackConfigLabel', {}, mockState);
-mockState = set(
-  'browser.trackConfig.browserCogTrackList',
-  {
-    'track:gc': 100
-  },
-  mockState
-);
+const mockState = createMockBrowserState();
 
 const mockStore = configureMockStore([thunk]);
 
@@ -83,7 +73,7 @@ describe('<BrowserCogList />', () => {
       expect(container.querySelector('#browserCog')).toBeFalsy();
     });
 
-    it('calls updateCogTrackList when genome browser sends track summary updates', () => {
+    it('calls updateCogList when genome browser sends track summary updates', () => {
       mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
 
       renderComponent();
@@ -92,11 +82,11 @@ describe('<BrowserCogList />', () => {
         type: IncomingActionType.TRACK_SUMMARY,
         payload: [
           {
-            'switch-id': 'track-1',
+            'switch-id': 'gene-focus',
             offset: 100
           },
           {
-            'switch-id': 'track-2',
+            'switch-id': 'contig',
             offset: 200
           }
         ]
@@ -104,13 +94,13 @@ describe('<BrowserCogList />', () => {
 
       const dispatchedActions = store.getActions();
 
-      const updateCogTrackListAction = dispatchedActions.find(
-        (action) => action.type === updateCogTrackList.type
+      const updateCogListAction = dispatchedActions.find(
+        (action) => action.type === updateCogList.type
       );
 
-      expect(updateCogTrackListAction.payload).toEqual({
-        'track-1': 100,
-        'track-2': 200
+      expect(updateCogListAction.payload).toEqual({
+        'gene-focus': 100,
+        contig: 200
       });
     });
   });

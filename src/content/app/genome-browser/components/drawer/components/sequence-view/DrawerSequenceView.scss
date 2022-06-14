@@ -27,6 +27,10 @@
   grid-area: aside-top;
 }
 
+.blastSequenceButton {
+  margin: 0 0 0 25px;
+}
+
 .sequence {
   grid-area: main-bottom;
   margin-top: 10px;
@@ -44,11 +48,13 @@
 
 .sequenceTypeSelection {
   margin-top: 50px;
+  --radio-label-font-weight: #{$light};
 }
 
 .reverseComplement {
   margin-top: 43px;
   white-space: nowrap;
+  --checkbox-label-font-weight: #{$light};
 }
 
 .showHide {

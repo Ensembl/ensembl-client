@@ -33,7 +33,10 @@ import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import {
+  TrackActivityStatus,
+  TrackId
+} from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { RootState } from 'src/store';
 
 import styles from './TrackPanelItem.scss';
@@ -45,7 +48,7 @@ type TrackPanelGeneProps = {
 };
 
 // TODO: figure out proper gene and transcript track naming conventions
-const GENE_TRACK_ID = 'track:gene-feat';
+const GENE_TRACK_ID = TrackId.GENE;
 const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {

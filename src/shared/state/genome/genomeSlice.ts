@@ -126,6 +126,7 @@ export const fetchGenomeTrackCategories = createAsyncThunk(
 
       const url = `/api/tracks/track_categories/${genomeId}`;
       const response = await apiService.fetch(url);
+
       return {
         [genomeId]: response.track_categories
       };

@@ -17,6 +17,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash/cloneDeep';
 
+import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
+
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 import type {
   BlastParameterName,
@@ -29,6 +31,7 @@ type BlastFormSettings = {
   jobName: string;
   sequenceType: SequenceType;
   sequenceSelectionMode: 'automatic' | 'manual';
+  databaseSelectionMode: 'automatic' | 'manual';
   program: BlastProgram;
   preset: string;
   parameters: Partial<Record<BlastParameterName, string>>;
@@ -50,10 +53,11 @@ export type BlastFormState = {
   settings: BlastFormSettings;
 };
 
-const initialBlastFormSettings: BlastFormSettings = {
+export const initialBlastFormSettings: BlastFormSettings = {
   jobName: '',
   sequenceType: 'dna',
   sequenceSelectionMode: 'automatic',
+  databaseSelectionMode: 'automatic',
   program: 'blastn',
   preset: 'normal',
   parameters: {}
@@ -97,16 +101,110 @@ const getDatabaseSequenceType = ({
   return config.database_sequence_types[database];
 };
 
+/**
+ * To be run for changes of sequences, sequence type, or database
+ */
+const autoUpdateSettings = (
+  state: BlastFormState,
+  config: BlastSettingsConfig
+) => {
+  if (
+    state.sequences.length &&
+    state.settings.sequenceSelectionMode === 'automatic'
+  ) {
+    const firstSequence = state.sequences[0].value;
+    const sequenceType = guessSequenceType(firstSequence);
+    state.settings.sequenceType = sequenceType;
+  }
+
+  if (state.settings.databaseSelectionMode === 'automatic') {
+    updateDatabaseFromSequenceType(state, config);
+  }
+
+  // Update computed properties
+  const sequenceType = state.settings.sequenceType;
+  const database = state.settings.parameters.database as string;
+  const databaseSequenceType = getDatabaseSequenceType({
+    database,
+    config
+  });
+
+  const programName = getProgamName({
+    sequenceType,
+    databaseSequenceType,
+    config
+  });
+
+  const presetName = initialBlastFormSettings.preset;
+  const parameters = config.presets.settings[programName][presetName];
+
+  state.settings.program = programName;
+  state.settings.preset = presetName;
+  state.settings.parameters = { ...parameters, database };
+};
+
+const resetSettings = (state: BlastFormState, config: BlastSettingsConfig) => {
+  state.settings = cloneDeep(initialBlastFormSettings);
+  state.settings.parameters.database = config.defaults.database;
+};
+
+const updateDatabaseFromSequenceType = (
+  state: BlastFormState,
+  config: BlastSettingsConfig
+) => {
+  const currentDatabase = state.settings.parameters.database;
+  const currentSequenceType = state.settings.sequenceType;
+  const { database_sequence_types } = config;
+  if (
+    !currentDatabase ||
+    database_sequence_types[currentDatabase] !== currentSequenceType
+  ) {
+    // get first database with the matching sequence type
+    const match = Object.entries(config.database_sequence_types).find(
+      ([, dbSequenceType]) => dbSequenceType === currentSequenceType
+    ) as [string, SequenceType];
+    const [databaseName] = match;
+    state.settings.parameters.database = databaseName;
+  }
+};
+
+const updateEmptyInputVisibility = (
+  state: BlastFormState,
+  sequences: ParsedInputSequence[]
+) => {
+  if (sequences.length > state.sequences.length) {
+    state.shouldAppendEmptyInput = false;
+  } else if (!sequences.length) {
+    state.shouldAppendEmptyInput = true;
+  }
+};
+
 const blastFormSlice = createSlice({
   name: 'blast-form',
   initialState,
   reducers: {
     setSequences(
       state,
-      action: PayloadAction<{ sequences: ParsedInputSequence[] }>
+      action: PayloadAction<{
+        sequences: ParsedInputSequence[];
+        config: BlastSettingsConfig;
+      }>
     ) {
-      const { sequences } = action.payload;
+      const { sequences, config } = action.payload;
+      updateEmptyInputVisibility(state, sequences);
+
       state.sequences = sequences;
+      state.hasUncommittedSequence = false;
+
+      if (!sequences.length) {
+        resetSettings(state, config);
+        autoUpdateSettings(state, config); // to fill in individual blast parameters
+      } else if (
+        guessSequenceType(sequences[0].value) !== state.settings.sequenceType &&
+        state.settings.sequenceSelectionMode === 'automatic'
+      ) {
+        autoUpdateSettings(state, config);
+      }
     },
     addSelectedSpecies(state, action: PayloadAction<Species>) {
       const species = action.payload;
@@ -142,50 +240,32 @@ const blastFormSlice = createSlice({
       }>
     ) {
       const { sequenceType, config, isAutomatic } = action.payload;
-      const selectedDatabase =
-        state.settings.parameters.database ?? config.defaults.database;
-      const databaseSequenceType = getDatabaseSequenceType({
-        database: selectedDatabase,
-        config
-      });
-      const programName = getProgamName({
-        sequenceType,
-        databaseSequenceType,
-        config
-      });
-      const presetName = initialBlastFormSettings.preset;
-      const parameters = config.presets.settings[programName][presetName];
+
       state.settings.sequenceType = sequenceType;
-      state.settings.sequenceSelectionMode = isAutomatic
-        ? 'automatic'
-        : 'manual';
-      state.settings.program = programName;
-      state.settings.preset = presetName;
-      state.settings.parameters = { ...parameters, database: selectedDatabase };
+      if (!isAutomatic) {
+        state.settings.sequenceSelectionMode = 'manual';
+      }
+
+      autoUpdateSettings(state, config);
     },
     setBlastDatabase(
       state,
       action: PayloadAction<{
         database: string;
+        isAutomatic?: boolean;
         config: BlastSettingsConfig;
       }>
     ) {
-      const { database, config } = action.payload;
-      const sequenceType = state.settings.sequenceType;
-      const databaseSequenceType = getDatabaseSequenceType({
-        database,
-        config
-      });
-      const programName = getProgamName({
-        sequenceType,
-        databaseSequenceType,
-        config
-      });
-      const presetName = initialBlastFormSettings.preset;
-      const parameters = config.presets.settings[programName][presetName];
-      state.settings.program = programName;
-      state.settings.preset = presetName;
-      state.settings.parameters = { ...parameters, database };
+      const { database, config, isAutomatic } = action.payload;
+
+      state.settings.parameters = { ...state.settings.parameters, database };
+      if (!isAutomatic) {
+        state.settings.databaseSelectionMode = 'manual';
+        // NOTE: disabling the automatic guessing of sequence type in response to a manual choice of the database
+        // is a requirement from the UX team. There's a good chance we'll want to undo this in the future
+        state.settings.sequenceSelectionMode = 'manual';
+      }
+      autoUpdateSettings(state, config);
     },
     setBlastProgram(
       state,
@@ -233,6 +313,7 @@ const blastFormSlice = createSlice({
     setBlastJobName(state, action: PayloadAction<string>) {
       state.settings.jobName = action.payload;
     },
+    // this action is for populating BLAST form with data from a previous BLAST submission
     fillBlastForm(
       _,
       action: PayloadAction<{
@@ -252,6 +333,25 @@ const blastFormSlice = createSlice({
           ...settings
         }
       });
+    },
+    // this action is for populating BLAST form via the "BLAST this sequence" button in another app
+    setSequenceForGenome(
+      state,
+      action: PayloadAction<{
+        sequence: ParsedInputSequence;
+        species: Species;
+        sequenceType: SequenceType;
+        config: BlastSettingsConfig;
+      }>
+    ) {
+      const { sequence, species, sequenceType, config } = action.payload;
+      resetSettings(state, config);
+      state.sequences = [sequence];
+      state.selectedSpecies = [species];
+      state.shouldAppendEmptyInput = false;
+      state.settings.sequenceType = sequenceType;
+      state.settings.sequenceSelectionMode = 'manual'; // to prevent sequence guessing (abusing the 'manual' keyword here)
+      autoUpdateSettings(state, config);
     },
     clearBlastForm() {
       // TODO: apply default settings to the form
@@ -276,6 +376,7 @@ export const {
   setBlastParameter,
   setBlastJobName,
   fillBlastForm,
+  setSequenceForGenome,
   clearBlastForm
 } = blastFormSlice.actions;
 export default blastFormSlice.reducer;

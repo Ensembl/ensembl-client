@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import {
   Markup,
   ZmenuFeatureType,
-  ZmenuContentTranscript,
-  ZmenuContentGene,
-  ZmenuCreatePayload,
-  ZmenuPayloadVarietyType
+  ZmenuPayloadVarietyType,
+  type ZmenuContentTranscript,
+  type ZmenuContentGene,
+  type ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
 import {
   getChrLocationStr,
-  RegionValidationMessages
+  type RegionValidationMessages
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
   createGenomeCategories,
@@ -34,45 +34,29 @@ import {
 } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { CogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+import {
+  getDefaultGeneTrackConfig,
+  getDefaultRegularTrackConfig,
+  type CogList
+} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 export const createCogTrackList = (): CogList => ({
-  'track:contig': faker.datatype.number(),
-  'track:gc': faker.datatype.number(),
-  'track:gene-feat': faker.datatype.number(),
-  'track:gene-other-fwd': faker.datatype.number(),
-  'track:gene-other-rev': faker.datatype.number(),
-  'track:gene-pc-fwd': faker.datatype.number(),
-  'track:gene-pc-rev': faker.datatype.number(),
-  'track:variant': faker.datatype.number()
+  'gene-focus': faker.datatype.number(),
+  contig: faker.datatype.number(),
+  gc: faker.datatype.number()
 });
 
-export const createTrackConfigLabel = () => ({
-  'track:contig': true,
-  'track:gc': true,
-  'track:gene-feat': true,
-  'track:gene-other-fwd': true,
-  'track:gene-other-rev': true,
-  'track:gene-pc-fwd': true,
-  'track:gene-pc-rev': true,
-  'track:variant': true
-});
-
-export const createTrackConfigNames = () => ({
-  'track:contig': true,
-  'track:gc': true,
-  'track:gene-feat': true,
-  'track:gene-other-fwd': true,
-  'track:gene-other-rev': true,
-  'track:gene-pc-fwd': true,
-  'track:gene-pc-rev': true,
-  'track:variant': true
+export const createTrackConfigs = () => ({
+  'gene-focus': getDefaultGeneTrackConfig(),
+  contig: getDefaultRegularTrackConfig(),
+  gc: getDefaultRegularTrackConfig()
 });
 
 export const createZmenuContentPayload = (): {
@@ -234,16 +218,20 @@ export const createMockBrowserState = () => {
         }
       },
       trackConfig: {
-        applyToAllConfig: {
-          isSelected: false,
-          allTrackNamesOn: false,
-          allTrackLabelsOn: false
+        browserTrackCogs: {
+          cogList: {
+            'gene-focus': 0,
+            contig: 192,
+            gc: 384
+          },
+          selectedCog: 'gene-focus'
         },
-        browserCogList: 0,
-        browserCogTrackList: createCogTrackList(),
-        selectedCog: 'track:gc',
-        trackConfigLabel: createTrackConfigLabel(),
-        trackConfigNames: createTrackConfigNames()
+        [fakeGenomeId]: {
+          applyToAllConfig: {
+            isSelected: true
+          },
+          tracks: createTrackConfigs()
+        }
       },
       trackPanel: {
         [fakeGenomeId]: {

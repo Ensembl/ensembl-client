@@ -19,7 +19,7 @@ import { useAppSelector } from 'src/store';
 
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import useBlastInputSequences from './useBlastInputSequences';
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
@@ -34,7 +34,7 @@ const BlastInputSequences = () => {
     updateSequences,
     appendEmptyInputBox,
     setUncommittedSequencePresence
-  } = useBlastInputSequences();
+  } = useBlastForm();
   const shouldAppendEmptyInput = useAppSelector(getEmptyInputVisibility);
 
   const onSequenceAdded = (input: string, index: number | null) => {

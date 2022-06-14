@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import random from 'lodash/random';
 import times from 'lodash/times';
 

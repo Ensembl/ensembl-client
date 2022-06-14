@@ -21,7 +21,7 @@ import configureMockStore from 'redux-mock-store';
 import { setTimeout } from 'timers/promises';
 import { render, fireEvent, createEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 import random from 'lodash/random';
 
 import BlastInputSequence, {

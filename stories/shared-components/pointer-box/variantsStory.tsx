@@ -16,7 +16,7 @@
 
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import PointerBox, {
   Position

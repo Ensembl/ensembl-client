@@ -208,7 +208,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           label={entry.label}
           isCollapsed={isCollapsed}
           hideUnchecked={props.showOverview}
-          {...additionalProps}
+          {...(additionalProps as JSONValue)}
         />
       </div>
     );

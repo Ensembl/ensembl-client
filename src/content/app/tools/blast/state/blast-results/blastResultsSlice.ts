@@ -106,7 +106,9 @@ const blastResultsSlice = createSlice({
       const { submissionId, jobId, fragment } = action.payload;
       const submission = state[submissionId];
       const job = submission.results.find((job) => job.jobId === jobId);
-      Object.assign(job, fragment);
+      if (job) {
+        Object.assign(job, fragment);
+      }
     }
   },
   extraReducers: (builder) => {

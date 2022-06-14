@@ -16,7 +16,7 @@
 
 import sample from 'lodash/sample';
 import times from 'lodash/times';
-import faker from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
 import { certainAminoAcids } from 'src/content/app/tools/blast/utils/sequenceAlphabets';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';

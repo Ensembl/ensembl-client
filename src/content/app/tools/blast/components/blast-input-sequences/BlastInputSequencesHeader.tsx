@@ -27,7 +27,7 @@ import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast
 
 import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastForm';
 
-import useBlastInputSequences from './useBlastInputSequences';
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
@@ -47,7 +47,7 @@ export type Props = {
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
-    useBlastInputSequences();
+    useBlastForm();
 
   const isEmptyInputAppended = useAppSelector(getEmptyInputVisibility);
   const isUserTypingInEmptyInput = useAppSelector(
@@ -70,6 +70,10 @@ const BlastInputSequencesHeader = (props: Props) => {
 
     // give React time to add the input box
     setTimeout(() => scrollToLastInputBox(), 0);
+  };
+
+  const onSequenceTypeChange = (sequenceType: SequenceType) => {
+    updateSequenceType({ sequenceType });
   };
 
   const scrollToLastInputBox = () => {
@@ -116,7 +120,7 @@ const BlastInputSequencesHeader = (props: Props) => {
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
-        onChange={updateSequenceType}
+        onChange={onSequenceTypeChange}
       />
       <div className={styles.headerGroup}>
         <span className={styles.clearAll} onClick={clearAllSequences}>
