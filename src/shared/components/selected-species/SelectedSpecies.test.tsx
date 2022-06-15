@@ -49,31 +49,31 @@ describe('<SelectedSpecies />', () => {
     it('has correct classes when active and enabled', () => {
       const { container } = renderSelectedSpecies(minimalProps);
       const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('inUseActive')).toBe(true);
+      expect(lozenge.classList.contains('themeBlack')).toBe(true);
     });
 
     it('has correct classes when active and not enabled', () => {
       const props = set('species.isEnabled', false, minimalProps);
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('notInUseActive')).toBe(true);
+      expect(lozenge.classList.contains('themeGrey')).toBe(true);
     });
 
     it('has correct classes when inactive and enabled', () => {
       const props = set('isActive', false, minimalProps);
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('inUseInactive')).toBe(true);
+      expect(lozenge.classList.contains('themeBlue')).toBe(true);
     });
 
-    it('has correct classes when inactive and disabled', () => {
+    it('has correct classes when inactive and not enabled', () => {
       const props = merge(minimalProps, {
         isActive: false,
         species: { isEnabled: false }
       });
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('notInUseInactive')).toBe(true);
+      expect(lozenge.classList.contains('themeIceBlue')).toBe(true);
     });
   });
 

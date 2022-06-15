@@ -17,7 +17,6 @@
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
@@ -28,7 +27,7 @@ import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
-import { SelectedSpecies } from 'src/shared/components/selected-species';
+import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -63,20 +62,16 @@ const BlastAppBar = (props: Props) => {
   };
 
   const enabledSpecies = speciesList.map((species, index) => (
-    <SelectedSpecies
+    <SpeciesLozenge
       key={index}
+      theme="blue"
       species={species}
       onClick={() => speciesLozengeClick(species)}
     />
   ));
 
   const disabledSpecies = speciesList.map((species, index) => (
-    <SelectedSpecies
-      key={index}
-      isActive={true}
-      species={{ ...species, isEnabled: false }}
-      onClick={noop}
-    />
+    <SpeciesLozenge key={index} theme="grey" species={species} />
   ));
 
   const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;

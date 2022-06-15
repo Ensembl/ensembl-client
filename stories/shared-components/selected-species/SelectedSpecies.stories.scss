@@ -1,5 +1,14 @@
 @import 'src/styles/common';
 
 .wrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1.5rem;
   padding: 40px;
+}
+
+.innerWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 1.5rem;
 }

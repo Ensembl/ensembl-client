@@ -16,10 +16,10 @@
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-const SPECIES_NAME_SIZE = 14;
+const SPECIES_NAME_SIZE = 15;
 const ASSEMBLY_NAME_SIZE = 11;
 const PADDING_SIZE = 20;
-const SPACE_BETWEEN = 7;
+const SPACE_BETWEEN = 10;
 const BORDER_WIDTH = 1;
 
 export const getDisplayName = (species: CommittedItem) =>

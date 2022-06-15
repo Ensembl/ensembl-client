@@ -1,0 +1,65 @@
+@import 'src/styles/common';
+@import 'src/styles/mixins';
+
+.species {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 20px;
+  border-width: 1px;
+  border-radius: 20px;
+  border-style: solid;
+  overflow: hidden;
+  user-select: none;
+}
+
+.themeBlue {
+  border-color: var(--species-lozenge-bg-color, #{$blue});
+  background-color: var(--species-lozenge-bg-color, #{$blue});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeBlack {
+  border-color: var(--species-lozenge-bg-color, #{$black});
+  background-color: var(--species-lozenge-bg-color, #{$black});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeIceBlue {
+  border-color: var(--species-lozenge-bg-color, #{$ice-blue});
+  background-color: var(--species-lozenge-bg-color, #{$ice-blue});
+  color: var(--species-lozenge-text-color, #{$blue});
+}
+
+.themeGrey {
+  border-color: var(--species-lozenge-bg-color, #{$grey});
+  background-color: var(--species-lozenge-bg-color, #{$grey});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.themeRed {
+  border-color: var(--species-lozenge-bg-color, #{$red});
+  background-color: var(--species-lozenge-bg-color, #{$red});
+  color: var(--species-lozenge-text-color, #{$white});
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.inner {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: $bold;
+  margin-right: 10px;
+}
+
+.assembly {
+  font-size: 11px;
+}

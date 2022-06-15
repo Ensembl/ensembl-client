@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from '../species-tabs-wrapper/speciesData';
 
@@ -32,33 +32,41 @@ type StoryArgs = {
 };
 
 export const SelectedSpeciesStory = (args: StoryArgs) => {
-  const enabledSpecies = speciesData[0];
-  const disabledSpecies = {
-    ...enabledSpecies,
-    isEnabled: false
-  };
+  const species = speciesData[0];
 
   return (
-    <div className={styles.wrapper}>
-      <SelectedSpecies
-        species={enabledSpecies}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={enabledSpecies}
-        isActive={true}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={disabledSpecies}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-      <SelectedSpecies
-        species={disabledSpecies}
-        isActive={true}
-        onClick={args.onClick}
-      ></SelectedSpecies>
-    </div>
+    <>
+      <div className={styles.wrapper}>
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge theme="blue" species={species} />
+          <span>blue theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge theme="black" species={species} />
+          <span>black theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge theme="ice-blue" species={species} />
+          <span>ice-blue theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge theme="grey" species={species} />
+          <span>grey theme</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge theme="red" species={species} />
+          <span>red theme</span>
+        </div>
+      </div>
+      <p>A clickable lozenge will change the cursor to hover, like so:</p>
+      <div>
+        <SpeciesLozenge theme="blue" species={species} onClick={args.onClick} />
+      </div>
+    </>
   );
 };
 
