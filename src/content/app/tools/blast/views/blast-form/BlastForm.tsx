@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import classNames from 'classnames';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
@@ -97,7 +97,7 @@ const MainLarge = () => {
 };
 
 const MainSmall = () => {
-  const step = useSelector(getStep);
+  const step = useAppSelector(getStep);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const containerClasses = `${styles.mainContainer} ${styles.mainContainerSmall}`;
@@ -125,8 +125,8 @@ const MainSmall = () => {
 };
 
 const BlastFormStepToggle = () => {
-  const dispatch = useDispatch();
-  const step = useSelector(getStep);
+  const dispatch = useAppDispatch();
+  const step = useAppSelector(getStep);
 
   const onSwitchToSpecies = () => {
     dispatch(switchToSpeciesStep());
