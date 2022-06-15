@@ -57,7 +57,7 @@ const useBrowserTrackConfig = () => {
 
   const {
     toggleTrackName,
-    toggleFeatureLabel,
+    toggleFeatureLabels,
     toggleSeveralTranscripts,
     toggleTranscriptIds
   } = useGenomeBrowser();
@@ -115,7 +115,7 @@ const useBrowserTrackConfig = () => {
             isFeatureLabelShown
           })
         );
-        toggleFeatureLabel({
+        toggleFeatureLabels({
           trackId,
           shouldShowFeatureLabel: isFeatureLabelShown
         });
@@ -128,7 +128,7 @@ const useBrowserTrackConfig = () => {
           isFeatureLabelShown
         })
       );
-      toggleFeatureLabel({
+      toggleFeatureLabels({
         trackId: selectedCog,
         shouldShowFeatureLabel: isFeatureLabelShown
       });

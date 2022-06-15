@@ -305,7 +305,7 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleFeatureLabel = (params: {
+  const toggleFeatureLabels = (params: {
     trackId: string;
     shouldShowFeatureLabel: boolean;
   }) => {
@@ -418,7 +418,7 @@ const useGenomeBrowser = () => {
     setZmenus,
     toggleTrack,
     toggleTrackName,
-    toggleFeatureLabel,
+    toggleFeatureLabels,
     toggleSeveralTranscripts,
     toggleTranscriptIds,
     genomeBrowser,

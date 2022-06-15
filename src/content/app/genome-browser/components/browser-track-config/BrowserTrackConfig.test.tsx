@@ -95,7 +95,7 @@ jest.mock(
   () => () => ({
     genomeBrowser: mockGenomeBrowser,
     toggleTrackName: jest.fn(),
-    toggleFeatureLabel: jest.fn()
+    toggleFeatureLabels: jest.fn()
   })
 );
 
