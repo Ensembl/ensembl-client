@@ -15,4 +15,4 @@
  */
 
 export { default as SelectedSpecies } from './SelectedSpecies';
-export { default as SelectedSpeciesLozenge } from './SelectedSpeciesLozenge';
+export { default as SpeciesLozenge } from './SpeciesLozenge';

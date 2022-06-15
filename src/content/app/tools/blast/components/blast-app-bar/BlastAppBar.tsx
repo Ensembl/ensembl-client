@@ -27,7 +27,7 @@ import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
-import { SelectedSpeciesLozenge } from 'src/shared/components/selected-species';
+import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -62,7 +62,7 @@ const BlastAppBar = (props: Props) => {
   };
 
   const enabledSpecies = speciesList.map((species, index) => (
-    <SelectedSpeciesLozenge
+    <SpeciesLozenge
       key={index}
       theme="blue"
       species={species}
@@ -71,7 +71,7 @@ const BlastAppBar = (props: Props) => {
   ));
 
   const disabledSpecies = speciesList.map((species, index) => (
-    <SelectedSpeciesLozenge key={index} theme="grey" species={species} />
+    <SpeciesLozenge key={index} theme="grey" species={species} />
   ));
 
   const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;

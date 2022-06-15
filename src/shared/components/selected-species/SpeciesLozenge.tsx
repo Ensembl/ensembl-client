@@ -23,7 +23,7 @@ import { getDisplayName } from './selectedSpeciesHelpers';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-import styles from './SelectedSpeciesLozenge.scss';
+import styles from './SpeciesLozenge.scss';
 
 type SpeciesLozengeTheme = 'blue' | 'black' | 'ice-blue' | 'grey' | 'red';
 
@@ -36,7 +36,7 @@ export type Props = {
   onMouseLeave?: () => void;
 };
 
-const SelectedSpeciesLozenge = (props: Props) => {
+const SpeciesLozenge = (props: Props) => {
   const handleMouseEnter = () => {
     props?.onMouseEnter?.();
   };
@@ -73,4 +73,4 @@ const SelectedSpeciesLozenge = (props: Props) => {
   );
 };
 
-export default SelectedSpeciesLozenge;
+export default SpeciesLozenge;

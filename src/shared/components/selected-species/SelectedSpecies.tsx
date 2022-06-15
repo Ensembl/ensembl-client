@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import SelectedSpeciesLozenge from './SelectedSpeciesLozenge';
+import SpeciesLozenge from './SpeciesLozenge';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
@@ -31,7 +31,7 @@ export type Props = {
 
 const SelectedSpecies = (props: Props) => {
   return (
-    <SelectedSpeciesLozenge
+    <SpeciesLozenge
       species={props.species}
       className={props.className}
       onMouseEnter={props.onMouseEnter}

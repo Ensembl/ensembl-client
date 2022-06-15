@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import SelectedSpeciesLozenge from 'src/shared/components/selected-species/SelectedSpeciesLozenge';
+import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from '../species-tabs-wrapper/speciesData';
 
@@ -38,37 +38,33 @@ export const SelectedSpeciesStory = (args: StoryArgs) => {
     <>
       <div className={styles.wrapper}>
         <div className={styles.innerWrapper}>
-          <SelectedSpeciesLozenge theme="blue" species={species} />
+          <SpeciesLozenge theme="blue" species={species} />
           <span>blue theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SelectedSpeciesLozenge theme="black" species={species} />
+          <SpeciesLozenge theme="black" species={species} />
           <span>black theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SelectedSpeciesLozenge theme="ice-blue" species={species} />
+          <SpeciesLozenge theme="ice-blue" species={species} />
           <span>ice-blue theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SelectedSpeciesLozenge theme="grey" species={species} />
+          <SpeciesLozenge theme="grey" species={species} />
           <span>grey theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SelectedSpeciesLozenge theme="red" species={species} />
+          <SpeciesLozenge theme="red" species={species} />
           <span>red theme</span>
         </div>
       </div>
       <p>A clickable lozenge will change the cursor to hover, like so:</p>
       <div>
-        <SelectedSpeciesLozenge
-          theme="blue"
-          species={species}
-          onClick={args.onClick}
-        />
+        <SpeciesLozenge theme="blue" species={species} onClick={args.onClick} />
       </div>
     </>
   );
