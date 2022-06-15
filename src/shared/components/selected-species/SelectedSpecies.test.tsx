@@ -66,7 +66,7 @@ describe('<SelectedSpecies />', () => {
       expect(lozenge.classList.contains('themeBlue')).toBe(true);
     });
 
-    it('has correct classes when inactive and disabled', () => {
+    it('has correct classes when inactive and not enabled', () => {
       const props = merge(minimalProps, {
         isActive: false,
         species: { isEnabled: false }
