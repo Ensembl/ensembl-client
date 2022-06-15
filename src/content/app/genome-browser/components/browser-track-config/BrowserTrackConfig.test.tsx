@@ -43,7 +43,7 @@ const renderComponent = () => {
         showSeveralTranscripts: false,
         showTranscriptIds: false,
         showTrackName: false,
-        showFeatureLabel: false,
+        showFeatureLabels: false,
         trackType: trackConfigSlice.TrackType.GENE
       }
     }
@@ -154,12 +154,14 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigSlice, 'updateFeatureLabel');
+      jest.spyOn(trackConfigSlice, 'updateFeatureLabelsVisibility');
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigSlice.updateFeatureLabel).toHaveBeenCalledWith({
+      expect(
+        trackConfigSlice.updateFeatureLabelsVisibility
+      ).toHaveBeenCalledWith({
         genomeId,
-        isFeatureLabelShown: true,
+        areFeatureLabelsShown: true,
         trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
       });
       const trackInfo =
@@ -167,7 +169,7 @@ describe('<BrowserTrackConfig />', () => {
           selectedTrackId
         ];
       if (trackInfo.trackType === trackConfigSlice.TrackType.GENE) {
-        expect(trackInfo.showFeatureLabel).toBeTruthy();
+        expect(trackInfo.showFeatureLabels).toBeTruthy();
       }
     });
   });

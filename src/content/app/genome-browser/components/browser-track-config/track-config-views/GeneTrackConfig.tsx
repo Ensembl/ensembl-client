@@ -41,7 +41,7 @@ export const GeneTrackConfig = () => {
 
   const {
     updateTrackName,
-    updateFeatureLabel,
+    updateFeatureLabelsVisibility,
     updateShowSeveralTranscripts,
     updateShowTranscriptIds
   } = useBrowserTrackConfig();
@@ -51,7 +51,7 @@ export const GeneTrackConfig = () => {
   }
 
   const shouldShowTrackName = selectedTrackConfig.showTrackName;
-  const shouldShowFeatureLabel = selectedTrackConfig.showFeatureLabel;
+  const shouldShowFeatureLabels = selectedTrackConfig.showFeatureLabels;
   const shouldShowSeveralTranscripts =
     selectedTrackConfig.showSeveralTranscripts;
   const shouldShowTranscriptIds = selectedTrackConfig.showTranscriptIds;
@@ -68,8 +68,8 @@ export const GeneTrackConfig = () => {
     updateTrackName(!shouldShowTrackName);
   };
 
-  const handleFeatureLabelToggle = () => {
-    updateFeatureLabel(!shouldShowFeatureLabel);
+  const handleFeatureLabelsToggle = () => {
+    updateFeatureLabelsVisibility(!shouldShowFeatureLabels);
   };
   return (
     <div className={styles.section}>
@@ -102,8 +102,8 @@ export const GeneTrackConfig = () => {
         <div className={styles.toggleWrapper}>
           <label>Feature labels</label>
           <SlideToggle
-            isOn={shouldShowFeatureLabel}
-            onChange={handleFeatureLabelToggle}
+            isOn={shouldShowFeatureLabels}
+            onChange={handleFeatureLabelsToggle}
             className={styles.slideToggle}
           />
         </div>

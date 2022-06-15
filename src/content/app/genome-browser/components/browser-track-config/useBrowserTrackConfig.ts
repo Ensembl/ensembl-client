@@ -26,7 +26,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
 import {
   updateTrackName as updateTrackConfigTrackName,
-  updateFeatureLabel as updateTrackConfigFeatureLabel,
+  updateFeatureLabelsVisibility as updateTrackConfigFeatureLabelsVisibility,
   updateShowSeveralTranscripts as updateTrackConfigShowSeveralTranscripts,
   updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
   updateApplyToAll,
@@ -101,7 +101,7 @@ const useBrowserTrackConfig = () => {
     });
   };
 
-  const updateFeatureLabel = (isFeatureLabelShown: boolean) => {
+  const updateFeatureLabelsVisibility = (areFeatureLabelsShown: boolean) => {
     if (!activeGenomeId) {
       return;
     }
@@ -109,28 +109,28 @@ const useBrowserTrackConfig = () => {
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigFeatureLabel({
+          updateTrackConfigFeatureLabelsVisibility({
             genomeId: activeGenomeId,
             trackId,
-            isFeatureLabelShown
+            areFeatureLabelsShown
           })
         );
         toggleFeatureLabels({
           trackId,
-          shouldShowFeatureLabel: isFeatureLabelShown
+          shouldShowFeatureLabels: areFeatureLabelsShown
         });
       });
     } else {
       dispatch(
-        updateTrackConfigFeatureLabel({
+        updateTrackConfigFeatureLabelsVisibility({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isFeatureLabelShown
+          areFeatureLabelsShown
         })
       );
       toggleFeatureLabels({
         trackId: selectedCog,
-        shouldShowFeatureLabel: isFeatureLabelShown
+        shouldShowFeatureLabels: areFeatureLabelsShown
       });
     }
 
@@ -139,7 +139,7 @@ const useBrowserTrackConfig = () => {
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'feature_label_' + (isFeatureLabelShown ? 'on' : 'off')
+      action: 'feature_labels_' + (areFeatureLabelsShown ? 'on' : 'off')
     });
   };
 
@@ -232,9 +232,9 @@ const useBrowserTrackConfig = () => {
     }
 
     const shouldShowTrackName = selectedTrackConfigs.showTrackName;
-    const shouldShowFeatureLabel =
+    const shouldShowFeatureLabels =
       selectedTrackConfigs.trackType === TrackType.GENE
-        ? selectedTrackConfigs.showFeatureLabel
+        ? selectedTrackConfigs.showFeatureLabels
         : false;
 
     const shouldShowSeveralTranscripts =
@@ -257,7 +257,7 @@ const useBrowserTrackConfig = () => {
     shouldApplyToAllRef.current = value === 'all_tracks';
 
     updateTrackName(shouldShowTrackName);
-    updateFeatureLabel(shouldShowFeatureLabel);
+    updateFeatureLabelsVisibility(shouldShowFeatureLabels);
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
     updateShowTranscriptIds(shouldShowTranscriptIds);
 
@@ -270,7 +270,7 @@ const useBrowserTrackConfig = () => {
 
   return {
     updateTrackName,
-    updateFeatureLabel,
+    updateFeatureLabelsVisibility,
     updateShowSeveralTranscripts,
     updateShowTranscriptIds,
     toggleApplyToAll

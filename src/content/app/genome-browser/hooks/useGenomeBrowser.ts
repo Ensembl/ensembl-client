@@ -187,7 +187,7 @@ const useGenomeBrowser = () => {
           : trackStateForNames.off.push(trackId);
 
         if (config.trackType === TrackType.GENE) {
-          config.showFeatureLabel
+          config.showFeatureLabels
             ? trackStateForLabels.on.push(trackId)
             : trackStateForLabels.off.push(trackId);
 
@@ -307,16 +307,16 @@ const useGenomeBrowser = () => {
 
   const toggleFeatureLabels = (params: {
     trackId: string;
-    shouldShowFeatureLabel: boolean;
+    shouldShowFeatureLabels: boolean;
   }) => {
-    const { trackId, shouldShowFeatureLabel } = params;
+    const { trackId, shouldShowFeatureLabels } = params;
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
-      type: shouldShowFeatureLabel
+      type: shouldShowFeatureLabels
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {
@@ -382,9 +382,9 @@ const useGenomeBrowser = () => {
 
     const trackInfo = trackConfigs && trackConfigs[trackId];
 
-    if (trackInfo && 'showFeatureLabel' in trackInfo && isTurnedOn) {
+    if (trackInfo && 'showFeatureLabels' in trackInfo && isTurnedOn) {
       genomeBrowser?.send({
-        type: trackInfo?.showFeatureLabel
+        type: trackInfo?.showFeatureLabels
           ? OutgoingActionType.TURN_ON_LABELS
           : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
