@@ -41,7 +41,7 @@ export const GeneTrackConfig = () => {
 
   const {
     updateTrackName,
-    updateTrackLabel,
+    updateFeatureLabelsVisibility,
     updateShowSeveralTranscripts,
     updateShowTranscriptIds
   } = useBrowserTrackConfig();
@@ -51,11 +51,26 @@ export const GeneTrackConfig = () => {
   }
 
   const shouldShowTrackName = selectedTrackConfig.showTrackName;
-  const shouldShowTrackLabel = selectedTrackConfig.showFeatureLabel;
+  const shouldShowFeatureLabels = selectedTrackConfig.showFeatureLabels;
   const shouldShowSeveralTranscripts =
     selectedTrackConfig.showSeveralTranscripts;
-  const shouldShowTranscriptIDs = selectedTrackConfig.showTranscriptIds;
+  const shouldShowTranscriptIds = selectedTrackConfig.showTranscriptIds;
 
+  const handleSeveralTranscriptsToggle = () => {
+    updateShowSeveralTranscripts(!shouldShowSeveralTranscripts);
+  };
+
+  const handleTranscriptIdsToggle = () => {
+    updateShowTranscriptIds(!shouldShowTranscriptIds);
+  };
+
+  const handleTrackNameToggle = () => {
+    updateTrackName(!shouldShowTrackName);
+  };
+
+  const handleFeatureLabelsToggle = () => {
+    updateFeatureLabelsVisibility(!shouldShowFeatureLabels);
+  };
   return (
     <div className={styles.section}>
       <div className={styles.subLabel}>Show</div>
@@ -64,17 +79,15 @@ export const GeneTrackConfig = () => {
           <label>5 transcripts</label>
           <SlideToggle
             isOn={shouldShowSeveralTranscripts}
-            onChange={() =>
-              updateShowSeveralTranscripts(!shouldShowSeveralTranscripts)
-            }
+            onChange={handleSeveralTranscriptsToggle}
             className={styles.slideToggle}
           />
         </div>
         <div className={styles.toggleWrapper}>
           <label>Transcript IDs</label>
           <SlideToggle
-            isOn={shouldShowTranscriptIDs}
-            onChange={() => updateShowTranscriptIds(!shouldShowTranscriptIDs)}
+            isOn={shouldShowTranscriptIds}
+            onChange={handleTranscriptIdsToggle}
             className={styles.slideToggle}
           />
         </div>
@@ -82,15 +95,15 @@ export const GeneTrackConfig = () => {
           <label>Track name</label>
           <SlideToggle
             isOn={shouldShowTrackName}
-            onChange={() => updateTrackName(!shouldShowTrackName)}
+            onChange={handleTrackNameToggle}
             className={styles.slideToggle}
           />
         </div>
         <div className={styles.toggleWrapper}>
           <label>Feature labels</label>
           <SlideToggle
-            isOn={shouldShowTrackLabel}
-            onChange={() => updateTrackLabel(!shouldShowTrackLabel)}
+            isOn={shouldShowFeatureLabels}
+            onChange={handleFeatureLabelsToggle}
             className={styles.slideToggle}
           />
         </div>

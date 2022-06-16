@@ -45,7 +45,7 @@ export type GeneTrackConfig = {
   showSeveralTranscripts: boolean;
   showTranscriptIds: boolean;
   showTrackName: boolean;
-  showFeatureLabel: boolean;
+  showFeatureLabels: boolean;
   trackType: TrackType.GENE;
 };
 
@@ -95,7 +95,7 @@ export const getDefaultGeneTrackConfig = (): GeneTrackConfig => ({
   showSeveralTranscripts: false,
   showTranscriptIds: false,
   showTrackName: false,
-  showFeatureLabel: true,
+  showFeatureLabels: true,
   trackType: TrackType.GENE
 });
 
@@ -192,22 +192,22 @@ const browserTrackConfigSlice = createSlice({
       const trackConfigState = state.configs[genomeId].tracks[trackId];
       trackConfigState.showTrackName = isTrackNameShown;
     },
-    updateFeatureLabel(
+    updateFeatureLabelsVisibility(
       state,
       action: PayloadAction<{
         genomeId: string;
         trackId: string;
-        isTrackLabelShown: boolean;
+        areFeatureLabelsShown: boolean;
       }>
     ) {
-      const { genomeId, trackId, isTrackLabelShown } = action.payload;
+      const { genomeId, trackId, areFeatureLabelsShown } = action.payload;
       const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
       }
 
-      trackConfigState.showFeatureLabel = isTrackLabelShown;
+      trackConfigState.showFeatureLabels = areFeatureLabelsShown;
     },
     updateShowSeveralTranscripts(
       state,
@@ -231,17 +231,17 @@ const browserTrackConfigSlice = createSlice({
       action: PayloadAction<{
         genomeId: string;
         trackId: string;
-        isTranscriptIdsShown: boolean;
+        shouldShowTranscriptIds: boolean;
       }>
     ) {
-      const { genomeId, trackId, isTranscriptIdsShown } = action.payload;
+      const { genomeId, trackId, shouldShowTranscriptIds } = action.payload;
       const trackConfigState = state.configs[genomeId].tracks[trackId];
 
       if (trackConfigState.trackType !== TrackType.GENE) {
         return;
       }
 
-      trackConfigState.showTranscriptIds = isTranscriptIdsShown;
+      trackConfigState.showTranscriptIds = shouldShowTranscriptIds;
     },
     deleteTrackConfigsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -256,7 +256,7 @@ export const {
   updateSelectedCog,
   updateApplyToAll,
   updateTrackName,
-  updateFeatureLabel,
+  updateFeatureLabelsVisibility,
   updateShowSeveralTranscripts,
   updateShowTranscriptIds,
   deleteTrackConfigsForGenome

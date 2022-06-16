@@ -36,12 +36,20 @@ export const TranscriptTrackConfig = () => {
     getTrackConfigsForTrackId(state, selectedCog)
   );
   const shouldShowTrackName = selectedTrackConfigInfo?.showTrackName ?? false;
-  const shouldShowTrackLabel =
+  const shouldShowFeatureLabels =
     selectedTrackConfigInfo?.trackType === TrackType.GENE &&
-    selectedTrackConfigInfo.showFeatureLabel;
+    selectedTrackConfigInfo.showFeatureLabels;
 
-  const { updateTrackName, updateTrackLabel } = useBrowserTrackConfig();
+  const { updateTrackName, updateFeatureLabelsVisibility } =
+    useBrowserTrackConfig();
 
+  const handleTrackNameToggle = () => {
+    updateTrackName(!shouldShowTrackName);
+  };
+
+  const handleFeatureLabelsToggle = () => {
+    updateFeatureLabelsVisibility(!shouldShowFeatureLabels);
+  };
   return (
     <div className={styles.section}>
       <div className={styles.subLabel}>Show</div>
@@ -50,15 +58,15 @@ export const TranscriptTrackConfig = () => {
           <label>Track name</label>
           <SlideToggle
             isOn={shouldShowTrackName}
-            onChange={() => updateTrackName(!shouldShowTrackName)}
+            onChange={handleTrackNameToggle}
             className={styles.slideToggle}
           />
         </div>
         <div className={styles.toggleWrapper}>
           <label>Feature labels</label>
           <SlideToggle
-            isOn={shouldShowTrackLabel}
-            onChange={() => updateTrackLabel(!shouldShowTrackLabel)}
+            isOn={shouldShowFeatureLabels}
+            onChange={handleFeatureLabelsToggle}
             className={styles.slideToggle}
           />
         </div>

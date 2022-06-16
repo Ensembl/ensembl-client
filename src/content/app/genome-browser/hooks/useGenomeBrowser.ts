@@ -169,6 +169,7 @@ const useGenomeBrowser = () => {
     };
 
     const trackStateForSeveralTranscripts = cloneDeep(emptyOnOffLists);
+    const trackStateForTranscriptIds = cloneDeep(emptyOnOffLists);
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
@@ -186,13 +187,17 @@ const useGenomeBrowser = () => {
           : trackStateForNames.off.push(trackId);
 
         if (config.trackType === TrackType.GENE) {
-          config.showFeatureLabel
+          config.showFeatureLabels
             ? trackStateForLabels.on.push(trackId)
             : trackStateForLabels.off.push(trackId);
 
           config.showSeveralTranscripts
             ? trackStateForSeveralTranscripts.on.push(trackId)
             : trackStateForSeveralTranscripts.off.push(trackId);
+
+          config.showTranscriptIds
+            ? trackStateForTranscriptIds.on.push(trackId)
+            : trackStateForTranscriptIds.off.push(trackId);
         }
       });
 
@@ -235,6 +240,20 @@ const useGenomeBrowser = () => {
       type: OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
       payload: {
         track_ids: trackStateForSeveralTranscripts.off
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: trackStateForTranscriptIds.on
+      }
+    });
+
+    genomeBrowser.send({
+      type: OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: trackStateForTranscriptIds.off
       }
     });
   };
@@ -286,18 +305,18 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleTrackLabel = (params: {
+  const toggleFeatureLabels = (params: {
     trackId: string;
-    shouldShowFeatureLabel: boolean;
+    shouldShowFeatureLabels: boolean;
   }) => {
-    const { trackId, shouldShowFeatureLabel } = params;
+    const { trackId, shouldShowFeatureLabels } = params;
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
-      type: shouldShowFeatureLabel
+      type: shouldShowFeatureLabels
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {
@@ -325,7 +344,6 @@ const useGenomeBrowser = () => {
     });
   };
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const toggleTranscriptIds = (params: {
     trackId: string;
     shouldShowTranscriptIds: boolean;
@@ -335,17 +353,15 @@ const useGenomeBrowser = () => {
     const trackIdToSend =
       trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
-    // Below lines will be enabled when we have the relevant functionality in genome browser.
-    // genomeBrowser?.send({
-    //   type: shouldShowTranscriptIds
-    //     ? OutgoingActionType.TURN_ON_TRANSCRIPT_IDS
-    //     : OutgoingActionType.TURN_OFF_TRANSCRIPT_IDS,
-    //   payload: {
-    //     track_ids: [trackIdToSend]
-    //   }
-    // });
+    genomeBrowser?.send({
+      type: shouldShowTranscriptIds
+        ? OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS
+        : OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    });
   };
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   const toggleTrack = (params: { trackId: string; status: Status }) => {
     const { trackId, status } = params;
@@ -366,9 +382,9 @@ const useGenomeBrowser = () => {
 
     const trackInfo = trackConfigs && trackConfigs[trackId];
 
-    if (trackInfo && 'showFeatureLabel' in trackInfo && isTurnedOn) {
+    if (trackInfo && 'showFeatureLabels' in trackInfo && isTurnedOn) {
       genomeBrowser?.send({
-        type: trackInfo?.showFeatureLabel
+        type: trackInfo?.showFeatureLabels
           ? OutgoingActionType.TURN_ON_LABELS
           : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
@@ -402,7 +418,7 @@ const useGenomeBrowser = () => {
     setZmenus,
     toggleTrack,
     toggleTrackName,
-    toggleTrackLabel,
+    toggleFeatureLabels,
     toggleSeveralTranscripts,
     toggleTranscriptIds,
     genomeBrowser,
