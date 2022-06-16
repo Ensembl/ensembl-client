@@ -55,7 +55,6 @@ const emptyTestContext = {
   sequenceValidityStatus: undefined,
   updateSequenceValidity: jest.fn()
 };
-let testContext: typeof emptyTestContext;
 const TestContext = createContext(emptyTestContext);
 
 const mockStore = configureMockStore([thunk]);
@@ -63,11 +62,10 @@ const mockStore = configureMockStore([thunk]);
 const getBlastInputSequenceNode = (
   props: Partial<BlastInputSequenceProps> = commonProps
 ) => {
-  testContext = { ...emptyTestContext };
   const newProps = { ...commonProps, ...props } as BlastInputSequenceProps;
   return (
     <Provider store={mockStore(mockState)}>
-      <TestContext.Provider value={testContext}>
+      <TestContext.Provider value={emptyTestContext}>
         <BlastInputSequence {...newProps} />
       </TestContext.Provider>
     </Provider>

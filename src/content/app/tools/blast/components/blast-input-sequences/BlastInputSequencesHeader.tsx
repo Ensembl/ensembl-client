@@ -57,13 +57,11 @@ const BlastInputSequencesHeader = (props: Props) => {
   const dispatch = useAppDispatch();
 
   const sequenceValidityContext = useContext(BlastFormContext);
-  let shouldShowAlert = false;
-
-  if (sequenceValidityContext) {
-    shouldShowAlert = Object.values(
-      sequenceValidityContext.sequenceValidityStatus
-    ).includes(false);
-  }
+  const shouldShowAlert =
+    sequenceValidityContext &&
+    Object.values(sequenceValidityContext.sequenceValidityStatus).includes(
+      false
+    );
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
