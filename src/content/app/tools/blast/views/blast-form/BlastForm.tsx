@@ -60,10 +60,16 @@ const BlastForm = () => {
 
 const Main = () => {
   const isSmallViewport = useMediaQuery('(max-width: 1900px)');
-  const [sequenceValidityStatus, setSequenceValidityStatus] = useState({});
+  const [sequencesValidity, setSequencesValidity] = useState<boolean[]>([]);
 
   const updateSequenceValidity = (index: number, status: boolean) => {
-    setSequenceValidityStatus({ ...sequenceValidityStatus, [index]: status });
+    const array = [...sequencesValidity];
+    array[index] = status;
+    setSequencesValidity(array);
+  };
+
+  const removeSequenceValidity = (index: number) => {
+    setSequencesValidity(sequencesValidity.filter((value, i) => i !== index));
   };
 
   if (isSmallViewport === null) {
@@ -72,7 +78,11 @@ const Main = () => {
 
   return (
     <BlastFormContext.Provider
-      value={{ updateSequenceValidity, sequenceValidityStatus }}
+      value={{
+        updateSequenceValidity,
+        removeSequenceValidity,
+        sequencesValidity
+      }}
     >
       {isSmallViewport ? <MainSmall /> : <MainLarge />}
     </BlastFormContext.Provider>
@@ -163,7 +173,8 @@ const BlastFormStepToggle = () => {
 
 type SequenceValidity = {
   updateSequenceValidity: (index: number, status: boolean) => void;
-  sequenceValidityStatus: { [key: number]: boolean };
+  removeSequenceValidity: (index: number) => void;
+  sequencesValidity: boolean[];
 };
 
 export const BlastFormContext = React.createContext<

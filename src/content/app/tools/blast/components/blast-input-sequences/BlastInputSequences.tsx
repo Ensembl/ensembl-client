@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { useAppSelector } from 'src/store';
 
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+
+import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastForm';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
@@ -36,6 +38,7 @@ const BlastInputSequences = () => {
     setUncommittedSequencePresence
   } = useBlastForm();
   const shouldAppendEmptyInput = useAppSelector(getEmptyInputVisibility);
+  const sequenceValidityContext = useContext(BlastFormContext);
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -57,6 +60,7 @@ const BlastInputSequences = () => {
     } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
+      sequenceValidityContext?.removeSequenceValidity(index);
     }
   };
 

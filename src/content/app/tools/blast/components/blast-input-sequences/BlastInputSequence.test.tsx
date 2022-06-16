@@ -52,7 +52,7 @@ const mockState = {
 };
 
 const emptyTestContext = {
-  sequenceValidityStatus: undefined,
+  sequencesValidity: undefined,
   updateSequenceValidity: jest.fn()
 };
 const TestContext = createContext(emptyTestContext);

@@ -44,6 +44,9 @@ export type Props = {
   compact: boolean;
 };
 
+const errorTooltipDescription =
+  'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
@@ -59,9 +62,7 @@ const BlastInputSequencesHeader = (props: Props) => {
   const sequenceValidityContext = useContext(BlastFormContext);
   const shouldShowAlert =
     sequenceValidityContext &&
-    Object.values(sequenceValidityContext.sequenceValidityStatus).includes(
-      false
-    );
+    Object.values(sequenceValidityContext.sequencesValidity).includes(false);
 
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
@@ -97,9 +98,6 @@ const BlastInputSequencesHeader = (props: Props) => {
   const headerClass = classNames(styles.header, {
     [styles.smallScreenHeader]: compact
   });
-
-  const errorTooltipDescription =
-    'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
 
   return (
     <div className={headerClass}>
