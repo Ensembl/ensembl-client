@@ -88,6 +88,21 @@ const BlastInputSequence = (props: Props) => {
     setInput(toFasta(sequence));
   }, [sequence.header, sequence.value, forceRenderCount]);
 
+  const isInputValid = input
+    ? checkSequenceValidity(input, sequenceType)
+    : true; // treat empty input as valid
+
+  const { sequences } = useBlastForm();
+  const sequenceValidityKey = index === null ? sequences.length : index;
+  const sequenceValidityContext = useContext(BlastFormContext);
+
+  useEffect(() => {
+    sequenceValidityContext?.updateSequenceValidity(
+      sequenceValidityKey,
+      isInputValid
+    );
+  }, [isInputValid]);
+
   const forceReadSequenceFromProps = () => {
     setForceRenderCount((count) => count + 1);
   };
@@ -136,21 +151,6 @@ const BlastInputSequence = (props: Props) => {
     props.onRemoveSequence?.(index);
     props.onInput?.('', index);
   };
-
-  const isInputValid = input
-    ? checkSequenceValidity(input, sequenceType)
-    : true; // treat empty input as valid
-
-  const { sequences } = useBlastForm();
-  const sequenceValidityKey = index === null ? sequences.length : index;
-  const sequenceValidityContext = useContext(BlastFormContext);
-
-  useEffect(() => {
-    sequenceValidityContext?.updateSequenceValidity(
-      sequenceValidityKey,
-      isInputValid
-    );
-  }, [isInputValid]);
 
   const inputBoxClassnames = classNames(styles.inputSequenceBox, {
     [styles.inputSequenceBoxFileOver]: isFileOver
