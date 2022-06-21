@@ -67,9 +67,14 @@ const BlastInputSequence = (props: Props) => {
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const sequenceValidityContext = useContext(BlastFormContext);
 
   const errorTooltipDescription =
     'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+
+  const isInputValid = input
+    ? checkSequenceValidity(input, sequenceType)
+    : true; // treat empty input as valid
 
   const onFileDrop = ({ content }: FileTransformedToString) => {
     if (content) {
@@ -85,12 +90,6 @@ const BlastInputSequence = (props: Props) => {
   useEffect(() => {
     setInput(toFasta(sequence));
   }, [sequence.header, sequence.value, forceRenderCount]);
-
-  const isInputValid = input
-    ? checkSequenceValidity(input, sequenceType)
-    : true; // treat empty input as valid
-
-  const sequenceValidityContext = useContext(BlastFormContext);
 
   useEffect(() => {
     sequenceValidityContext?.updateSequenceValidity(index, isInputValid);
