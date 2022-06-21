@@ -27,8 +27,6 @@ import classNames from 'classnames';
 
 import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastForm';
 
-import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
-
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 import { isValidSequence } from 'src/content/app/tools/blast/utils/sequenceValidators';
 
@@ -92,15 +90,10 @@ const BlastInputSequence = (props: Props) => {
     ? checkSequenceValidity(input, sequenceType)
     : true; // treat empty input as valid
 
-  const { sequences } = useBlastForm();
-  const sequenceValidityKey = index === null ? sequences.length : index;
   const sequenceValidityContext = useContext(BlastFormContext);
 
   useEffect(() => {
-    sequenceValidityContext?.updateSequenceValidity(
-      sequenceValidityKey,
-      isInputValid
-    );
+    sequenceValidityContext?.updateSequenceValidity(index, isInputValid);
   }, [isInputValid]);
 
   const forceReadSequenceFromProps = () => {

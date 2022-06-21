@@ -18,6 +18,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import classNames from 'classnames';
 
+import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
+
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
@@ -61,9 +63,11 @@ const BlastForm = () => {
 const Main = () => {
   const isSmallViewport = useMediaQuery('(max-width: 1900px)');
   const [sequencesValidity, setSequencesValidity] = useState<boolean[]>([]);
+  const { sequences } = useBlastForm();
 
-  const updateSequenceValidity = (index: number, status: boolean) => {
+  const updateSequenceValidity = (index: number | null, status: boolean) => {
     const array = [...sequencesValidity];
+    index = index === null ? sequences.length : index;
     array[index] = status;
     setSequencesValidity(array);
   };
@@ -172,7 +176,7 @@ const BlastFormStepToggle = () => {
 };
 
 type SequenceValidity = {
-  updateSequenceValidity: (index: number, status: boolean) => void;
+  updateSequenceValidity: (index: number | null, status: boolean) => void;
   removeSequenceValidity: (index: number) => void;
   sequencesValidity: boolean[];
 };
