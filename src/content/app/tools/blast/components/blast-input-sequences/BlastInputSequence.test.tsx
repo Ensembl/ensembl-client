@@ -14,62 +14,20 @@
  * limitations under the License.
  */
 
-import React, { createContext } from 'react';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
+import React from 'react';
 import { setTimeout } from 'timers/promises';
 import { render, fireEvent, createEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
 import random from 'lodash/random';
 
-import BlastInputSequence, {
-  type Props as BlastInputSequenceProps
-} from './BlastInputSequence';
-
-import { initialState as initialBlastFormState } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-
-import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+import BlastInputSequence from './BlastInputSequence';
 
 const testInput = 'AGCT'; // it shouldn't even matter for testing purposes
-
-jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
-  return {
-    useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
-  };
-});
 
 const commonProps = {
   onCommitted: jest.fn(),
   sequenceType: 'dna' as const
-};
-
-const mockState = {
-  blast: {
-    blastForm: initialBlastFormState
-  }
-};
-
-const emptyTestContext = {
-  sequencesValidity: undefined,
-  updateSequenceValidity: jest.fn()
-};
-const TestContext = createContext(emptyTestContext);
-
-const mockStore = configureMockStore([thunk]);
-
-const getBlastInputSequenceNode = (
-  props: Partial<BlastInputSequenceProps> = commonProps
-) => {
-  const newProps = { ...commonProps, ...props } as BlastInputSequenceProps;
-  return (
-    <Provider store={mockStore(mockState)}>
-      <TestContext.Provider value={emptyTestContext}>
-        <BlastInputSequence {...newProps} />
-      </TestContext.Provider>
-    </Provider>
-  );
 };
 
 describe('<BlastInputSequence />', () => {
@@ -79,7 +37,7 @@ describe('<BlastInputSequence />', () => {
 
   describe('when empty', () => {
     it('accepts a pasted input', () => {
-      const { container } = render(getBlastInputSequenceNode());
+      const { container } = render(<BlastInputSequence {...commonProps} />);
       const textarea = container.querySelector(
         'textarea'
       ) as HTMLTextAreaElement;
@@ -106,7 +64,7 @@ describe('<BlastInputSequence />', () => {
       const file = new File([testFasta], 'test-sequence.fasta', {
         type: 'text/x-fasta'
       });
-      const { container } = render(getBlastInputSequenceNode());
+      const { container } = render(<BlastInputSequence {...commonProps} />);
       const fileInput = container.querySelector(
         'input[type="file"]'
       ) as HTMLInputElement;
@@ -120,7 +78,7 @@ describe('<BlastInputSequence />', () => {
     });
 
     it('contains a control for clearing the input', () => {
-      const { container } = render(getBlastInputSequenceNode());
+      const { container } = render(<BlastInputSequence {...commonProps} />);
       const deleteButton = container.querySelector('.deleteButton');
 
       expect(deleteButton).toBeTruthy();
@@ -130,7 +88,9 @@ describe('<BlastInputSequence />', () => {
   describe('interaction with parent', () => {
     it('renders a title controlled by the parent', () => {
       const title = 'This is test title';
-      const { container } = render(getBlastInputSequenceNode({ title }));
+      const { container } = render(
+        <BlastInputSequence {...commonProps} title={title} />
+      );
       const inputHeader = container.querySelector('.header') as HTMLElement;
 
       expect(inputHeader.innerHTML).toMatch(title);
@@ -142,7 +102,7 @@ describe('<BlastInputSequence />', () => {
         value: 'AGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCT'
       };
       const { container, rerender } = render(
-        getBlastInputSequenceNode({ sequence })
+        <BlastInputSequence {...commonProps} sequence={sequence} />
       );
       const textarea = container.querySelector(
         'textarea'
@@ -157,7 +117,7 @@ describe('<BlastInputSequence />', () => {
         value: 'AAACCCTTT'
       };
 
-      rerender(getBlastInputSequenceNode({ sequence }));
+      rerender(<BlastInputSequence {...commonProps} sequence={sequence} />);
 
       expectedTextareaContent = `>${sequence.header}\n${sequence.value}`; // the sequence has been updated
       expect(textarea.value).toBe(expectedTextareaContent);
@@ -166,7 +126,7 @@ describe('<BlastInputSequence />', () => {
     it('accepts typed-in input, and passes it to parent when user leaves the textarea', async () => {
       const elementIndex = random(0, 5);
       const { container, rerender } = render(
-        getBlastInputSequenceNode({ index: elementIndex })
+        <BlastInputSequence {...commonProps} index={elementIndex} />
       );
       const textarea = container.querySelector(
         'textarea'
@@ -186,7 +146,7 @@ describe('<BlastInputSequence />', () => {
       jest.clearAllMocks();
 
       // if index is not passed at all
-      rerender(getBlastInputSequenceNode());
+      rerender(<BlastInputSequence {...commonProps} />);
       act(() => {
         textarea.focus();
       });
@@ -206,10 +166,11 @@ describe('<BlastInputSequence />', () => {
       const onRemoveSequence = jest.fn();
       const inputIndex = faker.datatype.boolean() ? 1 : undefined; // an input box may receive an index property
       const { container } = render(
-        getBlastInputSequenceNode({
-          index: inputIndex,
-          onRemoveSequence
-        })
+        <BlastInputSequence
+          {...commonProps}
+          index={inputIndex}
+          onRemoveSequence={onRemoveSequence}
+        />
       );
       const textarea = container.querySelector(
         'textarea'
