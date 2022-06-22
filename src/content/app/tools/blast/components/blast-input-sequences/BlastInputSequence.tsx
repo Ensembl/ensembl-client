@@ -54,6 +54,9 @@ export type Props = {
   onRemoveSequence?: (index: number | null) => void;
 };
 
+const errorTooltipDescription =
+  'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+
 const BlastInputSequence = (props: Props) => {
   const {
     index = null,
@@ -69,12 +72,17 @@ const BlastInputSequence = (props: Props) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sequenceValidityContext = useContext(BlastFormContext);
 
-  const errorTooltipDescription =
-    'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+  useEffect(() => {
+    setInput(toFasta(sequence));
+  }, [sequence.header, sequence.value, forceRenderCount]);
 
   const isInputValid = input
     ? checkSequenceValidity(input, sequenceType)
     : true; // treat empty input as valid
+
+  useEffect(() => {
+    sequenceValidityContext?.updateSequenceValidity(index, isInputValid);
+  }, [isInputValid]);
 
   const onFileDrop = ({ content }: FileTransformedToString) => {
     if (content) {
@@ -86,14 +94,6 @@ const BlastInputSequence = (props: Props) => {
     onUpload: onFileDrop,
     transformTo: 'text'
   });
-
-  useEffect(() => {
-    setInput(toFasta(sequence));
-  }, [sequence.header, sequence.value, forceRenderCount]);
-
-  useEffect(() => {
-    sequenceValidityContext?.updateSequenceValidity(index, isInputValid);
-  }, [isInputValid]);
 
   const forceReadSequenceFromProps = () => {
     setForceRenderCount((count) => count + 1);
