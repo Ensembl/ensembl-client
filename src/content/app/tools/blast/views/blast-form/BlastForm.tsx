@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import classNames from 'classnames';
 
-import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
+import BlastFormContextContainer from './BlastFormContextContainer';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
@@ -62,34 +62,15 @@ const BlastForm = () => {
 
 const Main = () => {
   const isSmallViewport = useMediaQuery('(max-width: 1900px)');
-  const [sequencesValidity, setSequencesValidity] = useState<boolean[]>([]);
-  const { sequences } = useBlastForm();
-
-  const updateSequenceValidity = (index: number | null, status: boolean) => {
-    const array = [...sequencesValidity];
-    index = index === null ? sequences.length : index;
-    array[index] = status;
-    setSequencesValidity(array);
-  };
-
-  const removeSequenceValidity = (index: number) => {
-    setSequencesValidity(sequencesValidity.filter((value, i) => i !== index));
-  };
 
   if (isSmallViewport === null) {
     return null;
   }
 
   return (
-    <BlastFormContext.Provider
-      value={{
-        updateSequenceValidity,
-        removeSequenceValidity,
-        sequencesValidity
-      }}
-    >
+    <BlastFormContextContainer>
       {isSmallViewport ? <MainSmall /> : <MainLarge />}
-    </BlastFormContext.Provider>
+    </BlastFormContextContainer>
   );
 };
 
@@ -174,15 +155,5 @@ const BlastFormStepToggle = () => {
     </div>
   );
 };
-
-type SequenceValidity = {
-  updateSequenceValidity: (index: number | null, status: boolean) => void;
-  removeSequenceValidity: (index: number) => void;
-  sequencesValidity: boolean[];
-};
-
-export const BlastFormContext = React.createContext<
-  SequenceValidity | undefined
->(undefined);
 
 export default BlastForm;
