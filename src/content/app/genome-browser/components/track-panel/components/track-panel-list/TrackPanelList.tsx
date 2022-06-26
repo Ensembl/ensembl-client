@@ -18,6 +18,8 @@ import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
+import { useAppDispatch } from 'src/store';
+
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 import {
@@ -26,6 +28,10 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
+import {
+  BrowserSidebarModalView,
+  openBrowserSidebarModal
+} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
@@ -36,6 +42,7 @@ import {
   AccordionItemButton,
   AccordionItemPanel
 } from 'src/shared/components/accordion';
+import SearchIcon from 'static/icons/icon_search.svg';
 
 import styles from './TrackPanelList.scss';
 
@@ -44,10 +51,15 @@ export const TrackPanelList = () => {
   const activeFocusObject = useSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const genomeTrackCategories = useSelector(getGenomeTrackCategoriesById);
+  const dispatch = useAppDispatch();
 
   if (!activeGenomeId) {
     return null; // will never happen, but makes typescript happy
   }
+
+  const openSearch = () => {
+    dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));
+  };
 
   const currentTrackCategories = genomeTrackCategories?.filter(
     (category: GenomeTrackCategory) =>
@@ -71,6 +83,16 @@ export const TrackPanelList = () => {
           />
         </section>
       ) : null}
+
+      <section>
+        <div className={styles.sectionContent}>
+          <div className={styles.findAGene} onClick={openSearch}>
+            <span>Find a gene</span>
+            <SearchIcon />
+          </div>
+        </div>
+      </section>
+
       <div className={styles.accordionContainer}>
         <Accordion
           className={styles.trackPanelAccordion}
