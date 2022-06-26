@@ -27,8 +27,8 @@
 }
 
 .geneSymbol {
-    font-weight: $bold;
-    margin-right: 10px;
+  font-weight: $bold;
+  margin-right: 10px;
 }
 
 .accordionContainer {
@@ -36,37 +36,49 @@
 
   .entityViewerAccordion {
     border: none;
-    margin-top: 30px;
   }
-  
+
   .entityViewerAccordionHeader {
     background-color: $light-grey;
     border-radius: 5px;
   }
-  
+
   .entityViewerAccordionButton {
     color: $blue;
     padding: 5px 15px 5px 15px;
     border-radius: 5px;
-  
+
     &:before,
     &:after {
       margin-top: -3px;
     }
-  
+
     &Disabled {
       color: $grey;
     }
   }
-  
+
   .entityViewerAccordionItem:not(:first-child) {
     border-color: transparent;
   }
-  
+
   .entityViewerAccordionItemContent {
     background-color: transparent;
     border: none;
     padding: 15px;
   }
+}
 
+.findAGene {
+  color: $blue;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 40px 0 20px 0;
+
+  svg {
+    fill: $blue;
+    width: 13px;
+    margin-left: 12px;
+    margin-bottom: -2px;
+  }
 }
