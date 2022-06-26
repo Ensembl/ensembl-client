@@ -37,6 +37,8 @@ jest.mock(
   })
 );
 
+jest.mock('src/store', () => ({ useAppDispatch: jest.fn() }));
+
 jest.mock('../publications/GenePublications', () => () => (
   <div className="genePublications" />
 ));
