@@ -82,7 +82,7 @@ describe('<BrowserCogList />', () => {
         type: IncomingActionType.TRACK_SUMMARY,
         payload: [
           {
-            'switch-id': 'gene-focus',
+            'switch-id': 'focus',
             offset: 100
           },
           {
@@ -99,7 +99,7 @@ describe('<BrowserCogList />', () => {
       );
 
       expect(updateCogListAction.payload).toEqual({
-        'gene-focus': 100,
+        focus: 100,
         contig: 200
       });
     });
