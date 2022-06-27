@@ -25,7 +25,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
-import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastFormContextContainer';
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 import { isValidSequence } from 'src/content/app/tools/blast/utils/sequenceValidators';
@@ -40,7 +40,7 @@ import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
-import { type SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
+import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequence.scss';
 

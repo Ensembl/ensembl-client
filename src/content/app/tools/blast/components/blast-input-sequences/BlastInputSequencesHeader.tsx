@@ -25,7 +25,7 @@ import {
 
 import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastFormContextContainer';
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 

@@ -18,7 +18,7 @@ import React, { useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import classNames from 'classnames';
 
-import BlastFormContextContainer from './BlastFormContextContainer';
+import { BlastFormContextContainer } from './BlastFormContext';
 
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';

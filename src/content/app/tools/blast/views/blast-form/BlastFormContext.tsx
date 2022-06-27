@@ -18,14 +18,14 @@ import React, { ReactNode, useState } from 'react';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
-type SequenceValidity = {
+type BlastFormContextType = {
   updateSequenceValidity: (index: number | null, status: boolean) => void;
   removeSequenceValidity: (index: number) => void;
   sequencesValidity: boolean[];
 };
 
 export const BlastFormContext = React.createContext<
-  SequenceValidity | undefined
+  BlastFormContextType | undefined
 >(undefined);
 
 type Props = {
@@ -59,4 +59,4 @@ export const BlastFormContextContainer = (props: Props) => {
   );
 };
 
-export default BlastFormContextContainer;
+export default BlastFormContext;

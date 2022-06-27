@@ -19,7 +19,7 @@ import { useAppSelector } from 'src/store';
 
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
-import { BlastFormContext } from 'src/content/app/tools/blast/views/blast-form/BlastFormContextContainer';
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
