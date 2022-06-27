@@ -19,9 +19,9 @@ import React, { ReactNode, useState } from 'react';
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 type BlastFormContextType = {
-  updateSequenceValidity: (index: number | null, status: boolean) => void;
-  removeSequenceValidity: (index: number) => void;
-  sequencesValidity: boolean[];
+  updateSequenceValidityFlags: (index: number | null, status: boolean) => void;
+  removeSequenceValidityFlags: (index: number) => void;
+  sequenceValidityFlags: boolean[];
 };
 
 export const BlastFormContext = React.createContext<
@@ -33,25 +33,32 @@ type Props = {
 };
 
 export const BlastFormContextContainer = (props: Props) => {
-  const [sequencesValidity, setSequencesValidity] = useState<boolean[]>([]);
+  const [sequenceValidityFlags, setSequenceValidityFlags] = useState<boolean[]>(
+    []
+  );
   const { sequences } = useBlastForm();
 
-  const updateSequenceValidity = (index: number | null, status: boolean) => {
-    const array = [...sequencesValidity];
+  const updateSequenceValidityFlags = (
+    index: number | null,
+    status: boolean
+  ) => {
+    const array = [...sequenceValidityFlags];
     index = index === null ? sequences.length : index;
     array[index] = status;
-    setSequencesValidity(array);
+    setSequenceValidityFlags(array);
   };
 
-  const removeSequenceValidity = (index: number) => {
-    setSequencesValidity(sequencesValidity.filter((value, i) => i !== index));
+  const removeSequenceValidityFlags = (index: number) => {
+    setSequenceValidityFlags(
+      sequenceValidityFlags.filter((value, i) => i !== index)
+    );
   };
   return (
     <BlastFormContext.Provider
       value={{
-        updateSequenceValidity,
-        removeSequenceValidity,
-        sequencesValidity
+        updateSequenceValidityFlags,
+        removeSequenceValidityFlags,
+        sequenceValidityFlags
       }}
     >
       {props.children}

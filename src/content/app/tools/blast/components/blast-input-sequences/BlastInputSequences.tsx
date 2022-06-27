@@ -38,7 +38,7 @@ const BlastInputSequences = () => {
     setUncommittedSequencePresence
   } = useBlastForm();
   const shouldAppendEmptyInput = useAppSelector(getEmptyInputVisibility);
-  const sequenceValidityContext = useContext(BlastFormContext);
+  const blastFormContext = useContext(BlastFormContext);
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -60,7 +60,7 @@ const BlastInputSequences = () => {
     } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
-      sequenceValidityContext?.removeSequenceValidity(index);
+      blastFormContext?.removeSequenceValidityFlags(index);
     }
   };
 

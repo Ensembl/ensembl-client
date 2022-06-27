@@ -70,7 +70,7 @@ const BlastInputSequence = (props: Props) => {
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const sequenceValidityContext = useContext(BlastFormContext);
+  const blastFormContext = useContext(BlastFormContext);
 
   useEffect(() => {
     setInput(toFasta(sequence));
@@ -81,7 +81,7 @@ const BlastInputSequence = (props: Props) => {
     : true; // treat empty input as valid
 
   useEffect(() => {
-    sequenceValidityContext?.updateSequenceValidity(index, isInputValid);
+    blastFormContext?.updateSequenceValidityFlags(index, isInputValid);
   }, [isInputValid]);
 
   const onFileDrop = ({ content }: FileTransformedToString) => {
