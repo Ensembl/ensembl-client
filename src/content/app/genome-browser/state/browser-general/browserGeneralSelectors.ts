@@ -79,6 +79,21 @@ export const getBrowserTrackState = (
   return savedTrackStatus ?? Status.SELECTED;
 };
 
+export const getBrowserTranscriptTrackState = (
+  state: RootState,
+  params: {
+    genomeId: string;
+    objectId: string;
+    transcriptId: string;
+  }
+) => {
+  const { genomeId, objectId, transcriptId } = params;
+  const allBrowserTrackStates = getBrowserTrackStates(state);
+  const transcriptTrackStatuses =
+    allBrowserTrackStates?.[genomeId]?.transcriptTracks?.[objectId];
+  return transcriptTrackStatuses?.[transcriptId] ?? Status.SELECTED;
+};
+
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 

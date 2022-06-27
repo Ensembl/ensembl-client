@@ -54,7 +54,12 @@ export type TrackStates = {
 
 export type GenomeTrackStates = {
   commonTracks?: TrackStates;
-  objectTracks?: { [objctId: string]: TrackStates };
+  objectTracks?: { [objectId: string]: TrackStates };
+  transcriptTracks?: {
+    [objectId: string]: {
+      [transcriptId: string]: TrackActivityStatus;
+    };
+  };
 };
 
 export type BrowserTrackStates = {

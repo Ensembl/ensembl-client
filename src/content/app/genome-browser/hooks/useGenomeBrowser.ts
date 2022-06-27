@@ -395,6 +395,7 @@ const useGenomeBrowser = () => {
 
     const allTrackNamesOn =
       trackConfigs && trackConfigs[trackId]?.showTrackName;
+
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: allTrackNamesOn
@@ -405,6 +406,26 @@ const useGenomeBrowser = () => {
         }
       });
     }
+
+    if (trackIdToSend === 'focus' && !isTurnedOn) {
+      genomeBrowser?.send({
+        type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
+        payload: {
+          track_id: 'focus',
+          transcript_ids: []
+        }
+      });
+    }
+  };
+
+  const updateTranscriptTracks = (visibleTranscriptIds: string[]) => {
+    genomeBrowser?.send({
+      type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
+      payload: {
+        track_id: 'focus',
+        transcript_ids: visibleTranscriptIds
+      }
+    });
   };
 
   return {
@@ -417,6 +438,7 @@ const useGenomeBrowser = () => {
     restoreTrackConfigStates,
     setZmenus,
     toggleTrack,
+    updateTranscriptTracks,
     toggleTrackName,
     toggleFeatureLabels,
     toggleSeveralTranscripts,
