@@ -84,14 +84,10 @@ export const TrackPanelList = () => {
         </section>
       ) : null}
 
-      <section>
-        <div className={styles.sectionContent}>
-          <div className={styles.findAGene} onClick={openSearch}>
-            <span>Find a gene</span>
-            <SearchIcon />
-          </div>
-        </div>
-      </section>
+      <div className={styles.findAGene} onClick={openSearch}>
+        <span>Find a gene</span>
+        <SearchIcon />
+      </div>
 
       <div className={styles.accordionContainer}>
         <Accordion
