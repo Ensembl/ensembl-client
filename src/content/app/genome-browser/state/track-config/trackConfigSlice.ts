@@ -134,7 +134,7 @@ export const getTrackType = (trackId: string) => {
     return null;
   }
 
-  if (trackId.startsWith('gene')) {
+  if (trackId.startsWith('gene') || trackId.startsWith('focus')) {
     return TrackType.GENE;
   } else {
     return TrackType.REGULAR;
