@@ -60,7 +60,7 @@ const BlastInputSequences = () => {
     } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
-      blastFormContext?.removeSequenceValidityFlags(index);
+      blastFormContext?.removeSequenceValidityFlag(index);
     }
   };
 
