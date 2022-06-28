@@ -130,6 +130,10 @@ export const saveTrackConfigsForGenome: ActionCreator<
 
 // TODO: get proper data from the backend in order not to hack track id
 export const getTrackType = (trackId: string) => {
+  if (!trackId) {
+    return null;
+  }
+
   if (trackId.startsWith('gene')) {
     return TrackType.GENE;
   } else {

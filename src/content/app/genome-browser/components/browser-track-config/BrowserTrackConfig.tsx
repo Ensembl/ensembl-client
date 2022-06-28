@@ -52,6 +52,10 @@ export const BrowserTrackConfig = () => {
   const trackType = getTrackType(selectedCog);
   const { toggleApplyToAll } = useBrowserTrackConfig();
 
+  if (!trackType) {
+    return null;
+  }
+
   const radioOptions: RadioOptions = [
     {
       value: 'this_track',
