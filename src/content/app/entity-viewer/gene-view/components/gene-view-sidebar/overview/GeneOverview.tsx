@@ -22,18 +22,25 @@ import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { useAppDispatch } from 'src/store';
 
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import SearchIcon from 'static/icons/icon_search.svg';
 
-import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+import {
+  openSidebarModal,
+  SidebarModalView,
+  SidebarTabName
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.scss';
 
 const GeneOverview = () => {
   const { entityId, genomeId } = useParams<'genomeId' | 'entityId'>();
   const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
+  const dispatch = useAppDispatch();
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
@@ -69,6 +76,10 @@ const GeneOverview = () => {
       tabName: SidebarTabName.OVERVIEW,
       linkLabel: geneNameMetadata.accession_id
     });
+  };
+
+  const openSearch = () => {
+    dispatch(openSidebarModal(SidebarModalView.SEARCH));
   };
 
   return (
@@ -107,6 +118,15 @@ const GeneOverview = () => {
             {gene.alternative_symbols.length
               ? gene.alternative_symbols.join(', ')
               : 'None'}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className={styles.sectionContent}>
+          <div className={styles.findAGene} onClick={openSearch}>
+            <span>Find a gene</span>
+            <SearchIcon />
           </div>
         </div>
       </section>
