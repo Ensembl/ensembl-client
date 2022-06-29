@@ -44,7 +44,7 @@ import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettin
 
 import styles from './BlastInputSequence.scss';
 
-export type Props = {
+type Props = {
   index?: number; // 0...n if there are many input elements
   sequence?: ParsedInputSequence;
   sequenceType: SequenceType;

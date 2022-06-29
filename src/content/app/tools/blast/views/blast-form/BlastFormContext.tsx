@@ -21,6 +21,7 @@ import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 type BlastFormContextType = {
   updateSequenceValidityFlags: (index: number | null, status: boolean) => void;
   removeSequenceValidityFlag: (index: number) => void;
+  clearSequenceValidityFlags: () => void;
   sequenceValidityFlags: boolean[];
 };
 
@@ -53,11 +54,16 @@ export const BlastFormContextContainer = (props: Props) => {
       sequenceValidityFlags.filter((value, i) => i !== index)
     );
   };
+
+  const clearSequenceValidityFlags = () => {
+    setSequenceValidityFlags([]);
+  };
   return (
     <BlastFormContext.Provider
       value={{
         updateSequenceValidityFlags,
         removeSequenceValidityFlag,
+        clearSequenceValidityFlags,
         sequenceValidityFlags
       }}
     >
