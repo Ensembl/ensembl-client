@@ -175,10 +175,7 @@ const useGenomeBrowser = () => {
 
     trackConfigs &&
       Object.keys(trackConfigs).forEach((key) => {
-        let trackId = key;
-        if (trackId.match('focus')) {
-          trackId = 'focus';
-        }
+        const trackId = key;
 
         const config = trackConfigs[key];
 
