@@ -174,10 +174,8 @@ const useGenomeBrowser = () => {
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
     trackConfigs &&
-      Object.keys(trackConfigs).forEach((key) => {
-        const trackId = key;
-
-        const config = trackConfigs[key];
+      Object.keys(trackConfigs).forEach((trackId) => {
+        const config = trackConfigs[trackId];
 
         config.showTrackName
           ? trackStateForNames.on.push(trackId)
