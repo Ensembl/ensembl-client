@@ -131,19 +131,6 @@ export const fetchPopularSpecies = createAsyncThunk(
 //     speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
 //   };
 
-export const ensureSpeciesIsEnabled =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-
-    const currentSpecies = getCommittedSpeciesById(state, genomeId);
-    if (!currentSpecies || currentSpecies.isEnabled) {
-      return;
-    }
-
-    dispatch(toggleSpeciesUseAndSave(genomeId));
-  };
-
 export const loadStoredSpecies =
   (): ThunkAction<void, any, void, Action<string>> => (dispatch) => {
     const storedSpecies = speciesSelectorStorageService.getSelectedSpecies();

@@ -22,7 +22,6 @@ import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeB
 
 import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getExampleGenes } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import {
@@ -37,8 +36,7 @@ import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 import styles from './BrowserInterstitial.scss';
 
 const BrowserInterstitial = () => {
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
 
   const dispatch = useAppDispatch();
 

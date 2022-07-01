@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -37,8 +36,6 @@ import {
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
 import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -57,9 +54,8 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const [shouldShowDownload, showDownload] = useState(false);
-  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {

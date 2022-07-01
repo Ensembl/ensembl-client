@@ -23,7 +23,6 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
   isEntityViewerSidebarOpen,
   getEntityViewerSidebarModalView
@@ -48,7 +47,7 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 import styles from './EntityViewer.scss';
 
 const EntityViewer = () => {
-  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const { activeGenomeId } = useEntityViewerIds();
   const dispatch = useAppDispatch();
 
   useEntityViewerRouting();
@@ -93,12 +92,7 @@ const EntityViewerForGene = () => {
   return (
     <StandardAppLayout
       mainContent={<GeneView />}
-      topbarContent={
-        <EntityViewerTopbar
-          genomeId={activeGenomeId}
-          entityId={activeEntityId}
-        />
-      }
+      topbarContent={<EntityViewerTopbar />}
       sidebarContent={SideBarContent}
       sidebarNavigation={<GeneViewSidebarTabs />}
       sidebarToolstripContent={<EntityViewerSidebarToolstrip />}

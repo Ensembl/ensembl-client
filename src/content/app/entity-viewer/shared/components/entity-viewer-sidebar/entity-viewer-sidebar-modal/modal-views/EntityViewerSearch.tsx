@@ -15,17 +15,13 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
-
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const EntityViewerSidebarSearch = () => {
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const { genomeIdForUrl } = useEntityViewerIds();
+  const { activeGenomeId, genomeIdForUrl } = useEntityViewerIds();
 
   return (
     <section>

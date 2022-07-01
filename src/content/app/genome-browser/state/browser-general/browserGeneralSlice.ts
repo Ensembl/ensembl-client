@@ -115,7 +115,6 @@ export const setDataFromUrlAndSave: ActionCreator<
 
     dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
     dispatch(setInitialTrackPanelDataForGenome(payload));
-    // dispatch(ensureSpeciesIsEnabled(activeGenomeId));
   });
 
   browserStorageService.saveActiveGenomeId(activeGenomeId);
