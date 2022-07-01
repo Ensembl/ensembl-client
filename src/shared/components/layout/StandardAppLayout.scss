@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
-$sidebarContentWidth: 320px;
-$sidebarToolstripWidth: 46px;
+$sidebarContentWidth: 340px;
+$sidebarToolstripWidth: 50px;
 $topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
@@ -59,7 +59,7 @@ $drawerWindowWidth: 45px;
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% - 46px);
+  width: calc(100% - $sidebarToolstripWidth);
   height: 100%;
   display: flex;
   z-index: 5;
@@ -88,6 +88,7 @@ $drawerWindowWidth: 45px;
   width: $sidebarContentWidth;
   border-left: 1px solid $grey;
   padding: 21px 12px;
+  padding-right: $page-right-padding;
   background-color: white;
   overflow: auto;
 }

@@ -16,6 +16,9 @@ $global-radius: 0;
 $global-padding-left: 100px;
 $global-button-cursor: auto;
 
+$page-left-padding: 30px;
+$page-right-padding: 30px;
+
 // Colour Palette
 // ---------
 $soft-black: #374148;
@@ -39,7 +42,8 @@ $mustard: #cc9933;
 $green: #47d147;
 
 $global-box-shadow: $medium-light-grey;
-$form-field-shadow: inset 2px 2px 4px -2px $medium-dark-grey, inset -2px -2px 1px -2px $dark-grey;
+$form-field-shadow: inset 2px 2px 4px -2px $medium-dark-grey,
+  inset -2px -2px 1px -2px $dark-grey;
 
 /* stylelint-disable */
 :export {
@@ -75,4 +79,3 @@ $dark: 900;
 // ------------------
 
 $font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
-
