@@ -27,45 +27,46 @@ import once from 'lodash/once';
  *
  */
 
-interface GA {
+interface GTAG {
   (...args: any[]): void; // executes analytics commands
-  q: any[]; // a container for queueing up analytics commands
-  l: number; // is used for timestamps
 }
 
 // extend the window interface with the google analytics object
 declare global {
   interface Window {
-    ga: GA;
+    gtag: GTAG;
+    dataLayer: any[];
   }
 }
 
 const loadGoogleAnalytics = (trackerId: string) => {
   createGAShim(trackerId);
-  loadScript();
+  loadScript(trackerId);
 };
 
 // create a simplified google analytics object and assign it to window
 // to keep a queue of any pending analytics commands
 // until the real google analytics object is ready to replace it
 const createGAShim = (trackerId: string) => {
-  const ga = (...args: any[]) => {
+  const gtag = (...args: any[]) => {
     // the sole purpose of the shim is to enqueue commands that it receives
     // before the real Google Analytics script loads
-    window.ga.q.push(args);
+    window.dataLayer.push(args);
   };
 
-  ga.q = [] as any[]; // initialise the command queue
-  ga.l = new Date().getTime(); // Google uses this for timing hits
-  window.ga = ga;
+  window.dataLayer = window.dataLayer || []; // initialise the command queue
+  window.gtag = gtag;
+  window.gtag('js', new Date()); // Google uses this for timing hits
 
-  window.ga('create', trackerId, 'auto'); // immediately enqueue a command for creating a tracker
+  // The statement below automatically sends Pageview
+  // TODO: Check if we need to disable it by passing: `{send_page_view: false}` as the third arg
+  window.gtag('config', trackerId);
 };
 
-const loadScript = () => {
+const loadScript = (trackerId: string) => {
   const scriptElement = document.createElement('script');
   scriptElement.async = true;
-  scriptElement.src = 'https://www.google-analytics.com/analytics.js';
+  scriptElement.src = `https://www.googletagmanager.com/gtag/js?id=${trackerId}`;
   document.body.appendChild(scriptElement);
 };
 

@@ -16,46 +16,79 @@
 
 import loadGoogleAnalytics from './loadGoogleAnalytics';
 
+type TrackPageView = {
+  page_title?: string;
+  page_location?: string;
+  page_path: string;
+};
+
+type TrackEvent = {
+  event_action: string;
+  event_category: string;
+  event_label?: string;
+  event_value?: number;
+};
+
+type SetDimension = {
+  event_name: string;
+  dimension_key: string;
+  dimension_value: string | null;
+};
+
 /**
  * The interface of the GoogleAnalytics class below
  * replicates the interface of the ReactGA library that we were using before
  */
 
 class GoogleAnalytics {
+  static googleAnalyticsKey: string;
+
   static initialize(googleAnalyticsKey: string) {
     loadGoogleAnalytics(googleAnalyticsKey);
+    this.googleAnalyticsKey = googleAnalyticsKey;
   }
 
-  static ga(...args: any[]) {
-    window.ga(...args);
+  static gtag(...args: any[]) {
+    window.gtag(...args);
   }
 
-  // referencee: example from Google's docs for analytics.js
-  // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#hitType
-  static pageview(pagePath: string) {
-    window.ga('send', {
-      hitType: 'pageview',
-      page: pagePath
+  // referencee: example from Google's docs for gtag.js
+  // https://developers.google.com/analytics/devguides/collection/gtagjs/pages
+  static pageview(params: TrackPageView) {
+    window.gtag('event', 'page_view', {
+      send_to: this.googleAnalyticsKey,
+      ...params
     });
   }
 
   // referencee: Google's docs for analytics.js
-  // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#eventCategory
-  static event(params: {
-    eventAction: string;
-    eventCategory: string;
-    eventLabel?: string;
-    eventValue?: number;
-  }) {
+  // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#event_category
+  static event(params: TrackEvent) {
     // clean up the params object before passing it to ga function
     // by removing from it any empty fields
-    const options = Object.entries(params).reduce(
-      (obj, [key, value]): Partial<typeof params> => {
-        return value !== undefined ? { ...obj, [key]: value } : obj;
-      },
-      {}
-    );
-    window.ga('send', 'event', options);
+    const options: {
+      event_category: string;
+      event_label?: string;
+      value?: string;
+    } = {
+      event_category: params.event_category
+    };
+
+    if (params.event_label) {
+      options['event_label'] = params.event_label;
+    }
+
+    if (params.event_value) {
+      options['value'] = params.event_label;
+    }
+
+    window.gtag('event', params.event_action, options);
+  }
+
+  static setDimension(params: SetDimension) {
+    window.gtag('event', params.event_name, {
+      [params.dimension_key]: params.dimension_value
+    });
   }
 }
 

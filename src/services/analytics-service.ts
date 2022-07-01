@@ -39,50 +39,61 @@ class AnalyticsTracking {
 
   private setReporting() {
     // don't send analytics other than in production deployment
+    // https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
     if (!config.shouldReportAnalytics) {
-      this.googleAnalytics.ga('set', 'sendHitTask', null);
+      (window as any)[`ga-disable-${googleAnalyticsKey}`] = true;
     }
   }
 
   // Track a pageview
   public trackPageView(pagePath: string) {
-    this.googleAnalytics.pageview(pagePath);
+    this.googleAnalytics.pageview({
+      page_path: pagePath
+    });
   }
 
   // Track an event
-  public trackEvent(ga: AnalyticsOptions) {
-    ga.species && this.setSpeciesDimension(ga.species);
-    ga.app && this.setAppDimension(ga.app);
-    ga.feature && this.setFeatureDimension(ga.feature);
+  public trackEvent(gtag: AnalyticsOptions) {
+    gtag.species && this.setSpeciesDimension(gtag.species);
+    gtag.app && this.setAppDimension(gtag.app);
+    gtag.feature && this.setFeatureDimension(gtag.feature);
 
     this.googleAnalytics.event({
-      eventAction: ga.action,
-      eventCategory: ga.category,
-      eventLabel: ga.label,
-      eventValue: ga.value
+      event_action: gtag.action,
+      event_category: gtag.category,
+      event_label: gtag.label,
+      event_value: gtag.value
     });
 
-    ga.species && this.setSpeciesDimension(null);
-    ga.feature && this.setFeatureDimension(null);
+    gtag.species && this.setSpeciesDimension(null);
+    gtag.feature && this.setFeatureDimension(null);
   }
 
   // Set app custom dimension
   public setAppDimension(app: string | null) {
-    this.googleAnalytics.ga('set', CustomDimensions.APP, app);
+    this.googleAnalytics.setDimension({
+      event_name: 'set_app_dimension',
+      dimension_key: CustomDimensions.APP,
+      dimension_value: app
+    });
   }
 
   // Set species custom dimension
   public setSpeciesDimension(speciesAnalyticsName: string | null) {
-    this.googleAnalytics.ga(
-      'set',
-      CustomDimensions.SPECIES,
-      speciesAnalyticsName
-    );
+    this.googleAnalytics.setDimension({
+      event_name: 'set_species_dimension',
+      dimension_key: CustomDimensions.SPECIES,
+      dimension_value: speciesAnalyticsName
+    });
   }
 
   // Set feature custom dimension
   public setFeatureDimension(featureType: string | null) {
-    this.googleAnalytics.ga('set', CustomDimensions.FEATURE, featureType);
+    this.googleAnalytics.setDimension({
+      event_name: 'set_feature_dimension',
+      dimension_key: CustomDimensions.FEATURE,
+      dimension_value: featureType
+    });
   }
 }
 
