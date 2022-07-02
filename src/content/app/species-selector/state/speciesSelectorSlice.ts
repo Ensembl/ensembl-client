@@ -107,30 +107,6 @@ export const fetchPopularSpecies = createAsyncThunk(
   }
 );
 
-// export const ensureSpeciesIsCommitted =
-//   (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
-//   async (dispatch, getState: () => RootState) => {
-//     const state = getState();
-//     const committedSpecies = getCommittedSpecies(state);
-//     const genomeInfo = getGenomeInfoById(state, genomeId);
-//     if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
-//       return;
-//     }
-
-//     const newCommittedSpecies = [
-//       ...committedSpecies,
-//       {
-//         ...pickBy(genomeInfo, (_, key) => {
-//           return key !== 'example_objects';
-//         }),
-//         isEnabled: true
-//       }
-//     ] as CommittedItem[];
-
-//     dispatch(updateCommittedSpecies(newCommittedSpecies));
-//     speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
-//   };
-
 export const loadStoredSpecies =
   (): ThunkAction<void, any, void, Action<string>> => (dispatch) => {
     const storedSpecies = speciesSelectorStorageService.getSelectedSpecies();
