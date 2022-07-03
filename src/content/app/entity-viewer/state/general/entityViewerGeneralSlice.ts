@@ -73,15 +73,6 @@ export const setDataFromUrl =
       entityViewerStorageService.updateGeneralState({
         activeEntityIds: { [genomeId]: entityId }
       });
-
-      // if (entityId !== activeEntityId) {
-
-      // }
-
-      // FIXME: where should this belong?
-      // if (activeGenomeId === genomeIdFromUrl && entityId !== activeEntityId) {
-      //   dispatch(resetFilterPanel());
-      // }
     }
   };
 

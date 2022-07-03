@@ -34,7 +34,10 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
-import { setFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  setFilterPanel,
+  resetFilterPanel
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
   getFilters,
   getSortingRule,
@@ -67,6 +70,7 @@ type GeneViewWithDataProps = {
 
 const GeneView = () => {
   const { activeGenomeId, geneId } = useGeneViewIds();
+  const dispatch = useAppDispatch();
 
   const { currentData, isFetching } = useDefaultEntityViewerGeneQuery(
     {
@@ -77,6 +81,10 @@ const GeneView = () => {
       skip: !geneId || !activeGenomeId
     }
   );
+
+  useEffect(() => {
+    dispatch(resetFilterPanel());
+  }, [geneId]);
 
   // TODO decide about error handling
   if (isFetching) {
