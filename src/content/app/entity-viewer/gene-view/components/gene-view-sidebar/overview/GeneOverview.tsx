@@ -56,7 +56,7 @@ const GeneOverview = () => {
     return <div>Loading...</div>;
   }
 
-  if (!currentData || !currentData.gene) {
+  if (!currentData?.gene) {
     return <div>No data to display</div>;
   }
 
