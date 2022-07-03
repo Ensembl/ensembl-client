@@ -56,6 +56,10 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div id="overlay" />
 ));
 
+jest.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
+  jest.fn()
+);
+
 const mockState = createMockBrowserState();
 
 const mockStore = configureMockStore([thunk]);
@@ -73,7 +77,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-describe.skip('<BrowserImage />', () => {
+describe('<BrowserImage />', () => {
   beforeEach(() => {
     // running this in before each, because it looks that
     // afterEach completes before cleanup functions called at component's unmounting get executed
