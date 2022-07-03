@@ -54,12 +54,13 @@ const TestComponent = () => {
 };
 
 describe('useShowTooltip', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
-  beforeAll(() => {
-    jest.useFakeTimers();
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.useRealTimers();
   });
 
   describe('useShowTooltip with on click', () => {
