@@ -34,6 +34,8 @@ import { BookmarksModal } from './BookmarksModal';
 import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
+const mockGenomeId = 'grch38';
+
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
     <a href={props.to} onClick={props.onClick}>
@@ -41,6 +43,13 @@ jest.mock('react-router-dom', () => ({
     </a>
   )
 }));
+
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
+  () => () => ({
+    genomeIdForUrl: mockGenomeId
+  })
+);
 
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
@@ -65,7 +74,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-describe.skip('<BookmarksModal />', () => {
+describe('<BookmarksModal />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -75,7 +84,7 @@ describe.skip('<BookmarksModal />', () => {
     const region = '3D:2585940-2634711';
     const geneObjectId = `${activeGenomeId}:gene:${geneId}`;
     const regionObjectId = `${activeGenomeId}:region:${region}`;
-    const nonRandomPreviouslyViewedObjects = [
+    const previouslyViewedObjects = [
       {
         genome_id: activeGenomeId,
         object_id: geneObjectId,
@@ -93,7 +102,7 @@ describe.skip('<BookmarksModal />', () => {
       browser: {
         browserBookmarks: {
           previouslyViewedObjects: {
-            [activeGenomeId]: nonRandomPreviouslyViewedObjects
+            [activeGenomeId]: previouslyViewedObjects
           }
         }
       }
@@ -104,8 +113,8 @@ describe.skip('<BookmarksModal />', () => {
     const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
     const regionLink = screen.getByText(region).closest('a') as HTMLElement;
 
-    const expectedGeneHref = `/genome-browser/${activeGenomeId}?focus=gene:${geneId}`;
-    const expectedRegionHref = `/genome-browser/${activeGenomeId}?focus=region:${region}`;
+    const expectedGeneHref = `/genome-browser/${mockGenomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${mockGenomeId}?focus=region:${region}`;
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
     expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
