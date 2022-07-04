@@ -73,6 +73,12 @@ const BlastInputSequence = (props: Props) => {
   const blastFormContext = useContext(BlastFormContext);
 
   useEffect(() => {
+    return () => {
+      blastFormContext?.removeSequenceValidityFlag(index);
+    };
+  }, []);
+
+  useEffect(() => {
     setInput(toFasta(sequence));
   }, [sequence.header, sequence.value, forceRenderCount]);
 

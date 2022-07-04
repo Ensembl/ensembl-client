@@ -62,7 +62,6 @@ const BlastInputSequencesHeader = (props: Props) => {
   const blastFormContext = useContext(BlastFormContext);
   const shouldShowAlert =
     blastFormContext && blastFormContext.sequenceValidityFlags.includes(false);
-
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
 
@@ -81,9 +80,9 @@ const BlastInputSequencesHeader = (props: Props) => {
     lastInputBox?.scrollIntoView({ block: 'end', behavior: 'smooth' }); // Safari doesn't properly support this (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView); but other options scroll just as jerkily on Safari
   };
 
-  const clearAllClick = () => {
+  const onClearAll = () => {
     clearAllSequences();
-    blastFormContext && blastFormContext.clearSequenceValidityFlags();
+    blastFormContext?.clearSequenceValidityFlags();
   };
 
   const shouldEnableAddButton = isEmptyInputAppended
@@ -123,7 +122,7 @@ const BlastInputSequencesHeader = (props: Props) => {
         onChange={onSequenceTypeChange}
       />
       <div className={styles.headerGroup}>
-        <span className={styles.clearAll} onClick={clearAllClick}>
+        <span className={styles.clearAll} onClick={onClearAll}>
           Clear all
         </span>
         <AddAnotherSequence
