@@ -15,42 +15,38 @@
  */
 
 import React, { createContext, useContext } from 'react';
-import { render, act } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
-import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 
-import * as genomeActions from 'src/shared/state/genome/genomeSlice';
-import * as browserGeneralActions from '../state/browser-general/browserGeneralSlice';
+import createRootReducer from 'src/root/rootReducer';
+
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
-import { createGenomeCategories } from 'tests/fixtures/genomes';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
 const mockChangeFocusObject = jest.fn();
 const mockChangeBrowserLocation = jest.fn();
 
-jest.mock(
-  'src/content/app/genome-browser/state/browser-general/browserGeneralSlice.ts',
-  () => ({
-    setActiveGenomeId: jest.fn(() => ({ type: 'setActiveGenomeId' })),
-    setDataFromUrlAndSave: jest.fn(() => ({ type: 'setDataFromUrlAndSave' }))
-  })
-);
+const mockGenomeSearchApiBaseUrl = 'http://genome-search-api';
+const mockGenomeBrowserObj = {};
 
-jest.mock('src/shared/state/genome/genomeSlice', () => ({
-  fetchGenomeData: jest.fn(() => ({ type: 'fetchGenomeData' }))
+jest.mock('config', () => ({
+  genomeSearchBaseUrl: 'http://genome-search-api'
 }));
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
-    genomeBrowser: {},
+    genomeBrowser: mockGenomeBrowserObj,
     changeFocusObject: mockChangeFocusObject,
     changeBrowserLocation: mockChangeBrowserLocation
   })
@@ -63,32 +59,43 @@ jest.mock(
   })
 );
 
+const humanGenomeInfo = {
+  assembly_name: 'GRCh38.p13',
+  common_name: 'Human',
+  genome_id: 'homo_sapiens_GCA_000001405_28',
+  scientific_name: 'Homo sapiens',
+  url_slug: 'grch38'
+};
+
+const wheatGenomeInfo = {
+  assembly_name: 'IWGSC',
+  common_name: null,
+  genome_id: 'triticum_aestivum_GCA_900519105_1',
+  scientific_name: 'Triticum aestivum',
+  url_slug: 'iwgsc'
+};
+
 const committedHuman = {
   ...createSelectedSpecies(),
-  genome_id: 'human'
+  genome_id: humanGenomeInfo.genome_id,
+  url_slug: humanGenomeInfo.url_slug
 };
 
 const committedWheat = {
   ...createSelectedSpecies(),
-  genome_id: 'wheat'
+  genome_id: wheatGenomeInfo.genome_id,
+  url_slug: wheatGenomeInfo.url_slug
 };
 
 const mockState = {
   browser: {
     browserGeneral: {
-      activeGenomeId: 'human',
+      activeGenomeId: humanGenomeInfo.genome_id,
       activeFocusObjectIds: {
-        human: 'human:gene:ENSG00000139618'
+        [humanGenomeInfo.genome_id]: `${humanGenomeInfo.genome_id}:gene:ENSG00000139618`
       },
       chrLocations: {
-        human: ['13', 100, 200]
-      }
-    }
-  },
-  genome: {
-    genomeTrackCategories: {
-      genomeTrackCategoriesData: {
-        fake_genome_id_1: createGenomeCategories()
+        [humanGenomeInfo.genome_id]: ['13', 100, 200]
       }
     }
   },
@@ -96,8 +103,6 @@ const mockState = {
     committedItems: [committedHuman, committedWheat]
   }
 };
-
-const mockStore = configureMockStore([thunk]);
 
 let routingHandle: ReturnType<typeof useBrowserRouting> | null = null;
 const emptyTestContext = {
@@ -130,8 +135,15 @@ const renderComponent = ({
 }) => {
   testContext = { ...emptyTestContext };
 
-  return render(
-    <Provider store={mockStore(state)}>
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([restApiSlice.middleware]),
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
       <TestContext.Provider value={testContext}>
         <MemoryRouter initialEntries={[path]}>
           <Routes>
@@ -145,37 +157,82 @@ const renderComponent = ({
       </TestContext.Provider>
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
-describe.skip('useBrowserRouting', () => {
+const server = setupServer(
+  rest.get(`${mockGenomeSearchApiBaseUrl}/genome/info`, (req, res, ctx) => {
+    const genomeId = req.url.searchParams.get('genome_id');
+
+    if (
+      genomeId === humanGenomeInfo.genome_id ||
+      genomeId === humanGenomeInfo.url_slug
+    ) {
+      return res(
+        ctx.json({
+          genome_info: [humanGenomeInfo]
+        })
+      );
+    } else if (
+      genomeId === wheatGenomeInfo.genome_id ||
+      genomeId === wheatGenomeInfo.url_slug
+    ) {
+      return res(
+        ctx.json({
+          genome_info: [wheatGenomeInfo]
+        })
+      );
+    }
+  })
+);
+
+beforeAll(() =>
+  server.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterAll(() => server.close());
+
+describe('useBrowserRouting', () => {
   afterEach(() => {
     jest.clearAllMocks();
     routingHandle = null;
   });
 
   describe('navigation to /genome-browser (no species, focus object or location in the url)', () => {
-    it('redirects to url for active genome', () => {
+    it('redirects to url for active genome', async () => {
       const updatedState = set(
         'browser.browserGeneral.activeGenomeId',
-        'wheat',
+        wheatGenomeInfo.genome_id,
         mockState
       );
       renderComponent({ state: updatedState, path: '/genome-browser' });
 
       // this is useless, because this route will be handled by the interstitial;
       // yet this is how the code currently behaves
-      expect(testContext.url).toBe('/genome-browser/wheat');
+      await waitFor(() => {
+        expect(testContext.url).toBe(
+          `/genome-browser/${wheatGenomeInfo.url_slug}`
+        );
+      });
     });
 
     it('redirects to url for active genome using focus id and location from redux', () => {
       // human is set as active genome in mock redux state
       renderComponent({ path: '/genome-browser' });
 
-      // notice how the identifier "human:gene:ENSG00000139618" that was used in the mock store
+      // notice how the identifier "human:gene:ENSG00000139618" that was used in the mock redux state
       // is reformatted to gene:ENSG00000139618 in the url;
       // this can be tested by examining TestComponent after a switch to react-router v6
       expect(testContext.url).toBe(
-        '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+        `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
       );
     });
 
@@ -194,93 +251,114 @@ describe.skip('useBrowserRouting', () => {
       renderComponent({ state: updatedState, path: '/genome-browser' });
 
       // this is useless behaviour; yet this is how the code currently behaves
-      expect(testContext.url).toBe('/genome-browser/wheat');
+      expect(testContext.url).toBe(
+        `/genome-browser/${committedWheat.url_slug}`
+      );
     });
   });
 
   describe('navigation to /genome-browser/:genome_id', () => {
-    it('sets the data from the url in redux', () => {
-      renderComponent({ path: '/genome-browser/human' });
+    it('sets the data from the url in redux', async () => {
+      const { store } = renderComponent({
+        path: `/genome-browser/${wheatGenomeInfo.url_slug}`
+      });
 
-      expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
-        activeGenomeId: 'human',
-        activeFocusObjectId: null,
-        chrLocation: null
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.browser.browserGeneral.activeGenomeId).toBe(
+          wheatGenomeInfo.genome_id
+        );
       });
     });
 
-    it('fetches the genome using the genome id from the url', async () => {
-      renderComponent({ path: '/genome-browser/human' });
+    it('redirects to url containing focus id if available in redux', async () => {
+      renderComponent({ path: `/genome-browser/${humanGenomeInfo.url_slug}` });
 
-      expect(genomeActions.fetchGenomeData).toHaveBeenCalledWith('human');
-    });
-
-    it('redirects to url containing focus id if available in redux', () => {
-      renderComponent({ path: '/genome-browser/human' });
-
-      expect(testContext.url).toBe(
-        '/genome-browser/human?focus=gene:ENSG00000139618'
-      );
+      await waitFor(() => {
+        expect(testContext.url).toBe(
+          `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618`
+        );
+      });
     });
   });
 
   describe('navigation to /genome-browser/:genome_id with focus object', () => {
-    it('sets the data from the url in redux', () => {
-      renderComponent({
-        path: '/genome-browser/human?focus=gene:ENSG00000139618'
+    it('sets the data from the url in redux', async () => {
+      const geneStableId = 'TraesCS1D02G435500';
+      const url = `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:${geneStableId}`;
+      const { store } = renderComponent({
+        path: url
       });
 
-      expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
-        activeGenomeId: 'human',
-        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in focus object id
-        chrLocation: null
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.browser.browserGeneral.activeGenomeId).toBe(
+          wheatGenomeInfo.genome_id
+        );
+        expect(
+          state.browser.browserGeneral.activeFocusObjectIds[
+            wheatGenomeInfo.genome_id
+          ]
+        ).toBe(`${wheatGenomeInfo.genome_id}:gene:${geneStableId}`);
+        // no navigation actions expected
+        expect(testContext.url).toBe(url);
       });
-
-      // no navigation actions expected
-      expect(testContext.url).toBe(
-        '/genome-browser/human?focus=gene:ENSG00000139618'
-      );
     });
 
-    it('tells genome browser to switch to the focus object from the url', () => {
+    it('tells genome browser to switch to the focus object from the url', async () => {
+      const geneStableId = 'ENSG00000139618';
+      const url = `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618`;
       renderComponent({
-        path: '/genome-browser/human?focus=gene:ENSG00000139618'
+        path: url
       });
 
-      expect(mockChangeFocusObject).toHaveBeenCalledWith(
-        'human:gene:ENSG00000139618'
-      );
-      expect(mockChangeBrowserLocation).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockChangeFocusObject).toHaveBeenCalledWith(
+          `${humanGenomeInfo.genome_id}:gene:${geneStableId}`
+        );
+        expect(mockChangeBrowserLocation).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe('navigation to /genome-browser/:genome_id with focus object and location', () => {
-    it('sets the data from the url in redux', () => {
-      renderComponent({
-        path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+    it('sets the data from the url in redux', async () => {
+      const geneStableId = 'TraesCS1D02G435500';
+      const url = `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:${geneStableId}&location=3D:100-200`;
+      const { store } = renderComponent({
+        path: url
       });
 
-      expect(browserGeneralActions.setDataFromUrlAndSave).toHaveBeenCalledWith({
-        activeGenomeId: 'human',
-        activeFocusObjectId: 'human:gene:ENSG00000139618', // <-- notice how genome id is included in focus object id
-        chrLocation: ['13', 100, 200]
-      });
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.browser.browserGeneral.activeGenomeId).toBe(
+          wheatGenomeInfo.genome_id
+        );
+        expect(
+          state.browser.browserGeneral.activeFocusObjectIds[
+            wheatGenomeInfo.genome_id
+          ]
+        ).toBe(`${wheatGenomeInfo.genome_id}:gene:${geneStableId}`);
+        expect(
+          state.browser.browserGeneral.chrLocations[wheatGenomeInfo.genome_id]
+        ).toEqual(['3D', 100, 200]);
 
-      // no navigation actions expected
-      expect(testContext.url).toBe(
-        '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
-      );
+        // no navigation actions expected
+        expect(testContext.url).toBe(url);
+      });
     });
 
-    it('tells genome browser to set the focus object and the location from the url', () => {
+    it('tells genome browser to set the focus object and the location from the url', async () => {
       renderComponent({
-        path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+        path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
       });
 
-      expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
-        genomeId: 'human',
-        focusId: 'ENSG00000139618',
-        chrLocation: ['13', 100, 200]
+      await waitFor(() => {
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
+          genomeId: humanGenomeInfo.genome_id,
+          focusId: 'ENSG00000139618',
+          chrLocation: ['13', 100, 200]
+        });
       });
     });
   });
@@ -289,73 +367,60 @@ describe.skip('useBrowserRouting', () => {
     describe('changeGenomeId', () => {
       it('redirects to correct url when focus id and location for new genome are unavailable', () => {
         renderComponent({
-          path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
         });
-        jest.clearAllMocks();
-        jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
         act(() => {
-          routingHandle?.changeGenomeId('wheat');
+          routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
-        expect(testContext.url).toBe('/genome-browser/wheat');
-        expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(
-          'wheat'
+        expect(testContext.url).toBe(
+          `/genome-browser/${wheatGenomeInfo.url_slug}`
         );
       });
 
       it('redirects to correct url when only focus id for new genome is available', () => {
         const updatedState = set(
-          'browser.browserGeneral.activeFocusObjectIds.wheat',
-          'wheat:gene:TraesCS3D02G273600',
+          `browser.browserGeneral.activeFocusObjectIds.${wheatGenomeInfo.genome_id}`,
+          `${wheatGenomeInfo.genome_id}:gene:TraesCS3D02G273600`,
           mockState
         );
         renderComponent({
           state: updatedState,
-          path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
         });
-        jest.clearAllMocks();
-        jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
         act(() => {
-          routingHandle?.changeGenomeId('wheat');
+          routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
         expect(testContext.url).toBe(
-          '/genome-browser/wheat?focus=gene:TraesCS3D02G273600'
-        );
-        expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(
-          'wheat'
+          `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:TraesCS3D02G273600`
         );
       });
 
       it('redirects to correct url when both focus id and location for new genome are available', () => {
         let updatedState = set(
-          'browser.browserGeneral.activeFocusObjectIds.wheat',
-          'wheat:gene:TraesCS3D02G273600',
+          `browser.browserGeneral.activeFocusObjectIds.${wheatGenomeInfo.genome_id}`,
+          `${wheatGenomeInfo.genome_id}:gene:TraesCS3D02G273600`,
           mockState
         );
         updatedState = set(
-          'browser.browserGeneral.chrLocations.wheat',
+          `browser.browserGeneral.chrLocations.${wheatGenomeInfo.genome_id}`,
           ['3D', 1000, 1100],
           updatedState
         );
         renderComponent({
           state: updatedState,
-          path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
+          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
         });
-        jest.clearAllMocks();
-        jest.spyOn(browserGeneralActions, 'setActiveGenomeId');
 
         act(() => {
-          routingHandle?.changeGenomeId('wheat');
+          routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
         expect(testContext.url).toBe(
-          '/genome-browser/wheat?focus=gene:TraesCS3D02G273600&location=3D:1000-1100'
-        );
-        expect(browserGeneralActions.setActiveGenomeId).toHaveBeenCalledWith(
-          'wheat'
+          `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:TraesCS3D02G273600&location=3D:1000-1100`
         );
       });
     });

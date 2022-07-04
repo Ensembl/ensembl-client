@@ -68,6 +68,8 @@ jest.mock(
 
 jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 
+// TODO: Update these tests when the component is changed to fit the updated design
+
 describe.skip('<BrowserRegionEditor />', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
