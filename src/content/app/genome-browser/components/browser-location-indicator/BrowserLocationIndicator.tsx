@@ -28,7 +28,7 @@ import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-n
 
 import styles from './BrowserLocationIndicator.scss';
 
-type Props = {
+export type Props = {
   disabled?: boolean;
 };
 

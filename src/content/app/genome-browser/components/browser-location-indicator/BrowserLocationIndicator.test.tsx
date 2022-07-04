@@ -16,19 +16,43 @@
 
 import React from 'react';
 import { faker } from '@faker-js/faker';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
-import set from 'lodash/fp/set';
+import merge from 'lodash/fp/merge';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { BrowserLocationIndicator } from './BrowserLocationIndicator';
-
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import createRootReducer from 'src/root/rootReducer';
+
+import {
+  BrowserLocationIndicator,
+  type Props as BrowserLocationIndicatorProps
+} from './BrowserLocationIndicator';
+
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+
+const humanChromosomeName = '13';
+const bacterialChromosomeName = 'Chromosome';
+const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
+const endPosition =
+  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
+const mockHumanKaryotype = [{ is_circular: false, name: humanChromosomeName }];
+const mockBacteriumKaryotype = [
+  { is_circular: true, name: bacterialChromosomeName }
+];
+
+const mockGenomeSearchApi = 'http://genome-search-api';
+
+jest.mock('config', () => ({
+  genomeSearchBaseUrl: 'http://genome-search-api'
+}));
 
 jest.mock(
   'src/content/app/genome-browser/state/browser-nav/browserNavSlice.ts',
@@ -37,119 +61,157 @@ jest.mock(
   })
 );
 
-const chrName = faker.lorem.word();
-const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
-const endPosition =
-  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
+const server = setupServer(
+  rest.get(`${mockGenomeSearchApi}/genome/karyotype`, (req, res, ctx) => {
+    const genomeId = req.url.searchParams.get('genome_id');
 
-const circularChrName = faker.lorem.word();
+    if (genomeId === 'human') {
+      return res(ctx.json(mockHumanKaryotype));
+    } else if (genomeId === 'ecoli') {
+      return res(ctx.json(mockBacteriumKaryotype));
+    }
+  })
+);
 
-const mockState = {
+const initialReduxState = {
   browser: {
     browserGeneral: {
       actualChrLocations: {
-        human: [chrName, startPosition, endPosition] as ChrLocation,
-        ecoli: [circularChrName, startPosition, endPosition] as ChrLocation
+        human: [humanChromosomeName, startPosition, endPosition] as ChrLocation,
+        ecoli: [
+          bacterialChromosomeName,
+          startPosition,
+          endPosition
+        ] as ChrLocation
       },
       activeGenomeId: 'human'
-    }
-  },
-  genome: {
-    genomeKaryotype: {
-      genomeKaryotypeData: {
-        human: [{ is_circular: false, name: chrName }],
-        ecoli: [{ is_circular: true, name: circularChrName }]
-      }
     }
   }
 };
 
-const mockStore = configureMockStore();
-const renderComponent = (state: typeof mockState = mockState) => {
-  return render(
-    <Provider store={mockStore(state)}>
-      <BrowserLocationIndicator />
+const renderBrowserLocationIndicator = ({
+  props = {},
+  state = {}
+}: {
+  props?: Partial<BrowserLocationIndicatorProps>;
+  state?: Partial<typeof initialReduxState>;
+} = {}) => {
+  const initialState = merge(initialReduxState, state);
+
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([restApiSlice.middleware]),
+    preloadedState: initialState as any
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
+      <BrowserLocationIndicator {...props} />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
-describe.skip('BrowserLocationIndicator', () => {
+beforeAll(() =>
+  server.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+describe('BrowserLocationIndicator', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('rendering', () => {
-    it('displays chromosome name', () => {
-      const { container } = renderComponent();
-      const renderedName = container.querySelector('.chrCode');
-      expect(renderedName?.textContent).toBe(chrName);
+    it('displays chromosome name', async () => {
+      const { container } = renderBrowserLocationIndicator();
+      await waitFor(() => {
+        const renderedName = container.querySelector('.chrCode');
+        expect(renderedName?.textContent).toBe(humanChromosomeName);
+      });
     });
 
-    it('displays circular chromosome', () => {
-      const newstate = set(
-        'browser.browserGeneral.activeGenomeId',
-        'ecoli',
-        mockState
-      );
-      const { container } = renderComponent(newstate);
-      const circularIndicator = container.querySelector('.circularIndicator');
-      expect(circularIndicator).toBeTruthy();
+    it('displays circular chromosome', async () => {
+      const { container } = renderBrowserLocationIndicator({
+        state: {
+          browser: { browserGeneral: { activeGenomeId: 'ecoli' } }
+        } as any
+      });
+      await waitFor(() => {
+        const circularIndicator = container.querySelector('.circularIndicator');
+        expect(circularIndicator).toBeTruthy();
+      });
     });
 
-    it('displays location', () => {
-      const { container } = renderComponent();
-      const renderedLocation = container.querySelector('.chrRegion');
-      expect(renderedLocation?.textContent).toBe(
-        `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
-          endPosition
-        )}`
-      );
+    it('displays location', async () => {
+      const { container } = renderBrowserLocationIndicator();
+      await waitFor(() => {
+        const renderedLocation = container.querySelector('.chrRegion');
+        expect(renderedLocation?.textContent).toBe(
+          `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
+            endPosition
+          )}`
+        );
+      });
     });
 
-    it('adds disabled class when component is disabled', () => {
-      const { container, rerender } = renderComponent();
-      const element = container.firstChild as HTMLDivElement;
-      expect(
-        element.classList.contains('browserLocationIndicatorDisabled')
-      ).toBe(false);
+    it('adds disabled class when component is disabled', async () => {
+      const { container } = renderBrowserLocationIndicator();
 
-      const wrappedComponent = (
-        <Provider store={mockStore(mockState)}>
-          <BrowserLocationIndicator disabled={true} />
-        </Provider>
+      await waitFor(() => {
+        const element = container.firstChild as HTMLDivElement;
+        expect(
+          element.classList.contains('browserLocationIndicatorDisabled')
+        ).toBe(false);
+      });
+
+      const { container: rerenderedContainer } = renderBrowserLocationIndicator(
+        { props: { disabled: true } }
       );
 
-      rerender(wrappedComponent);
-
-      expect(
-        element.classList.contains('browserLocationIndicatorDisabled')
-      ).toBe(true);
+      await waitFor(() => {
+        const element = rerenderedContainer.firstChild as HTMLDivElement;
+        expect(
+          element.classList.contains('browserLocationIndicatorDisabled')
+        ).toBe(true);
+      });
     });
   });
 
   describe('behaviour', () => {
     it('calls toggleBrowserNav when clicked', async () => {
-      const { container } = renderComponent();
-      const indicator = container.querySelector('.chrLocationView');
+      const { container } = renderBrowserLocationIndicator();
 
-      await userEvent.click(indicator as HTMLDivElement);
-      expect(toggleBrowserNav).toHaveBeenCalled();
+      await waitFor(async () => {
+        const indicator = container.querySelector('.chrLocationView');
+
+        await userEvent.click(indicator as HTMLDivElement);
+        expect(toggleBrowserNav).toHaveBeenCalled();
+      });
     });
 
     it('does not call toggleBrowserNav if disabled', async () => {
-      const { container, rerender } = renderComponent();
-      const indicator = container.querySelector('.chrLocationView');
+      const { container } = renderBrowserLocationIndicator({
+        props: { disabled: true }
+      });
 
-      const wrappedComponent = (
-        <Provider store={mockStore(mockState)}>
-          <BrowserLocationIndicator disabled={true} />
-        </Provider>
-      );
+      await waitFor(async () => {
+        const indicator = container.querySelector('.chrLocationView');
 
-      rerender(wrappedComponent);
-
-      await userEvent.click(indicator as HTMLDivElement);
-      expect(toggleBrowserNav).not.toHaveBeenCalled();
+        await userEvent.click(indicator as HTMLDivElement);
+        expect(toggleBrowserNav).not.toHaveBeenCalled();
+      });
     });
   });
 });
