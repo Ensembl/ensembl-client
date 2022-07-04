@@ -21,6 +21,9 @@ import configureMockStore from 'redux-mock-store';
 
 import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
+const genomeId = 'human';
+const mockGenomeId = genomeId; // to be picked up by jest
+
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
     <a className="link" href={props.to}>
@@ -33,6 +36,13 @@ jest.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
   () => () => ({
     trackPreviouslyViewedLinkClick: jest.fn()
+  })
+);
+
+jest.mock(
+  'src/content/app/entity-viewer/hooks/useEntityViewerIds',
+  () => () => ({
+    genomeIdForUrl: mockGenomeId
   })
 );
 
@@ -70,7 +80,7 @@ const mockState = {
   genome: {
     genomeInfo: {
       genomeInfoData: {
-        human: {
+        [genomeId]: {
           example_objects: exampleEntities
         }
       }
@@ -78,14 +88,14 @@ const mockState = {
   },
   entityViewer: {
     general: {
-      activeGenomeId: 'human',
+      activeGenomeId: genomeId,
       activeEntityIds: {
-        human: `human:gene:${currentEntityId}`
+        [genomeId]: `${genomeId}:gene:${currentEntityId}`
       }
     },
     bookmarks: {
       previouslyViewed: {
-        human: previouslyViewedEntities
+        [genomeId]: previouslyViewedEntities
       }
     }
   }
@@ -99,7 +109,7 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
   );
 };
 
-describe.skip('<EntityViewerSidebarBookmarks />', () => {
+describe('<EntityViewerSidebarBookmarks />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
