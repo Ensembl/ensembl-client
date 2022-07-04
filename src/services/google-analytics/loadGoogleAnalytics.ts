@@ -40,8 +40,8 @@ declare global {
 }
 
 const loadGoogleAnalytics = (trackerId: string) => {
-  createGAShim(trackerId);
   loadScript(trackerId);
+  createGAShim(trackerId);
 };
 
 // create a simplified google analytics object and assign it to window
@@ -67,7 +67,7 @@ const loadScript = (trackerId: string) => {
   const scriptElement = document.createElement('script');
   scriptElement.async = true;
   scriptElement.src = `https://www.googletagmanager.com/gtag/js?id=${trackerId}`;
-  document.body.appendChild(scriptElement);
+  document.head.appendChild(scriptElement);
 };
 
 export default once(loadGoogleAnalytics);

@@ -35,19 +35,19 @@ const getEnvironment = () => {
   return {
     buildEnvironment: process.env.NODE_ENV ?? 'production',
     deploymentEnvironment: process.env.ENVIRONMENT ?? 'development',
-    shouldReportAnalytics: shouldReportAnalytics(),
+    shouldReportAnalytics: true,
     shouldReportErrors: shouldReportErrors()
   };
 };
 
 const getKeys = () => {
   return {
-    googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? ''
+    googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? 'G-3N77V6KPSV'
   };
 };
 
-const shouldReportAnalytics = () =>
-  `${process.env.REPORT_ANALYTICS}`.toLowerCase() === 'true';
+// const shouldReportAnalytics = () =>
+//   `${process.env.REPORT_ANALYTICS}`.toLowerCase() === 'true';
 
 const shouldReportErrors = () =>
   `${process.env.REPORT_ERRORS}`.toLowerCase() === 'true';
