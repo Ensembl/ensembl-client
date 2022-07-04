@@ -28,7 +28,7 @@ import * as browserGeneralSlice from 'src/content/app/genome-browser/state/brows
 import BrowserTrackConfig from './BrowserTrackConfig';
 
 const genomeId = 'fake_genome_id_1';
-const selectedTrackId = 'gene-focus';
+const selectedTrackId = 'focus';
 const renderComponent = () => {
   const rootReducer = combineReducers({
     browser: combineReducers({
