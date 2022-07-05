@@ -15,10 +15,11 @@
  */
 
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { useAppDispatch } from 'src/store';
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -63,9 +64,8 @@ export type TranscriptsListItemInfoProps = {
 export const TranscriptsListItemInfo = (
   props: TranscriptsListItemInfoProps
 ) => {
+  const { activeGenomeId, genomeIdInUrl, entityIdInUrl } = useGeneViewIds();
   const { transcript } = props;
-  const params = useParams<'genomeId' | 'entityId'>();
-  const { genomeId, entityId } = params;
 
   const dispatch = useAppDispatch();
 
@@ -143,8 +143,8 @@ export const TranscriptsListItemInfo = (
 
   const getLinkToProteinView = (proteinStableId: string) => {
     const proteinViewUrl = urlFor.entityViewer({
-      genomeId,
-      entityId,
+      genomeId: genomeIdInUrl,
+      entityId: entityIdInUrl,
       view: View.PROTEIN,
       proteinId: proteinStableId
     });
@@ -153,8 +153,7 @@ export const TranscriptsListItemInfo = (
   };
 
   const getBrowserLink = () => {
-    const { genomeId } = params;
-    return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
+    return urlFor.browser({ genomeId: genomeIdInUrl, focus: focusIdForUrl });
   };
 
   const handleDownloadLinkClick = () => {
@@ -274,7 +273,7 @@ export const TranscriptsListItemInfo = (
         {props.expandDownload && (
           <div className={styles.download}>
             <InstantDownloadTranscript
-              genomeId={genomeId}
+              genomeId={activeGenomeId as string}
               transcript={{
                 id: transcript.stable_id,
                 isProteinCoding: isProteinCodingTranscript(transcript)
