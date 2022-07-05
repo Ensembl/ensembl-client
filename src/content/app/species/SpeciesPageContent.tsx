@@ -35,6 +35,7 @@ import SpeciesMainView from 'src/content/app/species/components/species-main-vie
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesPage.scss';
 
@@ -50,9 +51,10 @@ const SpeciesPageContent = () => {
 
   const genomeId = genomeInfo?.genomeId;
 
-  const changeGenomeId = (genomeId: string) => {
+  const changeGenomeId = (species: CommittedItem) => {
+    const genomeIdForUrl = species.url_slug ?? species.genome_id;
     const params = {
-      genomeId
+      genomeId: genomeIdForUrl
     };
 
     navigate(urlFor.speciesPage(params), { replace: true });
