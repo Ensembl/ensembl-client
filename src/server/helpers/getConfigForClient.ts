@@ -42,7 +42,7 @@ const getEnvironment = () => {
 
 const getKeys = () => {
   return {
-    googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? 'G-3N77V6KPSV'
+    googleAnalyticsKey: 'G-3N77V6KPSV'
   };
 };
 
