@@ -18,11 +18,14 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useContext,
   type FormEvent,
   type ClipboardEvent,
   type FocusEvent
 } from 'react';
 import classNames from 'classnames';
+
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 import { isValidSequence } from 'src/content/app/tools/blast/utils/sequenceValidators';
@@ -34,9 +37,10 @@ import {
   type FileTransformedToString
 } from 'src/shared/components/upload';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
-import { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
+import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequence.scss';
 
@@ -49,6 +53,9 @@ type Props = {
   onInput?: (input: string, index: number | null) => void;
   onRemoveSequence?: (index: number | null) => void;
 };
+
+const errorTooltipDescription =
+  'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
 
 const BlastInputSequence = (props: Props) => {
   const {
@@ -63,6 +70,25 @@ const BlastInputSequence = (props: Props) => {
   const [forceRenderCount, setForceRenderCount] = useState(0); // A hack. For details, see comment in the bottom of this file
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const blastFormContext = useContext(BlastFormContext);
+
+  useEffect(() => {
+    return () => {
+      blastFormContext?.removeSequenceValidityFlag(index);
+    };
+  }, []);
+
+  useEffect(() => {
+    setInput(toFasta(sequence));
+  }, [sequence.header, sequence.value, forceRenderCount]);
+
+  const isInputValid = input
+    ? checkSequenceValidity(input, sequenceType)
+    : true; // treat empty input as valid
+
+  useEffect(() => {
+    blastFormContext?.updateSequenceValidityFlags(index, isInputValid);
+  }, [isInputValid]);
 
   const onFileDrop = ({ content }: FileTransformedToString) => {
     if (content) {
@@ -74,10 +100,6 @@ const BlastInputSequence = (props: Props) => {
     onUpload: onFileDrop,
     transformTo: 'text'
   });
-
-  useEffect(() => {
-    setInput(toFasta(sequence));
-  }, [sequence.header, sequence.value, forceRenderCount]);
 
   const forceReadSequenceFromProps = () => {
     setForceRenderCount((count) => count + 1);
@@ -128,10 +150,6 @@ const BlastInputSequence = (props: Props) => {
     props.onInput?.('', index);
   };
 
-  const isInputValid = input
-    ? checkSequenceValidity(input, sequenceType)
-    : true; // treat empty input as valid
-
   const inputBoxClassnames = classNames(styles.inputSequenceBox, {
     [styles.inputSequenceBoxFileOver]: isFileOver
   });
@@ -143,7 +161,15 @@ const BlastInputSequence = (props: Props) => {
   return (
     <div className={inputBoxClassnames} ref={dropZoneRef}>
       <div className={styles.header}>
-        <span>{title}</span>
+        <div>
+          {title}
+          {!isInputValid && (
+            <AlertButton
+              className={styles.alertButton}
+              tooltipContent={errorTooltipDescription}
+            />
+          )}
+        </div>
         <span className={styles.deleteButtonWrapper}>
           <DeleteButton ref={deleteButtonRef} onClick={onClear} />
         </span>
