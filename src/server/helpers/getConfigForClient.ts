@@ -42,7 +42,7 @@ const getEnvironment = () => {
 
 const getKeys = () => {
   return {
-    googleAnalyticsKey: 'G-3N77V6KPSV'
+    googleAnalyticsKey: 'G-320671471'
   };
 };
 
