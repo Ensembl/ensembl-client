@@ -60,9 +60,7 @@ const createGAShim = (trackerId: string) => {
 
   // The statement below automatically sends Pageview
   // TODO: Check if we need to disable it by passing: `{send_page_view: false}` as the third arg
-  window.gtag('config', 'UA-58710484-17');
-
-  window.gtag('config', trackerId, { debug_mode: true });
+  window.gtag('config', trackerId);
 };
 
 const loadScript = (trackerId: string) => {
