@@ -48,14 +48,13 @@ const loadGoogleAnalytics = (trackerId: string) => {
 // to keep a queue of any pending analytics commands
 // until the real google analytics object is ready to replace it
 const createGAShim = (trackerId: string) => {
-  const gtag = (...args: any[]) => {
-    // the sole purpose of the shim is to enqueue commands that it receives
-    // before the real Google Analytics script loads
-    window.dataLayer.push(args);
+  window.gtag = function () {
+    // gtag is really particular in that it wants the Arguments object
+    // which is only available on non-arrow functions
+    window.dataLayer.push(arguments); // eslint-disable-line prefer-rest-params
   };
 
   window.dataLayer = window.dataLayer || []; // initialise the command queue
-  window.gtag = gtag;
   window.gtag('js', new Date()); // Google uses this for timing hits
 
   // The statement below automatically sends Pageview
