@@ -56,7 +56,7 @@ export const setActiveIds =
       dispatch(setDefaultActiveGenomeId());
       activeGenomeId = getEntityViewerActiveGenomeId(state) as string;
     } else if (genomeId && genomeId !== activeGenomeId) {
-      dispatch(setActiveGenomeId(genomeId)); // FIXME: check this!
+      dispatch(setActiveGenomeId(genomeId));
 
       entityViewerStorageService.updateGeneralState({
         activeGenomeId: genomeId

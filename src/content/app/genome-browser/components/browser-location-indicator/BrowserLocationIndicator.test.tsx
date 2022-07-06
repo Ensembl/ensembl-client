@@ -33,7 +33,7 @@ import createRootReducer from 'src/root/rootReducer';
 
 import {
   BrowserLocationIndicator,
-  type Props as BrowserLocationIndicatorProps
+  type BrowserLocationIndicatorProps
 } from './BrowserLocationIndicator';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';

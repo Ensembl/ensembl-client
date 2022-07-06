@@ -28,11 +28,13 @@ import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-n
 
 import styles from './BrowserLocationIndicator.scss';
 
-export type Props = {
+export type BrowserLocationIndicatorProps = {
   disabled?: boolean;
 };
 
-export const BrowserLocationIndicator = (props: Props) => {
+export const BrowserLocationIndicator = (
+  props: BrowserLocationIndicatorProps
+) => {
   const actualChrLocation = useSelector(getActualChrLocation);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId) as string;
 
