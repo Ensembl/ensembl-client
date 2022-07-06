@@ -24,11 +24,13 @@ import {
   ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
-import { useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
+import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   Toolbox,
@@ -54,9 +56,18 @@ export type ZmenuProps = {
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
+  const actualChrLocation = useAppSelector(getActualChrLocation);
   const dispatch = useAppDispatch();
 
+  //console.log(actualChrLocation);
+  //useeffect on location change to close zmenu
+  useEffect(() => {
+    //console.log(zmenus);
+    Object.keys(zmenus).length && destroyZmenu();
+  }, [actualChrLocation]);
+
   const destroyZmenu = () => {
+    //console.log("DESTROYING ZMENU....")
     dispatch(changeHighlightedTrackId(''));
     setZmenus &&
       setZmenus(pickBy(zmenus, (value, key) => key !== props.zmenuId));
