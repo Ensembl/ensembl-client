@@ -28,7 +28,7 @@ import {
   getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
+import { setActiveIds } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import {
   toggleSidebar,
   initializeSidebar
@@ -142,7 +142,7 @@ const useEntityViewerRouting = () => {
       navigate(replacementUrl, { replace: true });
     }
     dispatch(
-      setDataFromUrl({
+      setActiveIds({
         genomeId,
         entityId
       })
