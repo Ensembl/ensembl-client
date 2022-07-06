@@ -119,15 +119,6 @@ const useBrowserRouting = () => {
       chrLocation
     };
 
-    // if (!activeGenomeId) {
-    //   /*
-    //     Means that this is the first time user visits genome browser.
-    //     We need to make sure that active genome id is set properly in redux
-    //     for the actions below (e.g. changeFocusObject) to work
-    //   */
-    //   dispatch(setActiveGenomeId(genomeId));
-    // }
-
     if (!focusObjectIdInUrl && activeFocusObjectId) {
       const newFocus = buildFocusIdForUrl(
         parseFocusObjectId(activeFocusObjectId)
@@ -170,12 +161,6 @@ const useBrowserRouting = () => {
     genomeBrowser,
     location
   ]);
-
-  // useEffect(() => {
-  //   if (genomeId) {
-  //     dispatch(fetchGenomeInfo(genomeId));
-  //   }
-  // }, [genomeId]);
 
   useEffect(() => {
     if (!focusObject && activeFocusObjectId) {
@@ -223,10 +208,5 @@ const useBrowserRouting = () => {
     changeGenomeId
   };
 };
-
-// const buildNewFocusObjectId = (genomeId: string, focusFromUrl: string) => {
-//   const parsedFocus = parseFocusIdFromUrl(focusFromUrl);
-//   return buildFocusObjectId({ genomeId, ...parsedFocus });
-// };
 
 export default useBrowserRouting;
