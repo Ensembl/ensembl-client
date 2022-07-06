@@ -61,10 +61,8 @@ const Zmenu = (props: ZmenuProps) => {
 
   const dispatch = useAppDispatch();
 
-  //useEffect on location change to close zmenu
   useEffect(() => {
     setRenderCount(renderCount + 1);
-
     // Do not try to close the Zmenu on first render
     if (renderCount) {
       destroyZmenu();
