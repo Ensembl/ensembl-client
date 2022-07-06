@@ -55,7 +55,7 @@ type Props = {
 };
 
 const errorTooltipDescription =
-  'Please check that all your sequences are nucleotide or protein, and that they do not contain any invalid characters';
+  'Please check the uploaded sequences are either all nucleotide or all protein, remove any invalid characters and ensure all sequences are over 5 bases long.';
 
 const BlastInputSequence = (props: Props) => {
   const {
