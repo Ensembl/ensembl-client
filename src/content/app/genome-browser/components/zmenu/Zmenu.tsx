@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import pickBy from 'lodash/pickBy';
 import {
   ZmenuContentTranscript,
@@ -57,17 +57,21 @@ const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
   const actualChrLocation = useAppSelector(getActualChrLocation);
+  const [renderCount, setRenderCount] = useState(0);
+
   const dispatch = useAppDispatch();
 
-  //console.log(actualChrLocation);
-  //useeffect on location change to close zmenu
+  //useEffect on location change to close zmenu
   useEffect(() => {
-    //console.log(zmenus);
-    Object.keys(zmenus).length && destroyZmenu();
+    setRenderCount(renderCount + 1);
+
+    // Do not try to close the Zmenu on first render
+    if (renderCount) {
+      destroyZmenu();
+    }
   }, [actualChrLocation]);
 
   const destroyZmenu = () => {
-    //console.log("DESTROYING ZMENU....")
     dispatch(changeHighlightedTrackId(''));
     setZmenus &&
       setZmenus(pickBy(zmenus, (value, key) => key !== props.zmenuId));
