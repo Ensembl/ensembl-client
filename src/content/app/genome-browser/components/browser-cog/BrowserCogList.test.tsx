@@ -32,6 +32,15 @@ import { updateCogList } from 'src/content/app/genome-browser/state/track-config
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 jest.mock(
+  'src/content/app/genome-browser/state/api/genomeBrowserApiSlice',
+  () => ({
+    useGenomeTracksQuery: () => ({
+      data: null
+    })
+  })
+);
+
+jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser()

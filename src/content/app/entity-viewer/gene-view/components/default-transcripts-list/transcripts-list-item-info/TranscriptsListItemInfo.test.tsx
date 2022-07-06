@@ -34,6 +34,15 @@ import {
 } from 'tests/fixtures/entity-viewer/transcript';
 import { createExternalReference } from 'tests/fixtures/entity-viewer/external-reference';
 
+jest.mock(
+  'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
+  () => () => ({
+    activeGenomeId: 'human',
+    genomeIdInUrl: 'grch38',
+    entityIdInUrl: 'some_gene'
+  })
+);
+
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div data-test-id="viewInApp">ViewInApp</div>
 ));
