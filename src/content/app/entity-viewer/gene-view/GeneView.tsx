@@ -45,8 +45,6 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptsList from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -103,7 +101,7 @@ const GeneView = () => {
 const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
-  const { genomeIdForUrl } = useGeneViewIds();
+  const { genomeIdForUrl, entityIdInUrl } = useGeneViewIds();
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
@@ -121,9 +119,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     referenceId: uniqueScrollReferenceId
   });
 
-  const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
-  const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
-  const gbUrl = urlFor.browser({ genomeId: genomeIdForUrl, focus: focusId });
+  const { genomeId, selectedTabs } = useGeneViewRouting();
+  const gbUrl = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: entityIdInUrl
+  });
 
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT ||
@@ -234,11 +234,9 @@ const isViewParameterValid = (view: string) =>
   Object.values(View).some((value) => value === view);
 
 const useGeneViewRouting = () => {
-  const { genomeIdForUrl, activeGenomeId, activeEntityId, entityIdInUrl } =
-    useGeneViewIds();
+  const { genomeIdForUrl, activeGenomeId, entityIdInUrl } = useGeneViewIds();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { objectId: geneId } = parseFocusIdFromUrl(activeEntityId as string);
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
 
@@ -264,7 +262,6 @@ const useGeneViewRouting = () => {
 
   return {
     genomeId: activeGenomeId,
-    geneId,
     selectedTabs
   };
 };
