@@ -21,8 +21,7 @@ import configureMockStore from 'redux-mock-store';
 
 import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
-const genomeId = 'human';
-const mockGenomeId = genomeId; // to be picked up by jest
+const mockGenomeId = 'human'; // to be picked up by jest
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -80,7 +79,7 @@ const mockState = {
   genome: {
     genomeInfo: {
       genomeInfoData: {
-        [genomeId]: {
+        [mockGenomeId]: {
           example_objects: exampleEntities
         }
       }
@@ -88,14 +87,14 @@ const mockState = {
   },
   entityViewer: {
     general: {
-      activeGenomeId: genomeId,
+      activeGenomeId: mockGenomeId,
       activeEntityIds: {
-        [genomeId]: `${genomeId}:gene:${currentEntityId}`
+        [mockGenomeId]: `${mockGenomeId}:gene:${currentEntityId}`
       }
     },
     bookmarks: {
       previouslyViewed: {
-        [genomeId]: previouslyViewedEntities
+        [mockGenomeId]: previouslyViewedEntities
       }
     }
   }
