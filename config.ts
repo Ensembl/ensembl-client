@@ -16,6 +16,7 @@
 
 import { isClient, readEnvironment } from 'src/shared/helpers/environment';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
+import { hostWithProtocol as defaultServerHost } from 'src/server/constants';
 
 export type BaseApiUrls = {
   thoasBaseUrl: string;
@@ -54,10 +55,12 @@ const getBaseApiUrls = (): BaseApiUrls => {
 
   // the following will be run on the server
   return {
-    thoasBaseUrl: process.env.SSR_THOAS_BASE_URL ?? defaultApiUrls.thoasBaseUrl,
+    thoasBaseUrl:
+      process.env.SSR_THOAS_BASE_URL ??
+      `${defaultServerHost}${defaultApiUrls.thoasBaseUrl}`,
     genomeSearchBaseUrl:
       process.env.SSR_GENOME_SEARCH_BASE_URL ??
-      defaultApiUrls.genomeBrowserBackendBaseUrl,
+      `${defaultServerHost}${defaultApiUrls.genomeSearchBaseUrl}`,
     docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering

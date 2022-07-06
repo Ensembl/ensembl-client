@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import server from './server';
+/**
+ * TODO:
+ * - Ideally, these constants should be used by the scripts/start.ts file
+ * - It's worth considering whether the start script should be able to assign the port dynamically if the specified port is busy
+ *   However, in this case:
+ *    - some communication should exist between the start script, the server bootsrtap code, and the config
+ */
 
-import { port } from './constants';
-
-server.listen(port, () => {
-  // eslint-disable-next-line
-  console.log(`Ensembl-client server listening at http://localhost:${port}`);
-});
+export const hostname = 'localhost';
+export const port = 8080;
+export const host = `${hostname}:${port}`;
+export const hostWithProtocol = `http://${host}`;
