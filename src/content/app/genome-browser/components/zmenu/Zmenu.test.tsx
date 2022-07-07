@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { faker } from '@faker-js/faker';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -25,6 +26,8 @@ import Zmenu, { ZmenuProps } from './Zmenu';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { createZmenuPayload } from 'tests/fixtures/browser';
+
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
@@ -50,6 +53,21 @@ jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
 
+const chrName = faker.lorem.word();
+const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
+const endPosition =
+  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
+
+const mockState = {
+  browser: {
+    browserGeneral: {
+      actualChrLocations: {
+        human: [chrName, startPosition, endPosition] as ChrLocation
+      }
+    }
+  }
+};
+
 const defaultProps: ZmenuProps = {
   browserRef: {
     current: document.createElement('div')
@@ -60,8 +78,8 @@ const defaultProps: ZmenuProps = {
 
 const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
-const renderComponent = () => {
-  store = mockStore();
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
   return render(
     <Provider store={store}>
       <Zmenu {...defaultProps} />
