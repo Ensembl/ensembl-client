@@ -84,15 +84,39 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   useEffect(() => {
     toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
+  }, [genomeBrowser]);
 
+  useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
-        console.log(action.payload); // eslint-disable-line no-console
+        updateVisibleTranscriptList(action.payload.transcript_ids);
       }
     );
+
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  }, [genomeBrowser, genomeId, focusObjectId]);
+
+  useEffect(() => {
+    const allTranscriptTrackStatusValues = Object.values(
+      allTranscriptTrackStatuses
+    );
+    const areAllTranscriptsSelected = allTranscriptTrackStatusValues.every(
+      (status) => status === Status.SELECTED
+    );
+    const areAllTranscriptsUnselected = allTranscriptTrackStatusValues.every(
+      (status) => status === Status.UNSELECTED
+    );
+    let newStatus = Status.PARTIALLY_SELECTED;
+
+    if (areAllTranscriptsSelected) {
+      newStatus = Status.SELECTED;
+    } else if (areAllTranscriptsUnselected) {
+      newStatus = Status.UNSELECTED;
+    }
+
+    updateObjectTrackStatus(newStatus);
+  }, [allTranscriptTrackStatuses]);
 
   useEffect(() => {
     if (sortedTranscripts?.length) {
@@ -107,6 +131,49 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       updateTranscriptTracks(visibleTranscriptIds);
     }
   }, [sortedTranscripts]);
+
+  const updateVisibleTranscriptList = (transcriptList: string[]) => {
+    const transcriptTrackStatuses: { [genomeId: string]: Status } = {};
+
+    transcriptList.forEach((transcriptId) => {
+      transcriptTrackStatuses[transcriptId] = Status.SELECTED;
+    });
+
+    dispatch(
+      updateTrackStatesAndSave({
+        [genomeId]: {
+          objectTracks: {
+            [focusObjectId]: {
+              transcripts: transcriptTrackStatuses
+            }
+          }
+        }
+      })
+    );
+  };
+
+  const updateObjectTrackStatus = (newStatus?: Status) => {
+    if (!newStatus) {
+      newStatus =
+        trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+    }
+
+    toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
+
+    dispatch(
+      updateTrackStatesAndSave({
+        [genomeId]: {
+          objectTracks: {
+            [focusObjectId]: {
+              main: {
+                [GENE_TRACK_ID]: newStatus
+              }
+            }
+          }
+        }
+      })
+    );
+  };
 
   if (!currentData) {
     return null;
@@ -139,33 +206,12 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const onChangeVisibility = () => {
-    const newStatus =
-      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-
-    toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
-
-    dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          objectTracks: {
-            [focusObjectId]: {
-              main: {
-                [GENE_TRACK_ID]: newStatus
-              }
-            }
-          }
-        }
-      })
-    );
-  };
-
   return (
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
         visibilityStatus={trackStatus}
-        onChangeVisibility={onChangeVisibility}
+        onChangeVisibility={updateObjectTrackStatus}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >

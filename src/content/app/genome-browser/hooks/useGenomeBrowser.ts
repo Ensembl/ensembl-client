@@ -365,7 +365,8 @@ const useGenomeBrowser = () => {
 
   const toggleTrack = (params: { trackId: string; status: Status }) => {
     const { trackId, status } = params;
-    const isTurnedOn = status === Status.SELECTED;
+    const isTurnedOn =
+      status === Status.SELECTED || status === Status.PARTIALLY_SELECTED;
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =

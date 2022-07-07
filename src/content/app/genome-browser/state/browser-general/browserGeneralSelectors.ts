@@ -72,11 +72,11 @@ export const getBrowserTrackState = (
     tracksGroup === 'objectTracks'
       ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]?.[
           categoryName
-        ]?.[trackId]
+        ]?.[trackId] ?? Status.PARTIALLY_SELECTED
       : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[categoryName]?.[
           trackId
-        ];
-  return savedTrackStatus ?? Status.SELECTED;
+        ] ?? Status.SELECTED;
+  return savedTrackStatus;
 };
 
 export const getBrowserTranscriptTrackState = (
@@ -91,7 +91,7 @@ export const getBrowserTranscriptTrackState = (
   const allBrowserTrackStates = getBrowserTrackStates(state);
   const transcriptTrackStatuses =
     allBrowserTrackStates?.[genomeId]?.objectTracks?.[objectId]?.transcripts;
-  return transcriptTrackStatuses?.[transcriptId] ?? Status.SELECTED;
+  return transcriptTrackStatuses?.[transcriptId] ?? Status.UNSELECTED;
 };
 
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {

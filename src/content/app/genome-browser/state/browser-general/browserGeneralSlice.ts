@@ -24,6 +24,8 @@ import {
 import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import merge from 'lodash/merge';
+import cloneDeep from 'lodash/cloneDeep';
+import set from 'lodash/fp/set';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
@@ -268,7 +270,36 @@ const browserGeneralSlice = createSlice({
       state.activeFocusObjectIds = action.payload;
     },
     updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
-      state.trackStates = merge(state.trackStates, action.payload);
+      const genomeId = state.activeGenomeId as string;
+      const focusObjectId = state.activeFocusObjectIds[genomeId];
+
+      if (action.payload[genomeId]?.objectTracks?.[focusObjectId].transcripts) {
+        const currentTrackStates = cloneDeep(state.trackStates);
+        const receivedTrackState =
+          action.payload[genomeId]?.objectTracks?.[focusObjectId].transcripts;
+        const newTrackStates = set(
+          `${genomeId}.objectTracks.${focusObjectId}.transcripts`,
+          receivedTrackState,
+          currentTrackStates
+        );
+
+        state.trackStates = newTrackStates;
+      } else {
+        state.trackStates = merge(state.trackStates, action.payload);
+      }
+    },
+    updateTranscriptTrackStates(
+      state,
+      action: PayloadAction<BrowserTrackStates>
+    ) {
+      const genomeId = state.activeGenomeId as string;
+      const focusObjectId = state.activeFocusObjectIds[genomeId];
+
+      state.trackStates = set(
+        `${genomeId}.objectTracks.${focusObjectId}.transcripts`,
+        action.payload,
+        state.trackStates
+      );
     },
     deleteBrowserDataForGenome(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;

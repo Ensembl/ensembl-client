@@ -21,7 +21,7 @@
 .partiallySelected {
   svg {
     fill: $blue;
-    [class*='rightHalf'] {
+    [class*='leftHalf'] {
       fill: $grey;
     }
   }
