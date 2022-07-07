@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .help {
   display: grid;
   grid-template-rows: [appBar] auto [menu] auto [article-grid] minmax(0, 1fr);
@@ -15,7 +17,7 @@
   .conversationIcon {
     justify-self: end;
     height: 24px;
-    margin-right: 20px;
+    margin-right: $page-right-padding;
     margin-top: 30px;
   }
 }
