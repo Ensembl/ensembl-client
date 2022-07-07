@@ -57,7 +57,8 @@ const useGenomeBrowserPosition = () => {
   const idRef = useRef({
     activeGenomeId,
     activeFocusId,
-    genomeIdForUrl
+    genomeIdForUrl,
+    focusObjectIdForUrl
   });
 
   const { genomeBrowser } = useGenomeBrowser();
@@ -66,8 +67,13 @@ const useGenomeBrowserPosition = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    idRef.current = { activeGenomeId, activeFocusId, genomeIdForUrl };
-  }, [activeGenomeId, activeFocusId]);
+    idRef.current = {
+      activeGenomeId,
+      activeFocusId,
+      genomeIdForUrl,
+      focusObjectIdForUrl
+    };
+  }, [activeGenomeId, activeFocusId, genomeIdForUrl, focusObjectIdForUrl]);
 
   useEffect(() => {
     const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
@@ -90,7 +96,8 @@ const useGenomeBrowserPosition = () => {
       | BrowserCurrentLocationUpdateAction
       | BrowserTargetLocationUpdateAction
   ) => {
-    const { activeGenomeId, genomeIdForUrl } = idRef.current;
+    const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
+      idRef.current;
     const { stick, start, end } = action.payload;
     const chromosome = stick.split(':')[1];
 
