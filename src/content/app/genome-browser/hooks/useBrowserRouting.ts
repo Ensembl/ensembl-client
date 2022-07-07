@@ -119,7 +119,11 @@ const useBrowserRouting = () => {
       chrLocation
     };
 
-    if (!focusObjectIdInUrl && activeFocusObjectId) {
+    if (
+      !focusObjectIdInUrl &&
+      genomeId === activeGenomeId &&
+      activeFocusObjectId
+    ) {
       const newFocus = buildFocusIdForUrl(
         parseFocusObjectId(activeFocusObjectId)
       );
