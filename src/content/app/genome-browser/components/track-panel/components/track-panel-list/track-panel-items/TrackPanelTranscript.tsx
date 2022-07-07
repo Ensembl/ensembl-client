@@ -18,7 +18,7 @@ import React from 'react';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getBrowserActiveGenomeTrackStates,
@@ -49,7 +49,7 @@ const TrackPanelTranscript = (props: Props) => {
   const browserGenomeTrackStates = useAppSelector(
     getBrowserActiveGenomeTrackStates
   );
-  const trackVisibilityStatus = useAppSelector((state: RootState) =>
+  const trackVisibilityStatus = useAppSelector((state) =>
     getBrowserTranscriptTrackState(state, {
       genomeId,
       objectId: focusObjectId,
@@ -59,8 +59,8 @@ const TrackPanelTranscript = (props: Props) => {
   const dispatch = useAppDispatch();
   const { updateTranscriptTracks } = useGenomeBrowser();
 
-  const transcriptTrackStatuses =
-    browserGenomeTrackStates?.transcriptTracks?.[focusObjectId] ?? {};
+  const allTranscriptTrackStatuses =
+    browserGenomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? {};
 
   if (!genomeId) {
     return null;
@@ -87,11 +87,13 @@ const TrackPanelTranscript = (props: Props) => {
         : Status.SELECTED;
 
     const updatedTranscriptTracks = {
-      ...transcriptTrackStatuses,
+      ...allTranscriptTrackStatuses,
       [transcript.stable_id]: newStatus
     };
-    const visibleTranscriptIds = Object.keys(updatedTranscriptTracks).filter(
-      Boolean
+
+    const visibleTranscriptIds = Object.keys(updateTranscriptTracks).filter(
+      (transcriptId) =>
+        updatedTranscriptTracks[transcriptId] === Status.SELECTED
     );
 
     updateTranscriptTracks(visibleTranscriptIds);
@@ -99,8 +101,10 @@ const TrackPanelTranscript = (props: Props) => {
     dispatch(
       updateTrackStatesAndSave({
         [genomeId]: {
-          transcriptTracks: {
-            [focusObjectId]: updatedTranscriptTracks
+          objectTracks: {
+            [focusObjectId]: {
+              transcripts: updatedTranscriptTracks
+            }
           }
         }
       })
@@ -120,7 +124,7 @@ const TrackPanelTranscript = (props: Props) => {
   return (
     <SimpleTrackPanelItemLayout
       visibilityStatus={trackVisibilityStatus}
-      onChangeVisibility={() => onChangeVisibility()}
+      onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >
       <div className={styles.label}>

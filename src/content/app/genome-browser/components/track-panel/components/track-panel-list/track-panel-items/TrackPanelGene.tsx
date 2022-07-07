@@ -41,6 +41,10 @@ import type { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/conte
 import type { RootState } from 'src/store';
 
 import styles from './TrackPanelItem.scss';
+import {
+  IncomingActionType,
+  ReportVisibleTranscriptsAction
+} from '@ensembl/ensembl-genome-browser';
 
 type TrackPanelGeneProps = {
   genomeId: string;
@@ -74,28 +78,31 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const transcriptTrackStatuses =
-    browserGenomeTrackStates?.transcriptTracks?.[focusObjectId] ?? {};
-  let sortedTranscripts: TrackPanelTranscriptType[] = [];
+  const allTranscriptTrackStatuses =
+    browserGenomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? {};
+  let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
     toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
+
+    const subscription = genomeBrowser?.subscribe(
+      IncomingActionType.VISIBLE_TRANSCRIPTS,
+      (action: ReportVisibleTranscriptsAction) => {
+        console.log(action.payload); // eslint-disable-line no-console
+      }
+    );
+    return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
   useEffect(() => {
-    if (sortedTranscripts.length) {
+    if (sortedTranscripts?.length) {
       const visibleTranscriptIds = sortedTranscripts
         .map((transcript) => transcript.stable_id)
-        .filter((transcriptId) => {
-          if (
-            transcriptTrackStatuses[transcriptId] === Status.SELECTED ||
-            transcriptTrackStatuses[transcriptId] === undefined
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        .filter(
+          (transcriptId) =>
+            allTranscriptTrackStatuses?.[transcriptId] === Status.SELECTED ||
+            allTranscriptTrackStatuses?.[transcriptId] === undefined
+        );
 
       updateTranscriptTracks(visibleTranscriptIds);
     }
@@ -132,16 +139,11 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const onChangeVisibility = ({
-    trackId,
-    status
-  }: {
-    trackId: string;
-    status: Status;
-  }) => {
+  const onChangeVisibility = () => {
     const newStatus =
-      status === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-    toggleTrack({ trackId, status: newStatus });
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+
+    toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
 
     dispatch(
       updateTrackStatesAndSave({
@@ -149,7 +151,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           objectTracks: {
             [focusObjectId]: {
               main: {
-                [trackId]: newStatus
+                [GENE_TRACK_ID]: newStatus
               }
             }
           }
@@ -163,9 +165,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
         visibilityStatus={trackStatus}
-        onChangeVisibility={() =>
-          onChangeVisibility({ trackId: GENE_TRACK_ID, status: trackStatus })
-        }
+        onChangeVisibility={onChangeVisibility}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >

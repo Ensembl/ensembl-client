@@ -52,14 +52,16 @@ export type TrackStates = {
   };
 };
 
+// we might need to add other types for variants and regulation?
+export type GeneTrackStates = TrackStates & {
+  transcripts?: {
+    [transcriptId: string]: TrackActivityStatus;
+  };
+};
+
 export type GenomeTrackStates = {
   commonTracks?: TrackStates;
-  objectTracks?: { [objectId: string]: TrackStates };
-  transcriptTracks?: {
-    [objectId: string]: {
-      [transcriptId: string]: TrackActivityStatus;
-    };
-  };
+  objectTracks?: { [objectId: string]: GeneTrackStates };
 };
 
 export type BrowserTrackStates = {

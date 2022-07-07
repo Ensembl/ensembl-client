@@ -90,7 +90,7 @@ export const getBrowserTranscriptTrackState = (
   const { genomeId, objectId, transcriptId } = params;
   const allBrowserTrackStates = getBrowserTrackStates(state);
   const transcriptTrackStatuses =
-    allBrowserTrackStates?.[genomeId]?.transcriptTracks?.[objectId];
+    allBrowserTrackStates?.[genomeId]?.objectTracks?.[objectId]?.transcripts;
   return transcriptTrackStatuses?.[transcriptId] ?? Status.SELECTED;
 };
 

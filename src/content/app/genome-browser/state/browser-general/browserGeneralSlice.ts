@@ -23,6 +23,7 @@ import {
 } from '@reduxjs/toolkit';
 import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
+import merge from 'lodash/merge';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
@@ -267,7 +268,7 @@ const browserGeneralSlice = createSlice({
       state.activeFocusObjectIds = action.payload;
     },
     updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
-      state.trackStates = Object.assign(state.trackStates, action.payload);
+      state.trackStates = merge(state.trackStates, action.payload);
     },
     deleteBrowserDataForGenome(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;
