@@ -21,17 +21,14 @@ import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/en
 
 import GeneOverview from './GeneOverview';
 
-const genomeId = 'genome_id';
-const geneId = 'unversioned_gene_id';
-
-const mockGenomeId = genomeId; // for jest to be able to pick it up
-const mockGeneId = geneId; // for jest to be able to pick it up
+const mockGenomeId = 'genome_id';
+const mockGeneId = 'unversioned_gene_id';
 
 jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => ({
     params: {
-      entityId: geneId,
-      genomeId
+      entityId: mockGenomeId,
+      mockGeneId
     }
   }))
 }));
