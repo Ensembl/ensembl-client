@@ -20,18 +20,14 @@ import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { GenomeInfo } from './genomeTypes';
 
-export type GenomeInfoState = Readonly<{
+export type GenomesState = Readonly<{
   urlToGenomeIdMap: Record<string, string>; // maps the id used in the url to the genome uuid
   genomes: Record<string, GenomeInfo>;
 }>;
 
-export const defaultGenomeInfoState: GenomeInfoState = {
+const defaultGenomeState: GenomesState = {
   urlToGenomeIdMap: {},
   genomes: {}
-};
-
-const defaultGenomeState = {
-  genomeInfo: defaultGenomeInfoState as GenomeInfoState // FIXME: is this field even necessary anymore?
 };
 const genomeSlice = createSlice({
   name: 'genomeInfo',
@@ -42,15 +38,15 @@ const genomeSlice = createSlice({
     builder.addMatcher(fetchGenomeInfo.matchFulfilled, (state, { payload }) => {
       const { genomeId, urlSlug, genomeInfo } = payload;
 
-      state.genomeInfo.genomes[genomeId] = genomeInfo;
+      state.genomes[genomeId] = genomeInfo;
 
       if (urlSlug) {
         // TODO: fetchGenomeInfo function is going to retrieve genome info using the id from the url.
         // Consider what should happen if the id from the url becomes associated with a more recent genome id.
-        // We should probably check whether state.genomeInfo.urlToGenomeIdMap[urlSlug] exists before updating it
-        state.genomeInfo.urlToGenomeIdMap[urlSlug] = genomeId;
+        // We should probably check whether state.urlToGenomeIdMap[urlSlug] exists before updating it
+        state.urlToGenomeIdMap[urlSlug] = genomeId;
       } else {
-        state.genomeInfo.urlToGenomeIdMap[genomeId] = genomeId;
+        state.urlToGenomeIdMap[genomeId] = genomeId;
       }
     });
   }

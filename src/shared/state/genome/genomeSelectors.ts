@@ -17,8 +17,7 @@
 import type { RootState } from 'src/store';
 import type { GenomeInfo } from './genomeTypes';
 
-export const getGenomeInfo = (state: RootState) =>
-  state.genome.genomeInfo.genomes;
+export const getGenomeInfo = (state: RootState) => state.genome.genomes;
 
 export const getGenomeInfoById = (
   state: RootState,
@@ -32,7 +31,7 @@ export const getGenomeIdFromUrlSlug = (
   state: RootState,
   urlSlug: string
 ): string | undefined => {
-  return state.genome.genomeInfo.urlToGenomeIdMap[urlSlug];
+  return state.genome.urlToGenomeIdMap[urlSlug];
 };
 
 export const getGenomeInfoByUrlSlug = (
@@ -59,7 +58,5 @@ export const getGenomeExampleFocusObjects = (
   if (!genomeId) {
     return emptyObjects;
   }
-  return (
-    state.genome.genomeInfo.genomes[genomeId]?.example_objects || emptyObjects
-  );
+  return state.genome.genomes[genomeId]?.example_objects || emptyObjects;
 };
