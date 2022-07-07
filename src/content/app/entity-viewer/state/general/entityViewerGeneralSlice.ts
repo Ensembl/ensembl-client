@@ -42,7 +42,6 @@ export const initialState: EntityViewerGeneralState = {
   activeEntityIds: {}
 };
 
-// TODO: rename to setActiveIds? Or setInitialData?
 export const setActiveIds =
   (params: EntityViewerParams): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
