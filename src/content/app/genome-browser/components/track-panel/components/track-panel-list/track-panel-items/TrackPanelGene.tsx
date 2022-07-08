@@ -80,47 +80,48 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   const allTranscriptTrackStatuses =
     browserGenomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? {};
+  let allTranscriptsInGene: TrackPanelTranscriptType[] | undefined; // eslint-disable-line
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
     toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
-  }, [genomeBrowser]);
 
-  useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
-        updateVisibleTranscriptList(action.payload.transcript_ids);
+        setVisibleTranscriptList(action.payload.transcript_ids);
       }
     );
 
     return () => subscription?.unsubscribe();
   }, [genomeBrowser, genomeId, focusObjectId]);
 
+  // update gene track status based on changes to transcript tracks visiblity
   useEffect(() => {
-    const allTranscriptTrackStatusValues = Object.values(
-      allTranscriptTrackStatuses
-    );
-    const areAllTranscriptsSelected = allTranscriptTrackStatusValues.every(
-      (status) => status === Status.SELECTED
-    );
-    const areAllTranscriptsUnselected = allTranscriptTrackStatusValues.every(
-      (status) => status === Status.UNSELECTED
-    );
-    let newStatus = Status.PARTIALLY_SELECTED;
+    if (allTranscriptsInGene?.length) {
+      const allTranscriptTrackStatusValues = Object.values(
+        allTranscriptTrackStatuses
+      );
+      const numberOfSelectedTranscripts = allTranscriptTrackStatusValues.filter(
+        (status) => status === Status.SELECTED
+      ).length;
+      let newStatus = Status.PARTIALLY_SELECTED;
 
-    if (areAllTranscriptsSelected) {
-      newStatus = Status.SELECTED;
-    } else if (areAllTranscriptsUnselected) {
-      newStatus = Status.UNSELECTED;
+      if (!numberOfSelectedTranscripts) {
+        newStatus = Status.UNSELECTED;
+      }
+
+      if (numberOfSelectedTranscripts === allTranscriptsInGene.length) {
+        newStatus = Status.SELECTED;
+      }
+
+      updateObjectTrackStatus(newStatus);
     }
-
-    updateObjectTrackStatus(newStatus);
   }, [allTranscriptTrackStatuses]);
 
   useEffect(() => {
-    if (sortedTranscripts?.length) {
-      const visibleTranscriptIds = sortedTranscripts
+    if (allTranscriptsInGene?.length) {
+      const visibleTranscriptIds = allTranscriptsInGene
         .map((transcript) => transcript.stable_id)
         .filter(
           (transcriptId) =>
@@ -130,9 +131,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
       updateTranscriptTracks(visibleTranscriptIds);
     }
-  }, [sortedTranscripts]);
+  }, [allTranscriptsInGene]);
 
-  const updateVisibleTranscriptList = (transcriptList: string[]) => {
+  const setVisibleTranscriptList = (transcriptList: string[]) => {
     const transcriptTrackStatuses: { [genomeId: string]: Status } = {};
 
     transcriptList.forEach((transcriptId) => {
@@ -180,6 +181,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   }
 
   const { gene } = currentData;
+
+  allTranscriptsInGene = gene.transcripts;
 
   if (isEnvironment([Environment.PRODUCTION])) {
     // TODO: remove this branch when multiple transcripts become available
