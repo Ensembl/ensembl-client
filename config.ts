@@ -42,7 +42,7 @@ const defaultApiUrls: BaseApiUrls = {
 };
 
 const defaultKeys = {
-  googleAnalyticsKey: 'G-3N77V6KPSV'
+  googleAnalyticsKey: ''
 };
 
 const getBaseApiUrls = (): BaseApiUrls => {
@@ -72,9 +72,9 @@ const getKeys = (): PublicKeys => {
   return defaultKeys;
 };
 
-// const shouldReportAnalytics = () =>
-//   isClient() &&
-//   (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment.shouldReportAnalytics;
+const shouldReportAnalytics = () =>
+  isClient() &&
+  (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment.shouldReportAnalytics;
 
 // TODO: figure out what to do with errors that happen server-side
 const shouldReportErrors = () =>
@@ -91,7 +91,7 @@ export default {
   isDevelopment: buildEnvironment === 'development',
   isProduction: buildEnvironment !== 'development',
 
-  shouldReportAnalytics: true,
+  shouldReportAnalytics: shouldReportAnalytics(),
   shouldReportErrors: shouldReportErrors(),
 
   // TODO: remove this from the config in the future (will require refactoring of the apiService)

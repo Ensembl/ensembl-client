@@ -57,9 +57,8 @@ const createGAShim = (trackerId: string) => {
   window.dataLayer = window.dataLayer || []; // initialise the command queue
   window.gtag('js', new Date()); // Google uses this for timing hits
 
-  // The statement below automatically sends Pageview
-  // TODO: Check if we need to disable it by passing: `{send_page_view: false}` as the third arg
-  window.gtag('config', trackerId);
+  // It is better to disable sending pageviews automatically as it will trigger too many calls in genome browser
+  window.gtag('config', trackerId, { send_page_view: false });
 };
 
 const loadScript = (trackerId: string) => {
