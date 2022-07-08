@@ -75,7 +75,7 @@ export const TrackPanelList = () => {
       {activeFocusObject?.type === 'gene' &&
       activeGenomeId &&
       activeFocusObject.stable_id ? (
-        <section className={`${styles.mainTrackItem} mainTrackItem`}>
+        <section className="mainTrackItem">
           <TrackPanelGene
             focusObjectId={activeFocusObject.object_id}
             genomeId={activeGenomeId}
