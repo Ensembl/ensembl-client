@@ -67,7 +67,7 @@ const unsupportedBrowserRouter = (_: Request, res: Response) => {
 const getAnalyticsScript = () =>
   process.env.REPORT_ANALYTICS?.toLowerCase() === 'true' &&
   process.env.GOOGLE_ANALYTICS_KEY
-    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_KEY}"></>
+    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_KEY}"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}

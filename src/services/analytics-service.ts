@@ -53,20 +53,20 @@ class AnalyticsTracking {
   }
 
   // Track an event
-  public trackEvent(gtag: AnalyticsOptions) {
-    gtag.species && this.setSpeciesDimension(gtag.species);
-    gtag.app && this.setAppDimension(gtag.app);
-    gtag.feature && this.setFeatureDimension(gtag.feature);
+  public trackEvent(options: AnalyticsOptions) {
+    options.species && this.setSpeciesDimension(options.species);
+    options.app && this.setAppDimension(options.app);
+    options.feature && this.setFeatureDimension(options.feature);
 
     this.googleAnalytics.event({
-      event_action: gtag.action,
-      event_category: gtag.category,
-      event_label: gtag.label,
-      event_value: gtag.value
+      event_action: options.action,
+      event_category: options.category,
+      event_label: options.label,
+      event_value: options.value
     });
 
-    gtag.species && this.setSpeciesDimension(null);
-    gtag.feature && this.setFeatureDimension(null);
+    options.species && this.setSpeciesDimension(null);
+    options.feature && this.setFeatureDimension(null);
   }
 
   // Set app custom dimension

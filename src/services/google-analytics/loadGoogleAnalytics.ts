@@ -27,14 +27,14 @@ import once from 'lodash/once';
  *
  */
 
-interface GTAG {
+interface GTag {
   (...args: any[]): void; // executes analytics commands
 }
 
 // extend the window interface with the google analytics object
 declare global {
   interface Window {
-    gtag: GTAG;
+    gtag: GTag;
     dataLayer: any[];
   }
 }

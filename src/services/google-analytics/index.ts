@@ -48,11 +48,7 @@ class GoogleAnalytics {
     this.googleAnalyticsKey = googleAnalyticsKey;
   }
 
-  static gtag(...args: any[]) {
-    window.gtag(...args);
-  }
-
-  // referencee: example from Google's docs for gtag.js
+  // reference: example from Google's docs for gtag.js
   // https://developers.google.com/analytics/devguides/collection/gtagjs/pages
   static pageview(params: TrackPageView) {
     window.gtag('event', 'page_view', {
@@ -61,7 +57,7 @@ class GoogleAnalytics {
     });
   }
 
-  // referencee: Google's docs for analytics.js
+  // reference: Google's docs for analytics.js
   // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#event_category
   static event(params: TrackEvent) {
     // clean up the params object before passing it to ga function
