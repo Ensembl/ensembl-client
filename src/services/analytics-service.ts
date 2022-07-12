@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { CustomDimensions, type AnalyticsOptions } from 'src/analyticsHelper';
+import { type AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
-import GoogleAnalytics from 'src/services/google-analytics';
+import GoogleAnalytics, {
+  TrackEventParams
+} from 'src/services/google-analytics';
 
 const { googleAnalyticsKey } = config;
 
@@ -54,46 +56,32 @@ class AnalyticsTracking {
 
   // Track an event
   public trackEvent(options: AnalyticsOptions) {
-    options.species && this.setSpeciesDimension(options.species);
-    options.app && this.setAppDimension(options.app);
-    options.feature && this.setFeatureDimension(options.feature);
-
-    this.googleAnalytics.event({
+    const eventParams: TrackEventParams = {
       event_action: options.action,
-      event_category: options.category,
-      event_label: options.label,
-      event_value: options.value
-    });
+      event_category: options.category
+    };
 
-    options.species && this.setSpeciesDimension(null);
-    options.feature && this.setFeatureDimension(null);
-  }
+    if (options.label) {
+      eventParams.event_label = options.label;
+    }
 
-  // Set app custom dimension
-  public setAppDimension(app: string | null) {
-    this.googleAnalytics.setDimension({
-      event_name: 'set_app_dimension',
-      dimension_key: CustomDimensions.APP,
-      dimension_value: app
-    });
-  }
+    if (options.value) {
+      eventParams.event_value = options.value;
+    }
 
-  // Set species custom dimension
-  public setSpeciesDimension(speciesAnalyticsName: string | null) {
-    this.googleAnalytics.setDimension({
-      event_name: 'set_species_dimension',
-      dimension_key: CustomDimensions.SPECIES,
-      dimension_value: speciesAnalyticsName
-    });
-  }
+    if (options.species) {
+      eventParams.species = options.species;
+    }
 
-  // Set feature custom dimension
-  public setFeatureDimension(featureType: string | null) {
-    this.googleAnalytics.setDimension({
-      event_name: 'set_feature_dimension',
-      dimension_key: CustomDimensions.FEATURE,
-      dimension_value: featureType
-    });
+    if (options.app) {
+      eventParams.app = options.app;
+    }
+
+    if (options.feature) {
+      eventParams.feature = options.feature;
+    }
+
+    this.googleAnalytics.event(eventParams);
   }
 }
 

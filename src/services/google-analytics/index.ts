@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CustomDimensionsOptions } from 'src/analyticsHelper';
 import loadGoogleAnalytics from './loadGoogleAnalytics';
 
 type TrackPageView = {
@@ -22,17 +23,11 @@ type TrackPageView = {
   page_path: string;
 };
 
-type TrackEvent = {
+export type TrackEventParams = CustomDimensionsOptions & {
   event_action: string;
   event_category: string;
   event_label?: string;
   event_value?: number;
-};
-
-type SetDimension = {
-  event_name: string;
-  dimension_key: string;
-  dimension_value: string | null;
 };
 
 /**
@@ -41,50 +36,22 @@ type SetDimension = {
  */
 
 class GoogleAnalytics {
-  static googleAnalyticsKey: string;
-
   static initialize(googleAnalyticsKey: string) {
     loadGoogleAnalytics(googleAnalyticsKey);
-    this.googleAnalyticsKey = googleAnalyticsKey;
   }
 
   // reference: example from Google's docs for gtag.js
   // https://developers.google.com/analytics/devguides/collection/gtagjs/pages
   static pageview(params: TrackPageView) {
     window.gtag('event', 'page_view', {
-      send_to: this.googleAnalyticsKey,
       ...params
     });
   }
 
   // reference: Google's docs for analytics.js
   // https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference#event_category
-  static event(params: TrackEvent) {
-    // clean up the params object before passing it to ga function
-    // by removing from it any empty fields
-    const options: {
-      event_category: string;
-      event_label?: string;
-      value?: string;
-    } = {
-      event_category: params.event_category
-    };
-
-    if (params.event_label) {
-      options['event_label'] = params.event_label;
-    }
-
-    if (params.event_value) {
-      options['value'] = params.event_label;
-    }
-
-    window.gtag('event', params.event_action, options);
-  }
-
-  static setDimension(params: SetDimension) {
-    window.gtag('event', params.event_name, {
-      [params.dimension_key]: params.dimension_value
-    });
+  static event(eventParams: TrackEventParams) {
+    window.gtag('event', eventParams.event_action, eventParams);
   }
 }
 

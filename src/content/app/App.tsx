@@ -33,7 +33,6 @@ const AppContainer = () => {
     const appName: string = location.pathname.split('/').filter(Boolean)[0];
 
     dispatch(changeCurrentApp(appName));
-    analyticsTracking.setAppDimension(appName);
 
     return function unsetApp() {
       dispatch(changeCurrentApp(''));

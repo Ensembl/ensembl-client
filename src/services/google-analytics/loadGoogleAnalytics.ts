@@ -35,7 +35,7 @@ interface GTag {
 declare global {
   interface Window {
     gtag: GTag;
-    dataLayer: any[];
+    dataLayer: unknown[];
   }
 }
 
