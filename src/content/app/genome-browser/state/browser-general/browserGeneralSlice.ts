@@ -35,7 +35,6 @@ import {
   deleteGenomeTrackPanelData,
   setInitialTrackPanelDataForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { deleteTrackConfigsForGenome } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
 
@@ -116,7 +115,6 @@ export const setDataFromUrlAndSave: ActionCreator<
 
     dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
     dispatch(setInitialTrackPanelDataForGenome(payload));
-    dispatch(ensureSpeciesIsEnabled(activeGenomeId));
   });
 
   browserStorageService.saveActiveGenomeId(activeGenomeId);

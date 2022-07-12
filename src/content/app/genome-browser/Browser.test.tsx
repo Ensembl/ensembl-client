@@ -58,14 +58,15 @@ jest.mock('./components/track-panel/TrackPanel', () => () => (
   <div className="trackPanel">TrackPanel</div>
 ));
 jest.mock(
+  './components/browser-sidebar-modal/BrowserSidebarModal',
+  () => () => <div className="sidebarModal">Sidebar modal</div>
+);
+jest.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
   () => () => <div className="trackPanelTabs">TrackPanelTabs</div>
 );
 jest.mock('./components/drawer/Drawer', () => () => (
   <div className="drawer">Drawer</div>
-));
-jest.mock('src/shared/components/in-app-search/InAppSearch', () => () => (
-  <div className="inAppSearch">Genome browser search</div>
 ));
 
 const mockState = createMockBrowserState();
@@ -149,13 +150,13 @@ describe('<Browser />', () => {
         mockState
       );
 
-      const { getByText } = renderComponent({
+      const { container: rerenderedContainer } = renderComponent({
         state: stateWithModalOpened,
         url: '/genome-browser?focus=foo'
       });
 
       await waitFor(() => {
-        getByText('Genome browser search'); // errors while the text is missing; succeeds when the text is available
+        expect(rerenderedContainer.querySelector('.sidebarModal')).toBeTruthy();
       });
     });
 

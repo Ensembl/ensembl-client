@@ -23,7 +23,7 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/speci
 export type Props = {
   species: CommittedItem;
   isActive?: boolean;
-  onClick: (genomeId: string) => void;
+  onClick: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;

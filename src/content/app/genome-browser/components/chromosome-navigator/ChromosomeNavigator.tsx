@@ -18,6 +18,7 @@ import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import * as constants from './chromosomeNavigatorConstants';
 
@@ -30,11 +31,7 @@ import {
   getDefaultChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { getKaryotypeItemLength } from 'src/shared/state/genome/genomeSelectors';
-
 import * as centromeres from 'src/shared/data/centromeres';
-
-import { RootState } from 'src/store';
 
 import styles from './ChromosomeNavigator.scss';
 
@@ -54,6 +51,7 @@ export type ChromosomeNavigatorProps = {
 };
 
 export const ChromosomeNavigatorWrapper = () => {
+  const genomeId = useSelector(getBrowserActiveGenomeId) as string;
   const [chromosomeName = '', viewportStart = 0, viewportEnd = 0] =
     useSelector(getActualChrLocation) || [];
   const defaultChrLocation = useSelector(getDefaultChrLocation);
@@ -64,17 +62,17 @@ export const ChromosomeNavigatorWrapper = () => {
       }
     : null;
 
-  const karyotypeItemLength = useSelector((state: RootState) =>
-    getKaryotypeItemLength(chromosomeName, state)
-  );
+  const { data: karyotype } = useGenomeKaryotypeQuery(genomeId);
 
-  const length = karyotypeItemLength || 0;
+  const currentKaryotypeItem = karyotype?.find(
+    (item) => item.name === chromosomeName
+  );
+  const karyotypeItemLength = currentKaryotypeItem?.length ?? 0;
 
   // the code below is naughty and temporary (see ENSWBSITES-385):
   // we are peeking at the string that represents genome id — something which we are not supposed to do
-  const genomeId = useSelector(getBrowserActiveGenomeId);
   let centromere = null;
-  if (chromosomeName && genomeId && genomeId.startsWith('homo_sapiens')) {
+  if (chromosomeName && genomeId.startsWith('homo_sapiens')) {
     centromere = centromeres.humanCentromeres[chromosomeName] || null;
   }
 
@@ -82,7 +80,7 @@ export const ChromosomeNavigatorWrapper = () => {
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
   const props = {
-    length,
+    length: karyotypeItemLength,
     centromere,
     viewportStart,
     viewportEnd,

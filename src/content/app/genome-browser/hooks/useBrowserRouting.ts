@@ -20,8 +20,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
@@ -31,11 +31,9 @@ import {
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
-  parseFocusObjectId,
-  buildFocusObjectId
+  parseFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave
@@ -43,12 +41,11 @@ import {
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveFocusObjectIds
-} from '../state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveFocusObjectIds } from '../state/browser-general/browserGeneralSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -66,90 +63,88 @@ import { getAllChrLocations } from '../state/browser-general/browserGeneralSelec
 
 const useBrowserRouting = () => {
   const firstRenderRef = useRef(true);
-  const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
+  const {
+    genomeId,
+    focusObjectId,
+    genomeIdInUrl,
+    focusObjectIdInUrl,
+    activeGenomeId,
+    activeFocusObjectId,
+    genomeIdForUrl,
+    isFetchingGenomeId
+  } = useGenomeBrowserIds();
+  const focusObject = useAppSelector((state: RootState) =>
+    getFocusObjectById(state, activeFocusObjectId || '')
+  );
+  const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
+    useGenomeBrowser();
   const { search } = useLocation(); // from document.location provided by the router
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { genomeId } = params;
   const urlSearchParams = new URLSearchParams(search);
-  const focus = urlSearchParams.get('focus') || null;
   const location = urlSearchParams.get('location') || null;
 
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const committedSpecies = useAppSelector(getEnabledCommittedSpecies);
+  const allCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const allChrLocations = useAppSelector(getAllChrLocations);
   const allActiveFocusObjectIds = useAppSelector(
     getBrowserActiveFocusObjectIds
   );
 
-  const activeFocusObjectId = genomeId
-    ? allActiveFocusObjectIds[genomeId]
-    : null;
-  const focusObject = useAppSelector((state: RootState) =>
-    getFocusObjectById(state, activeFocusObjectId || '')
-  );
-
-  const newFocusId = focus
-    ? buildNewFocusObjectId(genomeId as string, focus)
-    : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
-  const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
-    useGenomeBrowser();
 
   useEffect(() => {
-    if (!genomeId) {
+    if (!genomeIdInUrl) {
       // handling navigation to /browser
       // select either the species that the user viewed during the previous visit,
       // or the first selected species
-      const selectedSpecies = committedSpecies.find(
+      const selectedSpecies = allCommittedSpecies.find(
         ({ genome_id }) => genome_id === activeGenomeId
       );
-      const firstCommittedSpecies = committedSpecies[0];
+      const firstCommittedSpecies = allCommittedSpecies[0];
       if (selectedSpecies) {
         changeGenomeId(selectedSpecies.genome_id);
       } else if (firstCommittedSpecies) {
         changeGenomeId(firstCommittedSpecies.genome_id);
       }
       return;
+    } else if (isFetchingGenomeId) {
+      // don't do anything while the real genome id is being fetched from the backend
+      return;
     }
 
     const payload = {
       activeGenomeId: genomeId,
-      activeFocusObjectId: newFocusId,
+      activeFocusObjectId: focusObjectId,
       chrLocation
     };
 
-    if (!activeGenomeId) {
-      /*
-        Means that this is the first time user visits genome browser.
-        We need to make sure that active genome id is set properly in redux
-        for the actions below (e.g. changeFocusObject) to work
-      */
-      dispatch(setActiveGenomeId(genomeId));
-    }
-
-    if (!focus && activeFocusObjectId) {
+    if (
+      !focusObjectIdInUrl &&
+      genomeId === activeGenomeId &&
+      activeFocusObjectId
+    ) {
       const newFocus = buildFocusIdForUrl(
         parseFocusObjectId(activeFocusObjectId)
       );
-      navigate(urlFor.browser({ genomeId, focus: newFocus }), {
+
+      navigate(urlFor.browser({ genomeId: genomeIdForUrl, focus: newFocus }), {
         replace: true
       });
-    } else if (newFocusId && !chrLocation) {
+    } else if (focusObjectId && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
        before it gets changed by setDataFromUrlAndSave
       */
-      changeFocusObject(newFocusId);
-    } else if (focus && chrLocation) {
+      changeFocusObject(focusObjectId);
+    } else if (focusObjectIdInUrl && chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
-      if (genomeBrowser) {
+      if (genomeId && genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
-          const { objectId } = parseFocusIdFromUrl(focus);
+          const { objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
 
           changeBrowserLocation({
             genomeId,
@@ -162,13 +157,14 @@ const useBrowserRouting = () => {
       }
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, genomeBrowser, location]);
-
-  useEffect(() => {
-    if (genomeId) {
-      dispatch(fetchGenomeData(genomeId));
-    }
-  }, [genomeId]);
+  }, [
+    genomeId,
+    isFetchingGenomeId,
+    focusObjectIdInUrl,
+    focusObjectId,
+    genomeBrowser,
+    location
+  ]);
 
   useEffect(() => {
     if (!focusObject && activeFocusObjectId) {
@@ -178,6 +174,10 @@ const useBrowserRouting = () => {
 
   const changeGenomeId = useCallback(
     (genomeId: string) => {
+      const species = allCommittedSpecies.find(
+        (species) => species.genome_id === genomeId
+      ) as CommittedItem;
+      const genomeIdForUrl = species.url_slug ?? species.genome_id;
       const chrLocation = allChrLocations[genomeId];
       const activeFocusObjectId = allActiveFocusObjectIds[genomeId];
       const focusIdForUrl = activeFocusObjectId
@@ -185,7 +185,7 @@ const useBrowserRouting = () => {
         : null;
 
       const nextUrlParams = {
-        genomeId,
+        genomeId: genomeIdForUrl,
         focus: focusIdForUrl,
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
@@ -203,19 +203,14 @@ const useBrowserRouting = () => {
       // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
       // becomes a valid searchable page in its own right.
 
-      navigate(urlFor.browser(nextUrlParams), { replace: !params.genomeId });
+      navigate(urlFor.browser(nextUrlParams), { replace: !genomeIdInUrl });
     },
-    [params.genomeId]
+    [genomeIdInUrl]
   );
 
   return {
     changeGenomeId
   };
-};
-
-const buildNewFocusObjectId = (genomeId: string, focusFromUrl: string) => {
-  const parsedFocus = parseFocusIdFromUrl(focusFromUrl);
-  return buildFocusObjectId({ genomeId, ...parsedFocus });
 };
 
 export default useBrowserRouting;

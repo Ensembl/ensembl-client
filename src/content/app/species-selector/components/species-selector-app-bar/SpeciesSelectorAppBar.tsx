@@ -60,9 +60,10 @@ export const SpeciesSelectorAppBar = () => {
 const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   const navigate = useNavigate();
 
-  const showSpeciesPage = (genome_id: string) => {
+  const showSpeciesPage = (species: CommittedItem) => {
+    const genomeIdForUrl = species.url_slug ?? species.genome_id;
     const speciesPageUrl = urlFor.speciesPage({
-      genomeId: genome_id
+      genomeId: genomeIdForUrl
     });
 
     navigate(speciesPageUrl);

@@ -21,11 +21,14 @@ import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/en
 
 import GeneOverview from './GeneOverview';
 
+const mockGenomeId = 'genome_id';
+const mockGeneId = 'unversioned_gene_id';
+
 jest.mock('react-router-dom', () => ({
   useParams: jest.fn(() => ({
     params: {
-      entityId: geneId,
-      genomeId
+      entityId: mockGenomeId,
+      mockGeneId
     }
   }))
 }));
@@ -44,12 +47,18 @@ jest.mock('../publications/GenePublications', () => () => (
 ));
 
 jest.mock(
+  'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
+  () => () => ({
+    genomeId: mockGenomeId,
+    geneId: mockGeneId
+  })
+);
+
+jest.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
   () => () => ({})
 );
 
-const genomeId = 'genome_id';
-const geneId = 'unversioned_gene_id';
 const geneName = 'gene_name';
 const geneSymbol = 'gene_symbol';
 const stableId = 'gene_stable_id';

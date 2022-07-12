@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -35,7 +34,7 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
@@ -55,7 +54,7 @@ type Props = {
 
 const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
@@ -92,7 +91,7 @@ const TranscriptSummary = (props: Props) => {
   });
 
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: activeGenomeId,
+    genomeId: genomeIdForUrl,
     entityId: focusId
   });
 

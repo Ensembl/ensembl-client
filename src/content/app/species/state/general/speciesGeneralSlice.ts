@@ -22,7 +22,10 @@ import {
 import set from 'lodash/fp/set';
 
 import { getActiveGenomeId } from './speciesGeneralSelectors';
-import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import {
+  getGenomeIdForUrl,
+  getGenomeExampleFocusObjects
+} from 'src/shared/state/genome/genomeSelectors';
 import speciesStorageService from '../../services/species-storage-service';
 
 import {
@@ -66,6 +69,9 @@ export const fetchStatsForActiveGenome =
       return;
     }
 
+    // if active genome id exists, then genomeIdForUrl must be a string
+    const genomeIdForUrl = getGenomeIdForUrl(state, activeGenomeId) as string;
+
     const exampleFocusObjects = getGenomeExampleFocusObjects(
       state,
       activeGenomeId
@@ -75,6 +81,7 @@ export const fetchStatsForActiveGenome =
       .map((section) =>
         getStatsForSection({
           genome_id: activeGenomeId,
+          genomeIdForUrl,
           section,
           exampleFocusObjects
         })

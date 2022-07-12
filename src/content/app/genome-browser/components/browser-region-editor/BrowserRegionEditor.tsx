@@ -20,6 +20,7 @@ import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
@@ -33,10 +34,9 @@ import {
   getRegionFieldActive
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import {
   toggleRegionEditorActive,
-  ChrLocation
+  type ChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import {
@@ -45,12 +45,11 @@ import {
 } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   validateRegion,
-  RegionValidationErrors
+  type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
 import applyUrl from 'static/img/shared/apply.svg?url';
@@ -59,11 +58,10 @@ import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 export const BrowserRegionEditor = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId) as string;
   const chrLocation = useSelector(getChrLocation);
-  const genomeKaryotype = useSelector(
-    getGenomeKaryotype
-  ) as GenomeKaryotypeItem[];
+  const { data: genomeKaryotype = [] } =
+    useGenomeKaryotypeQuery(activeGenomeId);
   const isDisabled = useSelector(getRegionFieldActive);
 
   const dispatch = useDispatch();

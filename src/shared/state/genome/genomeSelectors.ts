@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
-import { GenomeInfo, GenomeInfoData } from './genomeTypes';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import type { RootState } from 'src/store';
+import type { GenomeInfo } from './genomeTypes';
 
-export const getGenomeInfo = (state: RootState) =>
-  state.genome.genomeInfo.genomeInfoData as GenomeInfoData;
+export const getGenomeInfo = (state: RootState) => state.genome.genomes;
 
 export const getGenomeInfoById = (
   state: RootState,
@@ -29,14 +27,28 @@ export const getGenomeInfoById = (
   return allGenomesInfo[genomeId] || null;
 };
 
-export const getGenomeInfoFetching = (state: RootState) =>
-  state.genome.genomeInfo.genomeInfoFetching;
+export const getGenomeIdFromUrlSlug = (
+  state: RootState,
+  urlSlug: string
+): string | undefined => {
+  return state.genome.urlToGenomeIdMap[urlSlug];
+};
 
-export const getGenomeInfoFetchFailed = (state: RootState) =>
-  state.genome.genomeInfo.genomeInfoFetchFailed;
+export const getGenomeInfoByUrlSlug = (
+  state: RootState,
+  urlSlug: string
+): GenomeInfo | null => {
+  const genomeId = getGenomeIdFromUrlSlug(state, urlSlug);
+  return genomeId ? getGenomeInfoById(state, genomeId) : null;
+};
 
-export const getGenomeTrackCategories = (state: RootState) =>
-  state.genome.genomeTrackCategories.genomeTrackCategoriesData;
+export const getGenomeIdForUrl = (
+  state: RootState,
+  genomeId: string
+): string | undefined => {
+  const genome = getGenomeInfoById(state, genomeId);
+  return genome?.url_slug ?? genome?.genome_id;
+};
 
 export const getGenomeExampleFocusObjects = (
   state: RootState,
@@ -46,46 +58,5 @@ export const getGenomeExampleFocusObjects = (
   if (!genomeId) {
     return emptyObjects;
   }
-  return (
-    state.genome.genomeInfo.genomeInfoData[genomeId]?.example_objects ||
-    emptyObjects
-  );
+  return state.genome.genomes[genomeId]?.example_objects || emptyObjects;
 };
-
-export const getGenomeTrackCategoriesById = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
-    ? state.genome.genomeTrackCategories.genomeTrackCategoriesData[
-        activeGenomeId
-      ]
-    : null;
-};
-
-export const getGenomeTrackCategoriesFetching = (state: RootState) =>
-  state.genome.genomeTrackCategories.genomeTrackCategoriesFetching;
-
-export const getGenomeTrackCategoriesFetchFailed = (state: RootState) =>
-  state.genome.genomeTrackCategories.genomeTrackCategoriesFetchFailed;
-
-export const getGenomeKaryotype = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
-    ? state.genome.genomeKaryotype.genomeKaryotypeData[activeGenomeId]
-    : null;
-};
-
-export const getKaryotypeItemLength = (name: string, state: RootState) => {
-  const karyotype = getGenomeKaryotype(state);
-  if (!karyotype) {
-    return null;
-  }
-
-  const karyotypeItem = karyotype.find((item) => item.name === name);
-  return karyotypeItem ? karyotypeItem.length : null;
-};
-
-export const getGenomeKaryotypeFetching = (state: RootState) =>
-  state.genome.genomeKaryotype.genomeKaryotypeFetching;
-
-export const getGenomeKaryotypeFetchFailed = (state: RootState) =>
-  state.genome.genomeKaryotype.genomeKaryotypeFetchFailed;

@@ -15,19 +15,16 @@
  */
 
 import React, { memo } from 'react';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
-import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
-import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
 import {
   getBrowserActiveFocusObject,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
-import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 import {
   BrowserSidebarModalView,
   openBrowserSidebarModal
@@ -44,18 +41,19 @@ import {
 } from 'src/shared/components/accordion';
 import SearchIcon from 'static/icons/icon_search.svg';
 
+import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
+import type { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
+
 import styles from './TrackPanelList.scss';
 
 export const TrackPanelList = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeFocusObject = useSelector(getBrowserActiveFocusObject);
-  const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
-  const genomeTrackCategories = useSelector(getGenomeTrackCategoriesById);
+  // by the time this component renders, genome id should be available
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
+  const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
   const dispatch = useAppDispatch();
 
-  if (!activeGenomeId) {
-    return null; // will never happen, but makes typescript happy
-  }
+  const { data: genomeTrackCategories } = useGenomeTracksQuery(activeGenomeId);
 
   const openSearch = () => {
     dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));

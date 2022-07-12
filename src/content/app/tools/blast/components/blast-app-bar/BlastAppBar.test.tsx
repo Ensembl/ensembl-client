@@ -39,10 +39,10 @@ jest.mock(
 const mockCommittedItems = [
   {
     genome_id: 'homo_sapiens_GCA_000001405_14',
-    reference_genome_id: null,
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     assembly_name: 'GRCh37.p13',
+    url_slug: null,
     isEnabled: true
   }
 ];

@@ -16,12 +16,14 @@
 
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
-import usePrevious from 'src/shared/hooks/usePrevious';
 import { useDefaultEntityViewerGeneQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import {
   getSelectedGeneViewTabs,
   getCurrentView
@@ -32,7 +34,10 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
-import { setFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  setFilterPanel,
+  resetFilterPanel
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
   getFilters,
   getSortingRule,
@@ -40,10 +45,6 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
-
-import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptsList from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -66,14 +67,22 @@ type GeneViewWithDataProps = {
 };
 
 const GeneView = () => {
-  const params = useParams<'genomeId' | 'entityId'>();
-  const { genomeId, entityId } = params;
-  const { objectId: geneId } = parseFocusIdFromUrl(entityId as string);
+  const { activeGenomeId, geneId } = useGeneViewIds();
+  const dispatch = useAppDispatch();
 
-  const { currentData, isFetching } = useDefaultEntityViewerGeneQuery({
-    geneId,
-    genomeId: genomeId as string
-  });
+  const { currentData, isFetching } = useDefaultEntityViewerGeneQuery(
+    {
+      geneId: geneId as string,
+      genomeId: activeGenomeId as string
+    },
+    {
+      skip: !geneId || !activeGenomeId
+    }
+  );
+
+  useEffect(() => {
+    dispatch(resetFilterPanel());
+  }, [geneId]);
 
   // TODO decide about error handling
   if (isFetching) {
@@ -92,6 +101,7 @@ const GeneView = () => {
 const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
+  const { genomeIdForUrl, entityIdInUrl } = useGeneViewIds();
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
@@ -109,9 +119,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     referenceId: uniqueScrollReferenceId
   });
 
-  const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
-  const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
-  const gbUrl = urlFor.browser({ genomeId, focus: focusId });
+  const { genomeId, selectedTabs } = useGeneViewRouting();
+  const gbUrl = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: entityIdInUrl
+  });
 
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT ||
@@ -222,11 +234,9 @@ const isViewParameterValid = (view: string) =>
   Object.values(View).some((value) => value === view);
 
 const useGeneViewRouting = () => {
+  const { genomeIdForUrl, activeGenomeId, entityIdInUrl } = useGeneViewIds();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const params = useParams<'genomeId' | 'entityId'>();
-  const { genomeId, entityId } = params;
-  const { objectId: geneId } = parseFocusIdFromUrl(entityId as string);
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
 
@@ -234,26 +244,24 @@ const useGeneViewRouting = () => {
   const view = urlSearchParams.get('view');
   const proteinId = urlSearchParams.get('protein_id');
   const viewInRedux = useAppSelector(getCurrentView) || View.TRANSCRIPTS;
-  const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
   const selectedTabs = useAppSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
     if (view && isViewParameterValid(view) && viewInRedux !== view) {
       dispatch(updateView(view as View));
-    } else {
+    } else if (!view || !isViewParameterValid(view)) {
       const url = urlFor.entityViewer({
-        genomeId,
-        entityId,
+        genomeId: genomeIdForUrl,
+        entityId: entityIdInUrl,
         view: viewInRedux,
         proteinId
       });
       navigate(url, { replace: true });
     }
-  }, [view, viewInRedux, genomeId, previousGenomeId]);
+  }, [view, viewInRedux, genomeIdForUrl]);
 
   return {
-    genomeId,
-    geneId,
+    genomeId: activeGenomeId,
     selectedTabs
   };
 };

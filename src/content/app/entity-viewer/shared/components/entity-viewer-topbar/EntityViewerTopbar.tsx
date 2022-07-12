@@ -16,6 +16,7 @@
 
 import React from 'react';
 
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
@@ -24,15 +25,20 @@ import type { GeneSummary } from 'src/content/app/entity-viewer/state/api/querie
 
 import styles from './EntityViewerTopbar.scss';
 
-export type EntityViewerTopbarProps = {
-  genomeId: string;
-  entityId: string;
-};
+export const EntityViewerTopbar = () => {
+  const { genomeId, geneId = '' } = useGeneViewIds();
 
-export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
-  const { genomeId } = props;
-  const entityId = props.entityId.split(':').pop() as string;
-  const { currentData } = useGeneSummaryQuery({ geneId: entityId, genomeId });
+  // NOTE: when we introduce entities other than gene,
+  // either the component's name will have to change, or the data fetcher below
+  const { currentData } = useGeneSummaryQuery(
+    {
+      genomeId: genomeId as string,
+      geneId
+    },
+    {
+      skip: !geneId
+    }
+  );
 
   return (
     <div className={styles.container}>

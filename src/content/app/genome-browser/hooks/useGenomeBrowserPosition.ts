@@ -24,13 +24,10 @@ import {
 } from '@ensembl/ensembl-genome-browser';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import {
-  buildFocusIdForUrl,
-  parseFocusObjectId
-} from 'src/shared/helpers/focusObjectHelpers';
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import {
   getBrowserActiveFocusObjectId,
@@ -51,6 +48,7 @@ import {
  */
 
 const useGenomeBrowserPosition = () => {
+  const { genomeIdForUrl, focusObjectIdForUrl } = useGenomeBrowserIds();
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeFocusId = useSelector(getBrowserActiveFocusObjectId);
 
@@ -58,7 +56,9 @@ const useGenomeBrowserPosition = () => {
   // by the time to use them inside onBrowserLocationChange
   const idRef = useRef({
     activeGenomeId,
-    activeFocusId
+    activeFocusId,
+    genomeIdForUrl,
+    focusObjectIdForUrl
   });
 
   const { genomeBrowser } = useGenomeBrowser();
@@ -67,8 +67,13 @@ const useGenomeBrowserPosition = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    idRef.current = { activeGenomeId, activeFocusId };
-  }, [activeGenomeId, activeFocusId]);
+    idRef.current = {
+      activeGenomeId,
+      activeFocusId,
+      genomeIdForUrl,
+      focusObjectIdForUrl
+    };
+  }, [activeGenomeId, activeFocusId, genomeIdForUrl, focusObjectIdForUrl]);
 
   useEffect(() => {
     const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
@@ -91,7 +96,8 @@ const useGenomeBrowserPosition = () => {
       | BrowserCurrentLocationUpdateAction
       | BrowserTargetLocationUpdateAction
   ) => {
-    const { activeGenomeId, activeFocusId } = idRef.current;
+    const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
+      idRef.current;
     const { stick, start, end } = action.payload;
     const chromosome = stick.split(':')[1];
 
@@ -100,10 +106,6 @@ const useGenomeBrowserPosition = () => {
     } else {
       const chrLocation = [chromosome, start, end] as ChrLocation;
 
-      const newFocus = buildFocusIdForUrl(
-        parseFocusObjectId(activeFocusId as string)
-      );
-
       dispatch(
         updateChrLocation({
           [activeGenomeId as string]: [chromosome, start, end]
@@ -111,8 +113,8 @@ const useGenomeBrowserPosition = () => {
       );
       navigate(
         urlFor.browser({
-          genomeId: activeGenomeId,
-          focus: newFocus,
+          genomeId: genomeIdForUrl,
+          focus: focusObjectIdForUrl,
           location: getChrLocationStr(chrLocation)
         }),
         {

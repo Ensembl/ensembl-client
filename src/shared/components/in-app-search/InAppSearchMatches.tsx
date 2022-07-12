@@ -43,6 +43,7 @@ import styles from './InAppSearch.scss';
 type InAppSearchMatchesProps = SearchResults & {
   app: AppName;
   mode: InAppSearchMode;
+  genomeIdForUrl: string; // TODO: remove this when backend starts including this id in the response
 };
 
 const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
@@ -54,6 +55,7 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
           match={match}
           app={props.app}
           mode={props.mode}
+          genomeIdForUrl={props.genomeIdForUrl}
           position={index + 1}
         />
       ))}
@@ -65,6 +67,7 @@ type InAppSearchMatchProps = {
   match: SearchMatch;
   app: AppName;
   mode: InAppSearchMode;
+  genomeIdForUrl: string;
   position: number;
 };
 
@@ -138,12 +141,12 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
 };
 
 const MatchDetails = (
-  props: Pick<InAppSearchMatchProps, 'match' | 'mode'> & {
+  props: Pick<InAppSearchMatchProps, 'match' | 'mode' | 'genomeIdForUrl'> & {
     onClick: (appName?: AppName) => void;
   }
 ) => {
-  const { match } = props;
-  const { genome_id: genomeId, unversioned_stable_id } = match;
+  const { match, genomeIdForUrl } = props;
+  const { unversioned_stable_id } = match;
 
   const formattedLocation = getFormattedLocation({
     chromosome: match.slice.region.name,
@@ -152,12 +155,12 @@ const MatchDetails = (
   });
 
   const urlForGenomeBrowser = urlFor.browser({
-    genomeId,
+    genomeId: genomeIdForUrl,
     focus: buildFocusIdForUrl({ type: 'gene', objectId: unversioned_stable_id })
   });
 
   const urlForEntityViewer = urlFor.entityViewer({
-    genomeId,
+    genomeId: genomeIdForUrl,
     entityId: buildFocusIdForUrl({
       type: 'gene',
       objectId: unversioned_stable_id

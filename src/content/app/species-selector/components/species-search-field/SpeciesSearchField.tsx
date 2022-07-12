@@ -39,7 +39,7 @@ import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
 
-import {
+import type {
   SearchMatch,
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';

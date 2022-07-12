@@ -19,6 +19,7 @@ import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -32,10 +33,10 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
-  const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects).slice(
-    0,
-    20
-  );
+  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const previouslyViewedObjects = useAppSelector(
+    getPreviouslyViewedObjects
+  ).slice(0, 20);
 
   const onLinkClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -50,7 +51,7 @@ export const PreviouslyViewedLinks = () => {
     <div data-test-id="previously viewed links">
       {previouslyViewedObjects.map((previouslyViewedObject, index) => {
         const path = urlFor.browser({
-          genomeId: previouslyViewedObject.genome_id,
+          genomeId: genomeIdForUrl,
           focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
         });
 

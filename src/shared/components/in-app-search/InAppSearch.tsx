@@ -55,11 +55,12 @@ export type InAppSearchMode = 'interstitial' | 'sidebar';
 export type Props = {
   app: AppName;
   genomeId: string;
+  genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   mode: InAppSearchMode;
 };
 
 const InAppSearch = (props: Props) => {
-  const { app, genomeId, mode } = props;
+  const { app, genomeId, genomeIdForUrl, mode } = props;
   const [isLoading, setIsLoading] = useState(false);
   const query = useSelector((state: RootState) =>
     getSearchQuery(state, app, genomeId)
@@ -152,7 +153,12 @@ const InAppSearch = (props: Props) => {
         <CircleLoader className={styles.spinner} size="small" />
       ) : (
         searchResult && (
-          <InAppSearchMatches {...searchResult} app={app} mode={mode} />
+          <InAppSearchMatches
+            {...searchResult}
+            app={app}
+            mode={mode}
+            genomeIdForUrl={genomeIdForUrl}
+          />
         )
       )}
     </div>
