@@ -43,9 +43,7 @@ class GoogleAnalytics {
   // reference: example from Google's docs for gtag.js
   // https://developers.google.com/analytics/devguides/collection/gtagjs/pages
   static pageview(params: TrackPageView) {
-    window.gtag('event', 'page_view', {
-      ...params
-    });
+    window.gtag('event', 'page_view', params);
   }
 
   // reference: Google's docs for analytics.js
