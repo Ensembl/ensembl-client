@@ -5,8 +5,7 @@
   justify-content: space-between;
   border-bottom: 1px solid $grey;
   border-top: 1px solid $grey;
-  padding-left: $page-left-padding;
-  padding-right: $page-right-padding;
+  padding: 0 $standard-gutter;
   height: 60px;
   align-items: center;
 
@@ -31,7 +30,8 @@
 
 .category {
   display: flex;
-  padding: 0 15px;
+  column-gap: 20px;
+  padding: 0 $standard-gutter;
 
   &:first-child {
     padding-left: 0px;
@@ -52,7 +52,6 @@
   display: inline-block;
   height: 32px;
   width: 32px;
-  margin: 0 12px;
 
   button {
     width: 32px;

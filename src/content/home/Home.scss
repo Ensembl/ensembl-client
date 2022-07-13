@@ -85,7 +85,7 @@
 .homeTopRight {
   position: absolute;
   top: 2px;
-  right: $page-right-padding;
+  right: $standard-gutter;
   display: grid;
   grid-template-columns: repeat(2, auto);
   align-items: start;

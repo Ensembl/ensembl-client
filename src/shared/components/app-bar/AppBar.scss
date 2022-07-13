@@ -8,7 +8,7 @@
     'top top'
     'main right';
   align-items: center;
-  padding: 8px $page-right-padding 0 $page-left-padding;
+  padding: 8px $standard-gutter 0 $standard-gutter;
   min-height: 80px;
   width: 100%;
 
@@ -29,7 +29,7 @@
 
 .appBarMain {
   grid-area: main;
-  margin-left: $page-left-padding;
+  margin-left: $standard-gutter;
   max-width: 100%;
   align-self: start;
 }
