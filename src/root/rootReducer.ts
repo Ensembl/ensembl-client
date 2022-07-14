@@ -26,6 +26,7 @@ import speciesSelector from 'src/content/app/species-selector/state/speciesSelec
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
+import sharedComponents from 'src/shared/state/sharedComponentsReducer';
 
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -42,6 +43,7 @@ const createRootReducer = () =>
     speciesPage,
     entityViewer,
     blast,
+    sharedComponents,
     [thoasApiSlice.reducerPath]: thoasApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
