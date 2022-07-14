@@ -19,8 +19,8 @@ import { createSelector } from '@reduxjs/toolkit';
 import get from 'lodash/get';
 import find from 'lodash/find';
 
-import { RootState } from 'src/store';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { RootState } from 'src/store';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 export const getSearchText = (state: RootState) =>
   state.speciesSelector.search.text;

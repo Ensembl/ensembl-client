@@ -6,8 +6,8 @@
   user-select: none;
 
   > svg {
-    width: var(--alert-icon-width, 18px);
-    height: var(--alert-icon-height, 18px);
+    width: var(--alert-icon-diameter, 18px);
+    height: var(--alert-icon-diameter, 18px);
     cursor: pointer;
   }
 }

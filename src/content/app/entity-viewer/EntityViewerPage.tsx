@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import loadable from '@loadable/component';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
-
 import {
-  parseFocusObjectId,
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
-import { fetchPageTitleInfo } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSlice';
-import { getEntityViewerPageMeta } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSelectors';
-import {
-  getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEntityId
-} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import { useGenePageMetaQuery, fetchGenePageMeta } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
@@ -42,43 +35,31 @@ import type { AppDispatch } from 'src/store';
 const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
 
 const EntityViewerPage = () => {
-  const dispatch = useAppDispatch();
   const hasMounted = useHasMounted();
-  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
-  const pageMeta = useAppSelector(getEntityViewerPageMeta);
 
-  const { title } = pageMeta;
+  // TODO: eventually, EntityViewerPage should not use a hook that is explicitly about gene,
+  // because we will have entities other than gene
+  const { genomeId, geneId } = useGeneViewIds();
 
-  useEffect(() => {
-    const geneId = activeEntityId
-      ? parseFocusObjectId(activeEntityId).objectId
-      : null;
-    const shouldFetchPageTitle =
-      activeGenomeId !== null &&
-      geneId !== null &&
-      (activeGenomeId !== pageMeta.genomeId || geneId !== pageMeta.entityId);
-
-    if (shouldFetchPageTitle) {
-      dispatch(
-        fetchPageTitleInfo({
-          genomeId: activeGenomeId as string,
-          geneStableId: geneId as string
-        })
-      );
-    }
-  }, [activeGenomeId, activeEntityId]);
+  const { data: pageMeta } = useGenePageMetaQuery({
+    genomeId: genomeId ?? '',
+    geneId: geneId ?? ''
+  },
+  {
+    skip: !genomeId || !geneId
+  });
 
   return (
     <>
       <Helmet>
-        <title>{title}</title>
+        <title>{ pageMeta?.title }</title>
         <meta name="description" content="Entity viewer" />
       </Helmet>
       {hasMounted && <LoadableEntityViewer />}
     </>
   );
 };
+
 
 export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
@@ -94,25 +75,37 @@ export const serverFetch: ServerFetch = async (params) => {
   const genomeInfoResponsePromise = dispatch(
     fetchGenomeInfo.initiate(genomeIdFromUrl)
   );
-  const genomeInfoResponse = await genomeInfoResponsePromise;
-  genomeInfoResponsePromise.unsubscribe();
+  const { data: genomeInfoData, error: genomeInfoError } = await genomeInfoResponsePromise;
 
-  // TODO: if genomeInfoResponse.error.originalStatus === 404,
-  // we want to show the 404 error screen somehow
+  // FIXME: 404 status code in response
+  if (genomeInfoError && 'status' in genomeInfoError && genomeInfoError.status >= 400) {
+    return {
+      status: 404
+    };
+  }
 
-  const genomeId = genomeInfoResponse.data?.genomeId;
+  const genomeId = genomeInfoData?.genomeId;
 
   if (!genomeId) {
     return; // this shouldn't happen
   }
 
-  const stableId = parseFocusIdFromUrl(entityId).objectId;
-  await store.dispatch(
-    fetchPageTitleInfo({
-      genomeId,
-      geneStableId: stableId
-    })
-  );
+  // FIXME: gene symbol parsing can explode!
+  const geneStableId = parseFocusIdFromUrl(entityId).objectId;
+
+  const pageMetaPromise = dispatch(fetchGenePageMeta.initiate({
+    genomeId,
+    geneId: geneStableId
+  }));
+  const pageMetaQueryResult = await pageMetaPromise;
+
+  if ((pageMetaQueryResult?.error as any)?.meta?.data?.gene === null) {
+    // this is graphql's way of telling us that there is no such gene
+    return {
+      status: 404
+    };
+  }
+
 };
 
 export default EntityViewerPage;

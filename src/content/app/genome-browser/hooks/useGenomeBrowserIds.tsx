@@ -48,13 +48,16 @@ const useGenomeBrowserIds = () => {
   const urlSearchParams = new URLSearchParams(search);
   const focusObjectIdInUrl = urlSearchParams.get('focus');
 
-  const { data: genomeInfo, isFetching } = useGenomeInfoQuery(
-    genomeIdInUrl ?? '',
-    {
-      skip: !genomeIdInUrl
-    }
-  );
+  const {
+    data: genomeInfo,
+    isFetching,
+    isError,
+    error
+  } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
+    skip: !genomeIdInUrl
+  });
   const genomeId = genomeInfo?.genomeId;
+  const isMissingGenomeId = isError && 'status' in error && error.status >= 400; // FIXME: use proper status code
 
   // TODO: check if the logic below is correct
   const genomeIdForUrl =
@@ -62,13 +65,21 @@ const useGenomeBrowserIds = () => {
 
   let focusObjectId;
   let focusObjectIdForUrl;
+  let parsedFocusObjectId;
+  let isMalformedFocusObjectId = false;
+
   if (focusObjectIdInUrl) {
     focusObjectIdForUrl = focusObjectIdInUrl;
     if (genomeId) {
-      focusObjectId = buildFocusObjectId({
-        genomeId,
-        ...parseFocusIdFromUrl(focusObjectIdInUrl)
-      });
+      try {
+        parsedFocusObjectId = {
+          genomeId,
+          ...parseFocusIdFromUrl(focusObjectIdInUrl)
+        };
+        focusObjectId = buildFocusObjectId(parsedFocusObjectId);
+      } catch {
+        isMalformedFocusObjectId = true;
+      }
     }
   } else if (activeFocusObjectId) {
     focusObjectIdForUrl = buildFocusIdForUrl(activeFocusObjectId);
@@ -76,6 +87,7 @@ const useGenomeBrowserIds = () => {
 
   return {
     isFetchingGenomeId: isFetching,
+    isMissingGenomeId,
     genomeId,
     genomeIdInUrl,
     focusObjectId,
@@ -83,7 +95,9 @@ const useGenomeBrowserIds = () => {
     activeGenomeId,
     activeFocusObjectId,
     genomeIdForUrl,
-    focusObjectIdForUrl
+    focusObjectIdForUrl,
+    parsedFocusObjectId,
+    isMalformedFocusObjectId
   };
 };
 

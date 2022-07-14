@@ -33,6 +33,7 @@ import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -45,7 +46,11 @@ type SpeciesPageParams = {
 
 const SpeciesPageContent = () => {
   const { genomeId: genomeIdInUrl } = useParams() as SpeciesPageParams;
-  const { data: genomeInfo } = useGenomeInfoQuery(genomeIdInUrl);
+  const {
+    data: genomeInfo,
+    isError,
+    error
+  } = useGenomeInfoQuery(genomeIdInUrl);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -69,6 +74,16 @@ const SpeciesPageContent = () => {
     dispatch(setActiveGenomeId(genomeId));
     dispatch(fetchExampleFocusObjects(genomeId));
   }, [genomeId]);
+
+  // FIXME error status
+  if (isError && 'status' in error && error.status >= 400) {
+    return (
+      <div className={styles.speciesPage}>
+        <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
+        <MissingGenomeError genomeId={genomeIdInUrl} />
+      </div>
+    );
+  }
 
   if (!genomeId) {
     return null; // TODO: consider some kind of a spinner?

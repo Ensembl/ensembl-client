@@ -16,23 +16,26 @@
 
 import { Epic } from 'redux-observable';
 import { map, switchMap, tap, filter, distinctUntilChanged } from 'rxjs';
-import { isAnyOf, Action } from '@reduxjs/toolkit';
+import { isAnyOf, isFulfilled, Action } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+import * as observableApiService from 'src/services/observable-api-service';
 
 import {
   getCommittedSpecies,
   getCommittedSpeciesById
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import * as observableApiService from 'src/services/observable-api-service';
+import { getGenomes } from 'src/shared/state/genome/genomeSelectors';
+
 import {
   fetchSpeciesSearchResults,
   setSelectedSpecies,
   setSearchResults,
   clearSearch,
   clearSearchResults,
-  updateCommittedSpecies
+  updateCommittedSpecies,
+  loadStoredSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 
@@ -125,6 +128,65 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
         isEnabled: true
       };
       const allCommittedSpecies = [...getCommittedSpecies(state), newSpecies];
+      return allCommittedSpecies;
+    }),
+    tap((allCommittedSpecies) => {
+      speciesSelectorStorageService.saveSelectedSpecies(allCommittedSpecies);
+    }),
+    map((allCommittedSpecies) => {
+      return updateCommittedSpecies(allCommittedSpecies);
+    })
+  );
+
+/**
+ * If a genome is fetched during server-side rendering,
+ * ensureCommittedSpeciesEpic won't run,
+ * and the genome will not get added to the list of selected species,
+ * nor will be saved to the browser storage.
+ *
+ * This epic is intended to run after selected species have been read back
+ * from user's browser storage. It compares the list of selected species
+ * with the list of fetched genomes in the redux storage; and if it finds genomes
+ * that are not among in the selected species list, it adds them to this list.
+ */
+
+export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
+  action$,
+  state$
+) =>
+  action$.pipe(
+    filter(isFulfilled(loadStoredSpecies)),
+    map((action) => {
+      const state = state$.value;
+      const allGenomes = Object.values(getGenomes(state));
+      const committedSpecies = action.payload;
+      const uncommittedGenomes = allGenomes.filter(
+        ({ genome_id }) =>
+          !committedSpecies.find((species) => species.genome_id === genome_id)
+      );
+      return {
+        action,
+        state,
+        uncommittedGenomes
+      };
+    }),
+    filter(({ uncommittedGenomes }) => {
+      // check that the genome is not among committed species
+      return uncommittedGenomes.length > 0;
+    }),
+    map(({ state, uncommittedGenomes }) => {
+      const newSpecies: CommittedItem[] = uncommittedGenomes.map((genome) => ({
+        genome_id: genome.genome_id,
+        common_name: genome.common_name,
+        scientific_name: genome.scientific_name,
+        assembly_name: genome.assembly_name,
+        url_slug: genome.url_slug,
+        isEnabled: true
+      }));
+      const allCommittedSpecies = [
+        ...getCommittedSpecies(state),
+        ...newSpecies
+      ];
       return allCommittedSpecies;
     }),
     tap((allCommittedSpecies) => {

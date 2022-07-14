@@ -21,14 +21,19 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
+import useEntityViewerUrlCheck from 'src/content/app/entity-viewer/hooks/useEntityViewerUrlChecks';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
 import {
   isEntityViewerSidebarOpen,
   getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { setActiveIds } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
+import {
+  setActiveIds,
+  deleteActiveEntityIdAndSave
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import {
   toggleSidebar,
   initializeSidebar
@@ -43,12 +48,24 @@ import EntityViewerInterstitial from './interstitial/EntityViewerInterstitial';
 import GeneView from './gene-view/GeneView';
 import GeneViewSidebar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
+import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
+import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import styles from './EntityViewer.scss';
 
 const EntityViewer = () => {
-  const { activeGenomeId } = useEntityViewerIds();
+  const {
+    activeGenomeId,
+    genomeIdInUrl,
+    entityIdInUrl,
+    isMissingGenomeId,
+    isMalformedEntityId
+  } = useEntityViewerIds();
+  const genome = useAppSelector((state) =>
+    getGenomeById(state, activeGenomeId ?? '')
+  );
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEntityViewerRouting();
 
@@ -58,29 +75,75 @@ const EntityViewer = () => {
     }
   }, [activeGenomeId]);
 
+  const openEntityViewerInterstitial = () => {
+    dispatch(deleteActiveEntityIdAndSave());
+    navigate(urlFor.entityViewer({ genomeId: genomeIdInUrl }));
+  };
+
+  const renderEntityViewerRoutes = () => (
+    <Routes>
+      <Route index element={<EntityViewerInterstitial />} />
+      <Route path="/:genomeId" element={<EntityViewerInterstitial />} />
+      <Route path="/:genomeId/:entityId" element={<EntityViewerForGene />} />
+    </Routes>
+  );
+
   return (
     <div className={styles.entityViewer}>
       <EntityViewerAppBar />
-      <Routes>
-        <Route index element={<EntityViewerInterstitial />} />
-        <Route path="/:genomeId" element={<EntityViewerInterstitial />} />
-        <Route path="/:genomeId/:entityId" element={<EntityViewerForGene />} />
-      </Routes>
+      {isMissingGenomeId ? (
+        <MissingGenomeError genomeId={genomeIdInUrl as string} />
+      ) : isMalformedEntityId ? (
+        <MissingFeatureError
+          featureId={entityIdInUrl as string}
+          genome={genome}
+          showTopBar={true}
+          onContinue={openEntityViewerInterstitial}
+        />
+      ) : (
+        renderEntityViewerRoutes()
+      )}
     </div>
   );
 };
 
 const EntityViewerForGene = () => {
   const { activeGenomeId, activeEntityId } = useEntityViewerIds();
+  const {
+    genomeIdInUrl,
+    entityIdInUrl,
+    isFetching: isVerifyingUrl,
+    isMissingEntity
+  } = useEntityViewerUrlCheck();
+  const genome = useAppSelector((state) =>
+    getGenomeById(state, activeGenomeId ?? '')
+  );
   const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
   const isSidebarModalOpen = Boolean(
     useAppSelector(getEntityViewerSidebarModalView)
   );
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  if (!activeGenomeId || !activeEntityId) {
+  const openEntityViewerInterstitial = () => {
+    dispatch(deleteActiveEntityIdAndSave());
+    navigate(urlFor.entityViewer({ genomeId: genomeIdInUrl }));
+  };
+
+  if (!activeGenomeId || !activeEntityId || isVerifyingUrl) {
     return null;
+  }
+
+  if (isMissingEntity) {
+    return (
+      <MissingFeatureError
+        featureId={entityIdInUrl as string}
+        genome={genome}
+        showTopBar={true}
+        onContinue={openEntityViewerInterstitial}
+      />
+    );
   }
 
   const SideBarContent = isSidebarModalOpen ? (
@@ -152,6 +215,7 @@ const useEntityViewerRouting = () => {
     entityIdInUrl,
     genomeId,
     entityId,
+    entityIdForUrl,
     activeGenomeId,
     activeEntityId
   ]);

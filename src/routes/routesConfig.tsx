@@ -18,7 +18,9 @@ import React, { type ReactNode } from 'react';
 
 import HomePage from 'src/content/home/HomePage';
 import SpeciesSelectorPage from 'src/content/app/species-selector/SpeciesSelectorPage';
-import SpeciesPage from 'src/content/app/species/SpeciesPage';
+import SpeciesPage, {
+  serverFetch as speciesPageServerFetch
+} from 'src/content/app/species/SpeciesPage';
 import GenomeBrowserPage from 'src/content/app/genome-browser/BrowserPage';
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
@@ -56,7 +58,8 @@ const routes: RouteConfig[] = [
   },
   {
     path: '/species/:genomeId',
-    element: <SpeciesPage />
+    element: <SpeciesPage />,
+    serverFetch: speciesPageServerFetch
   },
   {
     path: '/entity-viewer/*',
