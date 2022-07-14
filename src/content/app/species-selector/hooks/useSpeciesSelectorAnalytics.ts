@@ -25,8 +25,8 @@ import type {
   PopularSpecies,
   SearchMatch
 } from 'src/content/app/species-selector/types/species-search';
-import { type CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { type AnalyticsOptions } from 'src/analyticsHelper';
+import type { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 
 const useSpeciesSelectorAnalytics = () => {
   const committedSpecies = useSelector(getCommittedSpecies);

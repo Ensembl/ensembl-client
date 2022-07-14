@@ -19,8 +19,8 @@ import analyticsTracking from 'src/services/analytics-service';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import { AppName } from 'src/global/globalConfig';
-import { type CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import { type AnalyticsOptions } from 'src/analyticsHelper';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 
 const useSpeciesAnalytics = () => {
   const trackEvent = (ga: AnalyticsOptions) => {
