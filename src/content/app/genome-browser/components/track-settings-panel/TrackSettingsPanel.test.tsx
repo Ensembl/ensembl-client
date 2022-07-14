@@ -25,7 +25,7 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import * as trackSettingsSlice from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import TrackConfig from './TrackSettingsPanel';
+import TrackSettingsPanel from './TrackSettingsPanel';
 
 const genomeId = 'fake_genome_id_1';
 const selectedTrackId = 'focus';
@@ -79,7 +79,7 @@ const renderComponent = () => {
 
   const renderResult = render(
     <Provider store={store}>
-      <TrackConfig />
+      <TrackSettingsPanel />
     </Provider>
   );
   return {
@@ -99,7 +99,7 @@ jest.mock(
   })
 );
 
-describe('<TrackConfig />', () => {
+describe('<TrackSettingsPanel />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
