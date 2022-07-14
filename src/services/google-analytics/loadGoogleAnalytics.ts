@@ -49,6 +49,12 @@ const loadGoogleAnalytics = (trackerId: string) => {
 // until the real google analytics object is ready to replace it
 const createGAShim = (trackerId: string) => {
   window.gtag = function () {
+    // Cleanup the dataLayer array after every 100 events
+    if (window.dataLayer.length > 100) {
+      window.dataLayer.push(function (this: any) {
+        this.reset();
+      });
+    }
     // gtag is really particular in that it wants the Arguments object
     // which is only available on non-arrow functions
     window.dataLayer.push(arguments); // eslint-disable-line prefer-rest-params
@@ -58,7 +64,7 @@ const createGAShim = (trackerId: string) => {
   window.gtag('js', new Date()); // Google uses this for timing hits
 
   // It is better to disable sending pageviews automatically as it will trigger too many calls in genome browser
-  window.gtag('config', trackerId, { send_page_view: false });
+  window.gtag('config', trackerId, { send_page_view: false, debug_mode: true });
 };
 
 const loadScript = (trackerId: string) => {
