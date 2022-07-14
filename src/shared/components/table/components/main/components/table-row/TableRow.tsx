@@ -14,9 +14,28 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { type TableRowData } from 'src/shared/components/table/state/tableReducer';
+import TableCell from '../table-cell/TableCell';
+
 /*
     - It should take in array of cells to be displayed.
     - Appends the actionable column (checkbox, eye icon) at the beginning of each row
     - Includes the option to append a dummy row that spans upto the width of the table on demand 
     - Each row must have an id column. It could be autogenrated.
 */
+
+const TableRow = (props: { rowData: TableRowData }) => {
+  if (!props.rowData) {
+    return null;
+  }
+  return (
+    <tr>
+      {props.rowData.map((cellData, cellId) => {
+        return <TableCell key={cellId}>{cellData}</TableCell>;
+      })}
+    </tr>
+  );
+};
+
+export default TableRow;

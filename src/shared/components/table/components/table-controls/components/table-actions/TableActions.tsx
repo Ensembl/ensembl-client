@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 /*
     - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/b16f1465-f2f5-48d4-8572-07ddc5226a43?fullscreen
     - Displays the action dropdown
@@ -21,3 +23,9 @@
     - It acts as a container for other actions elements like search & data downloads
 
 */
+
+const TableActions = () => {
+  return <>Actions</>;
+};
+
+export default TableActions;

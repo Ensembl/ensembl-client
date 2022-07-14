@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react';
 
+import styles from './RowsPerPageSelector.scss';
 /*
-    - provides the information about the table
-
+    - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/65cb206c-02a5-45de-865f-a7ddea257853?fullscreen
+    - Displays the dropdown to change the number of rows displayed in a page
 */
+
+const RowsPerPageSelector = () => {
+  return (
+    <div className={styles.rowsPerPageSelector}>Rows per page selector</div>
+  );
+};
+
+export default RowsPerPageSelector;

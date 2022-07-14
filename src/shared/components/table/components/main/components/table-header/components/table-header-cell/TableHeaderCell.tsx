@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
+import { IndividualColumn } from 'src/shared/components/table/state/tableReducer';
 /*
-    - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/65cb206c-02a5-45de-865f-a7ddea257853?fullscreen
-    - Displays the dropdown to change the number of rows displayed in a page
-*/
+    This is a component on its own as a cell in the header will have additional functionalities compared to a cell in the body.
+    Additional functionalities includes:
+        - Column tooltips
+        - sorting chevrons
+ */
+
+const TableHeaderCell = (props: IndividualColumn) => {
+  const { title } = props;
+
+  return <th>{title}</th>;
+};
+
+export default TableHeaderCell;

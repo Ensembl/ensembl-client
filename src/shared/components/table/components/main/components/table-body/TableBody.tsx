@@ -14,6 +14,28 @@
  * limitations under the License.
  */
 
+import React, { useContext } from 'react';
+import { TableContext } from 'src/shared/components/table/Table';
+import TableRow from '../table-row/TableRow';
+
 /*
     - takes in an array of TableRows and displays them
 */
+
+const TableBody = () => {
+  const { data } = useContext(TableContext) || { data: [] };
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <tbody>
+      {data.map((rowData, rowId) => {
+        return <TableRow key={rowId} rowData={rowData} />;
+      })}
+    </tbody>
+  );
+};
+
+export default TableBody;

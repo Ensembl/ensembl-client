@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
+import Pagination from './components/pagination/Pagination';
+import RowsPerPageSelector from './components/rows-per-page-selector/RowsPerPageSelector';
+import TableActions from './components/table-actions/TableActions';
 
-import tableReducer from 'src/shared/components/table/state/tableSlice';
+import styles from './TableControls.scss';
 
-export default combineReducers({
-  sharedComponentTable: tableReducer
-});
+const TableControls = () => {
+  return (
+    <div className={styles.tableControls}>
+      <TableActions />
+      <Pagination />
+      <RowsPerPageSelector />
+    </div>
+  );
+};
+
+export default TableControls;

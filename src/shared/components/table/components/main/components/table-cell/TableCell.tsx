@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
 /*
     - takes in the content that needs to be displayed within a cell
     - Wraps the content within a <td> tag
 */
+
+const TableCell = (props: { children: React.ReactNode }) => {
+  return <td>{props.children}</td>;
+};
+
+export default TableCell;

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+import React from 'react';
+
+import styles from './Pagination.scss';
 /*
-    This is a component on its own as a cell in the header will have additional functionalities compared to a cell in the body.
-    Additional functionalities includes:
-        - Column tooltips
-        - sorting chevrons
- */
+    - should we hide pagination when there is less number of rows or just disable it?
+
+*/
+
+const Pagination = () => {
+  return <div className={styles.pagination}>Pagination</div>;
+};
+
+export default Pagination;

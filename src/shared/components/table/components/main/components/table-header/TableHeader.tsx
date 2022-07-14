@@ -14,9 +14,32 @@
  * limitations under the License.
  */
 
+import React, { useContext } from 'react';
+import { TableContext } from 'src/shared/components/table/Table';
+import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 /*
     - Should receive an array of header items along with it's configurations like tooltip, isSortable, isHighlighted
     - First column in the header should display the total rows available
     - Subsequent columns will display individual header items wrapped in `TableCell`
     - Should header be fixed always? If not, make it optional.
 */
+
+const TableHeader = () => {
+  const { columns } = useContext(TableContext) || { columns: null };
+
+  if (!columns) {
+    return null;
+  }
+
+  return (
+    <thead>
+      <tr>
+        {columns.map((column, index) => {
+          return <TableHeaderCell {...column} key={index} />;
+        })}
+      </tr>
+    </thead>
+  );
+};
+
+export default TableHeader;

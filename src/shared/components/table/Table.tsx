@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+import React, { useEffect, useReducer, useRef } from 'react';
+import TableBody from './components/main/components/table-body/TableBody';
+import TableHeader from './components/main/components/table-header/TableHeader';
+import TableControls from './components/table-controls/TableControls';
+import {
+  AllTableActions,
+  defaultTableState,
+  tableReducer,
+  TableState
+} from './state/tableReducer';
 /*
-
     -- State management -- 
     - How can we restore the previous state everytime we come back?
         We need to store the state independently for all the tables. It can be optional.
@@ -24,3 +33,39 @@
 
     - Should there be an option to hide the first action column by default?
 */
+
+type TableContextType = TableState & {
+  dispatch: React.Dispatch<AllTableActions>;
+};
+export const TableContext = React.createContext(
+  null as TableContextType | null
+);
+
+export type TableProps = Partial<TableState> & {
+  onStateChange?: (newState: TableState) => void;
+};
+const Table = (props: TableProps) => {
+  const initialTableState = { ...defaultTableState, ...props };
+
+  const [tableState, dispatch] = useReducer(tableReducer, initialTableState);
+  const tableStateRef = useRef(tableState);
+
+  useEffect(() => {
+    return () => {
+      // Update the state stored in the parent once before unload
+      props.onStateChange && props.onStateChange(tableStateRef.current);
+    };
+  }, []);
+
+  return (
+    <TableContext.Provider value={{ ...tableState, dispatch }}>
+      <TableControls />
+      <table>
+        <TableHeader />
+        <TableBody />
+      </table>
+    </TableContext.Provider>
+  );
+};
+
+export default Table;
