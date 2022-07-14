@@ -87,9 +87,13 @@ $drawerWindowWidth: 45px;
   height: 100%;
   width: $sidebarContentWidth;
   border-left: 1px solid $grey;
-  padding: 21px 12px;
+  padding: 21px 12px 0 12px;
   background-color: white;
   overflow: auto;
+
+  & > div {
+    padding-bottom: $global-padding-bottom;
+  }
 }
 
 .sidebarToolstrip {

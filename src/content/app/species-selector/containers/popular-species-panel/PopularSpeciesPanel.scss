@@ -8,6 +8,7 @@ $popular-species-block-width: calc(
 .layout {
   padding-left: $global-padding-left;
   padding-top: $button-width; // FIXME this will have to change
+  padding-bottom: $global-padding-bottom;
 }
 
 .popularSpeciesList {
