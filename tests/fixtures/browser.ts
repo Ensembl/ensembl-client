@@ -49,7 +49,7 @@ export const createCogTrackList = (): CogList => ({
   gc: faker.datatype.number()
 });
 
-export const createTrackConfigs = () => ({
+export const createTrackSettings = () => ({
   'gene-focus': getDefaultGeneTrackSettings(),
   contig: getDefaultRegularTrackSettings(),
   gc: getDefaultRegularTrackSettings()
@@ -213,7 +213,7 @@ export const createMockBrowserState = () => {
           zoom_in: false
         }
       },
-      trackConfig: {
+      trackSettings: {
         browserTrackCogs: {
           cogList: {
             'gene-focus': 0,
@@ -226,7 +226,7 @@ export const createMockBrowserState = () => {
           applyToAllConfig: {
             isSelected: true
           },
-          tracks: createTrackConfigs()
+          tracks: createTrackSettings()
         }
       },
       trackPanel: {
