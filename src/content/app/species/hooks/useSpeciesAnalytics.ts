@@ -18,13 +18,22 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { AppName } from 'src/global/globalConfig';
+import { type CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { type AnalyticsOptions } from 'src/analyticsHelper';
 
 const useSpeciesAnalytics = () => {
+  const trackEvent = (ga: AnalyticsOptions) => {
+    analyticsTracking.trackEvent({
+      ...ga,
+      app: AppName.SPECIES_SELECTOR
+    });
+  };
+
   const trackDeletedSpecies = (species: CommittedItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_page',
       label: speciesNameForAnalytics,
       action: 'remove',
@@ -37,7 +46,7 @@ const useSpeciesAnalytics = () => {
 
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_page',
       label: speciesNameForAnalytics,
       action: updatedStatus,
@@ -49,7 +58,7 @@ const useSpeciesAnalytics = () => {
     species: CommittedItem,
     sectionName: string
   ) => {
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_page',
       action: 'open_section',
       label: sectionName,
@@ -61,7 +70,7 @@ const useSpeciesAnalytics = () => {
     species: CommittedItem,
     exampleLinkType: string
   ) => {
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_page',
       action: 'example_link_selected',
       label: exampleLinkType,
