@@ -15,22 +15,32 @@
  */
 
 import { Epic } from 'redux-observable';
-import { map, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
+import { map, switchMap, tap, filter, distinctUntilChanged } from 'rxjs';
 import { isAnyOf, Action } from '@reduxjs/toolkit';
 import queryString from 'query-string';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+
+import {
+  getCommittedSpecies,
+  getCommittedSpeciesById
+} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import * as observableApiService from 'src/services/observable-api-service';
 import {
   fetchSpeciesSearchResults,
   setSelectedSpecies,
   setSearchResults,
   clearSearch,
-  clearSearchResults
+  clearSearchResults,
+  updateCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 
-import { RootState } from 'src/store';
-import { SearchMatches } from 'src/content/app/species-selector/types/species-search';
+import type { RootState } from 'src/store';
+import type {
+  SearchMatches,
+  CommittedItem
+} from 'src/content/app/species-selector/types/species-search';
 
 export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
   action$,
@@ -76,5 +86,51 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
         // Although we aren't really handling this action anywhere downstream.
         return { type: 'species-selector/fetchSpeciesSearchResultsError' };
       }
+    })
+  );
+
+/**
+ * When information about a genome is fetched:
+ * - check that this genome exists among committed species
+ * - if it doesn't, use the fetched information to add this genome to the list of committed species
+ * - and save the updated list of committed species to the browser storage
+ */
+export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
+  action$,
+  state$
+) =>
+  action$.pipe(
+    filter(fetchGenomeInfo.matchFulfilled),
+    map((action) => {
+      const state = state$.value;
+      return {
+        action,
+        state
+      };
+    }),
+    filter(({ action, state }) => {
+      // check that the genome is not among committed species
+      const genomeId = action.payload.genomeId;
+      const speciesAlreadyCommitted = getCommittedSpeciesById(state, genomeId);
+      return !speciesAlreadyCommitted;
+    }),
+    map(({ action, state }) => {
+      const { genomeInfo } = action.payload;
+      const newSpecies: CommittedItem = {
+        genome_id: genomeInfo.genome_id,
+        common_name: genomeInfo.common_name,
+        scientific_name: genomeInfo.scientific_name,
+        assembly_name: genomeInfo.assembly_name,
+        url_slug: genomeInfo.url_slug,
+        isEnabled: true
+      };
+      const allCommittedSpecies = [...getCommittedSpecies(state), newSpecies];
+      return allCommittedSpecies;
+    }),
+    tap((allCommittedSpecies) => {
+      speciesSelectorStorageService.saveSelectedSpecies(allCommittedSpecies);
+    }),
+    map((allCommittedSpecies) => {
+      return updateCommittedSpecies(allCommittedSpecies);
     })
   );

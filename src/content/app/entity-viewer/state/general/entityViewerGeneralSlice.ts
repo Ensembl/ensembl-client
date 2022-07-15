@@ -17,22 +17,12 @@
 import { createSlice, PayloadAction, Action } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 
-import {
-  buildFocusObjectId,
-  parseFocusIdFromUrl
-} from 'src/shared/helpers/focusObjectHelpers';
-
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
-
-import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { resetFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
-import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { RootState } from 'src/store';
@@ -52,60 +42,35 @@ export const initialState: EntityViewerGeneralState = {
   activeEntityIds: {}
 };
 
-export const setDataFromUrl =
+export const setActiveIds =
   (params: EntityViewerParams): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
-    const { genomeId: genomeIdFromUrl } = params;
+    const { genomeId, entityId } = params;
 
     let activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state) || undefined;
 
-    if (!genomeIdFromUrl && !activeGenomeId) {
+    if (!genomeId && !activeGenomeId) {
       dispatch(setDefaultActiveGenomeId());
       activeGenomeId = getEntityViewerActiveGenomeId(state) as string;
-    } else if (genomeIdFromUrl && genomeIdFromUrl !== activeGenomeId) {
-      dispatch(setActiveGenomeId(genomeIdFromUrl));
-      dispatch(fetchGenomeData(genomeIdFromUrl));
-      dispatch(ensureSpeciesIsEnabled(genomeIdFromUrl));
+    } else if (genomeId && genomeId !== activeGenomeId) {
+      dispatch(setActiveGenomeId(genomeId));
 
-      // TODO: when backend is ready, entity info may also need fetching
-    } else if (activeGenomeId) {
-      // TODO: when backend is ready, fetch entity info
-      const genomeInfo = getGenomeInfoById(state, activeGenomeId);
-      if (!genomeInfo) {
-        dispatch(fetchGenomeData(activeGenomeId));
-      }
-      dispatch(ensureSpeciesIsEnabled(activeGenomeId));
+      entityViewerStorageService.updateGeneralState({
+        activeGenomeId: genomeId
+      });
     }
 
-    const entityId = params.entityId
-      ? buildFocusObjectId({
-          genomeId: genomeIdFromUrl as string,
-          ...parseFocusIdFromUrl(params.entityId)
+    if (genomeId && entityId && entityId !== activeEntityId) {
+      dispatch(
+        updateActiveEntityForGenome({
+          genomeId: genomeId,
+          entityId
         })
-      : null;
-
-    if (entityId && genomeIdFromUrl) {
-      if (entityId !== activeEntityId) {
-        dispatch(
-          updateActiveEntityForGenome({
-            genomeId: genomeIdFromUrl,
-            entityId
-          })
-        );
-      }
-
-      if (activeGenomeId === genomeIdFromUrl && entityId !== activeEntityId) {
-        dispatch(resetFilterPanel());
-      }
-
+      );
       entityViewerStorageService.updateGeneralState({
-        activeGenomeId: genomeIdFromUrl
-      });
-
-      entityViewerStorageService.updateGeneralState({
-        activeEntityIds: { [genomeIdFromUrl]: entityId }
+        activeEntityIds: { [genomeId]: entityId }
       });
     }
   };

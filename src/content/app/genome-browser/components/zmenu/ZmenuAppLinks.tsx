@@ -15,13 +15,11 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { parseFeatureId } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
@@ -34,28 +32,27 @@ type Props = {
 };
 
 const ZmenuAppLinks = (props: Props) => {
-  const genomeId = useSelector(getBrowserActiveGenomeId);
+  const { featureId } = props; // feature id here is passed in the format suitable for urls
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
-  const parsedFeatureId = parseFeatureId(`${genomeId}:${props.featureId}`);
+  const { type: featureType } = parseFocusIdFromUrl(featureId);
 
-  if (parsedFeatureId.type !== 'gene') {
+  if (featureType !== 'gene') {
     return null;
   }
 
-  const featureIdForUrl = buildFocusIdForUrl(parsedFeatureId);
-
-  const getBrowserLink = () =>
-    urlFor.browser({ genomeId, focus: featureIdForUrl });
-
   const links: UrlObj = {
     genomeBrowser: {
-      url: getBrowserLink(),
+      url: urlFor.browser({
+        genomeId: genomeIdForUrl,
+        focus: featureId
+      }),
       replaceState: true
     },
     entityViewer: {
       url: urlFor.entityViewer({
-        genomeId,
-        entityId: featureIdForUrl
+        genomeId: genomeIdForUrl,
+        entityId: featureId
       })
     }
   };

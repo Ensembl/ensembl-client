@@ -32,6 +32,15 @@ import { updateCogList } from 'src/content/app/genome-browser/state/track-config
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 jest.mock(
+  'src/content/app/genome-browser/state/api/genomeBrowserApiSlice',
+  () => ({
+    useGenomeTracksQuery: () => ({
+      data: null
+    })
+  })
+);
+
+jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser()
@@ -82,7 +91,7 @@ describe('<BrowserCogList />', () => {
         type: IncomingActionType.TRACK_SUMMARY,
         payload: [
           {
-            'switch-id': 'gene-focus',
+            'switch-id': 'focus',
             offset: 100
           },
           {
@@ -99,7 +108,7 @@ describe('<BrowserCogList />', () => {
       );
 
       expect(updateCogListAction.payload).toEqual({
-        'gene-focus': 100,
+        focus: 100,
         contig: 200
       });
     });

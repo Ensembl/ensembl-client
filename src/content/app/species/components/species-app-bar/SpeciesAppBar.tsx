@@ -25,11 +25,12 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
-
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
 type SpeciesAppBarProps = {
-  onSpeciesSelect: (genomeId: string) => void;
+  onSpeciesSelect: (species: CommittedItem) => void;
 };
 
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
@@ -41,7 +42,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       key={index}
       species={species}
       isActive={species.genome_id === activeGenomeId}
-      onClick={() => props.onSpeciesSelect(species.genome_id)}
+      onClick={props.onSpeciesSelect}
     />
   ));
 

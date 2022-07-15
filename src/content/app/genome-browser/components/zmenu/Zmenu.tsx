@@ -58,8 +58,7 @@ const Zmenu = (props: ZmenuProps) => {
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
-    setZmenus &&
-      setZmenus(pickBy(zmenus, (value, key) => key !== props.zmenuId));
+    setZmenus && setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
   };
 
   const direction = chooseDirection(props);

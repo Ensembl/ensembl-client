@@ -56,6 +56,10 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div id="overlay" />
 ));
 
+jest.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
+  jest.fn()
+);
+
 const mockState = createMockBrowserState();
 
 const mockStore = configureMockStore([thunk]);

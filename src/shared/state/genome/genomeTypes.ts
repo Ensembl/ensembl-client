@@ -24,15 +24,11 @@ export type ExampleFocusObject = {
 
 export type GenomeInfo = {
   genome_id: string;
-  reference_genome_id: string | null;
   common_name: string;
   assembly_name: string;
   scientific_name: string;
   example_objects: ExampleFocusObject[];
-};
-
-export type GenomeInfoData = {
-  [key: string]: GenomeInfo;
+  url_slug: string | null;
 };
 
 export type GenomeTrackCategory = {
@@ -44,10 +40,6 @@ export type GenomeTrackCategory = {
 
 export type GenomeInfoResponse = {
   genome_info: GenomeInfo[];
-};
-
-export type GenomeTrackCategories = {
-  [genomeId: string]: GenomeTrackCategory[];
 };
 
 export enum GenomeKaryotypeItemType {

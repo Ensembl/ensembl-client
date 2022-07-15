@@ -22,7 +22,6 @@ import {
   ThunkAction,
   Action
 } from '@reduxjs/toolkit';
-import pickBy from 'lodash/pickBy';
 
 import apiService from 'src/services/api-service';
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
@@ -36,7 +35,6 @@ import {
   getSelectedItem,
   getSearchText
 } from './speciesSelectorSelectors';
-import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
 
@@ -51,10 +49,10 @@ import { RootState } from 'src/store';
 
 export type CurrentItem = {
   genome_id: string; // changes every time we update strain or assembly
-  reference_genome_id: string | null;
   common_name: string | null;
   scientific_name: string;
   assembly_name: string | null; // name of the selected assembly
+  url_slug: string | null;
 };
 
 export type SpeciesSelectorState = {
@@ -108,43 +106,6 @@ export const fetchPopularSpecies = createAsyncThunk(
     return response.popular_species as PopularSpecies[];
   }
 );
-
-export const ensureSpeciesIsCommitted =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
-  async (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const committedSpecies = getCommittedSpecies(state);
-    const genomeInfo = getGenomeInfoById(state, genomeId);
-    if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
-      return;
-    }
-
-    const newCommittedSpecies = [
-      ...committedSpecies,
-      {
-        ...pickBy(genomeInfo, (_, key) => {
-          return key !== 'example_objects';
-        }),
-        isEnabled: true
-      }
-    ] as CommittedItem[];
-
-    dispatch(updateCommittedSpecies(newCommittedSpecies));
-    speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
-  };
-
-export const ensureSpeciesIsEnabled =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-
-    const currentSpecies = getCommittedSpeciesById(state, genomeId);
-    if (!currentSpecies || currentSpecies.isEnabled) {
-      return;
-    }
-
-    dispatch(toggleSpeciesUseAndSave(genomeId));
-  };
 
 export const loadStoredSpecies =
   (): ThunkAction<void, any, void, Action<string>> => (dispatch) => {
@@ -265,19 +226,19 @@ const speciesSelectorSlice = createSlice({
 const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
   return {
     genome_id: data.genome_id,
-    reference_genome_id: data.reference_genome_id,
     common_name: data.common_name,
     scientific_name: data.scientific_name,
-    assembly_name: data.assembly_name
+    assembly_name: data.assembly_name,
+    url_slug: data.url_slug
   };
 };
 
 const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   genome_id: data.genome_id,
-  reference_genome_id: data.reference_genome_id,
   common_name: data.common_name,
   scientific_name: data.scientific_name,
   assembly_name: data.assembly_name as string,
+  url_slug: data.url_slug,
   isEnabled: true
 });
 

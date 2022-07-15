@@ -28,6 +28,7 @@ import {
 import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
+import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { fetchPageTitleInfo } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSlice';
 import { getEntityViewerPageMeta } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSelectors';
 import {
@@ -36,6 +37,7 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
+import type { AppDispatch } from 'src/store';
 
 const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
 
@@ -80,26 +82,37 @@ const EntityViewerPage = () => {
 
 export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
-  const { genomeId, entityId } = getPathParameters<'genomeId' | 'entityId'>(
-    '/entity-viewer/:genomeId/:entityId',
-    path
-  );
+  const dispatch: AppDispatch = store.dispatch;
+  const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
+    'genomeId' | 'entityId'
+  >('/entity-viewer/:genomeId/:entityId', path);
 
-  if (genomeId && entityId) {
-    const stableId = parseFocusIdFromUrl(entityId).objectId;
-    await store.dispatch(
-      fetchPageTitleInfo({
-        genomeId,
-        geneStableId: stableId
-      })
-    );
-
-    // If the gene could not be fetched (due to incorrect ids in the request)
-    // the return value from `fetchPageTitleInfo` will have the following shape:
-    // `{ payload: {status: 404} }` (defined in fetchPageTitleInfo), which can be used to indicate
-    // a 404 response.
-    // TODO: figure out how to handle this
+  if (!(genomeIdFromUrl && entityId)) {
+    return;
   }
+
+  const genomeInfoResponsePromise = dispatch(
+    fetchGenomeInfo.initiate(genomeIdFromUrl)
+  );
+  const genomeInfoResponse = await genomeInfoResponsePromise;
+  genomeInfoResponsePromise.unsubscribe();
+
+  // TODO: if genomeInfoResponse.error.originalStatus === 404,
+  // we want to show the 404 error screen somehow
+
+  const genomeId = genomeInfoResponse.data?.genomeId;
+
+  if (!genomeId) {
+    return; // this shouldn't happen
+  }
+
+  const stableId = parseFocusIdFromUrl(entityId).objectId;
+  await store.dispatch(
+    fetchPageTitleInfo({
+      genomeId,
+      geneStableId: stableId
+    })
+  );
 };
 
 export default EntityViewerPage;

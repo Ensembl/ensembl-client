@@ -21,25 +21,25 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 
+import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
   buildFocusObjectId,
   parseFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 import { getFocusObjectLoadingStatus } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
-import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import {
+import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
+import type {
   FocusObject,
   FocusGene,
   FocusObjectIdConstituents,
   FocusRegion
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -114,9 +114,20 @@ const buildRegionObject = (payload: FocusObjectIdConstituents): FocusRegion => {
 
 export const fetchExampleFocusObjects =
   (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
-  async (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);
+  async (dispatch) => {
+    const genomeInfoResponsePromise = dispatch(
+      fetchGenomeInfo.initiate(genomeId)
+    );
+    const { data: genomeInfoResponse } = await genomeInfoResponsePromise;
+    genomeInfoResponsePromise.unsubscribe();
+
+    if (!genomeInfoResponse) {
+      // failed network request; nothing to do
+      return;
+    }
+
+    const { genomeInfo } = genomeInfoResponse;
+    const exampleFocusObjects = genomeInfo.example_objects;
 
     exampleFocusObjects.forEach(({ id, type }) => {
       dispatch(fetchFocusObject({ genomeId, type, objectId: id }));

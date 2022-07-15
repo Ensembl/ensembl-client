@@ -20,9 +20,9 @@ import zip from 'lodash/zip';
 import sortBy from 'lodash/sortBy';
 
 import {
-  SearchMatch,
-  MatchedSubstring,
-  MatchedFieldName
+  MatchedFieldName,
+  type SearchMatch,
+  type MatchedSubstring
 } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSearchMatch.scss';

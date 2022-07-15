@@ -28,7 +28,6 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 
 const speciesData = {
   genome_id: faker.datatype.uuid(),
-  reference_genome_id: null,
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
   assembly_name: 'GRCh38',
@@ -89,7 +88,7 @@ describe('<SelectedSpecies />', () => {
 
       await userEvent.click(lozenge);
 
-      expect(props.onClick).toHaveBeenCalledWith(speciesData.genome_id);
+      expect(props.onClick).toHaveBeenCalledWith(speciesData);
     });
 
     it('does not respond to clicks when active', async () => {

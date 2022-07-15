@@ -25,6 +25,7 @@ import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGbGeneSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import {
   buildFocusIdForUrl,
@@ -46,6 +47,7 @@ import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import styles from './GeneSummary.scss';
 
 const GeneSummary = () => {
+  const { genomeIdForUrl } = useGenomeBrowserIds();
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
@@ -77,7 +79,7 @@ const GeneSummary = () => {
     objectId: gene.unversioned_stable_id
   });
   const entityViewerUrl = urlFor.entityViewer({
-    genomeId: focusGene.genome_id,
+    genomeId: genomeIdForUrl,
     entityId: focusId
   });
 

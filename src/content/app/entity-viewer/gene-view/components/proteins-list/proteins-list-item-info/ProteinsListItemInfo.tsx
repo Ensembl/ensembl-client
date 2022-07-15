@@ -15,10 +15,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Pick2 } from 'ts-multipick';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+import { useProteinDomainsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { CircleLoader } from 'src/shared/components/loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
@@ -40,13 +43,10 @@ import {
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
-import { useProteinDomainsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-
-import { LoadingState } from 'src/shared/types/loading-state';
-import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
-
 import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
+import { LoadingState } from 'src/shared/types/loading-state';
+import type { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 
@@ -63,8 +63,7 @@ const gene_image_width = Number(settings.gene_image_width);
 
 const ProteinsListItemInfo = (props: Props) => {
   const { gene, transcript, trackLength } = props;
-  const params = useParams<'genomeId' | 'entityId'>();
-  const { genomeId } = params;
+  const genomeId = useSelector(getEntityViewerActiveGenomeId);
 
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined

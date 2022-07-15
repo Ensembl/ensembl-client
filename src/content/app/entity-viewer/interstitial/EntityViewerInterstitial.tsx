@@ -17,6 +17,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
+
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import EntityViewerInterstitialInstructions from './entity-viewer-interstitial-instructions/EntityViewerInterstitialInstructions';
@@ -27,6 +29,7 @@ import styles from './EntityViewerInterstitial.scss';
 
 const EntityViewerInterstitial = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+  const { genomeIdForUrl } = useEntityViewerIds();
 
   if (!activeGenomeId) {
     return <EntityViewerInterstitialInstructions />;
@@ -39,6 +42,7 @@ const EntityViewerInterstitial = () => {
           app="entityViewer"
           mode="interstitial"
           genomeId={activeGenomeId}
+          genomeIdForUrl={genomeIdForUrl as string}
         />
       </div>
       <ExampleLinks />

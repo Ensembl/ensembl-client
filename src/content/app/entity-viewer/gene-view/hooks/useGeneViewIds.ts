@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-import { faker } from '@faker-js/faker';
+import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
-export const createSelectedSpecies = (
-  fragment: Partial<CommittedItem> = {}
-): CommittedItem => ({
-  genome_id: faker.datatype.uuid(),
-  common_name: null,
-  scientific_name: faker.lorem.words(),
-  assembly_name: faker.lorem.word(),
-  url_slug: null,
-  isEnabled: true,
-  ...fragment
-});
+const useGeneViewIds = () => {
+  const bagOfIds = useEntityViewerIds();
+  const { entityId } = bagOfIds; // this is the id used as a key for entity information in redux store
+
+  let geneId;
+
+  if (entityId) {
+    geneId = parseFocusObjectId(entityId).objectId;
+  }
+
+  return {
+    ...bagOfIds,
+    geneId
+  };
+};
+
+export default useGeneViewIds;

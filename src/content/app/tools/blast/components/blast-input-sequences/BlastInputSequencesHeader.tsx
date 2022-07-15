@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getEmptyInputVisibility,
@@ -25,10 +25,13 @@ import {
 
 import { updateEmptyInputDisplay } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
+
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blastFormValidator';
 
@@ -41,16 +44,24 @@ export type Props = {
   compact: boolean;
 };
 
+const errorTooltipDescription =
+  'Please check the uploaded sequences are either all nucleotide or all protein, remove any invalid characters and ensure all sequences are over 5 bases long.';
+
 const BlastInputSequencesHeader = (props: Props) => {
   const { compact } = props;
   const { sequences, sequenceType, updateSequenceType, clearAllSequences } =
     useBlastForm();
 
-  const isEmptyInputAppended = useSelector(getEmptyInputVisibility);
-  const isUserTypingInEmptyInput = useSelector(getUncommittedSequencePresence);
+  const isEmptyInputAppended = useAppSelector(getEmptyInputVisibility);
+  const isUserTypingInEmptyInput = useAppSelector(
+    getUncommittedSequencePresence
+  );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
+  const blastFormContext = useContext(BlastFormContext);
+  const shouldShowAlert =
+    blastFormContext && blastFormContext.sequenceValidityFlags.includes(false);
   const appendEmptyInput = () => {
     dispatch(updateEmptyInputDisplay(true));
 
@@ -67,6 +78,11 @@ const BlastInputSequencesHeader = (props: Props) => {
       `.${sequenceBoxStyles.inputSequenceBox}:last-child`
     );
     lastInputBox?.scrollIntoView({ block: 'end', behavior: 'smooth' }); // Safari doesn't properly support this (see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView); but other options scroll just as jerkily on Safari
+  };
+
+  const onClearAll = () => {
+    clearAllSequences();
+    blastFormContext?.clearSequenceValidityFlags();
   };
 
   const shouldEnableAddButton = isEmptyInputAppended
@@ -94,13 +110,19 @@ const BlastInputSequencesHeader = (props: Props) => {
         <span className={styles.maxSequences}>
           of {MAX_BLAST_SEQUENCE_COUNT}
         </span>
+        {shouldShowAlert && (
+          <AlertButton
+            className={styles.alertButton}
+            tooltipContent={errorTooltipDescription}
+          />
+        )}
       </div>
       <SequenceSwitcher
         sequenceType={sequenceType}
         onChange={onSequenceTypeChange}
       />
       <div className={styles.headerGroup}>
-        <span className={styles.clearAll} onClick={clearAllSequences}>
+        <span className={styles.clearAll} onClick={onClearAll}>
           Clear all
         </span>
         <AddAnotherSequence

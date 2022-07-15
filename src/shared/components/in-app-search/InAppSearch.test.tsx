@@ -19,6 +19,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { faker } from '@faker-js/faker';
 
 import * as inAppSearchSlice from 'src/shared/state/in-app-search/inAppSearchSlice';
 import inAppSearchReducer from 'src/shared/state/in-app-search/inAppSearchSlice';
@@ -41,7 +42,8 @@ const getStore = (initialState = {}) => {
 
 const defaultProps: InAppSearchProps = {
   app: 'genomeBrowser',
-  genomeId: 'human',
+  genomeId: faker.datatype.uuid(),
+  genomeIdForUrl: 'human',
   mode: 'interstitial'
 };
 

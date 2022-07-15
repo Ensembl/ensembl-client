@@ -49,6 +49,9 @@ export class BrowserStorageService {
   }
 
   public saveActiveGenomeId(activeGenomeId: string) {
+    if (!activeGenomeId) {
+      return;
+    }
     this.storageService.save(StorageKeys.ACTIVE_GENOME_ID, activeGenomeId);
   }
 

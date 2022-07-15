@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { faker } from '@faker-js/faker';
+/**
+ * TODO:
+ * - Ideally, these constants should be used by the scripts/start.ts file
+ * - It's worth considering whether the start script should be able to assign the port dynamically if the specified port is busy
+ *   However, in this case:
+ *    - some communication should exist between the start script, the server bootsrtap code, and the config
+ */
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-
-export const createSelectedSpecies = (
-  fragment: Partial<CommittedItem> = {}
-): CommittedItem => ({
-  genome_id: faker.datatype.uuid(),
-  common_name: null,
-  scientific_name: faker.lorem.words(),
-  assembly_name: faker.lorem.word(),
-  url_slug: null,
-  isEnabled: true,
-  ...fragment
-});
+export const hostname = 'localhost';
+export const port = 8080;
+export const host = `${hostname}:${port}`;
+export const hostWithProtocol = `http://${host}`;

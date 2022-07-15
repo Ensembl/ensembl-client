@@ -50,7 +50,8 @@ export const createServerSideRootReducer = () =>
   combineReducers({
     speciesSelector,
     entityViewer,
-    blast
+    blast,
+    [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 
 export default createRootReducer;

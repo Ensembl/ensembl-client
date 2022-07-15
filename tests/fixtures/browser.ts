@@ -28,10 +28,6 @@ import {
   getChrLocationStr,
   type RegionValidationMessages
 } from 'src/content/app/genome-browser/helpers/browserHelper';
-import {
-  createGenomeCategories,
-  createGenomeKaryotype
-} from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import {
@@ -288,18 +284,6 @@ export const createMockBrowserState = () => {
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
-    },
-    genome: {
-      genomeKaryotype: {
-        genomeKaryotypeData: {
-          fake_genome_id_1: createGenomeKaryotype()
-        }
-      },
-      genomeTrackCategories: {
-        genomeTrackCategoriesData: {
-          fake_genome_id_1: createGenomeCategories()
-        }
-      }
     }
   };
 };

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/store';
 
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
@@ -35,7 +35,7 @@ const BlastInputSequences = () => {
     appendEmptyInputBox,
     setUncommittedSequencePresence
   } = useBlastForm();
-  const shouldAppendEmptyInput = useSelector(getEmptyInputVisibility);
+  const shouldAppendEmptyInput = useAppSelector(getEmptyInputVisibility);
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);

@@ -15,25 +15,20 @@
  */
 
 import React, { useEffect } from 'react';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import { useUrlParams } from 'src/shared/hooks/useUrlParams';
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import {
-  getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEntityId
-} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
   isEntityViewerSidebarOpen,
   getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
+import { setActiveIds } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import {
   toggleSidebar,
   initializeSidebar
@@ -52,7 +47,7 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 import styles from './EntityViewer.scss';
 
 const EntityViewer = () => {
-  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const { activeGenomeId } = useEntityViewerIds();
   const dispatch = useAppDispatch();
 
   useEntityViewerRouting();
@@ -76,13 +71,17 @@ const EntityViewer = () => {
 };
 
 const EntityViewerForGene = () => {
+  const { activeGenomeId, activeEntityId } = useEntityViewerIds();
   const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
   const isSidebarModalOpen = Boolean(
     useAppSelector(getEntityViewerSidebarModalView)
   );
   const viewportWidth = useAppSelector(getBreakpointWidth);
-  const { genomeId, entityId } = useParams<'genomeId' | 'entityId'>();
   const dispatch = useAppDispatch();
+
+  if (!activeGenomeId || !activeEntityId) {
+    return null;
+  }
 
   const SideBarContent = isSidebarModalOpen ? (
     <EntityViewerSidebarModal />
@@ -93,12 +92,7 @@ const EntityViewerForGene = () => {
   return (
     <StandardAppLayout
       mainContent={<GeneView />}
-      topbarContent={
-        <EntityViewerTopbar
-          genomeId={genomeId as string}
-          entityId={entityId as string}
-        />
-      }
+      topbarContent={<EntityViewerTopbar />}
       sidebarContent={SideBarContent}
       sidebarNavigation={<GeneViewSidebarTabs />}
       sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
@@ -111,45 +105,56 @@ const EntityViewerForGene = () => {
 };
 
 const useEntityViewerRouting = () => {
-  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
-  const navigate = useNavigate();
+  const {
+    activeGenomeId,
+    activeEntityId,
+    genomeIdInUrl,
+    genomeIdForUrl,
+    entityIdInUrl,
+    entityIdForUrl,
+    genomeId,
+    entityId,
+    hasActiveGenomeIdChanged
+  } = useEntityViewerIds();
 
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const params = useUrlParams<'genomeId' | 'entityId'>([
-    '/entity-viewer/:genomeId',
-    '/entity-viewer/:genomeId/:entityId'
-  ]);
-  const { genomeId, entityId } = params;
-
   useEffect(() => {
-    if (!genomeId && activeGenomeId) {
+    if (!genomeIdInUrl && genomeIdForUrl) {
       // the url is /entity-viewer; but the user has already viewed some species in EntityViewer
-      const entityIdForUrl = activeEntityId
-        ? buildFocusIdForUrl(activeEntityId)
-        : undefined;
       const newUrl = urlFor.entityViewer({
-        genomeId: activeGenomeId,
+        genomeId: genomeIdForUrl,
         entityId: entityIdForUrl
       });
       navigate(newUrl, { replace: true });
     } else if (
-      activeGenomeId &&
-      activeGenomeId === genomeId &&
-      activeEntityId &&
-      !entityId
+      !hasActiveGenomeIdChanged &&
+      genomeIdForUrl &&
+      entityIdForUrl &&
+      !entityIdInUrl
     ) {
       // the url is /entity-viewer/:genome_id; but the user has already viewed a gene
-      const entityIdForUrl = buildFocusIdForUrl(activeEntityId);
       const replacementUrl = urlFor.entityViewer({
-        genomeId: activeGenomeId,
+        genomeId: genomeIdForUrl,
         entityId: entityIdForUrl
       });
       navigate(replacementUrl, { replace: true });
     }
-    dispatch(setDataFromUrl(params));
-  }, [params.genomeId, params.entityId, activeGenomeId, activeEntityId]);
+    dispatch(
+      setActiveIds({
+        genomeId,
+        entityId
+      })
+    );
+  }, [
+    genomeIdInUrl,
+    entityIdInUrl,
+    genomeId,
+    entityId,
+    activeGenomeId,
+    activeEntityId
+  ]);
 };
 
 export default EntityViewer;

@@ -16,7 +16,7 @@
 
 import server from './server';
 
-const port = 8080;
+import { port } from './constants';
 
 server.listen(port, () => {
   // eslint-disable-next-line

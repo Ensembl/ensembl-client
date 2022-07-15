@@ -26,6 +26,15 @@ import { createFocusObject } from 'tests/fixtures/focus-object';
 
 import { TrackPanelList } from './TrackPanelList';
 
+jest.mock(
+  'src/content/app/genome-browser/state/api/genomeBrowserApiSlice',
+  () => ({
+    useGenomeTracksQuery: () => ({
+      data: null
+    })
+  })
+);
+
 jest.mock('./track-panel-items/TrackPanelGene', () => () => (
   <div className="trackPanelGene" />
 ));
@@ -49,6 +58,9 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
+// TODO: rewrite tests for TrackPanelList — they aren't showing anything meaningful at the moment
+// (you will notice that the useGenomeTracksQuery function is mocked out not to return any data,
+// but the tests still pass)
 describe('<TrackPanelList />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
