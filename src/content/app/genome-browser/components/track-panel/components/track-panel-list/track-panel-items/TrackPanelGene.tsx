@@ -22,11 +22,11 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import {
-  getBrowserActiveGenomeTrackStates,
-  getBrowserTrackState
+  getBrowserTrackState,
+  getVisibleTranscriptIds
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -66,20 +66,14 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     getBrowserTrackState(state, {
       genomeId,
       objectId: focusObjectId,
-      tracksGroup: 'objectTracks',
-      categoryName: 'main',
-      trackId: GENE_TRACK_ID
+      tracksGroup: 'objectTracks'
     })
   );
-  const browserGenomeTrackStates = useAppSelector(
-    getBrowserActiveGenomeTrackStates
-  );
+  const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
   const { toggleTrack, updateTranscriptTracks, genomeBrowser } =
     useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const allTranscriptTrackStatuses =
-    browserGenomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? {};
   let allTranscriptsInGene: TrackPanelTranscriptType[] | undefined; // eslint-disable-line
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
@@ -89,66 +83,26 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
-        setVisibleTranscriptList(action.payload.transcript_ids);
+        setVisibleTranscriptIds(action.payload.transcript_ids);
       }
     );
 
     return () => subscription?.unsubscribe();
   }, [genomeBrowser, genomeId, focusObjectId]);
 
-  // update gene track status based on changes to transcript tracks visiblity
+  // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
     if (allTranscriptsInGene?.length) {
-      const allTranscriptTrackStatusValues = Object.values(
-        allTranscriptTrackStatuses
-      );
-      const numberOfSelectedTranscripts = allTranscriptTrackStatusValues.filter(
-        (status) => status === Status.SELECTED
-      ).length;
-      let newStatus = Status.PARTIALLY_SELECTED;
-
-      if (!numberOfSelectedTranscripts) {
-        newStatus = Status.UNSELECTED;
-      }
-
-      if (numberOfSelectedTranscripts === allTranscriptsInGene.length) {
-        newStatus = Status.SELECTED;
-      }
-
-      updateObjectTrackStatus(newStatus);
-    }
-  }, [allTranscriptTrackStatuses]);
-
-  useEffect(() => {
-    if (allTranscriptsInGene?.length) {
-      const visibleTranscriptIds = allTranscriptsInGene
-        .map((transcript) => transcript.stable_id)
-        .filter(
-          (transcriptId) =>
-            allTranscriptTrackStatuses?.[transcriptId] === Status.SELECTED ||
-            allTranscriptTrackStatuses?.[transcriptId] === undefined
-        );
-
       updateTranscriptTracks(visibleTranscriptIds);
     }
   }, [allTranscriptsInGene]);
 
-  const setVisibleTranscriptList = (transcriptList: string[]) => {
-    const transcriptTrackStatuses: { [genomeId: string]: Status } = {};
-
-    transcriptList.forEach((transcriptId) => {
-      transcriptTrackStatuses[transcriptId] = Status.SELECTED;
-    });
-
+  const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          objectTracks: {
-            [focusObjectId]: {
-              transcripts: transcriptTrackStatuses
-            }
-          }
-        }
+      updateObjectTrackStates({
+        objectType: 'gene',
+        status: transcriptIds.length ? Status.SELECTED : Status.UNSELECTED,
+        transcripts: transcriptIds
       })
     );
   };
@@ -159,19 +113,18 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
     }
 
+    const newVisibleTranscriptIds =
+      newStatus === Status.SELECTED
+        ? allTranscriptsInGene?.map(({ stable_id }) => stable_id) ?? []
+        : [];
+
     toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
+    updateTranscriptTracks(newVisibleTranscriptIds);
 
     dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          objectTracks: {
-            [focusObjectId]: {
-              main: {
-                [GENE_TRACK_ID]: newStatus
-              }
-            }
-          }
-        }
+      updateObjectTrackStates({
+        objectType: 'gene',
+        status: newStatus
       })
     );
   };

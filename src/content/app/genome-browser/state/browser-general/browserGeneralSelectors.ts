@@ -54,44 +54,43 @@ export const getBrowserTrackState = (
   state: RootState,
   params: {
     genomeId: string;
-    categoryName: string;
-    trackId: string;
   } & (
     | {
         objectId: string;
         tracksGroup: 'objectTracks';
       }
     | {
+        categoryName: string;
         tracksGroup: 'commonTracks';
+        trackId: string;
       }
   )
 ) => {
-  const { genomeId, tracksGroup, categoryName, trackId } = params;
+  const { genomeId, tracksGroup } = params;
   const allBrowserTrackStates = getBrowserTrackStates(state);
   const savedTrackStatus =
     tracksGroup === 'objectTracks'
-      ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]?.[
-          categoryName
-        ]?.[trackId] ?? Status.PARTIALLY_SELECTED
-      : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[categoryName]?.[
-          trackId
-        ] ?? Status.SELECTED;
-  return savedTrackStatus;
+      ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]
+          ?.gene?.status
+      : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[
+          params.categoryName
+        ]?.[params.trackId];
+  return savedTrackStatus ?? Status.SELECTED;
 };
 
-export const getBrowserTranscriptTrackState = (
-  state: RootState,
-  params: {
-    genomeId: string;
-    objectId: string;
-    transcriptId: string;
-  }
-) => {
-  const { genomeId, objectId, transcriptId } = params;
+export const getVisibleTranscriptIds = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const focusObjectId = getBrowserActiveFocusObjectId(state);
   const allBrowserTrackStates = getBrowserTrackStates(state);
-  const transcriptTrackStatuses =
-    allBrowserTrackStates?.[genomeId]?.objectTracks?.[objectId]?.transcripts;
-  return transcriptTrackStatuses?.[transcriptId] ?? Status.UNSELECTED;
+  let visibleTranscriptIds: string[] | undefined;
+
+  if (activeGenomeId && focusObjectId) {
+    visibleTranscriptIds =
+      allBrowserTrackStates?.[activeGenomeId]?.objectTracks?.[focusObjectId]
+        ?.gene?.transcripts;
+  }
+
+  return visibleTranscriptIds ?? [];
 };
 
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {

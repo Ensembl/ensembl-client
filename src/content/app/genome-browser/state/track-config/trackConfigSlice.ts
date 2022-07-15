@@ -23,14 +23,9 @@ import {
 } from '@reduxjs/toolkit';
 import pick from 'lodash/pick';
 
-import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
 
-import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
 import type { RootState } from 'src/store';
-import type { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 export type CogList = {
   [key: string]: number;
@@ -103,14 +98,6 @@ export const getDefaultRegularTrackConfig = (): RegularTrackConfig => ({
   showTrackName: false,
   trackType: TrackType.REGULAR
 });
-
-export const updateTrackStatesAndSave: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
-  dispatch(updateTrackStates(payload));
-  const trackStates = getBrowserTrackStates(getState());
-  browserStorageService.saveTrackStates(trackStates);
-};
 
 export const saveTrackConfigsForGenome: ActionCreator<
   ThunkAction<void, any, void, Action<string>>

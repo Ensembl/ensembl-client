@@ -23,8 +23,6 @@ import {
 } from '@reduxjs/toolkit';
 import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
-import merge from 'lodash/merge';
-import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/fp/set';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
@@ -43,7 +41,6 @@ import { deleteTrackConfigsForGenome } from 'src/content/app/genome-browser/stat
 
 import {
   getBrowserActiveFocusObjectIds,
-  getBrowserTrackStates,
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObjectId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -53,6 +50,7 @@ import type {
   TrackActivityStatus
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { RootState } from 'src/store';
+import { Status } from 'src/shared/types/status';
 
 export type ChrLocation = [string, number, number];
 
@@ -89,14 +87,6 @@ export const fetchDataForLastVisitedObjects: ActionCreator<
   Object.values(activeFocusObjectIdsMap).forEach((objectId) =>
     dispatch(fetchFocusObject(objectId))
   );
-};
-
-export const updateTrackStatesAndSave: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
-  dispatch(updateTrackStates(payload));
-  const trackStates = getBrowserTrackStates(getState());
-  browserStorageService.saveTrackStates(trackStates);
 };
 
 export const setDataFromUrlAndSave: ActionCreator<
@@ -269,37 +259,54 @@ const browserGeneralSlice = createSlice({
     ) {
       state.activeFocusObjectIds = action.payload;
     },
-    updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
-      const genomeId = state.activeGenomeId as string;
-      const focusObjectId = state.activeFocusObjectIds[genomeId];
-
-      if (action.payload[genomeId]?.objectTracks?.[focusObjectId].transcripts) {
-        const currentTrackStates = cloneDeep(state.trackStates);
-        const receivedTrackState =
-          action.payload[genomeId]?.objectTracks?.[focusObjectId].transcripts;
-        const newTrackStates = set(
-          `${genomeId}.objectTracks.${focusObjectId}.transcripts`,
-          receivedTrackState,
-          currentTrackStates
-        );
-
-        state.trackStates = newTrackStates;
-      } else {
-        state.trackStates = merge(state.trackStates, action.payload);
-      }
-    },
-    updateTranscriptTrackStates(
+    updateObjectTrackStates(
       state,
-      action: PayloadAction<BrowserTrackStates>
+      action: PayloadAction<{
+        objectType: string;
+        status: Status;
+        transcripts?: string[];
+      }>
     ) {
-      const genomeId = state.activeGenomeId as string;
-      const focusObjectId = state.activeFocusObjectIds[genomeId];
+      const activeGenomeId = state.activeGenomeId as string;
+      const activeFocusObjectId = state.activeFocusObjectIds[
+        activeGenomeId
+      ] as string;
+      const { objectType, status, transcripts } = action.payload;
 
       state.trackStates = set(
-        `${genomeId}.objectTracks.${focusObjectId}.transcripts`,
-        action.payload,
+        `${activeGenomeId}.objectTracks.${activeFocusObjectId}.${objectType}.status`,
+        status,
         state.trackStates
       );
+
+      if (transcripts) {
+        state.trackStates = set(
+          `${activeGenomeId}.objectTracks.${activeFocusObjectId}.${objectType}.transcripts`,
+          transcripts,
+          state.trackStates
+        );
+      }
+
+      browserStorageService.saveTrackStates(state.trackStates);
+    },
+    updateCommonTrackStates(
+      state,
+      action: PayloadAction<{
+        category: string;
+        trackId: string;
+        status: Status;
+      }>
+    ) {
+      const activeGenomeId = state.activeGenomeId as string;
+      const { category, trackId, status } = action.payload;
+
+      state.trackStates = set(
+        `${activeGenomeId}.commonTracks.${category}.${trackId}`,
+        status,
+        state.trackStates
+      );
+
+      browserStorageService.saveTrackStates(state.trackStates);
     },
     deleteBrowserDataForGenome(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;
@@ -335,7 +342,8 @@ const browserGeneralSlice = createSlice({
 
 export const {
   setActiveGenomeId,
-  updateTrackStates,
+  updateObjectTrackStates,
+  updateCommonTrackStates,
   updateBrowserActiveFocusObjectIds,
   deleteBrowserDataForGenome,
   updateChrLocation,

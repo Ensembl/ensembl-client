@@ -85,8 +85,8 @@ describe('BrowserStorageService', () => {
         homo_sapiens38: {
           objectTracks: {
             homo_sapiens38_brca2: {
-              'Genes & transcripts': {
-                'gene-pc-fwd': Status.UNSELECTED as TrackActivityStatus
+              gene: {
+                status: Status.UNSELECTED as TrackActivityStatus
               }
             }
           }

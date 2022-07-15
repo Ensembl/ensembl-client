@@ -83,7 +83,11 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackStates(trackStates: {
+  public saveTrackStates(trackStates: BrowserTrackStates) {
+    this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
+  }
+
+  public updateTrackStates(trackStates: {
     [genomeId: string]: GenomeTrackStates | undefined;
   }) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
@@ -114,7 +118,7 @@ export class BrowserStorageService {
     this.updateTrackPanels({
       [genomeIdToDelete]: undefined
     });
-    this.saveTrackStates({
+    this.updateTrackStates({
       [genomeIdToDelete]: undefined
     });
   }

@@ -20,13 +20,9 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import {
-  getBrowserActiveGenomeTrackStates,
-  getBrowserTranscriptTrackState
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getVisibleTranscriptIds } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -45,22 +41,12 @@ type Props = {
 };
 
 const TrackPanelTranscript = (props: Props) => {
-  const { genomeId, transcript, focusObjectId } = props;
-  const browserGenomeTrackStates = useAppSelector(
-    getBrowserActiveGenomeTrackStates
-  );
-  const trackVisibilityStatus = useAppSelector((state) =>
-    getBrowserTranscriptTrackState(state, {
-      genomeId,
-      objectId: focusObjectId,
-      transcriptId: transcript.stable_id
-    })
-  );
+  const { genomeId, transcript } = props;
+  const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
   const dispatch = useAppDispatch();
   const { updateTranscriptTracks } = useGenomeBrowser();
 
-  const allTranscriptTrackStatuses =
-    browserGenomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? {};
+  const currentTranscriptId = transcript.stable_id;
 
   if (!genomeId) {
     return null;
@@ -74,41 +60,32 @@ const TrackPanelTranscript = (props: Props) => {
         genomeId,
         drawerView: {
           name: 'transcript_summary',
-          transcriptId: transcript.stable_id
+          transcriptId: currentTranscriptId
         }
       })
     );
   };
 
+  const getVisibilityStatus = () =>
+    visibleTranscriptIds.includes(currentTranscriptId)
+      ? Status.SELECTED
+      : Status.UNSELECTED;
+
   const onChangeVisibility = () => {
+    const currentStatus = getVisibilityStatus();
     const newStatus =
-      trackVisibilityStatus === Status.SELECTED
-        ? Status.UNSELECTED
-        : Status.SELECTED;
+      currentStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+    let newVisibleTranscriptIds = [...visibleTranscriptIds];
 
-    const updatedTranscriptTracks = {
-      ...allTranscriptTrackStatuses,
-      [transcript.stable_id]: newStatus
-    };
+    if (newStatus === Status.SELECTED) {
+      newVisibleTranscriptIds.push(currentTranscriptId);
+    } else {
+      newVisibleTranscriptIds = newVisibleTranscriptIds.filter(
+        (transcriptId) => transcriptId !== currentTranscriptId
+      );
+    }
 
-    const visibleTranscriptIds = Object.keys(updateTranscriptTracks).filter(
-      (transcriptId) =>
-        updatedTranscriptTracks[transcriptId] === Status.SELECTED
-    );
-
-    updateTranscriptTracks(visibleTranscriptIds);
-
-    dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          objectTracks: {
-            [focusObjectId]: {
-              transcripts: updatedTranscriptTracks
-            }
-          }
-        }
-      })
-    );
+    updateTranscriptTracks(newVisibleTranscriptIds);
   };
 
   const secondaryLabel = isCanonicalTranscript ? (
@@ -123,7 +100,7 @@ const TrackPanelTranscript = (props: Props) => {
 
   return (
     <SimpleTrackPanelItemLayout
-      visibilityStatus={trackVisibilityStatus}
+      visibilityStatus={getVisibilityStatus()}
       onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >
@@ -132,7 +109,7 @@ const TrackPanelTranscript = (props: Props) => {
           className={styles.colorMarker}
           style={{ backgroundColor: getTranscriptColor(transcript) }}
         />
-        <span className={styles.labelText}>{transcript.stable_id}</span>
+        <span className={styles.labelText}>{currentTranscriptId}</span>
         {secondaryLabel}
       </div>
     </SimpleTrackPanelItemLayout>
