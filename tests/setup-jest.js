@@ -4,3 +4,8 @@ jest.mock('src/services/google-analytics');
 process.on('unhandledRejection', (reason, promise) => {
   console.log('unhandledRejection', reason, promise);
 });
+
+const { TextEncoder, TextDecoder } = require('util'); // eslint-disable-line @typescript-eslint/no-var-requires
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
