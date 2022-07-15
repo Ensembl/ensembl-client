@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .speciesWrapper {
   white-space: nowrap;
   display: inline-block;
@@ -8,6 +10,7 @@
 .linkWrapper {
   display: inline-block;
   vertical-align: middle;
+  margin-left: $half-gutter;
 }
 
 .speciesContainer {
@@ -17,7 +20,7 @@
   transition: width 0.3s;
 
   &:not(:last-child) {
-    margin-right: 15px;
+    margin-right: $half-gutter;
   }
 }
 
