@@ -54,6 +54,7 @@ const createGAShim = (trackerId: string) => {
       window.dataLayer.push(function (this: any) {
         this.reset();
       });
+      window.dataLayer.length = 1;
     }
     // gtag is really particular in that it wants the Arguments object
     // which is only available on non-arrow functions
