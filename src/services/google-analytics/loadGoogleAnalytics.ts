@@ -49,13 +49,6 @@ const loadGoogleAnalytics = (trackerId: string) => {
 // until the real google analytics object is ready to replace it
 const createGAShim = (trackerId: string) => {
   window.gtag = function () {
-    // Cleanup the dataLayer array after every 100 events
-    if (window.dataLayer.length > 100) {
-      window.dataLayer.push(function (this: any) {
-        this.reset();
-      });
-      window.dataLayer.length = 1;
-    }
     // gtag is really particular in that it wants the Arguments object
     // which is only available on non-arrow functions
     window.dataLayer.push(arguments); // eslint-disable-line prefer-rest-params
