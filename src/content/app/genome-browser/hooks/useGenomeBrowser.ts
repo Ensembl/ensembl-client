@@ -401,16 +401,6 @@ const useGenomeBrowser = () => {
         }
       });
     }
-
-    if (trackIdToSend === 'focus' && !isTurnedOn) {
-      genomeBrowser?.send({
-        type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
-        payload: {
-          track_id: 'focus',
-          transcript_ids: []
-        }
-      });
-    }
   };
 
   const updateFocusGeneTranscripts = (visibleTranscriptIds: string[]) => {
