@@ -16,10 +16,10 @@
 
 import React from 'react';
 import { faker } from '@faker-js/faker';
-import configureMockStore from 'redux-mock-store';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
+import set from 'lodash/fp/set';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
@@ -28,6 +28,7 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import { createZmenuPayload } from 'tests/fixtures/browser';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
@@ -58,7 +59,7 @@ const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
 const endPosition =
   startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
 
-const mockState = {
+const initialState = {
   browser: {
     browserGeneral: {
       actualChrLocations: {
@@ -66,6 +67,25 @@ const mockState = {
       }
     }
   }
+};
+
+const renderComponent = (state: typeof initialState = initialState) => {
+  const rootReducer = combineReducers({
+    browser: combineReducers({
+      browserGeneral: browserGeneralSlice.default
+    })
+  });
+
+  const store = configureStore({
+    reducer: rootReducer,
+    preloadedState: state as any
+  });
+
+  return render(
+    <Provider store={store}>
+      <Zmenu {...defaultProps} />
+    </Provider>
+  );
 };
 
 const defaultProps: ZmenuProps = {
@@ -76,21 +96,25 @@ const defaultProps: ZmenuProps = {
   payload: createZmenuPayload()
 };
 
-const mockStore = configureMockStore([thunk]);
-let store: ReturnType<typeof mockStore>;
-const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
-  return render(
-    <Provider store={store}>
-      <Zmenu {...defaultProps} />
-    </Provider>
-  );
-};
 describe('<Zmenu />', () => {
   describe('rendering', () => {
     test('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();
       expect(queryByTestId('zmenuContent')).toBeTruthy();
+    });
+  });
+  describe('destroying ZMenu', () => {
+    it('closes zmenu when location change', () => {
+      let { container } = renderComponent();
+      expect(container.querySelectorAll('pointerBox')).toBeTruthy();
+      const updatedState = set(
+        'browser.browserGeneral.browserGeneral.actualChrLocations.human',
+        [chrName, startPosition + 10, endPosition],
+        initialState
+      );
+      container = renderComponent(updatedState).container;
+      //console.log(container.innerHTML);
+      expect(container.querySelectorAll('pointerBox')).toBeFalsy();
     });
   });
 });

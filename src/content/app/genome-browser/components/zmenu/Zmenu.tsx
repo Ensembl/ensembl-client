@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import pickBy from 'lodash/pickBy';
+import usePrevious from 'src/shared/hooks/usePrevious';
+
 import {
   ZmenuContentTranscript,
   ZmenuContentGene,
@@ -56,18 +58,19 @@ export type ZmenuProps = {
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
-  const actualChrLocation = useAppSelector(getActualChrLocation);
-  const [renderCount, setRenderCount] = useState(0);
+  const chromosomeLocation = useAppSelector(getActualChrLocation);
+  const previousChromosomeLocation = usePrevious(chromosomeLocation);
 
   const dispatch = useAppDispatch();
-
   useEffect(() => {
-    setRenderCount(renderCount + 1);
-    // Do not try to close the Zmenu on first render
-    if (renderCount) {
+    if (
+      chromosomeLocation &&
+      previousChromosomeLocation &&
+      chromosomeLocation.toString() !== previousChromosomeLocation.toString()
+    ) {
       destroyZmenu();
     }
-  }, [actualChrLocation]);
+  }, [chromosomeLocation]);
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
