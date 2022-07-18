@@ -63,7 +63,7 @@ const ListedBlastSubmission = (props: Props) => {
   });
 
   let sequenceContent = null;
-  if (isExpanded) {
+  if (isExpanded || sequences.length === 1) {
     sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
       <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
     ));
@@ -78,6 +78,7 @@ const ListedBlastSubmission = (props: Props) => {
         isAnyJobRunning={isAnyJobRunning}
         setExpanded={setExpanded}
         isExpanded={isExpanded}
+        totalSequences={sequences.length}
       />
       {sequenceContent}
     </div>
@@ -110,9 +111,10 @@ const Header = (
     isAnyJobRunning: boolean;
     isExpanded: boolean;
     setExpanded: (isExpanded: boolean) => void;
+    totalSequences: number;
   }
 ) => {
-  const { submission } = props;
+  const { submission, totalSequences } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -163,12 +165,14 @@ const Header = (
           <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
-        <ShowHide
-          label={''}
-          classNames={showHideClassNames}
-          isExpanded={props.isExpanded}
-          onClick={() => props.setExpanded(!props.isExpanded)}
-        />
+        {totalSequences > 1 && (
+          <ShowHide
+            label={''}
+            classNames={showHideClassNames}
+            isExpanded={props.isExpanded}
+            onClick={() => props.setExpanded(!props.isExpanded)}
+          />
+        )}
       </div>
       <div className={styles.controlButtons}>
         {!props.isAnyJobRunning && (
