@@ -19,7 +19,6 @@ import { faker } from '@faker-js/faker';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
-import set from 'lodash/fp/set';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
@@ -62,6 +61,9 @@ const endPosition =
 const initialState = {
   browser: {
     browserGeneral: {
+      chrLocations: {
+        ['human']: [chrName, startPosition, endPosition] as ChrLocation
+      },
       actualChrLocations: {
         human: [chrName, startPosition, endPosition] as ChrLocation
       }
@@ -81,11 +83,16 @@ const renderComponent = (state: typeof initialState = initialState) => {
     preloadedState: state as any
   });
 
-  return render(
+  const renderResult = render(
     <Provider store={store}>
       <Zmenu {...defaultProps} />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 const defaultProps: ZmenuProps = {
@@ -105,16 +112,15 @@ describe('<Zmenu />', () => {
   });
   describe('destroying ZMenu', () => {
     it('closes zmenu when location change', () => {
-      let { container } = renderComponent();
-      expect(container.querySelectorAll('pointerBox')).toBeTruthy();
-      const updatedState = set(
-        'browser.browserGeneral.browserGeneral.actualChrLocations.human',
-        [chrName, startPosition + 10, endPosition],
-        initialState
-      );
-      container = renderComponent(updatedState).container;
+      const { container, store } = renderComponent();
+      expect(container.querySelectorAll('.pointerBox')).toBeTruthy();
+
+      const payload = {
+        ['human']: [chrName, startPosition, endPosition] as ChrLocation
+      };
+      store.dispatch(browserGeneralSlice.updateChrLocation(payload));
       //console.log(container.innerHTML);
-      expect(container.querySelectorAll('pointerBox')).toBeFalsy();
+      expect(container.querySelectorAll('.pointerBox')).toBeFalsy();
     });
   });
 });
