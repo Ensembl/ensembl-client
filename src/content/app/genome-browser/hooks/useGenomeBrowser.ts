@@ -413,7 +413,7 @@ const useGenomeBrowser = () => {
     }
   };
 
-  const updateTranscriptTracks = (visibleTranscriptIds: string[]) => {
+  const updateFocusGeneTranscripts = (visibleTranscriptIds: string[]) => {
     genomeBrowser?.send({
       type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
       payload: {
@@ -433,7 +433,7 @@ const useGenomeBrowser = () => {
     restoreTrackConfigStates,
     setZmenus,
     toggleTrack,
-    updateTranscriptTracks,
+    updateFocusGeneTranscripts,
     toggleTrackName,
     toggleFeatureLabels,
     toggleSeveralTranscripts,

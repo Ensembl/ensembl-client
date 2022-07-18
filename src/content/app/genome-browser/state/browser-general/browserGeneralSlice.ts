@@ -260,7 +260,6 @@ const browserGeneralSlice = createSlice({
     updateObjectTrackStates(
       state,
       action: PayloadAction<{
-        objectType: string;
         status: Status;
         transcripts?: string[];
       }>
@@ -269,17 +268,17 @@ const browserGeneralSlice = createSlice({
       const activeFocusObjectId = state.activeFocusObjectIds[
         activeGenomeId
       ] as string;
-      const { objectType, status, transcripts } = action.payload;
+      const { status, transcripts } = action.payload;
 
       state.trackStates = set(
-        `${activeGenomeId}.objectTracks.${activeFocusObjectId}.${objectType}.status`,
+        `${activeGenomeId}.objectTracks.${activeFocusObjectId}.status`,
         status,
         state.trackStates
       );
 
       if (transcripts) {
         state.trackStates = set(
-          `${activeGenomeId}.objectTracks.${activeFocusObjectId}.${objectType}.transcripts`,
+          `${activeGenomeId}.objectTracks.${activeFocusObjectId}.transcripts`,
           transcripts,
           state.trackStates
         );

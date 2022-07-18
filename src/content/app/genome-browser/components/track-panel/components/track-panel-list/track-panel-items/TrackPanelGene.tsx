@@ -39,12 +39,12 @@ import { Status } from 'src/shared/types/status';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import type { RootState } from 'src/store';
-
-import styles from './TrackPanelItem.scss';
 import {
   IncomingActionType,
-  ReportVisibleTranscriptsAction
+  type ReportVisibleTranscriptsAction
 } from '@ensembl/ensembl-genome-browser';
+
+import styles from './TrackPanelItem.scss';
 
 type TrackPanelGeneProps = {
   genomeId: string;
@@ -70,11 +70,11 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     })
   );
   const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
-  const { toggleTrack, updateTranscriptTracks, genomeBrowser } =
+  const { toggleTrack, updateFocusGeneTranscripts, genomeBrowser } =
     useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  let allTranscriptsInGene: TrackPanelTranscriptType[] | undefined; // eslint-disable-line
+  let allTranscriptsInGene = currentData?.gene.transcripts ?? [];
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
@@ -93,14 +93,13 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
     if (allTranscriptsInGene?.length) {
-      updateTranscriptTracks(visibleTranscriptIds);
+      updateFocusGeneTranscripts(visibleTranscriptIds);
     }
   }, [allTranscriptsInGene]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
       updateObjectTrackStates({
-        objectType: 'gene',
         status: transcriptIds.length ? Status.SELECTED : Status.UNSELECTED,
         transcripts: transcriptIds
       })
@@ -119,11 +118,10 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         : [];
 
     toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
-    updateTranscriptTracks(newVisibleTranscriptIds);
+    updateFocusGeneTranscripts(newVisibleTranscriptIds);
 
     dispatch(
       updateObjectTrackStates({
-        objectType: 'gene',
         status: newStatus
       })
     );

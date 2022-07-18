@@ -85,9 +85,8 @@ describe('BrowserStorageService', () => {
         homo_sapiens38: {
           objectTracks: {
             homo_sapiens38_brca2: {
-              gene: {
-                status: Status.UNSELECTED as TrackActivityStatus
-              }
+              type: 'gene' as const,
+              status: Status.UNSELECTED as TrackActivityStatus
             }
           }
         }

@@ -71,7 +71,7 @@ export const getBrowserTrackState = (
   const savedTrackStatus =
     tracksGroup === 'objectTracks'
       ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]
-          ?.gene?.status
+          ?.status
       : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[
           params.categoryName
         ]?.[params.trackId];
@@ -87,7 +87,7 @@ export const getVisibleTranscriptIds = (state: RootState) => {
   if (activeGenomeId && focusObjectId) {
     visibleTranscriptIds =
       allBrowserTrackStates?.[activeGenomeId]?.objectTracks?.[focusObjectId]
-        ?.gene?.transcripts;
+        ?.transcripts;
   }
 
   return visibleTranscriptIds ?? [];

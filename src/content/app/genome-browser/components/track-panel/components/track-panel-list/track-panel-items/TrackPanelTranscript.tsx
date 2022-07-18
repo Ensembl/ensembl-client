@@ -44,7 +44,7 @@ const TrackPanelTranscript = (props: Props) => {
   const { genomeId, transcript } = props;
   const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
   const dispatch = useAppDispatch();
-  const { updateTranscriptTracks } = useGenomeBrowser();
+  const { updateFocusGeneTranscripts } = useGenomeBrowser();
 
   const currentTranscriptId = transcript.stable_id;
 
@@ -85,7 +85,7 @@ const TrackPanelTranscript = (props: Props) => {
       );
     }
 
-    updateTranscriptTracks(newVisibleTranscriptIds);
+    updateFocusGeneTranscripts(newVisibleTranscriptIds);
   };
 
   const secondaryLabel = isCanonicalTranscript ? (
