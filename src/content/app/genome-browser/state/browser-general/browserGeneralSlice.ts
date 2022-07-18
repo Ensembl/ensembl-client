@@ -41,7 +41,8 @@ import { deleteTrackConfigsForGenome } from 'src/content/app/genome-browser/stat
 import {
   getBrowserActiveFocusObjectIds,
   getBrowserActiveGenomeId,
-  getBrowserActiveFocusObjectId
+  getBrowserActiveFocusObjectId,
+  getBrowserTrackStates
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import type {
@@ -141,6 +142,55 @@ export const updateBrowserActiveFocusObjectIdsAndSave = (
     browserStorageService.updateActiveFocusObjectIds(
       updatedActiveFocusObjectIds
     );
+  };
+};
+
+export const updateObjectTrackStates: ActionCreator<
+  ThunkAction<void, any, void, Action<string>>
+> = (payload: { status: Status; transcripts?: string[] }) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state) as string;
+    const activeFocusObjectId = getBrowserActiveFocusObjectId(state) as string;
+    const trackStates = getBrowserTrackStates(state);
+    const { status, transcripts } = payload;
+
+    let newTrackStates = set(
+      `${activeGenomeId}.objectTracks.${activeFocusObjectId}.status`,
+      status,
+      trackStates
+    );
+
+    if (transcripts) {
+      newTrackStates = set(
+        `${activeGenomeId}.objectTracks.${activeFocusObjectId}.transcripts`,
+        transcripts,
+        newTrackStates
+      );
+    }
+
+    dispatch(updateTrackStates(newTrackStates));
+    browserStorageService.saveTrackStates(newTrackStates);
+  };
+};
+
+export const updateCommonTrackStates: ActionCreator<
+  ThunkAction<void, any, void, Action<string>>
+> = (payload: { category: string; trackId: string; status: Status }) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state) as string;
+    const trackStates = getBrowserTrackStates(state);
+    const { category, trackId, status } = payload;
+
+    const newTrackStates = set(
+      `${activeGenomeId}.commonTracks.${category}.${trackId}`,
+      status,
+      trackStates
+    );
+
+    dispatch(updateTrackStates(newTrackStates));
+    browserStorageService.saveTrackStates(newTrackStates);
   };
 };
 
@@ -257,53 +307,8 @@ const browserGeneralSlice = createSlice({
     ) {
       state.activeFocusObjectIds = action.payload;
     },
-    updateObjectTrackStates(
-      state,
-      action: PayloadAction<{
-        status: Status;
-        transcripts?: string[];
-      }>
-    ) {
-      const activeGenomeId = state.activeGenomeId as string;
-      const activeFocusObjectId = state.activeFocusObjectIds[
-        activeGenomeId
-      ] as string;
-      const { status, transcripts } = action.payload;
-
-      state.trackStates = set(
-        `${activeGenomeId}.objectTracks.${activeFocusObjectId}.status`,
-        status,
-        state.trackStates
-      );
-
-      if (transcripts) {
-        state.trackStates = set(
-          `${activeGenomeId}.objectTracks.${activeFocusObjectId}.transcripts`,
-          transcripts,
-          state.trackStates
-        );
-      }
-
-      browserStorageService.saveTrackStates(state.trackStates);
-    },
-    updateCommonTrackStates(
-      state,
-      action: PayloadAction<{
-        category: string;
-        trackId: string;
-        status: Status;
-      }>
-    ) {
-      const activeGenomeId = state.activeGenomeId as string;
-      const { category, trackId, status } = action.payload;
-
-      state.trackStates = set(
-        `${activeGenomeId}.commonTracks.${category}.${trackId}`,
-        status,
-        state.trackStates
-      );
-
-      browserStorageService.saveTrackStates(state.trackStates);
+    updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
+      state.trackStates = action.payload;
     },
     deleteBrowserDataForGenome(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;
@@ -339,8 +344,7 @@ const browserGeneralSlice = createSlice({
 
 export const {
   setActiveGenomeId,
-  updateObjectTrackStates,
-  updateCommonTrackStates,
+  updateTrackStates,
   updateBrowserActiveFocusObjectIds,
   deleteBrowserDataForGenome,
   updateChrLocation,
