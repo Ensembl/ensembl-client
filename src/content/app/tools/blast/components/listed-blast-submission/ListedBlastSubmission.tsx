@@ -62,24 +62,13 @@ const ListedBlastSubmission = (props: Props) => {
     };
   });
 
-  let sequenceBoxes = null;
+  let sequenceContent = null;
   if (isExpanded) {
-    sequenceBoxes = jobsGroupedBySequence.map(({ sequence, jobs }) => (
+    sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
       <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
     ));
   } else {
-    const totalSequences = jobsGroupedBySequence.length;
-    const totalSpecies = jobsGroupedBySequence[0].jobs.length;
-    sequenceBoxes = (
-      <div className={styles.sequenceBox}>
-        <div>
-          {totalSequences} sequence{totalSequences > 1 ? 's' : ''}
-        </div>
-        <div>
-          <span>Against</span> {totalSpecies} species
-        </div>
-      </div>
-    );
+    sequenceContent = <CollapsedSequencesBox submission={submission} />;
   }
 
   return (
@@ -90,7 +79,28 @@ const ListedBlastSubmission = (props: Props) => {
         setExpanded={setExpanded}
         isExpanded={isExpanded}
       />
-      {sequenceBoxes}
+      {sequenceContent}
+    </div>
+  );
+};
+
+const CollapsedSequencesBox = (props: Props) => {
+  const { submission } = props;
+  const sequences = submission.submittedData.sequences;
+  const allJobs = submission.results;
+
+  const totalSequences = sequences.length;
+  const totalSpecies = allJobs.length / totalSequences;
+
+  return (
+    <div className={styles.sequenceBox}>
+      <div>
+        {totalSequences} sequence{totalSequences > 1 ? 's' : ''}
+      </div>
+      <div>
+        <span>Against</span> {totalSpecies} species
+      </div>
+      <StatusElement jobs={allJobs} />
     </div>
   );
 };
