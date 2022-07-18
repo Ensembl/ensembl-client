@@ -49,6 +49,15 @@ and also that it can be of variable width
   margin-left: 1ch;
 }
 
+.showHideWrapper {
+  display: inline-block;
+
+  .chevron {
+    height: 8px;
+    margin-left: 15px;
+  }
+}
+
 .controlButtons {
   display: flex;
   align-items: center;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
@@ -36,6 +36,7 @@ import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/bl
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -48,6 +49,7 @@ export type Props = {
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
 
+  const [isExpanded, setExpanded] = useState(false);
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
@@ -60,13 +62,34 @@ const ListedBlastSubmission = (props: Props) => {
     };
   });
 
-  const sequenceBoxes = jobsGroupedBySequence.map(({ sequence, jobs }) => (
-    <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
-  ));
+  let sequenceBoxes = null;
+  if (isExpanded) {
+    sequenceBoxes = jobsGroupedBySequence.map(({ sequence, jobs }) => (
+      <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
+    ));
+  } else {
+    const totalSequences = jobsGroupedBySequence.length;
+    const totalSpecies = jobsGroupedBySequence[0].jobs.length;
+    sequenceBoxes = (
+      <div className={styles.sequenceBox}>
+        <div>
+          {totalSequences} sequence{totalSequences > 1 ? 's' : ''}
+        </div>
+        <div>
+          <span>Against</span> {totalSpecies} species
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.listedBlastSubmission}>
-      <Header {...props} isAnyJobRunning={isAnyJobRunning} />
+      <Header
+        {...props}
+        isAnyJobRunning={isAnyJobRunning}
+        setExpanded={setExpanded}
+        isExpanded={isExpanded}
+      />
       {sequenceBoxes}
     </div>
   );
@@ -75,6 +98,8 @@ const ListedBlastSubmission = (props: Props) => {
 const Header = (
   props: Props & {
     isAnyJobRunning: boolean;
+    isExpanded: boolean;
+    setExpanded: (isExpanded: boolean) => void;
   }
 ) => {
   const { submission } = props;
@@ -111,6 +136,10 @@ const Header = (
     dispatch(deleteBlastSubmission(submissionId));
   };
 
+  const showHideClassNames = {
+    wrapper: styles.showHideWrapper,
+    chevron: styles.chevron
+  };
   return (
     <BlastSubmissionHeaderGrid>
       <div>{blastProgram}</div>
@@ -124,6 +153,12 @@ const Header = (
           <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
+        <ShowHide
+          label={''}
+          classNames={showHideClassNames}
+          isExpanded={props.isExpanded}
+          onClick={() => props.setExpanded(!props.isExpanded)}
+        />
       </div>
       <div className={styles.controlButtons}>
         {!props.isAnyJobRunning && (
