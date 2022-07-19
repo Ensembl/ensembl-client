@@ -13,56 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { cloneDeep } from 'lodash/fp';
 import React, { useState } from 'react';
+import times from 'lodash/times';
+
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import {
-  Columns,
-  TableData
-} from 'src/shared/components/table/state/tableReducer';
 
-import Table from 'src/shared/components/table/Table';
+import Table, { TableProps } from 'src/shared/components/table/Table';
 
-const columns: Columns = [
-  {
-    columnId: '1',
-    title: 'Column 1'
-  },
-  {
-    columnId: '2',
-    title: 'Column 2',
-    isSearchable: false
-  },
-  {
-    columnId: '3',
-    title: 'Column 3'
-  }
-];
-
-const sampleTableData: TableData = [
-  { cells: ['Cell 1,1', 'Cell 1,2', 'Cell 1,3'] },
-  { cells: ['Cell 2,1', 'Cell 2,2', 'Cell 2,3'] },
-  { cells: ['Cell 3,1', 'Cell 3,2', 'Cell 3,3'] }
-];
+const createTableData = (rows: number, columns: number): TableProps => {
+  return {
+    data: times(rows, (row) => ({
+      cells: times(columns, (column) => `Cell ${row},${column}`)
+    })),
+    columns: times(columns, (column) => ({
+      columnId: `${column}`,
+      title: `Column ${column}`
+    }))
+  };
+};
 
 export const TableStory = () => {
-  const [tableState, setTableState] = useState({
-    columns,
-    data: cloneDeep(sampleTableData)
-  });
+  const [tableState, setTableState] = useState(createTableData(15, 15));
 
   return <Table {...tableState} onStateChange={setTableState} />;
 };
 
 TableStory.storyName = 'default';
 
-const sampleTableDataForExpand = cloneDeep(sampleTableData);
+const sampleTableDataForExpand = createTableData(5, 5);
 
 export const TableWithExpandStory = () => {
   const onExpanded = (isExpanded: boolean, rowId: number) => {
     const tableData = tableState.data;
 
+    if (!tableData) {
+      return;
+    }
     if (isExpanded) {
       tableData[rowId].expandedContent = (
         <div>Column {rowId} expanded content</div>
@@ -77,7 +63,7 @@ export const TableWithExpandStory = () => {
     });
   };
 
-  sampleTableDataForExpand.map((rowData, rowId) => {
+  sampleTableDataForExpand.data?.map((rowData, rowId) => {
     rowData.cells[1] = (
       <ShowHideColumn
         onExpanded={onExpanded}
@@ -87,10 +73,7 @@ export const TableWithExpandStory = () => {
     );
   });
 
-  const [tableState, setTableState] = useState({
-    columns,
-    data: sampleTableDataForExpand
-  });
+  const [tableState, setTableState] = useState(sampleTableDataForExpand);
 
   return <Table {...tableState} onStateChange={setTableState} />;
 };
@@ -109,7 +92,7 @@ const ShowHideColumn = (props: {
       label={'show hide'}
       isExpanded={props.isExpanded}
       onClick={onExpanded}
-    ></ShowHide>
+    />
   );
 };
 

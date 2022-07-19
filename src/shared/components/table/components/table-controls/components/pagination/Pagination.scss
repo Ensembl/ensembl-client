@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .pagination {
   padding-left: 30px;
 }
@@ -5,8 +7,10 @@
 .inputBox {
   display: inline-block;
   width: 50px;
+  height: 27px;
   margin-right: 5px;
   text-align: center;
+  border: 1px solid $blue;
 }
 
 .chevron {

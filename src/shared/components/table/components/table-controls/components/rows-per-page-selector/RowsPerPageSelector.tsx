@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
-import Select from 'src/shared/components/select/Select';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableContext } from 'src/shared/components/table/Table';
 
 import styles from './RowsPerPageSelector.scss';
@@ -25,60 +25,49 @@ import styles from './RowsPerPageSelector.scss';
 
 const rowsPerPageOptions = [
   {
-    value: 10,
-    label: '10',
-    isSelected: false
+    value: '10',
+    label: '10'
   },
   {
-    value: 20,
-    label: '20',
-    isSelected: false
+    value: '20',
+    label: '20'
   },
   {
-    value: 50,
-    label: '50',
-    isSelected: false
+    value: '50',
+    label: '50'
   },
   {
-    value: 100,
-    label: '100',
-    isSelected: false
+    value: '100',
+    label: '100'
   },
   {
-    value: 0,
-    label: 'All',
-    isSelected: false
+    value: '0',
+    label: 'All'
   }
 ];
 
 const Pagination = () => {
   const { dispatch, rowsPerPage } = useContext(TableContext) || {};
 
-  const selectOptions = rowsPerPageOptions.map((option) => {
-    if (rowsPerPage === option.value) {
-      return {
-        ...option,
-        isSelected: true
-      };
-    }
-
-    return option;
-  });
-
   if (!dispatch) {
     return null;
   }
 
-  const onSelect = (value: number) => {
+  const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch({
       type: 'set_rows_per_page',
-      payload: value
+      payload: Number(event.target.value)
     });
   };
 
   return (
     <div className={styles.rowsPerPageSelector}>
-      <Select options={selectOptions} onSelect={onSelect} /> per page
+      <SimpleSelect
+        options={rowsPerPageOptions}
+        onInput={onChange}
+        value={rowsPerPage}
+      />{' '}
+      <span className={styles.perPage}>per page</span>
     </div>
   );
 };
