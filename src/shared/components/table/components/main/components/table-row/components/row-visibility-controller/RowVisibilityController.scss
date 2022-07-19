@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.rowVisibilityControls {
+  color: $blue;
+  display: inline-flex;
+  column-gap: 30px;
+  margin-left: 20px;
+}
+
+.showAll {
+  cursor: pointer;
+
+  &Disabled {
+    color: $grey;
+    cursor: default;
+  }
+}
+
+.selectAll {
+  cursor: pointer;
+}
+
+.deselectAll {
+  cursor: pointer;
+}
+
+.apply {
+  cursor: pointer;
+}
+
+.cancel {
+  cursor: pointer;
+}

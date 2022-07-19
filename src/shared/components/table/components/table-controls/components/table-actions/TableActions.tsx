@@ -18,6 +18,7 @@ import React, { useContext } from 'react';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableAction } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
+import RowVisibilityController from '../../../main/components/table-row/components/row-visibility-controller/RowVisibilityController';
 import FindInTable from './components/find-in-table/FindInTable';
 import ShowHideColumns from './components/show-hide-columns/ShowHideColumns';
 
@@ -99,6 +100,8 @@ const getActionComponent = (selectedAction: TableAction) => {
     return <FindInTable />;
   } else if (selectedAction === TableAction.SHOW_HIDE_COLUMNS) {
     return <ShowHideColumns />;
+  } else if (selectedAction === TableAction.SHOW_HIDE_ROWS) {
+    return <RowVisibilityController />;
   }
 };
 

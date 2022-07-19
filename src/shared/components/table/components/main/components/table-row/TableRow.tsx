@@ -34,12 +34,22 @@ import styles from 'src/shared/components/table/Table.scss';
 */
 
 const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
-  const { isSelectable, searchText, dispatch, columns, hiddenColumnIds } =
-    useContext(TableContext) || {
-      isSelectable: true
-    };
+  const {
+    isSelectable,
+    searchText,
+    dispatch,
+    columns,
+    hiddenColumnIds,
+    hiddenRowIds
+  } = useContext(TableContext) || {
+    isSelectable: true
+  };
 
-  if (!props.rowData || !dispatch || !columns) {
+  if (!(props.rowData && dispatch && columns && hiddenRowIds)) {
+    return null;
+  }
+
+  if (hiddenRowIds[props.rowId]) {
     return null;
   }
 

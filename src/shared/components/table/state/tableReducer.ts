@@ -50,6 +50,7 @@ export type IndividualColumn = {
   columnId: string;
   isSortable?: boolean;
   isSearchable?: boolean;
+  isFilterable?: boolean;
   title: string;
   className?: string;
 };
@@ -70,6 +71,7 @@ export type TableState = {
   fixedHeader: boolean;
   selectedRowIds: TableRowIds;
   hiddenRowIds: TableRowIds;
+  hiddenRowIdsInDraft: TableRowIds;
   hiddenColumnIds: TableRowIds;
   expandedRowIds: TableRowIds;
 };
@@ -87,6 +89,7 @@ export const defaultTableState: TableState = {
   selectedRowIds: {},
   expandedRowIds: {},
   hiddenRowIds: {},
+  hiddenRowIdsInDraft: {},
   hiddenColumnIds: {}
 };
 
@@ -114,10 +117,20 @@ type SetHiddenRowIdsAction = {
   type: 'set_hidden_row_ids';
   payload: { [key: number]: boolean };
 };
+type SetHiddenRowIdsInDraftAction = {
+  type: 'set_hidden_row_ids_in_draft';
+  payload: { [key: number]: boolean };
+};
+
+type ClearHiddenRowIdsInDraftAction = {
+  type: 'clear_hidden_row_ids_in_draft';
+};
+
 type SetHiddenColumnIdsAction = {
   type: 'set_hidden_column_ids';
   payload: { [key: number]: boolean };
 };
+
 type SetSelectedRowIdsAction = {
   type: 'set_selected_row_ids';
   payload: { [key: number]: boolean };
@@ -132,6 +145,8 @@ export type AllTableActions =
   | SetSearchTextAction
   | SetCurrentPageNumberAction
   | SetHiddenRowIdsAction
+  | SetHiddenRowIdsInDraftAction
+  | ClearHiddenRowIdsInDraftAction
   | SetHiddenColumnIdsAction
   | SetSelectedRowIdsAction
   | SetSelectedActionAction
@@ -152,7 +167,17 @@ export const tableReducer = (
     case 'set_hidden_row_ids':
       return {
         ...state,
-        hiddenRowIds: { ...state.hiddenRowIds, ...action.payload }
+        hiddenRowIds: action.payload
+      };
+    case 'set_hidden_row_ids_in_draft':
+      return {
+        ...state,
+        hiddenRowIdsInDraft: { ...state.hiddenRowIdsInDraft, ...action.payload }
+      };
+    case 'clear_hidden_row_ids_in_draft':
+      return {
+        ...state,
+        hiddenRowIdsInDraft: {}
       };
     case 'set_hidden_column_ids':
       return {
