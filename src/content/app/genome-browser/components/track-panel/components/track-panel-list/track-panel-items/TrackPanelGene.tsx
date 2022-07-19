@@ -93,7 +93,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   useEffect(() => {
     updateObjectTrackStatus(trackStatus);
-  }, [genomeId, focusObjectId]);
+  }, [genomeId, focusObjectId, trackStatus]);
 
   // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
