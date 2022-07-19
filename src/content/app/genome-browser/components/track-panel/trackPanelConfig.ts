@@ -24,10 +24,7 @@ export enum TrackItemColour {
 
 export type TrackItemColourKey = keyof typeof TrackItemColour;
 
-export type TrackActivityStatus =
-  | Status.SELECTED
-  | Status.UNSELECTED
-  | Status.PARTIALLY_SELECTED;
+export type TrackActivityStatus = Status.SELECTED | Status.UNSELECTED;
 
 export enum TrackSet {
   GENOMIC = 'Genomic',

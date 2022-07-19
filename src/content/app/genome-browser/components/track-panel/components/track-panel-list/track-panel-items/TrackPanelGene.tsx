@@ -25,8 +25,8 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import {
-  getBrowserTrackState,
-  getVisibleTranscriptIds
+  getBrowserActiveGenomeTrackStates,
+  getBrowserTrackState
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -69,17 +69,18 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       tracksGroup: 'objectTracks'
     })
   );
-  const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
+  const visibleTranscriptIds = useAppSelector((state) => {
+    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
+    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
+  });
   const { toggleTrack, updateFocusGeneTranscripts, genomeBrowser } =
     useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  let allTranscriptsInGene = currentData?.gene.transcripts ?? [];
+  const allTranscriptsInGene = currentData?.gene.transcripts ?? [];
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
-    toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
-
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
@@ -88,7 +89,11 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
 
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser, genomeId, focusObjectId]);
+  }, [genomeBrowser]);
+
+  useEffect(() => {
+    updateObjectTrackStatus(trackStatus);
+  }, [genomeId, focusObjectId]);
 
   // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
@@ -132,8 +137,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   }
 
   const { gene } = currentData;
-
-  allTranscriptsInGene = gene.transcripts;
 
   if (isEnvironment([Environment.PRODUCTION])) {
     // TODO: remove this branch when multiple transcripts become available

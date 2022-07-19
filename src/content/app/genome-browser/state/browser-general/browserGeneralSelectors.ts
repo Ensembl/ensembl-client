@@ -78,21 +78,6 @@ export const getBrowserTrackState = (
   return savedTrackStatus ?? Status.SELECTED;
 };
 
-export const getVisibleTranscriptIds = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const focusObjectId = getBrowserActiveFocusObjectId(state);
-  const allBrowserTrackStates = getBrowserTrackStates(state);
-  let visibleTranscriptIds: string[] | undefined;
-
-  if (activeGenomeId && focusObjectId) {
-    visibleTranscriptIds =
-      allBrowserTrackStates?.[activeGenomeId]?.objectTracks?.[focusObjectId]
-        ?.transcripts;
-  }
-
-  return visibleTranscriptIds ?? [];
-};
-
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 

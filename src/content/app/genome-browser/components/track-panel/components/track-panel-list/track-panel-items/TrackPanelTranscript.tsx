@@ -20,7 +20,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import { getVisibleTranscriptIds } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveGenomeTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
@@ -41,8 +41,11 @@ type Props = {
 };
 
 const TrackPanelTranscript = (props: Props) => {
-  const { genomeId, transcript } = props;
-  const visibleTranscriptIds = useAppSelector(getVisibleTranscriptIds);
+  const { genomeId, focusObjectId, transcript } = props;
+  const visibleTranscriptIds = useAppSelector((state) => {
+    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
+    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
+  });
   const dispatch = useAppDispatch();
   const { updateFocusGeneTranscripts } = useGenomeBrowser();
 
