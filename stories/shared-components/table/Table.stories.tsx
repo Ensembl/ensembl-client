@@ -40,7 +40,7 @@ const columns: Columns = [
   }
 ];
 
-const sampletTableData: TableData = [
+const sampleTableData: TableData = [
   { cells: ['Cell 1,1', 'Cell 1,2', 'Cell 1,3'] },
   { cells: ['Cell 2,1', 'Cell 2,2', 'Cell 2,3'] },
   { cells: ['Cell 3,1', 'Cell 3,2', 'Cell 3,3'] }
@@ -49,7 +49,7 @@ const sampletTableData: TableData = [
 export const TableStory = () => {
   const [tableState, setTableState] = useState({
     columns,
-    data: cloneDeep(sampletTableData)
+    data: cloneDeep(sampleTableData)
   });
 
   return <Table {...tableState} onStateChange={setTableState} />;
@@ -57,10 +57,12 @@ export const TableStory = () => {
 
 TableStory.storyName = 'default';
 
-export const TableWithExpandStory = () => {
-  const tableData = cloneDeep(sampletTableData);
+const sampleTableDataForExpand = cloneDeep(sampleTableData);
 
+export const TableWithExpandStory = () => {
   const onExpanded = (isExpanded: boolean, rowId: number) => {
+    const tableData = tableState.data;
+
     if (isExpanded) {
       tableData[rowId].expandedContent = (
         <div>Column {rowId} expanded content</div>
@@ -75,7 +77,7 @@ export const TableWithExpandStory = () => {
     });
   };
 
-  tableData.map((rowData, rowId) => {
+  sampleTableDataForExpand.map((rowData, rowId) => {
     rowData.cells[1] = (
       <ShowHideColumn
         onExpanded={onExpanded}
@@ -85,7 +87,10 @@ export const TableWithExpandStory = () => {
     );
   });
 
-  const [tableState, setTableState] = useState({ columns, data: tableData });
+  const [tableState, setTableState] = useState({
+    columns,
+    data: sampleTableDataForExpand
+  });
 
   return <Table {...tableState} onStateChange={setTableState} />;
 };
