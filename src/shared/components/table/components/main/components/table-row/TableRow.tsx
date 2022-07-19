@@ -22,8 +22,9 @@ import { TableContext } from 'src/shared/components/table/Table';
 import TableCell from '../table-cell/TableCell';
 import RowSelector from './components/row-selector/RowSelector';
 
-import styles from 'src/shared/components/table/Table.scss';
 import classNames from 'classnames';
+
+import styles from 'src/shared/components/table/Table.scss';
 
 /*
     - It should take in array of cells to be displayed.
@@ -33,21 +34,36 @@ import classNames from 'classnames';
 */
 
 const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
-  const { isSelectable, dispatch } = useContext(TableContext) || {
-    isSelectable: true
-  };
+  const { isSelectable, searchText, dispatch, columns, hiddenColumnIds } =
+    useContext(TableContext) || {
+      isSelectable: true
+    };
 
-  if (!props.rowData || !dispatch) {
+  if (!props.rowData || !dispatch || !columns) {
     return null;
   }
 
   const { cells, expandedContent } = props.rowData;
 
+  if (searchText) {
+    const shouldIncludeRow = cells.some((cell, index) => {
+      const currentColumn = columns[index];
+      if (currentColumn.isSearchable) {
+        return false;
+      }
+      return cell?.toString().includes(searchText);
+    });
+
+    if (!shouldIncludeRow) {
+      return null;
+    }
+  }
+
   const handleSelector = (params: { rowId: number; checked: boolean }) => {
     dispatch({
       type: 'set_selected_row_ids',
       payload: {
-        [params.rowId]: params.checked
+        [params.rowId]: !params.checked
       }
     });
   };
@@ -64,8 +80,12 @@ const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
             <RowSelector rowId={props.rowId} onChange={handleSelector} />
           </TableCell>
         )}
-        {cells?.map((cellData, cellId) => {
-          return <TableCell key={cellId}>{cellData}</TableCell>;
+        {cells?.map((cellData, index) => {
+          const currentColumn = columns[index];
+          if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
+            return null;
+          }
+          return <TableCell key={index}>{cellData}</TableCell>;
         })}
       </tr>
       {expandedContent && (

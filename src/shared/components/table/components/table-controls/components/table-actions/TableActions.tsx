@@ -19,6 +19,7 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableAction } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 import FindInTable from './components/find-in-table/FindInTable';
+import ShowHideColumns from './components/show-hide-columns/ShowHideColumns';
 
 /*
     - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/b16f1465-f2f5-48d4-8572-07ddc5226a43?fullscreen
@@ -96,6 +97,8 @@ const TableActions = () => {
 const getActionComponent = (selectedAction: TableAction) => {
   if (selectedAction === TableAction.FIND_IN_TABLE) {
     return <FindInTable />;
+  } else if (selectedAction === TableAction.SHOW_HIDE_COLUMNS) {
+    return <ShowHideColumns />;
   }
 };
 

@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import classNames from 'classnames';
+import React, { useContext, useRef } from 'react';
+import { TableAction } from 'src/shared/components/table/state/tableReducer';
+import { TableContext } from 'src/shared/components/table/Table';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+
+import styles from './PopupPanel.scss';
 
 /*
     - used as a wrapper to display the filters and show/hide columns
@@ -20,3 +27,33 @@
     - Check if it needs to get closed on outside click?
 
 */
+
+const PopupPanel = (props: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const { dispatch } = useContext(TableContext) || {};
+
+  const ref = useRef(null);
+
+  const closePanel = () => {
+    if (dispatch) {
+      dispatch({
+        type: 'set_selected_action',
+        payload: TableAction.DEFAULT
+      });
+    }
+  };
+
+  useOutsideClick([ref], closePanel);
+
+  const popupPanelClassNames = classNames(styles.popupPanel, props.className);
+
+  return (
+    <div className={popupPanelClassNames} ref={ref}>
+      {props.children}
+    </div>
+  );
+};
+
+export default PopupPanel;

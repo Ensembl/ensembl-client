@@ -30,9 +30,8 @@ import styles from 'src/shared/components/table/Table.scss';
 */
 
 const TableHeader = () => {
-  const { columns, isSelectable, rowsPerPage, data } = useContext(
-    TableContext
-  ) || { columns: null, data: null };
+  const { columns, isSelectable, rowsPerPage, data, hiddenColumnIds } =
+    useContext(TableContext) || { columns: null, data: null };
 
   if (!columns || !data) {
     return null;
@@ -43,6 +42,11 @@ const TableHeader = () => {
       <tr className={styles.header}>
         {isSelectable && <HeaderStats data={data} rowsPerPage={rowsPerPage} />}
         {columns.map((column, index) => {
+          const currentColumn = columns[index];
+          if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
+            return null;
+          }
+
           return <TableHeaderCell {...column} key={index} />;
         })}
       </tr>

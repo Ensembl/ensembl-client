@@ -56,7 +56,7 @@ export type IndividualColumn = {
 
 export type Columns = IndividualColumn[];
 
-export type TableRowIds = { [key: number]: boolean };
+export type TableRowIds = { [key: string]: boolean };
 
 export type TableState = {
   columns: Columns;
