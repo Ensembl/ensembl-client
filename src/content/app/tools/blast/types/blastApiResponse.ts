@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
-
-export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults.submissions;
-
-export const getBlastSubmissionsUi = (state: RootState) =>
-  state.blast.blastResults.ui;
-
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
-  );
+export type BlastApiResponse = {
+  result: {
+    hits: Hit[];
+  };
 };
 
-export const getBlastSubmissionById = (state: RootState, id: string) =>
-  state.blast.blastResults[id];
+type Hit = HSP[];
+
+type HSP = {
+  hsp_score: number;
+  hsp_bit_score: number;
+  hsp_expect: number;
+  hsp_align_len: number;
+  hsp_identity: number;
+  hsp_positive: number;
+  hsp_gaps: number;
+  hsp_query_frame: string;
+  hsp_hit_frame: string;
+  hsp_strand: string;
+  hsp_query_from: number;
+  hsp_query_to: number;
+  hsp_hit_from: number;
+  hsp_hit_to: number;
+  hsp_qseq: string;
+  hsp_mseq: string;
+  hsp_hseq: string;
+};

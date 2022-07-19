@@ -129,7 +129,7 @@ const CollapsedSequencesBox = (props: Props) => {
   );
 };
 
-const Header = (
+export const Header = (
   props: Props & {
     isAnyJobRunning: boolean;
     isExpanded: boolean;

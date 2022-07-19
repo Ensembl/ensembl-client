@@ -54,6 +54,14 @@ export type BlastSubmissionParameters = MandatorySubmissionParameters &
     stype: SequenceType;
   };
 
+export type BlastResult = {
+  jobId: string;
+  sequenceId: number;
+  genomeId: string;
+  status: JobStatus;
+  data: null; // TODO: add data type
+};
+
 export type BlastSubmission = {
   id: string;
   submittedData: {
@@ -61,13 +69,7 @@ export type BlastSubmission = {
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     parameters: BlastSubmissionParameters;
   };
-  results: Array<{
-    jobId: string;
-    sequenceId: number;
-    genomeId: string;
-    status: JobStatus;
-    data: null; // TODO: add data type
-  }>;
+  results: BlastResult[];
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
