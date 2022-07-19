@@ -29,11 +29,15 @@ import { createZmenuPayload } from 'tests/fixtures/browser';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
+const mockSetZmenus = jest.fn();
+
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
-    genomeBrowser: mockGenomeBrowser
+    genomeBrowser: mockGenomeBrowser,
+    zmenus: { 1: {} },
+    setZmenus: mockSetZmenus
   })
 );
 
@@ -113,9 +117,8 @@ describe('<Zmenu />', () => {
   });
   describe('destroying ZMenu', () => {
     it('closes zmenu when location change', () => {
-      const { container, store } = renderComponent();
-      expect(container.querySelectorAll('.pointerBox')).toBeTruthy();
-      //console.log(store.getState().browser.browserGeneral.actualChrLocations);
+      const { store } = renderComponent();
+      expect(mockSetZmenus).not.toHaveBeenCalled();
       act(() => {
         store.dispatch(
           browserGeneralSlice.updateActualChrLocation([
@@ -125,10 +128,7 @@ describe('<Zmenu />', () => {
           ])
         );
       });
-
-      //console.log(store.getState().browser.browserGeneral.actualChrLocations);
-      //console.log(container.innerHTML);
-      expect(container.querySelectorAll('.pointerBox')).toBeFalsy();
+      expect(mockSetZmenus).toHaveBeenCalledWith({});
     });
   });
 });
