@@ -25,8 +25,8 @@ const TableControls = () => {
   return (
     <div className={styles.tableControls}>
       <TableActions />
-      <Pagination />
       <RowsPerPageSelector />
+      <Pagination />
     </div>
   );
 };

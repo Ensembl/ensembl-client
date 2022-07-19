@@ -13,8 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React, { useContext } from 'react';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import { TableContext } from 'src/shared/components/table/Table';
 
+import styles from 'src/shared/components/table/Table.scss';
 /*
     - Display the checkbox to select a row
     - It will be used by TableRow.tsx 
 */
+
+export type RowSelectorProps = {
+  rowId: number;
+  onChange: (params: { checked: boolean; rowId: number }) => void;
+};
+
+const RowSelector = (props: RowSelectorProps) => {
+  const { selectedRowIds } = useContext(TableContext) || {
+    selectedRowIds: null
+  };
+
+  const isCurrentRowSelected = selectedRowIds?.[props.rowId] ?? false;
+
+  return (
+    <div className={styles.rowSelector}>
+      <Checkbox
+        onChange={(checked: boolean) =>
+          props.onChange({ checked, rowId: props.rowId })
+        }
+        checked={isCurrentRowSelected}
+      />
+    </div>
+  );
+};
+
+export default RowSelector;

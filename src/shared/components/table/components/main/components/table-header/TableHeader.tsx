@@ -17,6 +17,11 @@
 import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/table/Table';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
+
+import TableCell from '../table-cell/TableCell';
+import { TableData } from 'src/shared/components/table/state/tableReducer';
+
+import styles from 'src/shared/components/table/Table.scss';
 /*
     - Should receive an array of header items along with it's configurations like tooltip, isSortable, isHighlighted
     - First column in the header should display the total rows available
@@ -25,20 +30,37 @@ import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 */
 
 const TableHeader = () => {
-  const { columns } = useContext(TableContext) || { columns: null };
+  const { columns, isSelectable, rowsPerPage, data } = useContext(
+    TableContext
+  ) || { columns: null, data: null };
 
-  if (!columns) {
+  if (!columns || !data) {
     return null;
   }
 
   return (
     <thead>
-      <tr>
+      <tr className={styles.header}>
+        {isSelectable && <HeaderStats data={data} rowsPerPage={rowsPerPage} />}
         {columns.map((column, index) => {
           return <TableHeaderCell {...column} key={index} />;
         })}
       </tr>
     </thead>
+  );
+};
+
+const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
+  const { data, rowsPerPage } = props;
+
+  const totalRecords = data.length;
+
+  const displayedRows = rowsPerPage > totalRecords ? totalRecords : rowsPerPage;
+
+  return (
+    <TableCell>
+      {displayedRows}/{totalRecords}
+    </TableCell>
   );
 };
 

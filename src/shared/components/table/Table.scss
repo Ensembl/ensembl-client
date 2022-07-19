@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.table {
+  border-collapse: collapse;
+}
+
+.header {
+  height: 40px;
+  border-bottom: 2px solid $blue;
+
+  th {
+    font-weight: $light;
+    padding-right: 20px;
+  }
+}
+
+.row {
+  border-bottom: 1px solid $medium-light-grey;
+  height: 40px;
+
+  &WithExpendedContent {
+    border-bottom: none;
+  }
+}
+
+.cell {
+  min-width: 50px;
+  padding: 0 10px;
+}
+
+.rowSelector {
+  text-align: center;
+}

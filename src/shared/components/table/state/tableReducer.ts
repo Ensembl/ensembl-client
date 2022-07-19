@@ -39,17 +39,24 @@ export enum TableAction {
 
 export type TableCellData = ReactNode;
 
-export type TableRowData = TableCellData[];
+export type TableRowData = {
+  cells: TableCellData[];
+  expandedContent?: ReactNode;
+};
 
 export type TableData = TableRowData[];
 
 export type IndividualColumn = {
   columnId: string;
   isSortable?: boolean;
+  isSearchable?: boolean;
   title: string;
+  className?: string;
 };
 
 export type Columns = IndividualColumn[];
+
+export type TableRowIds = { [key: number]: boolean };
 
 export type TableState = {
   columns: Columns;
@@ -57,13 +64,14 @@ export type TableState = {
   rowsPerPage: number;
   currentPageNumber: number;
   searchText: string;
-  hiddenRowIds: number[];
-  hiddenColumnIds: number[];
-  selectedRowIds: number[];
+  isSelectable: boolean;
   selectedAction: TableAction;
   sortedColumn: SortedColumn | null;
-  expandedRows: number[];
   fixedHeader: boolean;
+  selectedRowIds: TableRowIds;
+  hiddenRowIds: TableRowIds;
+  hiddenColumnIds: TableRowIds;
+  expandedRowIds: TableRowIds;
 };
 
 export const defaultTableState: TableState = {
@@ -72,13 +80,14 @@ export const defaultTableState: TableState = {
   rowsPerPage: 100,
   currentPageNumber: 1,
   searchText: '',
-  hiddenRowIds: [],
-  hiddenColumnIds: [],
-  selectedRowIds: [],
+  isSelectable: true,
   selectedAction: TableAction.DEFAULT,
   sortedColumn: null,
-  expandedRows: [],
-  fixedHeader: false
+  fixedHeader: false,
+  selectedRowIds: {},
+  expandedRowIds: {},
+  hiddenRowIds: {},
+  hiddenColumnIds: {}
 };
 
 type SetRowsPerPageAction = {
@@ -93,18 +102,6 @@ type SetCurrentPageNumberAction = {
   type: 'set_current_page_number';
   payload: number;
 };
-type SetHiddenRowIdsAction = {
-  type: 'set_hidden_row_ids';
-  payload: number[];
-};
-type SetHiddenColumnIdsAction = {
-  type: 'set_hidden_column_ids';
-  payload: number[];
-};
-type SetSelectedRowIdsAction = {
-  type: 'set_selected_row_ids';
-  payload: number[];
-};
 type SetSelectedActionAction = {
   type: 'set_selected_action';
   payload: TableAction;
@@ -113,9 +110,21 @@ type SetSortedColumnAction = {
   type: 'set_sorted_column';
   payload: SortedColumn;
 };
+type SetHiddenRowIdsAction = {
+  type: 'set_hidden_row_ids';
+  payload: { [key: number]: boolean };
+};
+type SetHiddenColumnIdsAction = {
+  type: 'set_hidden_column_ids';
+  payload: { [key: number]: boolean };
+};
+type SetSelectedRowIdsAction = {
+  type: 'set_selected_row_ids';
+  payload: { [key: number]: boolean };
+};
 type SetExpandedRowsAction = {
   type: 'set_expanded_rows';
-  payload: number[];
+  payload: { [key: number]: boolean };
 };
 
 export type AllTableActions =
@@ -129,7 +138,10 @@ export type AllTableActions =
   | SetSortedColumnAction
   | SetExpandedRowsAction;
 
-export const tableReducer = (state: TableState, action: AllTableActions) => {
+export const tableReducer = (
+  state: TableState,
+  action: AllTableActions
+): TableState => {
   switch (action.type) {
     case 'set_rows_per_page':
       return { ...state, rowsPerPage: action.payload };
@@ -138,17 +150,29 @@ export const tableReducer = (state: TableState, action: AllTableActions) => {
     case 'set_current_page_number':
       return { ...state, currentPageNumber: action.payload };
     case 'set_hidden_row_ids':
-      return { ...state, hiddenRowIds: action.payload };
+      return {
+        ...state,
+        hiddenRowIds: { ...state.hiddenRowIds, ...action.payload }
+      };
     case 'set_hidden_column_ids':
-      return { ...state, hiddenColumnIds: action.payload };
+      return {
+        ...state,
+        hiddenColumnIds: { ...state.hiddenColumnIds, ...action.payload }
+      };
     case 'set_selected_row_ids':
-      return { ...state, selectedRowIds: action.payload };
+      return {
+        ...state,
+        selectedRowIds: { ...state.selectedRowIds, ...action.payload }
+      };
     case 'set_selected_action':
       return { ...state, selectedAction: action.payload };
     case 'set_sorted_column':
       return { ...state, sortedColumn: action.payload };
     case 'set_expanded_rows':
-      return { ...state, expandedRows: action.payload };
+      return {
+        ...state,
+        expandedRowIds: { ...state.expandedRowIds, ...action.payload }
+      };
     default:
       return state;
   }

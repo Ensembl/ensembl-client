@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { cloneDeep } from 'lodash/fp';
 import React, { useState } from 'react';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
   Columns,
   TableData
@@ -29,7 +31,8 @@ const columns: Columns = [
   },
   {
     columnId: '2',
-    title: 'Column 2'
+    title: 'Column 2',
+    isSearchable: false
   },
   {
     columnId: '3',
@@ -37,19 +40,75 @@ const columns: Columns = [
   }
 ];
 
-const tableData: TableData = [
-  ['Cell 1,1', 'Cell 1,2', 'Cell 1,3'],
-  ['Cell 2,1', 'Cell 2,2', 'Cell 2,3'],
-  ['Cell 3,1', 'Cell 3,2', 'Cell 3,3']
+const sampletTableData: TableData = [
+  { cells: ['Cell 1,1', 'Cell 1,2', 'Cell 1,3'] },
+  { cells: ['Cell 2,1', 'Cell 2,2', 'Cell 2,3'] },
+  { cells: ['Cell 3,1', 'Cell 3,2', 'Cell 3,3'] }
 ];
 
 export const TableStory = () => {
-  const [tableState, setTableState] = useState({ columns, data: tableData });
+  const [tableState, setTableState] = useState({
+    columns,
+    data: cloneDeep(sampletTableData)
+  });
 
   return <Table {...tableState} onStateChange={setTableState} />;
 };
 
 TableStory.storyName = 'default';
+
+export const TableWithExpandStory = () => {
+  const tableData = cloneDeep(sampletTableData);
+
+  const onExpanded = (isExpanded: boolean, rowId: number) => {
+    if (isExpanded) {
+      tableData[rowId].expandedContent = (
+        <div>Column {rowId} expanded content</div>
+      );
+    } else {
+      tableData[rowId].expandedContent = null;
+    }
+
+    setTableState({
+      ...tableState,
+      data: tableData
+    });
+  };
+
+  tableData.map((rowData, rowId) => {
+    rowData.cells[1] = (
+      <ShowHideColumn
+        onExpanded={onExpanded}
+        rowId={rowId}
+        isExpanded={!!rowData.expandedContent}
+      />
+    );
+  });
+
+  const [tableState, setTableState] = useState({ columns, data: tableData });
+
+  return <Table {...tableState} onStateChange={setTableState} />;
+};
+
+const ShowHideColumn = (props: {
+  isExpanded: boolean;
+  onExpanded: (isExpanded: boolean, rowId: number) => void;
+  rowId: number;
+}) => {
+  const onExpanded = () => {
+    props.onExpanded(!props.isExpanded, props.rowId);
+  };
+
+  return (
+    <ShowHide
+      label={'show hide'}
+      isExpanded={props.isExpanded}
+      onClick={onExpanded}
+    ></ShowHide>
+  );
+};
+
+TableWithExpandStory.storyName = 'with expanded content';
 
 export default {
   title: 'Components/Shared Components/Table'

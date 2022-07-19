@@ -26,6 +26,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 export type Props = {
   direction: Direction;
   animate: boolean;
+  isDisabled?: boolean;
   onClick?: () => void;
   classNames?: {
     wrapper?: string;
@@ -39,6 +40,7 @@ const Chevron = (props: Props) => {
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
     { [styles.chevron_animated]: props.animate },
+    { [styles.chevronDisabled]: props.isDisabled },
     props.classNames?.svg
   );
 
@@ -52,7 +54,7 @@ const Chevron = (props: Props) => {
     Wrapper === React.Fragment
       ? {}
       : {
-          onClick: props.onClick,
+          onClick: props.isDisabled ? undefined : props.onClick,
           className: props.classNames?.wrapper
         };
 

@@ -32,7 +32,7 @@ const TableBody = () => {
   return (
     <tbody>
       {data.map((rowData, rowId) => {
-        return <TableRow key={rowId} rowData={rowData} />;
+        return <TableRow key={rowId} rowData={rowData} rowId={rowId} />;
       })}
     </tbody>
   );

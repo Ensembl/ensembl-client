@@ -15,14 +15,25 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
+import styles from 'src/shared/components/table/Table.scss';
 /*
     - takes in the content that needs to be displayed within a cell
     - Wraps the content within a <td> tag
 */
 
-const TableCell = (props: { children: React.ReactNode }) => {
-  return <td>{props.children}</td>;
+type TableCellProps = React.DetailedHTMLProps<
+  React.TdHTMLAttributes<HTMLTableCellElement>,
+  HTMLTableCellElement
+>;
+const TableCell = (props: TableCellProps) => {
+  const cellClassNames = classNames(styles.cell, props.className);
+  return (
+    <td {...props} className={cellClassNames}>
+      {props.children}
+    </td>
+  );
 };
 
 export default TableCell;

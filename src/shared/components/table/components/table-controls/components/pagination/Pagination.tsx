@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import React, { useContext } from 'react';
+import Chevron from 'src/shared/components/chevron/Chevron';
+import Input from 'src/shared/components/input/Input';
+import { TableContext } from 'src/shared/components/table/Table';
 
 import styles from './Pagination.scss';
 /*
@@ -23,7 +25,60 @@ import styles from './Pagination.scss';
 */
 
 const Pagination = () => {
-  return <div className={styles.pagination}>Pagination</div>;
+  const { dispatch, currentPageNumber, data } = useContext(TableContext) || {
+    currentPageNumber: 1
+  };
+
+  if (!dispatch || !data) {
+    return null;
+  }
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let pageNumberFromInput = Number(event.target.value);
+
+    if (isNaN(pageNumberFromInput)) {
+      pageNumberFromInput = currentPageNumber;
+    }
+
+    if (pageNumberFromInput > data?.length) {
+      pageNumberFromInput = data?.length;
+    }
+
+    dispatch({
+      type: 'set_current_page_number',
+      payload: pageNumberFromInput
+    });
+  };
+
+  const onChevronClick = (value: number) => {
+    dispatch({
+      type: 'set_current_page_number',
+      payload: value
+    });
+  };
+
+  return (
+    <div className={styles.pagination}>
+      <Chevron
+        direction="left"
+        classNames={{ wrapper: styles.chevron }}
+        isDisabled={currentPageNumber === 1}
+        onClick={() => onChevronClick(currentPageNumber - 1)}
+      />
+      <Input
+        value={currentPageNumber}
+        onChange={onChange}
+        className={styles.inputBox}
+      />{' '}
+      of {data?.length}
+      <Chevron
+        direction="right"
+        classNames={{ wrapper: styles.chevron }}
+        isDisabled={currentPageNumber === data?.length}
+        onClick={() => onChevronClick(currentPageNumber + 1)}
+      />
+    </div>
+  );
 };
 
 export default Pagination;

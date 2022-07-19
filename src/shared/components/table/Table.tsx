@@ -24,6 +24,9 @@ import {
   tableReducer,
   TableState
 } from './state/tableReducer';
+
+import styles from './Table.scss';
+
 /*
     -- State management -- 
     - How can we restore the previous state everytime we come back?
@@ -60,7 +63,7 @@ const Table = (props: TableProps) => {
   return (
     <TableContext.Provider value={{ ...tableState, dispatch }}>
       <TableControls />
-      <table>
+      <table className={styles.table}>
         <TableHeader />
         <TableBody />
       </table>
