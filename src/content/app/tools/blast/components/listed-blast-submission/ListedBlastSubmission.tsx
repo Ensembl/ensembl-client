@@ -24,7 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
   deleteBlastSubmission,
@@ -78,7 +78,7 @@ const ListedBlastSubmission = (props: Props) => {
         isAnyJobRunning={isAnyJobRunning}
         setExpanded={setExpanded}
         isExpanded={isExpanded}
-        totalSequences={sequences.length}
+        sequenceCount={sequences.length}
       />
       {sequenceContent}
     </div>
@@ -90,14 +90,12 @@ const CollapsedSequencesBox = (props: Props) => {
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
 
-  const totalSequences = sequences.length;
-  const totalSpecies = allJobs.length / totalSequences;
+  const sequenceCount = sequences.length;
+  const totalSpecies = submission.submittedData.species.length;
 
   return (
     <div className={styles.sequenceBox}>
-      <div>
-        {totalSequences} sequence{totalSequences > 1 ? 's' : ''}
-      </div>
+      <div>{`${sequenceCount} ${pluralise('sequence', sequenceCount)}`}</div>
       <div>
         <span>Against</span> {totalSpecies} species
       </div>
@@ -111,10 +109,10 @@ const Header = (
     isAnyJobRunning: boolean;
     isExpanded: boolean;
     setExpanded: (isExpanded: boolean) => void;
-    totalSequences: number;
+    sequenceCount: number;
   }
 ) => {
-  const { submission, totalSequences } = props;
+  const { submission, sequenceCount } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -165,7 +163,7 @@ const Header = (
           <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
-        {totalSequences > 1 && (
+        {sequenceCount > 1 && (
           <ShowHide
             label={''}
             classNames={showHideClassNames}
