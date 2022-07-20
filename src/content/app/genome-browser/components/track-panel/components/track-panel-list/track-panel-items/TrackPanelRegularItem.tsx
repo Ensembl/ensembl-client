@@ -22,7 +22,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateCommonTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
@@ -53,7 +53,7 @@ const TrackPanelRegularItem = (props: Props) => {
       genomeId,
       tracksGroup: 'commonTracks',
       categoryName: category,
-      trackId: props.track_id
+      trackId: track_id
     })
   );
   const { toggleTrack, genomeBrowser } = useGenomeBrowser();
@@ -65,7 +65,7 @@ const TrackPanelRegularItem = (props: Props) => {
         genomeId,
         drawerView: {
           name: 'track_details',
-          trackId: props.track_id
+          trackId: track_id
         }
       })
     );
@@ -76,17 +76,14 @@ const TrackPanelRegularItem = (props: Props) => {
       trackVisibilityStatus === Status.SELECTED
         ? Status.UNSELECTED
         : Status.SELECTED;
+
     toggleTrack({ trackId: track_id, status: newStatus });
 
     dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          commonTracks: {
-            [category]: {
-              [track_id]: newStatus
-            }
-          }
-        }
+      updateCommonTrackStates({
+        category,
+        trackId: track_id,
+        status: newStatus
       })
     );
   };

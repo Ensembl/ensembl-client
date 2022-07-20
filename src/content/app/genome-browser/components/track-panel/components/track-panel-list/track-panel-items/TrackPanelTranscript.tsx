@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import {
-  getBrowserActiveGenomeId,
-  getBrowserTrackState
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getBrowserActiveGenomeTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
@@ -31,9 +29,8 @@ import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
-import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/content/app/genome-browser/state/types/track-panel-gene';
-import type { RootState } from 'src/store';
+import type { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/content/app/genome-browser/state/types/track-panel-gene';
+import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelItem.scss';
 
@@ -41,31 +38,20 @@ type Props = {
   transcript: TrackPanelTranscriptType;
   genomeId: string;
   focusObjectId: string;
-  trackId: string;
-  onChangeVisibility: (status: TrackActivityStatus) => void;
 };
 
 const TrackPanelTranscript = (props: Props) => {
-  const { genomeId, transcript, focusObjectId, trackId } = props;
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const trackVisibilityStatus = useSelector((state: RootState) =>
-    getBrowserTrackState(state, {
-      genomeId,
-      objectId: focusObjectId,
-      tracksGroup: 'objectTracks',
-      categoryName: 'main',
-      trackId
-    })
-  );
+  const { genomeId, focusObjectId, transcript } = props;
+  const visibleTranscriptIds = useAppSelector((state) => {
+    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
+    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
+  });
+  const dispatch = useAppDispatch();
+  const { updateFocusGeneTranscripts } = useGenomeBrowser();
 
-  const dispatch = useDispatch();
-  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+  const currentTranscriptId = transcript.stable_id;
 
-  useEffect(() => {
-    toggleTrack({ trackId: trackId, status: trackVisibilityStatus });
-  }, [genomeBrowser]);
-
-  if (!activeGenomeId) {
+  if (!genomeId) {
     return null;
   }
 
@@ -74,13 +60,35 @@ const TrackPanelTranscript = (props: Props) => {
   const onShowMore = () => {
     dispatch(
       changeDrawerViewForGenome({
-        genomeId: activeGenomeId,
+        genomeId,
         drawerView: {
           name: 'transcript_summary',
-          transcriptId: transcript.stable_id
+          transcriptId: currentTranscriptId
         }
       })
     );
+  };
+
+  const getVisibilityStatus = () =>
+    visibleTranscriptIds.includes(currentTranscriptId)
+      ? Status.SELECTED
+      : Status.UNSELECTED;
+
+  const onChangeVisibility = () => {
+    const currentStatus = getVisibilityStatus();
+    const newStatus =
+      currentStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+    let newVisibleTranscriptIds = [...visibleTranscriptIds];
+
+    if (newStatus === Status.SELECTED) {
+      newVisibleTranscriptIds.push(currentTranscriptId);
+    } else {
+      newVisibleTranscriptIds = newVisibleTranscriptIds.filter(
+        (transcriptId) => transcriptId !== currentTranscriptId
+      );
+    }
+
+    updateFocusGeneTranscripts(newVisibleTranscriptIds);
   };
 
   const secondaryLabel = isCanonicalTranscript ? (
@@ -95,8 +103,8 @@ const TrackPanelTranscript = (props: Props) => {
 
   return (
     <SimpleTrackPanelItemLayout
-      visibilityStatus={trackVisibilityStatus}
-      onChangeVisibility={() => props.onChangeVisibility(trackVisibilityStatus)}
+      visibilityStatus={getVisibilityStatus()}
+      onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >
       <div className={styles.label}>
@@ -104,7 +112,7 @@ const TrackPanelTranscript = (props: Props) => {
           className={styles.colorMarker}
           style={{ backgroundColor: getTranscriptColor(transcript) }}
         />
-        <span className={styles.labelText}>{transcript.stable_id}</span>
+        <span className={styles.labelText}>{currentTranscriptId}</span>
         {secondaryLabel}
       </div>
     </SimpleTrackPanelItemLayout>
