@@ -110,13 +110,14 @@ const defaultProps: ZmenuProps = {
 
 describe('<Zmenu />', () => {
   describe('rendering', () => {
-    test('renders zmenu content', () => {
+    it('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();
       expect(queryByTestId('zmenuContent')).toBeTruthy();
     });
   });
-  describe('destroying ZMenu', () => {
-    it('closes zmenu when location change', () => {
+
+  describe('behaviour', () => {
+    it('sends a signal to be closed when genome browser’s location changes', () => {
       const { store } = renderComponent();
       expect(mockSetZmenus).not.toHaveBeenCalled();
       act(() => {
@@ -128,7 +129,7 @@ describe('<Zmenu />', () => {
           ])
         );
       });
-      expect(mockSetZmenus).toHaveBeenCalledWith({});
+      expect(mockSetZmenus).toHaveBeenCalledWith({}); // the new zmenu object will not have the id of the current zmenu
     });
   });
 });
