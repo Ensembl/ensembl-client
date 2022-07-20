@@ -106,7 +106,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     dispatch(
       updateObjectTrackStates({
         status: transcriptIds.length ? Status.SELECTED : Status.UNSELECTED,
-        transcripts: transcriptIds
+        transcriptIds
       })
     );
   };
