@@ -18,6 +18,8 @@ import React from 'react';
 import { useAppSelector } from 'src/store';
 import { useLocation } from 'react-router';
 
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
@@ -123,7 +125,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     <div className={styles.resultsSummaryRow}>
       <div>
         <span className={styles.boldText}>{data.result.hits.length} </span>
-        <span className={styles.label}> hits </span>
+        <span className={styles.label}>
+          {' '}
+          {`${pluralise('hit', data.result.hits.length)}`}{' '}
+        </span>
       </div>
       <div className={styles.summaryPlot}></div>
       <div className={styles.speciesInfo}>
