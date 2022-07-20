@@ -55,7 +55,7 @@ const useGenomeBrowserUrlCheck = () => {
     'meta' in geneQueryError &&
     geneQueryError.meta.data.gene === null;
 
-  const isMissingFocusObject = isMissingGene; // extend this when we start having other focus objects
+  const isMissingFocusObject = isMissingGene; // extend this after introduction of other focus objects
 
   return {
     genomeIdInUrl,
