@@ -73,7 +73,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
     dispatch({
       type: 'set_selected_row_ids',
       payload: {
-        [params.rowId]: !params.checked
+        [params.rowId]: params.checked
       }
     });
   };

@@ -15,6 +15,7 @@
  */
 
 import React, { useContext } from 'react';
+import { defaultTableState } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 import TableRow from '../table-row/TableRow';
 
@@ -23,15 +24,23 @@ import TableRow from '../table-row/TableRow';
 */
 
 const TableBody = () => {
-  const { data } = useContext(TableContext) || { data: [] };
+  const { data, currentPageNumber, rowsPerPage } =
+    useContext(TableContext) || defaultTableState;
 
   if (!data) {
     return null;
   }
-
+  const totalRows = data.length;
+  const rowIdLowerBound = (currentPageNumber - 1) * rowsPerPage;
+  const rowIdUpperBound = (currentPageNumber - 1) * rowsPerPage + rowsPerPage;
   return (
     <tbody>
       {data.map((rowData, rowId) => {
+        if (rowsPerPage !== 0 && totalRows > rowsPerPage) {
+          if (rowId < rowIdLowerBound || rowIdUpperBound - 1 < rowId) {
+            return null;
+          }
+        }
         return <TableRow key={rowId} rowData={rowData} rowId={rowId} />;
       })}
     </tbody>

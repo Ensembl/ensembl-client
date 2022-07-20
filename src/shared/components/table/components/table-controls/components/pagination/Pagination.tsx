@@ -25,18 +25,23 @@ import styles from './Pagination.scss';
 */
 
 const Pagination = () => {
-  const { dispatch, currentPageNumber, data } = useContext(TableContext) || {
-    currentPageNumber: 1
+  const { dispatch, currentPageNumber, data, rowsPerPage } = useContext(
+    TableContext
+  ) || {
+    currentPageNumber: 1,
+    rowsPerPage: 100
   };
 
   if (!dispatch || !data) {
     return null;
   }
 
+  const highestPageNumber = Math.ceil(data?.length / rowsPerPage);
+
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let pageNumberFromInput = Number(event.target.value);
 
-    if (isNaN(pageNumberFromInput)) {
+    if (isNaN(pageNumberFromInput) || pageNumberFromInput > highestPageNumber) {
       pageNumberFromInput = currentPageNumber;
     }
 
@@ -69,12 +74,15 @@ const Pagination = () => {
         value={currentPageNumber}
         onChange={onChange}
         className={styles.inputBox}
-      />{' '}
-      of {data?.length}
+        disabled={rowsPerPage === 0 || data?.length < rowsPerPage}
+      />
+      of {rowsPerPage === 0 ? 1 : highestPageNumber}
       <Chevron
         direction="right"
         classNames={{ wrapper: styles.chevron }}
-        isDisabled={currentPageNumber === data?.length}
+        isDisabled={
+          rowsPerPage === 0 || currentPageNumber === highestPageNumber
+        }
         onClick={() => onChevronClick(currentPageNumber + 1)}
       />
     </div>
