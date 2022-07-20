@@ -15,22 +15,19 @@
  */
 
 import React from 'react';
+import { useAppSelector, type RootState } from 'src/store';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import RadioGroup, {
-  type RadioOptions
-} from 'src/shared/components/radio-group/RadioGroup';
+import TrackSettingsRadioOptions from './components/track-settings-radio-options/TrackSettingsRadioOptions';
 
-import { useAppSelector, type RootState } from 'src/store';
 import {
   getApplyToAllSettings,
   getBrowserSelectedCog,
   getTrackSettingsForTrackId
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import useTrackSettings from '../useTrackSettings';
-
-import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import styles from '../TrackSettingsPanel.scss';
 
@@ -57,22 +54,10 @@ export const TranscriptTrackSettings = () => {
     updateFeatureLabelsVisibility(!shouldShowFeatureLabels);
   };
 
-  const radioOptions: RadioOptions = [
-    {
-      value: 'this_track',
-      label: 'This track'
-    },
-    {
-      value: 'all_tracks',
-      label: 'All tracks'
-    }
-  ];
-
   return (
     <div className={styles.trackSettings}>
       <div className={styles.section}>
-        <RadioGroup
-          options={radioOptions}
+        <TrackSettingsRadioOptions
           onChange={toggleApplyToAll}
           selectedOption={shouldApplyToAll ? 'all_tracks' : 'this_track'}
         />
