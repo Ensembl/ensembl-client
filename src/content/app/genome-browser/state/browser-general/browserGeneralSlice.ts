@@ -147,13 +147,13 @@ export const updateBrowserActiveFocusObjectIdsAndSave = (
 
 export const updateObjectTrackStates: ActionCreator<
   ThunkAction<void, any, void, Action<string>>
-> = (payload: { status: Status; transcripts?: string[] }) => {
+> = (payload: { status: Status; transcriptIds?: string[] }) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state) as string;
     const activeFocusObjectId = getBrowserActiveFocusObjectId(state) as string;
     const trackStates = getBrowserTrackStates(state);
-    const { status, transcripts } = payload;
+    const { status, transcriptIds } = payload;
 
     let newTrackStates = set(
       `${activeGenomeId}.objectTracks.${activeFocusObjectId}.status`,
@@ -161,10 +161,10 @@ export const updateObjectTrackStates: ActionCreator<
       trackStates
     );
 
-    if (transcripts) {
+    if (transcriptIds) {
       newTrackStates = set(
         `${activeGenomeId}.objectTracks.${activeFocusObjectId}.transcripts`,
-        transcripts,
+        transcriptIds,
         newTrackStates
       );
     }
