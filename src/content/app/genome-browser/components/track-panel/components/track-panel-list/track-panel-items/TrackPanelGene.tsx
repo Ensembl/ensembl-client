@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -56,6 +56,7 @@ type TrackPanelGeneProps = {
 const GENE_TRACK_ID = TrackId.GENE;
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
+  const geneIdRef = useRef(geneId);
   const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
   const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
   const { currentData } = useGetTrackPanelGeneQuery({
@@ -87,10 +88,17 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
+    geneIdRef.current = geneId;
+  });
+
+  useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
-        setVisibleTranscriptIds(action.payload.transcript_ids);
+        const { gene_id, transcript_ids } = action.payload;
+        if (gene_id === geneIdRef.current) {
+          setVisibleTranscriptIds(transcript_ids);
+        }
       }
     );
 
