@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { SerializedError } from '@reduxjs/toolkit';
+
 import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
@@ -56,3 +59,9 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
 export const { useGenomeInfoQuery, useGenomeKaryotypeQuery } = genomeApiSlice;
 
 export const { genomeInfo: fetchGenomeInfo } = genomeApiSlice.endpoints;
+
+export const isGenomeNotFoundError = (
+  error?: SerializedError | FetchBaseQueryError
+) => {
+  return error && 'status' in error && error.status >= 400; // FIXME: change to 404 when the backend is updated
+};

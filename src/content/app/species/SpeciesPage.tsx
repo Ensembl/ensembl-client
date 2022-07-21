@@ -26,7 +26,10 @@ import { getGenomeByUrlId } from 'src/shared/state/genome/genomeSelectors';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  fetchGenomeInfo,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 import { getPathParameters, useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
@@ -66,23 +69,14 @@ export const serverFetch: ServerFetch = async (params) => {
   const { genomeId: genomeIdFromUrl } = getPathParameters<'genomeId'>(
     '/species/:genomeId/',
     path
-  );
-
-  if (!genomeIdFromUrl) {
-    return; // this won't happen; but makes typescript happy
-  }
+  ) as { genomeId: string };
 
   const genomeInfoResponsePromise = dispatch(
     fetchGenomeInfo.initiate(genomeIdFromUrl)
   );
   const { error: genomeInfoError } = await genomeInfoResponsePromise;
 
-  // FIXME: 404 status code in response
-  if (
-    genomeInfoError &&
-    'status' in genomeInfoError &&
-    genomeInfoError.status >= 400
-  ) {
+  if (isGenomeNotFoundError(genomeInfoError)) {
     return {
       status: 404
     };

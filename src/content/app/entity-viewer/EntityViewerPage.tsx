@@ -18,16 +18,20 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import loadable from '@loadable/component';
 
-import {
-  parseFocusIdFromUrl
-} from 'src/shared/helpers/focusObjectHelpers';
+import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
-import { useGenePageMetaQuery, fetchGenePageMeta } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import {
+  fetchGenomeInfo,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenePageMetaQuery,
+  fetchGenePageMeta
+} from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
@@ -41,25 +45,26 @@ const EntityViewerPage = () => {
   // because we will have entities other than gene
   const { genomeId, geneId } = useGeneViewIds();
 
-  const { data: pageMeta } = useGenePageMetaQuery({
-    genomeId: genomeId ?? '',
-    geneId: geneId ?? ''
-  },
-  {
-    skip: !genomeId || !geneId
-  });
+  const { data: pageMeta } = useGenePageMetaQuery(
+    {
+      genomeId: genomeId ?? '',
+      geneId: geneId ?? ''
+    },
+    {
+      skip: !genomeId || !geneId
+    }
+  );
 
   return (
     <>
       <Helmet>
-        <title>{ pageMeta?.title }</title>
+        <title>{pageMeta?.title}</title>
         <meta name="description" content="Entity viewer" />
       </Helmet>
       {hasMounted && <LoadableEntityViewer />}
     </>
   );
 };
-
 
 export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
@@ -75,10 +80,11 @@ export const serverFetch: ServerFetch = async (params) => {
   const genomeInfoResponsePromise = dispatch(
     fetchGenomeInfo.initiate(genomeIdFromUrl)
   );
-  const { data: genomeInfoData, error: genomeInfoError } = await genomeInfoResponsePromise;
+  const { data: genomeInfoData, error: genomeInfoError } =
+    await genomeInfoResponsePromise;
 
   // FIXME: 404 status code in response
-  if (genomeInfoError && 'status' in genomeInfoError && genomeInfoError.status >= 400) {
+  if (isGenomeNotFoundError(genomeInfoError)) {
     return {
       status: 404
     };
@@ -93,10 +99,12 @@ export const serverFetch: ServerFetch = async (params) => {
   // FIXME: gene symbol parsing can explode!
   const geneStableId = parseFocusIdFromUrl(entityId).objectId;
 
-  const pageMetaPromise = dispatch(fetchGenePageMeta.initiate({
-    genomeId,
-    geneId: geneStableId
-  }));
+  const pageMetaPromise = dispatch(
+    fetchGenePageMeta.initiate({
+      genomeId,
+      geneId: geneStableId
+    })
+  );
   const pageMetaQueryResult = await pageMetaPromise;
 
   if ((pageMetaQueryResult?.error as any)?.meta?.data?.gene === null) {
@@ -105,7 +113,6 @@ export const serverFetch: ServerFetch = async (params) => {
       status: 404
     };
   }
-
 };
 
 export default EntityViewerPage;

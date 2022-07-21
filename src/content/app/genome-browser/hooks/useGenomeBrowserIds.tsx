@@ -24,7 +24,10 @@ import {
 
 import { useAppSelector } from 'src/store';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
-import { useGenomeInfoQuery } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenomeInfoQuery,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -57,7 +60,7 @@ const useGenomeBrowserIds = () => {
     skip: !genomeIdInUrl
   });
   const genomeId = genomeInfo?.genomeId;
-  const isMissingGenomeId = isError && 'status' in error && error.status >= 400; // FIXME: use proper status code
+  const isMissingGenomeId = isError && isGenomeNotFoundError(error);
 
   // TODO: check if the logic below is correct
   const genomeIdForUrl =

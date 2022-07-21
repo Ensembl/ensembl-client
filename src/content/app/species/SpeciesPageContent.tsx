@@ -19,7 +19,10 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import { useGenomeInfoQuery } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenomeInfoQuery,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -75,8 +78,7 @@ const SpeciesPageContent = () => {
     dispatch(fetchExampleFocusObjects(genomeId));
   }, [genomeId]);
 
-  // FIXME error status
-  if (isError && 'status' in error && error.status >= 400) {
+  if (isError && isGenomeNotFoundError(error)) {
     return (
       <div className={styles.speciesPage}>
         <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
