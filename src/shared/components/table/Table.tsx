@@ -46,6 +46,10 @@ export const TableContext = React.createContext(
 
 export type TableProps = Partial<TableState> & {
   onStateChange?: (newState: TableState) => void;
+  classNames?: {
+    table?: string;
+    wrapper?: string;
+  };
 };
 const Table = (props: TableProps) => {
   const initialTableState = { ...defaultTableState, ...props };
@@ -62,11 +66,13 @@ const Table = (props: TableProps) => {
 
   return (
     <TableContext.Provider value={{ ...tableState, dispatch }}>
-      <TableControls />
-      <table className={styles.table}>
-        <TableHeader />
-        <TableBody />
-      </table>
+      <div className={props.classNames?.wrapper}>
+        <TableControls />
+        <table className={styles.table}>
+          <TableHeader />
+          <TableBody />
+        </table>
+      </div>
     </TableContext.Provider>
   );
 };

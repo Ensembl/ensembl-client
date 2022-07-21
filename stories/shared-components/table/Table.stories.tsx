@@ -20,6 +20,8 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import Table, { TableProps } from 'src/shared/components/table/Table';
 
+import styles from './Table.stories.scss';
+
 const createTableData = (rows: number, columns: number): TableProps => {
   return {
     data: times(rows, (row) => ({
@@ -35,7 +37,13 @@ const createTableData = (rows: number, columns: number): TableProps => {
 export const TableStory = () => {
   const [tableState, setTableState] = useState(createTableData(15, 15));
 
-  return <Table {...tableState} onStateChange={setTableState} />;
+  return (
+    <Table
+      {...tableState}
+      onStateChange={setTableState}
+      classNames={{ wrapper: styles.wrapper }}
+    />
+  );
 };
 
 TableStory.storyName = 'default';

@@ -7,6 +7,10 @@
 .header {
   height: 40px;
   border-bottom: 2px solid $blue;
+  position: sticky;
+  top: 27px;
+  background-color: $light-grey;
+  z-index: 1;
 
   th {
     font-weight: $light;

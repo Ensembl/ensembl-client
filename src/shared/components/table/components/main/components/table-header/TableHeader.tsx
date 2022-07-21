@@ -38,8 +38,8 @@ const TableHeader = () => {
   }
 
   return (
-    <thead>
-      <tr className={styles.header}>
+    <thead className={styles.header}>
+      <tr>
         {isSelectable && <HeaderStats data={data} rowsPerPage={rowsPerPage} />}
         {columns.map((column, index) => {
           const currentColumn = columns[index];
