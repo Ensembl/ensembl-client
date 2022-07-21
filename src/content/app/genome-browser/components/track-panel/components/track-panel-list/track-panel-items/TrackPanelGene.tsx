@@ -71,13 +71,19 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   );
   const visibleTranscriptIds = useAppSelector((state) => {
     const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
-    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
+    return (
+      genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? null
+    );
   });
-  const { toggleTrack, updateFocusGeneTranscripts, genomeBrowser } =
-    useGenomeBrowser();
+
+  const {
+    setFocusGene,
+    toggleTrack,
+    updateFocusGeneTranscripts,
+    genomeBrowser
+  } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const allTranscriptsInGene = currentData?.gene.transcripts ?? [];
   let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
 
   useEffect(() => {
@@ -97,10 +103,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
-    if (allTranscriptsInGene?.length) {
-      updateFocusGeneTranscripts(visibleTranscriptIds);
-    }
-  }, [allTranscriptsInGene]);
+    updateFocusGeneTranscripts(visibleTranscriptIds);
+  }, [geneId, visibleTranscriptIds?.length]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
@@ -117,13 +121,18 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
     }
 
-    const newVisibleTranscriptIds =
-      newStatus === Status.SELECTED
-        ? allTranscriptsInGene?.map(({ stable_id }) => stable_id) ?? []
-        : [];
+    // const newVisibleTranscriptIds =
+    //   newStatus === Status.SELECTED
+    //     ? allTranscriptsInGene?.map(({ stable_id }) => stable_id) ?? []
+    //     : [];
 
-    toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
-    updateFocusGeneTranscripts(newVisibleTranscriptIds);
+    if (newStatus === Status.SELECTED) {
+      setFocusGene(focusObjectId);
+    } else {
+      toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
+    }
+
+    // updateFocusGeneTranscripts(newVisibleTranscriptIds);
 
     dispatch(
       updateObjectTrackStates({

@@ -80,7 +80,8 @@ const useGenomeBrowser = () => {
     setGenomeBrowser(null);
   };
 
-  const changeFocusObject = (focusObjectId: string) => {
+  // the focusObjectId is in the format "genome_id:gene:gene_stable_id"
+  const setFocusGene = (focusObjectId: string) => {
     if (!activeGenomeId || !genomeBrowser) {
       return;
     }
@@ -92,6 +93,25 @@ const useGenomeBrowser = () => {
       payload: {
         focus: objectId,
         genomeId
+      }
+    };
+
+    genomeBrowser.send(action);
+  };
+
+  const changeFocusObject = (focusObjectId: string) => {
+    if (!activeGenomeId || !genomeBrowser) {
+      return;
+    }
+
+    const { genomeId, objectId } = parseFocusObjectId(focusObjectId);
+
+    const action: OutgoingAction = {
+      type: OutgoingActionType.SET_FOCUS,
+      payload: {
+        focus: objectId,
+        genomeId,
+        shouldJump: true
       }
     };
 
@@ -111,18 +131,16 @@ const useGenomeBrowser = () => {
     }
 
     const trackStatesFromStorage = browserStorageService.getTrackStates();
-    const mergedTrackStates = {
-      ...get(
+    const storedCommonTracks =
+      (get(
         trackStatesFromStorage,
-        `${activeGenomeId}.objectTracks.${activeFocusObjectId}`
-      ),
-      ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
-    } as TrackStates;
+        `${activeGenomeId}.commonTracks`
+      ) as TrackStates) ?? {};
 
     const tracksToTurnOff: string[] = [];
     const tracksToTurnOn: string[] = [];
 
-    Object.values(mergedTrackStates).forEach((trackStates) => {
+    Object.values(storedCommonTracks).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
         const trackIdWithoutPrefix = trackId.replace('track:', '');
         const trackIdToSend =
@@ -186,9 +204,20 @@ const useGenomeBrowser = () => {
             ? trackStateForLabels.on.push(trackId)
             : trackStateForLabels.off.push(trackId);
 
-          config.showSeveralTranscripts
-            ? trackStateForSeveralTranscripts.on.push(trackId)
-            : trackStateForSeveralTranscripts.off.push(trackId);
+          /**
+           * TODO: think what to do about the saved state of the "several transcripts" toggle
+           * for the gene track.
+           * 1) How do we reconcile it with the transcripts we have selected manually?
+           * 2) Should we just ignore it
+           * 3) If we want (and can) to do anything about it, we should do so in the TrackPanelGene component,
+           * which also knows about the list of individual transcripts that are displayed
+           *
+           * Commenting out the problematic lines below for now.
+           */
+
+          // config.showSeveralTranscripts
+          //   ? trackStateForSeveralTranscripts.on.push(trackId)
+          //   : trackStateForSeveralTranscripts.off.push(trackId);
 
           config.showTranscriptIds
             ? trackStateForTranscriptIds.on.push(trackId)
@@ -403,7 +432,9 @@ const useGenomeBrowser = () => {
     }
   };
 
-  const updateFocusGeneTranscripts = (visibleTranscriptIds: string[]) => {
+  const updateFocusGeneTranscripts = (
+    visibleTranscriptIds: string[] | null
+  ) => {
     genomeBrowser?.send({
       type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
       payload: {
@@ -416,6 +447,7 @@ const useGenomeBrowser = () => {
   return {
     activateGenomeBrowser,
     clearGenomeBrowser,
+    setFocusGene,
     changeFocusObject,
     changeFocusObjectFromZmenu,
     changeBrowserLocation,
