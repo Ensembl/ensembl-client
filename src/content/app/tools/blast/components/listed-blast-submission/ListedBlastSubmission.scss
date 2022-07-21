@@ -29,6 +29,10 @@ and also that it can be of variable width
   border-top: none;
 }
 
+.againstText {
+  font-weight: $light;
+}
+
 .submissionIdLabel {
   font-weight: $light;
   margin-right: 1ch;
@@ -51,6 +55,7 @@ and also that it can be of variable width
 
 .showHideWrapper {
   display: inline-block;
+  position: absolute;
 
   .chevron {
     height: 8px;
