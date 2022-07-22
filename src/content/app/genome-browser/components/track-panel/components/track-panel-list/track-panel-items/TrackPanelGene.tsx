@@ -16,8 +16,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -37,7 +35,6 @@ import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanel
 
 import { Status } from 'src/shared/types/status';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import type { RootState } from 'src/store';
 import {
   IncomingActionType,
@@ -57,8 +54,7 @@ const GENE_TRACK_ID = TrackId.GENE;
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
   const geneIdRef = useRef(geneId);
-  const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
-  const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const { currentData } = useGetTrackPanelGeneQuery({
     genomeId,
     geneId
@@ -85,11 +81,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  let sortedTranscripts: TrackPanelTranscriptType[] | undefined;
-
   useEffect(() => {
     geneIdRef.current = geneId;
-  },[geneId]);
+  }, [geneId]);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -152,14 +146,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   const { gene } = currentData;
 
-  if (isEnvironment([Environment.PRODUCTION])) {
-    // TODO: remove this branch when multiple transcripts become available
-    sortedTranscripts = isCollapsed ? [] : [defaultSort(gene.transcripts)[0]];
-  } else {
-    sortedTranscripts = isCollapsed
-      ? [defaultSort(gene.transcripts)[0]]
-      : defaultSort(gene.transcripts);
-  }
+  const sortedTranscripts = isCollapsed
+    ? [defaultSort(gene.transcripts)[0]]
+    : defaultSort(gene.transcripts);
 
   const toggleExpand = () => {
     setIsCollapsed(!isCollapsed);
@@ -203,14 +192,12 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           key={transcript.stable_id}
         />
       ))}
-      {!isEnvironment([Environment.PRODUCTION]) &&
-        isCollapsed &&
-        gene.transcripts.length > 1 && (
-          <TrackPanelItemsCount
-            itemName="transcript"
-            count={gene.transcripts.length - 1}
-          />
-        )}
+      {isCollapsed && gene.transcripts.length > 1 && (
+        <TrackPanelItemsCount
+          itemName="transcript"
+          count={gene.transcripts.length - 1}
+        />
+      )}
     </>
   );
 };
