@@ -111,7 +111,7 @@ const useGenomeBrowser = () => {
       payload: {
         focus: objectId,
         genomeId,
-        shouldJump: true
+        bringIntoView: true
       }
     };
 
