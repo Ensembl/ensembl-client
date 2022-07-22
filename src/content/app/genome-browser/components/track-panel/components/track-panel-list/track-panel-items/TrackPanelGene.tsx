@@ -133,18 +133,11 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
     }
 
-    // const newVisibleTranscriptIds =
-    //   newStatus === Status.SELECTED
-    //     ? allTranscriptsInGene?.map(({ stable_id }) => stable_id) ?? []
-    //     : [];
-
     if (newStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
     } else {
       toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
     }
-
-    // updateFocusGeneTranscripts(newVisibleTranscriptIds);
 
     dispatch(
       updateObjectTrackStates({
