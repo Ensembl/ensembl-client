@@ -89,7 +89,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   useEffect(() => {
     geneIdRef.current = geneId;
-  });
+  },[geneId]);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
