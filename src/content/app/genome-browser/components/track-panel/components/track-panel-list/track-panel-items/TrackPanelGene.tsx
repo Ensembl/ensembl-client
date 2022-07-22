@@ -109,10 +109,14 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     updateObjectTrackStatus(trackStatus);
   }, [genomeId, focusObjectId, trackStatus]);
 
+  const stringifiedVisibleTranscriptIds = visibleTranscriptIds
+    ? String([...visibleTranscriptIds].sort())
+    : 'null';
+
   // set status of all transcripts based on the saved redux state after loading component
   useEffect(() => {
     updateFocusGeneTranscripts(visibleTranscriptIds);
-  }, [geneId, visibleTranscriptIds?.length]);
+  }, [geneId, stringifiedVisibleTranscriptIds]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
