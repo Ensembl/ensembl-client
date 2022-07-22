@@ -21,8 +21,8 @@ import { faker } from '@faker-js/faker';
 
 import BrowserCog, { BrowserCogProps } from './BrowserCog';
 
-jest.mock('../browser-track-config/BrowserTrackConfig', () => () => (
-  <div id="browserTrackConfig">BrowserTrackConfig</div>
+jest.mock('../track-settings/BrowserTrackSettings', () => () => (
+  <div id="browserTrackSettings">BrowserTrackSettings</div>
 ));
 
 describe('<BrowserCog />', () => {
@@ -39,7 +39,7 @@ describe('<BrowserCog />', () => {
   describe('rendering', () => {
     test('renders browser track config', () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
-      expect(container.querySelector('#browserTrackConfig')).toBeTruthy();
+      expect(container.querySelector('#browserTrackSettings')).toBeTruthy();
     });
   });
 

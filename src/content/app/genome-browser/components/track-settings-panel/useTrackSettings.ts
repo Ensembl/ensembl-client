@@ -19,20 +19,20 @@ import { useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
-  getTrackConfigsForTrackId,
-  getApplyToAllConfig,
+  getTrackSettingsForTrackId,
+  getApplyToAllSettings,
   getBrowserCogList,
   getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
-  updateTrackName as updateTrackConfigTrackName,
-  updateFeatureLabelsVisibility as updateTrackConfigFeatureLabelsVisibility,
-  updateShowSeveralTranscripts as updateTrackConfigShowSeveralTranscripts,
-  updateShowTranscriptIds as updateTrackConfigShowTranscriptIds,
+  updateTrackName as updateTrackSettingsTrackName,
+  updateFeatureLabelsVisibility as updateTrackSettingsFeatureLabelsVisibility,
+  updateShowSeveralTranscripts as updateTrackSettingsShowSeveralTranscripts,
+  updateShowTranscriptIds as updateTrackSettingsShowTranscriptIds,
   updateApplyToAll,
-  saveTrackConfigsForGenome,
+  saveTrackSettingsForGenome,
   TrackType
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -40,14 +40,14 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import { type OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
-const useBrowserTrackConfig = () => {
+const useBrowserTrackSettings = () => {
   const browserCogList = useAppSelector(getBrowserCogList);
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const selectedTrackConfigs = useAppSelector((state: RootState) =>
-    getTrackConfigsForTrackId(state, selectedCog)
+  const selectedTrackSettings = useAppSelector((state: RootState) =>
+    getTrackSettingsForTrackId(state, selectedCog)
   );
-  const shouldApplyToAll = useAppSelector(getApplyToAllConfig);
+  const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
   const dispatch = useAppDispatch();
 
@@ -70,7 +70,7 @@ const useBrowserTrackConfig = () => {
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigTrackName({
+          updateTrackSettingsTrackName({
             genomeId: activeGenomeId,
             trackId,
             isTrackNameShown
@@ -80,7 +80,7 @@ const useBrowserTrackConfig = () => {
       });
     } else {
       dispatch(
-        updateTrackConfigTrackName({
+        updateTrackSettingsTrackName({
           genomeId: activeGenomeId,
           trackId: selectedCog,
           isTrackNameShown
@@ -92,7 +92,7 @@ const useBrowserTrackConfig = () => {
       });
     }
 
-    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+    dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -109,7 +109,7 @@ const useBrowserTrackConfig = () => {
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigFeatureLabelsVisibility({
+          updateTrackSettingsFeatureLabelsVisibility({
             genomeId: activeGenomeId,
             trackId,
             areFeatureLabelsShown
@@ -122,7 +122,7 @@ const useBrowserTrackConfig = () => {
       });
     } else {
       dispatch(
-        updateTrackConfigFeatureLabelsVisibility({
+        updateTrackSettingsFeatureLabelsVisibility({
           genomeId: activeGenomeId,
           trackId: selectedCog,
           areFeatureLabelsShown
@@ -134,7 +134,7 @@ const useBrowserTrackConfig = () => {
       });
     }
 
-    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+    dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -150,7 +150,7 @@ const useBrowserTrackConfig = () => {
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigShowSeveralTranscripts({
+          updateTrackSettingsShowSeveralTranscripts({
             genomeId: activeGenomeId,
             trackId,
             isSeveralTranscriptsShown
@@ -163,7 +163,7 @@ const useBrowserTrackConfig = () => {
       });
     } else {
       dispatch(
-        updateTrackConfigShowSeveralTranscripts({
+        updateTrackSettingsShowSeveralTranscripts({
           genomeId: activeGenomeId,
           trackId: selectedCog,
           isSeveralTranscriptsShown
@@ -175,7 +175,7 @@ const useBrowserTrackConfig = () => {
       });
     }
 
-    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+    dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -192,7 +192,7 @@ const useBrowserTrackConfig = () => {
     if (shouldApplyToAllRef.current) {
       Object.keys(browserCogList).forEach((trackId) => {
         dispatch(
-          updateTrackConfigShowTranscriptIds({
+          updateTrackSettingsShowTranscriptIds({
             genomeId: activeGenomeId,
             trackId,
             shouldShowTranscriptIds
@@ -205,7 +205,7 @@ const useBrowserTrackConfig = () => {
       });
     } else {
       dispatch(
-        updateTrackConfigShowTranscriptIds({
+        updateTrackSettingsShowTranscriptIds({
           genomeId: activeGenomeId,
           trackId: selectedCog,
           shouldShowTranscriptIds
@@ -217,7 +217,7 @@ const useBrowserTrackConfig = () => {
       });
     }
 
-    dispatch(saveTrackConfigsForGenome(activeGenomeId));
+    dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
@@ -227,24 +227,24 @@ const useBrowserTrackConfig = () => {
   };
 
   const toggleApplyToAll = (value: OptionValue) => {
-    if (!activeGenomeId || !selectedTrackConfigs) {
+    if (!activeGenomeId || !selectedTrackSettings) {
       return;
     }
 
-    const shouldShowTrackName = selectedTrackConfigs.showTrackName;
+    const shouldShowTrackName = selectedTrackSettings.showTrackName;
     const shouldShowFeatureLabels =
-      selectedTrackConfigs.trackType === TrackType.GENE
-        ? selectedTrackConfigs.showFeatureLabels
+      selectedTrackSettings.trackType === TrackType.GENE
+        ? selectedTrackSettings.showFeatureLabels
         : false;
 
     const shouldShowSeveralTranscripts =
-      selectedTrackConfigs.trackType === TrackType.GENE
-        ? selectedTrackConfigs.showSeveralTranscripts
+      selectedTrackSettings.trackType === TrackType.GENE
+        ? selectedTrackSettings.showSeveralTranscripts
         : false;
 
     const shouldShowTranscriptIds =
-      selectedTrackConfigs.trackType === TrackType.GENE
-        ? selectedTrackConfigs.showTranscriptIds
+      selectedTrackSettings.trackType === TrackType.GENE
+        ? selectedTrackSettings.showTranscriptIds
         : false;
 
     dispatch(
@@ -277,4 +277,4 @@ const useBrowserTrackConfig = () => {
   };
 };
 
-export default useBrowserTrackConfig;
+export default useBrowserTrackSettings;

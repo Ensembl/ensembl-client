@@ -22,10 +22,10 @@ import { Provider } from 'react-redux';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import * as trackConfigSlice from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import * as trackSettingsSlice from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import BrowserTrackConfig from './BrowserTrackConfig';
+import TrackConfig from './TrackSettingsPanel';
 
 const genomeId = 'fake_genome_id_1';
 const selectedTrackId = 'focus';
@@ -33,7 +33,7 @@ const renderComponent = () => {
   const rootReducer = combineReducers({
     browser: combineReducers({
       browserGeneral: browserGeneralSlice.default,
-      trackConfig: trackConfigSlice.default
+      trackSettings: trackSettingsSlice.default
     })
   });
 
@@ -44,7 +44,7 @@ const renderComponent = () => {
         showTranscriptIds: false,
         showTrackName: false,
         showFeatureLabels: false,
-        trackType: trackConfigSlice.TrackType.GENE
+        trackType: trackSettingsSlice.TrackType.GENE
       }
     }
   };
@@ -56,15 +56,15 @@ const renderComponent = () => {
         browserGeneralSlice.defaultBrowserGeneralState,
         { activeGenomeId: genomeId }
       ),
-      trackConfig: {
+      trackSettings: {
         browserTrackCogs: {
           cogList: {},
           selectedCog: selectedTrackId
         },
-        configs: {
+        settings: {
           [genomeId]: Object.assign(
             {},
-            trackConfigSlice.defaultTrackConfigsForGenome,
+            trackSettingsSlice.defaultTrackSettingsForGenome,
             fragment
           )
         }
@@ -79,7 +79,7 @@ const renderComponent = () => {
 
   const renderResult = render(
     <Provider store={store}>
-      <BrowserTrackConfig />
+      <TrackConfig />
     </Provider>
   );
   return {
@@ -99,7 +99,7 @@ jest.mock(
   })
 );
 
-describe('<BrowserTrackConfig />', () => {
+describe('<TrackConfig />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -113,16 +113,16 @@ describe('<BrowserTrackConfig />', () => {
       const allTracksInputElement = allTracksLabel?.querySelector(
         'input'
       ) as HTMLElement;
-      jest.spyOn(trackConfigSlice, 'updateApplyToAll');
+      jest.spyOn(trackSettingsSlice, 'updateApplyToAll');
 
       await userEvent.click(allTracksInputElement);
       const updatedState = store.getState();
-      expect(trackConfigSlice.updateApplyToAll).toHaveBeenCalledWith({
+      expect(trackSettingsSlice.updateApplyToAll).toHaveBeenCalledWith({
         genomeId,
         isSelected: true
       });
       expect(
-        updatedState.browser.trackConfig.configs[genomeId].shouldApplyToAll
+        updatedState.browser.trackSettings.settings[genomeId].shouldApplyToAll
       ).toBeTruthy();
     });
 
@@ -132,17 +132,17 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigSlice, 'updateTrackName');
+      jest.spyOn(trackSettingsSlice, 'updateTrackName');
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackConfigSlice.updateTrackName).toHaveBeenCalledWith({
+      expect(trackSettingsSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackSettings.browserTrackCogs.selectedCog
       });
       expect(
-        updatedState.browser.trackConfig.configs[genomeId].tracks[
+        updatedState.browser.trackSettings.settings[genomeId].tracks[
           selectedTrackId
         ].showTrackName
       ).toBeTruthy();
@@ -154,21 +154,21 @@ describe('<BrowserTrackConfig />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackConfigSlice, 'updateFeatureLabelsVisibility');
+      jest.spyOn(trackSettingsSlice, 'updateFeatureLabelsVisibility');
       await userEvent.click(toggle);
       const updatedState = store.getState();
       expect(
-        trackConfigSlice.updateFeatureLabelsVisibility
+        trackSettingsSlice.updateFeatureLabelsVisibility
       ).toHaveBeenCalledWith({
         genomeId,
         areFeatureLabelsShown: true,
-        trackId: updatedState.browser.trackConfig.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackSettings.browserTrackCogs.selectedCog
       });
       const trackInfo =
-        updatedState.browser.trackConfig.configs[genomeId].tracks[
+        updatedState.browser.trackSettings.settings[genomeId].tracks[
           selectedTrackId
         ];
-      if (trackInfo.trackType === trackConfigSlice.TrackType.GENE) {
+      if (trackInfo.trackType === trackSettingsSlice.TrackType.GENE) {
         expect(trackInfo.showFeatureLabels).toBeTruthy();
       }
     });

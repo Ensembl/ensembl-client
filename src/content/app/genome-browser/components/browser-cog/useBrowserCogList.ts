@@ -19,7 +19,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
-import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
+import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
 
 import {
   getBrowserActiveGenomeId,
@@ -27,14 +27,14 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
-  setInitialTrackConfigsForGenome,
-  getDefaultGeneTrackConfig,
-  getDefaultRegularTrackConfig,
+  setInitialTrackSettingsForGenome,
+  getDefaultGeneTrackSettings,
+  getDefaultRegularTrackSettings,
   getTrackType,
   TrackType,
-  type TrackConfigs,
-  type TrackConfigsForGenome
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+  type TrackSettings,
+  type TrackSettingsForGenome
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
@@ -54,41 +54,41 @@ const useBrowserCogList = () => {
       return;
     }
 
-    const defaultTracksForGenome = prepareTrackConfigs({
+    const defaultTracksForGenome = prepareTrackSettings({
       trackCategories,
       focusObject
     });
 
-    const savedTrackConfigsForGenome =
-      getPersistentTrackConfigsForGenome(genomeId);
+    const savedTrackSettingsForGenome =
+      getPersistentTrackSettingsForGenome(genomeId);
 
-    const trackConfigs = {
+    const trackSettings = {
       tracks: defaultTracksForGenome,
-      ...savedTrackConfigsForGenome
+      ...savedTrackSettingsForGenome
     };
 
-    dispatch(setInitialTrackConfigsForGenome({ genomeId, trackConfigs }));
+    dispatch(setInitialTrackSettingsForGenome({ genomeId, trackSettings }));
   }, [trackCategories, focusObject, genomeId]);
 };
 
-export const getPersistentTrackConfigsForGenome = (
+export const getPersistentTrackSettingsForGenome = (
   genomeId: string
-): Partial<TrackConfigsForGenome> => {
-  const trackConfigs = browserTrackConfigStorageService.getTrackConfigs();
-  return trackConfigs[genomeId] ?? {};
+): Partial<TrackSettingsForGenome> => {
+  const trackSettings = browserTrackSettingsStorageService.getTrackSettings();
+  return trackSettings[genomeId] ?? {};
 };
 
-export const prepareTrackConfigs = ({
+const prepareTrackSettings = ({
   trackCategories,
   focusObject
 }: {
   trackCategories: GenomeTrackCategory[];
   focusObject: FocusObject | null;
 }) => {
-  const defaultTrackConfigs: TrackConfigs = {};
+  const defaultTrackSettings: TrackSettings = {};
 
   if (focusObject?.type === TrackType.GENE) {
-    defaultTrackConfigs[TrackId.GENE] = getDefaultGeneTrackConfig();
+    defaultTrackSettings[TrackId.GENE] = getDefaultGeneTrackSettings();
   }
 
   trackCategories.forEach((category) => {
@@ -97,13 +97,13 @@ export const prepareTrackConfigs = ({
       const trackType = getTrackType(trackId);
 
       if (trackType === TrackType.GENE) {
-        defaultTrackConfigs[trackId] = getDefaultGeneTrackConfig();
+        defaultTrackSettings[trackId] = getDefaultGeneTrackSettings();
       } else {
-        defaultTrackConfigs[trackId] = getDefaultRegularTrackConfig();
+        defaultTrackSettings[trackId] = getDefaultRegularTrackSettings();
       }
     });
   });
-  return defaultTrackConfigs;
+  return defaultTrackSettings;
 };
 
 export default useBrowserCogList;

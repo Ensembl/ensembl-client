@@ -31,10 +31,10 @@ import {
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import {
-  getDefaultGeneTrackConfig,
-  getDefaultRegularTrackConfig,
+  getDefaultGeneTrackSettings,
+  getDefaultRegularTrackSettings,
   type CogList
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -50,9 +50,9 @@ export const createCogTrackList = (): CogList => ({
 });
 
 export const createTrackConfigs = () => ({
-  'gene-focus': getDefaultGeneTrackConfig(),
-  contig: getDefaultRegularTrackConfig(),
-  gc: getDefaultRegularTrackConfig()
+  'gene-focus': getDefaultGeneTrackSettings(),
+  contig: getDefaultRegularTrackSettings(),
+  gc: getDefaultRegularTrackSettings()
 });
 
 export const createZmenuContentPayload = (): {

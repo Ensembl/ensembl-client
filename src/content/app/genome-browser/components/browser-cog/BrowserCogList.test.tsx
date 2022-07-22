@@ -27,7 +27,7 @@ import { BrowserCogList } from './BrowserCogList';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import { updateCogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { updateCogList } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
