@@ -51,7 +51,7 @@ const MissingFeatureError = (props: Props) => {
         <div className={styles.suggestion}>
           Find a gene or use the example links
         </div>
-        <div className={styles.continueButtonWrapperExtraPadded}>
+        <div className={styles.continueButtonWrapper}>
           <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
         </div>
       </main>

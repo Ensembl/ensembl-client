@@ -87,7 +87,7 @@ const InvalidSpeciesError = (props: InvalidSpeciesErrorProps) => {
         <div className={styles.suggestion}>
           Any invalid genomes and their site configurations will be removed
         </div>
-        <div className={styles.continueButtonWrapperExtraPadded}>
+        <div className={styles.continueButtonWrapper}>
           <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
         </div>
       </main>
@@ -115,7 +115,7 @@ const GenomeNotFoundError = (props: GenomeNotFoundErrorProps) => {
         <div className={styles.suggestion}>
           Find available species in the Species selector
         </div>
-        <div className={styles.continueButtonWrapperExtraPadded}>
+        <div className={styles.continueButtonWrapper}>
           <ButtonLink className={styles.continueButton} to={speciesSelectorUrl}>
             Continue
           </ButtonLink>
