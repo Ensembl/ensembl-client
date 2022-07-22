@@ -65,13 +65,13 @@ const BrowserCog = (props: BrowserCogProps) => {
     icon: CogIcon
   };
 
-  const [showTrackSettings, setTrackSettingsAnimation] = useState(cogActivated);
+  const [showTrackSettings, setShowTrackSettings] = useState(cogActivated);
   useEffect(() => {
     if (cogActivated) {
-      setTrackSettingsAnimation(true);
+      setShowTrackSettings(true);
       return;
     }
-    setTrackSettingsAnimation(false);
+    setShowTrackSettings(false);
   }, [cogActivated]);
 
   const transition = useTransition(showTrackSettings, {

@@ -15,10 +15,11 @@
  */
 
 import React from 'react';
+
 import { useAppSelector, type RootState } from 'src/store';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import TrackSettingsRadioOptions from './components/track-settings-radio-options/TrackSettingsRadioOptions';
+import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
 
 import {
   getApplyToAllSettings,
@@ -42,9 +43,9 @@ export const RegularTrackSettings = () => {
   const { updateTrackName } = useTrackSettings();
 
   return (
-    <div className={styles.trackSettings}>
+    <div className={styles.trackSettingsPanel}>
       <div className={styles.section}>
-        <TrackSettingsRadioOptions
+        <GlobalTrackSwitch
           onChange={toggleApplyToAll}
           selectedOption={shouldApplyToAll ? 'all_tracks' : 'this_track'}
         />

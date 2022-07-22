@@ -54,7 +54,6 @@ export type Settings = GeneTrackSettings | RegularTrackSettings;
 export type TrackSettings = {
   [trackId: string]: Settings;
 };
-4;
 
 export type TrackSettingsForGenome = Readonly<{
   shouldApplyToAll: boolean;

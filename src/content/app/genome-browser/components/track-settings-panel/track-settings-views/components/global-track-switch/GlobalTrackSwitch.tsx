@@ -25,7 +25,7 @@ type Props = {
   onChange: (value: OptionValue) => void;
 };
 
-const TrackSettingsRadioOptions = (props: Props) => {
+const GlobalTrackSwitch = (props: Props) => {
   const radioOptions: RadioOptions = [
     {
       value: 'this_track',
@@ -46,4 +46,4 @@ const TrackSettingsRadioOptions = (props: Props) => {
   );
 };
 
-export default TrackSettingsRadioOptions;
+export default GlobalTrackSwitch;
