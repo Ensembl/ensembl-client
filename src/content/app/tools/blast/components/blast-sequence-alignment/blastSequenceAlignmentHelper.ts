@@ -74,7 +74,6 @@ const createAlignedSegment = (
     querySequence,
     hitSequence,
     alignmentLine,
-    queryStart,
     hitStart,
     hitEnd,
     queryLineTitle = QUERY_LINE_TITLE,
@@ -93,14 +92,12 @@ const createAlignedSegment = (
       ? cursor + alignmentLineLength
       : querySequence.length - 1;
 
-  // FIXME: Account for gaps!
-
   const querySequenceSlice = querySequence.slice(startIndex, endIndex);
   const alignmentSlice = alignmentLine.slice(startIndex, endIndex);
   const hitSequenceSlice = hitSequence.slice(startIndex, endIndex);
 
-  let queryLinePrefix = `${queryLineTitle} ${queryStart + cursor}`;
-  let hitLinePrefix = `${hitLineTitle} ${hitStart + cursor * strandMultiplier}`;
+  let queryLinePrefix = `${queryLineTitle} ${querySequenceCounter}`;
+  let hitLinePrefix = `${hitLineTitle} ${hitSequenceCounter}`;
 
   const prefixLength = Math.max(queryLinePrefix.length, hitLinePrefix.length);
 
@@ -152,9 +149,9 @@ const calculateEndPosition = ({
   startPosition: number;
   strandMultiplier: number;
 }) => {
-  let position = startPosition + startIndex;
+  let position = startPosition;
 
-  for (let i = startIndex; i <= endIndex; i++) {
+  for (let i = startIndex; i < endIndex; i++) {
     if (sequence[i] !== '-') {
       position += 1 * strandMultiplier;
     }
