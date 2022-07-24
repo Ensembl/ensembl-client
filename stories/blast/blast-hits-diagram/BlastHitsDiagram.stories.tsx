@@ -18,12 +18,20 @@ import React from 'react';
 
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 
-import job from './blastGenomic.json';
+import job1 from './blastGenomic.json';
+import job2 from './blastGenomic2.json';
 
 export const BlastHitsDiagramStory = () => {
   const width = 800;
 
-  return <BlastHitsDiagram job={job.result} width={width} />;
+  return (
+    <>
+      <p>Full sequence matched</p>
+      <BlastHitsDiagram job={job1.result} width={width} />
+      <p>Parts of sequence matched</p>
+      <BlastHitsDiagram job={job2.result} width={width} />
+    </>
+  );
 };
 
 BlastHitsDiagramStory.storyName = 'default';
