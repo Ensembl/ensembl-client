@@ -54,13 +54,13 @@
 }
 
 .sortArrow {
-  svg {
-    fill: $grey;
-  }
+  margin-right: 0.8em;
+  height: 8px;
+  width: 8px;
+
+  fill: $grey;
 
   &Active {
-    svg {
-      fill: $blue;
-    }
+    fill: $blue;
   }
 }

@@ -16,9 +16,7 @@
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import SelectArrowhead, {
-  Direction
-} from 'src/shared/components/select/SelectArrowhead';
+
 import {
   IndividualColumn,
   SortingDirection
@@ -45,13 +43,13 @@ const TableHeaderCell = (props: IndividualColumn) => {
     return null;
   }
 
-  let currentColumnSortingDirection = Direction.DOWN;
+  let currentColumnSortingDirection = SortingDirection.DEFAULT;
   if (
     columnId === sortedColumnId &&
     sortedDirection &&
     sortedDirection === SortingDirection.ASC
   ) {
-    currentColumnSortingDirection = Direction.UP;
+    currentColumnSortingDirection = SortingDirection.ASC;
   }
 
   const onSort = () => {
@@ -87,14 +85,21 @@ const TableHeaderCell = (props: IndividualColumn) => {
     [styles.headerCellSortable]: isSortable
   });
 
+  const points =
+    currentColumnSortingDirection === SortingDirection.ASC
+      ? '0,8 8,8 4,0'
+      : '0,0 8,0 4,8';
+
+  const sortArrow = (
+    <svg className={sortArrowClassNames} focusable="false" viewBox="0 0 8 8">
+      <polygon points={points} />
+    </svg>
+  );
+
   return (
     <th className={headerCellClassNames} style={{ width: width }}>
       <div className={styles.headerCellContent} onClick={() => onSort()}>
-        {isSortable && (
-          <span className={sortArrowClassNames}>
-            <SelectArrowhead direction={currentColumnSortingDirection} />
-          </span>
-        )}
+        {isSortable && sortArrow}
 
         <span>{title}</span>
         {helpText && (

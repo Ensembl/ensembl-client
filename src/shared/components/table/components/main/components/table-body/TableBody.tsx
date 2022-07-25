@@ -67,7 +67,8 @@ const TableBody = () => {
 
   return (
     <tbody>
-      {rowsThisPage.map((rowData, rowId) => {
+      {rowsThisPage.map((rowData, index) => {
+        const rowId = currentPageNumber * rowsPerPage + index;
         return <TableRow key={rowId} rowData={rowData} rowId={rowId} />;
       })}
     </tbody>
