@@ -116,6 +116,11 @@ type SetSortedColumnAction = {
   type: 'set_sorted_column';
   payload: SortedColumn;
 };
+
+type ClearSortedColumnAction = {
+  type: 'clear_sorted_column';
+};
+
 type SetHiddenRowIdsAction = {
   type: 'set_hidden_row_ids';
   payload: { [key: number]: boolean };
@@ -159,6 +164,7 @@ export type AllTableActions =
   | SetSelectedRowIdsAction
   | SetSelectedActionAction
   | SetSortedColumnAction
+  | ClearSortedColumnAction
   | SetExpandedRowsAction
   | RestoreDefaultsAction;
 
@@ -202,6 +208,8 @@ export const tableReducer = (
       return { ...state, selectedAction: action.payload };
     case 'set_sorted_column':
       return { ...state, sortedColumn: action.payload };
+    case 'clear_sorted_column':
+      return { ...state, sortedColumn: undefined };
     case 'set_expanded_rows':
       return {
         ...state,

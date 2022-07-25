@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import classNames from 'classnames';
 import React, { useContext } from 'react';
-import Chevron from 'src/shared/components/chevron/Chevron';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import { IndividualColumn } from 'src/shared/components/table/state/tableReducer';
+import SelectArrowhead, {
+  Direction
+} from 'src/shared/components/select/SelectArrowhead';
+import {
+  IndividualColumn,
+  SortingDirection
+} from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 
 import styles from '../../TableHeader.scss';
@@ -29,28 +35,66 @@ import styles from '../../TableHeader.scss';
  */
 
 const TableHeaderCell = (props: IndividualColumn) => {
-  const { title, helpText, isSortable } = props;
+  const { title, helpText, isSortable, columnId } = props;
 
-  const { dispatch } = useContext(TableContext) || {};
+  const { dispatch, sortedColumn } = useContext(TableContext) || {};
+
+  const { columnId: sortedColumnId, sortedDirection } = sortedColumn || {};
 
   if (!dispatch) {
     return null;
   }
 
-  // const onSort = () => {
-  //   dispatch({
-  //     type: "set_sorted_column",
-  //     payload: {
-  //       columnId,
-  //       sortedDirection: SortingDirection.DEFAULT
-  //     }
-  //   })
-  // }
+  let currentColumnSortingDirection = Direction.DOWN;
+  if (
+    columnId === sortedColumnId &&
+    sortedDirection &&
+    sortedDirection === SortingDirection.ASC
+  ) {
+    currentColumnSortingDirection = Direction.UP;
+  }
+
+  const onSort = () => {
+    let directionToSet = SortingDirection.DEFAULT;
+    if (
+      columnId !== sortedColumnId ||
+      sortedDirection === SortingDirection.DEFAULT
+    ) {
+      directionToSet = SortingDirection.DESC;
+    } else if (sortedDirection === SortingDirection.DESC) {
+      directionToSet = SortingDirection.ASC;
+    } else if (sortedDirection === SortingDirection.ASC) {
+      dispatch({
+        type: 'clear_sorted_column'
+      });
+      return;
+    }
+
+    dispatch({
+      type: 'set_sorted_column',
+      payload: {
+        columnId,
+        sortedDirection: directionToSet
+      }
+    });
+  };
+
+  const sortArrowClassNames = classNames(styles.sortArrow, {
+    [styles.sortArrowActive]: columnId === sortedColumnId
+  });
+
+  const headerCellClassNames = classNames(styles.headerCell, {
+    [styles.headerCellSortable]: isSortable
+  });
 
   return (
-    <th className={styles.headerCell}>
-      <div className={styles.headerCellContent}>
-        {isSortable && <Chevron direction="down"></Chevron>}
+    <th className={headerCellClassNames}>
+      <div className={styles.headerCellContent} onClick={() => onSort()}>
+        {isSortable && (
+          <span className={sortArrowClassNames}>
+            <SelectArrowhead direction={currentColumnSortingDirection} />
+          </span>
+        )}
 
         <span>{title}</span>
         {helpText && (

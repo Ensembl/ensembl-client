@@ -15,7 +15,10 @@
  */
 
 import React, { useContext } from 'react';
-import { defaultTableState } from 'src/shared/components/table/state/tableReducer';
+import {
+  defaultTableState,
+  SortingDirection
+} from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 import TableRow from '../table-row/TableRow';
 
@@ -24,23 +27,47 @@ import TableRow from '../table-row/TableRow';
 */
 
 const TableBody = () => {
-  const { data, currentPageNumber, rowsPerPage } =
+  const { data, currentPageNumber, rowsPerPage, columns, sortedColumn } =
     useContext(TableContext) || defaultTableState;
 
-  if (!data) {
+  if (!(data && columns)) {
     return null;
   }
   const totalRows = data.length;
   const rowIdLowerBound = (currentPageNumber - 1) * rowsPerPage;
   const rowIdUpperBound = (currentPageNumber - 1) * rowsPerPage + rowsPerPage;
+
+  const rowsThisPage = data.filter((_, rowId) => {
+    if (rowsPerPage !== 0 && totalRows > rowsPerPage) {
+      if (rowId < rowIdLowerBound || rowIdUpperBound - 1 < rowId) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (sortedColumn) {
+    const sortedColumnIndex = columns.findIndex(
+      (column) => column.columnId === sortedColumn.columnId
+    );
+    rowsThisPage.sort((currentRow, nextRow) => {
+      const currentValue =
+        currentRow.cells[sortedColumnIndex]?.toString() || '';
+      const nextValue = nextRow.cells[sortedColumnIndex]?.toString() || '';
+
+      if (currentValue < nextValue) {
+        return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
+      } else if (currentValue > nextValue) {
+        return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
+      }
+
+      return 0;
+    });
+  }
+
   return (
     <tbody>
-      {data.map((rowData, rowId) => {
-        if (rowsPerPage !== 0 && totalRows > rowsPerPage) {
-          if (rowId < rowIdLowerBound || rowIdUpperBound - 1 < rowId) {
-            return null;
-          }
-        }
+      {rowsThisPage.map((rowData, rowId) => {
         return <TableRow key={rowId} rowData={rowData} rowId={rowId} />;
       })}
     </tbody>

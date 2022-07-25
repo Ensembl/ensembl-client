@@ -8,6 +8,11 @@
   .headerCell {
     font-weight: $light;
     padding-right: 20px;
+    user-select: none;
+
+    &Sortable {
+      cursor: pointer;
+    }
   }
 
   .headerCellContent {
@@ -15,6 +20,7 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     align-items: center;
+    column-gap: 5px;
   }
 }
 
@@ -44,4 +50,16 @@
     0 0%,
     50% 100%
   ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
+}
+
+.sortArrow {
+  svg {
+    fill: $grey;
+  }
+
+  &Active {
+    svg {
+      fill: $blue;
+    }
+  }
 }
