@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
@@ -29,7 +29,8 @@ import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blas
 import {
   deleteBlastSubmission,
   type BlastSubmission,
-  type BlastJob
+  type BlastJob,
+  updateSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
@@ -48,11 +49,12 @@ export type Props = {
 
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
+  const dispatch = useAppDispatch();
 
-  const [isExpanded, setExpanded] = useState(false);
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
+  const { isExpanded } = submission;
 
   const jobsGroupedBySequence = sequences.map((sequence) => {
     const jobs = allJobs.filter((job) => job.sequenceId === sequence.id);
@@ -71,12 +73,23 @@ const ListedBlastSubmission = (props: Props) => {
     sequenceContent = <CollapsedSequencesBox submission={submission} />;
   }
 
+  const toggleExpanded = (status: boolean) => {
+    dispatch(
+      updateSubmission({
+        submissionId: submission.id,
+        fragment: {
+          isExpanded: status
+        }
+      })
+    );
+  };
+
   return (
     <div className={styles.listedBlastSubmission}>
       <Header
         {...props}
         isAnyJobRunning={isAnyJobRunning}
-        setExpanded={setExpanded}
+        toggleExpanded={toggleExpanded}
         isExpanded={isExpanded}
         sequenceCount={sequences.length}
       />
@@ -109,7 +122,7 @@ const Header = (
   props: Props & {
     isAnyJobRunning: boolean;
     isExpanded: boolean;
-    setExpanded: (isExpanded: boolean) => void;
+    toggleExpanded: (isExpanded: boolean) => void;
     sequenceCount: number;
   }
 ) => {
@@ -169,7 +182,7 @@ const Header = (
             label={''}
             classNames={showHideClassNames}
             isExpanded={props.isExpanded}
-            onClick={() => props.setExpanded(!props.isExpanded)}
+            onClick={() => props.toggleExpanded(!props.isExpanded)}
           />
         )}
       </div>
