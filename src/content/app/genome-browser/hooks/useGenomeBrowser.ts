@@ -39,10 +39,7 @@ import {
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import {
-  TrackId,
-  TrackStates
-} from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { Status } from 'src/shared/types/status';
 
@@ -52,7 +49,6 @@ const useGenomeBrowser = () => {
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   const trackSettings = trackSettingsForGenome?.tracks;
-  const GENE_TRACK_ID = TrackId.GENE;
 
   if (!genomeBrowserContext) {
     throw new Error(
@@ -124,15 +120,9 @@ const useGenomeBrowser = () => {
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
-        const trackIdWithoutPrefix = trackId.replace('track:', '');
-        const trackIdToSend =
-          trackIdWithoutPrefix === GENE_TRACK_ID
-            ? 'focus'
-            : trackIdWithoutPrefix;
-
         trackStates[trackId] === Status.SELECTED
-          ? tracksToTurnOn.push(trackIdToSend)
-          : tracksToTurnOff.push(trackIdToSend);
+          ? tracksToTurnOn.push(trackId)
+          : tracksToTurnOff.push(trackId);
       });
     });
 
@@ -286,16 +276,12 @@ const useGenomeBrowser = () => {
   }) => {
     const { trackId, shouldShowTrackName } = params;
 
-    const trackIdWithoutPrefix = trackId.replace('track:', '');
-    const trackIdToSend =
-      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
-
     genomeBrowser?.send({
       type: shouldShowTrackName
         ? OutgoingActionType.TURN_ON_NAMES
         : OutgoingActionType.TURN_OFF_NAMES,
       payload: {
-        track_ids: [trackIdToSend]
+        track_ids: [trackId]
       }
     });
   };
@@ -306,16 +292,12 @@ const useGenomeBrowser = () => {
   }) => {
     const { trackId, shouldShowFeatureLabels } = params;
 
-    const trackIdWithoutPrefix = trackId.replace('track:', '');
-    const trackIdToSend =
-      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
-
     genomeBrowser?.send({
       type: shouldShowFeatureLabels
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {
-        track_ids: [trackIdToSend]
+        track_ids: [trackId]
       }
     });
   };
@@ -325,16 +307,13 @@ const useGenomeBrowser = () => {
     shouldShowSeveralTranscripts: boolean;
   }) => {
     const { trackId, shouldShowSeveralTranscripts } = params;
-    const trackIdWithoutPrefix = trackId.replace('track:', '');
-    const trackIdToSend =
-      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: shouldShowSeveralTranscripts
         ? OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS
         : OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
       payload: {
-        track_ids: [trackIdToSend]
+        track_ids: [trackId]
       }
     });
   };
@@ -344,16 +323,13 @@ const useGenomeBrowser = () => {
     shouldShowTranscriptIds: boolean;
   }) => {
     const { trackId, shouldShowTranscriptIds } = params;
-    const trackIdWithoutPrefix = trackId.replace('track:', '');
-    const trackIdToSend =
-      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
 
     genomeBrowser?.send({
       type: shouldShowTranscriptIds
         ? OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS
         : OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
       payload: {
-        track_ids: [trackIdToSend]
+        track_ids: [trackId]
       }
     });
   };
@@ -362,16 +338,12 @@ const useGenomeBrowser = () => {
     const { trackId, status } = params;
     const isTurnedOn = status === Status.SELECTED;
 
-    const trackIdWithoutPrefix = trackId.replace('track:', '');
-    const trackIdToSend =
-      trackIdWithoutPrefix === GENE_TRACK_ID ? 'focus' : trackIdWithoutPrefix;
-
     genomeBrowser?.send({
       type: isTurnedOn
         ? OutgoingActionType.TURN_ON_TRACKS
         : OutgoingActionType.TURN_OFF_TRACKS,
       payload: {
-        track_ids: [trackIdToSend]
+        track_ids: [trackId]
       }
     });
 
@@ -383,7 +355,7 @@ const useGenomeBrowser = () => {
           ? OutgoingActionType.TURN_ON_LABELS
           : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
-          track_ids: [trackIdToSend]
+          track_ids: [trackId]
         }
       });
     }
@@ -396,7 +368,7 @@ const useGenomeBrowser = () => {
           ? OutgoingActionType.TURN_ON_NAMES
           : OutgoingActionType.TURN_OFF_NAMES,
         payload: {
-          track_ids: [trackIdToSend]
+          track_ids: [trackId]
         }
       });
     }
