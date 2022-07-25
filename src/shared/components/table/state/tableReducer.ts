@@ -15,7 +15,7 @@
  */
 import type { ReactNode } from 'react';
 
-enum SortingDirection {
+export enum SortingDirection {
   ASC = 'ascending',
   DESC = 'descending',
   DEFAULT = 'default' // Do we need this?
@@ -53,11 +53,14 @@ export type IndividualColumn = {
   isFilterable?: boolean;
   title: string;
   className?: string;
+  helpText?: string;
 };
 
 export type Columns = IndividualColumn[];
 
 export type TableRowIds = { [key: string]: boolean };
+
+export type TableTheme = 'light' | 'dark';
 
 export type TableState = {
   columns: Columns;
@@ -79,7 +82,7 @@ export type TableState = {
 export const defaultTableState: TableState = {
   columns: [],
   data: [],
-  rowsPerPage: 100,
+  rowsPerPage: 10,
   currentPageNumber: 1,
   searchText: '',
   isSelectable: true,
@@ -135,9 +138,14 @@ type SetSelectedRowIdsAction = {
   type: 'set_selected_row_ids';
   payload: { [key: number]: boolean };
 };
+
 type SetExpandedRowsAction = {
   type: 'set_expanded_rows';
   payload: { [key: number]: boolean };
+};
+
+type RestoreDefaultsAction = {
+  type: 'restore_defaults';
 };
 
 export type AllTableActions =
@@ -151,7 +159,8 @@ export type AllTableActions =
   | SetSelectedRowIdsAction
   | SetSelectedActionAction
   | SetSortedColumnAction
-  | SetExpandedRowsAction;
+  | SetExpandedRowsAction
+  | RestoreDefaultsAction;
 
 export const tableReducer = (
   state: TableState,
@@ -198,6 +207,8 @@ export const tableReducer = (
         ...state,
         expandedRowIds: { ...state.expandedRowIds, ...action.payload }
       };
+    case 'restore_defaults':
+      return { ...defaultTableState, data: state.data, columns: state.columns };
     default:
       return state;
   }

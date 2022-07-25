@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
 import React, { useEffect, useReducer, useRef } from 'react';
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
@@ -22,7 +23,8 @@ import {
   AllTableActions,
   defaultTableState,
   tableReducer,
-  TableState
+  TableState,
+  TableTheme
 } from './state/tableReducer';
 
 import styles from './Table.scss';
@@ -39,6 +41,7 @@ import styles from './Table.scss';
 
 type TableContextType = TableState & {
   dispatch: React.Dispatch<AllTableActions>;
+  theme: TableTheme;
 };
 export const TableContext = React.createContext(
   null as TableContextType | null
@@ -46,6 +49,7 @@ export const TableContext = React.createContext(
 
 export type TableProps = Partial<TableState> & {
   onStateChange?: (newState: TableState) => void;
+  theme: TableTheme;
   classNames?: {
     table?: string;
     wrapper?: string;
@@ -64,9 +68,19 @@ const Table = (props: TableProps) => {
     };
   }, []);
 
+  const wrapperClasses = classNames(
+    styles.wrapper,
+    {
+      [styles.themeDark]: props.theme === 'dark'
+    },
+    props.classNames?.wrapper
+  );
+
   return (
-    <TableContext.Provider value={{ ...tableState, dispatch }}>
-      <div className={props.classNames?.wrapper}>
+    <TableContext.Provider
+      value={{ ...tableState, dispatch, theme: props.theme }}
+    >
+      <div className={wrapperClasses}>
         <TableControls />
         <table className={styles.table}>
           <TableHeader />
@@ -75,6 +89,10 @@ const Table = (props: TableProps) => {
       </div>
     </TableContext.Provider>
   );
+};
+
+Table.defaultProps = {
+  theme: 'light'
 };
 
 export default Table;

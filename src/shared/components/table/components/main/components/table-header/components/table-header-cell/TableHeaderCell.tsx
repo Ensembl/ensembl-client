@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useContext } from 'react';
+import Chevron from 'src/shared/components/chevron/Chevron';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import { IndividualColumn } from 'src/shared/components/table/state/tableReducer';
+import { TableContext } from 'src/shared/components/table/Table';
+
+import styles from '../../TableHeader.scss';
+
 /*
     This is a component on its own as a cell in the header will have additional functionalities compared to a cell in the body.
     Additional functionalities includes:
@@ -23,9 +29,39 @@ import { IndividualColumn } from 'src/shared/components/table/state/tableReducer
  */
 
 const TableHeaderCell = (props: IndividualColumn) => {
-  const { title } = props;
+  const { title, helpText, isSortable } = props;
 
-  return <th>{title}</th>;
+  const { dispatch } = useContext(TableContext) || {};
+
+  if (!dispatch) {
+    return null;
+  }
+
+  // const onSort = () => {
+  //   dispatch({
+  //     type: "set_sorted_column",
+  //     payload: {
+  //       columnId,
+  //       sortedDirection: SortingDirection.DEFAULT
+  //     }
+  //   })
+  // }
+
+  return (
+    <th className={styles.headerCell}>
+      <div className={styles.headerCellContent}>
+        {isSortable && <Chevron direction="down"></Chevron>}
+
+        <span>{title}</span>
+        {helpText && (
+          <QuestionButton
+            helpText={helpText}
+            className={{ inline: styles.questionButton }}
+          />
+        )}
+      </div>
+    </th>
+  );
 };
 
 export default TableHeaderCell;

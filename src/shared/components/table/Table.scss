@@ -1,21 +1,16 @@
 @import 'src/styles/common';
 
-.table {
-  border-collapse: collapse;
+.wrapper {
+  background-color: $white;
+
+  .themeDark {
+    background-color: $light-grey;
+  }
 }
 
-.header {
-  height: 40px;
-  border-bottom: 2px solid $blue;
-  position: sticky;
-  top: 27px;
-  background-color: $light-grey;
-  z-index: 1;
-
-  th {
-    font-weight: $light;
-    padding-right: 20px;
-  }
+.table {
+  border-collapse: collapse;
+  position: relative;
 }
 
 .row {

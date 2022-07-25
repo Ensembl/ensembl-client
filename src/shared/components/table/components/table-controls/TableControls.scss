@@ -2,7 +2,9 @@
 
 .tableControls {
   display: flex;
-  position: sticky;
-  top: 0;
-  background-color: $light-grey;
+  position: relative;
+
+  .themeDark {
+    background-color: $light-grey;
+  }
 }

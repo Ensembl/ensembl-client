@@ -64,7 +64,7 @@ const RowSelector = (props: RowSelectorProps) => {
 
   return (
     <div className={styles.rowSelector}>
-      {selectedAction === TableAction.DEFAULT && (
+      {selectedAction !== TableAction.SHOW_HIDE_ROWS && (
         <Checkbox
           onChange={(checked: boolean) =>
             props.onChange({ checked, rowId: props.rowId })

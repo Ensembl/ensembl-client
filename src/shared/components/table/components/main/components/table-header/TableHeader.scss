@@ -1,0 +1,47 @@
+@import 'src/styles/common';
+
+.header {
+  height: 40px;
+  border-bottom: 2px solid $blue;
+  z-index: 1;
+
+  .headerCell {
+    font-weight: $light;
+    padding-right: 20px;
+  }
+
+  .headerCellContent {
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-items: center;
+  }
+}
+
+.questionButton {
+  margin-left: 10px;
+  height: 14px;
+  width: 14px;
+}
+
+.sort {
+  display: inline-block;
+  position: relative;
+}
+
+.sort::before {
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-25%);
+  width: 0.8em;
+  height: 0.5em;
+  background-color: $blue;
+  cursor: pointer;
+  clip-path: polygon(
+    100% 0%,
+    0 0%,
+    50% 100%
+  ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
+}

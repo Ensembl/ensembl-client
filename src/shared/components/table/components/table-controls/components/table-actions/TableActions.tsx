@@ -75,6 +75,13 @@ const TableActions = () => {
   }
 
   const onSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value === TableAction.RESTORE_DEFAULTS) {
+      dispatch({
+        type: 'restore_defaults'
+      });
+      return;
+    }
+
     dispatch({
       type: 'set_selected_action',
       payload: event.target.value as TableAction

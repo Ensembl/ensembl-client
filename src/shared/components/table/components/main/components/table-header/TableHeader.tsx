@@ -21,7 +21,7 @@ import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 import TableCell from '../table-cell/TableCell';
 import { TableData } from 'src/shared/components/table/state/tableReducer';
 
-import styles from 'src/shared/components/table/Table.scss';
+import styles from './TableHeader.scss';
 /*
     - Should receive an array of header items along with it's configurations like tooltip, isSortable, isHighlighted
     - First column in the header should display the total rows available

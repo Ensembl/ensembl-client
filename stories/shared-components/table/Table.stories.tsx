@@ -17,29 +17,40 @@ import React, { useState } from 'react';
 import times from 'lodash/times';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-
-import Table, { TableProps } from 'src/shared/components/table/Table';
+import {
+  Columns,
+  TableData
+} from 'src/shared/components/table/state/tableReducer';
+import Table from 'src/shared/components/table/Table';
 
 import styles from './Table.stories.scss';
 
-const createTableData = (rows: number, columns: number): TableProps => {
+const createTableData = (
+  rows: number,
+  columns: number
+): { data: TableData; columns: Columns } => {
   return {
     data: times(rows, (row) => ({
       cells: times(columns, (column) => `Cell ${row},${column}`)
     })),
     columns: times(columns, (column) => ({
       columnId: `${column}`,
-      title: `Column ${column}`
+      title: `Column ${column}`,
+      helpText: `Column ${column} help text`,
+      isSortable: true
     }))
   };
 };
 
 export const TableStory = () => {
-  const [tableState, setTableState] = useState(createTableData(15, 15));
+  const tableData = createTableData(15, 15);
+
+  const [tableState, setTableState] = useState(tableData);
 
   return (
     <Table
       {...tableState}
+      theme="dark"
       onStateChange={setTableState}
       classNames={{ wrapper: styles.wrapper }}
     />

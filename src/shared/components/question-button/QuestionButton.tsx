@@ -46,7 +46,8 @@ const QuestionButton = (props: Props) => {
     {
       [defaultStyles[props.styleOption as string]]: props.styleOption
     },
-    props.className
+    props.className?.inline,
+    props.className?.['in-input-field']
   );
 
   return (
