@@ -17,6 +17,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { request, ClientError } from 'graphql-request';
 
+import config from 'config';
+
 const graphqlBaseQuery =
   ({ baseUrl }: { baseUrl: string }) =>
   async ({
@@ -31,16 +33,27 @@ const graphqlBaseQuery =
       return { data: result };
     } catch (error) {
       if (error instanceof ClientError) {
-        return { error: { status: error.response.status, data: error } };
+        return {
+          error: {
+            status: error.response.status,
+            meta: {
+              data: error.response.data ?? null,
+              errors: error.response.errors
+            }
+          }
+        };
       }
-      return { error: { status: 500, data: error } };
+      return { error: {
+        status: 500,
+        meta: { error: (error as Error).message }
+      }};
     }
   };
 
 export default createApi({
   reducerPath: 'thoasApi',
   baseQuery: graphqlBaseQuery({
-    baseUrl: '/api/thoas'
+    baseUrl: config.thoasBaseUrl
   }),
   endpoints: () => ({}) // will inject endpoints in other files
 });

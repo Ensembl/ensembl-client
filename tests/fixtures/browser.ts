@@ -281,6 +281,9 @@ export const createMockBrowserState = () => {
         }
       }
     },
+    genome: {
+      genomes: {}
+    },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}

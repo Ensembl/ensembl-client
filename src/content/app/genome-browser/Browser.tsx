@@ -15,18 +15,21 @@
  */
 
 import React, { useEffect, useState, memo, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
+import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 
 import analyticsTracking from 'src/services/analytics-service';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import { deleteBrowserActiveFocusObjectIdAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
@@ -34,6 +37,7 @@ import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/trac
 import { getIsBrowserSidebarModalOpened } from './state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
 
 import BrowserBar from './components/browser-bar/BrowserBar';
 import BrowserImage from './components/browser-image/BrowserImage';
@@ -46,6 +50,8 @@ import BrowserAppBar from './components/browser-app-bar/BrowserAppBar';
 import Drawer from './components/drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import BrowserInterstitial from './components/interstitial/BrowserInterstitial';
+import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
+import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/ZmenuController';
 
@@ -53,22 +59,28 @@ import styles from './Browser.scss';
 
 export const Browser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const browserNavOpenState = useAppSelector(getBrowserNavOpenState);
   const isDrawerOpened = useAppSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
-  const isBrowserSidebarModalOpened = useAppSelector(
-    getIsBrowserSidebarModalOpened
-  );
   const viewportWidth = useAppSelector(getBreakpointWidth);
+  const genome = useAppSelector((state) =>
+    getGenomeById(state, activeGenomeId ?? '')
+  );
 
   const { search } = useLocation(); // from document.location provided by the router
   const urlSearchParams = new URLSearchParams(search);
   const focus = urlSearchParams.get('focus') || null;
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { changeGenomeId } = useBrowserRouting();
+  const {
+    genomeIdInUrl,
+    focusObjectIdInUrl,
+    isMissingGenomeId,
+    isMalformedFocusObjectId,
+    isMissingFocusObject
+  } = useGenomeBrowserUrlCheck();
 
-  const { genomeBrowser } = useGenomeBrowser();
   useEffect(() => {
     if (!activeGenomeId) {
       return;
@@ -85,29 +97,30 @@ export const Browser = () => {
     dispatch(closeDrawer());
   };
 
-  const shouldShowNavBar =
-    genomeBrowser && browserNavOpenState && !isDrawerOpened;
-
-  const mainContent = (
-    <>
-      {shouldShowNavBar && <BrowserNavBar />}
-      <BrowserImage />
-    </>
-  );
-
-  const SideBarContent = isBrowserSidebarModalOpened ? (
-    <BrowserSidebarModal />
-  ) : (
-    <TrackPanel />
-  );
+  const openGenomeBrowserInterstitial = () => {
+    const interstitialUrl = urlFor.browser({
+      genomeId: genomeIdInUrl
+    });
+    dispatch(deleteBrowserActiveFocusObjectIdAndSave());
+    navigate(interstitialUrl);
+  };
 
   return (
     <div className={styles.genomeBrowser}>
       <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-      {activeGenomeId && focus ? (
+      {isMissingGenomeId ? (
+        <MissingGenomeError genomeId={genomeIdInUrl as string} />
+      ) : isMalformedFocusObjectId || isMissingFocusObject ? (
+        <MissingFeatureError
+          featureId={focusObjectIdInUrl as string}
+          genome={genome}
+          showTopBar={true}
+          onContinue={openGenomeBrowserInterstitial}
+        />
+      ) : activeGenomeId && focus ? (
         <StandardAppLayout
-          mainContent={mainContent}
-          sidebarContent={SideBarContent}
+          mainContent={<MainContent />}
+          sidebarContent={<SidebarContent />}
           sidebarNavigation={<TrackPanelTabs />}
           sidebarToolstripContent={<BrowserSidebarToolstrip />}
           onSidebarToggle={onSidebarToggle}
@@ -123,6 +136,31 @@ export const Browser = () => {
       )}
     </div>
   );
+};
+
+const MainContent = () => {
+  const browserNavOpenState = useAppSelector(getBrowserNavOpenState);
+  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
+  const { genomeBrowser } = useGenomeBrowser();
+
+  const shouldShowNavBar = Boolean(
+    genomeBrowser && browserNavOpenState && !isDrawerOpened
+  );
+
+  return (
+    <>
+      {shouldShowNavBar && <BrowserNavBar />}
+      <BrowserImage />
+    </>
+  );
+};
+
+const SidebarContent = () => {
+  const isBrowserSidebarModalOpened = useAppSelector(
+    getIsBrowserSidebarModalOpened
+  );
+
+  return isBrowserSidebarModalOpened ? <BrowserSidebarModal /> : <TrackPanel />;
 };
 
 type GenomeBrowserContextType = {

@@ -61,7 +61,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     />
   );
 
-  const mainContent = activeGenomeId
+  const mainContent = species.length
     ? wrappedSpecies
     : 'To start using this app...';
 

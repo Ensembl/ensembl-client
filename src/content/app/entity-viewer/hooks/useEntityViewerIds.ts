@@ -33,6 +33,8 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+
 /**
  * Lots of ids going on here. Here’s what they mean
  *
@@ -62,9 +64,12 @@ const useEntityViewerIds = () => {
   ]);
   const { genomeId: genomeIdInUrl, entityId: entityIdInUrl } = params;
 
-  const { currentData: genomeInfo } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
-    skip: !genomeIdInUrl
-  });
+  const { currentData: genomeInfo, error } = useGenomeInfoQuery(
+    genomeIdInUrl ?? '',
+    {
+      skip: !genomeIdInUrl
+    }
+  );
 
   const genomeId = genomeInfo?.genomeId;
   const genomeIdForUrl =
@@ -74,13 +79,21 @@ const useEntityViewerIds = () => {
     savedGenomeInfo?.url_slug ??
     savedGenomeInfo?.genome_id;
 
-  const entityId =
-    genomeId && params.entityId
-      ? buildFocusObjectId({
-          genomeId,
-          ...parseFocusIdFromUrl(params.entityId)
-        })
-      : undefined;
+  let entityId;
+  let parsedEntityId;
+  let isMalformedEntityId = false;
+
+  if (genomeId && params.entityId) {
+    try {
+      parsedEntityId = {
+        genomeId,
+        ...parseFocusIdFromUrl(params.entityId)
+      };
+      entityId = buildFocusObjectId(parsedEntityId);
+    } catch {
+      isMalformedEntityId = true;
+    }
+  }
 
   // FIXME: sometimes we actually want to generate entity id for url from a provided genome id
   // (e.g. from active entity id); whereas other times, we want to use the entity id from the url
@@ -99,6 +112,10 @@ const useEntityViewerIds = () => {
     previousActiveEntityId &&
     activeEntityId !== previousActiveEntityId;
 
+  const isMissingGenomeId =
+    typeof (error as FetchBaseQueryError)?.status === 'number' &&
+    (error as FetchBaseQueryError).status >= 400; // FIXME change status to 404 when the backend behaves
+
   return {
     activeGenomeId,
     activeEntityId,
@@ -108,8 +125,11 @@ const useEntityViewerIds = () => {
     entityIdForUrl,
     genomeId,
     entityId,
+    parsedEntityId,
     hasActiveGenomeIdChanged,
-    hasActiveEntityIdChanged
+    hasActiveEntityIdChanged,
+    isMissingGenomeId,
+    isMalformedEntityId
   };
 };
 
