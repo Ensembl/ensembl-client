@@ -41,8 +41,7 @@ import {
 } from 'src/shared/components/accordion';
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
-import type { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 
 import styles from './TrackPanelList.scss';
 
@@ -122,7 +121,7 @@ export const TrackPanelList = () => {
                   className={styles.trackPanelAccordionItemContent}
                 >
                   <dl>
-                    {category.track_list.map((track: FocusObjectTrack) => (
+                    {category.track_list.map((track) => (
                       <TrackPanelRegularItem
                         {...track}
                         genomeId={activeGenomeId}

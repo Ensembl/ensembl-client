@@ -32,7 +32,7 @@ import {
   TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
 
-import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
 
 type GeneQueryParams = { genomeId: string; geneId: string };

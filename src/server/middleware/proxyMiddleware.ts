@@ -56,13 +56,31 @@ const staticAssetsMiddleware = createProxyMiddleware('/static', {
   target: 'http://localhost:8081'
 });
 
-const apiProxyMiddleware = createProxyMiddleware('/api', {
-  target: 'https://staging-2020.ensembl.org',
+// const apiProxyMiddleware = createProxyMiddleware('/api', {
+//   target: 'https://staging-2020.ensembl.org',
+//   changeOrigin: true,
+//   secure: false
+// });
+
+const apiProxyMiddleware = createProxyMiddleware(
+  ['/api/**', '!/api/tracks/**'],
+  {
+    target: 'https://staging-2020.ensembl.org',
+    changeOrigin: true,
+    secure: false
+  }
+);
+
+const tracksProxyMiddleware = createProxyMiddleware('/api/tracks/**', {
+  target: 'http://change-track-ids.review.ensembl.org',
+  // pathRewrite: {
+  //   '^/api/docs': '/api', // rewrite path
+  // },
   changeOrigin: true,
   secure: false
 });
 
-let proxyMiddleware = [apiProxyMiddleware];
+let proxyMiddleware = [apiProxyMiddleware, tracksProxyMiddleware];
 
 if (process.env.NODE_ENV === 'development') {
   proxyMiddleware = proxyMiddleware.concat([
