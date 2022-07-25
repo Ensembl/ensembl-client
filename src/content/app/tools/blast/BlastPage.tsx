@@ -53,11 +53,10 @@ const BrowserPage = () => {
             path="unviewed-submissions"
             element={<BlastUnviewedSubmissions />}
           />
-          <Route
-            path="submissions/:submissionId"
-            element={<BlastSubmissionResults />}
-          />
-          <Route path="submissions" element={<BlastJobs />} />
+          <Route path="submissions">
+            <Route index={true} element={<BlastJobs />} />
+            <Route path=":submissionId" element={<BlastSubmissionResults />} />
+          </Route>
         </Routes>
       )}
     </>

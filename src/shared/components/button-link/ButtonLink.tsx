@@ -53,6 +53,7 @@ const ButtonLink = (props: Props) => {
       className={({ isActive }) =>
         isActive ? activeLinkClasses : inactiveLinkClasses
       }
+      end={true}
     >
       {children}
     </NavLink>
