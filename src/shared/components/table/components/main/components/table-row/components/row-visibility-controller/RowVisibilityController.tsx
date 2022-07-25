@@ -55,6 +55,7 @@ const RowVisibilityController = () => {
 
     const newRowIdsInDraft: TableRowIds = {};
 
+    // TODO: Select only rows that are currently visible
     for (let i = 0; i < totalRows; i++) {
       newRowIdsInDraft[i] = false;
     }

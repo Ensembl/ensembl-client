@@ -71,7 +71,7 @@ const Table = (props: TableProps) => {
   const wrapperClasses = classNames(
     styles.wrapper,
     {
-      [styles.themeDark]: props.theme === 'dark'
+      [styles.wrapperThemeDark]: props.theme === 'dark'
     },
     props.classNames?.wrapper
   );

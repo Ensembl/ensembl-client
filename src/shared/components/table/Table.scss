@@ -3,7 +3,7 @@
 .wrapper {
   background-color: $white;
 
-  .themeDark {
+  &ThemeDark {
     background-color: $light-grey;
   }
 }

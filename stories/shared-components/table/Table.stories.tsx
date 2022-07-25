@@ -44,7 +44,7 @@ const createTableData = (
 };
 
 export const TableStory = () => {
-  const tableData = createTableData(15, 15);
+  const tableData = createTableData(150, 10);
 
   const [tableState, setTableState] = useState(tableData);
 
@@ -95,7 +95,13 @@ export const TableWithExpandStory = () => {
 
   const [tableState, setTableState] = useState(sampleTableDataForExpand);
 
-  return <Table {...tableState} onStateChange={setTableState} />;
+  return (
+    <Table
+      {...tableState}
+      onStateChange={setTableState}
+      classNames={{ wrapper: styles.wrapper }}
+    />
+  );
 };
 
 const ShowHideColumn = (props: {

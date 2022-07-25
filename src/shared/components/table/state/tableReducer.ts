@@ -210,7 +210,7 @@ export const tableReducer = (
     case 'set_sorted_column':
       return { ...state, sortedColumn: action.payload };
     case 'clear_sorted_column':
-      return { ...state, sortedColumn: undefined };
+      return { ...state, sortedColumn: null };
     case 'set_expanded_rows':
       return {
         ...state,
