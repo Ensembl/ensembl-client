@@ -54,6 +54,7 @@ export type IndividualColumn = {
   title: string;
   className?: string;
   helpText?: string;
+  width?: string;
 };
 
 export type Columns = IndividualColumn[];

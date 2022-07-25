@@ -37,7 +37,8 @@ const createTableData = (
       columnId: `${column}`,
       title: `Column ${column}`,
       helpText: `Column ${column} help text`,
-      isSortable: true
+      isSortable: true,
+      width: '150px'
     }))
   };
 };

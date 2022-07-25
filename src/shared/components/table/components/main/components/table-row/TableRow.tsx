@@ -95,7 +95,13 @@ const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
           if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
             return null;
           }
-          return <TableCell key={index}>{cellData}</TableCell>;
+
+          const { width } = currentColumn;
+          return (
+            <TableCell key={index} style={{ width }}>
+              {cellData}
+            </TableCell>
+          );
         })}
       </tr>
       {expandedContent && (

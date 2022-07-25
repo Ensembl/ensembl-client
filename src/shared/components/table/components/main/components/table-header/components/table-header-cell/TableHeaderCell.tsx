@@ -35,7 +35,7 @@ import styles from '../../TableHeader.scss';
  */
 
 const TableHeaderCell = (props: IndividualColumn) => {
-  const { title, helpText, isSortable, columnId } = props;
+  const { title, helpText, isSortable, columnId, width = '150px' } = props;
 
   const { dispatch, sortedColumn } = useContext(TableContext) || {};
 
@@ -88,7 +88,7 @@ const TableHeaderCell = (props: IndividualColumn) => {
   });
 
   return (
-    <th className={headerCellClassNames}>
+    <th className={headerCellClassNames} style={{ width: width }}>
       <div className={styles.headerCellContent} onClick={() => onSort()}>
         {isSortable && (
           <span className={sortArrowClassNames}>
