@@ -46,18 +46,6 @@ export type FocusRegion = BasicFocusObject & {
 
 export type FocusObject = FocusGene | FocusRegion;
 
-export type FocusObjectTrack = {
-  additional_info?: string;
-  child_tracks?: FocusObjectTrack[];
-  colour?: string;
-  label: string;
-  ensembl_object_id?: string;
-  support_level?: string | null;
-  track_id: string;
-  stable_id: string | null;
-  description: string | null;
-};
-
 export type FocusObjectResponse = FocusGene;
 
 export type FocusObjectIdConstituents = {
