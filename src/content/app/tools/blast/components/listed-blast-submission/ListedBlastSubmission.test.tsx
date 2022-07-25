@@ -99,21 +99,13 @@ describe('BlastSubmissionHeader', () => {
 
     it('shows multiple sequence boxes if the submission contained multiple sequences', async () => {
       const submission = createBlastSubmission({
-        options: { sequencesCount: 5 }
+        options: { sequencesCount: 5 },
+        fragment: { isExpanded: true }
       });
 
       const { container } = renderComponent({
         props: { submission }
       });
-
-      const showHideChevron = container.querySelector(
-        '.showHide .label'
-      ) as HTMLElement;
-      expect(showHideChevron).toBeTruthy();
-
-      expect(container.querySelectorAll('.sequenceBox').length).toBe(1);
-
-      await userEvent.click(showHideChevron);
 
       expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
     });
