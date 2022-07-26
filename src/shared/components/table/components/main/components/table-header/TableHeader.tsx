@@ -59,6 +59,13 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
 
   const totalRecords = data.length;
 
+  /*
+    The width of the row selector column has to match the width of the header stats (first header column)
+    To calculate the width, we calculate the total number of character that are possible in the stats
+    and multiply it be 10px for each character to get the width.
+  */
+  const width = (String(totalRecords).length * 2 + 1) * 10;
+
   let displayedRows = totalRecords;
 
   // Note: rowsPerPage will be 0 for when we need to show all records
@@ -67,7 +74,7 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
   }
 
   return (
-    <TableCell>
+    <TableCell style={{ width }}>
       {displayedRows}/{totalRecords}
     </TableCell>
   );

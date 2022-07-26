@@ -28,8 +28,8 @@ import styles from './RowSelector.scss';
 */
 
 export type RowSelectorProps = {
-  rowId: number;
-  onChange: (params: { checked: boolean; rowId: number }) => void;
+  rowId: string;
+  onChange: (params: { checked: boolean; rowId: string }) => void;
 };
 
 const RowSelector = (props: RowSelectorProps) => {
@@ -38,13 +38,14 @@ const RowSelector = (props: RowSelectorProps) => {
     hiddenRowIdsInDraft,
     selectedRowIds,
     selectedAction,
+    columns,
     dispatch
   } = useContext(TableContext) || {
     hiddenRowIds: null,
     hiddenRowIdsInDraft: null
   };
 
-  if (!dispatch) {
+  if (!(dispatch && columns)) {
     return null;
   }
 
@@ -53,7 +54,7 @@ const RowSelector = (props: RowSelectorProps) => {
   const isCurrentRowSelected = selectedRowIds?.[props.rowId] === true;
   const isCurrentRowVisible = mergedHiddenRowIds?.[props.rowId] !== true;
 
-  const onVisibilityChange = (params: { status: boolean; rowId: number }) => {
+  const onVisibilityChange = (params: { status: boolean; rowId: string }) => {
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
       payload: {

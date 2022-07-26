@@ -59,7 +59,7 @@ export type IndividualColumn = {
 
 export type Columns = IndividualColumn[];
 
-export type TableRowIds = { [key: string]: boolean };
+export type TableSelectedRowId = { [key: string]: boolean };
 
 export type TableTheme = 'light' | 'dark';
 
@@ -73,11 +73,11 @@ export type TableState = {
   selectedAction: TableAction;
   sortedColumn: SortedColumn | null;
   fixedHeader: boolean;
-  selectedRowIds: TableRowIds;
-  hiddenRowIds: TableRowIds;
-  hiddenRowIdsInDraft: TableRowIds;
-  hiddenColumnIds: TableRowIds;
-  expandedRowIds: TableRowIds;
+  selectedRowIds: TableSelectedRowId;
+  hiddenRowIds: TableSelectedRowId;
+  hiddenRowIdsInDraft: TableSelectedRowId;
+  hiddenColumnIds: TableSelectedRowId;
+  expandedRowIds: TableSelectedRowId;
 };
 
 export const defaultTableState: TableState = {
@@ -124,11 +124,11 @@ type ClearSortedColumnAction = {
 
 type SetHiddenRowIdsAction = {
   type: 'set_hidden_row_ids';
-  payload: { [key: number]: boolean };
+  payload: TableSelectedRowId;
 };
 type SetHiddenRowIdsInDraftAction = {
   type: 'set_hidden_row_ids_in_draft';
-  payload: { [key: number]: boolean };
+  payload: TableSelectedRowId;
 };
 
 type ClearHiddenRowIdsInDraftAction = {
@@ -137,17 +137,17 @@ type ClearHiddenRowIdsInDraftAction = {
 
 type SetHiddenColumnIdsAction = {
   type: 'set_hidden_column_ids';
-  payload: { [key: number]: boolean };
+  payload: TableSelectedRowId;
 };
 
 type SetSelectedRowIdsAction = {
   type: 'set_selected_row_ids';
-  payload: { [key: number]: boolean };
+  payload: TableSelectedRowId;
 };
 
 type SetExpandedRowsAction = {
   type: 'set_expanded_rows';
-  payload: { [key: number]: boolean };
+  payload: TableSelectedRowId;
 };
 
 type RestoreDefaultsAction = {

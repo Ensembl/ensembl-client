@@ -52,6 +52,7 @@ export const TableStory = () => {
     <Table
       {...tableState}
       theme="dark"
+      uniqueColumnId={'0'}
       onStateChange={setTableState}
       classNames={{ wrapper: styles.wrapper }}
     />
@@ -98,6 +99,7 @@ export const TableWithExpandStory = () => {
   return (
     <Table
       {...tableState}
+      uniqueColumnId={'0'}
       onStateChange={setTableState}
       classNames={{ wrapper: styles.wrapper }}
     />

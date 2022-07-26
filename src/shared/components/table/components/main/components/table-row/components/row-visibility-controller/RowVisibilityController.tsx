@@ -24,7 +24,7 @@ import React, { useContext } from 'react';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import {
   TableAction,
-  TableRowIds
+  TableSelectedRowId
 } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 
@@ -53,7 +53,7 @@ const RowVisibilityController = () => {
   const selectAll = () => {
     const totalRows = data.length;
 
-    const newRowIdsInDraft: TableRowIds = {};
+    const newRowIdsInDraft: TableSelectedRowId = {};
 
     // TODO: Select only rows that are currently visible
     for (let i = 0; i < totalRows; i++) {
@@ -68,7 +68,7 @@ const RowVisibilityController = () => {
   const deselectAll = () => {
     const totalRows = data.length;
 
-    const newRowIdsInDraft: TableRowIds = {};
+    const newRowIdsInDraft: TableSelectedRowId = {};
 
     for (let i = 0; i < totalRows; i++) {
       newRowIdsInDraft[i] = true;

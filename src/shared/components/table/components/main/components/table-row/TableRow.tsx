@@ -33,19 +33,20 @@ import styles from 'src/shared/components/table/Table.scss';
     - Each row must have an id column. It could be autogenrated.
 */
 
-const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
+const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
   const {
     isSelectable,
     searchText,
     dispatch,
     columns,
     hiddenColumnIds,
-    hiddenRowIds
+    hiddenRowIds,
+    data
   } = useContext(TableContext) || {
     isSelectable: true
   };
 
-  if (!(props.rowData && dispatch && columns && hiddenRowIds)) {
+  if (!(data && props.rowData && dispatch && columns && hiddenRowIds)) {
     return null;
   }
 
@@ -69,7 +70,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
     }
   }
 
-  const handleSelector = (params: { rowId: number; checked: boolean }) => {
+  const handleSelector = (params: { rowId: string; checked: boolean }) => {
     dispatch({
       type: 'set_selected_row_ids',
       payload: {
@@ -82,11 +83,19 @@ const TableRow = (props: { rowData: TableRowData; rowId: number }) => {
     [styles.rowWithExpendedContent]: !!expandedContent
   });
 
+  const totalRecords = data.length;
+
+  /*
+    The width of the row selector column has to match the width of the header stats (first header column)
+    To calculate the width, we calculate the total number of character that are possible in the stats
+    and multiply it be 10px for each character to get the width.
+  */
+  const rowSelectorWidth = (String(totalRecords).length * 2 + 1) * 10;
   return (
     <>
       <tr className={rowClassNames}>
         {isSelectable && (
-          <TableCell>
+          <TableCell style={{ width: rowSelectorWidth }}>
             <RowSelector rowId={props.rowId} onChange={handleSelector} />
           </TableCell>
         )}

@@ -42,7 +42,9 @@ import styles from './Table.scss';
 type TableContextType = TableState & {
   dispatch: React.Dispatch<AllTableActions>;
   theme: TableTheme;
+  uniqueColumnId: string;
 };
+
 export const TableContext = React.createContext(
   null as TableContextType | null
 );
@@ -50,6 +52,7 @@ export const TableContext = React.createContext(
 export type TableProps = Partial<TableState> & {
   onStateChange?: (newState: TableState) => void;
   theme: TableTheme;
+  uniqueColumnId: string; // Values in this column will be used to identify individual rows
   classNames?: {
     table?: string;
     wrapper?: string;
@@ -78,7 +81,12 @@ const Table = (props: TableProps) => {
 
   return (
     <TableContext.Provider
-      value={{ ...tableState, dispatch, theme: props.theme }}
+      value={{
+        ...tableState,
+        dispatch,
+        theme: props.theme,
+        uniqueColumnId: props.uniqueColumnId
+      }}
     >
       <div className={wrapperClasses}>
         <TableControls />

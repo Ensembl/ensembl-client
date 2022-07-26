@@ -27,19 +27,30 @@ import TableRow from '../table-row/TableRow';
 */
 
 const TableBody = () => {
-  const { data, currentPageNumber, rowsPerPage, columns, sortedColumn } =
-    useContext(TableContext) || defaultTableState;
+  const {
+    data,
+    currentPageNumber,
+    rowsPerPage,
+    columns,
+    sortedColumn,
+    uniqueColumnId
+  } = useContext(TableContext) || {
+    currentPageNumber: defaultTableState.currentPageNumber,
+    rowsPerPage: defaultTableState.rowsPerPage
+  };
 
-  if (!(data && columns)) {
+  if (!(data && columns && uniqueColumnId)) {
     return null;
   }
   const totalRows = data.length;
-  const rowIdLowerBound = (currentPageNumber - 1) * rowsPerPage;
-  const rowIdUpperBound = (currentPageNumber - 1) * rowsPerPage + rowsPerPage;
+  const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
+  const rowIndexUpperBound =
+    (currentPageNumber - 1) * rowsPerPage + rowsPerPage;
 
-  const rowsThisPage = data.filter((_, rowId) => {
+  // Filter the rows that needs to be displayed in the current page
+  const rowsThisPage = data.filter((_, rowIndex) => {
     if (rowsPerPage !== 0 && totalRows > rowsPerPage) {
-      if (rowId < rowIdLowerBound || rowIdUpperBound - 1 < rowId) {
+      if (rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex) {
         return false;
       }
     }
@@ -65,11 +76,17 @@ const TableBody = () => {
     });
   }
 
+  const uniqueColumnIndex = columns.findIndex(
+    (column) => column.columnId === uniqueColumnId
+  );
+
   return (
     <tbody>
-      {rowsThisPage.map((rowData, index) => {
-        const rowId = currentPageNumber * rowsPerPage + index;
-        return <TableRow key={rowId} rowData={rowData} rowId={rowId} />;
+      {rowsThisPage.map((rowData) => {
+        const rowId = rowData.cells[uniqueColumnIndex]?.toString();
+        return (
+          <TableRow key={rowId} rowData={rowData} rowId={rowId as string} />
+        );
       })}
     </tbody>
   );
