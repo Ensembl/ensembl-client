@@ -25,8 +25,6 @@ import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 
-import analyticsTracking from 'src/services/analytics-service';
-
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { deleteBrowserActiveFocusObjectIdAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
@@ -85,8 +83,6 @@ export const Browser = () => {
     if (!activeGenomeId) {
       return;
     }
-
-    analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [activeGenomeId]);
 
   const onSidebarToggle = () => {
