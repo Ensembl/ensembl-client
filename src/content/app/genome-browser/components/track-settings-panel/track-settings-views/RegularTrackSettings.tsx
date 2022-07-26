@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { useAppSelector, type RootState } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
@@ -33,14 +33,12 @@ import styles from '../TrackSettingsPanel.scss';
 
 export const RegularTrackSettings = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
-  const selectedTrackSettingsInfo = useAppSelector((state: RootState) =>
+  const selectedTrackSettingsInfo = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, selectedCog)
   );
   const shouldShowTrackName = selectedTrackSettingsInfo?.showTrackName ?? false;
   const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
-  const { toggleApplyToAll } = useTrackSettings();
-
-  const { updateTrackName } = useTrackSettings();
+  const { toggleApplyToAll, updateTrackName } = useTrackSettings();
 
   return (
     <div className={styles.trackSettingsPanel}>

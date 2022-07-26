@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { useAppSelector, type RootState } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
@@ -35,7 +35,7 @@ import styles from '../TrackSettingsPanel.scss';
 export const GeneTrackSettings = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const selectedTrackSettings = useAppSelector(
-    (state: RootState) =>
+    (state) =>
       getTrackSettingsForTrackId(
         state,
         selectedCog
