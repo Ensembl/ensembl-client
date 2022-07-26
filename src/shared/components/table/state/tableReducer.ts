@@ -145,11 +145,6 @@ type SetSelectedRowIdsAction = {
   payload: TableSelectedRowId;
 };
 
-type SetExpandedRowsAction = {
-  type: 'set_expanded_rows';
-  payload: TableSelectedRowId;
-};
-
 type RestoreDefaultsAction = {
   type: 'restore_defaults';
 };
@@ -166,7 +161,6 @@ export type AllTableActions =
   | SetSelectedActionAction
   | SetSortedColumnAction
   | ClearSortedColumnAction
-  | SetExpandedRowsAction
   | RestoreDefaultsAction;
 
 export const tableReducer = (
@@ -211,11 +205,6 @@ export const tableReducer = (
       return { ...state, sortedColumn: action.payload };
     case 'clear_sorted_column':
       return { ...state, sortedColumn: null };
-    case 'set_expanded_rows':
-      return {
-        ...state,
-        expandedRowIds: { ...state.expandedRowIds, ...action.payload }
-      };
     case 'restore_defaults':
       return { ...defaultTableState, data: state.data, columns: state.columns };
     default:
