@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
@@ -29,6 +30,7 @@ import browserStorageService from 'src/content/app/genome-browser/services/brows
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 
@@ -51,6 +53,7 @@ const useGenomeBrowser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
+  const navigate = useNavigate();
   const trackConfigs = trackConfigsForGenome?.tracks;
   const GENE_TRACK_ID = TrackId.GENE;
 
@@ -122,7 +125,13 @@ const useGenomeBrowser = () => {
     if (!activeGenomeId) {
       return;
     }
-    changeFocusObject(`${activeGenomeId}:${featureId}`);
+
+    const url = urlFor.browser({
+      genomeId: activeGenomeId,
+      focus: featureId
+    });
+
+    navigate(url, { replace: true });
   };
 
   const restoreBrowserTrackStates = () => {
