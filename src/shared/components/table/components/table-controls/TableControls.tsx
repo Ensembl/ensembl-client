@@ -15,9 +15,11 @@
  */
 
 import React from 'react';
+
 import Pagination from './components/pagination/Pagination';
 import RowsPerPageSelector from './components/rows-per-page-selector/RowsPerPageSelector';
 import TableActions from './components/table-actions/TableActions';
+
 import styles from './TableControls.scss';
 
 const TableControls = () => {

@@ -29,16 +29,6 @@ import {
 
 import styles from './Table.scss';
 
-/*
-    -- State management -- 
-    - How can we restore the previous state everytime we come back?
-        We need to store the state independently for all the tables. It can be optional.
-        To identify a table, the parent component should be able to provide an UUID for each table so that 
-        it can be used to restore the state.
-
-    - Should there be an option to hide the first action column by default?
-*/
-
 type TableContextType = TableState & {
   dispatch: React.Dispatch<AllTableActions>;
   theme: TableTheme;

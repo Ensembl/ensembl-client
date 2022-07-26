@@ -19,9 +19,11 @@ import times from 'lodash/times';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
   Columns,
-  TableData
+  TableData,
+  TableTheme
 } from 'src/shared/components/table/state/tableReducer';
 import Table from 'src/shared/components/table/Table';
+import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
 import styles from './Table.stories.scss';
 
@@ -43,19 +45,33 @@ const createTableData = (
   };
 };
 
+const tableThemeOptions = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' }
+];
+
 export const TableStory = () => {
   const tableData = createTableData(150, 10);
 
   const [tableState, setTableState] = useState(tableData);
+  const [tableTheme, setTableTheme] = useState<TableTheme>('light');
 
   return (
-    <Table
-      {...tableState}
-      theme="dark"
-      uniqueColumnId={'0'}
-      onStateChange={setTableState}
-      classNames={{ wrapper: styles.wrapper }}
-    />
+    <>
+      <RadioGroup
+        options={tableThemeOptions}
+        onChange={(theme) => setTableTheme(theme as TableTheme)}
+        selectedOption={tableTheme}
+        direction="row"
+      />
+      <Table
+        {...tableState}
+        theme={tableTheme}
+        uniqueColumnId={'0'}
+        onStateChange={setTableState}
+        classNames={{ wrapper: styles.wrapper }}
+      />
+    </>
   );
 };
 

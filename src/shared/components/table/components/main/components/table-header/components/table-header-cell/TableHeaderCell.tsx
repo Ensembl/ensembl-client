@@ -15,8 +15,8 @@
  */
 import classNames from 'classnames';
 import React, { useContext } from 'react';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import {
   IndividualColumn,
   SortingDirection
@@ -24,13 +24,6 @@ import {
 import { TableContext } from 'src/shared/components/table/Table';
 
 import styles from '../../TableHeader.scss';
-
-/*
-    This is a component on its own as a cell in the header will have additional functionalities compared to a cell in the body.
-    Additional functionalities includes:
-        - Column tooltips
-        - sorting chevrons
- */
 
 const TableHeaderCell = (props: IndividualColumn) => {
   const { title, helpText, isSortable, columnId, width = '150px' } = props;

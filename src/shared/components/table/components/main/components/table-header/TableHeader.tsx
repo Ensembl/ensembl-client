@@ -68,7 +68,7 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
 
   let displayedRows = totalRecords;
 
-  // Note: rowsPerPage will be 0 for when we need to show all records
+  // Note: rowsPerPage will be 0 when we need to show all records
   if (rowsPerPage > 0) {
     displayedRows = rowsPerPage > totalRecords ? totalRecords : rowsPerPage;
   }

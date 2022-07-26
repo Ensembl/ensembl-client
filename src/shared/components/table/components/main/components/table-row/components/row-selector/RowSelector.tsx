@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
+
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
+
 import { TableAction } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
-import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
 import { Status } from 'src/shared/types/status';
 
 import styles from './RowSelector.scss';
-/*
-    - Display the checkbox to select a row
-    - It will be used by TableRow.tsx 
-*/
 
 export type RowSelectorProps = {
   rowId: string;

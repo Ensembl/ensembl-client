@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
-    - Makes use of the PopupPanel to display a list of available columns
-
-*/
-
-import classNames from 'classnames';
 import React, { useContext } from 'react';
+import classNames from 'classnames';
+
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import {
   TableAction,
@@ -34,7 +29,6 @@ const RowVisibilityController = () => {
   const { hiddenRowIdsInDraft, hiddenRowIds, data, dispatch } =
     useContext(TableContext) || {};
 
-  // TODO: Create a useTable hook to get only the displayed rows
   if (!(hiddenRowIdsInDraft && dispatch && data && hiddenRowIds)) {
     return null;
   }

@@ -15,16 +15,13 @@
  */
 
 import React, { useContext } from 'react';
+
 import {
   defaultTableState,
   SortingDirection
 } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 import TableRow from '../table-row/TableRow';
-
-/*
-    - takes in an array of TableRows and displays them
-*/
 
 const TableBody = () => {
   const {
