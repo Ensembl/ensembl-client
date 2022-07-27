@@ -30,7 +30,7 @@ import {
   deleteBlastSubmission,
   type BlastSubmission,
   type BlastJob,
-  updateSubmission
+  updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
@@ -54,7 +54,7 @@ const ListedBlastSubmission = (props: Props) => {
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
-  const { isExpanded } = submission;
+  const { isExpandedOnSubmissionList } = submission.ui;
 
   const jobsGroupedBySequence = sequences.map((sequence) => {
     const jobs = allJobs.filter((job) => job.sequenceId === sequence.id);
@@ -65,7 +65,7 @@ const ListedBlastSubmission = (props: Props) => {
   });
 
   let sequenceContent = null;
-  if (isExpanded || sequences.length === 1) {
+  if (isExpandedOnSubmissionList || sequences.length === 1) {
     sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
       <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
     ));
@@ -75,10 +75,10 @@ const ListedBlastSubmission = (props: Props) => {
 
   const toggleExpanded = (status: boolean) => {
     dispatch(
-      updateSubmission({
+      updateSubmissionUi({
         submissionId: submission.id,
         fragment: {
-          isExpanded: status
+          isExpandedOnSubmissionList: status
         }
       })
     );
@@ -90,7 +90,7 @@ const ListedBlastSubmission = (props: Props) => {
         {...props}
         isAnyJobRunning={isAnyJobRunning}
         toggleExpanded={toggleExpanded}
-        isExpanded={isExpanded}
+        isExpanded={isExpandedOnSubmissionList}
         sequenceCount={sequences.length}
       />
       {sequenceContent}

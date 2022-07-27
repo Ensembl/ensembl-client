@@ -68,7 +68,9 @@ export type BlastSubmission = {
     status: JobStatus;
     data: null; // TODO: add data type
   }>;
-  isExpanded: boolean; // used to retain expanded / collapsed state in the jobs list view
+  ui: {
+    isExpandedOnSubmissionList: boolean; // used to retain expanded / collapsed state in the jobs list view
+  };
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
@@ -111,17 +113,17 @@ const blastResultsSlice = createSlice({
         Object.assign(job, fragment);
       }
     },
-    updateSubmission(
+    updateSubmissionUi(
       state,
       action: PayloadAction<{
         submissionId: string;
-        fragment: Partial<BlastSubmission>;
+        fragment: Partial<BlastSubmission['ui']>;
       }>
     ) {
       const { submissionId, fragment } = action.payload;
       const submission = state[submissionId];
       if (submission) {
-        Object.assign(submission, fragment);
+        Object.assign(submission.ui, fragment);
       }
     }
   },
@@ -140,6 +142,6 @@ const blastResultsSlice = createSlice({
   }
 });
 
-export const { updateJob, updateSubmission } = blastResultsSlice.actions;
+export const { updateJob, updateSubmissionUi } = blastResultsSlice.actions;
 
 export default blastResultsSlice.reducer;
