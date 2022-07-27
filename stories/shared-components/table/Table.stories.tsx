@@ -19,6 +19,7 @@ import times from 'lodash/times';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
   Columns,
+  TableCellRendererParams,
   TableData,
   TableTheme
 } from 'src/shared/components/table/state/tableReducer';
@@ -80,18 +81,28 @@ TableStory.storyName = 'default';
 const sampleTableDataForExpand = createTableData(5, 5);
 
 export const TableWithExpandStory = () => {
-  const onExpanded = (isExpanded: boolean, rowId: number) => {
+  const uniqueColumnId = '0';
+
+  const onExpanded = (isExpanded: boolean, rowId: string) => {
     const tableData = tableState.data;
+
+    const idColumnIndex = sampleTableDataForExpand.columns.findIndex(
+      (column) => column.columnId === uniqueColumnId
+    );
+
+    const currentRowIndex = tableData.findIndex(
+      (row) => row.cells[idColumnIndex] === rowId
+    );
 
     if (!tableData) {
       return;
     }
     if (isExpanded) {
-      tableData[rowId].expandedContent = (
+      tableData[currentRowIndex].expandedContent = (
         <div>Column {rowId} expanded content</div>
       );
     } else {
-      tableData[rowId].expandedContent = null;
+      tableData[currentRowIndex].expandedContent = null;
     }
 
     setTableState({
@@ -100,22 +111,23 @@ export const TableWithExpandStory = () => {
     });
   };
 
-  sampleTableDataForExpand.data?.map((rowData, rowId) => {
-    rowData.cells[1] = (
+  sampleTableDataForExpand.columns[1].renderer = (
+    params: TableCellRendererParams
+  ) => {
+    return (
       <ShowHideColumn
         onExpanded={onExpanded}
-        rowId={rowId}
-        isExpanded={!!rowData.expandedContent}
+        rowId={params.rowId}
+        isExpanded={!!params.rowData.expandedContent}
       />
     );
-  });
-
+  };
   const [tableState, setTableState] = useState(sampleTableDataForExpand);
 
   return (
     <Table
       {...tableState}
-      uniqueColumnId={'0'}
+      uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}
       classNames={{ wrapper: styles.wrapper }}
     />
@@ -124,8 +136,8 @@ export const TableWithExpandStory = () => {
 
 const ShowHideColumn = (props: {
   isExpanded: boolean;
-  onExpanded: (isExpanded: boolean, rowId: number) => void;
-  rowId: number;
+  onExpanded: (isExpanded: boolean, rowId: string) => void;
+  rowId: string;
 }) => {
   const onExpanded = () => {
     props.onExpanded(!props.isExpanded, props.rowId);

@@ -97,10 +97,16 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
             return null;
           }
 
-          const { width } = currentColumn;
+          const { width, renderer } = currentColumn;
           return (
             <TableCell key={index} style={{ width }}>
-              {cellData}
+              {renderer
+                ? renderer({
+                    rowData: props.rowData,
+                    rowId: props.rowId,
+                    cellData
+                  })
+                : cellData}
             </TableCell>
           );
         })}

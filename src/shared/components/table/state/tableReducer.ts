@@ -46,6 +46,12 @@ export type TableRowData = {
 
 export type TableData = TableRowData[];
 
+export type TableCellRendererParams = {
+  rowId: string;
+  rowData: TableRowData;
+  cellData: TableCellData;
+};
+
 export type IndividualColumn = {
   columnId: string;
   isSortable?: boolean;
@@ -55,6 +61,7 @@ export type IndividualColumn = {
   className?: string;
   helpText?: string;
   width?: string;
+  renderer?: (params: TableCellRendererParams) => ReactNode;
 };
 
 export type Columns = IndividualColumn[];
