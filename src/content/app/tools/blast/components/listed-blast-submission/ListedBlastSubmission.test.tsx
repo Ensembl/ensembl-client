@@ -194,7 +194,7 @@ describe('BlastSubmissionHeader', () => {
 
   describe('behaviour', () => {
     // define this behaviour better
-    it('folds jobs of a submission into a single box by default', async () => {
+    it('folds jobs of a submission into a single box by default', () => {
       const submission = createBlastSubmission({
         options: { sequencesCount: 5 }
       });
