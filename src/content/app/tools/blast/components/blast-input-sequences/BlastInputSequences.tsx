@@ -73,7 +73,6 @@ const BlastInputSequences = () => {
     } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
-      blastFormContext?.removeSequenceValidityFlag(index);
     }
   };
 
