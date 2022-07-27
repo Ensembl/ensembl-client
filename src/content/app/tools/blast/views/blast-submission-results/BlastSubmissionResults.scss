@@ -20,8 +20,8 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: 5% 62% auto;
-  column-gap: 0.5%;
+  grid-template-columns: 100px 1060px auto;
+  column-gap: 10px;
   padding-bottom: 20px;
 }
 
@@ -35,4 +35,32 @@
 
 .speciesInfo span {
   padding-right: 20px;
+}
+
+.submissionIdLabel {
+  font-weight: $light;
+  margin-right: 1ch;
+}
+
+.editSubmission {
+  color: $blue;
+  cursor: pointer;
+  margin: 0 32px;
+}
+
+.timeStamp {
+  white-space: nowrap;
+}
+
+.timeZone {
+  font-weight: $light;
+  margin-left: 1ch;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 40px;
+  width: 268px;
 }

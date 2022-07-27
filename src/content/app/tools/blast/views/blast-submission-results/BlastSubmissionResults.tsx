@@ -15,20 +15,35 @@
  */
 
 import React from 'react';
-import { useAppSelector } from 'src/store';
-import { useLocation } from 'react-router';
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { useLocation, useNavigate } from 'react-router';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { parseBlastInput } from '../../utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
-import { Header } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
+import { Props } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
+import ButtonLink from 'src/shared/components/button-link/ButtonLink';
+import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import BlastSubmissionHeaderGrid from '../../components/blast-submission-header-container/BlastSubmissionHeaderGrid';
+
+import { BlastProgram } from '../../types/blastSettings';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  BlastSubmission,
+  deleteBlastSubmission
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import {
+  fillBlastForm,
+  Species
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -44,6 +59,69 @@ const BlastSubmissionResults = () => {
   );
 };
 
+const Header = (props: Props) => {
+  const { submission } = props;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const blastProgram =
+    submission.submittedData.parameters.program.toUpperCase();
+  const submissionId = submission.id;
+  const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
+
+  const editSubmission = () => {
+    const { sequences, species, parameters } = submission.submittedData;
+    const parsedSequences = sequences.flatMap((sequence) =>
+      parseBlastInput(sequence.value)
+    );
+    const { title, program, stype, ...otherParameters } = parameters;
+
+    const payload = {
+      sequences: parsedSequences,
+      selectedSpecies: species,
+      settings: {
+        jobName: title,
+        sequenceType: stype,
+        program: program as BlastProgram,
+        parameters: otherParameters
+      }
+    };
+    dispatch(fillBlastForm(payload));
+    navigate(urlFor.blastForm());
+  };
+
+  const handleDeletion = () => {
+    dispatch(deleteBlastSubmission(submissionId));
+  };
+
+  return (
+    <BlastSubmissionHeaderGrid>
+      <div>{blastProgram}</div>
+      <div>
+        <span className={styles.submissionIdLabel}>Submission</span>
+        <span>{submissionId}</span>
+        <span className={styles.editSubmission} onClick={editSubmission}>
+          Edit/rerun
+        </span>
+        <span className={styles.timeStamp}>
+          <span>{submissionTime}</span>
+          <span className={styles.timeZone}>GMT</span>
+        </span>
+      </div>
+      <div className={styles.controlButtons}>
+        <DeleteButton onClick={handleDeletion} />
+        <DownloadButton className={styles.inactiveButton} />
+        <ButtonLink
+          to={urlFor.blastSubmission(submissionId)}
+          isDisabled={false}
+        >
+          Results
+        </ButtonLink>
+      </div>
+    </BlastSubmissionHeaderGrid>
+  );
+};
+
 const Main = () => {
   const location = useLocation();
   const submissionId = location.pathname.split('/').slice(-1)[0];
@@ -51,9 +129,12 @@ const Main = () => {
     getBlastSubmissionById(state, submissionId)
   );
 
+  if (!blastSubmission) {
+    return null;
+  }
   return (
     <div className={styles.blastSubmissionResultsContainer}>
-      <Header submission={blastSubmission} isAnyJobRunning={false} />
+      <Header submission={blastSubmission} />
       <SequenceBox submission={blastSubmission} />
     </div>
   );
@@ -80,7 +161,9 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <div key={data.sequence.id} className={styles.sequenceBoxWrapper}>
           <div className={styles.resultsSummaryRow}>
             <div>Sequence {data.sequence.id}</div>
-            <div>Query sequence header...</div>
+            <div>
+              {'>' + (parseBlastInput(data.sequence.value)[0].header || '')}
+            </div>
             <div>
               <span className={styles.label}>Against</span>{' '}
               <span className={styles.boldText}>
