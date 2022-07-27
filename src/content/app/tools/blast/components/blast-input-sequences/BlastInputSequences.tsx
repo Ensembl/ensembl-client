@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useAppSelector } from 'src/store';
 
+import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
+
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+
+import { checkSequenceValidity } from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequence';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
@@ -35,7 +39,19 @@ const BlastInputSequences = () => {
     appendEmptyInputBox,
     setUncommittedSequencePresence
   } = useBlastForm();
+
   const shouldAppendEmptyInput = useAppSelector(getEmptyInputVisibility);
+
+  const blastFormContext = useContext(BlastFormContext);
+
+  useEffect(() => {
+    blastFormContext?.clearSequenceValidityFlags();
+
+    const sequenceFlags = sequences.map((sequence) => {
+      return checkSequenceValidity(sequence.value, sequenceType);
+    });
+    blastFormContext?.setSequenceValidityFlags(sequenceFlags);
+  }, [sequences]);
 
   const onSequenceAdded = (input: string, index: number | null) => {
     const parsedSequences = parseBlastInput(input);
@@ -57,6 +73,7 @@ const BlastInputSequences = () => {
     } else if (typeof index === 'number') {
       const newSequences = [...sequences].filter((_, i) => i !== index);
       updateSequences(newSequences);
+      blastFormContext?.removeSequenceValidityFlag(index);
     }
   };
 
