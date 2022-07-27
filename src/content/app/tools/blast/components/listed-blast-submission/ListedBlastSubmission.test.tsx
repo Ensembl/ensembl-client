@@ -100,7 +100,7 @@ describe('BlastSubmissionHeader', () => {
     it('shows multiple sequence boxes if the submission contained multiple sequences', async () => {
       const submission = createBlastSubmission({
         options: { sequencesCount: 5 },
-        fragment: { isExpanded: true }
+        fragment: { ui: { isExpandedOnSubmissionList: true } }
       });
 
       const { container } = renderComponent({
