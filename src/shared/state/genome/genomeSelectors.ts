@@ -17,14 +17,14 @@
 import type { RootState } from 'src/store';
 import type { GenomeInfo } from './genomeTypes';
 
-export const getGenomeInfo = (state: RootState) => state.genome.genomes;
+export const getGenomes = (state: RootState) => state.genome.genomes;
 
-export const getGenomeInfoById = (
+export const getGenomeById = (
   state: RootState,
   genomeId: string
 ): GenomeInfo | null => {
-  const allGenomesInfo = getGenomeInfo(state);
-  return allGenomesInfo[genomeId] || null;
+  const allGenomes = getGenomes(state);
+  return allGenomes[genomeId] || null;
 };
 
 export const getGenomeIdFromUrlSlug = (
@@ -34,19 +34,23 @@ export const getGenomeIdFromUrlSlug = (
   return state.genome.urlToGenomeIdMap[urlSlug];
 };
 
-export const getGenomeInfoByUrlSlug = (
+export const getGenomeByUrlId = (
   state: RootState,
-  urlSlug: string
+  id: string
 ): GenomeInfo | null => {
-  const genomeId = getGenomeIdFromUrlSlug(state, urlSlug);
-  return genomeId ? getGenomeInfoById(state, genomeId) : null;
+  const allGenomes = getGenomes(state);
+  return (
+    Object.values(allGenomes).find(
+      (genome) => genome.url_slug === id || genome.genome_id === id
+    ) ?? null
+  );
 };
 
 export const getGenomeIdForUrl = (
   state: RootState,
   genomeId: string
 ): string | undefined => {
-  const genome = getGenomeInfoById(state, genomeId);
+  const genome = getGenomeById(state, genomeId);
   return genome?.url_slug ?? genome?.genome_id;
 };
 

@@ -194,6 +194,33 @@ export const updateCommonTrackStates: ActionCreator<
   };
 };
 
+export const deleteBrowserActiveFocusObjectIdAndSave = (): ThunkAction<
+  void,
+  any,
+  void,
+  Action<string>
+> => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const currentActiveFocusObjectIds = getBrowserActiveFocusObjectIds(state);
+
+    const updatedActiveFocusObjectIds = pickBy(
+      currentActiveFocusObjectIds,
+      (_, key) => key !== activeGenomeId
+    );
+
+    dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
+
+    browserStorageService.updateActiveFocusObjectIds(
+      updatedActiveFocusObjectIds
+    );
+  }
+};
+
 export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {

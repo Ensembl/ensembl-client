@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
+import { getGenomes } from 'src/shared/state/genome/genomeSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import { Status } from 'src/shared/types/status';
@@ -24,10 +24,10 @@ import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-g
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserGeneral.activeGenomeId;
 
-export const getBrowserActiveGenomeInfo = (state: RootState) => {
-  const allGenomesInfo = getGenomeInfo(state);
+export const getBrowserActiveGenome = (state: RootState) => {
+  const allGenomes = getGenomes(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId ? allGenomesInfo[activeGenomeId] : null;
+  return activeGenomeId ? allGenomes[activeGenomeId] : null;
 };
 
 export const getBrowserActiveFocusObjectIds = (state: RootState) =>
