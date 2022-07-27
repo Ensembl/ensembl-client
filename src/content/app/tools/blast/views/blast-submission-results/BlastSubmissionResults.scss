@@ -2,7 +2,7 @@
 
 .blastSubmissionResultsContainer {
   max-width: 1860px;
-  padding: 0 30px $global-padding-bottom 60px;
+  padding: 0 $standard-gutter $global-padding-bottom 60px;
 }
 
 .listedBlastSubmission:not(:last-child) {
@@ -27,17 +27,24 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: 100px 1060px auto;
-  column-gap: 10px;
+  grid-template-columns: 12ch 1060px auto;
+  column-gap: 20px;
   padding-bottom: 20px;
+}
+
+.sequenceId,
+.hitLabel {
+  text-align: right;
 }
 
 .label {
   font-weight: $light;
+  padding-right: 8px;
 }
 
 .boldText {
   font-weight: $bold;
+  padding-right: 4px;
 }
 
 .speciesInfo span {

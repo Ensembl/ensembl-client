@@ -16,11 +16,15 @@
 
 export type BlastApiResponse = {
   result: {
-    hits: Hit[];
+    hits: BlastHit[];
   };
 };
 
-type Hit = HSP[];
+type BlastHit = {
+  hit_acc: string;
+  hit_def: string;
+  hit_hsps: HSP[];
+};
 
 type HSP = {
   hsp_score: number;
@@ -29,7 +33,6 @@ type HSP = {
   hsp_align_len: number;
   hsp_identity: number;
   hsp_positive: number;
-  hsp_gaps: number;
   hsp_query_frame: string;
   hsp_hit_frame: string;
   hsp_strand: string;

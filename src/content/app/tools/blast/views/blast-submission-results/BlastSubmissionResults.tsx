@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseBlastInput } from '../../utils/blastInputParser';
@@ -36,7 +36,7 @@ import { BlastProgram } from '../../types/blastSettings';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import {
-  BlastSubmission,
+  BlastResult,
   deleteBlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
@@ -123,8 +123,7 @@ const Header = (props: Props) => {
 };
 
 const Main = () => {
-  const location = useLocation();
-  const submissionId = location.pathname.split('/').slice(-1)[0];
+  const { submissionId } = useParams() as { submissionId: string };
   const blastSubmission = useAppSelector((state) =>
     getBlastSubmissionById(state, submissionId)
   );
@@ -132,61 +131,75 @@ const Main = () => {
   if (!blastSubmission) {
     return null;
   }
+
+  const { submittedData, results } = blastSubmission;
+
+  const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {
+    const blastResults = results.filter((r) => r.sequenceId === sequence.id);
+    return {
+      sequence,
+      species: submittedData.species,
+      blastResults
+    };
+  });
+
+  const sequenceBoxes = resultsGroupedBySequence.map((data) => (
+    <SequenceBox
+      key={data.sequence.id}
+      species={data.species}
+      sequence={data.sequence}
+      blastResults={data.blastResults}
+    />
+  ));
+
   return (
     <div className={styles.blastSubmissionResultsContainer}>
       <Header submission={blastSubmission} />
-      <SequenceBox submission={blastSubmission} />
+      {sequenceBoxes}
     </div>
   );
 };
 
 type SequenceBoxProps = {
-  submission: BlastSubmission;
+  sequence: {
+    id: number;
+    value: string;
+  };
+  species: Species[];
+  blastResults: BlastResult[];
 };
 
 const SequenceBox = (props: SequenceBoxProps) => {
-  const { submittedData, results: blastResults } = props.submission;
-
-  const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {
-    const results = blastResults.filter((r) => r.sequenceId === sequence.id);
-    return {
-      sequence,
-      results
-    };
-  });
+  const { sequence, species, blastResults } = props;
 
   return (
     <>
-      {resultsGroupedBySequence.map((data) => (
-        <div key={data.sequence.id} className={styles.sequenceBoxWrapper}>
-          <div className={styles.resultsSummaryRow}>
-            <div>Sequence {data.sequence.id}</div>
-            <div className={styles.sequenceHeader}>
-              {'>' + (parseBlastInput(data.sequence.value)[0].header || '')}
-            </div>
-            <div>
-              <span className={styles.label}>Against</span>{' '}
-              <span className={styles.boldText}>
-                {submittedData.species.length} species{' '}
-              </span>
-            </div>
+      <div key={sequence.id} className={styles.sequenceBoxWrapper}>
+        <div className={styles.resultsSummaryRow}>
+          <div className={styles.sequenceId}>Sequence {sequence.id}</div>
+          <div className={styles.sequenceHeader}>
+            {'>' + (parseBlastInput(sequence.value)[0].header || '')}
           </div>
-
-          {data.results.map((result) => {
-            const species = submittedData.species.filter(
-              (s) => s.genome_id === result.genomeId
-            );
-            return (
-              <SingleBlastJobResult
-                key={result.jobId}
-                species={species[0]}
-                jobId={result.jobId}
-              />
-            );
-          })}
-          <div className={styles.ruler}></div>
+          <div>
+            <span className={styles.label}>Against</span>
+            <span className={styles.boldText}>{species.length} species</span>
+          </div>
         </div>
-      ))}
+
+        {blastResults.map((result) => {
+          const speciesInfo = species.filter(
+            (sp) => sp.genome_id === result.genomeId
+          );
+          return (
+            <SingleBlastJobResult
+              key={result.jobId}
+              species={speciesInfo[0]}
+              jobId={result.jobId}
+            />
+          );
+        })}
+        <div className={styles.ruler}></div>
+      </div>
     </>
   );
 };
@@ -206,11 +219,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { species: speciesInfo } = props;
   return (
     <div className={styles.resultsSummaryRow}>
-      <div>
+      <div className={styles.hitLabel}>
         <span className={styles.boldText}>{data.result.hits.length} </span>
         <span className={styles.label}>
-          {' '}
-          {`${pluralise('hit', data.result.hits.length)}`}{' '}
+          {`${pluralise('hit', data.result.hits.length)}`}
         </span>
       </div>
       <div className={styles.summaryPlot}></div>
