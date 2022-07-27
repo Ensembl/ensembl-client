@@ -18,6 +18,13 @@
   border-top: none;
 }
 
+.sequenceHeader {
+  width: 800px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .resultsSummaryRow {
   display: grid;
   grid-template-columns: 100px 1060px auto;

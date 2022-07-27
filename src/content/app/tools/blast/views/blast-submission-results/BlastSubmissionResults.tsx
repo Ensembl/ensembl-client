@@ -161,7 +161,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <div key={data.sequence.id} className={styles.sequenceBoxWrapper}>
           <div className={styles.resultsSummaryRow}>
             <div>Sequence {data.sequence.id}</div>
-            <div>
+            <div className={styles.sequenceHeader}>
               {'>' + (parseBlastInput(data.sequence.value)[0].header || '')}
             </div>
             <div>
