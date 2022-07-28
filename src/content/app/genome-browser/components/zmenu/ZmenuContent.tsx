@@ -21,7 +21,6 @@ import classNames from 'classnames';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
-// import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import ZmenuAppLinks from './ZmenuAppLinks';
 
@@ -135,6 +134,7 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
       genomeId: genomeIdForUrl,
       focus: featureId
     });
+
     navigate(url, { replace: true });
     props.destroyZmenu();
   };
