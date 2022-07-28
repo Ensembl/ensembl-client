@@ -71,9 +71,10 @@ export const serverFetch: ServerFetch = async (params) => {
   const dispatch: AppDispatch = store.dispatch;
   const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
     'genomeId' | 'entityId'
-  >('/entity-viewer/:genomeId/:entityId', path);
+  >(['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'], path);
 
-  if (!(genomeIdFromUrl && entityId)) {
+  // If the url is just /entity-viewer, there is nothing more to do
+  if (!genomeIdFromUrl) {
     return;
   }
 
@@ -83,21 +84,30 @@ export const serverFetch: ServerFetch = async (params) => {
   const { data: genomeInfoData, error: genomeInfoError } =
     await genomeInfoResponsePromise;
 
-  // FIXME: 404 status code in response
   if (isGenomeNotFoundError(genomeInfoError)) {
     return {
       status: 404
     };
   }
 
-  const genomeId = genomeInfoData?.genomeId;
+  const genomeId = genomeInfoData?.genomeId as string; // by this point, genomeId clearly exists
 
-  if (!genomeId) {
-    return; // this shouldn't happen
+  // If the url is /entity-viewer/:genomeId, there is nothing more to do
+  if (!entityId) {
+    return;
   }
 
-  // FIXME: gene symbol parsing can explode!
-  const geneStableId = parseFocusIdFromUrl(entityId).objectId;
+  // NOTE: we will have to be smarter here when entities are no longer just genes
+  let geneStableId;
+
+  try {
+    geneStableId = parseFocusIdFromUrl(entityId).objectId;
+  } catch {
+    // something wrong with the entity id
+    return {
+      status: 404
+    };
+  }
 
   const pageMetaPromise = dispatch(
     fetchGenePageMeta.initiate({
