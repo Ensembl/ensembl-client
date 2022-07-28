@@ -125,11 +125,12 @@ const useFocusGene = (params: Params) => {
     } else {
       toggleTrack({ trackId: 'focus', status: Status.UNSELECTED });
     }
-  }, [stringifiedVisibleTranscriptIds]);
+  }, [genomeBrowser, stringifiedVisibleTranscriptIds]);
 
   useEffect(() => {
+    // updateFocusGeneTranscripts requires genomeBrowser to be defined
     updateFocusGeneTranscripts(visibleTranscriptIds);
-  }, [geneStableId, stringifiedVisibleTranscriptIds]);
+  }, [genomeBrowser, geneStableId, stringifiedVisibleTranscriptIds]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
