@@ -250,10 +250,7 @@ export const TranscriptsListItemInfo = (
             onClick={handleTranscriptMoreInfoClick}
             label="More information"
             isExpanded={props.expandMoreInfo}
-            classNames={{
-              wrapper: styles.moreInformationLink,
-              label: styles.normalText
-            }}
+            className={styles.moreInformationLink}
           />
         )}
 
@@ -265,10 +262,7 @@ export const TranscriptsListItemInfo = (
           onClick={handleDownloadLinkClick}
           label="Download"
           isExpanded={props.expandDownload}
-          classNames={{
-            wrapper: styles.downloadLink,
-            label: styles.normalText
-          }}
+          className={styles.downloadLink}
         />
         {props.expandDownload && (
           <div className={styles.download}>

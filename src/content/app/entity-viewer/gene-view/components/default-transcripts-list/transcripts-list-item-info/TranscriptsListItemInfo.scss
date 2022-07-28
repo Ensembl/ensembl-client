@@ -33,6 +33,7 @@
   grid-area: left;
   width: 190px;
   margin-bottom: 12px;
+
   div {
     padding-bottom: 6px;
   }
@@ -41,6 +42,7 @@
 .topMiddle {
   grid-area: middle;
   width: 150px;
+
   div {
     padding-bottom: 6px;
   }
@@ -49,6 +51,7 @@
 .topRight {
   grid-area: right;
   width: 210px;
+
   div {
     padding-bottom: 6px;
   }
@@ -56,8 +59,11 @@
 
 .moreInformationLink {
   padding-top: 6px;
-  color: $blue;
-  cursor: pointer;
+  font-weight: $normal;
+}
+
+.normalText {
+  font-weight: $normal;
 }
 
 .moreInformation {
@@ -72,13 +78,10 @@
 
 .moreInfoColumn {
   width: 190px;
+
   div {
     padding-bottom: 6px;
   }
-}
-
-.normalText {
-  font-weight: $normal;
 }
 
 .externalRefLink {
@@ -89,6 +92,7 @@
 .downloadLink {
   grid-area: downloadLink;
   padding-top: 6px;
+  font-weight: $normal;
 }
 
 .download {
