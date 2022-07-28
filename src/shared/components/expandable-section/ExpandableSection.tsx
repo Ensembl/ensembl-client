@@ -69,7 +69,7 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
           <Chevron
             direction={isExpanded ? 'up' : 'down'}
             animate={true}
-            classNames={{ svg: styles.chevron }}
+            className={styles.chevron}
           />
         </div>
       )}

@@ -23,56 +23,37 @@ import Chevron from './Chevron';
 describe('<Chevron />', () => {
   describe('default', () => {
     it('renders correctly', () => {
-      const { container, rerender } = render(<Chevron direction="down" />);
-      const chevron = container.firstChild as HTMLElement;
-
-      expect(chevron.tagName.toLowerCase()).toBe('svg');
-      expect(chevron.classList.contains('chevron')).toBe(true);
-
-      rerender(<Chevron direction="up" />);
-      expect(chevron.classList.contains('chevron_up')).toBe(true);
-
-      rerender(<Chevron direction="left" />);
-      expect(chevron.classList.contains('chevron_left')).toBe(true);
-
-      rerender(<Chevron direction="right" />);
-      expect(chevron.classList.contains('chevron_right')).toBe(true);
-
-      rerender(<Chevron direction="down" animate={true} />);
-      expect(chevron.classList.contains('chevron_animated')).toBe(true);
-    });
-  });
-
-  describe('with wrapper', () => {
-    it('renders correctly', () => {
-      const wrapperClass = 'this_is_wrapper_class';
-      const iconClass = 'this_is_icon_class';
-      const { container } = render(
-        <Chevron
-          direction="down"
-          classNames={{ wrapper: wrapperClass, svg: iconClass }}
-        />
+      const { container, rerender } = render(
+        <Chevron className="componentClass" direction="down" />
       );
       const chevronWrapper = container.firstChild as HTMLElement;
-      const chevron = chevronWrapper.firstChild as HTMLElement;
+      const chevronIcon = container.querySelector('svg') as SVGSVGElement;
 
       expect(chevronWrapper.tagName.toLowerCase()).toBe('span');
-      expect(chevron.tagName.toLowerCase()).toBe('svg');
+      expect(chevronWrapper.classList.contains('componentClass')).toBe(true);
+      expect(chevronIcon.classList.contains('chevron')).toBe(true);
 
-      expect(chevronWrapper.classList.contains(wrapperClass)).toBe(true);
-      expect(chevron.classList.contains(iconClass)).toBe(true);
+      rerender(<Chevron direction="up" />);
+      expect(chevronIcon.classList.contains('chevron_up')).toBe(true);
+
+      rerender(<Chevron direction="left" />);
+      expect(chevronIcon.classList.contains('chevron_left')).toBe(true);
+
+      rerender(<Chevron direction="right" />);
+      expect(chevronIcon.classList.contains('chevron_right')).toBe(true);
+
+      rerender(<Chevron direction="down" animate={true} />);
+      expect(chevronIcon.classList.contains('chevron_animated')).toBe(true);
     });
   });
 
   describe('as a button', () => {
     it('renders correctly', () => {
-      const wrapperClass = 'this_is_wrapper_class';
-      const iconClass = 'this_is_icon_class';
       const { container } = render(
         <Chevron
           direction="down"
           onClick={jest.fn()}
-          classNames={{ wrapper: wrapperClass, svg: iconClass }}
+          className="componentClass"
         />
       );
 
@@ -82,8 +63,7 @@ describe('<Chevron />', () => {
       expect(chevronButton.tagName.toLowerCase()).toBe('button');
       expect(chevron.tagName.toLowerCase()).toBe('svg');
 
-      expect(chevronButton.classList.contains(wrapperClass)).toBe(true);
-      expect(chevron.classList.contains(iconClass)).toBe(true);
+      expect(chevronButton.classList.contains('componentClass')).toBe(true);
     });
 
     it('registers clicks', async () => {

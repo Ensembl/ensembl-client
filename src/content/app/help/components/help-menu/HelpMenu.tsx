@@ -167,7 +167,7 @@ const Submenu = (props: SubmenuProps) => {
         {item.type === 'collection' ? (
           <>
             {item.name}
-            <Chevron direction="right" classNames={{ svg: styles.chevron }} />
+            <Chevron direction="right" className={styles.chevron} />
           </>
         ) : (
           item.name

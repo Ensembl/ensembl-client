@@ -45,7 +45,7 @@ const ShowHide = (props: Props) => {
       <Chevron
         direction={props.isExpanded ? 'up' : 'down'}
         animate={true}
-        classNames={{ wrapper: styles.chevron }}
+        className={styles.chevron}
       />
     </div>
   );
