@@ -115,6 +115,10 @@ const useFocusGene = (params: Params) => {
   }, [genomeBrowser]);
 
   useEffect(() => {
+    if (!focusObjectId) {
+      return;
+    }
+
     const trackStatus =
       Array.isArray(visibleTranscriptIds) && !visibleTranscriptIds.length
         ? Status.UNSELECTED
@@ -125,7 +129,7 @@ const useFocusGene = (params: Params) => {
     } else {
       toggleTrack({ trackId: 'focus', status: Status.UNSELECTED });
     }
-  }, [genomeBrowser, stringifiedVisibleTranscriptIds]);
+  }, [genomeBrowser, focusObjectId, stringifiedVisibleTranscriptIds]);
 
   useEffect(() => {
     // updateFocusGeneTranscripts requires genomeBrowser to be defined
