@@ -16,11 +16,7 @@
 
 import React from 'react';
 
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
-
-import { useAppSelector, useAppDispatch } from 'src/store';
-
-import { getBrowserActiveGenomeTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useAppDispatch } from 'src/store';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
@@ -36,24 +32,16 @@ import styles from './TrackPanelItem.scss';
 
 type Props = {
   transcript: TrackPanelTranscriptType;
+  isVisible: boolean;
+  onVisibilityChange: (transcriptId: string, isVisible: boolean) => void;
   genomeId: string;
-  focusObjectId: string;
 };
 
 const TrackPanelTranscript = (props: Props) => {
-  const { genomeId, focusObjectId, transcript } = props;
-  const visibleTranscriptIds = useAppSelector((state) => {
-    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
-    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
-  });
+  const { genomeId, isVisible, transcript } = props;
   const dispatch = useAppDispatch();
-  const { updateFocusGeneTranscripts } = useGenomeBrowser();
 
   const currentTranscriptId = transcript.stable_id;
-
-  if (!genomeId) {
-    return null;
-  }
 
   const isCanonicalTranscript = transcript.metadata.canonical?.value ?? false;
 
@@ -69,26 +57,8 @@ const TrackPanelTranscript = (props: Props) => {
     );
   };
 
-  const getVisibilityStatus = () =>
-    visibleTranscriptIds.includes(currentTranscriptId)
-      ? Status.SELECTED
-      : Status.UNSELECTED;
-
   const onChangeVisibility = () => {
-    const currentStatus = getVisibilityStatus();
-    const newStatus =
-      currentStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-    let newVisibleTranscriptIds = [...visibleTranscriptIds];
-
-    if (newStatus === Status.SELECTED) {
-      newVisibleTranscriptIds.push(currentTranscriptId);
-    } else {
-      newVisibleTranscriptIds = newVisibleTranscriptIds.filter(
-        (transcriptId) => transcriptId !== currentTranscriptId
-      );
-    }
-
-    updateFocusGeneTranscripts(newVisibleTranscriptIds);
+    props.onVisibilityChange(transcript.stable_id, !isVisible);
   };
 
   const secondaryLabel = isCanonicalTranscript ? (
@@ -101,9 +71,11 @@ const TrackPanelTranscript = (props: Props) => {
     </span>
   );
 
+  const visibilityStatus = isVisible ? Status.SELECTED : Status.UNSELECTED;
+
   return (
     <SimpleTrackPanelItemLayout
-      visibilityStatus={getVisibilityStatus()}
+      visibilityStatus={visibilityStatus}
       onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >

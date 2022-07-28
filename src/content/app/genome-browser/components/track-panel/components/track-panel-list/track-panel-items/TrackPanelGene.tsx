@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -35,11 +35,6 @@ import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanel
 
 import { Status } from 'src/shared/types/status';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { RootState } from 'src/store';
-import {
-  IncomingActionType,
-  type ReportVisibleTranscriptsAction
-} from '@ensembl/ensembl-genome-browser';
 
 import styles from './TrackPanelItem.scss';
 
@@ -49,11 +44,9 @@ type TrackPanelGeneProps = {
   focusObjectId: string;
 };
 
-// TODO: figure out proper gene and transcript track naming conventions
 const GENE_TRACK_ID = TrackId.GENE;
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
-  const geneIdRef = useRef(geneId);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { currentData } = useGetTrackPanelGeneQuery({
     genomeId,
@@ -73,53 +66,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   });
 
-  const {
-    setFocusGene,
-    toggleTrack,
-    updateFocusGeneTranscripts,
-    genomeBrowser
-  } = useGenomeBrowser();
+  const { setFocusGene, toggleTrack, updateFocusGeneTranscripts } =
+    useGenomeBrowser();
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    geneIdRef.current = geneId;
-  }, [geneId]);
-
-  useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.VISIBLE_TRANSCRIPTS,
-      (action: ReportVisibleTranscriptsAction) => {
-        const { gene_id, transcript_ids } = action.payload;
-        if (gene_id === geneIdRef.current) {
-          setVisibleTranscriptIds(transcript_ids);
-        }
-      }
-    );
-
-    return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
-
-  useEffect(() => {
-    updateObjectTrackStatus(trackStatus);
-  }, [genomeId, focusObjectId, trackStatus]);
-
-  const stringifiedVisibleTranscriptIds = visibleTranscriptIds
-    ? String([...visibleTranscriptIds].sort())
-    : 'null';
-
-  // set status of all transcripts based on the saved redux state after loading component
-  useEffect(() => {
-    updateFocusGeneTranscripts(visibleTranscriptIds);
-  }, [geneId, stringifiedVisibleTranscriptIds]);
-
-  const setVisibleTranscriptIds = (transcriptIds: string[]) => {
-    dispatch(
-      updateObjectTrackStates({
-        status: transcriptIds.length ? Status.SELECTED : Status.UNSELECTED,
-        transcriptIds
-      })
-    );
-  };
 
   const updateObjectTrackStatus = (newStatus?: Status) => {
     if (!newStatus) {
@@ -138,6 +87,19 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         status: newStatus
       })
     );
+  };
+
+  const onTranscriptVisibilityChange = (
+    transcriptId: string,
+    isVisible: boolean
+  ) => {
+    let updatedTranscriptIds = visibleTranscriptIds ?? ([] as string[]);
+
+    updatedTranscriptIds = isVisible
+      ? [...updatedTranscriptIds, transcriptId]
+      : updatedTranscriptIds.filter((id) => id !== transcriptId);
+
+    updateFocusGeneTranscripts(updatedTranscriptIds);
   };
 
   if (!currentData) {
@@ -188,7 +150,10 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         <TrackPanelTranscript
           transcript={transcript}
           genomeId={genomeId}
-          focusObjectId={focusObjectId}
+          isVisible={
+            visibleTranscriptIds?.includes(transcript.stable_id) ?? false
+          }
+          onVisibilityChange={onTranscriptVisibilityChange}
           key={transcript.stable_id}
         />
       ))}
