@@ -26,7 +26,7 @@ import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatte
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
-import { Props } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
+import { Props as ListedBlastSubmissionProps } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
@@ -59,7 +59,7 @@ const BlastSubmissionResults = () => {
   );
 };
 
-const Header = (props: Props) => {
+const Header = (props: ListedBlastSubmissionProps) => {
   const { submission } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
