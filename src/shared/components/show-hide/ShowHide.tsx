@@ -40,15 +40,13 @@ const ShowHide = (props: Props) => {
   const wrapperClasses = classNames(styles.showHide, props.className);
 
   return (
-    <div className={wrapperClasses}>
-      <span onClick={props.onClick} className={styles.label}>
-        {props.label && props.label}
-        <Chevron
-          direction={props.isExpanded ? 'up' : 'down'}
-          animate={true}
-          classNames={{ wrapper: styles.chevron }}
-        />
-      </span>
+    <div onClick={props.onClick} className={wrapperClasses}>
+      {props.label && <span className={styles.label}>{props.label}</span>}
+      <Chevron
+        direction={props.isExpanded ? 'up' : 'down'}
+        animate={true}
+        classNames={{ wrapper: styles.chevron }}
+      />
     </div>
   );
 };
