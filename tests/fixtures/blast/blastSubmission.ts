@@ -49,7 +49,6 @@ export const createBlastSubmission = (params?: {
     results: createBlastJobs({ species, sequences }),
     submittedAt: Date.now(),
     seen: false,
-    ui: { isExpandedOnSubmissionList: false },
     ...fragment
   };
 };

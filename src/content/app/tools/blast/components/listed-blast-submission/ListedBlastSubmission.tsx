@@ -18,7 +18,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -42,6 +42,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './ListedBlastSubmission.scss';
+import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
 export type Props = {
   submission: BlastSubmission;
@@ -50,11 +51,16 @@ export type Props = {
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
   const dispatch = useAppDispatch();
+  const uiState = useAppSelector(getBlastSubmissionsUi);
 
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
-  const { isExpandedOnSubmissionList } = submission.ui;
+  const { expandedSubmissionIds } = uiState.unviewedJobsPage;
+
+  const isCurrentSubmissionExpanded = expandedSubmissionIds.includes(
+    submission.id
+  );
 
   const jobsGroupedBySequence = sequences.map((sequence) => {
     const jobs = allJobs.filter((job) => job.sequenceId === sequence.id);
@@ -65,7 +71,7 @@ const ListedBlastSubmission = (props: Props) => {
   });
 
   let sequenceContent = null;
-  if (isExpandedOnSubmissionList || sequences.length === 1) {
+  if (isCurrentSubmissionExpanded || sequences.length === 1) {
     sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
       <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
     ));
@@ -74,11 +80,16 @@ const ListedBlastSubmission = (props: Props) => {
   }
 
   const toggleExpanded = (status: boolean) => {
+    const newExpandedSubmissionIds = status
+      ? [...expandedSubmissionIds, submission.id]
+      : expandedSubmissionIds.filter((id) => id !== submission.id);
+
     dispatch(
       updateSubmissionUi({
-        submissionId: submission.id,
         fragment: {
-          isExpandedOnSubmissionList: status
+          unviewedJobsPage: {
+            expandedSubmissionIds: newExpandedSubmissionIds
+          }
         }
       })
     );
@@ -90,7 +101,7 @@ const ListedBlastSubmission = (props: Props) => {
         {...props}
         isAnyJobRunning={isAnyJobRunning}
         toggleExpanded={toggleExpanded}
-        isExpanded={isExpandedOnSubmissionList}
+        isExpanded={isCurrentSubmissionExpanded}
         sequenceCount={sequences.length}
       />
       {sequenceContent}

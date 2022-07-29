@@ -68,17 +68,24 @@ export type BlastSubmission = {
     status: JobStatus;
     data: null; // TODO: add data type
   }>;
-  ui: {
-    isExpandedOnSubmissionList: boolean; // used to retain expanded / collapsed state in the jobs list view
-  };
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
 
 export type BlastJob = BlastSubmission['results'][number];
 
+export type BlastResultsUI = {
+  unviewedJobsPage: {
+    expandedSubmissionIds: string[];
+  };
+  viewedJobsPage: {
+    expandedSubmissionIds: string[];
+  };
+};
+
 export type BlastResultsState = {
-  [submissionId: string]: BlastSubmission;
+  submissions: { [submissionId: string]: BlastSubmission };
+  ui: BlastResultsUI;
 };
 
 export const restoreBlastSubmissions = createAsyncThunk(
@@ -94,9 +101,20 @@ export const deleteBlastSubmission = createAsyncThunk(
   }
 );
 
+const initialState: BlastResultsState = {
+  submissions: {},
+  ui: {
+    unviewedJobsPage: {
+      expandedSubmissionIds: []
+    },
+    viewedJobsPage: {
+      expandedSubmissionIds: []
+    }
+  }
+};
 const blastResultsSlice = createSlice({
   name: 'blast-results',
-  initialState: {} as BlastResultsState,
+  initialState,
   reducers: {
     updateJob(
       state,
@@ -107,7 +125,7 @@ const blastResultsSlice = createSlice({
       }>
     ) {
       const { submissionId, jobId, fragment } = action.payload;
-      const submission = state[submissionId];
+      const submission = state.submissions[submissionId];
       const job = submission.results.find((job) => job.jobId === jobId);
       if (job) {
         Object.assign(job, fragment);
@@ -116,28 +134,24 @@ const blastResultsSlice = createSlice({
     updateSubmissionUi(
       state,
       action: PayloadAction<{
-        submissionId: string;
-        fragment: Partial<BlastSubmission['ui']>;
+        fragment: Partial<BlastResultsUI>;
       }>
     ) {
-      const { submissionId, fragment } = action.payload;
-      const submission = state[submissionId];
-      if (submission) {
-        Object.assign(submission.ui, fragment);
-      }
+      const { fragment } = action.payload;
+      state.ui = { ...state.ui, ...fragment };
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(restoreBlastSubmissions.fulfilled, (_, { payload }) => {
-      return payload;
+    builder.addCase(restoreBlastSubmissions.fulfilled, (state, { payload }) => {
+      state.submissions = payload;
     });
     builder.addCase(deleteBlastSubmission.fulfilled, (state, { payload }) => {
       const submissionId = payload;
-      delete state[submissionId];
+      delete state.submissions[submissionId];
     });
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
-      state[submissionId] = submission;
+      state.submissions[submissionId] = submission;
     });
   }
 });

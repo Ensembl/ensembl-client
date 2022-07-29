@@ -29,6 +29,7 @@ import ListedBlastSubmission, {
 
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import blastResultsReducer, {
+  BlastResultsUI,
   type BlastResultsState
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -49,7 +50,20 @@ const renderComponent = ({
   state?: Partial<BlastResultsState>;
 }) => {
   const initialState = {
-    blast: { blastResults: state ?? {} }
+    blast: {
+      blastResults: {
+        submissions: {},
+        ui: {
+          unviewedJobsPage: {
+            expandedSubmissionIds: []
+          },
+          viewedJobsPage: {
+            expandedSubmissionIds: []
+          }
+        },
+        ...state
+      }
+    }
   };
 
   const mergedProps = {
@@ -99,12 +113,18 @@ describe('BlastSubmissionHeader', () => {
 
     it('shows multiple sequence boxes if the submission contained multiple sequences', async () => {
       const submission = createBlastSubmission({
-        options: { sequencesCount: 5 },
-        fragment: { ui: { isExpandedOnSubmissionList: true } }
+        options: { sequencesCount: 5 }
       });
 
       const { container } = renderComponent({
-        props: { submission }
+        props: { submission },
+        state: {
+          ui: {
+            unviewedJobsPage: {
+              expandedSubmissionIds: [submission.id]
+            }
+          } as BlastResultsUI
+        }
       });
 
       expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
@@ -221,10 +241,12 @@ describe('BlastSubmissionHeader', () => {
       };
       const { container, store } = renderComponent({
         props: { submission },
-        state: submissionInRedux
+        state: { submissions: submissionInRedux }
       });
 
-      expect(store.getState().blast.blastResults[submissionId]).toBeTruthy();
+      expect(
+        store.getState().blast.blastResults.submissions[submissionId]
+      ).toBeTruthy();
 
       const deleteButton = container.querySelector(
         '.deleteButton'
@@ -236,7 +258,7 @@ describe('BlastSubmissionHeader', () => {
         submissionId
       );
       expect(
-        store.getState().blast.blastResults[submissionId]
+        store.getState().blast.blastResults.submissions[submissionId]
       ).not.toBeTruthy();
     });
 
