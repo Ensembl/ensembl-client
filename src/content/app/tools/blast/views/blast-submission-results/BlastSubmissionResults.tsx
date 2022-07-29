@@ -42,7 +42,7 @@ import {
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import {
   fillBlastForm,
-  Species
+ type Species
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSubmissionResults.scss';
