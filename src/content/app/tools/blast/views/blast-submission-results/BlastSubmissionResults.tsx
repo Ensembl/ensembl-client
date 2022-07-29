@@ -32,7 +32,7 @@ import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import BlastSubmissionHeaderGrid from '../../components/blast-submission-header-container/BlastSubmissionHeaderGrid';
 
-import { BlastProgram } from '../../types/blastSettings';
+import type { BlastProgram } from '../../types/blastSettings';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import {
