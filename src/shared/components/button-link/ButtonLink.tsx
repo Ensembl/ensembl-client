@@ -27,11 +27,29 @@ import styles from './ButtonLink.scss';
 
 type Props = Omit<NavLinkProps, 'children'> & {
   isDisabled?: boolean;
+  matchDescendantPaths?: boolean; // see explanation below; this is something we are unlikely to want
   children: ReactNode;
 };
 
+/**
+ * The `matchDescendantPaths` in `ButtonLink`'s props determines
+ * whether the `end` prop will be added to NavLink.
+ *
+ * According to ReactRouter documentation, the `end` prop
+ * ensures that NavLink doesn't get marked as "active"
+ * when its descendant paths are matched. For example,
+ * <NavLink to="/" end>Home</NavLink> will only be active at the website root,
+ * and not at any other url that starts with "/".
+ */
+
 const ButtonLink = (props: Props) => {
-  const { className, isDisabled, children, ...otherProps } = props;
+  const {
+    className,
+    isDisabled,
+    matchDescendantPaths = false,
+    children,
+    ...otherProps
+  } = props;
 
   const inactiveLinkClasses = classNames(
     styles.buttonLink,
@@ -53,7 +71,7 @@ const ButtonLink = (props: Props) => {
       className={({ isActive }) =>
         isActive ? activeLinkClasses : inactiveLinkClasses
       }
-      end={true}
+      end={!matchDescendantPaths}
     >
       {children}
     </NavLink>
