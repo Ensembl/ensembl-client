@@ -34,7 +34,6 @@ import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItem.scss';
 
@@ -44,7 +43,6 @@ type TrackPanelGeneProps = {
   focusObjectId: string;
 };
 
-const GENE_TRACK_ID = TrackId.GENE;
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -66,20 +64,21 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   });
 
-  const { setFocusGene, toggleTrack, updateFocusGeneTranscripts } =
-    useGenomeBrowser();
+  const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const updateObjectTrackStatus = (newStatus?: Status) => {
-    if (!newStatus) {
-      newStatus =
-        trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-    }
+  const updateObjectTrackStatus = () => {
+    const newStatus =
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
-    if (newStatus === Status.SELECTED) {
+    if (trackStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
+      const visibleTranscriptIds = sortedTranscripts
+        .slice(0, 1)
+        .map((transcript) => transcript.stable_id);
+      updateFocusGeneTranscripts(visibleTranscriptIds);
     } else {
-      toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
+      updateFocusGeneTranscripts([]);
     }
 
     dispatch(
@@ -99,6 +98,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       ? [...updatedTranscriptIds, transcriptId]
       : updatedTranscriptIds.filter((id) => id !== transcriptId);
 
+    if (!visibleTranscriptIds?.length) {
+      setFocusGene(focusObjectId);
+    }
     updateFocusGeneTranscripts(updatedTranscriptIds);
   };
 
