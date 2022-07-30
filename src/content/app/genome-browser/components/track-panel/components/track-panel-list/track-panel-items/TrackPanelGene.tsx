@@ -73,9 +73,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
     if (newStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
-      const visibleTranscriptIds = sortedTranscripts
-        .slice(0, 1)
-        .map((transcript) => transcript.stable_id);
+      const visibleTranscriptIds = sortedTranscripts.map(
+        (transcript) => transcript.stable_id
+      );
       updateFocusGeneTranscripts(visibleTranscriptIds);
     } else {
       updateFocusGeneTranscripts([]);
@@ -130,11 +130,17 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
+  const geneVisibilityStatus = !visibleTranscriptIds?.length
+    ? Status.UNSELECTED
+    : visibleTranscriptIds.length === gene.transcripts.length
+    ? Status.SELECTED
+    : Status.PARTIALLY_SELECTED;
+
   return (
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
-        visibilityStatus={trackStatus}
+        visibilityStatus={geneVisibilityStatus}
         onChangeVisibility={updateObjectTrackStatus}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
