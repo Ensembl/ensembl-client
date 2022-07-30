@@ -71,7 +71,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     const newStatus =
       trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
-    if (trackStatus === Status.SELECTED) {
+    if (newStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
       const visibleTranscriptIds = sortedTranscripts
         .slice(0, 1)
