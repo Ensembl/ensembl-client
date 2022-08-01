@@ -19,6 +19,8 @@ import React, {
   type HTMLAttributes,
   type ForwardedRef
 } from 'react';
+import classNames from 'classnames';
+
 import TrashcanIcon from 'static/icons/icon_delete.svg';
 
 import styles from './DeleteButton.scss';
@@ -26,8 +28,12 @@ import styles from './DeleteButton.scss';
 type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
 
 const DeleteButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+  const { className, ...otherProps } = props;
+
+  const elementClasses = classNames(styles.deleteButton, className);
+
   return (
-    <button {...props} ref={ref} className={styles.deleteButton}>
+    <button {...otherProps} ref={ref} className={elementClasses}>
       <TrashcanIcon />
     </button>
   );

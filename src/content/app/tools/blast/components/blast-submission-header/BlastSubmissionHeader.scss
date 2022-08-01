@@ -1,0 +1,45 @@
+@import 'src/styles/common';
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  column-gap: 172px;
+  align-items: center;
+  padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
+  padding-top: 20px;
+  margin-bottom: 14px;
+  white-space: nowrap;
+}
+
+.submissionIdLabel {
+  font-weight: $light;
+  margin-right: 1ch;
+}
+
+.editSubmission {
+  color: $blue;
+  cursor: pointer;
+  margin: 0 32px;
+}
+
+.timeStamp {
+  white-space: nowrap;
+}
+
+.timeZone {
+  font-weight: $light;
+  margin-left: 1ch;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 40px;
+  width: 268px;
+}
+
+.inactiveButton {
+  --download-button-background: #{$grey};
+  --delete-button-background: #{$grey};
+}

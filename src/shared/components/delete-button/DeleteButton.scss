@@ -8,6 +8,6 @@
   width: var(--delete-button-size, 18px);
 
   svg {
-    fill: $blue;
+    fill: var(--delete-button-background, #{$blue});
   }
 }

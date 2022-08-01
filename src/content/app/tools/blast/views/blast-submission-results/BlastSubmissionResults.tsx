@@ -15,37 +15,23 @@
  */
 
 import React from 'react';
-import { useAppDispatch, useAppSelector } from 'src/store';
-import { useNavigate, useParams } from 'react-router';
+import { useAppSelector } from 'src/store';
+import { useParams } from 'react-router';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseBlastInput } from '../../utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
-import { Props as ListedBlastSubmissionProps } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
-import ButtonLink from 'src/shared/components/button-link/ButtonLink';
-import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadButton from 'src/shared/components/download-button/DownloadButton';
-import BlastSubmissionHeaderGrid from '../../components/blast-submission-header-container/BlastSubmissionHeaderGrid';
-
-import type { BlastProgram } from '../../types/blastSettings';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import {
-  BlastResult,
-  deleteBlastSubmission
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import {
-  fillBlastForm,
- type Species
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSubmissionResults.scss';
+import BlastSubmissionHeader from '../../components/blast-submission-header/BlastSubmissionHeader';
 
 const BlastSubmissionResults = () => {
   return (
@@ -56,69 +42,6 @@ const BlastSubmissionResults = () => {
       </ToolsTopBar>
       <Main />
     </div>
-  );
-};
-
-const Header = (props: ListedBlastSubmissionProps) => {
-  const { submission } = props;
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const blastProgram =
-    submission.submittedData.parameters.program.toUpperCase();
-  const submissionId = submission.id;
-  const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
-
-  const editSubmission = () => {
-    const { sequences, species, parameters } = submission.submittedData;
-    const parsedSequences = sequences.flatMap((sequence) =>
-      parseBlastInput(sequence.value)
-    );
-    const { title, program, stype, ...otherParameters } = parameters;
-
-    const payload = {
-      sequences: parsedSequences,
-      selectedSpecies: species,
-      settings: {
-        jobName: title,
-        sequenceType: stype,
-        program: program as BlastProgram,
-        parameters: otherParameters
-      }
-    };
-    dispatch(fillBlastForm(payload));
-    navigate(urlFor.blastForm());
-  };
-
-  const handleDeletion = () => {
-    dispatch(deleteBlastSubmission(submissionId));
-  };
-
-  return (
-    <BlastSubmissionHeaderGrid>
-      <div>{blastProgram}</div>
-      <div>
-        <span className={styles.submissionIdLabel}>Submission</span>
-        <span>{submissionId}</span>
-        <span className={styles.editSubmission} onClick={editSubmission}>
-          Edit/rerun
-        </span>
-        <span className={styles.timeStamp}>
-          <span>{submissionTime}</span>
-          <span className={styles.timeZone}>GMT</span>
-        </span>
-      </div>
-      <div className={styles.controlButtons}>
-        <DeleteButton onClick={handleDeletion} />
-        <DownloadButton className={styles.inactiveButton} />
-        <ButtonLink
-          to={urlFor.blastSubmission(submissionId)}
-          isDisabled={false}
-        >
-          Results
-        </ButtonLink>
-      </div>
-    </BlastSubmissionHeaderGrid>
   );
 };
 
@@ -154,7 +77,10 @@ const Main = () => {
 
   return (
     <div className={styles.blastSubmissionResultsContainer}>
-      <Header submission={blastSubmission} />
+      <BlastSubmissionHeader
+        submission={blastSubmission}
+        isAnyJobRunning={false}
+      />
       {sequenceBoxes}
     </div>
   );
