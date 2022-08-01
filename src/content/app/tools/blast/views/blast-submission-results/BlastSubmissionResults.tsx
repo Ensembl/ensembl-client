@@ -24,14 +24,14 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
+import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { type BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSubmissionResults.scss';
-import BlastSubmissionHeader from '../../components/blast-submission-header/BlastSubmissionHeader';
 
 const BlastSubmissionResults = () => {
   return (
@@ -104,7 +104,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <div className={styles.resultsSummaryRow}>
           <div className={styles.sequenceId}>Sequence {sequence.id}</div>
           <div className={styles.sequenceHeader}>
-            {'>' + (parseBlastInput(sequence.value)[0].header || '')}
+            {'>' + parseBlastInput(sequence.value)[0].header}
           </div>
           <div>
             <span className={styles.label}>Against</span>
