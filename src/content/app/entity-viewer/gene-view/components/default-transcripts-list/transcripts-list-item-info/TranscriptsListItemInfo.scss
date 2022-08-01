@@ -57,6 +57,11 @@
   }
 }
 
+.moreInformationLink,
+.downloadLink {
+  justify-self: start;
+}
+
 .moreInformationLink {
   padding-top: 6px;
   font-weight: $normal;
