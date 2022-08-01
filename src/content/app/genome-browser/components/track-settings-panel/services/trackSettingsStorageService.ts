@@ -18,38 +18,38 @@ import storageService, {
   type StorageServiceInterface
 } from 'src/services/storage-service';
 import type {
-  GenomeTrackConfigs,
-  TrackConfigsForGenome
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+  GenomeTrackSettings,
+  TrackSettingsForGenome
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 export enum StorageKeys {
-  TRACK_CONFIGS = 'browser.trackConfig'
+  TRACK_SETTINGS = 'browser.trackSettings'
 }
 
-export class TrackConfigStorageService {
+export class trackSettingsStorageService {
   private storageService: StorageServiceInterface;
 
   public constructor(storageService: StorageServiceInterface) {
     this.storageService = storageService;
   }
 
-  public getTrackConfigs(): GenomeTrackConfigs {
-    return this.storageService.get(StorageKeys.TRACK_CONFIGS) || {};
+  public getTrackSettings(): GenomeTrackSettings {
+    return this.storageService.get(StorageKeys.TRACK_SETTINGS) || {};
   }
 
-  public setTrackConfigs(params: {
+  public setTrackSettings(params: {
     genomeId: string;
-    fragment: Partial<TrackConfigsForGenome>;
+    fragment: Partial<TrackSettingsForGenome>;
   }) {
     const { genomeId, fragment } = params;
-    this.storageService.update(StorageKeys.TRACK_CONFIGS, {
+    this.storageService.update(StorageKeys.TRACK_SETTINGS, {
       [genomeId]: fragment
     });
   }
 
-  public deleteTrackConfigs(genomeId: string): void {
-    return this.storageService.removeAt(StorageKeys.TRACK_CONFIGS, genomeId);
+  public deleteTrackSettings(genomeId: string): void {
+    return this.storageService.removeAt(StorageKeys.TRACK_SETTINGS, genomeId);
   }
 }
 
-export default new TrackConfigStorageService(storageService);
+export default new trackSettingsStorageService(storageService);
