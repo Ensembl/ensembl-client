@@ -101,8 +101,8 @@ $backgroundColor: $black;
   }
 }
 
-.openFilterLabel {
-  color: $white;
+.showHide {
+  --show-hide-label-color: $white;
 }
 
 .labelWithActivityIndicator {

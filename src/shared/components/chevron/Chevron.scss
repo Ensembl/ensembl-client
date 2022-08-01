@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
 .chevron {
-  fill: $blue;
-  height: 8px;
+  fill: var(--chevron-fill, $blue);
+  height: var(--chevron-height, 8px);
   user-select: none;
 }
 

@@ -147,7 +147,7 @@ const TranscriptExternalReferencesGroups = (props: {
   return (
     <>
       <ShowHide
-        classNames={{ wrapper: styles.showHideWrapper }}
+        className={styles.showHide}
         onClick={toggleTranscript}
         isExpanded={isTranscriptOpen}
         label={transcript.stable_id}
@@ -195,7 +195,7 @@ const ExternalReferencesGroup = (props: {
   return (
     <>
       <ShowHide
-        classNames={{ wrapper: styles.showHideWrapper }}
+        className={styles.showHide}
         onClick={toggleExternalReferencesGroup}
         isExpanded={isExternalReferencesGroupOpen}
         label={source.name}
