@@ -67,7 +67,33 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const updateObjectTrackStatus = () => {
+  if (!currentData) {
+    return null;
+  }
+
+  const { gene } = currentData;
+
+  const sortedTranscripts = defaultSort(gene.transcripts);
+  const visibleSortedTranscripts = isCollapsed
+    ? [sortedTranscripts[0]]
+    : sortedTranscripts;
+
+  const geneVisibilityStatus = !visibleTranscriptIds?.length
+    ? Status.UNSELECTED
+    : visibleTranscriptIds.length === gene.transcripts.length
+    ? Status.SELECTED
+    : Status.PARTIALLY_SELECTED;
+
+  const onGeneVisibilityChange = () => {
+    if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
+      // show all transcripts
+      const visibleTranscriptIds = sortedTranscripts.map(
+        (transcript) => transcript.stable_id
+      );
+      updateFocusGeneTranscripts(visibleTranscriptIds);
+      return;
+    }
+
     const newStatus =
       trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
@@ -104,16 +130,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     updateFocusGeneTranscripts(updatedTranscriptIds);
   };
 
-  if (!currentData) {
-    return null;
-  }
-
-  const { gene } = currentData;
-
-  const sortedTranscripts = isCollapsed
-    ? [defaultSort(gene.transcripts)[0]]
-    : defaultSort(gene.transcripts);
-
   const toggleExpand = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -130,18 +146,12 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const geneVisibilityStatus = !visibleTranscriptIds?.length
-    ? Status.UNSELECTED
-    : visibleTranscriptIds.length === gene.transcripts.length
-    ? Status.SELECTED
-    : Status.PARTIALLY_SELECTED;
-
   return (
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
         visibilityStatus={geneVisibilityStatus}
-        onChangeVisibility={updateObjectTrackStatus}
+        onChangeVisibility={onGeneVisibilityChange}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >
@@ -154,7 +164,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           </span>
         </div>
       </GroupTrackPanelItemLayout>
-      {sortedTranscripts.map((transcript) => (
+      {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
           transcript={transcript}
           genomeId={genomeId}
