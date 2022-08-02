@@ -33,7 +33,7 @@ import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 
 import { useAppSelector } from 'src/store';
-import { getAllTrackConfigs } from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
+import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
@@ -43,15 +43,15 @@ import {
   TrackId,
   TrackStates
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { TrackType } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { Status } from 'src/shared/types/status';
 
 const useGenomeBrowser = () => {
   const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const trackConfigsForGenome = useAppSelector(getAllTrackConfigs);
+  const trackSettingsForGenome = useAppSelector(getAllTrackSettings);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
-  const trackConfigs = trackConfigsForGenome?.tracks;
+  const trackSettings = trackSettingsForGenome?.tracks;
   const GENE_TRACK_ID = TrackId.GENE;
 
   if (!genomeBrowserContext) {
@@ -158,7 +158,7 @@ const useGenomeBrowser = () => {
     }
   };
 
-  const restoreTrackConfigStates = () => {
+  const restoreTrackSettingsStates = () => {
     if (!activeGenomeId || !genomeBrowser) {
       return;
     }
@@ -173,9 +173,9 @@ const useGenomeBrowser = () => {
     const trackStateForNames = cloneDeep(emptyOnOffLists);
     const trackStateForLabels = cloneDeep(emptyOnOffLists);
 
-    trackConfigs &&
-      Object.keys(trackConfigs).forEach((trackId) => {
-        const config = trackConfigs[trackId];
+    trackSettings &&
+      Object.keys(trackSettings).forEach((trackId) => {
+        const config = trackSettings[trackId];
 
         config.showTrackName
           ? trackStateForNames.on.push(trackId)
@@ -375,7 +375,7 @@ const useGenomeBrowser = () => {
       }
     });
 
-    const trackInfo = trackConfigs && trackConfigs[trackId];
+    const trackInfo = trackSettings && trackSettings[trackId];
 
     if (trackInfo && 'showFeatureLabels' in trackInfo && isTurnedOn) {
       genomeBrowser?.send({
@@ -389,7 +389,7 @@ const useGenomeBrowser = () => {
     }
 
     const allTrackNamesOn =
-      trackConfigs && trackConfigs[trackId]?.showTrackName;
+      trackSettings && trackSettings[trackId]?.showTrackName;
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: allTrackNamesOn
@@ -402,6 +402,16 @@ const useGenomeBrowser = () => {
     }
   };
 
+  const updateFocusGeneTranscripts = (visibleTranscriptIds: string[]) => {
+    genomeBrowser?.send({
+      type: OutgoingActionType.SET_VISIBLE_TRANSCRIPTS,
+      payload: {
+        track_id: 'focus',
+        transcript_ids: visibleTranscriptIds
+      }
+    });
+  };
+
   return {
     activateGenomeBrowser,
     clearGenomeBrowser,
@@ -409,9 +419,10 @@ const useGenomeBrowser = () => {
     changeFocusObjectFromZmenu,
     changeBrowserLocation,
     restoreBrowserTrackStates,
-    restoreTrackConfigStates,
+    restoreTrackSettingsStates,
     setZmenus,
     toggleTrack,
+    updateFocusGeneTranscripts,
     toggleTrackName,
     toggleFeatureLabels,
     toggleSeveralTranscripts,

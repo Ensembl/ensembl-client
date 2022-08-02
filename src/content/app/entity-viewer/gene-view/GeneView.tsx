@@ -146,8 +146,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     dispatch(setFilterPanel(!isFilterPanelOpen));
   };
 
-  const filterLabelClass = isFilterPanelOpen ? styles.openFilterLabel : '';
-
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
@@ -186,9 +184,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           {props.gene.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
               <ShowHide
-                classNames={{
-                  label: filterLabelClass
-                }}
+                className={isFilterPanelOpen ? styles.showHide : undefined}
                 onClick={toggleFilterPanel}
                 isExpanded={isFilterPanelOpen}
                 label={filterLabel}

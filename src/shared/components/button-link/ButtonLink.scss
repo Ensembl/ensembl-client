@@ -1,27 +1,30 @@
 @import 'src/styles/common';
 
 .buttonLink {
+  --_button-color: var(--button-link-color, #{$blue});
   display: inline-block;
   padding: var(--button-link-padding, 7px 18px);
   line-height: var(--button-link-line-height, 1);
   border-radius: var(--button-link-border-radius, 4px);
-  border: var(--button-link-border, 1px solid #{$blue});
-  background-color: var(--button-link-background-color, #{$blue});
-  color: var(--button-link-color, #{$white});
+  border: 1px solid var(--_button-color);
+  background-color: var(--_button-color);
+  color: var(--button-link-text-color, #{$white});
   font-weight: var(--button-link-font-weight, #{$bold});
   user-select: none;
 }
 
 .buttonLinkActive {
-  border: var(--button-link-active-border, 1px solid #{$black});
-  background-color: var(--button-link-active-background-color, #{$black});
+  --_button-color: var(--button-link-active-color, #{$black});
+  border: 1px solid var(--_button-color);
+  background-color: var(--_button-color);
   pointer-events: none;
   cursor: default;
 }
 
 .buttonLinkDisabled {
-  border: var(--button-link-disabled-border, 1px solid #{$grey});
-  background-color: var(--button-link-disabled-background-color, #{$grey});
+  --_button-color: var(--button-link-disabled-color, #{$grey});
+  border: 1px solid var(--_button-color);
+  background-color: var(--_button-color);
   pointer-events: none;
   cursor: default;
 }

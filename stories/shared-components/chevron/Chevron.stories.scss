@@ -17,9 +17,9 @@
 .controls {
   display: grid;
   grid-template-columns: 100px 100px;
-  grid-template-areas: 
-          'direction animation'
-          'direction class';
+  grid-template-areas:
+    'direction animation'
+    'direction class';
   column-gap: 2rem;
   row-gap: 1rem;
 }
@@ -37,6 +37,6 @@
 }
 
 .customChevron {
-  height: 30px;
-  width: 30px;
+  --chevron-height: 12px;
+  --chevron-fill: yellowgreen;
 }

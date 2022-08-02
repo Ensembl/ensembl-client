@@ -18,23 +18,31 @@ import { useSelector } from 'react-redux';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import {
+import { AppName } from 'src/global/globalConfig';
+import type {
   PopularSpecies,
   SearchMatch
 } from 'src/content/app/species-selector/types/species-search';
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import type { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 
 const useSpeciesSelectorAnalytics = () => {
   const committedSpecies = useSelector(getCommittedSpecies);
+
+  const trackEvent = (ga: AnalyticsOptions) => {
+    analyticsTracking.trackEvent({
+      ...ga,
+      app: AppName.SPECIES_SELECTOR
+    });
+  };
 
   /*  Species Selector Page Events */
   const trackAutocompleteSpeciesSelect = (species: SearchMatch) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_search',
       action: 'preselect',
       label: speciesNameForAnalytics,
@@ -48,7 +56,7 @@ const useSpeciesSelectorAnalytics = () => {
   ) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'popular_species',
       action: action,
       label: speciesNameForAnalytics,
@@ -59,7 +67,7 @@ const useSpeciesSelectorAnalytics = () => {
   const trackCommittedSpecies = (species: CurrentItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_selector',
       label: speciesNameForAnalytics,
       action: 'add',
@@ -78,7 +86,7 @@ const useSpeciesSelectorAnalytics = () => {
       .map((species) => getSpeciesAnalyticsName(species))
       .sort();
 
-    analyticsTracking.trackEvent({
+    trackEvent({
       category: 'species_selector',
       action: 'select_multiple',
       label: committedSpeciesNames.join(','),

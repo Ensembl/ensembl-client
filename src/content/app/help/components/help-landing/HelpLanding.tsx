@@ -104,7 +104,7 @@ const StartUsingSection = () => {
           label="Show me what to do"
           isExpanded={isExpanded}
           onClick={toggleExpanded}
-          classNames={{ wrapper: styles.showHideWrapper }}
+          className={styles.showHide}
         />
       </div>
 

@@ -33,12 +33,12 @@ import useBrowserCogList from './useBrowserCogList';
 import {
   getBrowserCogList,
   getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   type CogList,
   updateCogList,
   updateSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
@@ -118,7 +118,7 @@ export const BrowserCogList = () => {
     });
 
   return genomeBrowser ? (
-    <div className={styles.browserTrackConfigOuter}>
+    <div className={styles.browserTrackSettingsOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner}>{cogs}</div>
       </div>

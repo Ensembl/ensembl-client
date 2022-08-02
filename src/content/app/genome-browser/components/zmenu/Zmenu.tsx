@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import pickBy from 'lodash/pickBy';
+import usePrevious from 'src/shared/hooks/usePrevious';
+
 import {
   ZmenuContentTranscript,
   ZmenuContentGene,
@@ -24,11 +26,13 @@ import {
   ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
-import { useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
+import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   Toolbox,
@@ -54,7 +58,19 @@ export type ZmenuProps = {
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
+  const chromosomeLocation = useAppSelector(getActualChrLocation);
+  const previousChromosomeLocation = usePrevious(chromosomeLocation);
+
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (
+      chromosomeLocation &&
+      previousChromosomeLocation &&
+      chromosomeLocation.toString() !== previousChromosomeLocation.toString()
+    ) {
+      destroyZmenu();
+    }
+  }, [chromosomeLocation]);
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
@@ -69,42 +85,44 @@ const Zmenu = (props: ZmenuProps) => {
   const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [];
 
   let featureId = '',
-    transcriptId = '';
+    transcriptId = '',
+    transcript: ZmenuContentTranscript | undefined,
+    gene: ZmenuContentGene | undefined;
 
   const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
     Boolean(variety.type)
   )?.type;
 
   if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
-    const transcript = content.find(
+    transcript = content.find(
       (feature: ZmenuContentTranscript | ZmenuContentGene) =>
         feature.metadata.type === 'transcript'
     ) as ZmenuContentTranscript;
 
-    if (!transcript) {
-      return null;
+    if (transcript) {
+      features.push(transcript);
+
+      gene = content.find(
+        (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+          feature.metadata.type === 'gene' &&
+          feature.metadata.id === transcript?.metadata.gene_id
+      ) as ZmenuContentGene;
+
+      if (gene) {
+        features.push(gene);
+      }
+
+      transcriptId = transcript.metadata.transcript_id;
+      featureId = `gene:${gene.metadata.id.split('.')[0]}`;
     }
+  }
 
-    features.push(transcript);
+  useEffect(() => {
+    gene && dispatch(changeHighlightedTrackId(gene.metadata.track));
+  }, []);
 
-    const gene = content.find(
-      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
-        feature.metadata.type === 'gene' &&
-        feature.metadata.id === transcript.metadata.gene_id
-    ) as ZmenuContentGene;
-
-    if (!gene) {
-      return null;
-    }
-
-    if (gene) {
-      features.push(gene);
-    }
-
-    transcriptId = transcript.metadata.transcript_id;
-    featureId = `gene:${gene.metadata.id.split('.')[0]}`;
-
-    dispatch(changeHighlightedTrackId(gene.metadata.track));
+  if (!transcript || !gene) {
+    return null;
   }
 
   const mainContent = (

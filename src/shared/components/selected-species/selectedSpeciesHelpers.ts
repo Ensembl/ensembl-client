@@ -22,8 +22,10 @@ const PADDING_SIZE = 20;
 const SPACE_BETWEEN = 10;
 const BORDER_WIDTH = 1;
 
-export const getDisplayName = (species: CommittedItem) =>
-  species.common_name || species.scientific_name;
+export const getDisplayName = (species: {
+  common_name: string | null;
+  scientific_name: string;
+}) => species.common_name || species.scientific_name;
 
 export const getFullSpeciesItemWidth = (species: CommittedItem) => {
   const name = getDisplayName(species);

@@ -1,15 +1,16 @@
 @import 'src/styles/common';
 
 .showHide {
-  // increase specificity to be sure to override chevron's own styles 
-  .chevron {
-    margin-left: 10px;
-    height: 6px;
-  }
+  cursor: pointer;
+  display: inline-block;
 }
 
 .label {
-  color: $blue;
-  cursor: pointer;
+  color: var(--show-hide-label-color, $blue);
   white-space: nowrap;
+}
+
+.chevron {
+  margin-left: 10px;
+  --chevron-height: var(--show-hide-chevron-height, 6px);
 }

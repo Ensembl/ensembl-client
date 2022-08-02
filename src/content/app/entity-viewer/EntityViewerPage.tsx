@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import loadable from '@loadable/component';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import {
-  parseFocusObjectId,
-  parseFocusIdFromUrl
-} from 'src/shared/helpers/focusObjectHelpers';
-
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
-import { fetchPageTitleInfo } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSlice';
-import { getEntityViewerPageMeta } from 'src/content/app/entity-viewer/state/pageMeta/entityViewerPageMetaSelectors';
 import {
-  getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEntityId
-} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+  fetchGenomeInfo,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenePageMetaQuery,
+  fetchGenePageMeta
+} from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
@@ -42,37 +39,26 @@ import type { AppDispatch } from 'src/store';
 const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
 
 const EntityViewerPage = () => {
-  const dispatch = useAppDispatch();
   const hasMounted = useHasMounted();
-  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);
-  const pageMeta = useAppSelector(getEntityViewerPageMeta);
 
-  const { title } = pageMeta;
+  // TODO: eventually, EntityViewerPage should not use a hook that is explicitly about gene,
+  // because we will have entities other than gene
+  const { genomeId, geneId } = useGeneViewIds();
 
-  useEffect(() => {
-    const geneId = activeEntityId
-      ? parseFocusObjectId(activeEntityId).objectId
-      : null;
-    const shouldFetchPageTitle =
-      activeGenomeId !== null &&
-      geneId !== null &&
-      (activeGenomeId !== pageMeta.genomeId || geneId !== pageMeta.entityId);
-
-    if (shouldFetchPageTitle) {
-      dispatch(
-        fetchPageTitleInfo({
-          genomeId: activeGenomeId as string,
-          geneStableId: geneId as string
-        })
-      );
+  const { data: pageMeta } = useGenePageMetaQuery(
+    {
+      genomeId: genomeId ?? '',
+      geneId: geneId ?? ''
+    },
+    {
+      skip: !genomeId || !geneId
     }
-  }, [activeGenomeId, activeEntityId]);
+  );
 
   return (
     <>
       <Helmet>
-        <title>{title}</title>
+        <title>{pageMeta?.title}</title>
         <meta name="description" content="Entity viewer" />
       </Helmet>
       {hasMounted && <LoadableEntityViewer />}
@@ -85,34 +71,58 @@ export const serverFetch: ServerFetch = async (params) => {
   const dispatch: AppDispatch = store.dispatch;
   const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
     'genomeId' | 'entityId'
-  >('/entity-viewer/:genomeId/:entityId', path);
+  >(['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'], path);
 
-  if (!(genomeIdFromUrl && entityId)) {
+  // If the url is just /entity-viewer, there is nothing more to do
+  if (!genomeIdFromUrl) {
     return;
   }
 
   const genomeInfoResponsePromise = dispatch(
     fetchGenomeInfo.initiate(genomeIdFromUrl)
   );
-  const genomeInfoResponse = await genomeInfoResponsePromise;
-  genomeInfoResponsePromise.unsubscribe();
+  const { data: genomeInfoData, error: genomeInfoError } =
+    await genomeInfoResponsePromise;
 
-  // TODO: if genomeInfoResponse.error.originalStatus === 404,
-  // we want to show the 404 error screen somehow
-
-  const genomeId = genomeInfoResponse.data?.genomeId;
-
-  if (!genomeId) {
-    return; // this shouldn't happen
+  if (isGenomeNotFoundError(genomeInfoError)) {
+    return {
+      status: 404
+    };
   }
 
-  const stableId = parseFocusIdFromUrl(entityId).objectId;
-  await store.dispatch(
-    fetchPageTitleInfo({
+  const genomeId = genomeInfoData?.genomeId as string; // by this point, genomeId clearly exists
+
+  // If the url is /entity-viewer/:genomeId, there is nothing more to do
+  if (!entityId) {
+    return;
+  }
+
+  // NOTE: we will have to be smarter here when entities are no longer just genes
+  let geneStableId;
+
+  try {
+    geneStableId = parseFocusIdFromUrl(entityId).objectId;
+  } catch {
+    // something wrong with the entity id
+    return {
+      status: 404
+    };
+  }
+
+  const pageMetaPromise = dispatch(
+    fetchGenePageMeta.initiate({
       genomeId,
-      geneStableId: stableId
+      geneId: geneStableId
     })
   );
+  const pageMetaQueryResult = await pageMetaPromise;
+
+  if ((pageMetaQueryResult?.error as any)?.meta?.data?.gene === null) {
+    // this is graphql's way of telling us that there is no such gene
+    return {
+      status: 404
+    };
+  }
 };
 
 export default EntityViewerPage;

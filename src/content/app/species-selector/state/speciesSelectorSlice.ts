@@ -107,11 +107,12 @@ export const fetchPopularSpecies = createAsyncThunk(
   }
 );
 
-export const loadStoredSpecies =
-  (): ThunkAction<void, any, void, Action<string>> => (dispatch) => {
-    const storedSpecies = speciesSelectorStorageService.getSelectedSpecies();
-    dispatch(updateCommittedSpecies(storedSpecies));
-  };
+export const loadStoredSpecies = createAsyncThunk(
+  'species-selector/loadStoredSpecies',
+  async () => {
+    return speciesSelectorStorageService.getSelectedSpecies();
+  }
+);
 
 export const commitSelectedSpeciesAndSave =
   (): ThunkAction<void, any, void, Action<string>> => (dispatch, getState) => {
@@ -218,6 +219,9 @@ const speciesSelectorSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchPopularSpecies.fulfilled, (state, action) => {
       state.popularSpecies = action.payload;
+    });
+    builder.addCase(loadStoredSpecies.fulfilled, (state, action) => {
+      state.committedItems = action.payload;
     });
   }
 });

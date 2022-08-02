@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction, Action } from '@reduxjs/toolkit';
-import { ThunkAction } from 'redux-thunk';
+import { createSlice, type PayloadAction, type Action } from '@reduxjs/toolkit';
+import { type ThunkAction } from 'redux-thunk';
+import pickBy from 'lodash/pickBy';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   getEntityViewerActiveGenomeId,
+  getEntityViewerActiveEntityIds,
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -75,6 +77,35 @@ export const setActiveIds =
     }
   };
 
+// This thunk needs to be a synchronous function in order to be clear the active entity id from redux
+// in time for navigating to EntityViewer interstitial (otherwise user will be redirected to the active entity page).
+// If/when we remove the redirect from /entity-viewer/:genomeId to /entity-viewer/:genomeId/:entityId,
+// the synchronous nature of this thunk will become irrelevant
+export const deleteActiveEntityIdAndSave =
+  (): ThunkAction<void, any, void, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+
+    if (!activeGenomeId) {
+      return; // won't happen
+    }
+
+    const allActiveEntityIds = getEntityViewerActiveEntityIds(state);
+
+    const updatedActiveEntityIds = pickBy(
+      allActiveEntityIds,
+      (_, key) => key !== activeGenomeId
+    );
+
+    entityViewerStorageService.updateGeneralState({
+      activeEntityIds: updatedActiveEntityIds
+    });
+
+    return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
+  };
+
 export const setDefaultActiveGenomeId =
   (): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
@@ -88,11 +119,14 @@ const entityViewerGeneralSlice = createSlice({
   name: 'entity-viewer-general',
   initialState,
   reducers: {
-    loadInitialState() {
+    loadInitialState(state) {
       const savedState = entityViewerStorageService.getGeneralState();
-      if (savedState) {
-        return savedState as EntityViewerGeneralState;
-      }
+      return savedState
+        ? {
+            ...state,
+            ...savedState
+          }
+        : state;
     },
     setActiveGenomeId(state, action: PayloadAction<string>) {
       state.activeGenomeId = action.payload;
@@ -103,6 +137,10 @@ const entityViewerGeneralSlice = createSlice({
     ) {
       const { genomeId, entityId } = action.payload;
       state.activeEntityIds[genomeId] = entityId;
+    },
+    deleteActiveEntityIdForGenome(state, action: PayloadAction<string>) {
+      const genomeId = action.payload;
+      delete state.activeEntityIds[genomeId];
     },
     deleteGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -119,6 +157,7 @@ export const {
   loadInitialState,
   setActiveGenomeId,
   updateActiveEntityForGenome,
+  deleteActiveEntityIdForGenome,
   deleteGenome
 } = entityViewerGeneralSlice.actions;
 

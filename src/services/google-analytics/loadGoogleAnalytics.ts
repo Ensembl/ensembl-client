@@ -27,46 +27,45 @@ import once from 'lodash/once';
  *
  */
 
-interface GA {
+interface GTag {
   (...args: any[]): void; // executes analytics commands
-  q: any[]; // a container for queueing up analytics commands
-  l: number; // is used for timestamps
 }
 
 // extend the window interface with the google analytics object
 declare global {
   interface Window {
-    ga: GA;
+    gtag: GTag;
+    dataLayer: unknown[];
   }
 }
 
 const loadGoogleAnalytics = (trackerId: string) => {
+  loadScript(trackerId);
   createGAShim(trackerId);
-  loadScript();
 };
 
 // create a simplified google analytics object and assign it to window
 // to keep a queue of any pending analytics commands
 // until the real google analytics object is ready to replace it
 const createGAShim = (trackerId: string) => {
-  const ga = (...args: any[]) => {
-    // the sole purpose of the shim is to enqueue commands that it receives
-    // before the real Google Analytics script loads
-    window.ga.q.push(args);
+  window.gtag = function () {
+    // gtag is really particular in that it wants the Arguments object
+    // which is only available on non-arrow functions
+    window.dataLayer.push(arguments); // eslint-disable-line prefer-rest-params
   };
 
-  ga.q = [] as any[]; // initialise the command queue
-  ga.l = new Date().getTime(); // Google uses this for timing hits
-  window.ga = ga;
+  window.dataLayer = window.dataLayer || []; // initialise the command queue
+  window.gtag('js', new Date()); // Google uses this for timing hits
 
-  window.ga('create', trackerId, 'auto'); // immediately enqueue a command for creating a tracker
+  // It is better to disable sending pageviews automatically as it will trigger too many calls in genome browser
+  window.gtag('config', trackerId, { send_page_view: false });
 };
 
-const loadScript = () => {
+const loadScript = (trackerId: string) => {
   const scriptElement = document.createElement('script');
   scriptElement.async = true;
-  scriptElement.src = 'https://www.google-analytics.com/analytics.js';
-  document.body.appendChild(scriptElement);
+  scriptElement.src = `https://www.googletagmanager.com/gtag/js?id=${trackerId}`;
+  document.head.appendChild(scriptElement);
 };
 
 export default once(loadGoogleAnalytics);

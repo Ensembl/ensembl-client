@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { CustomDimensions, type AnalyticsOptions } from 'src/analyticsHelper';
+import { type AnalyticsOptions } from 'src/analyticsHelper';
 
 import config from 'config';
 
-import GoogleAnalytics from 'src/services/google-analytics';
+import GoogleAnalytics, {
+  TrackEventParams
+} from 'src/services/google-analytics';
 
 const { googleAnalyticsKey } = config;
 
@@ -39,50 +41,47 @@ class AnalyticsTracking {
 
   private setReporting() {
     // don't send analytics other than in production deployment
+    // https://developers.google.com/analytics/devguides/collection/gtagjs/user-opt-out
     if (!config.shouldReportAnalytics) {
-      this.googleAnalytics.ga('set', 'sendHitTask', null);
+      (window as any)[`ga-disable-${googleAnalyticsKey}`] = true;
     }
   }
 
   // Track a pageview
   public trackPageView(pagePath: string) {
-    this.googleAnalytics.pageview(pagePath);
+    this.googleAnalytics.pageview({
+      page_path: pagePath
+    });
   }
 
   // Track an event
-  public trackEvent(ga: AnalyticsOptions) {
-    ga.species && this.setSpeciesDimension(ga.species);
-    ga.app && this.setAppDimension(ga.app);
-    ga.feature && this.setFeatureDimension(ga.feature);
+  public trackEvent(options: AnalyticsOptions) {
+    const eventParams: TrackEventParams = {
+      event_action: options.action,
+      event_category: options.category
+    };
 
-    this.googleAnalytics.event({
-      eventAction: ga.action,
-      eventCategory: ga.category,
-      eventLabel: ga.label,
-      eventValue: ga.value
-    });
+    if (options.label) {
+      eventParams.event_label = options.label;
+    }
 
-    ga.species && this.setSpeciesDimension(null);
-    ga.feature && this.setFeatureDimension(null);
-  }
+    if (options.value) {
+      eventParams.event_value = options.value;
+    }
 
-  // Set app custom dimension
-  public setAppDimension(app: string | null) {
-    this.googleAnalytics.ga('set', CustomDimensions.APP, app);
-  }
+    if (options.species) {
+      eventParams.species = options.species;
+    }
 
-  // Set species custom dimension
-  public setSpeciesDimension(speciesAnalyticsName: string | null) {
-    this.googleAnalytics.ga(
-      'set',
-      CustomDimensions.SPECIES,
-      speciesAnalyticsName
-    );
-  }
+    if (options.app) {
+      eventParams.app = options.app;
+    }
 
-  // Set feature custom dimension
-  public setFeatureDimension(featureType: string | null) {
-    this.googleAnalytics.ga('set', CustomDimensions.FEATURE, featureType);
+    if (options.feature) {
+      eventParams.feature = options.feature;
+    }
+
+    this.googleAnalytics.event(eventParams);
   }
 }
 

@@ -31,8 +31,11 @@ export const TrackPanel = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeFocusObject = useSelector(getBrowserActiveFocusObject);
 
-  const { genomeBrowser, restoreBrowserTrackStates, restoreTrackConfigStates } =
-    useGenomeBrowser();
+  const {
+    genomeBrowser,
+    restoreBrowserTrackStates,
+    restoreTrackSettingsStates
+  } = useGenomeBrowser();
 
   const shouldRenderContent =
     activeGenomeId && genomeBrowser && activeFocusObject;
@@ -40,7 +43,7 @@ export const TrackPanel = () => {
   useEffect(() => {
     if (genomeBrowser) {
       restoreBrowserTrackStates();
-      restoreTrackConfigStates();
+      restoreTrackSettingsStates();
     }
   }, [activeFocusObject]);
 

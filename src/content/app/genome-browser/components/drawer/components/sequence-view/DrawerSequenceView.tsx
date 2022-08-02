@@ -91,19 +91,13 @@ const DrawerSequenceView = (props: Props) => {
 
   const canHaveReverseComplement = selectedSequenceType === 'genomic';
 
-  const showHideStyleProps = isExpanded
-    ? {
-        classNames: { wrapper: styles.showHide }
-      }
-    : {};
-
   return (
     <div>
       <ShowHide
         label="Sequences"
         isExpanded={isExpanded}
         onClick={toggleSequenceVisibility}
-        {...showHideStyleProps}
+        className={isExpanded ? styles.showHide : undefined}
       />
       {isExpanded && (
         <div className={styles.layout}>
