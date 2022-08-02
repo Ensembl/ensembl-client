@@ -53,14 +53,10 @@ and also that it can be of variable width
   margin-left: 1ch;
 }
 
-.showHideWrapper {
-  display: inline-block;
+.showHide {
   position: absolute;
-
-  .chevron {
-    height: 8px;
-    margin-left: 15px;
-  }
+  --show-hide-chevron-height: 8px;
+  --show-hide-chevron-margin-left: 15px;
 }
 
 .controlButtons {

@@ -171,10 +171,6 @@ const Header = (
     dispatch(deleteBlastSubmission(submissionId));
   };
 
-  const showHideClassNames = {
-    wrapper: styles.showHideWrapper,
-    chevron: styles.chevron
-  };
   return (
     <BlastSubmissionHeaderGrid>
       <div>{blastProgram}</div>
@@ -190,8 +186,7 @@ const Header = (
         </span>
         {sequenceCount > 1 && (
           <ShowHide
-            label={''}
-            classNames={showHideClassNames}
+            className={styles.showHide}
             isExpanded={props.isExpanded}
             onClick={() => props.toggleExpanded(!props.isExpanded)}
           />
