@@ -1,0 +1,43 @@
+@import 'src/styles/common';
+
+.table {
+  border-collapse: collapse;
+}
+
+.tableHeadCell {
+  font-size: 12px;
+  font-weight: $light;
+  border-bottom: 1px solid $blue;
+}
+
+.tableHeadCell,
+.tableCell {
+  padding: 6px 12px;
+}
+
+.tableCell {
+  vertical-align: top;
+}
+
+.tableHeadCellSortable {
+  position: relative;
+}
+
+.tableHeadCellSortableActive {
+  font-weight: $normal;
+}
+
+.tableHeadCellSortingControls {
+  position: absolute;
+  left: 0;
+}
+
+.tableHeadCellSortingArrow {
+  width: 8px;
+  fill: $grey;
+  cursor: pointer;
+}
+
+.tableHeadCellSortingArrowDown {
+  transform: rotate(180deg);
+}
