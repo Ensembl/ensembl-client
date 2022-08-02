@@ -57,10 +57,7 @@ const renderComponent = () => {
         { activeGenomeId: genomeId }
       ),
       trackSettings: {
-        browserTrackCogs: {
-          cogList: {},
-          selectedCog: selectedTrackId
-        },
+        selectedCog: selectedTrackId,
         settings: {
           [genomeId]: Object.assign(
             {},
@@ -95,7 +92,18 @@ jest.mock(
   () => () => ({
     genomeBrowser: mockGenomeBrowser,
     toggleTrackName: jest.fn(),
-    toggleFeatureLabels: jest.fn()
+    toggleFeatureLabels: jest.fn(),
+    toggleTranscriptIds: jest.fn(),
+    toggleSeveralTranscripts: jest.fn()
+  })
+);
+
+jest.mock(
+  'src/content/app/genome-browser/components/browser-cog/useBrowserCogList',
+  () => () => ({
+    cogList: {
+      [selectedTrackId]: 0
+    }
   })
 );
 
@@ -139,7 +147,7 @@ describe('<TrackSettingsPanel />', () => {
       expect(trackSettingsSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        trackId: updatedState.browser.trackSettings.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackSettings.selectedCog
       });
       expect(
         updatedState.browser.trackSettings.settings[genomeId].tracks[
@@ -162,7 +170,7 @@ describe('<TrackSettingsPanel />', () => {
       ).toHaveBeenCalledWith({
         genomeId,
         areFeatureLabelsShown: true,
-        trackId: updatedState.browser.trackSettings.browserTrackCogs.selectedCog
+        trackId: updatedState.browser.trackSettings.selectedCog
       });
       const trackInfo =
         updatedState.browser.trackSettings.settings[genomeId].tracks[

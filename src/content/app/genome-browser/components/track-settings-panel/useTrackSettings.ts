@@ -17,11 +17,12 @@
 import { useEffect, useRef } from 'react';
 
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+
+import useBrowserCogList from '../browser-cog/useBrowserCogList';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getTrackSettingsForTrackId,
   getApplyToAllSettings,
-  getBrowserCogList,
   getBrowserSelectedCog
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
@@ -41,7 +42,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import { type OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
 const useBrowserTrackSettings = () => {
-  const browserCogList = useAppSelector(getBrowserCogList);
+  const { cogList } = useBrowserCogList();
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const selectedTrackSettings = useAppSelector((state: RootState) =>
@@ -67,8 +68,8 @@ const useBrowserTrackSettings = () => {
       return;
     }
 
-    if (shouldApplyToAllRef.current) {
-      Object.keys(browserCogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current && cogList) {
+      Object.keys(cogList).forEach((trackId) => {
         dispatch(
           updateTrackSettingsTrackName({
             genomeId: activeGenomeId,
@@ -106,8 +107,8 @@ const useBrowserTrackSettings = () => {
       return;
     }
 
-    if (shouldApplyToAllRef.current) {
-      Object.keys(browserCogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current && cogList) {
+      Object.keys(cogList).forEach((trackId) => {
         dispatch(
           updateTrackSettingsFeatureLabelsVisibility({
             genomeId: activeGenomeId,
@@ -147,8 +148,8 @@ const useBrowserTrackSettings = () => {
     if (!activeGenomeId) {
       return;
     }
-    if (shouldApplyToAllRef.current) {
-      Object.keys(browserCogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current && cogList) {
+      Object.keys(cogList).forEach((trackId) => {
         dispatch(
           updateTrackSettingsShowSeveralTranscripts({
             genomeId: activeGenomeId,
@@ -189,8 +190,8 @@ const useBrowserTrackSettings = () => {
     if (!activeGenomeId) {
       return;
     }
-    if (shouldApplyToAllRef.current) {
-      Object.keys(browserCogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current && cogList) {
+      Object.keys(cogList).forEach((trackId) => {
         dispatch(
           updateTrackSettingsShowTranscriptIds({
             genomeId: activeGenomeId,

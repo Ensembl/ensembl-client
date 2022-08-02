@@ -73,10 +73,7 @@ export type GenomeTrackSettings = {
  * Hopefully, we’ll be able to to remove the cogs from the redux state altogether
  */
 type TrackSettingsState = {
-  browserTrackCogs: {
-    cogList: CogList;
-    selectedCog: string | null;
-  };
+  selectedCog: string | null;
   settings: GenomeTrackSettings;
 };
 
@@ -128,10 +125,7 @@ export const getTrackType = (trackId: string) => {
 };
 
 const initialState: TrackSettingsState = {
-  browserTrackCogs: {
-    cogList: {},
-    selectedCog: null
-  },
+  selectedCog: null,
   settings: {}
 };
 
@@ -152,13 +146,9 @@ const trackSettingsSlice = createSlice({
         ...trackSettings
       };
     },
-    updateCogList(state, action: PayloadAction<CogList>) {
-      const browserCogList = action.payload;
-      state.browserTrackCogs.cogList = browserCogList;
-    },
     updateSelectedCog(state, action: PayloadAction<string | null>) {
       const selectedCog = action.payload;
-      state.browserTrackCogs.selectedCog = selectedCog;
+      state.selectedCog = selectedCog;
     },
     updateApplyToAll(
       state,
@@ -242,7 +232,6 @@ const trackSettingsSlice = createSlice({
 
 export const {
   setInitialTrackSettingsForGenome,
-  updateCogList,
   updateSelectedCog,
   updateApplyToAll,
   updateTrackName,
