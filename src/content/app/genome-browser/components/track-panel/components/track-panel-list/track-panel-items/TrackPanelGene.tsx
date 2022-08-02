@@ -87,9 +87,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const onGeneVisibilityChange = () => {
     if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
       // show all transcripts
-      const visibleTranscriptIds = sortedTranscripts.map(
-        (transcript) => transcript.stable_id
-      );
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       updateFocusGeneTranscripts(visibleTranscriptIds);
       return;
     }
@@ -99,9 +97,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
     if (newStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
-      const visibleTranscriptIds = sortedTranscripts.map(
-        (transcript) => transcript.stable_id
-      );
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       updateFocusGeneTranscripts(visibleTranscriptIds);
     } else {
       updateFocusGeneTranscripts([]);
@@ -184,5 +180,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     </>
   );
 };
+
+const pluckStableIds = (items: { stable_id: string }[]) =>
+  items.map((item) => item.stable_id);
 
 export default TrackPanelGene;
