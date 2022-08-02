@@ -132,9 +132,17 @@ const useFocusGene = (params: Params) => {
   }, [genomeBrowser, focusObjectId, stringifiedVisibleTranscriptIds]);
 
   useEffect(() => {
-    // updateFocusGeneTranscripts requires genomeBrowser to be defined
-    updateFocusGeneTranscripts(visibleTranscriptIds);
-  }, [genomeBrowser, geneStableId, stringifiedVisibleTranscriptIds]);
+    // Even if the user has diabled all gene's transcripts, re-focusing on this gene should show at least one transcript
+    // (it's possible that this logic will change when no selected transcripts results in showing a ghosted transcript)
+    const transcriptsParam = visibleTranscriptIds?.length
+      ? visibleTranscriptIds
+      : null;
+    updateFocusGeneTranscripts(transcriptsParam);
+  }, [
+    genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
+    geneStableId,
+    stringifiedVisibleTranscriptIds
+  ]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
