@@ -17,11 +17,11 @@ import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import {
+import { GenomeKaryotypeItemType } from 'src/shared/state/genome/genomeTypes';
+import type {
   GenomeTrackCategory,
-  GenomeKaryotypeItemType
-} from 'src/shared/state/genome/genomeTypes';
-import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
+  GenomicTrack
+} from 'src/content/app/genome-browser/state/types/tracks';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
@@ -44,14 +44,12 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
   }
 ];
 
-const createTrack = (): FocusObjectTrack => {
+const createTrack = (): GenomicTrack => {
   return {
     additional_info: faker.lorem.words(),
     colour: 'DARK_GREY',
     label: faker.lorem.words(),
-    track_id: 'track:gene-pc-fwd',
-    stable_id: faker.lorem.word(),
-    description: faker.lorem.words()
+    track_id: 'gene-pc-fwd'
   };
 };
 export const createGenomeKaryotype = () =>
