@@ -23,24 +23,21 @@
   grid-column: visibility-switch;
 }
 
-.highlightableOnHover:hover, .highlighted {
+.highlightableOnHover:hover,
+.highlighted {
   background: $ice-blue;
 }
 
 .groupItemMain {
   display: flex;
+}
 
-  .groupItemContent {
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-  }
+.groupItemContent {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
 
-  .chevronWrapper {
-    flex: 0 0 auto;
-    margin-left: 8px;
-  }
-
-  .chevron {
-    height: 6px;
-  }
+.chevron {
+  margin-left: 8px;
+  --chevron-height: 6px;
 }

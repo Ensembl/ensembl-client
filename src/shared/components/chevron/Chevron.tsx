@@ -27,10 +27,7 @@ export type Props = {
   direction: Direction;
   animate: boolean;
   onClick?: () => void;
-  classNames?: {
-    wrapper?: string;
-    svg?: string;
-  };
+  className?: string;
 };
 
 const Chevron = (props: Props) => {
@@ -38,23 +35,17 @@ const Chevron = (props: Props) => {
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate },
-    props.classNames?.svg
+    { [styles.chevron_animated]: props.animate }
   );
 
-  const Wrapper = props.onClick
-    ? 'button'
-    : props.classNames?.wrapper
-    ? 'span'
-    : React.Fragment;
+  const Wrapper = props.onClick ? 'button' : 'span';
 
-  const wrapperProps =
-    Wrapper === React.Fragment
-      ? {}
-      : {
-          onClick: props.onClick,
-          className: props.classNames?.wrapper
-        };
+  const wrapperClasses = classNames(styles.wrapper, props.className);
+
+  const wrapperProps = {
+    onClick: props.onClick,
+    className: wrapperClasses
+  };
 
   return (
     <Wrapper {...wrapperProps}>

@@ -67,7 +67,7 @@ const SubmitSlider = (props: Props) => {
         onMouseDown={handlePress}
         onTouchStart={handlePress}
       >
-        <Chevron direction="right" classNames={{ svg: styles.chevron }} />
+        <Chevron direction="right" className={styles.chevron} />
       </animated.div>
     </div>
   );

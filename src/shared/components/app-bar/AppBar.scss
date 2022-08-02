@@ -11,13 +11,12 @@
   padding: 8px $standard-gutter 0 $standard-gutter;
   min-height: 80px;
   width: 100%;
+}
 
-  // nesting to increase specificity to override child's styles
-  .chevron {
-    margin-left: 5px;
-    height: 7px;
-    fill: $grey;
-  }
+.chevron {
+  margin-left: 5px;
+  --chevron-height: 6px;
+  --chevron-fill: $grey;
 }
 
 .appBarTop {
