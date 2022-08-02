@@ -104,7 +104,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <div className={styles.resultsSummaryRow}>
           <div className={styles.sequenceId}>Sequence {sequence.id}</div>
           <div className={styles.sequenceHeader}>
-            {'>' + parseBlastInput(sequence.value)[0].header}
+            {'>' + parseBlastInput(sequence.value)[0].header || ''}
           </div>
           <div>
             <span className={styles.label}>Against</span>
