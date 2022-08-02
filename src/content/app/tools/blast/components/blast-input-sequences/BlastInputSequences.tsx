@@ -17,6 +17,8 @@
 import React, { useEffect, useContext } from 'react';
 import { useAppSelector } from 'src/store';
 
+import usePrevious from 'src/shared/hooks/usePrevious';
+
 import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';
 
 import { getEmptyInputVisibility } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -44,13 +46,17 @@ const BlastInputSequences = () => {
 
   const blastFormContext = useContext(BlastFormContext);
 
-  useEffect(() => {
-    blastFormContext?.clearSequenceValidityFlags();
+  const previousSequences = usePrevious(sequences);
 
-    const sequenceFlags = sequences.map((sequence) => {
-      return checkSequenceValidity(sequence.value, sequenceType);
-    });
-    blastFormContext?.setSequenceValidityFlags(sequenceFlags);
+  useEffect(() => {
+    if (previousSequences?.length !== sequences.length) {
+      blastFormContext?.clearSequenceValidityFlags();
+
+      const sequenceFlags = sequences.map((sequence) => {
+        return checkSequenceValidity(sequence.value, sequenceType);
+      });
+      blastFormContext?.setSequenceValidityFlags(sequenceFlags);
+    }
   }, [sequences]);
 
   const onSequenceAdded = (input: string, index: number | null) => {
