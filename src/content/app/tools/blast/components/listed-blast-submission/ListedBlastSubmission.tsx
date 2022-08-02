@@ -32,6 +32,7 @@ import {
   type BlastJob,
   updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -42,7 +43,6 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './ListedBlastSubmission.scss';
-import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
 export type Props = {
   submission: BlastSubmission;
