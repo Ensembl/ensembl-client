@@ -27,7 +27,10 @@ import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/
 
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import {
+  PrimaryButton,
+  SecondaryButton
+} from 'src/shared/components/button/Button';
 
 import { RootState } from 'src/store';
 
@@ -73,9 +76,11 @@ const SpeciesRemove = () => {
           </div>
         </div>
       ) : (
-        <span className={styles.clickable} onClick={toggleRemovalDialog}>
-          Remove
-        </span>
+        <div className={styles.buttonContainer}>
+          <SecondaryButton onClick={toggleRemovalDialog}>
+            Remove
+          </SecondaryButton>
+        </div>
       )}
     </div>
   );

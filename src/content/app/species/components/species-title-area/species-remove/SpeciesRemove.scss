@@ -40,3 +40,8 @@ $fake-left-margin: 60px;
   color: $blue;
   cursor: pointer;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+}

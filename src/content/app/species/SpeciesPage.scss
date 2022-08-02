@@ -11,19 +11,24 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   line-height: 1;
+  padding-left: 11px;
 }
 
 .topbarLeft {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  justify-self: start;
 }
 
-.close {
-  margin-top: 2px;
+.backChevron {
+  margin-left: 5px;
 }
 
 .pageTitle {
-  margin-right: 1rem;
+  color: $blue;
+  font-weight: $bold;
+  margin-left: 13px;
 }
 
 .dataForSpecies {

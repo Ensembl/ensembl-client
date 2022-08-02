@@ -4,8 +4,8 @@ $container-padding-right: 20px;
 
 @mixin narrow-grid {
   grid-template-areas:
-  'icon species-name species-name species-name'
-  'icon use-dont-use . remove';
+    'icon species-name species-name species-name'
+    'icon use-dont-use . remove';
   grid-template-columns: 60px 150px 20px 1fr;
   padding: 20px $container-padding-right 12px 0;
   height: auto;
@@ -32,12 +32,12 @@ $container-padding-right: 20px;
 
 .speciesTitleArea {
   display: grid;
-  grid-template-areas:
-    'icon species-name usage-toggle remove';
+  grid-template-areas: 'icon species-name usage-toggle remove';
   grid-template-columns: 60px fit-content(60%) 200px minmax(280px, 1fr);
   grid-column-gap: 20px;
   align-items: center;
   height: 90px;
+  max-width: 1321px;
   margin-left: 60px;
   padding-right: $container-padding-right;
 
@@ -50,7 +50,6 @@ $container-padding-right: 20px;
       @include narrow-grid;
     }
   }
-
 }
 
 .speciesIcon {

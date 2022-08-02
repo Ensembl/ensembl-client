@@ -35,7 +35,7 @@ import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+import Chevron from 'src/shared/components/chevron/Chevron';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
@@ -119,12 +119,13 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <div className={styles.topbarLeft}>
-        <span className={styles.pageTitle}>Species Home page</span>
-        <CloseButton
-          className={styles.close}
-          onClick={returnToSpeciesSelector}
+      <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
+        <Chevron
+          direction={'left'}
+          animate={false}
+          className={styles.backChevron}
         />
+        <span className={styles.pageTitle}>Find a Species</span>
       </div>
       <div className={styles.dataForSpecies}>Data for this species</div>
     </div>
