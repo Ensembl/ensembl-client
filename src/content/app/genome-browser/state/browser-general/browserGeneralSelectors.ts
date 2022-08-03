@@ -20,6 +20,7 @@ import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-o
 import { Status } from 'src/shared/types/status';
 import type { RootState } from 'src/store';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { FocusTrack } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserGeneral.activeGenomeId;
@@ -83,6 +84,20 @@ export const getBrowserTrackState = (
   }
 
   return savedTrackStatus ?? Status.SELECTED;
+};
+
+export const getFocusObjectTrackState = (
+  state: RootState,
+  params: {
+    genomeId: string;
+    focusObjectId: string;
+  }
+): FocusTrack | null => {
+  const { genomeId, focusObjectId } = params;
+  const allBrowserTrackStates = getBrowserTrackStates(state);
+  return (
+    allBrowserTrackStates?.[genomeId]?.objectTracks?.[focusObjectId] ?? null
+  );
 };
 
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {

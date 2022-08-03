@@ -37,7 +37,7 @@ import { Status } from 'src/shared/types/status';
 import styles from './TrackPanelItemLayout.scss';
 
 export type Props = {
-  visibilityStatus?: TrackActivityStatus;
+  visibilityStatus?: TrackActivityStatus | Status.PARTIALLY_SELECTED;
   onChangeVisibility?: () => void;
   onShowMore?: () => void;
   isHighlighted?: boolean;
@@ -86,9 +86,10 @@ const SimpleTrackPanelItemLayout = (props: Props) => {
   );
 };
 
-const getVisibilityIconHelpText = (status: TrackActivityStatus) => {
-  // TODO: check whether the message is still correct after the half-highlighted eye icon is introduced
-  return status === Status.SELECTED ? 'Hide this track' : 'Show this track';
+const getVisibilityIconHelpText = (
+  status: NonNullable<Props['visibilityStatus']>
+) => {
+  return status === Status.UNSELECTED ? 'Show this track' : 'Hide this track';
 };
 
 export default SimpleTrackPanelItemLayout;
