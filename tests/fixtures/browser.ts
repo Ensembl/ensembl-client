@@ -214,15 +214,7 @@ export const createMockBrowserState = () => {
         }
       },
       trackSettings: {
-        browserTrackCogs: {
-          selectedCog: 'gene-focus'
-        },
-        [fakeGenomeId]: {
-          applyToAllConfig: {
-            isSelected: true
-          },
-          tracks: createTrackSettings()
-        }
+        selectedCog: 'gene-focus'
       },
       trackPanel: {
         [fakeGenomeId]: {
