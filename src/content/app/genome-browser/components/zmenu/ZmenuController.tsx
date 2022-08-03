@@ -19,9 +19,13 @@ import React, { useEffect, memo } from 'react';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
-  ZmenuCreateAction,
+  type ZmenuCreateAction,
+  type ZmenuCreatePayload,
+  type ZmenuContentGene,
+  type ZmenuContentTranscript,
+  type ZmenuPayloadVariety,
   IncomingActionType,
-  ZmenuCreatePayload
+  ZmenuPayloadVarietyType
 } from '@ensembl/ensembl-genome-browser';
 
 import Zmenu from './Zmenu';
@@ -55,6 +59,23 @@ const ZmenuController = (props: Props) => {
     if (!payload.variety.length) {
       return;
     }
+
+    const { content, variety } = action.payload;
+
+    const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
+      Boolean(variety.type)
+    )?.type;
+    if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
+      const hasTranscript = content.some(
+        (feature: ZmenuContentTranscript | ZmenuContentGene) =>
+          feature.metadata.type === 'transcript'
+      );
+
+      if (!hasTranscript) {
+        return;
+      }
+    }
+
     const zmenuId = Object.keys(zmenus).length + 1;
 
     setZmenus &&
