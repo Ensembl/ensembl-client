@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -26,6 +26,8 @@ import {
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import { GenomeBrowserContext } from '../../Browser';
+
 import {
   setInitialTrackSettingsForGenome,
   getDefaultGeneTrackSettings,
@@ -33,8 +35,7 @@ import {
   getTrackType,
   TrackType,
   type TrackSettings,
-  type TrackSettingsForGenome,
-  type CogList
+  type TrackSettingsForGenome
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
@@ -46,7 +47,15 @@ const useBrowserCogList = () => {
   const { data: trackCategories } = useGenomeTracksQuery(genomeId);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
 
-  const [cogList, setCogList] = useState<CogList | null>(null);
+  const genomeBrowserContext = useContext(GenomeBrowserContext);
+
+  if (!genomeBrowserContext) {
+    throw new Error(
+      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
+    );
+  }
+
+  const { cogList, setCogList } = genomeBrowserContext;
 
   const dispatch = useAppDispatch();
 
