@@ -101,7 +101,7 @@ export const deleteBlastSubmission = createAsyncThunk(
   }
 );
 
-const initialState: BlastResultsState = {
+export const initialBlastResultsState: BlastResultsState = {
   submissions: {},
   ui: {
     unviewedJobsPage: {
@@ -114,7 +114,7 @@ const initialState: BlastResultsState = {
 };
 const blastResultsSlice = createSlice({
   name: 'blast-results',
-  initialState,
+  initialState: initialBlastResultsState,
   reducers: {
     updateJob(
       state,

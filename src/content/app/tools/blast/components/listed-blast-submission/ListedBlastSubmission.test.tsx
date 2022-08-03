@@ -30,6 +30,7 @@ import ListedBlastSubmission, {
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import blastResultsReducer, {
   BlastResultsUI,
+  initialBlastResultsState,
   type BlastResultsState
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -52,15 +53,7 @@ const renderComponent = ({
   const initialState = {
     blast: {
       blastResults: {
-        submissions: {},
-        ui: {
-          unviewedJobsPage: {
-            expandedSubmissionIds: []
-          },
-          viewedJobsPage: {
-            expandedSubmissionIds: []
-          }
-        },
+        ...initialBlastResultsState,
         ...state
       }
     }
