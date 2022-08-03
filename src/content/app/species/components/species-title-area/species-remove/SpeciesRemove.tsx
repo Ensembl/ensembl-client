@@ -32,7 +32,7 @@ import {
   SecondaryButton
 } from 'src/shared/components/button/Button';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 import styles from './SpeciesRemove.scss';
 
@@ -78,7 +78,7 @@ const SpeciesRemove = () => {
       ) : (
         <div className={styles.buttonContainer}>
           <SecondaryButton onClick={toggleRemovalDialog}>
-            Remove
+            Remove species
           </SecondaryButton>
         </div>
       )}

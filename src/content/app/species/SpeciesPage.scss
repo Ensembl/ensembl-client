@@ -11,7 +11,8 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   line-height: 1;
-  padding-left: 11px;
+  padding-left: 10px;
+  padding-right: 20px;
 }
 
 .topbarLeft {
@@ -19,10 +20,6 @@
   align-items: center;
   cursor: pointer;
   justify-self: start;
-}
-
-.backChevron {
-  margin-left: 5px;
 }
 
 .pageTitle {

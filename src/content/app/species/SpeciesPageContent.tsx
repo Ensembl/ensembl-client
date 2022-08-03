@@ -120,11 +120,7 @@ const TopBar = () => {
   return (
     <div className={styles.topbar}>
       <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
-        <Chevron
-          direction={'left'}
-          animate={false}
-          className={styles.backChevron}
-        />
+        <Chevron direction="left" animate={false} />
         <span className={styles.pageTitle}>Find a Species</span>
       </div>
       <div className={styles.dataForSpecies}>Data for this species</div>
