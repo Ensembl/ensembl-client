@@ -33,8 +33,8 @@ export type GenomeTrackDetails = {
 
 export const trackDetailsSampleData: GenomeTrackDetails = {
   homo_sapiens_GCA_000001405_28: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -45,7 +45,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -57,7 +57,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -69,7 +69,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -81,19 +81,19 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
       description: 'Shows the percentage of Gs and Cs in a region'
     },
-    'track:variant': {
+    variant: {
       track_id: 'variant',
       track_name: '1000 Genomes all SNPs and indels',
       strand: null,
@@ -102,8 +102,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   homo_sapiens_GCA_000001405_14: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -114,7 +114,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -126,7 +126,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -138,7 +138,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -150,19 +150,19 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
       description: 'Shows the percentage of Gs and Cs in a region'
     },
-    'track:variant': {
+    variant: {
       track_id: 'variant',
       track_name: '1000 Genomes all SNPs and indels',
       strand: null,
@@ -171,8 +171,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   triticum_aestivum_GCA_900519105_1: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -183,7 +183,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -195,7 +195,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -207,7 +207,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -219,19 +219,19 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
       description: 'Shows the percentage of Gs and Cs in a region'
     },
-    'track:variant': {
+    variant: {
       track_id: 'variant',
       track_name: 'Sequence variants',
       strand: null,
@@ -239,8 +239,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -251,7 +251,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -263,7 +263,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -275,7 +275,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -287,13 +287,13 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
@@ -301,8 +301,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   saccharomyces_cerevisiae_GCA_000146045_2: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -313,7 +313,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -325,7 +325,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -337,7 +337,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -349,13 +349,13 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
@@ -363,8 +363,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   plasmodium_falciparum_GCA_000002765_2: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -375,7 +375,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Other genes',
       strand: 'forward',
@@ -387,7 +387,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -399,7 +399,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Other genes',
       strand: 'reverse',
@@ -411,13 +411,13 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,
@@ -425,8 +425,8 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
     }
   },
   caenorhabditis_elegans_GCA_000002985_3: {
-    'track:gene-pc-fwd': {
-      track_id: 'track:gene-pc-fwd',
+    'gene-pc-fwd': {
+      track_id: 'gene-pc-fwd',
       track_name: 'Protein coding genes',
       strand: 'forward',
       description:
@@ -437,7 +437,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-fwd': {
+    'gene-other-fwd': {
       track_id: 'gene-other-fwd',
       track_name: 'Non coding RNA',
       strand: 'forward',
@@ -449,7 +449,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-pc-rev': {
+    'gene-pc-rev': {
       track_id: 'gene-pc-rev',
       track_name: 'Protein coding genes',
       strand: 'reverse',
@@ -461,7 +461,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:gene-other-rev': {
+    'gene-other-rev': {
       track_id: 'gene-other-rev',
       track_name: 'Non coding RNA',
       strand: 'forward',
@@ -473,13 +473,13 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
         id: ''
       }
     },
-    'track:contig': {
+    contig: {
       track_id: 'contig',
       track_name: 'Reference assembly',
       strand: null,
       description: 'Shows the contigs underlying the reference assembly.'
     },
-    'track:gc': {
+    gc: {
       track_id: 'gc',
       track_name: '%GC',
       strand: null,

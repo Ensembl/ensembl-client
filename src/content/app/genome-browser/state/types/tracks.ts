@@ -14,32 +14,18 @@
  * limitations under the License.
  */
 
-export type ExampleFocusObject = {
-  id: string;
-  type: string;
+import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+
+export type GenomicTrack = {
+  colour: string; // NOTE: the backend will want to get rid of this field
+  label: string;
+  track_id: string;
+  additional_info: string;
 };
 
-export type GenomeInfo = {
-  genome_id: string;
-  common_name: string;
-  assembly_name: string;
-  scientific_name: string;
-  example_objects: ExampleFocusObject[];
-  url_slug: string | null;
-};
-
-export type GenomeInfoResponse = {
-  genome_info: GenomeInfo[];
-};
-
-export enum GenomeKaryotypeItemType {
-  CHROMOSOME = 'chromosome'
-}
-
-export type GenomeKaryotypeItem = {
-  is_chromosome: boolean;
-  is_circular: boolean;
-  length: number;
-  name: string;
-  type: GenomeKaryotypeItemType;
+export type GenomeTrackCategory = {
+  label: string;
+  track_category_id: string;
+  track_list: GenomicTrack[];
+  types: TrackSet[]; // shows which groups of tracks this category belongs to
 };

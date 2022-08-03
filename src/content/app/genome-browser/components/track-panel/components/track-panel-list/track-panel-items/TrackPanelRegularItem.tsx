@@ -28,7 +28,8 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import { RootState } from 'src/store';
+import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
+import type { RootState } from 'src/store';
 
 import styles from './TrackPanelItem.scss';
 
@@ -37,11 +38,7 @@ import styles from './TrackPanelItem.scss';
  * by the tracks api.
  */
 
-type Props = {
-  additional_info?: string;
-  colour?: string;
-  label: string;
-  track_id: string;
+type Props = GenomicTrack & {
   genomeId: string;
   category: string;
 };

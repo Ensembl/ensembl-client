@@ -18,7 +18,7 @@ import { faker } from '@faker-js/faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   fake_genome_id_1: {
@@ -29,30 +29,9 @@ export const createTrackStates = (): BrowserTrackStates => ({
   }
 });
 
-export const createTrackInfo = (): FocusObjectTrack => ({
+export const createTrackInfo = (): GenomicTrack => ({
+  colour: 'GREY',
   additional_info: faker.lorem.words(),
-  description: faker.lorem.words(),
   label: faker.lorem.words(),
-  track_id: 'gene-pc-fwd',
-  stable_id: faker.lorem.words()
-});
-
-export const createMainTrackInfo = (): FocusObjectTrack => ({
-  additional_info: faker.lorem.words(),
-  child_tracks: [
-    {
-      additional_info: faker.lorem.words(),
-      colour: faker.lorem.words(),
-      description: faker.lorem.words(),
-      label: faker.lorem.words(),
-      support_level: faker.lorem.words(),
-      track_id: 'gene-feat-1',
-      stable_id: faker.lorem.words()
-    }
-  ],
-  description: faker.lorem.words(),
-  ensembl_object_id: faker.lorem.words(),
-  label: faker.lorem.words(),
-  track_id: 'gene-feat',
-  stable_id: faker.lorem.words()
+  track_id: 'gene-pc-fwd'
 });

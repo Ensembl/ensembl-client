@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -34,12 +34,6 @@ import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { RootState } from 'src/store';
-import {
-  IncomingActionType,
-  type ReportVisibleTranscriptsAction
-} from '@ensembl/ensembl-genome-browser';
 
 import styles from './TrackPanelItem.scss';
 
@@ -49,8 +43,6 @@ type TrackPanelGeneProps = {
   focusObjectId: string;
 };
 
-// TODO: figure out proper gene and transcript track naming conventions
-const GENE_TRACK_ID = TrackId.GENE;
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -67,58 +59,49 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   );
   const visibleTranscriptIds = useAppSelector((state) => {
     const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
-    return genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? [];
+    return (
+      genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? null
+    );
   });
-  const { toggleTrack, updateFocusGeneTranscripts, genomeBrowser } =
-    useGenomeBrowser();
+
+  const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
-  const allTranscriptsInGene = currentData?.gene.transcripts ?? [];
+  if (!currentData) {
+    return null;
+  }
 
-  useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.VISIBLE_TRANSCRIPTS,
-      (action: ReportVisibleTranscriptsAction) => {
-        setVisibleTranscriptIds(action.payload.transcript_ids);
-      }
-    );
+  const { gene } = currentData;
 
-    return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  const sortedTranscripts = defaultSort(gene.transcripts);
+  const visibleSortedTranscripts = isCollapsed
+    ? [sortedTranscripts[0]]
+    : sortedTranscripts;
 
-  useEffect(() => {
-    updateObjectTrackStatus(trackStatus);
-  }, [genomeId, focusObjectId, trackStatus]);
+  const geneVisibilityStatus = !visibleTranscriptIds?.length
+    ? Status.UNSELECTED
+    : visibleTranscriptIds.length === gene.transcripts.length
+    ? Status.SELECTED
+    : Status.PARTIALLY_SELECTED;
 
-  // set status of all transcripts based on the saved redux state after loading component
-  useEffect(() => {
-    if (allTranscriptsInGene?.length) {
+  const onGeneVisibilityChange = () => {
+    if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
+      // show all transcripts
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       updateFocusGeneTranscripts(visibleTranscriptIds);
-    }
-  }, [allTranscriptsInGene]);
-
-  const setVisibleTranscriptIds = (transcriptIds: string[]) => {
-    dispatch(
-      updateObjectTrackStates({
-        status: transcriptIds.length ? Status.SELECTED : Status.UNSELECTED,
-        transcriptIds
-      })
-    );
-  };
-
-  const updateObjectTrackStatus = (newStatus?: Status) => {
-    if (!newStatus) {
-      newStatus =
-        trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+      return;
     }
 
-    const newVisibleTranscriptIds =
-      newStatus === Status.SELECTED
-        ? allTranscriptsInGene?.map(({ stable_id }) => stable_id) ?? []
-        : [];
+    const newStatus =
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
-    toggleTrack({ trackId: GENE_TRACK_ID, status: newStatus });
-    updateFocusGeneTranscripts(newVisibleTranscriptIds);
+    if (newStatus === Status.SELECTED) {
+      setFocusGene(focusObjectId);
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
+      updateFocusGeneTranscripts(visibleTranscriptIds);
+    } else {
+      updateFocusGeneTranscripts([]);
+    }
 
     dispatch(
       updateObjectTrackStates({
@@ -127,15 +110,21 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  if (!currentData) {
-    return null;
-  }
+  const onTranscriptVisibilityChange = (
+    transcriptId: string,
+    isVisible: boolean
+  ) => {
+    let updatedTranscriptIds = visibleTranscriptIds ?? ([] as string[]);
 
-  const { gene } = currentData;
+    updatedTranscriptIds = isVisible
+      ? [...updatedTranscriptIds, transcriptId]
+      : updatedTranscriptIds.filter((id) => id !== transcriptId);
 
-  const sortedTranscripts = isCollapsed
-    ? [defaultSort(gene.transcripts)[0]]
-    : defaultSort(gene.transcripts);
+    if (!visibleTranscriptIds?.length) {
+      setFocusGene(focusObjectId);
+    }
+    updateFocusGeneTranscripts(updatedTranscriptIds);
+  };
 
   const toggleExpand = () => {
     setIsCollapsed(!isCollapsed);
@@ -157,8 +146,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
-        visibilityStatus={trackStatus}
-        onChangeVisibility={updateObjectTrackStatus}
+        visibilityStatus={geneVisibilityStatus}
+        onChangeVisibility={onGeneVisibilityChange}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >
@@ -171,11 +160,14 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           </span>
         </div>
       </GroupTrackPanelItemLayout>
-      {sortedTranscripts.map((transcript) => (
+      {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
           transcript={transcript}
           genomeId={genomeId}
-          focusObjectId={focusObjectId}
+          isVisible={
+            visibleTranscriptIds?.includes(transcript.stable_id) ?? false
+          }
+          onVisibilityChange={onTranscriptVisibilityChange}
           key={transcript.stable_id}
         />
       ))}
@@ -188,5 +180,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     </>
   );
 };
+
+const pluckStableIds = (items: { stable_id: string }[]) =>
+  items.map((item) => item.stable_id);
 
 export default TrackPanelGene;

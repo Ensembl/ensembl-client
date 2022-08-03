@@ -18,6 +18,10 @@ import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
+import { useAppDispatch } from 'src/store';
+
+import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
@@ -79,7 +83,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
     match: { symbol, stable_id }
   } = props;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-
+  const dispatch = useAppDispatch();
   const anchorRef = useRef<HTMLSpanElement>(null);
 
   const onMatchClick = () => {
@@ -96,7 +100,9 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
   };
 
   const onAppClick = (selectedAppName?: AppName) => {
-    setShouldShowTooltip(!shouldShowTooltip);
+    if (app === 'genomeBrowser') {
+      dispatch(changeHighlightedTrackId(''));
+    }
 
     if (app === 'entityViewer') {
       analyticsTracking.trackEvent({
@@ -105,6 +111,8 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
         label: selectedAppName
       });
     }
+
+    setShouldShowTooltip(!shouldShowTooltip);
   };
 
   const hideTooltip = () => setShouldShowTooltip(false);

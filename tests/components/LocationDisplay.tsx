@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-export type ExampleFocusObject = {
-  id: string;
-  type: string;
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+
+export const LOCATION_DISPLAY_TEST_ID = 'location-display';
+
+/**
+ * The purpose of this test component is to assist with the testing of route changes
+ * when using React Router.
+ *
+ * It renders the pathname of the route.
+ */
+
+const LocationDisplay = () => {
+  const location = useLocation();
+
+  return <div data-test-id={LOCATION_DISPLAY_TEST_ID}>{location.pathname}</div>;
 };
 
-export type GenomeInfo = {
-  genome_id: string;
-  common_name: string;
-  assembly_name: string;
-  scientific_name: string;
-  example_objects: ExampleFocusObject[];
-  url_slug: string | null;
-};
-
-export type GenomeInfoResponse = {
-  genome_info: GenomeInfo[];
-};
-
-export enum GenomeKaryotypeItemType {
-  CHROMOSOME = 'chromosome'
-}
-
-export type GenomeKaryotypeItem = {
-  is_chromosome: boolean;
-  is_circular: boolean;
-  length: number;
-  name: string;
-  type: GenomeKaryotypeItemType;
-};
+export default LocationDisplay;

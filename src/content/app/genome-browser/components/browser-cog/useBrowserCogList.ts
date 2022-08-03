@@ -38,7 +38,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
-import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
 const useBrowserCogList = () => {
@@ -101,13 +101,13 @@ const prepareTrackSettings = ({
 
   trackCategories.forEach((category) => {
     category.track_list.forEach((track) => {
-      const trackId = track.track_id.replace('track:', '');
-      const trackType = getTrackType(trackId);
+      const { track_id } = track;
+      const trackType = getTrackType(track_id);
 
       if (trackType === TrackType.GENE) {
-        defaultTrackSettings[trackId] = getDefaultGeneTrackSettings();
+        defaultTrackSettings[track_id] = getDefaultGeneTrackSettings();
       } else {
-        defaultTrackSettings[trackId] = getDefaultRegularTrackSettings();
+        defaultTrackSettings[track_id] = getDefaultRegularTrackSettings();
       }
     });
   });
