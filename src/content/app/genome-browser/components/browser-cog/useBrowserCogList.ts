@@ -34,7 +34,7 @@ import {
   TrackType,
   type TrackSettings,
   type TrackSettingsForGenome,
-  CogList
+  type CogList
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
