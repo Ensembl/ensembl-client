@@ -87,9 +87,10 @@ $drawerWindowWidth: 45px;
   height: 100%;
   width: $sidebarContentWidth;
   border-left: 1px solid $grey;
-  padding: 21px 12px 0 12px;
+  padding: 21px 0 0 12px;
   background-color: white;
   overflow: auto;
+  scrollbar-gutter: stable;
 
   & > div {
     padding-bottom: $global-padding-bottom;
