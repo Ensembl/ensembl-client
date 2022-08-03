@@ -11,6 +11,9 @@
 }
 
 .chevron {
-  margin-left: 10px;
   --chevron-height: var(--show-hide-chevron-height, 6px);
+}
+
+.label + .chevron {
+  margin-left: 10px;
 }

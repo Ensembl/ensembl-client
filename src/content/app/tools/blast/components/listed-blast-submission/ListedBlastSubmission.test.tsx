@@ -29,10 +29,13 @@ import ListedBlastSubmission, {
 
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import blastResultsReducer, {
+  BlastResultsUI,
+  initialBlastResultsState,
   type BlastResultsState
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { createBlastSubmission } from 'tests/fixtures/blast/blastSubmission';
+import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
 jest.mock('src/content/app/tools/blast/services/blastStorageService');
 
@@ -48,7 +51,12 @@ const renderComponent = ({
   state?: Partial<BlastResultsState>;
 }) => {
   const initialState = {
-    blast: { blastResults: state ?? {} }
+    blast: {
+      blastResults: {
+        ...initialBlastResultsState,
+        ...state
+      }
+    }
   };
 
   const mergedProps = {
@@ -93,21 +101,47 @@ describe('BlastSubmissionHeader', () => {
       });
 
       expect(container.querySelectorAll('.sequenceBox').length).toBe(1);
+      expect(container.querySelectorAll('.showHide').length).toBe(0);
     });
 
-    it('shows multiple sequence boxes if the submission contained multiple sequences', () => {
+    it('shows multiple sequence boxes if the submission contained multiple sequences', async () => {
       const submission = createBlastSubmission({
         options: { sequencesCount: 5 }
       });
 
       const { container } = renderComponent({
-        props: { submission }
+        props: { submission },
+        state: {
+          ui: {
+            unviewedJobsPage: {
+              expandedSubmissionIds: [submission.id]
+            }
+          } as BlastResultsUI
+        }
       });
 
       expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
     });
 
-    it.todo('shows submission date');
+    it('shows submission date', () => {
+      const submission = createBlastSubmission();
+
+      const { container } = renderComponent({
+        props: { submission }
+      });
+
+      const dateTimeElement = container.querySelector(
+        '.timeStamp'
+      ) as HTMLElement;
+      const timeStampText =
+        dateTimeElement?.querySelectorAll('span')[0].textContent;
+
+      const expectedTimeStamp = getFormattedDateTime(
+        new Date(submission.submittedAt)
+      );
+
+      expect(timeStampText).toContain(expectedTimeStamp);
+    });
 
     describe('while at least one job is running', () => {
       const submission = createBlastSubmission({
@@ -173,7 +207,21 @@ describe('BlastSubmissionHeader', () => {
 
   describe('behaviour', () => {
     // define this behaviour better
-    it.todo('can fold jobs of a submission into a single box');
+    it('folds jobs of a submission into a single box by default', () => {
+      const submission = createBlastSubmission({
+        options: { sequencesCount: 5 }
+      });
+
+      const { container } = renderComponent({
+        props: { submission }
+      });
+
+      expect(container.querySelectorAll('.sequenceBox').length).toBe(1);
+
+      expect(
+        container.querySelector('.sequenceBox')?.firstElementChild?.textContent
+      ).toBe('5 sequences');
+    });
 
     // TODO: make sure that deleting a sequence stops polling for this sequence
     it('can delete a submission', async () => {
@@ -186,10 +234,12 @@ describe('BlastSubmissionHeader', () => {
       };
       const { container, store } = renderComponent({
         props: { submission },
-        state: submissionInRedux
+        state: { submissions: submissionInRedux }
       });
 
-      expect(store.getState().blast.blastResults[submissionId]).toBeTruthy();
+      expect(
+        store.getState().blast.blastResults.submissions[submissionId]
+      ).toBeTruthy();
 
       const deleteButton = container.querySelector(
         '.deleteButton'
@@ -201,7 +251,7 @@ describe('BlastSubmissionHeader', () => {
         submissionId
       );
       expect(
-        store.getState().blast.blastResults[submissionId]
+        store.getState().blast.blastResults.submissions[submissionId]
       ).not.toBeTruthy();
     });
 

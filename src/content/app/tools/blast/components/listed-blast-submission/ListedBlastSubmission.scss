@@ -29,6 +29,10 @@ and also that it can be of variable width
   border-top: none;
 }
 
+.againstText {
+  font-weight: $light;
+}
+
 .submissionIdLabel {
   font-weight: $light;
   margin-right: 1ch;
@@ -47,6 +51,12 @@ and also that it can be of variable width
 .timeZone {
   font-weight: $light;
   margin-left: 1ch;
+}
+
+.showHide {
+  position: absolute;
+  --show-hide-chevron-height: 8px;
+  margin-left: 15px;
 }
 
 .controlButtons {

@@ -18,24 +18,27 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
   deleteBlastSubmission,
   type BlastSubmission,
-  type BlastJob
+  type BlastJob,
+  updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
 import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -47,10 +50,17 @@ export type Props = {
 
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
+  const dispatch = useAppDispatch();
+  const uiState = useAppSelector(getBlastSubmissionsUi);
 
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
+  const { expandedSubmissionIds } = uiState.unviewedJobsPage;
+
+  const isCurrentSubmissionExpanded = expandedSubmissionIds.includes(
+    submission.id
+  );
 
   const jobsGroupedBySequence = sequences.map((sequence) => {
     const jobs = allJobs.filter((job) => job.sequenceId === sequence.id);
@@ -60,14 +70,61 @@ const ListedBlastSubmission = (props: Props) => {
     };
   });
 
-  const sequenceBoxes = jobsGroupedBySequence.map(({ sequence, jobs }) => (
-    <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
-  ));
+  let sequenceContent = null;
+  if (isCurrentSubmissionExpanded || sequences.length === 1) {
+    sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
+      <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
+    ));
+  } else {
+    sequenceContent = <CollapsedSequencesBox submission={submission} />;
+  }
+
+  const toggleExpanded = (status: boolean) => {
+    const newExpandedSubmissionIds = status
+      ? [...expandedSubmissionIds, submission.id]
+      : expandedSubmissionIds.filter((id) => id !== submission.id);
+
+    dispatch(
+      updateSubmissionUi({
+        fragment: {
+          unviewedJobsPage: {
+            expandedSubmissionIds: newExpandedSubmissionIds
+          }
+        }
+      })
+    );
+  };
 
   return (
     <div className={styles.listedBlastSubmission}>
-      <Header {...props} isAnyJobRunning={isAnyJobRunning} />
-      {sequenceBoxes}
+      <Header
+        {...props}
+        isAnyJobRunning={isAnyJobRunning}
+        toggleExpanded={toggleExpanded}
+        isExpanded={isCurrentSubmissionExpanded}
+        sequenceCount={sequences.length}
+      />
+      {sequenceContent}
+    </div>
+  );
+};
+
+const CollapsedSequencesBox = (props: Props) => {
+  const { submission } = props;
+  const sequences = submission.submittedData.sequences;
+  const allJobs = submission.results;
+
+  const sequenceCount = sequences.length;
+  const totalSpecies = submission.submittedData.species.length;
+
+  return (
+    <div className={styles.sequenceBox}>
+      <div>{`${sequenceCount} ${pluralise('sequence', sequenceCount)}`}</div>
+      <div>
+        <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
+        species
+      </div>
+      <StatusElement jobs={allJobs} />
     </div>
   );
 };
@@ -75,9 +132,12 @@ const ListedBlastSubmission = (props: Props) => {
 const Header = (
   props: Props & {
     isAnyJobRunning: boolean;
+    isExpanded: boolean;
+    toggleExpanded: (isExpanded: boolean) => void;
+    sequenceCount: number;
   }
 ) => {
-  const { submission } = props;
+  const { submission, sequenceCount } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -124,6 +184,13 @@ const Header = (
           <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
+        {sequenceCount > 1 && (
+          <ShowHide
+            className={styles.showHide}
+            isExpanded={props.isExpanded}
+            onClick={() => props.toggleExpanded(!props.isExpanded)}
+          />
+        )}
       </div>
       <div className={styles.controlButtons}>
         {!props.isAnyJobRunning && (
@@ -155,7 +222,8 @@ const SequenceBox = (props: SequenceBoxProps) => {
     <div className={styles.sequenceBox}>
       <div>Sequence {sequence.id}</div>
       <div>
-        <span>Against</span> {jobs.length} species
+        <span className={styles.againstText}>Against</span> {jobs.length}{' '}
+        species
       </div>
       <StatusElement jobs={jobs} />
     </div>
