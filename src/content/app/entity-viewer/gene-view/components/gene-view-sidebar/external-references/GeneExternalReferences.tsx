@@ -15,11 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
 
-import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 
 import { useGeneExternalReferencesQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
@@ -41,8 +41,7 @@ type ExternalReferencesGroupType = {
 };
 
 const GeneExternalReferences = () => {
-  const { entityId, genomeId } = useParams<'genomeId' | 'entityId'>();
-  const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
+  const { genomeId, geneId } = useGeneViewIds();
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
