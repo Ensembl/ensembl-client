@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .speciesContainer {
-  max-width: 1381px;
+  max-width: 1380px;
 }
 
 @mixin narrow-top-grid {
@@ -27,7 +27,7 @@
 }
 
 .statsWrapper {
-  padding: 5px 20px $global-padding-bottom 120px;
+  padding: 5px 20px $global-padding-bottom 140px;
 }
 
 .exampleLinkText {
