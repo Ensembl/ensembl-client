@@ -50,8 +50,6 @@ const BlastInputSequences = () => {
 
   useEffect(() => {
     if (previousSequences?.length !== sequences.length) {
-      blastFormContext?.clearSequenceValidityFlags();
-
       const sequenceFlags = sequences.map((sequence) => {
         return checkSequenceValidity(sequence.value, sequenceType);
       });
