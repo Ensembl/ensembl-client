@@ -56,7 +56,6 @@ const Main = () => {
   }
 
   const { submittedData, results } = blastSubmission;
-
   const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {
     const blastResults = results.filter((r) => r.sequenceId === sequence.id);
     return {
@@ -104,11 +103,11 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <div className={styles.resultsSummaryRow}>
           <div className={styles.sequenceId}>Sequence {sequence.id}</div>
           <div className={styles.sequenceHeader}>
-            {'>' + parseBlastInput(sequence.value)[0].header || ''}
+            {'>' + (parseBlastInput(sequence.value)[0].header || '')}
           </div>
           <div>
-            <span className={styles.label}>Against</span>
-            <span className={styles.boldText}>{species.length} species</span>
+            <span className={styles.againstText}>Against</span>{' '}
+            <span>{species.length} species</span>
           </div>
         </div>
 
@@ -124,7 +123,6 @@ const SequenceBox = (props: SequenceBoxProps) => {
             />
           );
         })}
-        <div className={styles.ruler}></div>
       </div>
     </>
   );
@@ -146,7 +144,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   return (
     <div className={styles.resultsSummaryRow}>
       <div className={styles.hitLabel}>
-        <span className={styles.boldText}>{data.result.hits.length} </span>
+        <span>{data.result.hits.length} </span>
         <span className={styles.label}>
           {`${pluralise('hit', data.result.hits.length)}`}
         </span>

@@ -120,6 +120,7 @@ const CollapsedSequencesBox = (props: Props) => {
   return (
     <div className={styles.sequenceBox}>
       <div>{`${sequenceCount} ${pluralise('sequence', sequenceCount)}`}</div>
+      <div></div>
       <div>
         <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
         species
@@ -221,6 +222,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
   return (
     <div className={styles.sequenceBox}>
       <div>Sequence {sequence.id}</div>
+      <div></div>
       <div>
         <span className={styles.againstText}>Against</span> {jobs.length}{' '}
         species

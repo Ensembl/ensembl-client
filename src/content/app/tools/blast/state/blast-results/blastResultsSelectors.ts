@@ -29,4 +29,4 @@ export const getUnviewedBlastSubmissions = (state: RootState) => {
 };
 
 export const getBlastSubmissionById = (state: RootState, id: string) =>
-  state.blast.blastResults[id];
+  state.blast.blastResults.submissions[id];

@@ -20,9 +20,11 @@ and also that it can be of variable width
 */
 .sequenceBox {
   display: grid;
-  grid-template-columns: 68% auto 1fr;
+  grid-template-columns: 12ch auto 1fr;
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
+  grid-template-columns: 12ch 57% 1fr;
+  column-gap: 20px;
 }
 
 .sequenceBox + .sequenceBox {
