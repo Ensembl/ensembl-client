@@ -2,13 +2,44 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  column-gap: 172px;
+  grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
+  column-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
   padding-top: 20px;
   margin-bottom: 14px;
   white-space: nowrap;
+}
+
+@media screen and (max-width: 1439px) {
+  .grid {
+    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
+  }
+  .controlButtons {
+    padding-left: 20px;
+  }
+}
+
+.submissionName {
+  grid-column: submission-name;
+}
+
+@media screen and (max-width: 1279px) {
+  .submissionName {
+    display: none;
+  }
+}
+
+.submissionDetails {
+  grid-column: submission-details;
+  justify-self: end;
+  padding-right: 40px;
+}
+
+.showHide {
+  position: absolute;
+  --show-hide-chevron-height: 8px;
+  margin-left: 15px;
 }
 
 .submissionIdLabel {
@@ -32,11 +63,16 @@
 }
 
 .controlButtons {
+  grid-column: control-buttons;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   column-gap: 40px;
-  width: 268px;
+  // width: 268px;
+}
+
+.controlButtons > * {
+  flex-shrink: 0;
 }
 
 .inactiveButton {

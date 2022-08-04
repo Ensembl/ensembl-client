@@ -20,15 +20,21 @@ and also that it can be of variable width
 */
 .sequenceBox {
   display: grid;
-  grid-template-columns: 12ch auto 1fr;
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
-  grid-template-columns: 12ch 57% 1fr;
+  grid-template-columns: 11ch minmax(48%, 1050px) [species-count] minmax(
+      20%,
+      1fr
+    ) 10px;
   column-gap: 20px;
 }
 
 .sequenceBox + .sequenceBox {
   border-top: none;
+}
+
+.speciesCount {
+  grid-column: species-count;
 }
 
 .againstText {

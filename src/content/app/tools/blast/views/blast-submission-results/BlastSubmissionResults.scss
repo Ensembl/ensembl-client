@@ -15,7 +15,6 @@
 }
 
 .sequenceHeader {
-  width: 800px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -23,9 +22,12 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: 12ch 57% 1fr;
+  grid-template-columns: 11ch minmax(48%, 1050px) minmax(20%, 1fr) 10px;
   column-gap: 20px;
   padding-bottom: 20px;
+}
+
+.summaryPlot {
 }
 
 .hitLabel {

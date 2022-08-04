@@ -37,14 +37,18 @@ import DownloadButton from 'src/shared/components/download-button/DownloadButton
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSubmissionHeader.scss';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 export type Props = {
   submission: BlastSubmission;
   isAnyJobRunning?: boolean;
+  isExpanded?: boolean;
+  toggleExpanded?: (isExpanded: boolean) => void;
+  sequenceCount?: number;
 };
 
 export const BlastSubmissionHeader = (props: Props) => {
-  const { submission } = props;
+  const { submission, sequenceCount } = props;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -82,7 +86,10 @@ export const BlastSubmissionHeader = (props: Props) => {
   return (
     <div className={styles.grid}>
       <div>{blastProgram}</div>
-      <div>
+      <div className={styles.submissionName}>
+        {/* placeholder for submission name */}
+      </div>
+      <div className={styles.submissionDetails}>
         <span className={styles.submissionIdLabel}>Submission</span>
         <span>{submissionId}</span>
         <span className={styles.editSubmission} onClick={editSubmission}>
@@ -92,6 +99,15 @@ export const BlastSubmissionHeader = (props: Props) => {
           <span>{submissionTime}</span>
           <span className={styles.timeZone}>GMT</span>
         </span>
+        {sequenceCount && sequenceCount > 1 && (
+          <ShowHide
+            className={styles.showHide}
+            isExpanded={props.isExpanded || false}
+            onClick={() =>
+              props.toggleExpanded && props.toggleExpanded(!props.isExpanded)
+            }
+          />
+        )}
       </div>
       <div className={styles.controlButtons}>
         <DeleteButton
