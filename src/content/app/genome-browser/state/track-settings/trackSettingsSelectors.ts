@@ -19,12 +19,8 @@ import { defaultTrackSettingsForGenome } from './trackSettingsSlice';
 
 import type { RootState } from 'src/store';
 
-export const getBrowserCogList = (state: RootState) => {
-  return state.browser.trackSettings.browserTrackCogs.cogList;
-};
-
 export const getBrowserSelectedCog = (state: RootState) => {
-  return state.browser.trackSettings.browserTrackCogs.selectedCog;
+  return state.browser.trackSettings.selectedCog;
 };
 
 export const getTrackSettingsForTrackId = (

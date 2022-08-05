@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -25,6 +25,8 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
+import { GenomeBrowserContext } from '../../Browser';
 
 import {
   setInitialTrackSettingsForGenome,
@@ -44,6 +46,16 @@ const useBrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const { data: trackCategories } = useGenomeTracksQuery(genomeId);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
+
+  const genomeBrowserContext = useContext(GenomeBrowserContext);
+
+  if (!genomeBrowserContext) {
+    throw new Error(
+      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
+    );
+  }
+
+  const { cogList, setCogList } = genomeBrowserContext;
 
   const dispatch = useAppDispatch();
 
@@ -69,6 +81,11 @@ const useBrowserCogList = () => {
 
     dispatch(setInitialTrackSettingsForGenome({ genomeId, trackSettings }));
   }, [trackCategories, focusObject, genomeId]);
+
+  return {
+    cogList,
+    setCogList
+  };
 };
 
 export const getPersistentTrackSettingsForGenome = (
