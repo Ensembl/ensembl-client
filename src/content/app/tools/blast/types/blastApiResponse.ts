@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
-
-import styles from './BlastSubmissionHeaderGrid.scss';
-
-/**
- * This is a dumb component whose sole purpose is to arrange the children into a grid
- */
-
-// TODO: consider which interface is better: a single "children" prop,
-// or individual "first", "second", "third" props. With individual props,
-// the consumer of the component will know that this component accepts only three children
-type Props = {
-  children: ReactNode;
+export type BlastApiResponse = {
+  result: {
+    hits: BlastHit[];
+  };
 };
 
-const BlastSubmissionHeaderGrid = ({ children }: Props) => {
-  return <div className={styles.grid}>{children}</div>;
+type BlastHit = {
+  hit_acc: string;
+  hit_def: string;
+  hit_hsps: HSP[];
 };
 
-export default BlastSubmissionHeaderGrid;
+type HSP = {
+  hsp_score: number;
+  hsp_bit_score: number;
+  hsp_expect: number;
+  hsp_align_len: number;
+  hsp_identity: number;
+  hsp_positive: number;
+  hsp_query_frame: string;
+  hsp_hit_frame: string;
+  hsp_strand: string;
+  hsp_query_from: number;
+  hsp_query_to: number;
+  hsp_hit_from: number;
+  hsp_hit_to: number;
+  hsp_qseq: string;
+  hsp_mseq: string;
+  hsp_hseq: string;
+};
