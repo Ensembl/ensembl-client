@@ -164,7 +164,9 @@ describe('BlastSubmissionHeader', () => {
         const deleteButton = container.querySelector(
           '.deleteButton'
         ) as HTMLElement;
-        expect(deleteButton.classList.contains('inactiveButton')).toBe(true);
+        expect(deleteButton.classList.contains('deleteButtonDisabled')).toBe(
+          true
+        );
       });
 
       it('has a disabled link to submission results page', () => {
