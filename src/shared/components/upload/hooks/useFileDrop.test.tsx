@@ -15,8 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { setTimeout } from 'timers/promises';
-import { render, fireEvent, act } from '@testing-library/react';
+import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import noop from 'lodash/noop';
 import classNames from 'classnames';
 
@@ -78,11 +77,12 @@ describe('useFileDrop', () => {
 
     expect(testElement.innerHTML).toBe('I am empty component');
 
-    await act(async () => {
+    act(() => {
       fireEvent.drop(testElement, mockDragEvent);
-      await setTimeout(0); // bump to the end of event loop to give file reader time to read the file, and for React component to update
     });
 
-    expect(testElement.innerHTML).toBe('Lorem ipsum');
+    await waitFor(() => {
+      expect(testElement.innerHTML).toBe('Lorem ipsum');
+    });
   });
 });
