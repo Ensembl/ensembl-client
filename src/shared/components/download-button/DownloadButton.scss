@@ -13,3 +13,8 @@
     fill: $white;
   }
 }
+
+.downloadButtonDisabled {
+  --download-button-background: #{$grey};
+  cursor: default;
+}

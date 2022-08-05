@@ -25,12 +25,18 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 
 import styles from './DownloadButton.scss';
 
-type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'>;
+type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'> & {
+  disabled?: boolean;
+};
 
 const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
   const { className, ...otherProps } = props;
 
-  const elementClasses = classNames(styles.downloadButton, className);
+  const elementClasses = classNames(
+    styles.downloadButton,
+    { [styles.downloadButtonDisabled]: props.disabled },
+    className
+  );
 
   return (
     <button {...otherProps} ref={ref} className={elementClasses}>

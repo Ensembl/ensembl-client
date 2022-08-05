@@ -11,3 +11,8 @@
     fill: var(--delete-button-background, #{$blue});
   }
 }
+
+.deleteButtonDisabled {
+  --delete-button-background: #{$grey};
+  cursor: default;
+}

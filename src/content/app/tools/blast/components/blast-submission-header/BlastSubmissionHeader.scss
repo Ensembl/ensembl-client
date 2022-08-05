@@ -73,9 +73,3 @@
 .controlButtons > * {
   flex-shrink: 0;
 }
-
-.inactiveButton {
-  --download-button-background: #{$grey};
-  --delete-button-background: #{$grey};
-  cursor: default;
-}

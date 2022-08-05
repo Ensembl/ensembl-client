@@ -74,10 +74,6 @@ and also that it can be of variable width
   width: 268px;
 }
 
-.inactiveButton {
-  --download-button-background: #{$grey};
-}
-
 .jobStatus {
   justify-self: end;
 }

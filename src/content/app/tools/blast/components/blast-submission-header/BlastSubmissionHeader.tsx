@@ -112,9 +112,9 @@ export const BlastSubmissionHeader = (props: Props) => {
       <div className={styles.controlButtons}>
         <DeleteButton
           onClick={handleDeletion}
-          className={props.isAnyJobRunning ? styles.inactiveButton : ''}
+          disabled={props.isAnyJobRunning}
         />
-        <DownloadButton className={styles.inactiveButton} />
+        <DownloadButton disabled={true} />
         <ButtonLink
           to={urlFor.blastSubmission(submissionId)}
           isDisabled={props.isAnyJobRunning}
