@@ -7,7 +7,7 @@
       and subtract from it the extra left padding that the main container has over the top bar (60px - 30px)
     Thus, 1800 - 60 + 30 = 1770px
   */
-  max-width: 1770px;
+  max-width: calc(1800px - ($standard-gutter * 2) + $standard-gutter);
 }
 
 .listedBlastSubmission:not(:last-child) {
@@ -22,10 +22,9 @@ and also that it can be of variable width
   display: grid;
   padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
-  grid-template-columns: 11ch minmax(48%, 1050px) [species-count] minmax(
-      20%,
-      1fr
-    ) 10px;
+  grid-template-columns:
+    11ch minmax(48%, 1050px) [species-count] minmax(20%, 1fr)
+    10px;
   column-gap: 20px;
 }
 

@@ -77,4 +77,5 @@
 .inactiveButton {
   --download-button-background: #{$grey};
   --delete-button-background: #{$grey};
+  cursor: default;
 }

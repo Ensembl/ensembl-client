@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useAppSelector } from 'src/store';
 import { useParams } from 'react-router';
+import { useAppSelector } from 'src/store';
 
 import { parseBlastInput } from '../../utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
@@ -26,10 +26,11 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 
-import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { type BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+
+import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -98,33 +99,31 @@ const SequenceBox = (props: SequenceBoxProps) => {
   const { sequence, species, blastResults } = props;
 
   return (
-    <>
-      <div key={sequence.id} className={styles.sequenceBoxWrapper}>
-        <div className={styles.resultsSummaryRow}>
-          <div className={styles.sequenceId}>Sequence {sequence.id}</div>
-          <div className={styles.sequenceHeader}>
-            {'>' + (parseBlastInput(sequence.value)[0].header || '')}
-          </div>
-          <div>
-            <span className={styles.againstText}>Against</span>{' '}
-            <span>{species.length} species</span>
-          </div>
+    <div className={styles.sequenceBoxWrapper}>
+      <div className={styles.resultsSummaryRow}>
+        <div className={styles.sequenceId}>Sequence {sequence.id}</div>
+        <div className={styles.sequenceHeader}>
+          {'>' + (parseBlastInput(sequence.value)[0].header || '')}
         </div>
-
-        {blastResults.map((result) => {
-          const speciesInfo = species.filter(
-            (sp) => sp.genome_id === result.genomeId
-          );
-          return (
-            <SingleBlastJobResult
-              key={result.jobId}
-              species={speciesInfo[0]}
-              jobId={result.jobId}
-            />
-          );
-        })}
+        <div>
+          <span className={styles.againstText}>Against</span>{' '}
+          <span>{species.length} species</span>
+        </div>
       </div>
-    </>
+
+      {blastResults.map((result) => {
+        const speciesInfo = species.filter(
+          (sp) => sp.genome_id === result.genomeId
+        );
+        return (
+          <SingleBlastJobResult
+            key={result.jobId}
+            species={speciesInfo[0]}
+            jobId={result.jobId}
+          />
+        );
+      })}
+    </div>
   );
 };
 

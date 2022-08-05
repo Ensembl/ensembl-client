@@ -33,11 +33,11 @@ import {
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSubmissionHeader.scss';
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 export type Props = {
   submission: BlastSubmission;
