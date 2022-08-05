@@ -157,16 +157,19 @@ describe('BlastSubmissionHeader', () => {
         }
       });
 
-      it('does not show control buttons', () => {
+      it('shows disabled control buttons', () => {
         const { container } = renderComponent({
           props: { submission }
         });
         const deleteButton = container.querySelector(
           '.deleteButton'
         ) as HTMLElement;
-        expect(deleteButton.classList.contains('deleteButtonDisabled')).toBe(
-          true
-        );
+        const downloadButton = container.querySelector(
+          '.downloadButton'
+        ) as HTMLElement;
+
+        expect(deleteButton.hasAttribute('disabled')).toBe(true);
+        expect(downloadButton.hasAttribute('disabled')).toBe(true);
       });
 
       it('has a disabled link to submission results page', () => {
