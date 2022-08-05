@@ -16,7 +16,10 @@
 
 import React from 'react';
 import { useParams } from 'react-router';
+
 import { useAppSelector } from 'src/store';
+import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
 import { parseBlastInput } from '../../utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
@@ -28,9 +31,6 @@ import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-
 
 import { type BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-
-import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
 import styles from './BlastSubmissionResults.scss';
 
