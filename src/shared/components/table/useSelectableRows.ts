@@ -13,11 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { default as Table } from './Table';
-export { default as TableHead } from './TableHead';
-export { default as TableBody } from './TableBody';
-export { default as TableRow } from './TableRow';
-export { default as TableHeadCell } from './TableHeaderCell';
-export { default as TableCell } from './TableCell';
-export { default as TableRowSelectorCell } from './TableRowSelectorCell';

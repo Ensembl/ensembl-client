@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { type HTMLProps } from 'react';
 
 import styles from './Table.scss';
 
@@ -23,14 +23,10 @@ import styles from './Table.scss';
  * - render the td tag
  */
 
-type Props = {
-  children: ReactNode;
+type Props = HTMLProps<HTMLTableCellElement>;
+
+const TableCell = (props: Props) => {
+  return <td className={styles.tableCell} {...props} />;
 };
 
-const TableHead = (props: Props) => {
-  const { children } = props;
-
-  return <td className={styles.tableCell}>{children}</td>;
-};
-
-export default TableHead;
+export default TableCell;

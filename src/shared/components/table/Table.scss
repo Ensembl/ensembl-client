@@ -36,6 +36,7 @@
   width: 8px;
   fill: $grey;
   cursor: pointer;
+  user-select: none;
 }
 
 .tableHeadCellSortingArrowDown {

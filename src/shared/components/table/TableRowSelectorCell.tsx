@@ -14,10 +14,31 @@
  * limitations under the License.
  */
 
-export { default as Table } from './Table';
-export { default as TableHead } from './TableHead';
-export { default as TableBody } from './TableBody';
-export { default as TableRow } from './TableRow';
-export { default as TableHeadCell } from './TableHeaderCell';
-export { default as TableCell } from './TableCell';
-export { default as TableRowSelectorCell } from './TableRowSelectorCell';
+import React from 'react';
+
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+
+import styles from './Table.scss';
+
+/**
+ * Responsibilities
+ * - render a td tag containing either a checkbox or an eye icon, to act as a way to select a row
+ */
+
+type Props = {
+  isSelected: boolean;
+  mode: 'default' | 'selecting';
+  onChange: () => void;
+};
+
+const TableRowSelectorCell = (props: Props) => {
+  const { isSelected, onChange } = props;
+
+  return (
+    <td className={styles.tableCell}>
+      <Checkbox checked={isSelected} onChange={onChange} />
+    </td>
+  );
+};
+
+export default TableRowSelectorCell;
