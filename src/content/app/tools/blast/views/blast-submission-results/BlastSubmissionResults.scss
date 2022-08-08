@@ -1,0 +1,71 @@
+@import 'src/styles/common';
+
+$double_standard_gutter: calc($standard-gutter * 2);
+
+.blastSubmissionResultsContainer {
+  max-width: 1860px;
+  padding: 0 $standard-gutter $global-padding-bottom $double_standard_gutter;
+}
+
+.sequenceBoxWrapper {
+  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
+  border: 1px solid $grey;
+}
+
+.sequenceBoxWrapper + .sequenceBoxWrapper {
+  border-top: none;
+}
+
+.sequenceHeader {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultsSummaryRow {
+  display: grid;
+  grid-template-columns: 11ch minmax(48%, 1050px) minmax(20%, 1fr) 10px;
+  column-gap: 20px;
+  padding-bottom: 20px;
+}
+
+.hitLabel {
+  text-align: right;
+  padding-right: 20px;
+}
+
+.againstText {
+  font-weight: $light;
+}
+
+.speciesInfo span {
+  padding-right: 20px;
+}
+
+.submissionIdLabel {
+  font-weight: $light;
+  margin-right: 1ch;
+}
+
+.editSubmission {
+  color: $blue;
+  cursor: pointer;
+  margin: 0 32px;
+}
+
+.timeStamp {
+  white-space: nowrap;
+}
+
+.timeZone {
+  font-weight: $light;
+  margin-left: 1ch;
+}
+
+.controlButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 40px;
+  width: 268px;
+}

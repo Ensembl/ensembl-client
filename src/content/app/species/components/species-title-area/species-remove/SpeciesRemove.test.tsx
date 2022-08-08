@@ -84,10 +84,13 @@ describe('SpeciesSelectionControls', () => {
 
   it('correctly toggles removal confirmation dialog', async () => {
     const { container } = wrapInRedux();
-    const removeLabel = getByText(container as HTMLElement, 'Remove');
+    const removeSpeciesButton = getByText(
+      container as HTMLElement,
+      'Remove species'
+    );
 
     // open removal confitmation dialog
-    await userEvent.click(removeLabel);
+    await userEvent.click(removeSpeciesButton);
 
     expect(container.querySelector('.speciesRemovalWarning')?.textContent).toBe(
       confirmationMessage
@@ -107,8 +110,11 @@ describe('SpeciesSelectionControls', () => {
     const { container, routerInfo } = wrapInRedux();
 
     // open removal confitmation dialog
-    const removeLabel = getByText(container as HTMLElement, 'Remove');
-    await userEvent.click(removeLabel);
+    const removeSpeciesButton = getByText(
+      container as HTMLElement,
+      'Remove species'
+    );
+    await userEvent.click(removeSpeciesButton);
 
     const removeButton = getByText(container as HTMLElement, 'Remove'); // this will be a button element now
     await userEvent.click(removeButton);

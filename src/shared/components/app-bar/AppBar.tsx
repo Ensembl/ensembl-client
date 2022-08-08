@@ -46,7 +46,7 @@ export const HelpAndDocumentation = () => {
     <div className={styles.helpLink}>
       <span>
         Help &amp; documentation
-        <Chevron direction="right" classNames={{ svg: styles.chevron }} />
+        <Chevron direction="right" className={styles.chevron} />
       </span>
     </div>
   );

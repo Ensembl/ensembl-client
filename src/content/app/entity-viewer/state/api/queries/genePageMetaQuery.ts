@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import { gql } from 'graphql-request';
 
-import styles from './BlastSubmissionHeaderGrid.scss';
+export const genePageMetaQuery = gql`
+  query GenePageMeta($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      symbol
+    }
+  }
+`;
+
+export type GenePageMetaQueryResult = {
+  gene: {
+    stable_id: string;
+    symbol: string;
+  };
+};
 
 /**
- * This is a dumb component whose sole purpose is to arrange the children into a grid
+ * TODO in the future:
+ * - Add information for page description meta tag
+ * - Add information for a bioschema
+ *   - see https://bioschemas.org/profiles/Gene/1.0-RELEASE
+ *   - see also an `application/ld+json` script on current Ensembl gene page
  */
 
-// TODO: consider which interface is better: a single "children" prop,
-// or individual "first", "second", "third" props. With individual props,
-// the consumer of the component will know that this component accepts only three children
-type Props = {
-  children: ReactNode;
+export type GenePageMeta = {
+  title: string;
 };
-
-const BlastSubmissionHeaderGrid = ({ children }: Props) => {
-  return <div className={styles.grid}>{children}</div>;
-};
-
-export default BlastSubmissionHeaderGrid;

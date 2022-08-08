@@ -30,35 +30,23 @@ import styles from './ShowHide.scss';
  */
 
 type Props = {
-  label: string | JSX.Element;
+  label?: string | JSX.Element;
   isExpanded: boolean;
   onClick: () => void;
-  classNames?: {
-    wrapper?: string;
-    label?: string;
-    chevron?: string;
-  };
+  className?: string;
 };
 
 const ShowHide = (props: Props) => {
-  const wrapperClasses = classNames(styles.showHide, props.classNames?.wrapper);
-
-  const labelClasses = classNames(styles.label, props.classNames?.label);
-
-  const chevronClasses = {
-    svg: classNames(styles.chevron, props.classNames?.chevron)
-  };
+  const wrapperClasses = classNames(styles.showHide, props.className);
 
   return (
-    <div className={wrapperClasses}>
-      <span onClick={props.onClick} className={labelClasses}>
-        {props.label}
-        <Chevron
-          direction={props.isExpanded ? 'up' : 'down'}
-          animate={true}
-          classNames={chevronClasses}
-        />
-      </span>
+    <div onClick={props.onClick} className={wrapperClasses}>
+      {props.label && <span className={styles.label}>{props.label}</span>}
+      <Chevron
+        direction={props.isExpanded ? 'up' : 'down'}
+        animate={true}
+        className={styles.chevron}
+      />
     </div>
   );
 };

@@ -31,10 +31,10 @@ import {
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import {
-  getDefaultGeneTrackConfig,
-  getDefaultRegularTrackConfig,
+  getDefaultGeneTrackSettings,
+  getDefaultRegularTrackSettings,
   type CogList
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -49,10 +49,10 @@ export const createCogTrackList = (): CogList => ({
   gc: faker.datatype.number()
 });
 
-export const createTrackConfigs = () => ({
-  'gene-focus': getDefaultGeneTrackConfig(),
-  contig: getDefaultRegularTrackConfig(),
-  gc: getDefaultRegularTrackConfig()
+export const createTrackSettings = () => ({
+  'gene-focus': getDefaultGeneTrackSettings(),
+  contig: getDefaultRegularTrackSettings(),
+  gc: getDefaultRegularTrackSettings()
 });
 
 export const createZmenuContentPayload = (): {
@@ -213,21 +213,8 @@ export const createMockBrowserState = () => {
           zoom_in: false
         }
       },
-      trackConfig: {
-        browserTrackCogs: {
-          cogList: {
-            'gene-focus': 0,
-            contig: 192,
-            gc: 384
-          },
-          selectedCog: 'gene-focus'
-        },
-        [fakeGenomeId]: {
-          applyToAllConfig: {
-            isSelected: true
-          },
-          tracks: createTrackConfigs()
-        }
+      trackSettings: {
+        selectedCog: 'gene-focus'
       },
       trackPanel: {
         [fakeGenomeId]: {
@@ -280,6 +267,9 @@ export const createMockBrowserState = () => {
           loadingStatus: LoadingState.SUCCESS
         }
       }
+    },
+    genome: {
+      genomes: {}
     },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,

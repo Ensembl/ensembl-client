@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { MemoryRouter } from 'react-router';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -33,6 +34,9 @@ import {
   ZmenuContentItem,
   ZmenuContentItemProps
 } from './ZmenuContent';
+import LocationDisplay, {
+  LOCATION_DISPLAY_TEST_ID
+} from 'tests/components/LocationDisplay';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
@@ -41,6 +45,12 @@ jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     changeFocusObjectFromZmenu: mockChangeFocusObjectFromZmenu
+  })
+);
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
+  () => () => ({
+    genomeIdForUrl: 'grch38'
   })
 );
 
@@ -62,9 +72,11 @@ const defaultZmenuContentProps: ZmenuContentProps = {
 
 const renderZmenuContent = (store = mockStore) =>
   render(
-    <Provider store={store}>
-      <ZmenuContent {...defaultZmenuContentProps} />
-    </Provider>
+    <MemoryRouter>
+      <Provider store={store}>
+        <ZmenuContent {...defaultZmenuContentProps} />
+      </Provider>
+    </MemoryRouter>
   );
 
 const defaultZmenuContentItemProps: ZmenuContentItemProps = {
@@ -76,9 +88,12 @@ const defaultZmenuContentItemProps: ZmenuContentItemProps = {
 
 const renderZmenuContentItem = (store = mockStore) =>
   render(
-    <Provider store={store}>
-      <ZmenuContentItem {...defaultZmenuContentItemProps} />
-    </Provider>
+    <MemoryRouter>
+      <Provider store={store}>
+        <ZmenuContentItem {...defaultZmenuContentItemProps} />
+      </Provider>
+      <LocationDisplay />
+    </MemoryRouter>
   );
 
 describe('<ZmenuContent />', () => {
@@ -127,13 +142,13 @@ describe('<ZmenuContent />', () => {
 
   describe('<ZmenuContentItem />', () => {
     it('calls function to change focus feature when feature link is clicked', async () => {
-      const { container } = renderZmenuContentItem();
+      const { container, getByTestId } = renderZmenuContentItem();
 
       await userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledWith(
-        defaultZmenuContentItemProps.featureId
-      );
+      const locationDisplay = getByTestId(LOCATION_DISPLAY_TEST_ID);
+
+      expect(locationDisplay?.textContent).toBe('/genome-browser/grch38');
     });
   });
 });

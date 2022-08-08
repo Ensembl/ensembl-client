@@ -51,8 +51,22 @@ const viewRouter = async (req: Request, res: Response) => {
     matchPath(route.path, req.path)
   ) as RouteConfig;
 
+  let status = 200;
+
   if (matchedPageConfig.serverFetch) {
-    await matchedPageConfig.serverFetch({ path: req.path, store: reduxStore });
+    try {
+      const fetchResult =
+        (await matchedPageConfig.serverFetch({
+          path: req.path,
+          store: reduxStore
+        })) ?? {};
+      if ('status' in (fetchResult as { status?: number })) {
+        status = (fetchResult as { status: number }).status;
+      }
+    } catch (error) {
+      // TODO: this would be a good place to log out the error when we set up loggers
+      status = 500;
+    }
   }
 
   const ReactApp = (
@@ -109,7 +123,7 @@ const viewRouter = async (req: Request, res: Response) => {
     res.status(404);
   }
 
-  res.send(responseString);
+  res.status(status).send(responseString);
 };
 
 export default viewRouter;

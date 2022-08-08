@@ -14,36 +14,48 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
-import browserTrackConfigStorageService from 'src/content/app/genome-browser/components/browser-track-config/services/browserTrackConfigStorageService';
+import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
 
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import { GenomeBrowserContext } from '../../Browser';
+
 import {
-  setInitialTrackConfigsForGenome,
-  getDefaultGeneTrackConfig,
-  getDefaultRegularTrackConfig,
+  setInitialTrackSettingsForGenome,
+  getDefaultGeneTrackSettings,
+  getDefaultRegularTrackSettings,
   getTrackType,
   TrackType,
-  type TrackConfigs,
-  type TrackConfigsForGenome
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+  type TrackSettings,
+  type TrackSettingsForGenome
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
-import type { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
 const useBrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const { data: trackCategories } = useGenomeTracksQuery(genomeId);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
+
+  const genomeBrowserContext = useContext(GenomeBrowserContext);
+
+  if (!genomeBrowserContext) {
+    throw new Error(
+      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
+    );
+  }
+
+  const { cogList, setCogList } = genomeBrowserContext;
 
   const dispatch = useAppDispatch();
 
@@ -54,56 +66,61 @@ const useBrowserCogList = () => {
       return;
     }
 
-    const defaultTracksForGenome = prepareTrackConfigs({
+    const defaultTracksForGenome = prepareTrackSettings({
       trackCategories,
       focusObject
     });
 
-    const savedTrackConfigsForGenome =
-      getPersistentTrackConfigsForGenome(genomeId);
+    const savedTrackSettingsForGenome =
+      getPersistentTrackSettingsForGenome(genomeId);
 
-    const trackConfigs = {
+    const trackSettings = {
       tracks: defaultTracksForGenome,
-      ...savedTrackConfigsForGenome
+      ...savedTrackSettingsForGenome
     };
 
-    dispatch(setInitialTrackConfigsForGenome({ genomeId, trackConfigs }));
+    dispatch(setInitialTrackSettingsForGenome({ genomeId, trackSettings }));
   }, [trackCategories, focusObject, genomeId]);
+
+  return {
+    cogList,
+    setCogList
+  };
 };
 
-export const getPersistentTrackConfigsForGenome = (
+export const getPersistentTrackSettingsForGenome = (
   genomeId: string
-): Partial<TrackConfigsForGenome> => {
-  const trackConfigs = browserTrackConfigStorageService.getTrackConfigs();
-  return trackConfigs[genomeId] ?? {};
+): Partial<TrackSettingsForGenome> => {
+  const trackSettings = browserTrackSettingsStorageService.getTrackSettings();
+  return trackSettings[genomeId] ?? {};
 };
 
-export const prepareTrackConfigs = ({
+const prepareTrackSettings = ({
   trackCategories,
   focusObject
 }: {
   trackCategories: GenomeTrackCategory[];
   focusObject: FocusObject | null;
 }) => {
-  const defaultTrackConfigs: TrackConfigs = {};
+  const defaultTrackSettings: TrackSettings = {};
 
   if (focusObject?.type === TrackType.GENE) {
-    defaultTrackConfigs[TrackId.GENE] = getDefaultGeneTrackConfig();
+    defaultTrackSettings[TrackId.GENE] = getDefaultGeneTrackSettings();
   }
 
   trackCategories.forEach((category) => {
     category.track_list.forEach((track) => {
-      const trackId = track.track_id.replace('track:', '');
-      const trackType = getTrackType(trackId);
+      const { track_id } = track;
+      const trackType = getTrackType(track_id);
 
       if (trackType === TrackType.GENE) {
-        defaultTrackConfigs[trackId] = getDefaultGeneTrackConfig();
+        defaultTrackSettings[track_id] = getDefaultGeneTrackSettings();
       } else {
-        defaultTrackConfigs[trackId] = getDefaultRegularTrackConfig();
+        defaultTrackSettings[track_id] = getDefaultRegularTrackSettings();
       }
     });
   });
-  return defaultTrackConfigs;
+  return defaultTrackSettings;
 };
 
 export default useBrowserCogList;

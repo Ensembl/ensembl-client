@@ -27,8 +27,6 @@ import { BrowserCogList } from './BrowserCogList';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import { updateCogList } from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
-
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 jest.mock(
@@ -44,6 +42,20 @@ jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser()
+  })
+);
+
+const mockSetCogList = jest.fn();
+
+jest.mock(
+  'src/content/app/genome-browser/components/browser-cog/useBrowserCogList',
+  () => () => ({
+    setCogList: mockSetCogList,
+    cogList: {
+      'gene-focus': 0,
+      contig: 192,
+      gc: 384
+    }
   })
 );
 
@@ -101,13 +113,7 @@ describe('<BrowserCogList />', () => {
         ]
       });
 
-      const dispatchedActions = store.getActions();
-
-      const updateCogListAction = dispatchedActions.find(
-        (action) => action.type === updateCogList.type
-      );
-
-      expect(updateCogListAction.payload).toEqual({
+      expect(mockSetCogList).toBeCalledWith({
         focus: 100,
         contig: 200
       });

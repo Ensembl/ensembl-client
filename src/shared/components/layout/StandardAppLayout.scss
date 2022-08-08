@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
-$sidebarContentWidth: 320px;
-$sidebarToolstripWidth: 46px;
+$sidebarContentWidth: 340px;
+$sidebarToolstripWidth: 50px;
 $topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
@@ -16,7 +16,6 @@ $drawerWindowWidth: 45px;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   position: relative;
-  padding-left: 18px;
   width: 100%;
   z-index: 10;
 
@@ -59,7 +58,7 @@ $drawerWindowWidth: 45px;
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% - 46px);
+  width: calc(100% - $sidebarToolstripWidth);
   height: 100%;
   display: flex;
   z-index: 5;
@@ -87,9 +86,14 @@ $drawerWindowWidth: 45px;
   height: 100%;
   width: $sidebarContentWidth;
   border-left: 1px solid $grey;
-  padding: 21px 12px;
+  padding: 21px 0 0 12px;
   background-color: white;
   overflow: auto;
+  scrollbar-gutter: stable;
+
+  & > div {
+    padding-bottom: $global-padding-bottom;
+  }
 }
 
 .sidebarToolstrip {

@@ -54,6 +54,14 @@ export type BlastSubmissionParameters = MandatorySubmissionParameters &
     stype: SequenceType;
   };
 
+export type BlastResult = {
+  jobId: string;
+  sequenceId: number;
+  genomeId: string;
+  status: JobStatus;
+  data: null; // TODO: add data type
+};
+
 export type BlastSubmission = {
   id: string;
   submittedData: {
@@ -61,21 +69,25 @@ export type BlastSubmission = {
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     parameters: BlastSubmissionParameters;
   };
-  results: Array<{
-    jobId: string;
-    sequenceId: number;
-    genomeId: string;
-    status: JobStatus;
-    data: null; // TODO: add data type
-  }>;
+  results: BlastResult[];
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
 
 export type BlastJob = BlastSubmission['results'][number];
 
+export type BlastResultsUI = {
+  unviewedJobsPage: {
+    expandedSubmissionIds: string[];
+  };
+  viewedJobsPage: {
+    expandedSubmissionIds: string[];
+  };
+};
+
 export type BlastResultsState = {
-  [submissionId: string]: BlastSubmission;
+  submissions: { [submissionId: string]: BlastSubmission };
+  ui: BlastResultsUI;
 };
 
 export const restoreBlastSubmissions = createAsyncThunk(
@@ -91,9 +103,20 @@ export const deleteBlastSubmission = createAsyncThunk(
   }
 );
 
+export const initialBlastResultsState: BlastResultsState = {
+  submissions: {},
+  ui: {
+    unviewedJobsPage: {
+      expandedSubmissionIds: []
+    },
+    viewedJobsPage: {
+      expandedSubmissionIds: []
+    }
+  }
+};
 const blastResultsSlice = createSlice({
   name: 'blast-results',
-  initialState: {} as BlastResultsState,
+  initialState: initialBlastResultsState,
   reducers: {
     updateJob(
       state,
@@ -104,28 +127,37 @@ const blastResultsSlice = createSlice({
       }>
     ) {
       const { submissionId, jobId, fragment } = action.payload;
-      const submission = state[submissionId];
+      const submission = state.submissions[submissionId];
       const job = submission.results.find((job) => job.jobId === jobId);
       if (job) {
         Object.assign(job, fragment);
       }
+    },
+    updateSubmissionUi(
+      state,
+      action: PayloadAction<{
+        fragment: Partial<BlastResultsUI>;
+      }>
+    ) {
+      const { fragment } = action.payload;
+      state.ui = { ...state.ui, ...fragment };
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(restoreBlastSubmissions.fulfilled, (_, { payload }) => {
-      return payload;
+    builder.addCase(restoreBlastSubmissions.fulfilled, (state, { payload }) => {
+      state.submissions = payload;
     });
     builder.addCase(deleteBlastSubmission.fulfilled, (state, { payload }) => {
       const submissionId = payload;
-      delete state[submissionId];
+      delete state.submissions[submissionId];
     });
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
-      state[submissionId] = submission;
+      state.submissions[submissionId] = submission;
     });
   }
 });
 
-export const { updateJob } = blastResultsSlice.actions;
+export const { updateJob, updateSubmissionUi } = blastResultsSlice.actions;
 
 export default blastResultsSlice.reducer;

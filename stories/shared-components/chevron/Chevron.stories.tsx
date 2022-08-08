@@ -76,7 +76,7 @@ export const ChevronStory = () => {
         <Chevron
           direction={direction}
           animate={animation}
-          classNames={{ svg: customClass ? styles.customChevron : undefined }}
+          className={customClass ? styles.customChevron : undefined}
         />
       </div>
       <div className={styles.controls}>

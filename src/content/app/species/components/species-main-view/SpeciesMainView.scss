@@ -1,5 +1,8 @@
-
 @import 'src/styles/common';
+
+.speciesContainer {
+  max-width: 1380px;
+}
 
 @mixin narrow-top-grid {
   grid-template-columns: 1fr;
@@ -16,7 +19,6 @@
     @media (max-width: 1200px) {
       @include narrow-top-grid;
     }
-
   }
 }
 
@@ -25,8 +27,7 @@
 }
 
 .statsWrapper {
-  padding: 5px 20px 40px 120px;
-  max-width: 1381px;
+  padding: 5px 20px $global-padding-bottom 140px;
 }
 
 .exampleLinkText {
@@ -94,7 +95,7 @@
   padding: 16px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto;
-  
+
   .title {
     grid-column: title;
     color: $black;
@@ -112,7 +113,6 @@
   .exampleLink {
     grid-column: example-link;
   }
-
 }
 
 .noData {

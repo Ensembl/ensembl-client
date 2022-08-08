@@ -22,13 +22,14 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateCommonTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import { RootState } from 'src/store';
+import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
+import type { RootState } from 'src/store';
 
 import styles from './TrackPanelItem.scss';
 
@@ -37,11 +38,7 @@ import styles from './TrackPanelItem.scss';
  * by the tracks api.
  */
 
-type Props = {
-  additional_info?: string;
-  colour?: string;
-  label: string;
-  track_id: string;
+type Props = GenomicTrack & {
   genomeId: string;
   category: string;
 };
@@ -53,7 +50,7 @@ const TrackPanelRegularItem = (props: Props) => {
       genomeId,
       tracksGroup: 'commonTracks',
       categoryName: category,
-      trackId: props.track_id
+      trackId: track_id
     })
   );
   const { toggleTrack, genomeBrowser } = useGenomeBrowser();
@@ -65,7 +62,7 @@ const TrackPanelRegularItem = (props: Props) => {
         genomeId,
         drawerView: {
           name: 'track_details',
-          trackId: props.track_id
+          trackId: track_id
         }
       })
     );
@@ -76,17 +73,14 @@ const TrackPanelRegularItem = (props: Props) => {
       trackVisibilityStatus === Status.SELECTED
         ? Status.UNSELECTED
         : Status.SELECTED;
+
     toggleTrack({ trackId: track_id, status: newStatus });
 
     dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          commonTracks: {
-            [category]: {
-              [track_id]: newStatus
-            }
-          }
-        }
+      updateCommonTrackStates({
+        category,
+        trackId: track_id,
+        status: newStatus
       })
     );
   };

@@ -19,9 +19,11 @@ import React from 'react';
 import SpeciesMainViewStats from './SpeciesMainViewStats';
 import SpeciesTitleArea from 'src/content/app/species/components/species-title-area/SpeciesTitleArea';
 
+import styles from './SpeciesMainView.scss';
+
 const SpeciesMainView = () => {
   return (
-    <div>
+    <div className={styles.speciesContainer}>
       <SpeciesTitleArea />
       <SpeciesMainViewStats />
     </div>

@@ -33,7 +33,7 @@ jest.mock(
   () => () => ({
     genomeBrowser: mockGenomeBrowser,
     restoreBrowserTrackStates: jest.fn(),
-    restoreTrackConfigStates: jest.fn()
+    restoreTrackSettingsStates: jest.fn()
   })
 );
 

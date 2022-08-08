@@ -281,7 +281,7 @@ export const ProteinExternalReferenceGroup = (
               <Chevron
                 direction={isXrefGroupOpen ? 'up' : 'down'}
                 animate={true}
-                classNames={{ svg: styles.chevron }}
+                className={styles.chevron}
               />
             </span>
           </div>

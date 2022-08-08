@@ -50,7 +50,9 @@ export const createServerSideRootReducer = () =>
   combineReducers({
     speciesSelector,
     entityViewer,
+    genome,
     blast,
+    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 

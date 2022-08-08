@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { faker } from '@faker-js/faker';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
@@ -26,11 +26,18 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { createZmenuPayload } from 'tests/fixtures/browser';
 
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+
+const mockSetZmenus = jest.fn();
+
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
-    genomeBrowser: mockGenomeBrowser
+    genomeBrowser: mockGenomeBrowser,
+    zmenus: { 1: {} },
+    setZmenus: mockSetZmenus
   })
 );
 
@@ -50,6 +57,49 @@ jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
 
+const chrName = faker.lorem.word();
+const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
+const endPosition =
+  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
+
+const initialState = {
+  browser: {
+    browserGeneral: {
+      activeGenomeId: 'human',
+      chrLocations: {
+        ['human']: [chrName, startPosition, endPosition] as ChrLocation
+      },
+      actualChrLocations: {
+        human: [chrName, startPosition, endPosition] as ChrLocation
+      }
+    }
+  }
+};
+
+const renderComponent = (state: typeof initialState = initialState) => {
+  const rootReducer = combineReducers({
+    browser: combineReducers({
+      browserGeneral: browserGeneralSlice.default
+    })
+  });
+
+  const store = configureStore({
+    reducer: rootReducer,
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
+      <Zmenu {...defaultProps} />
+    </Provider>
+  );
+
+  return {
+    ...renderResult,
+    store
+  };
+};
+
 const defaultProps: ZmenuProps = {
   browserRef: {
     current: document.createElement('div')
@@ -58,21 +108,28 @@ const defaultProps: ZmenuProps = {
   payload: createZmenuPayload()
 };
 
-const mockStore = configureMockStore([thunk]);
-let store: ReturnType<typeof mockStore>;
-const renderComponent = () => {
-  store = mockStore();
-  return render(
-    <Provider store={store}>
-      <Zmenu {...defaultProps} />
-    </Provider>
-  );
-};
 describe('<Zmenu />', () => {
   describe('rendering', () => {
-    test('renders zmenu content', () => {
+    it('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();
       expect(queryByTestId('zmenuContent')).toBeTruthy();
+    });
+  });
+
+  describe('behaviour', () => {
+    it('sends a signal to be closed when genome browser’s location changes', () => {
+      const { store } = renderComponent();
+      expect(mockSetZmenus).not.toHaveBeenCalled();
+      act(() => {
+        store.dispatch(
+          browserGeneralSlice.updateActualChrLocation([
+            chrName,
+            startPosition + 10,
+            endPosition
+          ])
+        );
+      });
+      expect(mockSetZmenus).toHaveBeenCalledWith({}); // the new zmenu object will not have the id of the current zmenu
     });
   });
 });

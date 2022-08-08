@@ -47,7 +47,7 @@ const GroupTrackPanelItemLayout = (props: Props) => {
         <Chevron
           onClick={toggleExpand}
           direction={isCollapsed ? 'down' : 'up'}
-          classNames={{ wrapper: styles.chevronWrapper, svg: styles.chevron }}
+          className={styles.chevron}
         />
       </div>
     </SimpleTrackPanelItemLayout>

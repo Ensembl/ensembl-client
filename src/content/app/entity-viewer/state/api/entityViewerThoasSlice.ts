@@ -17,6 +17,11 @@
 import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import {
+  genePageMetaQuery,
+  type GenePageMetaQueryResult,
+  type GenePageMeta
+} from './queries/genePageMetaQuery';
+import {
   defaultGeneQuery,
   type DefaultEntityViewerGeneQueryResult
 } from './queries/defaultGeneQuery';
@@ -46,6 +51,23 @@ type ProductQueryParams = { productId: string; genomeId: string };
 
 const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    genePageMeta: builder.query<GenePageMeta, GeneQueryParams>({
+      query: (params) => ({
+        body: genePageMetaQuery,
+        variables: params
+      }),
+      transformResponse(response: GenePageMetaQueryResult) {
+        const {
+          gene: { stable_id, symbol }
+        } = response;
+
+        const title = `Gene: ${symbol ?? stable_id} — Ensembl`;
+
+        return {
+          title
+        };
+      }
+    }),
     defaultEntityViewerGene: builder.query<
       DefaultEntityViewerGeneQueryResult,
       GeneQueryParams
@@ -98,6 +120,7 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
 });
 
 export const {
+  useGenePageMetaQuery,
   useDefaultEntityViewerGeneQuery,
   useGeneSummaryQuery,
   useGeneOverviewQuery,
@@ -105,3 +128,6 @@ export const {
   useGeneForSequenceDownloadQuery,
   useProteinDomainsQuery
 } = entityViewerThoasSlice;
+
+export const { genePageMeta: fetchGenePageMeta } =
+  entityViewerThoasSlice.endpoints;

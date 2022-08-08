@@ -19,7 +19,10 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import { useGenomeInfoQuery } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenomeInfoQuery,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -32,7 +35,8 @@ import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+import Chevron from 'src/shared/components/chevron/Chevron';
+import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -45,7 +49,11 @@ type SpeciesPageParams = {
 
 const SpeciesPageContent = () => {
   const { genomeId: genomeIdInUrl } = useParams() as SpeciesPageParams;
-  const { data: genomeInfo } = useGenomeInfoQuery(genomeIdInUrl);
+  const {
+    data: genomeInfo,
+    isError,
+    error
+  } = useGenomeInfoQuery(genomeIdInUrl);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -69,6 +77,15 @@ const SpeciesPageContent = () => {
     dispatch(setActiveGenomeId(genomeId));
     dispatch(fetchExampleFocusObjects(genomeId));
   }, [genomeId]);
+
+  if (isError && isGenomeNotFoundError(error)) {
+    return (
+      <div className={styles.speciesPage}>
+        <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
+        <MissingGenomeError genomeId={genomeIdInUrl} />
+      </div>
+    );
+  }
 
   if (!genomeId) {
     return null; // TODO: consider some kind of a spinner?
@@ -102,12 +119,9 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <div className={styles.topbarLeft}>
-        <span className={styles.pageTitle}>Species Home page</span>
-        <CloseButton
-          className={styles.close}
-          onClick={returnToSpeciesSelector}
-        />
+      <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
+        <Chevron direction="left" animate={false} />
+        <span className={styles.pageTitle}>Find a Species</span>
       </div>
       <div className={styles.dataForSpecies}>Data for this species</div>
     </div>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   FocusGene,
   FocusObjectIdConstituents,
   UrlFocusIdConstituents
@@ -66,7 +66,7 @@ export const parseFocusIdFromUrl = (id: string) => {
       objectId
     };
   } else {
-    throw new Error('Malformed focus id in url');
+    throw new Error(`Malformed focus id "${id}" in url`);
   }
 };
 

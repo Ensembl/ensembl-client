@@ -18,7 +18,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import drawer from 'src/content/app/genome-browser/state/drawer/drawerReducer';
 import browserGeneral from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import browserNav from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import trackConfig from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+import trackSettings from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import trackPanel from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import browserSidebarModal from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import browserBookmarks from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
@@ -28,7 +28,7 @@ export default combineReducers({
   drawer,
   browserGeneral,
   browserNav,
-  trackConfig,
+  trackSettings,
   trackPanel,
   browserSidebarModal,
   browserBookmarks,

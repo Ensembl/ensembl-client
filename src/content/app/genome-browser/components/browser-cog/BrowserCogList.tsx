@@ -30,15 +30,11 @@ import BrowserCog from './BrowserCog';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserCogList from './useBrowserCogList';
 
-import {
-  getBrowserCogList,
-  getBrowserSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSelectors';
+import { getBrowserSelectedCog } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   type CogList,
-  updateCogList,
   updateSelectedCog
-} from 'src/content/app/genome-browser/state/track-config/trackConfigSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
@@ -48,7 +44,6 @@ import { TrackId } from 'src/content/app/genome-browser/components/track-panel/t
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
-  const browserCogList = useAppSelector(getBrowserCogList);
   const selectedCog = useAppSelector(getBrowserSelectedCog);
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const objectId = useAppSelector(getBrowserActiveFocusObjectId);
@@ -56,7 +51,7 @@ export const BrowserCogList = () => {
 
   const { genomeBrowser } = useGenomeBrowser();
 
-  useBrowserCogList();
+  const { cogList: browserCogList, setCogList } = useBrowserCogList();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -89,7 +84,7 @@ export const BrowserCogList = () => {
       }
     });
 
-    dispatch(updateCogList(cogList));
+    setCogList(cogList);
   };
 
   useEffect(() => {
@@ -118,7 +113,7 @@ export const BrowserCogList = () => {
     });
 
   return genomeBrowser ? (
-    <div className={styles.browserTrackConfigOuter}>
+    <div className={styles.browserTrackSettingsOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner}>{cogs}</div>
       </div>

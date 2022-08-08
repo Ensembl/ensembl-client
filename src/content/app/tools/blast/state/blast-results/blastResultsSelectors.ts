@@ -17,10 +17,16 @@
 import { RootState } from 'src/store';
 
 export const getBlastSubmissions = (state: RootState) =>
-  state.blast.blastResults;
+  state.blast.blastResults.submissions;
+
+export const getBlastSubmissionsUi = (state: RootState) =>
+  state.blast.blastResults.ui;
 
 export const getUnviewedBlastSubmissions = (state: RootState) => {
   return Object.values(getBlastSubmissions(state)).filter(
     (submission) => !submission.seen
   );
 };
+
+export const getBlastSubmissionById = (state: RootState, id: string) =>
+  state.blast.blastResults.submissions[id];

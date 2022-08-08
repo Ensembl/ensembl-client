@@ -16,11 +16,18 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 
+import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
+
 import { createServerSideRootReducer } from 'src/root/rootReducer';
+
+const middleware = [thoasApiSlice.middleware, restApiSlice.middleware];
 
 export const getServerSideReduxStore = () => {
   return configureStore({
-    reducer: createServerSideRootReducer()
+    reducer: createServerSideRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(middleware)
   });
 };
 

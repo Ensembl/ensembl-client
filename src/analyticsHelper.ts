@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-export type AnalyticsOptions = {
-  category: string;
-  action: string;
-  label?: string;
-  value?: number;
-  species?: string;
-  app?: string;
-  feature?: string;
-};
-
 /*
   These dimensions are defined here:
   Analytics -> 2020 -> Admin -> Custom Definitions -> Custom Dimensions
@@ -33,6 +23,19 @@ export enum CustomDimensions {
   APP = 'dimension2',
   FEATURE = 'dimension3'
 }
+
+export type CustomDimensionsOptions = {
+  species?: string;
+  app?: string;
+  feature?: string;
+};
+
+export type AnalyticsOptions = CustomDimensionsOptions & {
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+};
 
 export type AnalyticsType = {
   ga: AnalyticsOptions;

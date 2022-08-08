@@ -15,29 +15,19 @@
  */
 
 import React from 'react';
-import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
 
-import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-
-import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import {
-  deleteBlastSubmission,
   type BlastSubmission,
-  type BlastJob
+  type BlastJob,
+  updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-
-import BlastSubmissionHeaderGrid from 'src/content/app/tools/blast/components/blast-submission-header-container/BlastSubmissionHeaderGrid';
-import ButtonLink from 'src/shared/components/button-link/ButtonLink';
-import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadButton from 'src/shared/components/download-button/DownloadButton';
-
-import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
+import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
 import styles from './ListedBlastSubmission.scss';
 
@@ -47,10 +37,17 @@ export type Props = {
 
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
+  const dispatch = useAppDispatch();
+  const uiState = useAppSelector(getBlastSubmissionsUi);
 
   const sequences = submission.submittedData.sequences;
   const allJobs = submission.results;
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
+  const { expandedSubmissionIds } = uiState.unviewedJobsPage;
+
+  const isCurrentSubmissionExpanded = expandedSubmissionIds.includes(
+    submission.id
+  );
 
   const jobsGroupedBySequence = sequences.map((sequence) => {
     const jobs = allJobs.filter((job) => job.sequenceId === sequence.id);
@@ -60,86 +57,62 @@ const ListedBlastSubmission = (props: Props) => {
     };
   });
 
-  const sequenceBoxes = jobsGroupedBySequence.map(({ sequence, jobs }) => (
-    <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
-  ));
+  let sequenceContent = null;
+  if (isCurrentSubmissionExpanded || sequences.length === 1) {
+    sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
+      <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
+    ));
+  } else {
+    sequenceContent = <CollapsedSequencesBox submission={submission} />;
+  }
+
+  const toggleExpanded = (status: boolean) => {
+    const newExpandedSubmissionIds = status
+      ? [...expandedSubmissionIds, submission.id]
+      : expandedSubmissionIds.filter((id) => id !== submission.id);
+
+    dispatch(
+      updateSubmissionUi({
+        fragment: {
+          unviewedJobsPage: {
+            expandedSubmissionIds: newExpandedSubmissionIds
+          }
+        }
+      })
+    );
+  };
 
   return (
     <div className={styles.listedBlastSubmission}>
-      <Header {...props} isAnyJobRunning={isAnyJobRunning} />
-      {sequenceBoxes}
+      <BlastSubmissionHeader
+        {...props}
+        isAnyJobRunning={isAnyJobRunning}
+        toggleExpanded={toggleExpanded}
+        isExpanded={isCurrentSubmissionExpanded}
+        sequenceCount={sequences.length}
+      />
+      {sequenceContent}
     </div>
   );
 };
 
-const Header = (
-  props: Props & {
-    isAnyJobRunning: boolean;
-  }
-) => {
+const CollapsedSequencesBox = (props: Props) => {
   const { submission } = props;
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const sequences = submission.submittedData.sequences;
+  const allJobs = submission.results;
 
-  const blastProgram =
-    submission.submittedData.parameters.program.toUpperCase();
-  const submissionId = submission.id;
-  const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
-
-  const editSubmission = () => {
-    const { sequences, species, parameters } = submission.submittedData;
-    const parsedSequences = sequences.flatMap((sequence) =>
-      parseBlastInput(sequence.value)
-    );
-    const { title, program, stype, ...otherParameters } = parameters;
-
-    const payload = {
-      sequences: parsedSequences,
-      selectedSpecies: species,
-      settings: {
-        jobName: title,
-        sequenceType: stype,
-        program: program as BlastProgram,
-        parameters: otherParameters
-      }
-    };
-    dispatch(fillBlastForm(payload));
-    navigate(urlFor.blastForm());
-  };
-
-  const handleDeletion = () => {
-    dispatch(deleteBlastSubmission(submissionId));
-  };
+  const sequenceCount = sequences.length;
+  const totalSpecies = submission.submittedData.species.length;
 
   return (
-    <BlastSubmissionHeaderGrid>
-      <div>{blastProgram}</div>
-      <div>
-        <span className={styles.submissionIdLabel}>Submission</span>
-        <span>{submissionId}</span>
-        <span className={styles.editSubmission} onClick={editSubmission}>
-          Edit/rerun
-        </span>
-        <span className={styles.timeStamp}>
-          <span>{submissionTime}</span>
-          <span className={styles.timeZone}>GMT</span>
-        </span>
+    <div className={styles.sequenceBox}>
+      <div>{`${sequenceCount} ${pluralise('sequence', sequenceCount)}`}</div>
+      <div className={styles.speciesCount}>
+        <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
+        species
       </div>
-      <div className={styles.controlButtons}>
-        {!props.isAnyJobRunning && (
-          <>
-            <DeleteButton onClick={handleDeletion} />
-            <DownloadButton className={styles.inactiveButton} />
-          </>
-        )}
-        <ButtonLink
-          to={urlFor.blastSubmission(submissionId)}
-          isDisabled={props.isAnyJobRunning}
-        >
-          Results
-        </ButtonLink>
-      </div>
-    </BlastSubmissionHeaderGrid>
+      <StatusElement jobs={allJobs} />
+    </div>
   );
 };
 
@@ -154,8 +127,9 @@ const SequenceBox = (props: SequenceBoxProps) => {
   return (
     <div className={styles.sequenceBox}>
       <div>Sequence {sequence.id}</div>
-      <div>
-        <span>Against</span> {jobs.length} species
+      <div className={styles.speciesCount}>
+        <span className={styles.againstText}>Against</span> {jobs.length}{' '}
+        species
       </div>
       <StatusElement jobs={jobs} />
     </div>

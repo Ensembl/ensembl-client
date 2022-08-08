@@ -15,9 +15,12 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import ZmenuAppLinks from './ZmenuAppLinks';
 
@@ -113,7 +116,8 @@ export type ZmenuContentItemProps = ZmenuContentItemType & {
 };
 
 export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
-  const { changeFocusObjectFromZmenu } = useGenomeBrowser();
+  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const navigate = useNavigate();
 
   const { text, markup, featureId } = props;
   const isFocusable = markup.includes(Markup.FOCUS);
@@ -126,7 +130,12 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   });
 
   const handleClick = () => {
-    changeFocusObjectFromZmenu(featureId);
+    const url = urlFor.browser({
+      genomeId: genomeIdForUrl,
+      focus: featureId
+    });
+
+    navigate(url, { replace: true });
     props.destroyZmenu();
   };
 

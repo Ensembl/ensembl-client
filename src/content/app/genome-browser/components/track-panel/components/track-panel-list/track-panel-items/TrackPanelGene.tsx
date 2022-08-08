@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateTrackStatesAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import {
+  getBrowserActiveGenomeTrackStates,
+  getBrowserTrackState
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
@@ -33,11 +34,6 @@ import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import {
-  TrackActivityStatus,
-  TrackId
-} from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { RootState } from 'src/store';
 
 import styles from './TrackPanelItem.scss';
 
@@ -47,14 +43,9 @@ type TrackPanelGeneProps = {
   focusObjectId: string;
 };
 
-// TODO: figure out proper gene and transcript track naming conventions
-const GENE_TRACK_ID = TrackId.GENE;
-const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
-
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, focusObjectId } = props;
-  const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
-  const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const { currentData } = useGetTrackPanelGeneQuery({
     genomeId,
     geneId
@@ -63,22 +54,77 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     getBrowserTrackState(state, {
       genomeId,
       objectId: focusObjectId,
-      tracksGroup: 'objectTracks',
-      categoryName: 'main',
-      trackId: GENE_TRACK_ID
+      tracksGroup: 'objectTracks'
     })
   );
-  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+  const visibleTranscriptIds = useAppSelector((state) => {
+    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
+    return (
+      genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? null
+    );
+  });
 
+  const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
-  }, [genomeBrowser]);
 
   if (!currentData) {
     return null;
   }
+
+  const { gene } = currentData;
+
+  const sortedTranscripts = defaultSort(gene.transcripts);
+  const visibleSortedTranscripts = isCollapsed
+    ? [sortedTranscripts[0]]
+    : sortedTranscripts;
+
+  const geneVisibilityStatus = !visibleTranscriptIds?.length
+    ? Status.UNSELECTED
+    : visibleTranscriptIds.length === gene.transcripts.length
+    ? Status.SELECTED
+    : Status.PARTIALLY_SELECTED;
+
+  const onGeneVisibilityChange = () => {
+    if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
+      // show all transcripts
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
+      updateFocusGeneTranscripts(visibleTranscriptIds);
+      return;
+    }
+
+    const newStatus =
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
+
+    if (newStatus === Status.SELECTED) {
+      setFocusGene(focusObjectId);
+      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
+      updateFocusGeneTranscripts(visibleTranscriptIds);
+    } else {
+      updateFocusGeneTranscripts([]);
+    }
+
+    dispatch(
+      updateObjectTrackStates({
+        status: newStatus
+      })
+    );
+  };
+
+  const onTranscriptVisibilityChange = (
+    transcriptId: string,
+    isVisible: boolean
+  ) => {
+    let updatedTranscriptIds = visibleTranscriptIds ?? ([] as string[]);
+
+    updatedTranscriptIds = isVisible
+      ? [...updatedTranscriptIds, transcriptId]
+      : updatedTranscriptIds.filter((id) => id !== transcriptId);
+
+    if (!visibleTranscriptIds?.length) {
+      setFocusGene(focusObjectId);
+    }
+    updateFocusGeneTranscripts(updatedTranscriptIds);
+  };
 
   const toggleExpand = () => {
     setIsCollapsed(!isCollapsed);
@@ -96,52 +142,12 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const onChangeVisibility = ({
-    trackId,
-    status
-  }: {
-    trackId: string;
-    status: Status;
-  }) => {
-    const newStatus =
-      status === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-    toggleTrack({ trackId, status: newStatus });
-
-    dispatch(
-      updateTrackStatesAndSave({
-        [genomeId]: {
-          objectTracks: {
-            [focusObjectId]: {
-              main: {
-                [trackId]: newStatus
-              }
-            }
-          }
-        }
-      })
-    );
-  };
-
-  const { gene } = currentData;
-  let sortedTranscripts;
-
-  if (isEnvironment([Environment.PRODUCTION])) {
-    // TODO: remove this branch when multiple transcripts become available
-    sortedTranscripts = isCollapsed ? [] : [defaultSort(gene.transcripts)[0]];
-  } else {
-    sortedTranscripts = isCollapsed
-      ? [defaultSort(gene.transcripts)[0]]
-      : defaultSort(gene.transcripts);
-  }
-
   return (
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
-        visibilityStatus={trackStatus}
-        onChangeVisibility={() =>
-          onChangeVisibility({ trackId: GENE_TRACK_ID, status: trackStatus })
-        }
+        visibilityStatus={geneVisibilityStatus}
+        onChangeVisibility={onGeneVisibilityChange}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >
@@ -154,31 +160,28 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           </span>
         </div>
       </GroupTrackPanelItemLayout>
-      {sortedTranscripts.map((transcript, index) => {
-        const trackId = getTranscriptTrackId(index + 1);
-        return (
-          <TrackPanelTranscript
-            transcript={transcript}
-            trackId={trackId}
-            genomeId={genomeId}
-            focusObjectId={focusObjectId}
-            onChangeVisibility={(trackStatus: TrackActivityStatus) =>
-              onChangeVisibility({ trackId, status: trackStatus })
-            }
-            key={transcript.stable_id}
-          />
-        );
-      })}
-      {!isEnvironment([Environment.PRODUCTION]) &&
-        isCollapsed &&
-        gene.transcripts.length > 1 && (
-          <TrackPanelItemsCount
-            itemName="transcript"
-            count={gene.transcripts.length - 1}
-          />
-        )}
+      {visibleSortedTranscripts.map((transcript) => (
+        <TrackPanelTranscript
+          transcript={transcript}
+          genomeId={genomeId}
+          isVisible={
+            visibleTranscriptIds?.includes(transcript.stable_id) ?? false
+          }
+          onVisibilityChange={onTranscriptVisibilityChange}
+          key={transcript.stable_id}
+        />
+      ))}
+      {isCollapsed && gene.transcripts.length > 1 && (
+        <TrackPanelItemsCount
+          itemName="transcript"
+          count={gene.transcripts.length - 1}
+        />
+      )}
     </>
   );
 };
+
+const pluckStableIds = (items: { stable_id: string }[]) =>
+  items.map((item) => item.stable_id);
 
 export default TrackPanelGene;

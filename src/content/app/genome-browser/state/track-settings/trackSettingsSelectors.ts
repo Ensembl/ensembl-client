@@ -15,41 +15,39 @@
  */
 
 import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
-import { defaultTrackConfigsForGenome } from './trackConfigSlice';
+import { defaultTrackSettingsForGenome } from './trackSettingsSlice';
 
 import type { RootState } from 'src/store';
 
-export const getBrowserCogList = (state: RootState) => {
-  return state.browser.trackConfig.browserTrackCogs.cogList;
-};
-
 export const getBrowserSelectedCog = (state: RootState) => {
-  return state.browser.trackConfig.browserTrackCogs.selectedCog;
+  return state.browser.trackSettings.selectedCog;
 };
 
-export const getTrackConfigsForTrackId = (
+export const getTrackSettingsForTrackId = (
   state: RootState,
   trackId: string
 ) => {
   const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
+  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
     return null;
   }
-  return state.browser.trackConfig.configs[genomeId].tracks[trackId];
+  return state.browser.trackSettings.settings[genomeId].tracks[trackId];
 };
 
-export const getAllTrackConfigs = (state: RootState) => {
+export const getAllTrackSettings = (state: RootState) => {
   const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
+  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
     return null;
   }
-  return state.browser.trackConfig.configs[genomeId];
+  return state.browser.trackSettings.settings[genomeId];
 };
 
-export const getApplyToAllConfig = (state: RootState) => {
+export const getApplyToAllSettings = (state: RootState) => {
   const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackConfig.configs[genomeId]) {
-    return defaultTrackConfigsForGenome.shouldApplyToAll;
+  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
+    return defaultTrackSettingsForGenome.shouldApplyToAll;
   }
-  return state.browser.trackConfig.configs[genomeId]?.shouldApplyToAll ?? false;
+  return (
+    state.browser.trackSettings.settings[genomeId]?.shouldApplyToAll ?? false
+  );
 };

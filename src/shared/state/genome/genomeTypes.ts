@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { FocusObjectTrack } from 'src/shared/types/focus-object/focusObjectTypes';
-import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-
 export type ExampleFocusObject = {
   id: string;
   type: string;
@@ -29,13 +26,6 @@ export type GenomeInfo = {
   scientific_name: string;
   example_objects: ExampleFocusObject[];
   url_slug: string | null;
-};
-
-export type GenomeTrackCategory = {
-  label: string;
-  track_category_id: string;
-  track_list: FocusObjectTrack[];
-  types: TrackSet[];
 };
 
 export type GenomeInfoResponse = {
