@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
@@ -33,6 +33,7 @@ import { type BlastResult } from 'src/content/app/tools/blast/state/blast-result
 import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSubmissionResults.scss';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 const BlastSubmissionResults = () => {
   return (
@@ -135,6 +136,8 @@ type SingleBlastJobResultProps = {
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { data } = useFetchBlastSubmissionQuery(props.jobId);
 
+  const [isExpanded, setExpanded] = useState(false);
+
   if (!data) {
     return null;
   }
@@ -153,6 +156,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
         <span>{speciesInfo.scientific_name}</span>
         <span>{speciesInfo.assembly_name}</span>
+      </div>
+      <div className={styles.showHideWrapper}>
+        <ShowHide
+          isExpanded={isExpanded}
+          onClick={() => setExpanded(!isExpanded)}
+        ></ShowHide>
       </div>
     </div>
   );

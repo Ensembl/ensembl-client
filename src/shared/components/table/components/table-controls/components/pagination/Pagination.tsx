@@ -66,7 +66,7 @@ const Pagination = () => {
     <div className={styles.pagination}>
       <Chevron
         direction="left"
-        classNames={{ wrapper: styles.chevron }}
+        className={styles.showHide}
         isDisabled={currentPageNumber === 1}
         onClick={() => onChevronClick(currentPageNumber - 1)}
       />
@@ -79,7 +79,7 @@ const Pagination = () => {
       of {rowsPerPage === 0 ? 1 : highestPageNumber}
       <Chevron
         direction="right"
-        classNames={{ wrapper: styles.chevron }}
+        className={styles.showHide}
         isDisabled={
           rowsPerPage === 0 || currentPageNumber === highestPageNumber
         }

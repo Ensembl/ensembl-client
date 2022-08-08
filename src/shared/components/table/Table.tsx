@@ -77,7 +77,8 @@ const Table = (props: TableProps) => {
         ...tableState,
         dispatch,
         theme: props.theme,
-        uniqueColumnId: props.uniqueColumnId
+        uniqueColumnId: props.uniqueColumnId,
+        selectableColumnIndex: props.selectableColumnIndex
       }}
     >
       <div className={wrapperClasses}>
