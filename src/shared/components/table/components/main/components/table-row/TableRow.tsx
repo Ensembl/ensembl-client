@@ -33,9 +33,11 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     columns,
     hiddenColumnIds,
     hiddenRowIds,
-    data
+    data,
+    selectableColumnIndex
   } = useContext(TableContext) || {
-    isSelectable: true
+    isSelectable: true,
+    selectableColumnIndex: 0
   };
 
   if (!(data && props.rowData && dispatch && columns && hiddenRowIds)) {
@@ -86,11 +88,6 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
   return (
     <>
       <tr className={rowClassNames}>
-        {isSelectable && (
-          <TableCell style={{ width: rowSelectorWidth }}>
-            <RowSelector rowId={props.rowId} onChange={handleSelector} />
-          </TableCell>
-        )}
         {cells?.map((cellData, index) => {
           const currentColumn = columns[index];
           if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
@@ -99,15 +96,22 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
 
           const { width, renderer } = currentColumn;
           return (
-            <TableCell key={index} style={{ width }}>
-              {renderer
-                ? renderer({
-                    rowData: props.rowData,
-                    rowId: props.rowId,
-                    cellData
-                  })
-                : cellData}
-            </TableCell>
+            <>
+              {isSelectable && index === selectableColumnIndex && (
+                <TableCell style={{ width: rowSelectorWidth }}>
+                  <RowSelector rowId={props.rowId} onChange={handleSelector} />
+                </TableCell>
+              )}
+              <TableCell key={index} style={{ width }}>
+                {renderer
+                  ? renderer({
+                      rowData: props.rowData,
+                      rowId: props.rowId,
+                      cellData
+                    })
+                  : cellData}
+              </TableCell>
+            </>
           );
         })}
       </tr>

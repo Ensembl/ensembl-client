@@ -30,8 +30,18 @@ import styles from './TableHeader.scss';
 */
 
 const TableHeader = () => {
-  const { columns, isSelectable, rowsPerPage, data, hiddenColumnIds } =
-    useContext(TableContext) || { columns: null, data: null };
+  const {
+    columns,
+    isSelectable,
+    rowsPerPage,
+    data,
+    hiddenColumnIds,
+    selectableColumnIndex
+  } = useContext(TableContext) || {
+    columns: null,
+    data: null,
+    selectableColumnIndex: 0
+  };
 
   if (!columns || !data) {
     return null;
@@ -40,14 +50,20 @@ const TableHeader = () => {
   return (
     <thead className={styles.header}>
       <tr>
-        {isSelectable && <HeaderStats data={data} rowsPerPage={rowsPerPage} />}
         {columns.map((column, index) => {
           const currentColumn = columns[index];
           if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
             return null;
           }
 
-          return <TableHeaderCell {...column} key={index} />;
+          return (
+            <>
+              {isSelectable && selectableColumnIndex === index && (
+                <HeaderStats data={data} rowsPerPage={rowsPerPage} />
+              )}
+              <TableHeaderCell {...column} key={index} />
+            </>
+          );
         })}
       </tr>
     </thead>

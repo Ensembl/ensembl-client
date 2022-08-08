@@ -33,6 +33,7 @@ type TableContextType = TableState & {
   dispatch: React.Dispatch<AllTableActions>;
   theme: TableTheme;
   uniqueColumnId: string;
+  selectableColumnIndex: number;
 };
 
 export const TableContext = React.createContext(
@@ -43,6 +44,7 @@ export type TableProps = Partial<TableState> & {
   onStateChange?: (newState: TableState) => void;
   theme: TableTheme;
   uniqueColumnId: string; // Values in this column will be used to identify individual rows
+  selectableColumnIndex: number;
   classNames?: {
     table?: string;
     wrapper?: string;
@@ -90,7 +92,8 @@ const Table = (props: TableProps) => {
 };
 
 Table.defaultProps = {
-  theme: 'light'
+  theme: 'light',
+  selectableColumnIndex: 0
 };
 
 export default Table;

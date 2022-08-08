@@ -69,6 +69,7 @@ export const TableStory = () => {
         {...tableState}
         theme={tableTheme}
         uniqueColumnId={'0'}
+        selectableColumnIndex={2}
         onStateChange={setTableState}
         classNames={{ wrapper: styles.wrapper }}
       />
