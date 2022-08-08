@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useParams } from 'react-router';
+
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { useAppSelector } from 'src/store';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
@@ -28,9 +30,12 @@ import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/Bl
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
+import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 
-import { type BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import { type Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -97,14 +102,17 @@ type SequenceBoxProps = {
 
 const SequenceBox = (props: SequenceBoxProps) => {
   const { sequence, species, blastResults } = props;
+  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
+  const { header: sequenceHeader = '', value: sequenceValue } =
+    parsedBlastSequence;
+  const rulerContainer = useRef<HTMLDivElement | null>(null);
+  const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
 
   return (
     <div className={styles.sequenceBoxWrapper}>
       <div className={styles.resultsSummaryRow}>
         <div className={styles.sequenceId}>Sequence {sequence.id}</div>
-        <div className={styles.sequenceHeader}>
-          {'>' + (parseBlastInput(sequence.value)[0].header || '')}
-        </div>
+        <div className={styles.sequenceHeader}>{'>' + sequenceHeader}</div>
         <div>
           <span className={styles.againstText}>Against</span>{' '}
           <span>{species.length} species</span>
@@ -120,9 +128,19 @@ const SequenceBox = (props: SequenceBoxProps) => {
             key={result.jobId}
             species={speciesInfo[0]}
             jobId={result.jobId}
+            diagramWidth={plotwidth}
           />
         );
       })}
+      <div className={styles.resultsSummaryRow}>
+        <div ref={rulerContainer} className={styles.summaryPlot}>
+          <BasePairsRuler
+            width={plotwidth}
+            length={sequenceValue.length}
+            standalone={true}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -130,25 +148,30 @@ const SequenceBox = (props: SequenceBoxProps) => {
 type SingleBlastJobResultProps = {
   jobId: string;
   species: Species;
+  diagramWidth: number;
 };
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
+  const { species: speciesInfo, diagramWidth } = props;
   const { data } = useFetchBlastSubmissionQuery(props.jobId);
 
   if (!data) {
     return null;
   }
 
-  const { species: speciesInfo } = props;
+  const alignmentsCount = countAlignments(data.result);
+
   return (
     <div className={styles.resultsSummaryRow}>
       <div className={styles.hitLabel}>
-        <span>{data.result.hits.length} </span>
+        <span>{alignmentsCount} </span>
         <span className={styles.label}>
-          {`${pluralise('hit', data.result.hits.length)}`}
+          {`${pluralise('hit', alignmentsCount)}`}
         </span>
       </div>
-      <div className={styles.summaryPlot}></div>
+      <div className={styles.summaryPlot}>
+        <BlastHitsDiagram job={data.result} width={diagramWidth} />
+      </div>
       <div className={styles.speciesInfo}>
         {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
         <span>{speciesInfo.scientific_name}</span>
@@ -156,6 +179,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       </div>
     </div>
   );
+};
+
+const countAlignments = (blastJob: BlastJob) => {
+  return blastJob.hits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
 };
 
 export default BlastSubmissionResults;

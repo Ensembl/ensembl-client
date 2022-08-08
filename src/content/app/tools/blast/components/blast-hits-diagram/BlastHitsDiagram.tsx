@@ -17,12 +17,12 @@
 import React from 'react';
 import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
-// type Props = {
-//   queryLength: number;
-//   queryMatchedRegions: { start: number, end: number }[]
-// };
+import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
 
-const BLOCK_HEIGHT = 8;
+import styles from './BlastHitsDiagram.scss';
+
+const BACKBONE_HEIGHT = 1;
+const BLOCK_HEIGHT = 6;
 
 type Props = {
   job: BlastJob;
@@ -43,8 +43,8 @@ const BlastHitsDiagram = (props: Props) => {
   return (
     <svg
       width={width}
-      height={BLOCK_HEIGHT}
-      viewBox={`0 0 ${width} ${BLOCK_HEIGHT}`}
+      height={BLOCK_HEIGHT + BACKBONE_HEIGHT}
+      viewBox={`0 0 ${width} ${BLOCK_HEIGHT + BACKBONE_HEIGHT}`}
     >
       <Backbone width={width} />
       {queryMatchedRegions.map((region, index) => (
@@ -56,7 +56,9 @@ const BlastHitsDiagram = (props: Props) => {
 
 const Backbone = (props: { width: number }) => {
   const { width } = props;
-  return <rect width={width} height={1} />;
+  return (
+    <rect className={styles.backbone} width={width} height={BACKBONE_HEIGHT} />
+  );
 };
 
 const MatchedRegion = (props: {
@@ -68,7 +70,15 @@ const MatchedRegion = (props: {
   const x = scale(start);
   const width = scale(end - start + 1);
 
-  return <rect x={x} width={width} height={BLOCK_HEIGHT} />;
+  return (
+    <rect
+      className={styles.hit}
+      x={x}
+      y={BACKBONE_HEIGHT}
+      width={width}
+      height={BLOCK_HEIGHT}
+    />
+  );
 };
 
 const getMatchedRegions = (job: BlastJob) => {
@@ -122,28 +132,6 @@ const getMatchedRegions = (job: BlastJob) => {
     },
     [] as { start: number; end: number }[]
   );
-};
-
-// FIXME: move this to a types file
-type BlastJob = {
-  query_len: number;
-  hits: Array<{
-    hit_id: string;
-    hit_hsps: Array<{
-      hsp_score: number;
-      hsp_expect: number;
-      hsp_align_len: number;
-      hsp_identity: number;
-      hsp_strand: string;
-      hsp_query_from: number;
-      hsp_query_to: number;
-      hsp_hit_from: number;
-      hsp_hit_to: number;
-      hsp_qseq: string; // alignment string for the query (with gaps)
-      hsp_mseq: string; // line of characters for showing matches between the query and the hit
-      hsp_hseq: string; // alignment string for subject (with gaps)
-    }>;
-  }>;
 };
 
 export default BlastHitsDiagram;
