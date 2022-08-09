@@ -145,8 +145,13 @@ const hitsTableColumns: TableColumns = [
     width: '150px',
     columnId: 'e_value',
     title: 'E-value',
-    helpText: 'E Value',
-    isSortable: true
+    isSortable: true,
+    helpText: (
+      <span>
+        The number of times a match is expected to occur by chance <br></br>{' '}
+        Typically, a low e-value indicated greater similarity between sequences{' '}
+      </span>
+    )
   },
   {
     width: '150px',
@@ -159,32 +164,72 @@ const hitsTableColumns: TableColumns = [
     width: '150px',
     columnId: 'percentage_id',
     title: '% ID',
-    isSortable: true
+    isSortable: true,
+    helpText: (
+      <span>
+        Indicates the extent to which the query sequence and the hit have the
+        same residues at the same positions in an alignment
+      </span>
+    )
   },
   { width: '150px', columnId: 'score', title: 'Score', isSortable: true },
   {
     width: '300px',
     columnId: 'genomic_location',
     title: 'Genomic location',
-    isSortable: true
+    isSortable: true,
+    helpText: <span>Location of the hit in this species</span>
   },
   {
     width: '150px',
     columnId: 'hit_orientation',
     title: 'Hit orientation',
-    isSortable: true
+    isSortable: true,
+    helpText: <span>The orientation of the hit against the query sequence</span>
+  },
+  {
+    width: '150px',
+    columnId: 'hit_start',
+    title: 'Hit start',
+    isSortable: true,
+    helpText: (
+      <span>
+        The position within the query sequence at which the hit started
+      </span>
+    )
+  },
+  {
+    width: '150px',
+    columnId: 'hit_end',
+    title: 'Hit end',
+    isSortable: true,
+    helpText: (
+      <span>The position within the query sequence at which the hit ended</span>
+    )
   },
   {
     width: '150px',
     columnId: 'query_start',
     title: 'Query start',
-    isSortable: true
+    isSortable: true,
+    helpText: (
+      <span>
+        The first position within the query sequence that matches the beginning
+        of the hit that BLAST returns
+      </span>
+    )
   },
   {
     width: '150px',
     columnId: 'query_end',
     title: 'Query end',
-    isSortable: true
+    isSortable: true,
+    helpText: (
+      <span>
+        The last position within the query sequence that matches the end of the
+        hit that BLAST returns
+      </span>
+    )
   }
 ];
 
@@ -215,6 +260,8 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           hitHsp.hsp_score,
           `${hit.hit_acc}:${hitHsp.hsp_hit_from}-${hitHsp.hsp_hit_to}`, // genomic_location
           hitHsp.hsp_hit_frame === '1' ? 'forward' : 'reverse',
+          hitHsp.hsp_hit_from,
+          hitHsp.hsp_hit_to,
           hitHsp.hsp_query_from,
           hitHsp.hsp_query_to
         ]);
