@@ -15,6 +15,7 @@
  */
 import React, { useContext } from 'react';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import { RowsPerPage } from 'src/shared/components/table/state/tableReducer';
 import { TableContext } from 'src/shared/components/table/Table';
 
 import styles from './RowsPerPageSelector.scss';
@@ -56,7 +57,7 @@ const Pagination = () => {
   const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch({
       type: 'set_rows_per_page',
-      payload: Number(event.target.value)
+      payload: Number(event.target.value) as RowsPerPage
     });
   };
 
@@ -66,7 +67,7 @@ const Pagination = () => {
         options={rowsPerPageOptions}
         onInput={onChange}
         value={rowsPerPage}
-      />{' '}
+      />
       <span className={styles.perPage}>per page</span>
     </div>
   );

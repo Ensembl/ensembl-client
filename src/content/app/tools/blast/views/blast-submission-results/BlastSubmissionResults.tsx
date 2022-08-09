@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
@@ -34,6 +34,12 @@ import { type Species } from 'src/content/app/tools/blast/state/blast-form/blast
 
 import styles from './BlastSubmissionResults.scss';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import {
+  TableCellRendererParams,
+  TableColumns,
+  TableData
+} from 'src/shared/components/table/state/tableReducer';
+import Table from 'src/shared/components/table/Table';
 
 const BlastSubmissionResults = () => {
   return (
@@ -133,37 +139,168 @@ type SingleBlastJobResultProps = {
   species: Species;
 };
 
+const hitsTableColumns: TableColumns = [
+  {
+    width: '150px',
+    columnId: 'e_value',
+    title: 'E-value',
+    helpText: 'E Value',
+    isSortable: true
+  },
+  {
+    width: '150px',
+    columnId: 'hit_length',
+    title: 'Hit length',
+    isSortable: true
+  },
+  { width: '200px', columnId: 'view_alignment', title: '' },
+  {
+    width: '150px',
+    columnId: 'percentage_id',
+    title: '% ID',
+    isSortable: true
+  },
+  { width: '150px', columnId: 'score', title: 'Score', isSortable: true },
+  {
+    width: '300px',
+    columnId: 'genomic_location',
+    title: 'Genomic location',
+    isSortable: true
+  },
+  {
+    width: '150px',
+    columnId: 'hit_orientation',
+    title: 'Hit orientation',
+    isSortable: true
+  },
+  {
+    width: '150px',
+    columnId: 'query_start',
+    title: 'Query start',
+    isSortable: true
+  },
+  {
+    width: '150px',
+    columnId: 'query_end',
+    title: 'Query end',
+    isSortable: true
+  }
+];
+
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { data } = useFetchBlastSubmissionQuery(props.jobId);
 
   const [isExpanded, setExpanded] = useState(false);
 
+  const [tableData, setTableData] = useState<TableData>([]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const { hits } = data.result;
+
+    const allTableData: TableData = [];
+
+    hits.forEach((hit) => {
+      const { hit_hsps } = hit;
+
+      hit_hsps.forEach((hitHsp) => {
+        allTableData.push([
+          hitHsp.hsp_expect,
+          hitHsp.hsp_align_len,
+          '', // view_alignment
+          hitHsp.hsp_identity,
+          hitHsp.hsp_score,
+          `${hit.hit_acc}:${hitHsp.hsp_hit_from}-${hitHsp.hsp_hit_to}`, // genomic_location
+          hitHsp.hsp_hit_frame === '1' ? 'forward' : 'reverse',
+          hitHsp.hsp_query_from,
+          hitHsp.hsp_query_to
+        ]);
+      });
+    });
+
+    setTableData(allTableData);
+  }, [data]);
+
+  const [expandedContent, setExpandedContent] = useState<{
+    [rowId: string]: ReactNode;
+  }>({});
+
+  const onExpanded = (isExpanded: boolean, rowId: string) => {
+    setExpandedContent({
+      ...expandedContent,
+      [rowId]: isExpanded ? <div>Row {rowId} expanded content</div> : undefined
+    });
+  };
+
+  hitsTableColumns[2].renderer = (params: TableCellRendererParams) => {
+    return (
+      <ShowHideColumn
+        onExpanded={onExpanded}
+        rowId={params.rowId}
+        isExpanded={!!expandedContent[params.rowId]}
+      />
+    );
+  };
+
   if (!data) {
     return null;
   }
+  const { hits } = data.result;
 
   const { species: speciesInfo } = props;
   return (
-    <div className={styles.resultsSummaryRow}>
-      <div className={styles.hitLabel}>
-        <span>{data.result.hits.length} </span>
-        <span className={styles.label}>
-          {`${pluralise('hit', data.result.hits.length)}`}
-        </span>
+    <>
+      <div className={styles.resultsSummaryRow}>
+        <div className={styles.hitLabel}>
+          <span>{hits.length} </span>
+          <span className={styles.label}>
+            {`${pluralise('hit', hits.length)}`}
+          </span>
+        </div>
+        <div className={styles.summaryPlot}></div>
+        <div className={styles.speciesInfo}>
+          {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
+          <span>{speciesInfo.scientific_name}</span>
+          <span>{speciesInfo.assembly_name}</span>
+        </div>
+        <div className={styles.showHideWrapper}>
+          <ShowHide
+            isExpanded={isExpanded}
+            onClick={() => setExpanded(!isExpanded)}
+          ></ShowHide>
+        </div>
       </div>
-      <div className={styles.summaryPlot}></div>
-      <div className={styles.speciesInfo}>
-        {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
-        <span>{speciesInfo.scientific_name}</span>
-        <span>{speciesInfo.assembly_name}</span>
-      </div>
-      <div className={styles.showHideWrapper}>
-        <ShowHide
-          isExpanded={isExpanded}
-          onClick={() => setExpanded(!isExpanded)}
-        ></ShowHide>
-      </div>
-    </div>
+      {isExpanded && (
+        <Table
+          columns={hitsTableColumns}
+          data={tableData}
+          theme={'dark'}
+          rowsPerPage={100}
+          className={styles.hitsTable}
+          expandedContent={expandedContent}
+        />
+      )}
+    </>
+  );
+};
+
+const ShowHideColumn = (props: {
+  isExpanded: boolean;
+  onExpanded: (isExpanded: boolean, rowId: string) => void;
+  rowId: string;
+}) => {
+  const onExpanded = () => {
+    props.onExpanded(!props.isExpanded, props.rowId);
+  };
+
+  return (
+    <ShowHide
+      label={'view alignment'}
+      isExpanded={props.isExpanded}
+      onClick={onExpanded}
+    />
   );
 };
 

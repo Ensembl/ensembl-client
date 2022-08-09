@@ -81,7 +81,7 @@ const TableHeaderCell = (props: IndividualColumn) => {
   const points =
     currentColumnSortingDirection === SortingDirection.ASC
       ? '0,8 8,8 4,0'
-      : '0,0 8,0 4,8';
+      : '0,0 8,0 4,7';
 
   const sortArrow = (
     <svg className={sortArrowClassNames} focusable="false" viewBox="0 0 8 8">
@@ -90,8 +90,11 @@ const TableHeaderCell = (props: IndividualColumn) => {
   );
 
   return (
-    <th className={headerCellClassNames} style={{ width: width }}>
-      <div className={styles.headerCellContent} onClick={() => onSort()}>
+    <th className={headerCellClassNames} style={{ minWidth: width }}>
+      <div
+        className={styles.headerCellContent}
+        onClick={isSortable ? () => onSort() : undefined}
+      >
         {isSortable && sortArrow}
 
         <span>{title}</span>

@@ -36,7 +36,7 @@ const TableBody = () => {
     rowsPerPage: defaultTableState.rowsPerPage
   };
 
-  if (!(data && columns && uniqueColumnId)) {
+  if (!(data && columns)) {
     return null;
   }
   const totalRows = data.length;
@@ -59,9 +59,8 @@ const TableBody = () => {
       (column) => column.columnId === sortedColumn.columnId
     );
     rowsThisPage.sort((currentRow, nextRow) => {
-      const currentValue =
-        currentRow.cells[sortedColumnIndex]?.toString() || '';
-      const nextValue = nextRow.cells[sortedColumnIndex]?.toString() || '';
+      const currentValue = currentRow[sortedColumnIndex]?.toString() || '';
+      const nextValue = nextRow[sortedColumnIndex]?.toString() || '';
 
       if (currentValue < nextValue) {
         return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
@@ -73,14 +72,17 @@ const TableBody = () => {
     });
   }
 
-  const uniqueColumnIndex = columns.findIndex(
-    (column) => column.columnId === uniqueColumnId
-  );
+  const uniqueColumnIndex = uniqueColumnId
+    ? columns.findIndex((column) => column.columnId === uniqueColumnId)
+    : undefined;
 
   return (
     <tbody>
-      {rowsThisPage.map((rowData) => {
-        const rowId = rowData.cells[uniqueColumnIndex]?.toString();
+      {rowsThisPage.map((rowData, index) => {
+        const rowId = uniqueColumnIndex
+          ? rowData[uniqueColumnIndex]?.toString()
+          : index;
+
         return (
           <TableRow key={rowId} rowData={rowData} rowId={rowId as string} />
         );

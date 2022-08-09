@@ -34,21 +34,22 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     hiddenColumnIds,
     hiddenRowIds,
     data,
-    selectableColumnIndex
+    selectableColumnIndex,
+    expandedContent
   } = useContext(TableContext) || {
     isSelectable: true,
     selectableColumnIndex: 0
   };
 
-  if (!(data && props.rowData && dispatch && columns && hiddenRowIds)) {
+  if (!(data && props.rowData && dispatch && columns)) {
     return null;
   }
 
-  if (hiddenRowIds[props.rowId]) {
+  if (hiddenRowIds && hiddenRowIds[props.rowId]) {
     return null;
   }
 
-  const { cells, expandedContent } = props.rowData;
+  const cells = props.rowData;
 
   if (searchText) {
     const shouldIncludeRow = cells.some((cell, index) => {
@@ -74,7 +75,9 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
   };
 
   const rowClassNames = classNames(styles.row, {
-    [styles.rowWithExpendedContent]: !!expandedContent
+    [styles.rowWithExpendedContent]: !!(
+      expandedContent && expandedContent[props.rowId]
+    )
   });
 
   const totalRecords = data.length;
@@ -84,6 +87,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     To calculate the width, we calculate the total number of character that are possible in the stats
     and multiply it be 10px for each character to get the width.
   */
+
   const rowSelectorWidth = (String(totalRecords).length * 2 + 1) * 10;
   return (
     <>
@@ -95,14 +99,15 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
           }
 
           const { width, renderer } = currentColumn;
-          return (
+
+          const Contents = () => (
             <>
               {isSelectable && index === selectableColumnIndex && (
-                <TableCell style={{ width: rowSelectorWidth }}>
+                <TableCell style={{ minWidth: 74, width: rowSelectorWidth }}>
                   <RowSelector rowId={props.rowId} onChange={handleSelector} />
                 </TableCell>
               )}
-              <TableCell key={index} style={{ width }}>
+              <TableCell key={index} style={{ minWidth: width }}>
                 {renderer
                   ? renderer({
                       rowData: props.rowData,
@@ -113,11 +118,15 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
               </TableCell>
             </>
           );
+
+          return <Contents key={index} />;
         })}
       </tr>
-      {expandedContent && (
+      {expandedContent && !!expandedContent[props.rowId] && (
         <tr className={classNames(styles.row, styles.rowExpanded)}>
-          <TableCell colSpan={cells.length}>{expandedContent}</TableCell>
+          <TableCell colSpan={cells.length}>
+            {expandedContent[props.rowId]}
+          </TableCell>
         </tr>
       )}
     </>

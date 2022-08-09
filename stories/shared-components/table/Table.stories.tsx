@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import times from 'lodash/times';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
-  Columns,
+  TableColumns,
   TableCellRendererParams,
   TableData,
   TableTheme
@@ -31,11 +31,11 @@ import styles from './Table.stories.scss';
 const createTableData = (
   rows: number,
   columns: number
-): { data: TableData; columns: Columns } => {
+): { data: TableData; columns: TableColumns } => {
   return {
-    data: times(rows, (row) => ({
-      cells: times(columns, (column) => `Cell ${row},${column}`)
-    })),
+    data: times(rows, (row) =>
+      times(columns, (column) => `Cell ${row},${column}`)
+    ),
     columns: times(columns, (column) => ({
       columnId: `${column}`,
       title: `Column ${column}`,
@@ -71,7 +71,7 @@ export const TableStory = () => {
         uniqueColumnId={'0'}
         selectableColumnIndex={2}
         onStateChange={setTableState}
-        classNames={{ wrapper: styles.wrapper }}
+        className={styles.wrapper}
       />
     </>
   );
@@ -84,31 +84,16 @@ const sampleTableDataForExpand = createTableData(5, 5);
 export const TableWithExpandStory = () => {
   const uniqueColumnId = '0';
 
+  const [expandedContent, setExpandedContent] = useState<{
+    [rowId: string]: ReactNode;
+  }>({});
+
   const onExpanded = (isExpanded: boolean, rowId: string) => {
-    const tableData = tableState.data;
-
-    const idColumnIndex = sampleTableDataForExpand.columns.findIndex(
-      (column) => column.columnId === uniqueColumnId
-    );
-
-    const currentRowIndex = tableData.findIndex(
-      (row) => row.cells[idColumnIndex] === rowId
-    );
-
-    if (!tableData) {
-      return;
-    }
-    if (isExpanded) {
-      tableData[currentRowIndex].expandedContent = (
+    setExpandedContent({
+      ...expandedContent,
+      [rowId]: isExpanded ? (
         <div>Column {rowId} expanded content</div>
-      );
-    } else {
-      tableData[currentRowIndex].expandedContent = null;
-    }
-
-    setTableState({
-      ...tableState,
-      data: tableData
+      ) : undefined
     });
   };
 
@@ -119,7 +104,7 @@ export const TableWithExpandStory = () => {
       <ShowHideColumn
         onExpanded={onExpanded}
         rowId={params.rowId}
-        isExpanded={!!params.rowData.expandedContent}
+        isExpanded={!!expandedContent[params.rowId]}
       />
     );
   };
@@ -130,7 +115,8 @@ export const TableWithExpandStory = () => {
       {...tableState}
       uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}
-      classNames={{ wrapper: styles.wrapper }}
+      className={styles.wrapper}
+      expandedContent={expandedContent}
     />
   );
 };

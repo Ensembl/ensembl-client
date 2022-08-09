@@ -56,14 +56,20 @@ const TableHeader = () => {
             return null;
           }
 
-          return (
+          const Contents = () => (
             <>
               {isSelectable && selectableColumnIndex === index && (
-                <HeaderStats data={data} rowsPerPage={rowsPerPage} />
+                <HeaderStats
+                  data={data}
+                  rowsPerPage={rowsPerPage}
+                  key={'selectable'}
+                />
               )}
-              <TableHeaderCell {...column} key={index} />
+              <TableHeaderCell {...column} key={column.columnId} />
             </>
           );
+
+          return <Contents key={index} />;
         })}
       </tr>
     </thead>
@@ -90,7 +96,7 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
   }
 
   return (
-    <TableCell style={{ width }}>
+    <TableCell style={{ minWidth: 74, width }}>
       {displayedRows}/{totalRecords}
     </TableCell>
   );

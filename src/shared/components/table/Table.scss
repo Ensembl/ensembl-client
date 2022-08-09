@@ -29,6 +29,9 @@
 .row {
   border-bottom: 1px solid $medium-light-grey;
   height: 40px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
 
   &WithExpendedContent {
     border-bottom: none;
@@ -37,5 +40,6 @@
 
 .cell {
   min-width: 50px;
-  padding: 0 10px;
+  padding-left: 24px;
+  overflow: auto;
 }

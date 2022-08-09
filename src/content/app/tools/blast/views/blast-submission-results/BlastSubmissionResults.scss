@@ -8,7 +8,7 @@ $double_standard_gutter: calc($standard-gutter * 2);
 }
 
 .sequenceBoxWrapper {
-  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
+  // padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
 }
 
@@ -27,6 +27,26 @@ $double_standard_gutter: calc($standard-gutter * 2);
   grid-template-columns: 11ch minmax(48%, 1050px) minmax(20%, 1fr) 10px;
   column-gap: 20px;
   padding-bottom: 20px;
+  padding-left: 24px;
+  padding-right: 24px;
+
+  &:first-of-type {
+    padding-top: 24px;
+  }
+
+  &:last-of-type {
+    padding-bottom: 46px;
+  }
+}
+
+.hitsTable {
+  padding: 20px;
+  border-top: 1px solid $grey;
+  border-bottom: 1px solid $grey;
+
+  + .resultsSummaryRow {
+    padding-top: 24px;
+  }
 }
 
 .hitLabel {

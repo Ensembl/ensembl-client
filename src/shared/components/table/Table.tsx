@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
 import TableControls from './components/table-controls/TableControls';
@@ -32,8 +32,9 @@ import styles from './Table.scss';
 type TableContextType = TableState & {
   dispatch: React.Dispatch<AllTableActions>;
   theme: TableTheme;
-  uniqueColumnId: string;
+  uniqueColumnId?: string;
   selectableColumnIndex: number;
+  expandedContent: { [rowId: string]: ReactNode };
 };
 
 export const TableContext = React.createContext(
@@ -43,12 +44,10 @@ export const TableContext = React.createContext(
 export type TableProps = Partial<TableState> & {
   onStateChange?: (newState: TableState) => void;
   theme: TableTheme;
-  uniqueColumnId: string; // Values in this column will be used to identify individual rows
+  uniqueColumnId?: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;
-  classNames?: {
-    table?: string;
-    wrapper?: string;
-  };
+  className?: string;
+  expandedContent: { [rowId: string]: ReactNode };
 };
 const Table = (props: TableProps) => {
   const initialTableState = { ...defaultTableState, ...props };
@@ -63,12 +62,12 @@ const Table = (props: TableProps) => {
     };
   }, []);
 
-  const wrapperClasses = classNames(
+  const tableClasses = classNames(
     styles.wrapper,
     {
       [styles.wrapperThemeDark]: props.theme === 'dark'
     },
-    props.classNames?.wrapper
+    props.className
   );
 
   return (
@@ -78,10 +77,11 @@ const Table = (props: TableProps) => {
         dispatch,
         theme: props.theme,
         uniqueColumnId: props.uniqueColumnId,
-        selectableColumnIndex: props.selectableColumnIndex
+        selectableColumnIndex: props.selectableColumnIndex,
+        expandedContent: props.expandedContent
       }}
     >
-      <div className={wrapperClasses}>
+      <div className={tableClasses}>
         <TableControls />
         <table className={styles.table}>
           <TableHeader />
@@ -94,7 +94,8 @@ const Table = (props: TableProps) => {
 
 Table.defaultProps = {
   theme: 'light',
-  selectableColumnIndex: 0
+  selectableColumnIndex: 0,
+  expandedContent: {}
 };
 
 export default Table;

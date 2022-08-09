@@ -39,10 +39,7 @@ export enum TableAction {
 
 export type TableCellData = ReactNode;
 
-export type TableRowData = {
-  cells: TableCellData[];
-  expandedContent?: ReactNode;
-};
+export type TableRowData = TableCellData[];
 
 export type TableData = TableRowData[];
 
@@ -54,26 +51,27 @@ export type TableCellRendererParams = {
 
 export type IndividualColumn = {
   columnId: string;
+  title: string;
   isSortable?: boolean;
   isSearchable?: boolean;
   isFilterable?: boolean;
-  title: string;
   className?: string;
   helpText?: string;
-  width?: string;
+  width: string;
   renderer?: (params: TableCellRendererParams) => ReactNode;
 };
 
-export type Columns = IndividualColumn[];
+export type TableColumns = IndividualColumn[];
 
 export type TableSelectedRowId = { [key: string]: boolean };
 
 export type TableTheme = 'light' | 'dark';
+export type RowsPerPage = 10 | 20 | 50 | 100 | 0;
 
 export type TableState = {
-  columns: Columns;
+  columns: TableColumns;
   data: TableData;
-  rowsPerPage: number;
+  rowsPerPage: RowsPerPage;
   currentPageNumber: number;
   searchText: string;
   isSelectable: boolean;
@@ -106,7 +104,7 @@ export const defaultTableState: TableState = {
 
 type SetRowsPerPageAction = {
   type: 'set_rows_per_page';
-  payload: number;
+  payload: RowsPerPage;
 };
 type SetSearchTextAction = {
   type: 'set_search_text';
