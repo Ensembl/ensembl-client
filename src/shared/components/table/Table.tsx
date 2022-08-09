@@ -22,6 +22,7 @@ import TableControls from './components/table-controls/TableControls';
 import {
   AllTableActions,
   defaultTableState,
+  TableAction,
   tableReducer,
   TableState,
   TableTheme
@@ -35,6 +36,7 @@ type TableContextType = TableState & {
   uniqueColumnId?: string;
   selectableColumnIndex: number;
   expandedContent: { [rowId: string]: ReactNode };
+  disabledActions?: TableAction[];
 };
 
 export const TableContext = React.createContext(
@@ -48,6 +50,7 @@ export type TableProps = Partial<TableState> & {
   selectableColumnIndex: number;
   className?: string;
   expandedContent: { [rowId: string]: ReactNode };
+  disabledActions?: TableAction[];
 };
 const Table = (props: TableProps) => {
   const initialTableState = { ...defaultTableState, ...props };
@@ -78,7 +81,8 @@ const Table = (props: TableProps) => {
         theme: props.theme,
         uniqueColumnId: props.uniqueColumnId,
         selectableColumnIndex: props.selectableColumnIndex,
-        expandedContent: props.expandedContent
+        expandedContent: props.expandedContent,
+        disabledActions: props.disabledActions
       }}
     >
       <div className={tableClasses}>

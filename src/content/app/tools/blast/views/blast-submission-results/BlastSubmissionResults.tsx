@@ -35,6 +35,7 @@ import { type Species } from 'src/content/app/tools/blast/state/blast-form/blast
 import styles from './BlastSubmissionResults.scss';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
+  TableAction,
   TableCellRendererParams,
   TableColumns,
   TableData
@@ -280,6 +281,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           rowsPerPage={100}
           className={styles.hitsTable}
           expandedContent={expandedContent}
+          disabledActions={[TableAction.FILTERS]}
         />
       )}
     </>

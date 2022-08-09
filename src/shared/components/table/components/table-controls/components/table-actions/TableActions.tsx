@@ -66,7 +66,9 @@ const actionOptions = [
 ];
 
 const TableActions = () => {
-  const { dispatch, selectedAction } = useContext(TableContext) || {
+  const { dispatch, selectedAction, disabledActions } = useContext(
+    TableContext
+  ) || {
     selectedAction: TableAction.DEFAULT
   };
 
@@ -91,7 +93,9 @@ const TableActions = () => {
   return (
     <>
       <SimpleSelect
-        options={actionOptions}
+        options={actionOptions.filter(
+          (option) => !disabledActions?.includes(option.value)
+        )}
         onInput={onSelect}
         placeholder={'Actions'}
         value={selectedAction}
