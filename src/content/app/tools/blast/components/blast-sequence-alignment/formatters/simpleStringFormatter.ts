@@ -23,11 +23,11 @@ type Params = {
   alignmentLines: BlastAlignmentLine[];
   queryLineStartLabel?: LineLabel;
   queryLineEndLabel?: LineLabel;
-  // alignmentLineStartLabel: LineLabel;
-  // alignmentLineEndLabel: LineLabel;
   hitLineStartLabel?: LineLabel;
   hitLineEndLabel?: LineLabel;
 };
+
+// QUESTION: should we add numbers to the middle line (containing the ASCI art that connects the query line with the hit line?)
 
 export const simpleStringBlastAlignmentFormatter = (params: Params) => {
   const { alignmentLines } = params;

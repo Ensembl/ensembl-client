@@ -13,3 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React from 'react';
+
+import { createBlastSequenceAlignment } from './blastSequenceAlignmentHelper';
+import { simpleStringBlastAlignmentFormatter } from './formatters/simpleStringFormatter';
+
+import type { BlastSequenceAlignmentInput } from './blastSequenceAlignmentTypes';
+import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
+
+type Props = {
+  alignment: BlastSequenceAlignmentInput & { hitId: string };
+  blastDatabase: DatabaseType;
+};
+
+const BlastSequenceAlignment = (props: Props) => {
+  if (props.blastDatabase === 'dna') {
+    return <GenomicBlastAlignment {...props} />;
+  } else {
+    return null;
+  }
+};
+
+const GenomicBlastAlignment = (props: Props) => {
+  const alignmentLines = createBlastSequenceAlignment(props.alignment);
+
+  const { hitId } = props.alignment;
+
+  const getLineStartLabel = (position: number) => `${hitId}:${position}`;
+
+  const formattedAlignment = simpleStringBlastAlignmentFormatter({
+    alignmentLines,
+    hitLineStartLabel: getLineStartLabel
+  });
+
+  return <pre>{formattedAlignment}</pre>;
+};
+
+export default BlastSequenceAlignment;

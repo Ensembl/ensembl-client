@@ -34,8 +34,8 @@ export type BlastAlignmentLine = {
   hitLineEnd: number; // Position in the matched sequence at the end of a line. Excludes mismatches while counting. To be used only for labelling purposes
   alignmentLineStart: number; // Counter starting from the first character of the first line of the alignment
   alignmentLineEnd: number; // Counter starting from the first character of the first line of the alignment
-  queryLine: string; // Query sequence; may contain dashes for mismatches
-  hitLine: string; // Matched sequence; may contain dashes for mismatches
+  queryLine: string; // Query sequence; may contain dashes for missing characters relative to hit sequence
+  hitLine: string; // Matched sequence; may contain dashes for missing characters relative to query sequence
   alignmentLine: string; // Vertical line characters representing matches between the query and the target sequence
 };
 
@@ -59,8 +59,8 @@ export const createBlastSequenceAlignment = (params: Params) => {
     const nextQueryStartPosition = lastAlignedSegment?.queryLineEnd
       ? lastAlignedSegment?.queryLineEnd + 1 // start next line from the next nucleotide / amino acid
       : queryStart;
-    const nextHitStartPosition = lastAlignedSegment?.hitLineStart
-      ? lastAlignedSegment?.hitLineStart + 1 // start nest line from the next nucleotide / amino acid
+    const nextHitStartPosition = lastAlignedSegment?.hitLineEnd
+      ? lastAlignedSegment?.hitLineEnd + hitDirection // start nest line from the next nucleotide / amino acid
       : hitStart;
 
     const alignedSegment = createAlignedSegment({
