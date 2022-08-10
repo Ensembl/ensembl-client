@@ -120,10 +120,13 @@ const getMatchedRegions = (job: BlastJob) => {
       if (!accumulator.length) {
         return [region];
       }
-      const lastRegion = accumulator.at(-1) as { start: number; end: number }; // FIXME: will this work in Safari?
+      const previousRegion = accumulator.at(-1) as {
+        start: number;
+        end: number;
+      }; // FIXME: will this work in Safari?
 
-      if (region.start <= lastRegion.end) {
-        lastRegion.end = Math.max(region.end, lastRegion.end);
+      if (region.start <= previousRegion.end) {
+        previousRegion.end = Math.max(region.end, previousRegion.end);
       } else {
         accumulator.push(region);
       }
