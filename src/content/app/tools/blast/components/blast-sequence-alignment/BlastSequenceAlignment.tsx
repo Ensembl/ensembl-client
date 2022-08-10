@@ -22,6 +22,8 @@ import { simpleStringBlastAlignmentFormatter } from './formatters/simpleStringFo
 import type { BlastSequenceAlignmentInput } from './blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
+import styles from './BlastSequenceAlignment.scss';
+
 type Props = {
   alignment: BlastSequenceAlignmentInput & { hitId: string };
   blastDatabase: DatabaseType;
@@ -47,7 +49,7 @@ const GenomicBlastAlignment = (props: Props) => {
     hitLineStartLabel: getLineStartLabel
   });
 
-  return <pre>{formattedAlignment}</pre>;
+  return <pre className={styles.alignment}>{formattedAlignment}</pre>;
 };
 
 export default BlastSequenceAlignment;
