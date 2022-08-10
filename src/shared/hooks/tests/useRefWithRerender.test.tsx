@@ -22,10 +22,11 @@ import useRefWithRerender from '../useRefWithRerender';
 describe('useRefWithRerender', () => {
   it('updates the component when ref.current value changes', async () => {
     const TestComponent = () => {
-      const elementRef = useRefWithRerender<HTMLDivElement>(null); // notice that we start with null
+      const [elementRef, setElementRef] =
+        useRefWithRerender<HTMLDivElement>(null); // notice that we start with null
 
       return (
-        <div ref={elementRef}>
+        <div ref={setElementRef}>
           {elementRef.current && (
             <div className="success">This should render</div>
           )}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, useRef, MutableRefObject } from 'react';
+import { useState, useRef, useCallback, MutableRefObject } from 'react';
 
 /*
 Normally, mutating ref.current will not cause React component
@@ -25,17 +25,18 @@ of ref.current changes. This logic can be abstracted into a custom hook.
 
 const useRefWithRerender = <T>(
   initialValue: T | null
-): MutableRefObject<T | null> => {
-  const [currentRef, setCurrentRef] = useState<T | null>(null);
-  const ref = useRef<T>(initialValue);
+): [MutableRefObject<T | null>, (value: T | null) => void] => {
+  const [, setRenderCount] = useState(0); // for force rerendering
+  const ref = useRef<typeof initialValue>(initialValue);
 
-  useEffect(() => {
-    if (currentRef !== ref.current) {
-      setCurrentRef(ref.current);
+  const callbackRef = useCallback((value: typeof initialValue) => {
+    if (value !== ref.current) {
+      ref.current = value;
+      setRenderCount((prevCount) => prevCount + 1); // to force a re-render
     }
-  }, [ref.current]);
+  }, []);
 
-  return ref;
+  return [ref, callbackRef];
 };
 
 export default useRefWithRerender;
