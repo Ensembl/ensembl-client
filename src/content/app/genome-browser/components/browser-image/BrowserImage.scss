@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.browserImagePlus {
+.browserImageWrapper {
   height: 100%;
   position: relative;
 }
@@ -8,7 +8,6 @@
 .browserStage {
   height: 100%;
   width: 100%;
-  overflow: hidden;
 }
 
 .loaderWrapper {
