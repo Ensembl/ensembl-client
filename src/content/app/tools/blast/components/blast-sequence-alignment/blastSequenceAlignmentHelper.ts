@@ -15,8 +15,6 @@
  */
 
 const ALIGNMENT_LINE_LENGTH = 60;
-const QUERY_LINE_TITLE = 'Query';
-const HIT_LINE_TITLE = 'Sbjct';
 
 type Params = {
   querySequence: string;
@@ -26,113 +24,119 @@ type Params = {
   queryEnd: number;
   hitStart: number;
   hitEnd: number;
-  queryLineTitle?: string;
-  hitLineTitle?: string;
   alignmentLineLength?: number;
+};
+
+export type BlastAlignmentLine = {
+  queryLineStart: number; // Position in the query sequence at the start of a line. To be used only for labelling purposes
+  queryLineEnd: number; // Position in the query sequence at the end of a line. Excludes mismatches while counting. To be used only for labelling purposes
+  hitLineStart: number; // Position in the matched sequence at the start of a line. To be used only for labelling purposes
+  hitLineEnd: number; // Position in the matched sequence at the end of a line. Excludes mismatches while counting. To be used only for labelling purposes
+  alignmentLineStart: number; // Counter starting from the first character of the first line of the alignment
+  alignmentLineEnd: number; // Counter starting from the first character of the first line of the alignment
+  queryLine: string; // Query sequence; may contain dashes for mismatches
+  hitLine: string; // Matched sequence; may contain dashes for mismatches
+  alignmentLine: string; // Vertical line characters representing matches between the query and the target sequence
 };
 
 export const createBlastSequenceAlignment = (params: Params) => {
   const {
     querySequence,
+    hitSequence,
+    alignmentLine,
     queryStart,
     hitStart,
+    hitEnd,
     alignmentLineLength = ALIGNMENT_LINE_LENGTH
   } = params;
 
   let cursor = 0;
-  let querySequenceCounter = queryStart;
-  let hitSequenceCounter = hitStart;
-  let fullAlignment = '';
+  const hitDirection = hitEnd > hitStart ? 1 : -1;
+  const alignedLines: BlastAlignmentLine[] = [];
 
   while (cursor < querySequence.length) {
-    const result = createAlignedSegment({
-      ...params,
-      cursor,
-      querySequenceCounter,
-      hitSequenceCounter
-    });
-    const segment = result.segment;
-    querySequenceCounter = result.querySequenceCounter;
-    hitSequenceCounter = result.hitSequenceCounter;
+    const lastAlignedSegment = alignedLines.at(-1);
+    const nextQueryStartPosition = lastAlignedSegment?.queryLineEnd
+      ? lastAlignedSegment?.queryLineEnd + 1 // start next line from the next nucleotide / amino acid
+      : queryStart;
+    const nextHitStartPosition = lastAlignedSegment?.hitLineStart
+      ? lastAlignedSegment?.hitLineStart + 1 // start nest line from the next nucleotide / amino acid
+      : hitStart;
 
-    fullAlignment += '\n\n';
-    fullAlignment += segment;
+    const alignedSegment = createAlignedSegment({
+      queryStart: nextQueryStartPosition,
+      hitStart: nextHitStartPosition,
+      hitDirection,
+      querySequence,
+      hitSequence,
+      alignmentLine,
+      cursor
+    });
+
+    alignedLines.push(alignedSegment);
     cursor += alignmentLineLength;
   }
 
-  return fullAlignment;
+  return alignedLines;
 };
 
-const createAlignedSegment = (
-  params: Params & {
-    cursor: number;
-    querySequenceCounter: number;
-    hitSequenceCounter: number;
-  }
-) => {
+const createAlignedSegment = (params: {
+  querySequence: string;
+  hitSequence: string;
+  alignmentLine: string;
+  hitDirection: number; // either 1 or - 1
+  queryStart: number;
+  hitStart: number;
+  alignmentLineLength?: number;
+  cursor: number;
+}): BlastAlignmentLine => {
   const {
     querySequence,
     hitSequence,
     alignmentLine,
+    hitDirection,
+    queryStart,
     hitStart,
-    hitEnd,
-    queryLineTitle = QUERY_LINE_TITLE,
-    hitLineTitle = HIT_LINE_TITLE,
     alignmentLineLength = ALIGNMENT_LINE_LENGTH,
-    querySequenceCounter,
-    hitSequenceCounter,
     cursor
   } = params;
-
-  const strandMultiplier = hitEnd > hitStart ? 1 : -1;
 
   const startIndex = cursor;
   const endIndex =
     querySequence.length - cursor > alignmentLineLength
-      ? cursor + alignmentLineLength
+      ? cursor + alignmentLineLength - 1
       : querySequence.length - 1;
 
-  const querySequenceSlice = querySequence.slice(startIndex, endIndex);
-  const alignmentSlice = alignmentLine.slice(startIndex, endIndex);
-  const hitSequenceSlice = hitSequence.slice(startIndex, endIndex);
-
-  let queryLinePrefix = `${queryLineTitle} ${querySequenceCounter}`;
-  let hitLinePrefix = `${hitLineTitle} ${hitSequenceCounter}`;
-
-  const prefixLength = Math.max(queryLinePrefix.length, hitLinePrefix.length);
-
-  queryLinePrefix = queryLinePrefix.padStart(prefixLength, ' ');
-  hitLinePrefix = hitLinePrefix.padStart(prefixLength, ' ');
-  const alignmentPrefix = ''.padStart(prefixLength, ' ');
+  const querySequenceSlice = querySequence.slice(startIndex, endIndex + 1);
+  const alignmentSlice = alignmentLine.slice(startIndex, endIndex + 1);
+  const hitSequenceSlice = hitSequence.slice(startIndex, endIndex + 1);
 
   const updatedQuerySequenceCounter = calculateEndPosition({
     sequence: querySequence,
     startIndex,
     endIndex,
-    startPosition: querySequenceCounter,
-    strandMultiplier: 1
+    startPosition: queryStart,
+    strandDirectionMultiplier: 1
   });
 
   const updatedHitSequenceCounter = calculateEndPosition({
     sequence: hitSequence,
     startIndex,
     endIndex,
-    startPosition: hitSequenceCounter,
-    strandMultiplier
+    startPosition: hitStart,
+    strandDirectionMultiplier: hitDirection
   });
-  const queryLineSuffix = `${updatedQuerySequenceCounter}`;
-  const hitLineSuffix = `${updatedHitSequenceCounter}`;
-
-  const segment = [
-    `${queryLinePrefix} ${querySequenceSlice} ${queryLineSuffix}`,
-    `${alignmentPrefix} ${alignmentSlice}`,
-    `${hitLinePrefix} ${hitSequenceSlice} ${hitLineSuffix}`
-  ].join('\n');
 
   return {
-    segment,
-    querySequenceCounter: updatedQuerySequenceCounter,
-    hitSequenceCounter: updatedHitSequenceCounter
+    queryLineStart: queryStart,
+    queryLineEnd: updatedQuerySequenceCounter,
+    hitLineStart: hitStart,
+    hitLineEnd: updatedHitSequenceCounter,
+    alignmentLineStart: cursor + 1,
+    alignmentLineEnd: cursor + alignmentLineLength,
+    queryLine: querySequenceSlice,
+    hitLine: hitSequenceSlice,
+    alignmentLine: alignmentSlice
   };
 };
 
@@ -141,19 +145,19 @@ const calculateEndPosition = ({
   startIndex,
   endIndex,
   startPosition,
-  strandMultiplier
+  strandDirectionMultiplier
 }: {
   sequence: string;
   startIndex: number;
   endIndex: number;
   startPosition: number;
-  strandMultiplier: number;
+  strandDirectionMultiplier: number;
 }) => {
   let position = startPosition;
 
   for (let i = startIndex; i < endIndex; i++) {
     if (sequence[i] !== '-') {
-      position += 1 * strandMultiplier;
+      position += 1 * strandDirectionMultiplier;
     }
   }
 
