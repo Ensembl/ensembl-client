@@ -84,20 +84,19 @@ const TableHeaderCell = (props: IndividualColumn) => {
       : '0,0 8,0 4,7';
 
   const sortArrow = (
-    <svg className={sortArrowClassNames} focusable="false" viewBox="0 0 8 8">
-      <polygon points={points} />
-    </svg>
+    <div onClick={isSortable ? () => onSort() : undefined}>
+      <svg className={sortArrowClassNames} focusable="false" viewBox="0 0 8 8">
+        <polygon points={points} />
+      </svg>
+    </div>
   );
 
   return (
     <th className={headerCellClassNames} style={{ minWidth: width }}>
-      <div
-        className={styles.headerCellContent}
-        onClick={isSortable ? () => onSort() : undefined}
-      >
+      <div className={styles.headerCellContent}>
         {isSortable && sortArrow}
 
-        <span>{title}</span>
+        <span onClick={isSortable ? () => onSort() : undefined}>{title}</span>
         {helpText && (
           <QuestionButton
             helpText={helpText}

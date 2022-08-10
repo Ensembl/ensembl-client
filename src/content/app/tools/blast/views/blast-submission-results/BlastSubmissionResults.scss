@@ -8,7 +8,6 @@ $double_standard_gutter: calc($standard-gutter * 2);
 }
 
 .sequenceBoxWrapper {
-  // padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
   border: 1px solid $grey;
 }
 

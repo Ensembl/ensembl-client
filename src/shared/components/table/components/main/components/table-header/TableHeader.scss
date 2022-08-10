@@ -20,14 +20,15 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     align-items: center;
-    column-gap: 5px;
+    padding-left: 5px;
   }
 }
 
 .questionButton {
-  margin-left: 10px;
+  margin-left: 15px;
   height: 14px;
   width: 14px;
+  cursor: default;
 }
 
 .sort {
