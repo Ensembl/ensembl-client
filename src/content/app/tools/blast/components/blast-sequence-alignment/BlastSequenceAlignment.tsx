@@ -42,11 +42,12 @@ const GenomicBlastAlignment = (props: Props) => {
 
   const { hitId } = props.alignment;
 
-  const getLineStartLabel = (position: number) => `${hitId}:${position}`;
+  const getHitLineLabel = (position: number) => `${hitId}:${position}`;
 
   const formattedAlignment = simpleStringBlastAlignmentFormatter({
     alignmentLines,
-    hitLineStartLabel: getLineStartLabel
+    hitLineStartLabel: getHitLineLabel,
+    hitLineEndLabel: getHitLineLabel
   });
 
   return <pre className={styles.alignment}>{formattedAlignment}</pre>;

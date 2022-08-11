@@ -62,6 +62,7 @@ describe('createBlastSequenceAlignment', () => {
 
       // Make sure that after all the line breaking, the numbers indicating the position of the last character
       // in the query sequence and in the hit sequence are still correct
+      const firstAlignmentLine = alignmentLines[0];
       const lastAlignmentLine = alignmentLines.at(-1);
       expect(lastAlignmentLine?.queryLineEnd).toBe(
         longGenomicAlignmentOppositeStrand.queryEnd
@@ -69,9 +70,13 @@ describe('createBlastSequenceAlignment', () => {
       expect(lastAlignmentLine?.hitLineEnd).toBe(
         longGenomicAlignmentOppositeStrand.hitEnd
       );
+      expect(firstAlignmentLine?.alignmentLineStart).toBe(1);
+      expect(lastAlignmentLine?.alignmentLineEnd).toBe(
+        input.querySequence.length
+      );
 
       const queryLineStartLabel = (position: number) => `Query ${position}`;
-      const hitLineStartLabel = (position: number) => `Sbjct ${position}`;
+      const hitLineStartLabel = (position: number) => `Subject ${position}`;
 
       // The easiest way to test the correctness of createBlastSequenceAlignment function for multi-line alignments
       // is to generate a formatted string out of the result produced by it

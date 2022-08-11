@@ -126,7 +126,7 @@ const createAlignedSegment = (params: {
     hitLineStart: hitStart,
     hitLineEnd: updatedHitSequenceCounter,
     alignmentLineStart: cursor + 1,
-    alignmentLineEnd: cursor + alignmentLineLength,
+    alignmentLineEnd: endIndex + 1,
     queryLine: querySequenceSlice,
     hitLine: hitSequenceSlice,
     alignmentLine: alignmentSlice

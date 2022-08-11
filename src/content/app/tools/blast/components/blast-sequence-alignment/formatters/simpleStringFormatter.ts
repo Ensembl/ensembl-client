@@ -63,7 +63,9 @@ const formatAlignmentLine = (
     queryLineStart,
     queryLineEnd,
     hitLineStart,
-    hitLineEnd
+    hitLineEnd,
+    alignmentLineStart,
+    alignmentLineEnd
   } = alignmentLine;
 
   let queryLinePrefix = getLabel(queryLineStart, queryLineStartLabel);
@@ -72,14 +74,15 @@ const formatAlignmentLine = (
   const hitLineSuffix = getLabel(hitLineEnd, hitLineEndLabel);
 
   const prefixLength = Math.max(queryLinePrefix.length, hitLinePrefix.length);
-  queryLinePrefix = queryLinePrefix.padEnd(prefixLength, ' ');
-  hitLinePrefix = hitLinePrefix.padEnd(prefixLength, ' ');
+  queryLinePrefix = queryLinePrefix.padStart(prefixLength, ' ');
+  hitLinePrefix = hitLinePrefix.padStart(prefixLength, ' ');
 
-  const alignmentPrefix = ''.padStart(prefixLength, ' ');
+  const alignmentPrefix = `${alignmentLineStart}`.padStart(prefixLength, ' ');
+  const alignmentSuffix = alignmentLineEnd;
 
   return [
     `${queryLinePrefix} ${queryLine} ${queryLineSuffix}`,
-    `${alignmentPrefix} ${middleLine}`,
+    `${alignmentPrefix} ${middleLine} ${alignmentSuffix}`,
     `${hitLinePrefix} ${hitLine} ${hitLineSuffix}`
   ].join('\n');
 };
