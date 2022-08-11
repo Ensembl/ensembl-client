@@ -34,6 +34,7 @@ type Props = {
 const TableRowSelectorCell = (props: Props) => {
   const { isSelected, onChange } = props;
 
+  // NOTE: eye icon currently not implemented
   return (
     <td className={styles.tableCell}>
       <Checkbox checked={isSelected} onChange={onChange} />

@@ -18,8 +18,7 @@ import React, { ReactNode } from 'react';
 
 /**
  * Responsibilities
- * - render the table tag
- * - width? (default: 100%)
+ * - render the tr tag
  */
 
 type Props = {

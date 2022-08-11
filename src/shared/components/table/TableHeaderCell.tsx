@@ -24,8 +24,9 @@ import styles from './Table.scss';
 /**
  * Responsibilities
  * - render the th tag
- * - know about whether it is determining the sorting order in this column
- * - know the direction of the sorting order
+ * - know about whether it can sort the data in its column
+ * - know whether the sorting rule associated with this column has actually been applied
+ * - for sorted columns, know the sorting order (ascending vs descending)
  * - have a callback for sort
  */
 

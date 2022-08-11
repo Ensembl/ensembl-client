@@ -20,8 +20,7 @@ import styles from './Table.scss';
 
 /**
  * Responsibilities
- * - render the table tag
- * - width? (default: 100%)
+ * - render the thead tag
  */
 
 type Props = {
