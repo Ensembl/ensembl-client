@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
+import type { BlastSequenceAlignmentInput } from './blastSequenceAlignmentTypes';
+
 const ALIGNMENT_LINE_LENGTH = 60;
 
-type Params = {
-  querySequence: string;
-  hitSequence: string;
-  alignmentLine: string;
-  queryStart: number;
-  queryEnd: number;
-  hitStart: number;
-  hitEnd: number;
-  alignmentLineLength?: number;
-};
+type Params = BlastSequenceAlignmentInput;
 
 export type BlastAlignmentLine = {
   queryLineStart: number; // Position in the query sequence at the start of a line. To be used only for labelling purposes
