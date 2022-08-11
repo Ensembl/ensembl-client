@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-export type BlastApiResponse = {
-  result: {
-    hits: BlastHit[];
-  };
+/**
+ * The types in this file describe the shape of the relevant fields in the reponse
+ * from the EBI BLAST api
+ */
+
+export type BlastJobResultResponse = {
+  result: BlastJob;
+};
+
+export type BlastJob = {
+  query_len: number; // length of the query sequence
+  hits: BlastHit[];
 };
 
 type BlastHit = {
@@ -40,7 +48,7 @@ type HSP = {
   hsp_query_to: number;
   hsp_hit_from: number;
   hsp_hit_to: number;
-  hsp_qseq: string;
-  hsp_mseq: string;
-  hsp_hseq: string;
+  hsp_qseq: string; // alignment string for the query (with gaps)
+  hsp_mseq: string; // line of characters for showing matches between the query and the hit
+  hsp_hseq: string; // alignment string for subject (with gaps)
 };

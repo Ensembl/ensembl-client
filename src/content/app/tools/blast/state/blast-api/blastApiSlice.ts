@@ -21,7 +21,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
-import type { BlastApiResponse } from 'src/content/app/tools/blast/types/blastApiResponse';
+import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
 
 export type BlastSubmissionPayload = {
   species: Species[];
@@ -99,7 +99,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         };
       }
     }),
-    fetchBlastSubmission: builder.query<BlastApiResponse, string>({
+    fetchBlastSubmission: builder.query<BlastJobResultResponse, string>({
       query: (jobId) => ({
         url: `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
       })
