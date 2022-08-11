@@ -150,6 +150,7 @@ const calculateEndPosition = ({
 
   for (let i = startIndex; i < endIndex; i++) {
     if (sequence[i] !== '-') {
+      // add or subtract one depending on whether you are counting in the same or in the opposite direction
       position += 1 * strandDirectionMultiplier;
     }
   }
