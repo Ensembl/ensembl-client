@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { HTMLProps } from 'react';
 import classNames from 'classnames';
 
 import IconArrow from 'static/icons/icon_arrow.svg';
@@ -31,9 +31,7 @@ import styles from './Table.scss';
 
 type SortDirection = 'asc' | 'desc';
 
-type MinimalProps = {
-  children: ReactNode;
-};
+type MinimalProps = HTMLProps<HTMLTableCellElement>;
 
 type SortableProps = MinimalProps & {
   sortDirection: SortDirection;

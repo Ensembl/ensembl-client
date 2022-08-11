@@ -17,10 +17,16 @@
 export const fakeData = [
   {
     first: 'Hello',
-    second: 6
+    second: 6,
+    third: '1:19168307-19168349',
+    fourth: 'Forward',
+    fifth: 'CYCB1;5'
   },
   {
     first: 'This cell will contain more words',
-    second: 21
+    second: 21,
+    third: '4:7068331-7068350',
+    fourth: 'Reverse',
+    fifth: 'AT1G52790, AT4G13160, AT4G13170'
   }
 ];

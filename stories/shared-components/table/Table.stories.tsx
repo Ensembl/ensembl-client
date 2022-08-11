@@ -15,8 +15,9 @@
  */
 
 import React, { useState } from 'react';
+import times from 'lodash/times';
 
-import { fakeData } from './fakeData';
+import { fakeData as fakeDataShort } from './fakeData';
 
 import {
   Table,
@@ -30,6 +31,8 @@ import {
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './Table.stories.scss';
+
+const fakeData = times(20, () => fakeDataShort).flat();
 
 export const TableStory = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
@@ -63,7 +66,7 @@ export const TableStory = () => {
     setExpandedRowIndex(nextExpandedIndex);
   };
 
-  return (
+  const table = (
     <Table>
       <TableHead>
         <TableRow>
@@ -78,7 +81,10 @@ export const TableStory = () => {
           >
             Numerical
           </TableHeadCell>
-          <TableHeadCell>Empty</TableHeadCell>
+          <TableHeadCell />
+          <TableHeadCell>Genomic location</TableHeadCell>
+          <TableHeadCell>Orientation</TableHeadCell>
+          <TableHeadCell>Overlapping Gene(s)</TableHeadCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -102,6 +108,13 @@ export const TableStory = () => {
                   onChange={() => onExpandRow(index)}
                 />
               </TableCell>
+              <TableCell>{rowData.third}</TableCell>
+              <TableCell>{rowData.fourth}</TableCell>
+              <TableCell>
+                <div className={styles.widthLimitedContainer}>
+                  {rowData.fifth}
+                </div>
+              </TableCell>
             </TableRow>
             {index === expandedRowIndex && (
               <TableRow key={`${index}-expanded`}>
@@ -113,6 +126,8 @@ export const TableStory = () => {
       </TableBody>
     </Table>
   );
+
+  return <div className={styles.tableContainer}>{table}</div>;
 };
 
 const ExpandCell = (props: { isExpanded: boolean; onChange: () => void }) => {
