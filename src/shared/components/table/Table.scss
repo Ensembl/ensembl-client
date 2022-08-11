@@ -13,24 +13,32 @@
   position: relative;
   width: 100%;
   overflow-y: auto;
-  display: inline-grid;
+  // display: inline-grid;
 
   tbody {
-    overflow: auto;
-    height: var(--table-body-height, 400px);
-    display: block;
+    // overflow: auto;
+    // height: var(--table-body-height, 400px);
+    // display: block;
   }
 
   thead {
-    display: block;
+    // display: block;
+    background-color: $white;
+
+    tr {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      box-shadow: inset 0px -2px $blue;
+    }
   }
 }
 
 .row {
   border-bottom: 1px solid $medium-light-grey;
   height: 40px;
-  display: flex;
-  flex-grow: 1;
+  // display: flex;
+  // flex-grow: 1;
   align-items: center;
 
   &WithExpendedContent {

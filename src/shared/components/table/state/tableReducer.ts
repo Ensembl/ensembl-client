@@ -57,7 +57,7 @@ export type IndividualColumn = {
   isFilterable?: boolean;
   className?: string;
   helpText?: ReactNode;
-  width: string;
+  width?: string;
   renderer?: (params: TableCellRendererParams) => ReactNode;
 };
 

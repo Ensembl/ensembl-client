@@ -26,7 +26,7 @@ import { TableContext } from 'src/shared/components/table/Table';
 import styles from '../../TableHeader.scss';
 
 const TableHeaderCell = (props: IndividualColumn) => {
-  const { title, helpText, isSortable, columnId, width = '150px' } = props;
+  const { title, helpText, isSortable, columnId, width } = props;
 
   const { dispatch, sortedColumn } = useContext(TableContext) || {};
 

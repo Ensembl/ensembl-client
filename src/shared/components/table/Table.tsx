@@ -85,8 +85,8 @@ const Table = (props: TableProps) => {
         disabledActions: props.disabledActions
       }}
     >
+      <TableControls />
       <div className={tableClasses}>
-        <TableControls />
         <table className={styles.table}>
           <TableHeader />
           <TableBody />
