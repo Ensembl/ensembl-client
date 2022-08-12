@@ -59,14 +59,15 @@ const TableHeader = () => {
 
           const Contents = () => (
             <>
-              {isSelectable && selectableColumnIndex === index && (
+              {isSelectable && selectableColumnIndex === index ? (
                 <HeaderStats
                   data={data}
                   rowsPerPage={rowsPerPage}
                   key={'selectable'}
                 />
+              ) : (
+                <TableHeaderCell {...column} key={column.columnId} />
               )}
-              <TableHeaderCell {...column} key={column.columnId} />
             </>
           );
 

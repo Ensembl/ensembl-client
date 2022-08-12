@@ -79,12 +79,13 @@ const TableBody = () => {
   return (
     <tbody>
       {rowsThisPage.map((rowData, index) => {
-        const rowId = uniqueColumnIndex
-          ? rowData[uniqueColumnIndex]?.toString()
-          : index;
+        const rowId =
+          uniqueColumnIndex !== undefined
+            ? String(rowData[uniqueColumnIndex])
+            : index;
 
         return (
-          <TableRow key={rowId} rowData={rowData} rowId={rowId as string} />
+          <TableRow key={index} rowData={rowData} rowId={rowId as string} />
         );
       })}
     </tbody>

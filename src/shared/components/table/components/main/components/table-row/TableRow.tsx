@@ -102,20 +102,21 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
 
           const Contents = () => (
             <>
-              {isSelectable && index === selectableColumnIndex && (
+              {isSelectable && index === selectableColumnIndex ? (
                 <TableCell style={{ minWidth: 74, width: rowSelectorWidth }}>
                   <RowSelector rowId={props.rowId} onChange={handleSelector} />
                 </TableCell>
+              ) : (
+                <TableCell key={index} style={{ minWidth: width }}>
+                  {renderer
+                    ? renderer({
+                        rowData: props.rowData,
+                        rowId: props.rowId,
+                        cellData
+                      })
+                    : cellData}
+                </TableCell>
               )}
-              <TableCell key={index} style={{ minWidth: width }}>
-                {renderer
-                  ? renderer({
-                      rowData: props.rowData,
-                      rowId: props.rowId,
-                      cellData
-                    })
-                  : cellData}
-              </TableCell>
             </>
           );
 

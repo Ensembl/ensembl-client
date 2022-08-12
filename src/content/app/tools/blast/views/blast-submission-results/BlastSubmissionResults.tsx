@@ -171,6 +171,12 @@ type SingleBlastJobResultProps = {
 
 const hitsTableColumns: TableColumns = [
   {
+    width: '0px',
+    columnId: 'id',
+    title: 'ID',
+    isFilterable: false
+  },
+  {
     width: '150px',
     columnId: 'e_value',
     title: 'E-value',
@@ -291,6 +297,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
       hit_hsps.forEach((hitHsp) => {
         allTableData.push([
+          counter,
           hitHsp.hsp_expect,
           hitHsp.hsp_align_len,
           '', // view_alignment
@@ -393,6 +400,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           className={styles.hitsTable}
           expandedContent={expandedContent}
           disabledActions={[TableAction.FILTERS]}
+          uniqueColumnId={'id'}
         />
       )}
     </>
