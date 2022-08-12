@@ -46,7 +46,9 @@ export type LinkObj = { url: string; replaceState?: boolean };
 
 export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
-type AppClickHandlers = Partial<Record<AppName, () => void>>;
+type AppClickHandlers = Partial<
+  Record<AppName, (event?: React.MouseEvent<HTMLDivElement>) => void>
+>;
 
 export type ViewInAppProps = {
   links: UrlObj;
@@ -58,80 +60,86 @@ export type ViewInAppProps = {
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
+  const { onAppClick, onAnyAppClick: onAnyAppClickFn } = props;
+
+  const labelClass = classNames(styles.label, props.classNames?.label);
+
+  const navigate = useNavigate();
   if (Object.keys(props.links).length === 0) {
     return null;
   }
-
-  const labelClass = classNames(styles.label, props.classNames?.label);
 
   return (
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
 
-      {(Object.keys(props.links) as AppName[]).map((appId) => {
-        const currentLinkObj = props.links[appId] as LinkObj;
+      {(Object.keys(props.links) as AppName[]).map((appName, index) => {
+        const currentLinkObj = props.links[appName] as LinkObj;
+
+        const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
+          const onAppClickFn = onAppClick?.[appName];
+
+          if (onAnyAppClickFn) {
+            onAnyAppClickFn(appName);
+          }
+
+          if (onAppClickFn) {
+            onAppClickFn(event);
+          }
+
+          navigate(currentLinkObj.url, {
+            replace: currentLinkObj.replaceState
+          });
+        };
 
         return (
-          <AppButton
-            key={appId}
-            appId={appId}
-            url={currentLinkObj.url}
-            replaceState={currentLinkObj.replaceState}
-            onClick={createClickHandler({ ...props, appName: appId })}
-          />
+          <div
+            className={styles.viewInAppLink}
+            data-test-id={appName}
+            key={index}
+          >
+            <ImageButton
+              status={Status.DEFAULT}
+              description={Apps[appName].tooltip}
+              image={Apps[appName].icon}
+              onClick={(event?: React.MouseEvent<HTMLDivElement>) =>
+                handleClick(event)
+              }
+            />
+          </div>
         );
       })}
     </div>
   );
 };
 
-const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
-  const { onAppClick, onAnyAppClick: onAnyAppClickFn, appName } = params;
-  const onAppClickFn = onAppClick?.[appName];
-  const clickHandlers: Array<(appName?: AppName) => void> = [];
+// const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
+//   const { onAppClick, onAnyAppClick: onAnyAppClickFn, appName } = params;
+//   const onAppClickFn = onAppClick?.[appName];
+//   const clickHandlers: Array<(params: { appName: AppName, event: React.MouseEvent<HTMLDivElement> }) => void> = [];
 
-  if (onAnyAppClickFn) {
-    clickHandlers.push(() => onAnyAppClickFn(params.appName));
-  }
+//   if (onAnyAppClickFn) {
+//     clickHandlers.push(() => onAnyAppClickFn({ appName }));
+//   }
 
-  if (onAppClickFn) {
-    clickHandlers.push(() => onAppClickFn());
-  }
+//   if (onAppClickFn) {
+//     clickHandlers.push(() => onAppClickFn({ event }));
+//   }
 
-  return clickHandlers.length
-    ? () => clickHandlers.forEach((fn) => fn())
-    : undefined;
-};
+//   return clickHandlers.length
+//     ? (event?: React.MouseEvent<HTMLDivElement>) => clickHandlers.forEach((fn) => fn(event))
+//     : undefined;
+// };
 
-type AppButtonProps = {
-  appId: AppName;
-  url: string;
-  replaceState?: boolean;
-  onClick?: () => void;
-};
+// type AppButtonProps = {
+//   appId: AppName;
+//   url: string;
+//   replaceState?: boolean;
+//   onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
+// };
 
-export const AppButton = (props: AppButtonProps) => {
-  const navigate = useNavigate();
+// export const AppButton = (props: ViewInAppProps & { appName: AppName }) => {
 
-  const handleClick = () => {
-    if (props.replaceState) {
-      navigate(props.url, { replace: true });
-    } else {
-      navigate(props.url);
-    }
-    props.onClick?.();
-  };
-
-  return (
-    <div className={styles.viewInAppLink} data-test-id={props.appId}>
-      <ImageButton
-        status={Status.DEFAULT}
-        description={Apps[props.appId].tooltip}
-        image={Apps[props.appId].icon}
-        onClick={handleClick}
-      />
-    </div>
-  );
-};
+// };
 
 export default ViewInApp;
