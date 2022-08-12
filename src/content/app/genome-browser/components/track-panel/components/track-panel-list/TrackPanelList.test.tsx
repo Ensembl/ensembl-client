@@ -27,6 +27,8 @@ import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
+
 import { createFocusObject } from 'tests/fixtures/focus-object';
 import { createMockBrowserState } from 'tests/fixtures/browser';
 import { createGenomeCategories } from 'tests/fixtures/genomes';
@@ -95,7 +97,7 @@ describe('<TrackPanelList />', () => {
   });
 
   describe('rendering', () => {
-    it('renders gene focus tracks', () => {
+    it('renders gene focus track', () => {
       const { container } = renderComponent();
 
       expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
@@ -136,10 +138,7 @@ describe('<TrackPanelList />', () => {
       await userEvent.click(geneSearchLabel);
 
       const state = store.getState();
-      expect(
-        state.browser.browserSidebarModal[activeGenomeId]
-          .browserSidebarModalView
-      ).toBe('search');
+      expect(getBrowserSidebarModalView(state)).toBe('search');
     });
   });
 });
