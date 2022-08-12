@@ -65,7 +65,7 @@ const Table = (props: TableProps) => {
     };
   }, []);
 
-  const tableClasses = classNames(
+  const wrapperClasses = classNames(
     styles.wrapper,
     {
       [styles.wrapperThemeDark]: props.theme === 'dark'
@@ -85,8 +85,8 @@ const Table = (props: TableProps) => {
         disabledActions: props.disabledActions
       }}
     >
-      <TableControls />
-      <div className={tableClasses}>
+      <div className={wrapperClasses}>
+        <TableControls />
         <table className={styles.table}>
           <TableHeader />
           <TableBody />

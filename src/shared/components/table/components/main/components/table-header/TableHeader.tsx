@@ -36,7 +36,8 @@ const TableHeader = () => {
     rowsPerPage,
     data,
     hiddenColumnIds,
-    selectableColumnIndex
+    selectableColumnIndex,
+    theme
   } = useContext(TableContext) || {
     columns: null,
     data: null,
@@ -49,7 +50,7 @@ const TableHeader = () => {
 
   return (
     <thead className={styles.header}>
-      <tr>
+      <tr className={theme === 'dark' ? styles.themeDark : undefined}>
         {columns.map((column, index) => {
           const currentColumn = columns[index];
           if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {

@@ -21,6 +21,12 @@
     align-items: center;
     padding-left: 5px;
   }
+
+  tr {
+    &.themeDark {
+      background-color: $light-grey;
+    }
+  }
 }
 
 .questionButton {

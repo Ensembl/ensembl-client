@@ -23,9 +23,10 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns:
-    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr) 10px;
+  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
+      48%,
+      1050px
+    ) [species] minmax(20%, 1fr) 10px;
   column-gap: 20px;
   padding-bottom: 20px;
   padding-left: 24px;
@@ -44,6 +45,7 @@ $double_standard_gutter: calc($standard-gutter * 2);
   padding: 20px;
   border-top: 1px solid $grey;
   border-bottom: 1px solid $grey;
+  width: 100%;
 
   + .resultsSummaryRow {
     padding-top: 24px;
@@ -93,4 +95,8 @@ $double_standard_gutter: calc($standard-gutter * 2);
   justify-content: flex-end;
   column-gap: 40px;
   width: 268px;
+}
+
+.sequenceAlignment {
+  margin-left: 200px;
 }

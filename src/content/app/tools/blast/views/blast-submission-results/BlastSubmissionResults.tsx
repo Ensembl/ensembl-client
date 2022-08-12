@@ -46,8 +46,9 @@ import {
   TableData
 } from 'src/shared/components/table/state/tableReducer';
 import Table from 'src/shared/components/table/Table';
-// import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
+import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
 import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
+import { DatabaseType } from '../../types/blastSettings';
 
 const BlastSubmissionResults = () => {
   return (
@@ -77,7 +78,8 @@ const Main = () => {
     return {
       sequence,
       species: submittedData.species,
-      blastResults
+      blastResults,
+      blastDatabase: submittedData.parameters.database as DatabaseType
     };
   });
 
@@ -87,6 +89,7 @@ const Main = () => {
       species={data.species}
       sequence={data.sequence}
       blastResults={data.blastResults}
+      blastDatabase={data.blastDatabase}
     />
   ));
 
@@ -108,10 +111,11 @@ type SequenceBoxProps = {
   };
   species: Species[];
   blastResults: BlastResult[];
+  blastDatabase: DatabaseType;
 };
 
 const SequenceBox = (props: SequenceBoxProps) => {
-  const { sequence, species, blastResults } = props;
+  const { sequence, species, blastResults, blastDatabase } = props;
 
   const parsedBlastSequence = parseBlastInput(sequence.value)[0];
   const { header: sequenceHeader = '', value: sequenceValue } =
@@ -141,6 +145,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
             species={speciesInfo[0]}
             jobId={result.jobId}
             diagramWidth={plotwidth}
+            blastDatabase={blastDatabase}
           />
         );
       })}
@@ -161,6 +166,7 @@ type SingleBlastJobResultProps = {
   jobId: string;
   species: Species;
   diagramWidth: number;
+  blastDatabase: DatabaseType;
 };
 
 const hitsTableColumns: TableColumns = [
@@ -257,7 +263,7 @@ const hitsTableColumns: TableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const { species: speciesInfo, diagramWidth } = props;
+  const { species: speciesInfo, diagramWidth, blastDatabase } = props;
   const { data } = useFetchBlastSubmissionQuery(props.jobId);
 
   const [isExpanded, setExpanded] = useState(false);
@@ -278,10 +284,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       [key: string]: BlastSequenceAlignmentInput & { hitId: string };
     } = {};
 
+    let counter = 0;
+
     hits.forEach((hit) => {
       const { hit_hsps } = hit;
 
-      hit_hsps.forEach((hitHsp, index) => {
+      hit_hsps.forEach((hitHsp) => {
         allTableData.push([
           hitHsp.hsp_expect,
           hitHsp.hsp_align_len,
@@ -296,7 +304,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           hitHsp.hsp_query_to
         ]);
 
-        newSequenceAlignmentData[index] = {
+        newSequenceAlignmentData[counter] = {
           hitId: hit.hit_acc,
           querySequence: hitHsp.hsp_qseq,
           hitSequence: hitHsp.hsp_hseq,
@@ -306,6 +314,8 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           hitStart: hitHsp.hsp_hit_from,
           hitEnd: hitHsp.hsp_hit_to
         };
+
+        counter++;
       });
     });
 
@@ -319,9 +329,17 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
   const onExpanded = (isExpanded: boolean, rowId: string) => {
     if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
+      const aligment = (
+        <div className={styles.sequenceAlignment}>
+          <BlastSequenceAlignment
+            alignment={sequenceAlignmentData[rowId]}
+            blastDatabase={blastDatabase}
+          />
+        </div>
+      );
       setExpandedContent({
         ...expandedContent,
-        [rowId]: isExpanded ? null : undefined
+        [rowId]: isExpanded ? aligment : undefined
       });
     }
   };
@@ -343,26 +361,28 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const alignmentsCount = countAlignments(data.result);
 
   return (
-    <div className={styles.resultsSummaryRow}>
-      <div className={styles.hitLabel}>
-        <span>{alignmentsCount} </span>
-        <span className={styles.label}>
-          {`${pluralise('hit', alignmentsCount)}`}
-        </span>
-      </div>
-      <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={data.result} width={diagramWidth} />
-      </div>
-      <div className={styles.speciesInfo}>
-        {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
-        <span>{speciesInfo.scientific_name}</span>
-        <span>{speciesInfo.assembly_name}</span>
-      </div>
-      <div className={styles.showHideWrapper}>
-        <ShowHide
-          isExpanded={isExpanded}
-          onClick={() => setExpanded(!isExpanded)}
-        ></ShowHide>
+    <>
+      <div className={styles.resultsSummaryRow}>
+        <div className={styles.hitLabel}>
+          <span>{alignmentsCount} </span>
+          <span className={styles.label}>
+            {`${pluralise('hit', alignmentsCount)}`}
+          </span>
+        </div>
+        <div className={styles.summaryPlot}>
+          <BlastHitsDiagram job={data.result} width={diagramWidth} />
+        </div>
+        <div className={styles.speciesInfo}>
+          {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
+          <span>{speciesInfo.scientific_name}</span>
+          <span>{speciesInfo.assembly_name}</span>
+        </div>
+        <div className={styles.showHideWrapper}>
+          <ShowHide
+            isExpanded={isExpanded}
+            onClick={() => setExpanded(!isExpanded)}
+          ></ShowHide>
+        </div>
       </div>
       {isExpanded && (
         <Table
@@ -375,7 +395,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           disabledActions={[TableAction.FILTERS]}
         />
       )}
-    </div>
+    </>
   );
 };
 
