@@ -66,7 +66,7 @@ export const BrowserImage = () => {
   });
 
   const browserImageContents = (
-    <div className={styles.browserImagePlus}>
+    <div className={styles.browserImageWrapper}>
       <div
         id={BROWSER_CONTAINER_ID}
         className={browserContainerClassNames}
