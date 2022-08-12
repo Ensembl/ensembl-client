@@ -56,7 +56,7 @@ export type ZmenuProps = {
 };
 
 const Zmenu = (props: ZmenuProps) => {
-  const anchorRef = useRefWithRerender<HTMLDivElement>(null);
+  const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLDivElement>(null);
   const { zmenus, setZmenus } = useGenomeBrowser();
   const chromosomeLocation = useAppSelector(getActualChrLocation);
   const previousChromosomeLocation = usePrevious(chromosomeLocation);
@@ -135,7 +135,7 @@ const Zmenu = (props: ZmenuProps) => {
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
-    <div ref={anchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
+    <div ref={setAnchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
       {anchorRef.current && (
         <Toolbox
           onOutsideClick={destroyZmenu}

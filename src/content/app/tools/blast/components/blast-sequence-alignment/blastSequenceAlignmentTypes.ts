@@ -14,33 +14,13 @@
  * limitations under the License.
  */
 
-export type BlastApiResponse = {
-  result: {
-    hits: BlastHit[];
-  };
-};
-
-type BlastHit = {
-  hit_acc: string;
-  hit_def: string;
-  hit_hsps: HSP[];
-};
-
-type HSP = {
-  hsp_score: number;
-  hsp_bit_score: number;
-  hsp_expect: number;
-  hsp_align_len: number;
-  hsp_identity: number;
-  hsp_positive: number;
-  hsp_query_frame: string;
-  hsp_hit_frame: string;
-  hsp_strand: string;
-  hsp_query_from: number;
-  hsp_query_to: number;
-  hsp_hit_from: number;
-  hsp_hit_to: number;
-  hsp_qseq: string;
-  hsp_mseq: string;
-  hsp_hseq: string;
+export type BlastSequenceAlignmentInput = {
+  querySequence: string;
+  hitSequence: string;
+  alignmentLine: string;
+  queryStart: number;
+  queryEnd: number;
+  hitStart: number;
+  hitEnd: number;
+  alignmentLineLength?: number;
 };

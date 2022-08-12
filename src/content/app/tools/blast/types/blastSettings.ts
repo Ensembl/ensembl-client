@@ -37,7 +37,7 @@ export type BlastParameterName =
   | MandatoryBlastParameterName
   | OptionalBlastParameterName;
 export type SequenceType = 'dna' | 'protein';
-type DatabaseType = 'cdna' | 'dna' | 'pep';
+export type DatabaseType = 'cdna' | 'dna' | 'pep';
 export type BlastProgram =
   | 'blastn'
   | 'tblastx'

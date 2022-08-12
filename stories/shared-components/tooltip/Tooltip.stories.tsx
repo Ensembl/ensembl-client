@@ -61,7 +61,7 @@ const ContentSwitch = (props: {
 export const DefaultTooltipStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
   const [isLongContent, setIsLongContent] = useState(false);
-  const elementRef = useRefWithRerender<HTMLDivElement>(null);
+  const [elementRef, setElementRef] = useRefWithRerender<HTMLDivElement>(null);
 
   return (
     <div className={styles.container}>
@@ -75,7 +75,7 @@ export const DefaultTooltipStory = () => {
         <div
           onMouseEnter={() => setIsMousedOver(true)}
           onMouseLeave={() => setIsMousedOver(false)}
-          ref={elementRef}
+          ref={setElementRef}
           className={styles.tooltipAnchor}
         >
           Mouse over me
@@ -96,7 +96,7 @@ DefaultTooltipStory.storyName = 'default';
 
 export const OnScrollTooltipStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
-  const elementRef = useRefWithRerender<HTMLDivElement>(null);
+  const [elementRef, setElementRef] = useRefWithRerender<HTMLDivElement>(null);
 
   const hideTooltip = () => setIsMousedOver(false);
 
@@ -111,7 +111,7 @@ export const OnScrollTooltipStory = () => {
         <div
           onMouseEnter={() => setIsMousedOver(true)}
           onMouseLeave={() => setIsMousedOver(false)}
-          ref={elementRef}
+          ref={setElementRef}
           className={styles.tooltipAnchor}
         >
           Mouse over me
@@ -134,7 +134,7 @@ OnScrollTooltipStory.storyName = 'scrolling';
 
 export const OverflowHiddenStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
-  const elementRef = useRefWithRerender<HTMLDivElement>(null);
+  const [elementRef, setElementRef] = useRefWithRerender<HTMLDivElement>(null);
 
   return (
     <div className={classNames(styles.container, styles.containerOverflow)}>
@@ -146,7 +146,7 @@ export const OverflowHiddenStory = () => {
         <div
           onMouseEnter={() => setIsMousedOver(true)}
           onMouseLeave={() => setIsMousedOver(false)}
-          ref={elementRef}
+          ref={setElementRef}
           className={styles.tooltipAnchor}
         >
           Mouse over me
