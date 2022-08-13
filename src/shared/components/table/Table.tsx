@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { HTMLProps } from 'react';
 
 import styles from './Table.scss';
 
@@ -28,12 +28,9 @@ import styles from './Table.scss';
 /**
  * Questions:
  * - what dictates the width of a column?
- * - how can row selection work across table pages?
  */
 
-type Props = {
-  children: ReactNode;
-};
+type Props = HTMLProps<HTMLTableElement>;
 
 const Table = (props: Props) => {
   const { children } = props;

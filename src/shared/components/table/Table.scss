@@ -4,12 +4,18 @@
   border-collapse: collapse;
 }
 
-// FIXME: sticky/non-sticky header should be configurable via props
-.table thead tr {
+.tableHeadSticky tr {
   position: sticky;
   top: 0;
   background-color: white;
 }
+
+// FIXME: sticky/non-sticky header should be configurable via props
+// .table thead tr {
+//   position: sticky;
+//   top: 0;
+//   background-color: white;
+// }
 
 .tableHeadCell {
   font-size: 12px;

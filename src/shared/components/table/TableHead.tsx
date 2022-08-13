@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { HTMLProps } from 'react';
 
 import styles from './Table.scss';
 
@@ -23,14 +23,20 @@ import styles from './Table.scss';
  * - render the thead tag
  */
 
-type Props = {
-  children: ReactNode;
+type Props = HTMLProps<HTMLTableSectionElement> & {
+  sticky: boolean;
 };
 
 const TableHead = (props: Props) => {
-  const { children } = props;
+  const { sticky, ...otherProps } = props;
 
-  return <thead className={styles.tableHead}>{children}</thead>;
+  const classNameProps = sticky
+    ? {
+        className: styles.tableHeadSticky
+      }
+    : {};
+
+  return <thead {...classNameProps} {...otherProps} />;
 };
 
 export default TableHead;
