@@ -23,8 +23,6 @@ type Props = HTMLProps<HTMLTableElement> & {
   stickyHeader?: boolean;
 };
 
-// approach inspired by React-Bootstrap Table component: https://react-bootstrap.github.io/components/table/
-
 const Table = (props: Props) => {
   const { stickyHeader, ...otherProps } = props;
 
