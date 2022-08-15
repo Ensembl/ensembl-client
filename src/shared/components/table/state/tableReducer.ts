@@ -55,6 +55,7 @@ export type IndividualColumn = {
   isSortable?: boolean;
   isSearchable?: boolean;
   isFilterable?: boolean;
+  isHideable?: boolean;
   className?: string;
   helpText?: ReactNode;
   width?: string;

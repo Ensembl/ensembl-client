@@ -174,7 +174,8 @@ const hitsTableColumns: TableColumns = [
     width: '0px',
     columnId: 'id',
     title: 'ID',
-    isFilterable: false
+    isFilterable: false,
+    isHideable: false
   },
   {
     width: '150px',
@@ -194,7 +195,7 @@ const hitsTableColumns: TableColumns = [
     title: 'Hit length',
     isSortable: true
   },
-  { width: '200px', columnId: 'view_alignment', title: '' },
+  { width: '200px', columnId: 'view_alignment', title: '', isHideable: false },
   {
     width: '150px',
     columnId: 'percentage_id',
@@ -351,7 +352,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     }
   };
 
-  hitsTableColumns[2].renderer = (params: TableCellRendererParams) => {
+  hitsTableColumns[3].renderer = (params: TableCellRendererParams) => {
     return (
       <ShowHideColumn
         onExpanded={onExpanded}

@@ -42,17 +42,19 @@ const ShowHideColumns = () => {
 
   return (
     <PopupPanel className={styles.popupPanel}>
-      {columns?.map((column, key) => {
-        return (
-          <Checkbox
-            key={key}
-            label={column.title}
-            checked={hiddenColumnIds[column.columnId] !== true}
-            onChange={(checked) => onChange(column.columnId, checked)}
-            className={styles.checkbox}
-          />
-        );
-      })}
+      {columns
+        ?.filter((column) => column.isHideable !== false)
+        .map((column, key) => {
+          return (
+            <Checkbox
+              key={key}
+              label={column.title}
+              checked={hiddenColumnIds[column.columnId] !== true}
+              onChange={(checked) => onChange(column.columnId, checked)}
+              className={styles.checkbox}
+            />
+          );
+        })}
     </PopupPanel>
   );
 };
