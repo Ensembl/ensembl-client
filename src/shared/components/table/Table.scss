@@ -13,9 +13,9 @@
 }
 
 .table th {
-  font-size: 12px;
-  font-weight: $light;
-  box-shadow: inset 0 -1px 0 var(--table-header-border-color, #{$blue});
+  font-size: var(--table-head-font-size, 12px);
+  font-weight: var(--table-head-font-weight, #{$light});
+  box-shadow: inset 0 -1px 0 var(--table-head-border-color, #{$blue});
   background-clip: padding-box;
 }
 
