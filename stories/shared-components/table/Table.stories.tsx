@@ -16,50 +16,36 @@
 
 import React, { useState } from 'react';
 import times from 'lodash/times';
+import { faker } from '@faker-js/faker';
+import upperFirst from 'lodash/upperFirst';
 
-import { fakeData as fakeDataShort } from './fakeData';
-
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableHeadCell,
-  TableCell,
-  TableRowSelectorCell
-} from 'src/shared/components/table';
+import { Table, RowFooter } from 'src/shared/components/table';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import styles from './Table.stories.scss';
+const getTableData = () => {
+  const columnsNumber = 10;
+  const rowsNumber = 50;
 
-const fakeData = times(20, () => fakeDataShort).flat();
+  const columnHeadings: (string | null)[] = times(columnsNumber, () =>
+    faker.word.noun()
+  ).map(upperFirst);
+  columnHeadings[2] = null;
+
+  const tableCells = times(rowsNumber, () =>
+    times(columnsNumber, () => faker.lorem.sentence())
+  );
+
+  return {
+    columnHeadings,
+    tableCells
+  };
+};
+
+const tableData = getTableData();
 
 export const TableStory = () => {
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
-    null
-  );
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
-
-  const sortedFakeData = [...fakeData].sort((a, b) => {
-    if (sortDirection === 'asc') {
-      return b.second - a.second;
-    } else if (sortDirection === 'desc') {
-      return a.second - b.second;
-    } else {
-      return 0;
-    }
-  });
-
-  const onSelectedRowChanged = (index: number) => {
-    if (selectedRows.has(index)) {
-      setSelectedRows(
-        new Set([...selectedRows].filter((item) => item !== index))
-      );
-    } else {
-      setSelectedRows(new Set([...selectedRows, index]));
-    }
-  };
+  const { columnHeadings, tableCells } = tableData;
 
   const onExpandRow = (index: number) => {
     const nextExpandedIndex = expandedRowIndex === index ? null : index;
@@ -67,73 +53,53 @@ export const TableStory = () => {
   };
 
   const table = (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableHeadCell>
-            {fakeData.length} / {fakeData.length}
-          </TableHeadCell>
-          <TableHeadCell>Words</TableHeadCell>
-          <TableHeadCell
-            sortDirection={sortDirection ?? 'desc'}
-            onSortDirectionChange={setSortDirection}
-            isSortingActive={!!sortDirection}
-          >
-            Numerical
-          </TableHeadCell>
-          <TableHeadCell />
-          <TableHeadCell>Genomic location</TableHeadCell>
-          <TableHeadCell>Orientation</TableHeadCell>
-          <TableHeadCell>Overlapping Gene(s)</TableHeadCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {sortedFakeData.map((rowData, index) => (
+    <Table stickyHeader={true}>
+      <thead>
+        <tr>
+          {columnHeadings.map((heading, index) => (
+            <th key={index}>{heading}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {tableCells.map((rowContent, rowIndex) => (
           <>
-            <TableRow key={index}>
-              <TableRowSelectorCell
-                isSelected={selectedRows.has(index)}
-                onChange={() => onSelectedRowChanged(index)}
-                mode="default"
-              />
-              <TableCell>
-                <div className={styles.widthLimitedContainer}>
-                  {rowData.first}
-                </div>
-              </TableCell>
-              <TableCell>{rowData.second}</TableCell>
-              <TableCell>
-                <ExpandCell
-                  isExpanded={index === expandedRowIndex}
-                  onChange={() => onExpandRow(index)}
-                />
-              </TableCell>
-              <TableCell>{rowData.third}</TableCell>
-              <TableCell>{rowData.fourth}</TableCell>
-              <TableCell>
-                <div className={styles.widthLimitedContainer}>
-                  {rowData.fifth}
-                </div>
-              </TableCell>
-            </TableRow>
-            {index === expandedRowIndex && (
-              <TableRow key={`${index}-expanded`}>
-                <TableCell colSpan={4}>More content for row {index}</TableCell>
-              </TableRow>
+            <tr key={rowIndex}>
+              {rowContent.map((cellContent, index) => {
+                if (index === 2) {
+                  return (
+                    <ExpandCell
+                      isExpanded={rowIndex === expandedRowIndex}
+                      onChange={() => onExpandRow(rowIndex)}
+                    />
+                  );
+                }
+
+                return <td key={index}>{cellContent}</td>;
+              })}
+            </tr>
+            {rowIndex === expandedRowIndex && (
+              <RowFooter key={`${rowIndex}-expanded`}>
+                {faker.lorem.paragraphs()}
+              </RowFooter>
             )}
           </>
         ))}
-      </TableBody>
+      </tbody>
     </Table>
   );
 
-  return <div className={styles.tableContainer}>{table}</div>;
+  return table;
 };
 
 const ExpandCell = (props: { isExpanded: boolean; onChange: () => void }) => {
   const { isExpanded, onChange } = props;
 
-  return <ShowHide label="more" isExpanded={isExpanded} onClick={onChange} />;
+  return (
+    <td>
+      <ShowHide label="more" isExpanded={isExpanded} onClick={onChange} />
+    </td>
+  );
 };
 
 TableStory.storyName = 'default';

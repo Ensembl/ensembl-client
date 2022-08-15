@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-import React, { HTMLProps } from 'react';
+import React, { type HTMLProps } from 'react';
+import classNames from 'classnames';
 
 import styles from './Table.scss';
 
-/**
- * Responsibilities
- * - render the table tag
- * - width? (default: 100%)
- * - background ?
- */
+type Props = HTMLProps<HTMLTableElement> & {
+  stickyHeader?: boolean;
+};
 
-/**
- * Questions:
- * - what dictates the width of a column?
- */
-
-type Props = HTMLProps<HTMLTableElement>;
+// approach inspired by React-Bootstrap Table component: https://react-bootstrap.github.io/components/table/
 
 const Table = (props: Props) => {
-  const { children } = props;
+  const { stickyHeader, ...otherProps } = props;
 
-  return <table className={styles.table}>{children}</table>;
+  const tableClasses = classNames(styles.table, {
+    [styles.tableWithStickyHeader]: stickyHeader
+  });
+
+  return <table className={tableClasses} {...otherProps} />;
 };
 
 export default Table;
