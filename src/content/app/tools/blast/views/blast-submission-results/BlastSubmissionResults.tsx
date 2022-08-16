@@ -44,8 +44,8 @@ import {
   TableCellRendererParams,
   TableColumns,
   TableData
-} from 'src/shared/components/table/state/tableReducer';
-import Table from 'src/shared/components/table/Table';
+} from 'src/shared/components/data-table/state/tableReducer';
+import Table from 'src/shared/components/data-table/DataTable';
 import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
 import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import { DatabaseType } from '../../types/blastSettings';
