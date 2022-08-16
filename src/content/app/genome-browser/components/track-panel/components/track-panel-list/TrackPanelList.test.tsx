@@ -15,25 +15,29 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import set from 'lodash/fp/set';
 
-import { createMockBrowserState } from 'tests/fixtures/browser';
+import createRootReducer from 'src/root/rootReducer';
+
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
+
+import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
+
 import { createFocusObject } from 'tests/fixtures/focus-object';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+import { createGenomeCategories } from 'tests/fixtures/genomes';
 
 import { TrackPanelList } from './TrackPanelList';
 
-jest.mock(
-  'src/content/app/genome-browser/state/api/genomeBrowserApiSlice',
-  () => ({
-    useGenomeTracksQuery: () => ({
-      data: null
-    })
-  })
-);
+jest.mock('config', () => ({
+  tracksApiBaseUrl: 'http://track-api'
+}));
 
 jest.mock('./track-panel-items/TrackPanelGene', () => () => (
   <div className="trackPanelGene" />
@@ -44,30 +48,56 @@ jest.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
 ));
 
 const mockState = createMockBrowserState();
+const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
-const mockStore = configureMockStore([thunk]);
+const server = setupServer(
+  rest.get('http://track-api/track_categories/:genomeId', (req, res, ctx) => {
+    const genomeId = req.params.genomeId as string;
+    if (genomeId === activeGenomeId) {
+      const mockData = { track_categories: createGenomeCategories() };
 
-let store: ReturnType<typeof mockStore>;
+      return res(ctx.json(mockData));
+    }
+  })
+);
 
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
-  return render(
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([restApiSlice.middleware]),
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
     <Provider store={store}>
       <TrackPanelList />
     </Provider>
   );
+  return {
+    ...renderResult,
+    store
+  };
 };
 
-// TODO: rewrite tests for TrackPanelList — they aren't showing anything meaningful at the moment
-// (you will notice that the useGenomeTracksQuery function is mocked out not to return any data,
-// but the tests still pass)
+beforeAll(() =>
+  server.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
 describe('<TrackPanelList />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('rendering', () => {
-    it('renders gene tracks', () => {
+    it('renders gene focus track', () => {
       const { container } = renderComponent();
 
       expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
@@ -86,6 +116,29 @@ describe('<TrackPanelList />', () => {
         )
       );
       expect(container.querySelector('.mainTrackItem')).toBeFalsy();
+    });
+
+    it('renders regular tracks', async () => {
+      const { container } = renderComponent();
+
+      await waitFor(() => {
+        expect(
+          container.querySelectorAll('.trackPanelRegularItem').length
+        ).toBeGreaterThan(0);
+      });
+    });
+
+    it('opens the search panel', async () => {
+      const { container, store } = renderComponent();
+
+      const geneSearchLabel = container.querySelector(
+        '.findAGene span'
+      ) as HTMLElement;
+
+      await userEvent.click(geneSearchLabel);
+
+      const state = store.getState();
+      expect(getBrowserSidebarModalView(state)).toBe('search');
     });
   });
 });
