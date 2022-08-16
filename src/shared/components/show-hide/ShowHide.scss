@@ -3,11 +3,11 @@
 .showHide {
   cursor: pointer;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .label {
   color: var(--show-hide-label-color, $blue);
-  white-space: nowrap;
 }
 
 .chevron {
