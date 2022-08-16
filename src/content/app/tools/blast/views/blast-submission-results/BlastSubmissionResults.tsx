@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import classNames from 'classnames';
 import { useParams } from 'react-router';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
@@ -25,6 +26,7 @@ import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/
 
 import { parseBlastInput } from '../../utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
@@ -107,6 +109,11 @@ const SequenceBox = (props: SequenceBoxProps) => {
     parsedBlastSequence;
   const rulerContainer = useRef<HTMLDivElement | null>(null);
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
+  const [isExpanded, setExpanded] = useState(false);
+  const rulerContainerClass = classNames(
+    styles.resultsSummaryRow,
+    styles.rulerContainerClass
+  );
 
   return (
     <div className={styles.sequenceBoxWrapper}>
@@ -117,28 +124,37 @@ const SequenceBox = (props: SequenceBoxProps) => {
           <span className={styles.againstText}>Against</span>{' '}
           <span>{species.length} species</span>
         </div>
+        <div className={styles.showHideWrapper}>
+          <ShowHide
+            isExpanded={isExpanded}
+            onClick={() => setExpanded(!isExpanded)}
+          ></ShowHide>
+        </div>
       </div>
 
-      {blastResults.map((result) => {
-        const speciesInfo = species.filter(
-          (sp) => sp.genome_id === result.genomeId
-        );
-        return (
-          <SingleBlastJobResult
-            key={result.jobId}
-            species={speciesInfo[0]}
-            jobId={result.jobId}
-            diagramWidth={plotwidth}
-          />
-        );
-      })}
-      <div className={styles.resultsSummaryRow}>
+      {isExpanded &&
+        blastResults.map((result) => {
+          const speciesInfo = species.filter(
+            (sp) => sp.genome_id === result.genomeId
+          );
+          return (
+            <SingleBlastJobResult
+              key={result.jobId}
+              species={speciesInfo[0]}
+              jobId={result.jobId}
+              diagramWidth={plotwidth}
+            />
+          );
+        })}
+      <div className={rulerContainerClass}>
         <div ref={rulerContainer} className={styles.summaryPlot}>
-          <BasePairsRuler
-            width={plotwidth}
-            length={sequenceValue.length}
-            standalone={true}
-          />
+          {isExpanded && (
+            <BasePairsRuler
+              width={plotwidth}
+              length={sequenceValue.length}
+              standalone={true}
+            />
+          )}
         </div>
       </div>
     </div>

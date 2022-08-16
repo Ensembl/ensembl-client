@@ -8,7 +8,7 @@ $double_standard_gutter: calc($standard-gutter * 2);
 }
 
 .sequenceBoxWrapper {
-  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
+  padding: 24px 20px 0px 20px;
   border: 1px solid $grey;
 }
 
@@ -24,10 +24,9 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
-      48%,
-      1050px
-    ) [species] minmax(20%, 1fr) 10px;
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr) 10px;
   column-gap: 20px;
   padding-bottom: 20px;
 }
@@ -75,4 +74,12 @@ $double_standard_gutter: calc($standard-gutter * 2);
   justify-content: flex-end;
   column-gap: 40px;
   width: 268px;
+}
+
+.showHideWrapper {
+  --show-hide-chevron-height: var(--chevron-height, 8px);
+}
+
+.rulerContainerClass {
+  padding-bottom: 10px;
 }
