@@ -192,11 +192,11 @@ export const createMockBrowserState = () => {
       browserGeneral: {
         activeGenomeId: fakeGenomeId,
         activeFocusObjectIds: {
-          fake_genome_id_1: `${fakeGenomeId}:gene:fake_gene_stable_id_1`
+          [fakeGenomeId]: `${fakeGenomeId}:gene:fake_gene_stable_id_1`
         },
         trackStates: createTrackStates(),
         chrLocations: {
-          [fakeGenomeId]: ['13', 32304804, 32384454]
+          [fakeGenomeId]: ['13', 32304804, 32384454] as [string, number, number]
         },
         actualChrLocations: {},
         regionEditorActive: false,
@@ -250,7 +250,7 @@ export const createMockBrowserState = () => {
       focusObjects: {
         [`${fakeGenomeId}:gene:fake_gene_stable_id_1`]: {
           data: {
-            type: 'gene',
+            type: 'gene' as const,
             object_id: `${fakeGenomeId}:gene:fake_gene_stable_id_1`,
             genome_id: fakeGenomeId,
             label: 'BRCA2',
