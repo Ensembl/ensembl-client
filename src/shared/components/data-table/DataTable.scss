@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .wrapper {
-  background-color: $white;
+  --table-background: $white;
   overflow: auto;
 
   &ThemeDark {
@@ -10,37 +10,31 @@
 }
 
 .table {
-  border-collapse: collapse;
-  position: relative;
   width: var(--table-width, 100%);
   height: var(--table-height, 500px);
   overflow: auto;
   display: block;
 
-  thead {
-    background-color: $white;
+  --table-background: $white;
 
-    tr {
-      position: sticky;
-      top: 0;
-      background-color: white;
-      box-shadow: inset 0px -2px $blue;
-    }
+  &ThemeDark {
+    --table-background: $light-grey;
+  }
+
+  td {
+    padding-left: 24px;
+  }
+
+  td.selectColumn {
+    padding-left: 0;
+  }
+
+  th {
+    padding-left: 0;
   }
 }
 
 .row {
-  border-bottom: 1px solid $medium-light-grey;
   height: 40px;
   align-items: center;
-
-  &WithExpendedContent {
-    border-bottom: none;
-  }
-}
-
-.cell {
-  min-width: 50px;
-  padding-left: 24px;
-  overflow: auto;
 }

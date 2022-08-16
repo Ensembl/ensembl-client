@@ -16,6 +16,9 @@
 
 import classNames from 'classnames';
 import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
+
+import Table from '../table/Table';
+
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
 import TableControls from './components/table-controls/TableControls';
@@ -87,10 +90,10 @@ const DataTable = (props: TableProps) => {
     >
       <div className={wrapperClasses}>
         <TableControls />
-        <table className={styles.table}>
+        <Table className={styles.table} stickyHeader={true}>
           <TableHeader />
           <TableBody />
-        </table>
+        </Table>
       </div>
     </TableContext.Provider>
   );

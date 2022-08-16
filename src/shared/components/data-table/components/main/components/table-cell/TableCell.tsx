@@ -15,9 +15,6 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
-
-import styles from 'src/shared/components/data-table/DataTable.scss';
 /*
     - takes in the content that needs to be displayed within a cell
     - Wraps the content within a <td> tag
@@ -28,9 +25,8 @@ type TableCellProps = React.DetailedHTMLProps<
   HTMLTableCellElement
 >;
 const TableCell = (props: TableCellProps) => {
-  const cellClassNames = classNames(styles.cell, props.className);
   return (
-    <td {...props} className={cellClassNames}>
+    <td {...props} className={props.className}>
       {props.children}
     </td>
   );

@@ -45,7 +45,7 @@ import {
   TableColumns,
   TableData
 } from 'src/shared/components/data-table/state/tableReducer';
-import Table from 'src/shared/components/data-table/DataTable';
+import DataTable from 'src/shared/components/data-table/DataTable';
 import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
 import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import { DatabaseType } from '../../types/blastSettings';
@@ -178,7 +178,7 @@ const hitsTableColumns: TableColumns = [
     isHideable: false
   },
   {
-    width: '150px',
+    width: '130px',
     columnId: 'e_value',
     title: 'E-value',
     isSortable: true,
@@ -190,14 +190,14 @@ const hitsTableColumns: TableColumns = [
     )
   },
   {
-    width: '150px',
+    width: '100px',
     columnId: 'hit_length',
     title: 'Hit length',
     isSortable: true
   },
   { width: '200px', columnId: 'view_alignment', title: '', isHideable: false },
   {
-    width: '150px',
+    width: '100px',
     columnId: 'percentage_id',
     title: '% ID',
     isSortable: true,
@@ -208,7 +208,12 @@ const hitsTableColumns: TableColumns = [
       </span>
     )
   },
-  { width: '150px', columnId: 'score', title: 'Score', isSortable: true },
+  {
+    width: '100px',
+    columnId: 'score',
+    title: 'Score',
+    isSortable: true
+  },
   {
     width: '300px',
     columnId: 'genomic_location',
@@ -217,14 +222,14 @@ const hitsTableColumns: TableColumns = [
     helpText: <span>Location of the hit in this species</span>
   },
   {
-    width: '150px',
+    width: '100px',
     columnId: 'hit_orientation',
     title: 'Hit orientation',
     isSortable: true,
     helpText: <span>The orientation of the hit against the query sequence</span>
   },
   {
-    width: '150px',
+    width: '130px',
     columnId: 'hit_start',
     title: 'Hit start',
     isSortable: true,
@@ -235,7 +240,7 @@ const hitsTableColumns: TableColumns = [
     )
   },
   {
-    width: '150px',
+    width: '130px',
     columnId: 'hit_end',
     title: 'Hit end',
     isSortable: true,
@@ -244,7 +249,7 @@ const hitsTableColumns: TableColumns = [
     )
   },
   {
-    width: '150px',
+    width: '130px',
     columnId: 'query_start',
     title: 'Query start',
     isSortable: true,
@@ -256,7 +261,7 @@ const hitsTableColumns: TableColumns = [
     )
   },
   {
-    width: '150px',
+    width: '130px',
     columnId: 'query_end',
     title: 'Query end',
     isSortable: true,
@@ -393,7 +398,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         </div>
       </div>
       {isExpanded && (
-        <Table
+        <DataTable
           columns={hitsTableColumns}
           data={tableData}
           theme={'dark'}

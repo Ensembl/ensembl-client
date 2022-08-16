@@ -18,7 +18,6 @@ import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
-import TableCell from '../table-cell/TableCell';
 import { TableData } from 'src/shared/components/data-table/state/tableReducer';
 
 import styles from './TableHeader.scss';
@@ -88,7 +87,7 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
     To calculate the width, we calculate the total number of character that are possible in the stats
     and multiply it be 10px for each character to get the width.
   */
-  const width = (String(totalRecords).length * 2 + 1) * 10;
+  const width = 10 + (String(totalRecords).length * 2 + 1) * 10;
 
   let displayedRows = totalRecords;
 
@@ -98,9 +97,9 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
   }
 
   return (
-    <TableCell style={{ minWidth: 74, width }}>
+    <th style={{ width, minWidth: '75px' }}>
       {displayedRows}/{totalRecords}
-    </TableCell>
+    </th>
   );
 };
 

@@ -24,11 +24,15 @@ type Props = HTMLProps<HTMLTableElement> & {
 };
 
 const Table = (props: Props) => {
-  const { stickyHeader, ...otherProps } = props;
+  const { stickyHeader, className, ...otherProps } = props;
 
-  const tableClasses = classNames(styles.table, {
-    [styles.tableWithStickyHeader]: stickyHeader
-  });
+  const tableClasses = classNames(
+    styles.table,
+    {
+      [styles.tableWithStickyHeader]: stickyHeader
+    },
+    className
+  );
 
   return <table className={tableClasses} {...otherProps} />;
 };
