@@ -24,15 +24,15 @@ import { useAppSelector } from 'src/store';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
-import { parseBlastInput } from '../../utils/blastInputParser';
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
