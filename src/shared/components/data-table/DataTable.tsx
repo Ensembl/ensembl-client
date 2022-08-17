@@ -62,7 +62,7 @@ const DataTable = (props: TableProps) => {
   useEffect(() => {
     return () => {
       // Update the state stored in the parent once before unload
-      props.onStateChange && props.onStateChange(tableStateRef.current);
+      props.onStateChange?.(tableStateRef.current);
     };
   }, []);
 

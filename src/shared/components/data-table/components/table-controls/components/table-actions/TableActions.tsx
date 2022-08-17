@@ -17,7 +17,6 @@
 import React, { useContext } from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import RowVisibilityController from 'src/shared/components/data-table/components/main/components/table-row/components/row-visibility-controller/RowVisibilityController';
 import FindInTable from './components/find-in-table/FindInTable';
@@ -99,7 +98,7 @@ const TableActions = () => {
           (option) => !disabledActions?.includes(option.value)
         )}
         onInput={onSelect}
-        placeholder={'Actions'}
+        placeholder="Actions"
         value={selectedAction}
       />
 
@@ -109,12 +108,15 @@ const TableActions = () => {
 };
 
 const getActionComponent = (selectedAction: TableAction) => {
-  if (selectedAction === TableAction.FIND_IN_TABLE) {
-    return <FindInTable />;
-  } else if (selectedAction === TableAction.SHOW_HIDE_COLUMNS) {
-    return <ShowHideColumns />;
-  } else if (selectedAction === TableAction.SHOW_HIDE_ROWS) {
-    return <RowVisibilityController />;
+  switch (selectedAction) {
+    case TableAction.FIND_IN_TABLE:
+      return <FindInTable />;
+    case TableAction.SHOW_HIDE_COLUMNS:
+      return <ShowHideColumns />;
+    case TableAction.SHOW_HIDE_ROWS:
+      return <RowVisibilityController />;
+    default:
+      return null;
   }
 };
 

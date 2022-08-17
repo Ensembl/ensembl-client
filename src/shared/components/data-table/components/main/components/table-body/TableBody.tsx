@@ -16,9 +16,10 @@
 
 import React, { useContext } from 'react';
 
-import { defaultTableState } from 'src/shared/components/data-table/dataTableReducer';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableRow from '../table-row/TableRow';
+
+import { defaultTableState } from 'src/shared/components/data-table/dataTableReducer';
 
 import { SortingDirection } from 'src/shared/components/data-table/dataTableTypes';
 
@@ -40,8 +41,7 @@ const TableBody = () => {
   }
   const totalRows = data.length;
   const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
-  const rowIndexUpperBound =
-    (currentPageNumber - 1) * rowsPerPage + rowsPerPage;
+  const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
 
   // Filter the rows that needs to be displayed in the current page
   const rowsThisPage = data.filter((_, rowIndex) => {

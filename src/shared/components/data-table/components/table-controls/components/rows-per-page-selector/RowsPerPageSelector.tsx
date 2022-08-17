@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
+
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-import type { RowsPerPage } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
+
+import type { RowsPerPage } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './RowsPerPageSelector.scss';
 /*
