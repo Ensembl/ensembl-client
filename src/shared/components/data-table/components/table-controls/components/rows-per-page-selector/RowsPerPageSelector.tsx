@@ -15,7 +15,7 @@
  */
 import React, { useContext } from 'react';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-import { RowsPerPage } from 'src/shared/components/data-table/state/tableReducer';
+import type { RowsPerPage } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './RowsPerPageSelector.scss';

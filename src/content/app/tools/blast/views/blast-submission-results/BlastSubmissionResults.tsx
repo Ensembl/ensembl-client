@@ -41,10 +41,10 @@ import styles from './BlastSubmissionResults.scss';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
   TableAction,
-  TableCellRendererParams,
-  TableColumns,
-  TableData
-} from 'src/shared/components/data-table/state/tableReducer';
+  type TableCellRendererParams,
+  type TableColumns,
+  type TableData
+} from 'src/shared/components/data-table/dataTableTypes';
 import DataTable from 'src/shared/components/data-table/DataTable';
 import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
 import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';

@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import classNames from 'classnames';
 import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
+import classNames from 'classnames';
 
 import Table from '../table/Table';
 
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
 import TableControls from './components/table-controls/TableControls';
+import { defaultTableState, tableReducer } from './dataTableReducer';
+
 import {
-  AllTableActions,
-  defaultTableState,
+  type AllTableActions,
   TableAction,
-  tableReducer,
-  TableState,
-  TableTheme
-} from './state/tableReducer';
+  type TableState,
+  type TableTheme
+} from './dataTableTypes';
 
 import styles from './DataTable.scss';
 

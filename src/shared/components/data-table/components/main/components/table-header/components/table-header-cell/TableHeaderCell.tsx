@@ -18,9 +18,9 @@ import React, { useContext } from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import {
-  IndividualColumn,
+  type IndividualColumn,
   SortingDirection
-} from 'src/shared/components/data-table/state/tableReducer';
+} from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from '../../TableHeader.scss';

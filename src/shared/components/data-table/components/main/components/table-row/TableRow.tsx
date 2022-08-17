@@ -16,7 +16,8 @@
 
 import React, { useContext } from 'react';
 
-import type { TableRowData } from 'src/shared/components/data-table/state/tableReducer';
+import type { TableRowData } from 'src/shared/components/data-table/dataTableTypes';
+
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import { RowFooter } from 'src/shared/components/table';

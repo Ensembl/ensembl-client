@@ -15,15 +15,17 @@
  */
 
 import React, { useContext } from 'react';
+
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-import { TableAction } from 'src/shared/components/data-table/state/tableReducer';
+
 import { TableContext } from 'src/shared/components/data-table/DataTable';
-import RowVisibilityController from '../../../main/components/table-row/components/row-visibility-controller/RowVisibilityController';
+import RowVisibilityController from 'src/shared/components/data-table/components/main/components/table-row/components/row-visibility-controller/RowVisibilityController';
 import FindInTable from './components/find-in-table/FindInTable';
 import ShowHideColumns from './components/show-hide-columns/ShowHideColumns';
 
+import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
+
 /*
-    - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/b16f1465-f2f5-48d4-8572-07ddc5226a43?fullscreen
     - Displays the action dropdown
     - It acts as a container to display the popup (used by filters & show/hide columns).
     - It acts as a container for other actions elements like search & data downloads

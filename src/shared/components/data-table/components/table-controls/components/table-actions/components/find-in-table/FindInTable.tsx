@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
+
 import Input from 'src/shared/components/input/Input';
-import { TableAction } from 'src/shared/components/data-table/state/tableReducer';
+import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './FindInTable.scss';

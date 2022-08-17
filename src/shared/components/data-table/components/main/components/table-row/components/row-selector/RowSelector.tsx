@@ -18,7 +18,7 @@ import React, { useContext } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
-import { TableAction } from 'src/shared/components/data-table/state/tableReducer';
+import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import { Status } from 'src/shared/types/status';

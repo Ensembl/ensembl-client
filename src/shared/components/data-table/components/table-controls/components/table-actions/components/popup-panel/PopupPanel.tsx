@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import classNames from 'classnames';
 import React, { useContext, useRef } from 'react';
-import { TableAction } from 'src/shared/components/data-table/state/tableReducer';
+import classNames from 'classnames';
+
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+
+import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './PopupPanel.scss';
 

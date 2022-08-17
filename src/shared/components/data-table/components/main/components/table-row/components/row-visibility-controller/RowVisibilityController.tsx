@@ -19,8 +19,8 @@ import classNames from 'classnames';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import {
   TableAction,
-  TableSelectedRowId
-} from 'src/shared/components/data-table/state/tableReducer';
+  type TableSelectedRowId
+} from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './RowVisibilityController.scss';

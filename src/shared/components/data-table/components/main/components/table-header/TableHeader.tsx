@@ -18,7 +18,7 @@ import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
-import { TableData } from 'src/shared/components/data-table/state/tableReducer';
+import type { TableData } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './TableHeader.scss';
 /*

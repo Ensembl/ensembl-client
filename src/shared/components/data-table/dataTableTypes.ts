@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ReactNode } from 'react';
+
+import { ReactNode } from 'react';
 
 export enum SortingDirection {
   ASC = 'ascending',
@@ -86,23 +87,6 @@ export type TableState = {
   expandedRowIds: TableSelectedRowId;
 };
 
-export const defaultTableState: TableState = {
-  columns: [],
-  data: [],
-  rowsPerPage: 10,
-  currentPageNumber: 1,
-  searchText: '',
-  isSelectable: true,
-  selectedAction: TableAction.DEFAULT,
-  sortedColumn: null,
-  fixedHeader: false,
-  selectedRowIds: {},
-  expandedRowIds: {},
-  hiddenRowIds: {},
-  hiddenRowIdsInDraft: {},
-  hiddenColumnIds: {}
-};
-
 type SetRowsPerPageAction = {
   type: 'set_rows_per_page';
   payload: RowsPerPage;
@@ -168,52 +152,3 @@ export type AllTableActions =
   | SetSortedColumnAction
   | ClearSortedColumnAction
   | RestoreDefaultsAction;
-
-export const tableReducer = (
-  state: TableState,
-  action: AllTableActions
-): TableState => {
-  switch (action.type) {
-    case 'set_rows_per_page':
-      return { ...state, rowsPerPage: action.payload };
-    case 'set_search_text':
-      return { ...state, searchText: action.payload };
-    case 'set_current_page_number':
-      return { ...state, currentPageNumber: action.payload };
-    case 'set_hidden_row_ids':
-      return {
-        ...state,
-        hiddenRowIds: action.payload
-      };
-    case 'set_hidden_row_ids_in_draft':
-      return {
-        ...state,
-        hiddenRowIdsInDraft: { ...state.hiddenRowIdsInDraft, ...action.payload }
-      };
-    case 'clear_hidden_row_ids_in_draft':
-      return {
-        ...state,
-        hiddenRowIdsInDraft: {}
-      };
-    case 'set_hidden_column_ids':
-      return {
-        ...state,
-        hiddenColumnIds: { ...state.hiddenColumnIds, ...action.payload }
-      };
-    case 'set_selected_row_ids':
-      return {
-        ...state,
-        selectedRowIds: { ...state.selectedRowIds, ...action.payload }
-      };
-    case 'set_selected_action':
-      return { ...state, selectedAction: action.payload };
-    case 'set_sorted_column':
-      return { ...state, sortedColumn: action.payload };
-    case 'clear_sorted_column':
-      return { ...state, sortedColumn: null };
-    case 'restore_defaults':
-      return { ...defaultTableState, data: state.data, columns: state.columns };
-    default:
-      return state;
-  }
-};

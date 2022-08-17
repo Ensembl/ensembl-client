@@ -23,10 +23,10 @@ import {
   TableData,
   TableTheme
 } from 'src/shared/components/data-table/state/tableReducer';
-import Table from 'src/shared/components/data-table/DataTable';
+import DataTable from 'src/shared/components/data-table/DataTable';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
-import styles from './Table.stories.scss';
+import styles from './DataTable.stories.scss';
 
 const createTableData = (
   rows: number,
@@ -50,7 +50,7 @@ const tableThemeOptions = [
   { value: 'dark', label: 'Dark' }
 ];
 
-export const TableStory = () => {
+export const DataTableStory = () => {
   const tableData = createTableData(150, 10);
 
   const [tableState, setTableState] = useState(tableData);
@@ -64,7 +64,7 @@ export const TableStory = () => {
         selectedOption={tableTheme}
         direction="row"
       />
-      <Table
+      <DataTable
         {...tableState}
         theme={tableTheme}
         uniqueColumnId={'0'}
@@ -76,11 +76,11 @@ export const TableStory = () => {
   );
 };
 
-TableStory.storyName = 'default';
+DataTableStory.storyName = 'default';
 
 const sampleTableDataForExpand = createTableData(5, 5);
 
-export const TableWithExpandStory = () => {
+export const DataTableWithExpandStory = () => {
   const uniqueColumnId = '0';
 
   const [expandedContent, setExpandedContent] = useState<{
@@ -110,7 +110,7 @@ export const TableWithExpandStory = () => {
   const [tableState, setTableState] = useState(sampleTableDataForExpand);
 
   return (
-    <Table
+    <DataTable
       {...tableState}
       uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}
@@ -138,8 +138,8 @@ const ShowHideColumn = (props: {
   );
 };
 
-TableWithExpandStory.storyName = 'with expanded content';
+DataTableWithExpandStory.storyName = 'with expanded content';
 
 export default {
-  title: 'Components/Shared Components/Table'
+  title: 'Components/Shared Components/DataTable'
 };

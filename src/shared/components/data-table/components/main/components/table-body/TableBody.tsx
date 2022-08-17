@@ -16,12 +16,11 @@
 
 import React, { useContext } from 'react';
 
-import {
-  defaultTableState,
-  SortingDirection
-} from 'src/shared/components/data-table/state/tableReducer';
+import { defaultTableState } from 'src/shared/components/data-table/dataTableReducer';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableRow from '../table-row/TableRow';
+
+import { SortingDirection } from 'src/shared/components/data-table/dataTableTypes';
 
 const TableBody = () => {
   const {
