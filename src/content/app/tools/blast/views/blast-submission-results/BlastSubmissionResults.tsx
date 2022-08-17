@@ -110,7 +110,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
   const rulerContainer = useRef<HTMLDivElement | null>(null);
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [isExpanded, setExpanded] = useState(true);
-  const rulerWrapper = classNames(
+  const rulerWrapperClassName = classNames(
     styles.resultsSummaryRow,
     styles.rulerWrapper
   );
@@ -148,7 +148,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
             />
           );
         })}
-      <div className={rulerWrapper}>
+      <div className={rulerWrapperClassName}>
         <div ref={rulerContainer} className={styles.summaryPlot}>
           {isExpanded && (
             <BasePairsRuler
