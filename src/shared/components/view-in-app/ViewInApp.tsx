@@ -46,9 +46,7 @@ export type LinkObj = { url: string; replaceState?: boolean };
 
 export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
-type AppClickHandlers = Partial<
-  Record<AppName, (event?: React.MouseEvent<HTMLDivElement>) => void>
->;
+type AppClickHandlers = Partial<Record<AppName, () => void>>;
 
 export type ViewInAppProps = {
   links: UrlObj;
@@ -81,7 +79,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
       {enabledApps.map((appName, index) => {
         const currentLinkObj = props.links[appName] as LinkObj;
 
-        const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
+        const handleClick = () => {
           const onAppClickFn = onAppClick?.[appName];
 
           if (onAnyAppClickFn) {
@@ -89,7 +87,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
           }
 
           if (onAppClickFn) {
-            onAppClickFn(event);
+            onAppClickFn();
           }
           if (currentLinkObj) {
             navigate(currentLinkObj.url, {
@@ -108,9 +106,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
               status={Status.DEFAULT}
               description={Apps[appName].tooltip}
               image={Apps[appName].icon}
-              onClick={(event?: React.MouseEvent<HTMLDivElement>) =>
-                handleClick(event)
-              }
+              onClick={handleClick}
             />
           </div>
         );
@@ -118,34 +114,5 @@ export const ViewInApp = (props: ViewInAppProps) => {
     </div>
   );
 };
-
-// const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
-//   const { onAppClick, onAnyAppClick: onAnyAppClickFn, appName } = params;
-//   const onAppClickFn = onAppClick?.[appName];
-//   const clickHandlers: Array<(params: { appName: AppName, event: React.MouseEvent<HTMLDivElement> }) => void> = [];
-
-//   if (onAnyAppClickFn) {
-//     clickHandlers.push(() => onAnyAppClickFn({ appName }));
-//   }
-
-//   if (onAppClickFn) {
-//     clickHandlers.push(() => onAppClickFn({ event }));
-//   }
-
-//   return clickHandlers.length
-//     ? (event?: React.MouseEvent<HTMLDivElement>) => clickHandlers.forEach((fn) => fn(event))
-//     : undefined;
-// };
-
-// type AppButtonProps = {
-//   appId: AppName;
-//   url: string;
-//   replaceState?: boolean;
-//   onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
-// };
-
-// export const AppButton = (props: ViewInAppProps & { appName: AppName }) => {
-
-// };
 
 export default ViewInApp;
