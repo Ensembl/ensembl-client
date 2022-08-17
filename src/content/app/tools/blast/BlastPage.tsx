@@ -22,10 +22,7 @@ import loadable from '@loadable/component';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 const BlastForm = loadable(() => import('./views/blast-form/BlastForm'));
-const BlastUnviewedSubmissions = loadable(
-  () => import('./views/blast-unviewed-submissions/BlastUnviewedSubmissions')
-);
-const BlastJobs = loadable(
+const BlastSubmissions = loadable(
   () => import('./views/blast-submissions/BlastSubmissions')
 );
 const BlastSubmissionResults = loadable(
@@ -51,10 +48,13 @@ const BrowserPage = () => {
           <Route index element={<BlastForm />} />
           <Route
             path="unviewed-submissions"
-            element={<BlastUnviewedSubmissions />}
+            element={<BlastSubmissions unviewed={true} />}
           />
           <Route path="submissions">
-            <Route index={true} element={<BlastJobs />} />
+            <Route
+              index={true}
+              element={<BlastSubmissions unviewed={false} />}
+            />
             <Route path=":submissionId" element={<BlastSubmissionResults />} />
           </Route>
         </Routes>

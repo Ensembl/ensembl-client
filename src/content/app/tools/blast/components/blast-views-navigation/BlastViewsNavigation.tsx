@@ -16,13 +16,19 @@
 
 import React from 'react';
 
+import { useAppSelector } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
 import styles from './BlastViewsNavigation.scss';
 
 const BlastViewsNavigation = () => {
+  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+
   return (
     <div className={styles.blastViewsNavigation}>
       <div className={styles.leftColumn}>
@@ -35,7 +41,10 @@ const BlastViewsNavigation = () => {
       </div>
       <div className={styles.rightColumn}>
         <div className={styles.wrapperRight}>
-          <ButtonLink to={urlFor.blastUnviewedSubmissions()}>
+          <ButtonLink
+            to={urlFor.blastUnviewedSubmissions()}
+            isDisabled={!unviewedBlastSubmissions.length}
+          >
             Unviewed jobs
           </ButtonLink>
           <ButtonLink to={urlFor.blastSubmissionsList()}>Jobs list</ButtonLink>

@@ -28,5 +28,11 @@ export const getUnviewedBlastSubmissions = (state: RootState) => {
   );
 };
 
+export const getViewedBlastSubmissions = (state: RootState) => {
+  return Object.values(getBlastSubmissions(state)).filter(
+    (submission) => submission.seen
+  );
+};
+
 export const getBlastSubmissionById = (state: RootState, id: string) =>
   state.blast.blastResults.submissions[id];

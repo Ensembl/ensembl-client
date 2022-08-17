@@ -22,6 +22,7 @@ import {
 
 import {
   getAllBlastSubmissions,
+  updateBlastSubmission as updateBlastSubmissionInStorage,
   deleteBlastSubmission as deleteBlastSubmissionFromStorage
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
@@ -103,6 +104,15 @@ export const deleteBlastSubmission = createAsyncThunk(
   }
 );
 
+export const markBlastSubmissionAsSeen = createAsyncThunk(
+  'blast-results/mark-blast-submission-as-seen',
+  async (submissionId: string) => {
+    await updateBlastSubmissionInStorage(submissionId, { seen: true });
+
+    return submissionId;
+  }
+);
+
 export const initialBlastResultsState: BlastResultsState = {
   submissions: {},
   ui: {
@@ -151,6 +161,16 @@ const blastResultsSlice = createSlice({
       const submissionId = payload;
       delete state.submissions[submissionId];
     });
+    builder.addCase(
+      markBlastSubmissionAsSeen.fulfilled,
+      (state, { payload }) => {
+        const submissionId = payload;
+        const submission = state.submissions[submissionId];
+        if (submission) {
+          submission.seen = true;
+        }
+      }
+    );
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
       state.submissions[submissionId] = submission;

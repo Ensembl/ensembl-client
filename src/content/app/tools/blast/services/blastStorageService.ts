@@ -51,6 +51,22 @@ export const getBlastSubmission = async (
   return await IndexedDB.get(STORE_NAME, submissionId);
 };
 
+export const updateBlastSubmission = async (
+  submissionId: string,
+  fragment: Partial<BlastSubmission>
+) => {
+  const submission = await getBlastSubmission(submissionId);
+  if (!submission) {
+    return;
+  }
+  const updatedSubmission = {
+    ...submission,
+    ...fragment
+  };
+
+  await saveBlastSubmission(submissionId, updatedSubmission);
+};
+
 export const updateSavedBlastJob = async (params: {
   submissionId: string;
   jobId: string;
