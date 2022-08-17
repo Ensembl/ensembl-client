@@ -23,6 +23,8 @@ import {
 } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
+import SortIcon from 'static/icons/icon_arrow.svg';
+
 import styles from '../../TableHeader.scss';
 
 const TableHeaderCell = (props: IndividualColumn) => {
@@ -71,23 +73,17 @@ const TableHeaderCell = (props: IndividualColumn) => {
   };
 
   const sortArrowClassNames = classNames(styles.sortArrow, {
-    [styles.sortArrowActive]: columnId === sortedColumnId
+    [styles.sortArrowActive]: columnId === sortedColumnId,
+    [styles.sortArrowUp]: currentColumnSortingDirection === SortingDirection.ASC
   });
 
   const headerCellClassNames = classNames(styles.headerCell, {
     [styles.headerCellSortable]: isSortable
   });
 
-  const points =
-    currentColumnSortingDirection === SortingDirection.ASC
-      ? '0,8 8,8 4,0'
-      : '0,0 8,0 4,7';
-
   const sortArrow = (
     <div onClick={isSortable ? () => onSort() : undefined}>
-      <svg className={sortArrowClassNames} focusable="false" viewBox="0 0 8 8">
-        <polygon points={points} />
-      </svg>
+      <SortIcon className={sortArrowClassNames} />
     </div>
   );
 
