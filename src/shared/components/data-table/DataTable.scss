@@ -17,8 +17,22 @@
 
   --table-background: $white;
 
+  thead {
+    tr {
+      background-color: $white;
+      --table-head-background: $white;
+    }
+  }
+
   &ThemeDark {
     --table-background: $light-grey;
+
+    thead {
+      tr {
+        background-color: $light-grey;
+        --table-head-background: $light-grey;
+      }
+    }
   }
 
   td {

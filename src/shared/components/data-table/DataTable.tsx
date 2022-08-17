@@ -74,6 +74,9 @@ const DataTable = (props: TableProps) => {
     props.className
   );
 
+  const tableClasses = classNames(styles.table, {
+    [styles.tableThemeDark]: props.theme === 'dark'
+  });
   return (
     <TableContext.Provider
       value={{
@@ -88,7 +91,7 @@ const DataTable = (props: TableProps) => {
     >
       <div className={wrapperClasses}>
         <TableControls />
-        <Table className={styles.table} stickyHeader={true}>
+        <Table className={tableClasses} stickyHeader={true}>
           <TableHeader />
           <TableBody />
         </Table>
