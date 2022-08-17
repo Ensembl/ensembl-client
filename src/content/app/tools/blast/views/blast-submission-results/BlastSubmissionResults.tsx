@@ -109,10 +109,10 @@ const SequenceBox = (props: SequenceBoxProps) => {
     parsedBlastSequence;
   const rulerContainer = useRef<HTMLDivElement | null>(null);
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
-  const [isExpanded, setExpanded] = useState(false);
-  const rulerContainerClass = classNames(
+  const [isExpanded, setExpanded] = useState(true);
+  const rulerWrapper = classNames(
     styles.resultsSummaryRow,
-    styles.rulerContainerClass
+    styles.rulerWrapper
   );
 
   return (
@@ -146,7 +146,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
             />
           );
         })}
-      <div className={rulerContainerClass}>
+      <div className={rulerWrapper}>
         <div ref={rulerContainer} className={styles.summaryPlot}>
           {isExpanded && (
             <BasePairsRuler

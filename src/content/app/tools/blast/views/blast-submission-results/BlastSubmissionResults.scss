@@ -77,9 +77,9 @@ $double_standard_gutter: calc($standard-gutter * 2);
 }
 
 .showHideWrapper {
-  --show-hide-chevron-height: var(--chevron-height, 8px);
+  --show-hide-chevron-height: 8px;
 }
 
-.rulerContainerClass {
+.rulerWrapper {
   padding-bottom: 10px;
 }
