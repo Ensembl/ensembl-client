@@ -134,13 +134,15 @@ const SequenceBox = (props: SequenceBoxProps) => {
 
       {isExpanded &&
         blastResults.map((result) => {
-          const speciesInfo = species.filter(
+          // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
+          const speciesInfo = species.find(
             (sp) => sp.genome_id === result.genomeId
-          );
+          ) as Species;
+
           return (
             <SingleBlastJobResult
               key={result.jobId}
-              species={speciesInfo[0]}
+              species={speciesInfo}
               jobId={result.jobId}
               diagramWidth={plotwidth}
             />
