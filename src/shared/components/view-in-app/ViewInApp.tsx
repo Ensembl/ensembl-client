@@ -69,11 +69,16 @@ export const ViewInApp = (props: ViewInAppProps) => {
     return null;
   }
 
+  const enabledApps = Object.keys({
+    ...(props.onAppClick || {}),
+    ...props.links
+  }) as AppName[];
+
   return (
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
 
-      {(Object.keys(props.links) as AppName[]).map((appName, index) => {
+      {enabledApps.map((appName, index) => {
         const currentLinkObj = props.links[appName] as LinkObj;
 
         const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
@@ -86,10 +91,11 @@ export const ViewInApp = (props: ViewInAppProps) => {
           if (onAppClickFn) {
             onAppClickFn(event);
           }
-
-          navigate(currentLinkObj.url, {
-            replace: currentLinkObj.replaceState
-          });
+          if (currentLinkObj) {
+            navigate(currentLinkObj.url, {
+              replace: currentLinkObj.replaceState
+            });
+          }
         };
 
         return (

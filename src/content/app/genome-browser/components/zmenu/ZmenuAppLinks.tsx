@@ -34,7 +34,8 @@ type Props = {
 
 const ZmenuAppLinks = (props: Props) => {
   const { featureId } = props; // feature id here is passed in the format suitable for urls
-  const { genomeIdForUrl, focusObjectId } = useGenomeBrowserIds();
+  const { genomeIdForUrl, focusObjectIdForUrl, focusObjectId } =
+    useGenomeBrowserIds();
   const { changeFocusObject } = useGenomeBrowser();
 
   const { type: featureType } = parseFocusIdFromUrl(featureId);
@@ -44,13 +45,6 @@ const ZmenuAppLinks = (props: Props) => {
   }
 
   const links: UrlObj = {
-    genomeBrowser: {
-      url: urlFor.browser({
-        genomeId: genomeIdForUrl,
-        focus: featureId
-      }),
-      replaceState: true
-    },
     entityViewer: {
       url: urlFor.entityViewer({
         genomeId: genomeIdForUrl,
@@ -59,15 +53,15 @@ const ZmenuAppLinks = (props: Props) => {
     }
   };
 
-  const onGenomeBrowserAppClick = (
-    event?: React.MouseEvent<HTMLDivElement>
-  ) => {
-    const isFocusCurrentlyActive = featureId === focusObjectId;
+  const onGenomeBrowserAppClick = () => {
+    if (!(focusObjectIdForUrl && focusObjectId)) {
+      return;
+    }
 
-    if (isFocusCurrentlyActive && event) {
-      changeFocusObject(featureId);
-      event.preventDefault();
-      event.stopPropagation();
+    const isFocusCurrentlyActive = featureId === focusObjectIdForUrl;
+
+    if (isFocusCurrentlyActive) {
+      changeFocusObject(focusObjectId);
     }
   };
 
