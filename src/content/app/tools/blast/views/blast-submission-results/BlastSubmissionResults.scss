@@ -8,6 +8,7 @@ $double_standard_gutter: calc($standard-gutter * 2);
 }
 
 .sequenceBoxWrapper {
+  padding: 24px 20px 0px 20px;
   border: 1px solid $grey;
 }
 
@@ -27,7 +28,12 @@ $double_standard_gutter: calc($standard-gutter * 2);
       48%,
       1050px
     ) [species] minmax(20%, 1fr) 10px;
-  column-gap: 20px;
+
+  grid-template-areas:
+    'sequence-label hits-diagram species chevron'
+    'table table table table';
+
+  gap: 20px;
   padding-bottom: 20px;
   padding-left: 24px;
   padding-right: 24px;
@@ -38,6 +44,12 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
   &:last-of-type {
     padding-bottom: 46px;
+  }
+
+  .tableWrapper {
+    grid-area: table;
+    margin-left: -43px;
+    margin-right: -43px;
   }
 }
 
@@ -99,4 +111,12 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
 .sequenceAlignment {
   margin-left: 200px;
+}
+
+.showHideWrapper {
+  --show-hide-chevron-height: 8px;
+}
+
+.rulerWrapper {
+  padding-bottom: 10px;
 }

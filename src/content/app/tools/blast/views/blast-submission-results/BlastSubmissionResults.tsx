@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode, useEffect, useState, useRef } from 'react';
+import classNames from 'classnames';
 import { useParams } from 'react-router';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
@@ -23,21 +24,20 @@ import { useAppSelector } from 'src/store';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
-import { parseBlastInput } from '../../utils/blastInputParser';
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
+import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
 
-import styles from './BlastSubmissionResults.scss';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
   TableAction,
@@ -49,6 +49,8 @@ import DataTable from 'src/shared/components/data-table/DataTable';
 import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
 import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import { DatabaseType } from '../../types/blastSettings';
+
+import styles from './BlastSubmissionResults.scss';
 
 const BlastSubmissionResults = () => {
   return (
@@ -122,6 +124,11 @@ const SequenceBox = (props: SequenceBoxProps) => {
     parsedBlastSequence;
   const rulerContainer = useRef<HTMLDivElement | null>(null);
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
+  const [isExpanded, setExpanded] = useState(true);
+  const rulerWrapperClassName = classNames(
+    styles.resultsSummaryRow,
+    styles.rulerWrapper
+  );
 
   return (
     <div className={styles.sequenceBoxWrapper}>
@@ -132,30 +139,39 @@ const SequenceBox = (props: SequenceBoxProps) => {
           <span className={styles.againstText}>Against</span>{' '}
           <span>{species.length} species</span>
         </div>
+        <div className={styles.showHideWrapper}>
+          <ShowHide
+            isExpanded={isExpanded}
+            onClick={() => setExpanded(!isExpanded)}
+          ></ShowHide>
+        </div>
       </div>
+      {isExpanded &&
+        blastResults.map((result) => {
+          // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
+          const speciesInfo = species.filter(
+            (sp) => sp.genome_id === result.genomeId
+          );
 
-      {blastResults.map((result) => {
-        const speciesInfo = species.filter(
-          (sp) => sp.genome_id === result.genomeId
-        );
-
-        return (
-          <SingleBlastJobResult
-            key={result.jobId}
-            species={speciesInfo[0]}
-            jobId={result.jobId}
-            diagramWidth={plotwidth}
-            blastDatabase={blastDatabase}
-          />
-        );
-      })}
-      <div className={styles.resultsSummaryRow}>
+          return (
+            <SingleBlastJobResult
+              key={result.jobId}
+              species={speciesInfo[0]}
+              jobId={result.jobId}
+              diagramWidth={plotwidth}
+              blastDatabase={blastDatabase}
+            />
+          );
+        })}
+      <div className={rulerWrapperClassName}>
         <div ref={rulerContainer} className={styles.summaryPlot}>
-          <BasePairsRuler
-            width={plotwidth}
-            length={sequenceValue.length}
-            standalone={true}
-          />
+          {isExpanded && (
+            <BasePairsRuler
+              width={plotwidth}
+              length={sequenceValue.length}
+              standalone={true}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -396,19 +412,22 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
             onClick={() => setExpanded(!isExpanded)}
           ></ShowHide>
         </div>
+
+        {isExpanded && (
+          <div className={styles.tableWrapper}>
+            <DataTable
+              columns={hitsTableColumns}
+              data={tableData}
+              theme={'dark'}
+              rowsPerPage={100}
+              className={styles.hitsTable}
+              expandedContent={expandedContent}
+              disabledActions={[TableAction.FILTERS]}
+              uniqueColumnId={'id'}
+            />
+          </div>
+        )}
       </div>
-      {isExpanded && (
-        <DataTable
-          columns={hitsTableColumns}
-          data={tableData}
-          theme={'dark'}
-          rowsPerPage={100}
-          className={styles.hitsTable}
-          expandedContent={expandedContent}
-          disabledActions={[TableAction.FILTERS]}
-          uniqueColumnId={'id'}
-        />
-      )}
     </>
   );
 };
