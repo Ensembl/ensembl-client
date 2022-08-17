@@ -46,7 +46,9 @@ export type LinkObj = { url: string; replaceState?: boolean };
 
 export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
-type AppClickHandlers = Partial<Record<AppName, () => void>>;
+type AppClickHandlers = Partial<
+  Record<AppName, (event?: React.MouseEvent<HTMLDivElement>) => void>
+>;
 
 export type ViewInAppProps = {
   links: UrlObj;
@@ -79,7 +81,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
       {enabledApps.map((appName, index) => {
         const currentLinkObj = props.links[appName] as LinkObj;
 
-        const handleClick = () => {
+        const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
           const onAppClickFn = onAppClick?.[appName];
 
           if (onAnyAppClickFn) {
@@ -87,7 +89,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
           }
 
           if (onAppClickFn) {
-            onAppClickFn();
+            onAppClickFn(event);
           }
           if (currentLinkObj) {
             navigate(currentLinkObj.url, {
@@ -106,7 +108,9 @@ export const ViewInApp = (props: ViewInAppProps) => {
               status={Status.DEFAULT}
               description={Apps[appName].tooltip}
               image={Apps[appName].icon}
-              onClick={handleClick}
+              onClick={(event?: React.MouseEvent<HTMLDivElement>) =>
+                handleClick(event)
+              }
             />
           </div>
         );
