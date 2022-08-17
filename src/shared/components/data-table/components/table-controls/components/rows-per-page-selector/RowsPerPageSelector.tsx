@@ -42,7 +42,7 @@ const rowsPerPageOptions = [
     label: '100'
   },
   {
-    value: '0',
+    value: 'Infinity',
     label: 'All'
   }
 ];

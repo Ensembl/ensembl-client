@@ -58,7 +58,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
       if (currentColumn.isSearchable) {
         return false;
       }
-      return cell?.toString().includes(searchText);
+      return cell?.toString().toLowerCase().includes(searchText);
     });
 
     if (!shouldIncludeRow) {

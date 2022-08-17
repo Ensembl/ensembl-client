@@ -45,7 +45,7 @@ const TableBody = () => {
 
   // Filter the rows that needs to be displayed in the current page
   const rowsThisPage = data.filter((_, rowIndex) => {
-    if (rowsPerPage !== 0 && totalRows > rowsPerPage) {
+    if (totalRows > rowsPerPage) {
       if (rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex) {
         return false;
       }

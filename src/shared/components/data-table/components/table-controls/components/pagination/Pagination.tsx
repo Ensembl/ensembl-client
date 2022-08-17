@@ -74,14 +74,14 @@ const Pagination = () => {
         value={currentPageNumber}
         onChange={onChange}
         className={styles.inputBox}
-        disabled={rowsPerPage === 0 || data?.length < rowsPerPage}
+        disabled={data?.length < rowsPerPage}
       />
-      of {rowsPerPage === 0 ? 1 : highestPageNumber}
+      of {rowsPerPage === Infinity ? 1 : highestPageNumber}
       <Chevron
         direction="right"
         className={styles.showHide}
         isDisabled={
-          rowsPerPage === 0 || currentPageNumber === highestPageNumber
+          rowsPerPage === Infinity || currentPageNumber === highestPageNumber
         }
         onClick={() => onChevronClick(currentPageNumber + 1)}
       />

@@ -15,6 +15,7 @@
  */
 
 import React, { useContext } from 'react';
+
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
@@ -89,12 +90,7 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
   */
   const width = 10 + (String(totalRecords).length * 2 + 1) * 10;
 
-  let displayedRows = totalRecords;
-
-  // Note: rowsPerPage will be 0 when we need to show all records
-  if (rowsPerPage > 0) {
-    displayedRows = rowsPerPage > totalRecords ? totalRecords : rowsPerPage;
-  }
+  const displayedRows = rowsPerPage > totalRecords ? totalRecords : rowsPerPage;
 
   return (
     <th style={{ width, minWidth: '75px' }}>
