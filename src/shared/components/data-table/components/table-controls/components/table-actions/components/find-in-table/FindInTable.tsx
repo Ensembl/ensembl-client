@@ -21,10 +21,7 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './FindInTable.scss';
 /*
-    - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/2abee51f-9796-4682-ba6c-ef7233924cda?fullscreen
     - Displays the search box 
-    - Does it need to go through all the columns and filter matching entries?
-    - Should we consider passing searchable columns?
 
 */
 

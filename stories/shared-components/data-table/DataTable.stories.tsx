@@ -17,12 +17,12 @@ import React, { ReactNode, useState } from 'react';
 import times from 'lodash/times';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import {
+import type {
   TableColumns,
   TableCellRendererParams,
   TableData,
   TableTheme
-} from 'src/shared/components/data-table/state/tableReducer';
+} from 'src/shared/components/data-table/dataTableTypes';
 import DataTable from 'src/shared/components/data-table/DataTable';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 

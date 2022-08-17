@@ -17,7 +17,6 @@ import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
 import classNames from 'classnames';
 
 import Table from '../table/Table';
-
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
 import TableControls from './components/table-controls/TableControls';
