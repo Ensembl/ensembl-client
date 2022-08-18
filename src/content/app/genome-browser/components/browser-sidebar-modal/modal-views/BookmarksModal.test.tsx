@@ -28,11 +28,14 @@ import merge from 'lodash/fp/merge';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { BookmarksModal } from './BookmarksModal';
 
 import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+
+const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 const mockGenomeId = 'grch38';
 
@@ -49,6 +52,11 @@ jest.mock(
   () => () => ({
     genomeIdForUrl: mockGenomeId
   })
+);
+
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowser',
+  () => () => mockGenomeBrowser
 );
 
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({

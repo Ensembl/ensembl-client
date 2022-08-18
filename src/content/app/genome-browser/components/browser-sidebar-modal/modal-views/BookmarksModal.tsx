@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -33,7 +34,8 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './BookmarksModal.scss';
 
 export const PreviouslyViewedLinks = () => {
-  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const { genomeIdForUrl, focusObjectId } = useGenomeBrowserIds();
+  const { changeFocusObject } = useGenomeBrowser();
   const previouslyViewedObjects = useAppSelector(
     getPreviouslyViewedObjects
   ).slice(0, 20);
@@ -55,16 +57,22 @@ export const PreviouslyViewedLinks = () => {
           focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
         });
 
+        const isFocusCurrentlyActive =
+          focusObjectId === previouslyViewedObject.object_id;
+
+        const onClick = isFocusCurrentlyActive
+          ? (event: React.MouseEvent<HTMLAnchorElement>) => {
+              changeFocusObject(focusObjectId);
+              event.preventDefault();
+            }
+          : () => onLinkClick(previouslyViewedObject.type, index);
+
         return (
           <div
             key={previouslyViewedObject.object_id}
             className={styles.linkHolder}
           >
-            <Link
-              replace
-              to={path}
-              onClick={() => onLinkClick(previouslyViewedObject.type, index)}
-            >
+            <Link replace to={path} onClick={onClick}>
               <TextLine
                 text={previouslyViewedObject.label}
                 className={styles.label}
