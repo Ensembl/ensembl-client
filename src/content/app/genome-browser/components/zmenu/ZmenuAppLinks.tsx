@@ -26,6 +26,7 @@ import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolb
 import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
+import { useNavigate } from 'react-router';
 
 type Props = {
   featureId: string;
@@ -37,6 +38,7 @@ const ZmenuAppLinks = (props: Props) => {
   const { genomeIdForUrl, focusObjectIdForUrl, focusObjectId } =
     useGenomeBrowserIds();
   const { changeFocusObject } = useGenomeBrowser();
+  const navigate = useNavigate();
 
   const { type: featureType } = parseFocusIdFromUrl(featureId);
 
@@ -62,6 +64,13 @@ const ZmenuAppLinks = (props: Props) => {
 
     if (isFocusCurrentlyActive) {
       changeFocusObject(focusObjectId);
+    } else {
+      navigate(
+        urlFor.browser({
+          genomeId: genomeIdForUrl,
+          focus: featureId
+        })
+      );
     }
   };
 
