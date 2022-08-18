@@ -1,7 +1,6 @@
 @import 'src/styles/common';
 
 .wrapper {
-  --table-background: $white;
   overflow: auto;
 
   &ThemeDark {
@@ -14,13 +13,11 @@
   height: var(--table-height, 500px);
   overflow: auto;
   display: block;
-
   --table-background: $white;
 
   thead {
     tr {
       background-color: $white;
-      --table-head-background: $white;
     }
   }
 
@@ -30,13 +27,13 @@
     thead {
       tr {
         background-color: $light-grey;
-        --table-head-background: $light-grey;
       }
     }
   }
 
   td {
     padding-left: 24px;
+    color: $dark-grey;
   }
 
   td.selectColumn {

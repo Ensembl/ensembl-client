@@ -23,7 +23,7 @@ import type { TableData } from 'src/shared/components/data-table/dataTableTypes'
 
 import styles from './TableHeader.scss';
 /*
-    - Should receive an array of header items along with it's configurations like tooltip, isSortable, isHighlighted
+    - Should receive an array of g items along with its configurations like tooltip, isSortable, isHighlighted
     - First column in the header should display the total rows available
     - Subsequent columns will display individual header items wrapped in `TableCell`
     - Should header be fixed always? If not, make it optional.
@@ -62,7 +62,7 @@ const TableHeader = () => {
                 <HeaderStats
                   data={data}
                   rowsPerPage={rowsPerPage}
-                  key={'selectable'}
+                  key="selectable"
                 />
               ) : (
                 <TableHeaderCell {...column} key={column.columnId} />

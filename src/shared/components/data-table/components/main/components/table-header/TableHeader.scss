@@ -1,17 +1,9 @@
 @import 'src/styles/common';
 
 .header {
-  height: 30px;
-  margin-top: 0px;
-  z-index: 1;
-
   .headerCell {
     font-weight: $light;
     user-select: none;
-
-    &Sortable {
-      cursor: pointer;
-    }
   }
 
   .headerCellContent {
@@ -20,6 +12,11 @@
     white-space: nowrap;
     align-items: center;
     padding-left: 5px;
+
+    .sortArrowContainer,
+    .title {
+      cursor: pointer;
+    }
   }
 }
 
@@ -33,23 +30,6 @@
 .sort {
   display: inline-block;
   position: relative;
-}
-
-.sort::before {
-  content: '';
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-25%);
-  width: 0.8em;
-  height: 0.5em;
-  background-color: $blue;
-  cursor: pointer;
-  clip-path: polygon(
-    100% 0%,
-    0 0%,
-    50% 100%
-  ); // idea from https://moderncss.dev/custom-select-styles-with-pure-css
 }
 
 .sortArrow {

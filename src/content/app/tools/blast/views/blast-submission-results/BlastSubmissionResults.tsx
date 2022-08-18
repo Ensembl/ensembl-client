@@ -200,15 +200,15 @@ const hitsTableColumns: TableColumns = [
     isSortable: true,
     helpText: (
       <span>
-        The number of times a match is expected to occur by chance <br></br>{' '}
-        Typically, a low e-value indicated greater similarity between sequences{' '}
+        The number of times a match is expected to occur by chance <br></br>
+        Typically, a low e-value indicates greater similarity between sequences
       </span>
     )
   },
   {
     width: '100px',
     columnId: 'hit_length',
-    title: 'Hit length',
+    title: 'Length',
     isSortable: true
   },
   { width: '200px', columnId: 'view_alignment', title: '', isHideable: false },
@@ -327,8 +327,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_score,
-          `${hit.hit_acc}:${hitHsp.hsp_hit_from}-${hitHsp.hsp_hit_to}`, // genomic_location
-          hitHsp.hsp_hit_frame === '1' ? 'forward' : 'reverse',
+          `${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
+            .sort()
+            .join('-')}`, // genomic_location
+          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
           hitHsp.hsp_hit_from,
           hitHsp.hsp_hit_to,
           hitHsp.hsp_query_from,
@@ -407,12 +409,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
           <span>{speciesInfo.scientific_name}</span>
           <span>{speciesInfo.assembly_name}</span>
-        </div>
-        <div className={styles.showHideWrapper}>
-          <ShowHide
-            isExpanded={isExpanded}
-            onClick={() => setExpanded(!isExpanded)}
-          ></ShowHide>
+          <div className={styles.showHideWrapper}>
+            <ShowHide
+              isExpanded={isExpanded}
+              onClick={() => setExpanded(!isExpanded)}
+            ></ShowHide>
+          </div>
         </div>
 
         {isExpanded && (

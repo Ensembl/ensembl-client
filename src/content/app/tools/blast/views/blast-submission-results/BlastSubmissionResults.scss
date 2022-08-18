@@ -24,10 +24,9 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
-      48%,
-      1050px
-    ) [species] minmax(20%, 1fr) 10px;
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr) 10px;
 
   grid-template-areas:
     'sequence-label hits-diagram species chevron'
@@ -115,6 +114,7 @@ $double_standard_gutter: calc($standard-gutter * 2);
 
 .showHideWrapper {
   --show-hide-chevron-height: 8px;
+  display: inline-block;
 }
 
 .rulerWrapper {

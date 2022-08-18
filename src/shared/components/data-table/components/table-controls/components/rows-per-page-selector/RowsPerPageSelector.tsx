@@ -22,7 +22,6 @@ import type { RowsPerPage } from 'src/shared/components/data-table/dataTableType
 
 import styles from './RowsPerPageSelector.scss';
 /*
-    - XD: https://xd.adobe.com/view/78773ed6-d738-4ea6-be84-fcc73487eac4-2d24/screen/65cb206c-02a5-45de-865f-a7ddea257853?fullscreen
     - Displays the dropdown to change the number of rows displayed in a page
 */
 

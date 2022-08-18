@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import classNames from 'classnames';
 import React, { useContext } from 'react';
+import classNames from 'classnames';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+
+import { TableContext } from 'src/shared/components/data-table/DataTable';
 import {
   type IndividualColumn,
   SortingDirection
 } from 'src/shared/components/data-table/dataTableTypes';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import SortIcon from 'static/icons/icon_arrow.svg';
 
@@ -39,11 +40,7 @@ const TableHeaderCell = (props: IndividualColumn) => {
   }
 
   let currentColumnSortingDirection = SortingDirection.DEFAULT;
-  if (
-    columnId === sortedColumnId &&
-    sortedDirection &&
-    sortedDirection === SortingDirection.ASC
-  ) {
+  if (columnId === sortedColumnId && sortedDirection === SortingDirection.ASC) {
     currentColumnSortingDirection = SortingDirection.ASC;
   }
 
@@ -82,7 +79,10 @@ const TableHeaderCell = (props: IndividualColumn) => {
   });
 
   const sortArrow = (
-    <div onClick={isSortable ? () => onSort() : undefined}>
+    <div
+      onClick={isSortable ? onSort : undefined}
+      className={styles.sortArrowContainer}
+    >
       <SortIcon className={sortArrowClassNames} />
     </div>
   );
@@ -92,7 +92,12 @@ const TableHeaderCell = (props: IndividualColumn) => {
       <div className={styles.headerCellContent}>
         {isSortable && sortArrow}
 
-        <span onClick={isSortable ? () => onSort() : undefined}>{title}</span>
+        <span
+          onClick={isSortable ? onSort : undefined}
+          className={styles.title}
+        >
+          {title}
+        </span>
         {helpText && (
           <QuestionButton
             helpText={helpText}
