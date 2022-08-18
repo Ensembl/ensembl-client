@@ -251,7 +251,7 @@ const hitsTableColumns: TableColumns = [
     isSortable: true,
     helpText: (
       <span>
-        The position within the query sequence at which the hit started
+        The position within the target sequence at which the hit started
       </span>
     )
   },
@@ -261,7 +261,9 @@ const hitsTableColumns: TableColumns = [
     title: 'Hit end',
     isSortable: true,
     helpText: (
-      <span>The position within the query sequence at which the hit ended</span>
+      <span>
+        The position within the target sequence at which the hit ended
+      </span>
     )
   },
   {
