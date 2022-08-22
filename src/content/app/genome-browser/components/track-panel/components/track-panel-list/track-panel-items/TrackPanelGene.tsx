@@ -75,7 +75,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   const sortedTranscripts = defaultSort(gene.transcripts);
   const visibleSortedTranscripts = isCollapsed
-    ? [sortedTranscripts[0]]
+    ? sortedTranscripts.length
+      ? [sortedTranscripts[0]]
+      : []
     : sortedTranscripts;
 
   const geneVisibilityStatus = !visibleTranscriptIds?.length
