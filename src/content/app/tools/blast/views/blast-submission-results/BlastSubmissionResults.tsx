@@ -149,14 +149,14 @@ const SequenceBox = (props: SequenceBoxProps) => {
       {isExpanded &&
         blastResults.map((result) => {
           // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
-          const speciesInfo = species.filter(
+          const speciesInfo = species.find(
             (sp) => sp.genome_id === result.genomeId
-          );
+          ) as Species;
 
           return (
             <SingleBlastJobResult
               key={result.jobId}
-              species={speciesInfo[0]}
+              species={speciesInfo}
               jobId={result.jobId}
               diagramWidth={plotwidth}
               blastDatabase={blastDatabase}
@@ -425,12 +425,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
             <DataTable
               columns={hitsTableColumns}
               data={tableData}
-              theme={'dark'}
+              theme="dark"
               rowsPerPage={100}
               className={styles.hitsTable}
               expandedContent={expandedContent}
               disabledActions={[TableAction.FILTERS]}
-              uniqueColumnId={'id'}
+              uniqueColumnId="id"
             />
           </div>
         )}
@@ -450,7 +450,7 @@ const ShowHideColumn = (props: {
 
   return (
     <ShowHide
-      label={'view alignment'}
+      label="view alignment"
       isExpanded={props.isExpanded}
       onClick={onExpanded}
     />

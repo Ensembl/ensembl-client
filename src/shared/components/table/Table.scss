@@ -33,7 +33,7 @@
 }
 
 .table tr:last-of-type:not(thead tr) {
-  border-bottom: 1px solid $grey;
+  border-bottom: 1px solid var(--table-row-border-color, #{$grey});
 }
 
 .rowFooter td {
