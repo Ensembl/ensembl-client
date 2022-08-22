@@ -17,41 +17,50 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import ChevronDown from 'static/icons/icon_chevron.svg';
+import Chevron from '../chevron/Chevron';
 
-import styles from './Chevron.scss';
+import styles from './ChevronButton.scss';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export type Props = {
   direction: Direction;
   animate: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
   className?: string;
 };
 
-const Chevron = (props: Props) => {
+const ChevronButton = (props: Props) => {
   const isNonDefaultDirection = props.direction !== 'down';
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate }
+    { [styles.chevron_animated]: props.animate },
+    { [styles.chevronDisabled]: props.disabled }
   );
 
   const wrapperClasses = classNames(styles.wrapper, props.className);
 
   const wrapperProps = {
+    onClick: props.onClick,
+    disabled: props.disabled,
     className: wrapperClasses
   };
 
   return (
-    <span {...wrapperProps}>
-      <ChevronDown className={chevronClasses} />
-    </span>
+    <button {...wrapperProps}>
+      <Chevron
+        className={chevronClasses}
+        direction={props.direction}
+        animate={props.animate}
+      />
+    </button>
   );
 };
 
-Chevron.defaultProps = {
+ChevronButton.defaultProps = {
   animate: false
 };
 
-export default Chevron;
+export default ChevronButton;

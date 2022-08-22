@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
-import Chevron from 'src/shared/components/chevron/Chevron';
+
+import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import Input from 'src/shared/components/input/Input';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
@@ -64,10 +65,10 @@ const Pagination = () => {
 
   return (
     <div className={styles.pagination}>
-      <Chevron
+      <ChevronButton
         direction="left"
         className={styles.showHide}
-        isDisabled={currentPageNumber === 1}
+        disabled={currentPageNumber === 1}
         onClick={() => onChevronClick(currentPageNumber - 1)}
       />
       <Input
@@ -77,10 +78,10 @@ const Pagination = () => {
         disabled={data?.length < rowsPerPage}
       />
       of {rowsPerPage === Infinity ? 1 : highestPageNumber}
-      <Chevron
+      <ChevronButton
         direction="right"
         className={styles.showHide}
-        isDisabled={
+        disabled={
           rowsPerPage === Infinity || currentPageNumber === highestPageNumber
         }
         onClick={() => onChevronClick(currentPageNumber + 1)}

@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import Chevron from './Chevron';
 
@@ -44,38 +43,6 @@ describe('<Chevron />', () => {
 
       rerender(<Chevron direction="down" animate={true} />);
       expect(chevronIcon.classList.contains('chevron_animated')).toBe(true);
-    });
-  });
-
-  describe('as a button', () => {
-    it('renders correctly', () => {
-      const { container } = render(
-        <Chevron
-          direction="down"
-          onClick={jest.fn()}
-          className="componentClass"
-        />
-      );
-
-      const chevronButton = container.firstChild as HTMLElement;
-      const chevron = chevronButton.firstChild as HTMLElement;
-
-      expect(chevronButton.tagName.toLowerCase()).toBe('button');
-      expect(chevron.tagName.toLowerCase()).toBe('svg');
-
-      expect(chevronButton.classList.contains('componentClass')).toBe(true);
-    });
-
-    it('registers clicks', async () => {
-      const clickHandler = jest.fn();
-      const { container } = render(
-        <Chevron direction="down" onClick={clickHandler} />
-      );
-
-      const chevronButton = container.firstChild as HTMLElement;
-      await userEvent.click(chevronButton);
-
-      expect(clickHandler).toHaveBeenCalledTimes(1);
     });
   });
 });
