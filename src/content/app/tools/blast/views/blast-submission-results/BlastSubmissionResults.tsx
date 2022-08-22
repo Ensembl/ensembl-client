@@ -242,7 +242,10 @@ const hitsTableColumns: TableColumns = [
     columnId: 'hit_orientation',
     title: 'Hit orientation',
     isSortable: true,
-    helpText: <span>The orientation of the hit against the query sequence</span>
+    helpText: (
+      <span>The orientation of the hit against the query sequence</span>
+    ),
+    bodyCellClassName: styles.strandColumn
   },
   {
     width: '130px',

@@ -57,7 +57,8 @@ export type IndividualColumn = {
   isSearchable?: boolean;
   isFilterable?: boolean;
   isHideable?: boolean;
-  className?: string;
+  headerCellClassName?: string;
+  bodyCellClassName?: string;
   helpText?: ReactNode;
   width?: string;
   renderer?: (params: TableCellRendererParams) => ReactNode;

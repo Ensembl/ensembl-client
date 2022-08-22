@@ -84,7 +84,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
             return null;
           }
 
-          const { renderer } = currentColumn;
+          const { renderer, bodyCellClassName } = currentColumn;
 
           const Contents = () => (
             <>
@@ -93,7 +93,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
                   <RowSelector rowId={props.rowId} onChange={handleSelector} />
                 </TableCell>
               ) : (
-                <TableCell key={index}>
+                <TableCell key={index} className={bodyCellClassName}>
                   {renderer
                     ? renderer({
                         rowData: props.rowData,

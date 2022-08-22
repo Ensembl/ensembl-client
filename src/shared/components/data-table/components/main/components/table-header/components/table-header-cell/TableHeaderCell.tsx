@@ -29,7 +29,8 @@ import SortIcon from 'static/icons/icon_arrow.svg';
 import styles from '../../TableHeader.scss';
 
 const TableHeaderCell = (props: IndividualColumn) => {
-  const { title, helpText, isSortable, columnId, width } = props;
+  const { title, helpText, isSortable, columnId, width, headerCellClassName } =
+    props;
 
   const { dispatch, sortedColumn } = useContext(TableContext) || {};
 
@@ -75,7 +76,8 @@ const TableHeaderCell = (props: IndividualColumn) => {
   });
 
   const headerCellClassNames = classNames(styles.headerCell, {
-    [styles.headerCellSortable]: isSortable
+    [styles.headerCellSortable]: isSortable,
+    headerCellClassName
   });
 
   const sortArrow = (
