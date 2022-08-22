@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React, { ReactNode, useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useParams } from 'react-router';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { markBlastSubmissionAsSeen } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
@@ -69,6 +69,13 @@ const Main = () => {
   const blastSubmission = useAppSelector((state) =>
     getBlastSubmissionById(state, submissionId)
   );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (blastSubmission) {
+      dispatch(markBlastSubmissionAsSeen(blastSubmission.id));
+    }
+  }, [blastSubmission?.id]);
 
   if (!blastSubmission) {
     return null;

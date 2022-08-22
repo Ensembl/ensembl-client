@@ -20,11 +20,13 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowser from '../../hooks/useGenomeBrowser';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
+import { useNavigate } from 'react-router';
 
 type Props = {
   featureId: string;
@@ -33,7 +35,10 @@ type Props = {
 
 const ZmenuAppLinks = (props: Props) => {
   const { featureId } = props; // feature id here is passed in the format suitable for urls
-  const { genomeIdForUrl } = useGenomeBrowserIds();
+  const { genomeIdForUrl, focusObjectIdForUrl, focusObjectId } =
+    useGenomeBrowserIds();
+  const { changeFocusObject } = useGenomeBrowser();
+  const navigate = useNavigate();
 
   const { type: featureType } = parseFocusIdFromUrl(featureId);
 
@@ -42,13 +47,6 @@ const ZmenuAppLinks = (props: Props) => {
   }
 
   const links: UrlObj = {
-    genomeBrowser: {
-      url: urlFor.browser({
-        genomeId: genomeIdForUrl,
-        focus: featureId
-      }),
-      replaceState: true
-    },
     entityViewer: {
       url: urlFor.entityViewer({
         genomeId: genomeIdForUrl,
@@ -56,13 +54,37 @@ const ZmenuAppLinks = (props: Props) => {
       })
     }
   };
+
+  const onGenomeBrowserAppClick = () => {
+    if (!(focusObjectIdForUrl && focusObjectId)) {
+      return;
+    }
+
+    const isFocusCurrentlyActive = featureId === focusObjectIdForUrl;
+
+    if (isFocusCurrentlyActive) {
+      changeFocusObject(focusObjectId);
+    } else {
+      navigate(
+        urlFor.browser({
+          genomeId: genomeIdForUrl,
+          focus: featureId
+        })
+      );
+    }
+  };
+
   return (
     <div className={styles.zmenuAppLinks}>
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         label="Download"
       />
-      <ViewInApp links={links} onAnyAppClick={props.destroyZmenu} />
+      <ViewInApp
+        links={links}
+        onAnyAppClick={props.destroyZmenu}
+        onAppClick={{ genomeBrowser: onGenomeBrowserAppClick }}
+      />
     </div>
   );
 };

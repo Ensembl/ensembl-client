@@ -28,6 +28,17 @@
   flex: 0 0 auto;
 }
 
+.launchbarButton {
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+
+  button {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 .category {
   display: flex;
   column-gap: 20px;
@@ -45,17 +56,6 @@
 
   &:not(:last-child) {
     border-right: 1px solid $grey;
-  }
-}
-
-.launchbarButton {
-  display: inline-block;
-  height: 32px;
-  width: 32px;
-
-  button {
-    width: 32px;
-    height: 32px;
   }
 }
 
@@ -81,6 +81,7 @@
   svg {
     fill: $white;
   }
+
   button {
     cursor: default;
   }

@@ -38,14 +38,14 @@ export type Props = {
   image: FunctionComponent | string;
   className?: string;
   statusClasses?: { [key in ImageButtonStatus]?: string };
-  onClick?: () => void;
+  onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export const ImageButton = (props: Props) => {
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
-  const handleClick = () => {
-    props.onClick && props.onClick();
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    props.onClick && props.onClick(event);
   };
 
   const buttonProps =
