@@ -39,6 +39,11 @@ jest.mock(
 );
 
 jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
+jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
     genomeBrowser: mockGenomeBrowser()

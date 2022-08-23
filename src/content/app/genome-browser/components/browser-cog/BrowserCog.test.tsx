@@ -25,6 +25,13 @@ jest.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
   <div id="trackSettingsPanel">TrackSettingsPanel</div>
 ));
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackTrackSettingsOpened: jest.fn()
+  })
+);
+
 describe('<BrowserCog />', () => {
   afterEach(() => {
     jest.resetAllMocks();

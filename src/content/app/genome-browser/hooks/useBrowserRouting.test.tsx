@@ -53,6 +53,11 @@ jest.mock(
 );
 
 jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
+jest.mock(
   'src/content/app/genome-browser/state/focus-object/focusObjectSlice',
   () => ({
     fetchFocusObject: jest.fn(() => ({ type: 'fetch-focus-object' }))
