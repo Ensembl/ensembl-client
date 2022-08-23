@@ -17,7 +17,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 
-import analyticsTracking from 'src/services/analytics-service';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import TrackSettingsPanel from '../track-settings-panel/TrackSettingsPanel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -35,6 +35,7 @@ export type BrowserCogProps = {
 
 const BrowserCog = (props: BrowserCogProps) => {
   const { cogActivated, updateSelectedCog, trackId } = props;
+  const { trackTrackSettingsOpened } = useGenomeBrowserAnalytics();
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
@@ -50,11 +51,7 @@ const BrowserCog = (props: BrowserCogProps) => {
         updateSelectedCog(trackId);
       }, 0);
 
-      analyticsTracking.trackEvent({
-        category: 'track_settings',
-        label: trackId,
-        action: 'opened'
-      });
+      trackTrackSettingsOpened(trackId);
     } else {
       updateSelectedCog(null);
     }

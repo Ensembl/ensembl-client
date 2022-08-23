@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
@@ -47,8 +48,6 @@ import {
   validateRegion,
   type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
-
-import analyticsTracking from 'src/services/analytics-service';
 
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
@@ -90,6 +89,8 @@ export const BrowserRegionEditor = () => {
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLSpanElement>(null);
+
+  const { trackRegionChange } = useGenomeBrowserAnalytics();
 
   const closeForm = () => {
     updateAllInputs();
@@ -205,11 +206,7 @@ export const BrowserRegionEditor = () => {
       changeFocusObject(regionId);
     }
 
-    analyticsTracking.trackEvent({
-      category: 'browser_navigation',
-      label: 'region_editor',
-      action: 'change_region'
-    });
+    trackRegionChange();
   };
 
   const locationStartClassNames = classNames({

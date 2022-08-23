@@ -31,6 +31,7 @@ import {
   Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { AppName } from 'src/global/globalConfig';
 import { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
 import { AnalyticsOptions } from 'src/analyticsHelper';
@@ -61,7 +62,8 @@ const useEntityViewerAnalytics = () => {
     analyticsTracking.trackEvent({
       ...ga,
       species: speciesNameForAnalytics,
-      feature: featureType
+      feature: featureType,
+      app: AppName.ENTITY_VIEWER
     });
   };
 

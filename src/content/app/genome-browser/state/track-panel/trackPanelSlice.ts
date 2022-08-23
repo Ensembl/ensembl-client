@@ -22,7 +22,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
-import analyticsTracking from 'src/services/analytics-service';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
@@ -77,16 +77,13 @@ export const selectTrackPanelTab =
   ): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
+    const { trackTrackPanelTabChange } = useGenomeBrowserAnalytics();
 
     if (!activeGenomeId) {
       return;
     }
 
-    analyticsTracking.trackEvent({
-      category: 'track_panel_tab',
-      label: selectedTrackPanelTab,
-      action: 'selected'
-    });
+    trackTrackPanelTabChange(selectedTrackPanelTab);
 
     dispatch(closeBrowserSidebarModal());
 
