@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { TableState, TableAction, AllTableActions } from './dataTableTypes';
+import { DataTableState, TableAction, AllTableActions } from './dataTableTypes';
 
-export const defaultTableState: TableState = {
+export const defaultDataTableState: DataTableState = {
   columns: [],
   data: [],
   rowsPerPage: 10,
@@ -34,9 +34,9 @@ export const defaultTableState: TableState = {
 };
 
 export const tableReducer = (
-  state: TableState,
+  state: DataTableState,
   action: AllTableActions
-): TableState => {
+): DataTableState => {
   switch (action.type) {
     case 'set_rows_per_page':
       return { ...state, rowsPerPage: action.payload };
@@ -76,7 +76,11 @@ export const tableReducer = (
     case 'clear_sorted_column':
       return { ...state, sortedColumn: null };
     case 'restore_defaults':
-      return { ...defaultTableState, data: state.data, columns: state.columns };
+      return {
+        ...defaultDataTableState,
+        data: state.data,
+        columns: state.columns
+      };
     default:
       return state;
   }

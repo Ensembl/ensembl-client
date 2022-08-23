@@ -19,7 +19,7 @@ import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableRow from '../table-row/TableRow';
 
-import { defaultTableState } from 'src/shared/components/data-table/dataTableReducer';
+import { defaultDataTableState } from 'src/shared/components/data-table/dataTableReducer';
 
 import { SortingDirection } from 'src/shared/components/data-table/dataTableTypes';
 
@@ -32,8 +32,8 @@ const TableBody = () => {
     sortedColumn,
     uniqueColumnId
   } = useContext(TableContext) || {
-    currentPageNumber: defaultTableState.currentPageNumber,
-    rowsPerPage: defaultTableState.rowsPerPage
+    currentPageNumber: defaultDataTableState.currentPageNumber,
+    rowsPerPage: defaultDataTableState.rowsPerPage
   };
 
   if (!(data && columns)) {

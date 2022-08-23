@@ -40,6 +40,7 @@ import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import {
+  DataTableState,
   TableAction,
   type TableCellRendererParams,
   type TableColumns,
@@ -370,6 +371,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     [rowId: string]: ReactNode;
   }>({});
 
+  const [tableState, setTableState] = useState<Partial<DataTableState>>({
+    rowsPerPage: 100
+  });
+
   const onExpanded = (isExpanded: boolean, rowId: string) => {
     if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
       const aligment = (
@@ -430,14 +435,15 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         {isExpanded && (
           <div className={styles.tableWrapper}>
             <DataTable
+              onStateChange={setTableState}
               columns={hitsTableColumns}
               data={tableData}
               theme="dark"
-              rowsPerPage={100}
               className={styles.hitsTable}
               expandedContent={expandedContent}
               disabledActions={[TableAction.FILTERS]}
               uniqueColumnId="id"
+              {...tableState}
             />
           </div>
         )}

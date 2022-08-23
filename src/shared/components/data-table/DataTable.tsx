@@ -20,18 +20,18 @@ import Table from '../table/Table';
 import TableBody from './components/main/components/table-body/TableBody';
 import TableHeader from './components/main/components/table-header/TableHeader';
 import TableControls from './components/table-controls/TableControls';
-import { defaultTableState, tableReducer } from './dataTableReducer';
+import { defaultDataTableState, tableReducer } from './dataTableReducer';
 
 import {
   type AllTableActions,
   TableAction,
-  type TableState,
+  type DataTableState,
   type TableTheme
 } from './dataTableTypes';
 
 import styles from './DataTable.scss';
 
-type TableContextType = TableState & {
+type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   theme: TableTheme;
   uniqueColumnId?: string;
@@ -44,8 +44,8 @@ export const TableContext = React.createContext(
   null as TableContextType | null
 );
 
-export type TableProps = Partial<TableState> & {
-  onStateChange?: (newState: TableState) => void;
+export type TableProps = Partial<DataTableState> & {
+  onStateChange?: (newState: DataTableState) => void;
   theme: TableTheme;
   uniqueColumnId?: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;
@@ -54,17 +54,17 @@ export type TableProps = Partial<TableState> & {
   disabledActions?: TableAction[];
 };
 const DataTable = (props: TableProps) => {
-  const initialTableState = { ...defaultTableState, ...props };
+  const initialDataTableState = { ...defaultDataTableState, ...props };
 
-  const [tableState, dispatch] = useReducer(tableReducer, initialTableState);
+  const [tableState, dispatch] = useReducer(
+    tableReducer,
+    initialDataTableState
+  );
   const tableStateRef = useRef(tableState);
 
   useEffect(() => {
-    return () => {
-      // Update the state stored in the parent once before unload
-      props.onStateChange?.(tableStateRef.current);
-    };
-  }, []);
+    props.onStateChange?.(tableStateRef.current);
+  }, [tableState]);
 
   const wrapperClasses = classNames(
     styles.wrapper,
