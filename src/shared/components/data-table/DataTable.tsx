@@ -49,7 +49,7 @@ export const TableContext = React.createContext(
 export type TableProps = {
   onStateChange?: (newState: DataTableState) => void;
   columns: DataTableColumns;
-  state?: DataTableState;
+  state?: Partial<DataTableState>;
   theme: TableTheme;
   uniqueColumnId?: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;

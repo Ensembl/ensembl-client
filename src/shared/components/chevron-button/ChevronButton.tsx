@@ -17,11 +17,9 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import Chevron from '../chevron/Chevron';
+import Chevron, { type Direction } from '../chevron/Chevron';
 
 import styles from './ChevronButton.scss';
-
-export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export type Props = {
   direction: Direction;
@@ -32,14 +30,6 @@ export type Props = {
 };
 
 const ChevronButton = (props: Props) => {
-  const isNonDefaultDirection = props.direction !== 'down';
-  const chevronClasses = classNames(
-    styles.chevron,
-    { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate },
-    { [styles.chevronDisabled]: props.disabled }
-  );
-
   const wrapperClasses = classNames(styles.wrapper, props.className);
 
   const wrapperProps = {
@@ -51,7 +41,7 @@ const ChevronButton = (props: Props) => {
   return (
     <button {...wrapperProps}>
       <Chevron
-        className={chevronClasses}
+        className={props.disabled ? styles.chevronDisabled : undefined}
         direction={props.direction}
         animate={props.animate}
       />

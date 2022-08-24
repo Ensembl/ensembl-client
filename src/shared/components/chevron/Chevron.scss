@@ -9,10 +9,6 @@
   fill: var(--chevron-fill, $blue);
   height: var(--chevron-height, 8px);
   user-select: none;
-
-  &Disabled {
-    fill: $grey;
-  }
 }
 
 .chevron_animated {

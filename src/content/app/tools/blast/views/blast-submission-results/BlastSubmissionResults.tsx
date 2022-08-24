@@ -434,7 +434,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         {isExpanded && (
           <div className={styles.tableWrapper}>
             <DataTable
-              {...tableState}
+              state={tableState}
               onStateChange={setTableState}
               columns={hitsTableColumns}
               theme="dark"

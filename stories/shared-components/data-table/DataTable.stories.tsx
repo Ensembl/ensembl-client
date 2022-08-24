@@ -18,7 +18,7 @@ import times from 'lodash/times';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import type {
-  TableColumns,
+  DataTableColumns,
   TableCellRendererParams,
   TableData,
   TableTheme
@@ -31,7 +31,7 @@ import styles from './DataTable.stories.scss';
 const createTableData = (
   rows: number,
   columns: number
-): { data: TableData; columns: TableColumns } => {
+): { data: TableData; columns: DataTableColumns } => {
   return {
     data: times(rows, (row) =>
       times(columns, (column) => `Cell ${row},${column}`)
@@ -53,7 +53,7 @@ const tableThemeOptions = [
 export const DataTableStory = () => {
   const tableData = createTableData(150, 10);
 
-  const [tableState, setTableState] = useState(tableData);
+  const [tableState, setTableState] = useState({ data: tableData.data });
   const [tableTheme, setTableTheme] = useState<TableTheme>('light');
 
   return (
@@ -66,6 +66,7 @@ export const DataTableStory = () => {
       />
       <DataTable
         {...tableState}
+        columns={tableData.columns}
         theme={tableTheme}
         uniqueColumnId={'0'}
         selectableColumnIndex={2}
@@ -107,11 +108,14 @@ export const DataTableWithExpandStory = () => {
       />
     );
   };
-  const [tableState, setTableState] = useState(sampleTableDataForExpand);
+  const [tableState, setTableState] = useState({
+    data: sampleTableDataForExpand.data
+  });
 
   return (
     <DataTable
       {...tableState}
+      columns={sampleTableDataForExpand.columns}
       uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}
       className={styles.wrapper}
