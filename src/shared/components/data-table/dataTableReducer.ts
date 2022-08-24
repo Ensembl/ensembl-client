@@ -17,7 +17,6 @@
 import { DataTableState, TableAction, AllTableActions } from './dataTableTypes';
 
 export const defaultDataTableState: DataTableState = {
-  columns: [],
   data: [],
   rowsPerPage: 10,
   currentPageNumber: 1,
@@ -77,9 +76,7 @@ export const tableReducer = (
       return { ...state, sortedColumn: null };
     case 'restore_defaults':
       return {
-        ...defaultDataTableState,
-        data: state.data,
-        columns: state.columns
+        ...defaultDataTableState
       };
     default:
       return state;

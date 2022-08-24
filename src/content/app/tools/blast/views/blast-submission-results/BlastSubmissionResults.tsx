@@ -43,7 +43,7 @@ import {
   DataTableState,
   TableAction,
   type TableCellRendererParams,
-  type TableColumns,
+  type DataTableColumns,
   type TableData
 } from 'src/shared/components/data-table/dataTableTypes';
 import DataTable from 'src/shared/components/data-table/DataTable';
@@ -193,7 +193,7 @@ type SingleBlastJobResultProps = {
   blastDatabase: DatabaseType;
 };
 
-const hitsTableColumns: TableColumns = [
+const hitsTableColumns: DataTableColumns = [
   {
     width: '0px',
     columnId: 'id',
@@ -309,7 +309,10 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
   const [isExpanded, setExpanded] = useState(false);
 
-  const [tableData, setTableData] = useState<TableData>([]);
+  const [tableState, setTableState] = useState<Partial<DataTableState>>({
+    rowsPerPage: 100
+  });
+
   const [sequenceAlignmentData, setSequenceAlignmentData] = useState<{
     [key: string]: BlastSequenceAlignmentInput & { hitId: string };
   }>();
@@ -363,17 +366,13 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       });
     });
 
-    setTableData(allTableData);
+    setTableState({ ...tableState, data: allTableData });
     setSequenceAlignmentData(newSequenceAlignmentData);
   }, [data]);
 
   const [expandedContent, setExpandedContent] = useState<{
     [rowId: string]: ReactNode;
   }>({});
-
-  const [tableState, setTableState] = useState<Partial<DataTableState>>({
-    rowsPerPage: 100
-  });
 
   const onExpanded = (isExpanded: boolean, rowId: string) => {
     if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
@@ -435,15 +434,14 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         {isExpanded && (
           <div className={styles.tableWrapper}>
             <DataTable
+              {...tableState}
               onStateChange={setTableState}
               columns={hitsTableColumns}
-              data={tableData}
               theme="dark"
               className={styles.hitsTable}
               expandedContent={expandedContent}
               disabledActions={[TableAction.FILTERS]}
               uniqueColumnId="id"
-              {...tableState}
             />
           </div>
         )}

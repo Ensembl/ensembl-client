@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
+import React, { type ReactNode, useEffect, useReducer } from 'react';
 import classNames from 'classnames';
 
 import Table from '../table/Table';
@@ -26,13 +26,15 @@ import {
   type AllTableActions,
   TableAction,
   type DataTableState,
-  type TableTheme
+  type TableTheme,
+  type DataTableColumns
 } from './dataTableTypes';
 
 import styles from './DataTable.scss';
 
 type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
+  columns: DataTableColumns;
   theme: TableTheme;
   uniqueColumnId?: string;
   selectableColumnIndex: number;
@@ -44,8 +46,10 @@ export const TableContext = React.createContext(
   null as TableContextType | null
 );
 
-export type TableProps = Partial<DataTableState> & {
+export type TableProps = {
   onStateChange?: (newState: DataTableState) => void;
+  columns: DataTableColumns;
+  state?: DataTableState;
   theme: TableTheme;
   uniqueColumnId?: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;
@@ -54,16 +58,18 @@ export type TableProps = Partial<DataTableState> & {
   disabledActions?: TableAction[];
 };
 const DataTable = (props: TableProps) => {
-  const initialDataTableState = { ...defaultDataTableState, ...props };
+  const initialDataTableState = {
+    ...defaultDataTableState,
+    ...(props.state || {})
+  };
 
   const [tableState, dispatch] = useReducer(
     tableReducer,
     initialDataTableState
   );
-  const tableStateRef = useRef(tableState);
 
   useEffect(() => {
-    props.onStateChange?.(tableStateRef.current);
+    props.onStateChange?.(tableState);
   }, [tableState]);
 
   const wrapperClasses = classNames(
@@ -82,6 +88,7 @@ const DataTable = (props: TableProps) => {
       value={{
         ...tableState,
         dispatch,
+        columns: props.columns,
         theme: props.theme,
         uniqueColumnId: props.uniqueColumnId,
         selectableColumnIndex: props.selectableColumnIndex,
