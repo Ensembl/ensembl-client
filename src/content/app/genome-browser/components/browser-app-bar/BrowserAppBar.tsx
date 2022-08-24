@@ -22,6 +22,8 @@ import isEqual from 'lodash/isEqual';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
@@ -29,28 +31,45 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 type BrowserAppBarProps = {
   onSpeciesSelect: (genomeId: string) => void;
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
-  const species = useSelector(getEnabledCommittedSpecies);
+  const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
+  const { trackSpeciesChangeLinkClicked, trackAppBarGenomeChanged } =
+    useGenomeBrowserAnalytics();
+
+  const onSpeciesSelect = (species: CommittedItem) => {
+    props.onSpeciesSelect(species.genome_id);
+
+    trackAppBarGenomeChanged();
+  };
+
   const speciesTabs = useMemo(() => {
-    return species.map((species, index) => (
+    return enabledCommittedSpecies.map((species, index) => (
       <SelectedSpecies
         key={index}
         species={species}
         isActive={species.genome_id === activeGenomeId}
-        onClick={() => props.onSpeciesSelect(species.genome_id)}
+        onClick={() => onSpeciesSelect(species)}
       />
     ));
-  }, [species.length, activeGenomeId]);
+  }, [enabledCommittedSpecies.length, activeGenomeId]);
 
   const speciesSelectorLink = useMemo(() => {
-    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+    return (
+      <Link
+        to={urlFor.speciesSelector()}
+        onClick={trackSpeciesChangeLinkClicked}
+      >
+        Change
+      </Link>
+    );
   }, []);
 
   const wrappedSpecies = (
@@ -61,7 +80,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     />
   );
 
-  const mainContent = species.length
+  const mainContent = enabledCommittedSpecies.length
     ? wrappedSpecies
     : 'To start using this app...';
 

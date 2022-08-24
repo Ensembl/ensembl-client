@@ -25,6 +25,7 @@ import useBrowserRouting from './hooks/useBrowserRouting';
 import useFocusTrack from './hooks/useFocusTrack';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -81,6 +82,8 @@ export const Browser = () => {
     isMissingFocusObject
   } = useGenomeBrowserUrlCheck();
 
+  const { trackTrackPanelToggled } = useGenomeBrowserAnalytics();
+
   useFocusTrack();
 
   useEffect(() => {
@@ -91,6 +94,8 @@ export const Browser = () => {
 
   const onSidebarToggle = () => {
     dispatch(toggleTrackPanel(!isTrackPanelOpened)); // FIXME
+
+    trackTrackPanelToggled(!isTrackPanelOpened);
   };
 
   const onDrawerClose = () => {

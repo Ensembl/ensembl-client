@@ -35,6 +35,7 @@ import {
 
 import { useGbTranscriptSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import TranscriptSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/TranscriptSequenceView';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
@@ -45,6 +46,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
+import type { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
 import styles from './TranscriptSummary.scss';
 
@@ -56,6 +58,7 @@ const TranscriptSummary = (props: Props) => {
   const { transcriptId } = props.drawerView;
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const [shouldShowDownload, showDownload] = useState(false);
+  const { trackDrawerSequenceDownloaded } = useGenomeBrowserAnalytics();
 
   const { currentData, isFetching } = useGbTranscriptSummaryQuery(
     {
@@ -110,6 +113,24 @@ const TranscriptSummary = (props: Props) => {
   const productAminoAcidLength = getCommaSeparatedNumber(
     defaultProductGeneratingContext?.cds?.protein_length || 0
   );
+
+  const onDownloadSuccess = (params: TrackTranscriptDownloadPayload) => {
+    const {
+      options: { gene, transcript }
+    } = params;
+
+    const selectedOptions = gene.genomicSequence
+      ? ['gene-genomic_sequence']
+      : [''];
+
+    Object.entries(transcript).forEach((entry) => {
+      if (entry[1]) {
+        selectedOptions.push(`transcript-${entry[0]}`);
+      }
+    });
+
+    trackDrawerSequenceDownloaded(selectedOptions.join(','));
+  };
 
   return (
     <div>
@@ -186,6 +207,7 @@ const TranscriptSummary = (props: Props) => {
                 gene={{ id: gene.stable_id }}
                 theme="light"
                 layout="vertical"
+                onDownloadSuccess={onDownloadSuccess}
               />
             </div>
           )}

@@ -18,6 +18,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
@@ -80,6 +81,8 @@ const DrawerSequenceView = (props: Props) => {
     getCommittedSpeciesById(state, genomeId)
   ) as CommittedItem;
 
+  const { trackDrawerSequenceViewed } = useGenomeBrowserAnalytics();
+
   // BLAST has a different labelling for sequence types than what is passed with props
   const sequenceTypeForBlast =
     selectedSequenceType === 'protein' ? 'protein' : 'dna';
@@ -91,12 +94,21 @@ const DrawerSequenceView = (props: Props) => {
 
   const canHaveReverseComplement = selectedSequenceType === 'genomic';
 
+  const onShowHideClick = () => {
+    toggleSequenceVisibility();
+
+    // Track only when it is opened
+    if (!isExpanded) {
+      trackDrawerSequenceViewed(selectedSequenceType);
+    }
+  };
+
   return (
     <div>
       <ShowHide
         label="Sequences"
         isExpanded={isExpanded}
-        onClick={toggleSequenceVisibility}
+        onClick={onShowHideClick}
         className={isExpanded ? styles.showHide : undefined}
       />
       {isExpanded && (
@@ -151,6 +163,12 @@ const Sequence = (props: {
   isReverseComplement: boolean;
   sequenceType: SequenceType;
 }) => {
+  const { trackDrawerSequenceCopied } = useGenomeBrowserAnalytics();
+
+  const onCopy = () => {
+    trackDrawerSequenceCopied(sequenceType);
+  };
+
   const { sequence, sequenceType, isReverseComplement } = props;
 
   const displaySequence = useMemo(() => {
@@ -168,7 +186,7 @@ const Sequence = (props: {
             {sequenceLengthUnits}
           </span>
         </span>
-        <Copy value={displaySequence} />
+        <Copy value={displaySequence} onCopy={onCopy} />
       </div>
 
       {/*
@@ -185,7 +203,7 @@ const Sequence = (props: {
 };
 
 // QUESTION: is this going to become a a standalone component?
-const Copy = (props: { value: string }) => {
+const Copy = (props: { value: string; onCopy?: () => void }) => {
   const [copied, setCopied] = useState(false);
 
   let timeout: ReturnType<typeof setTimeout>;
@@ -196,6 +214,7 @@ const Copy = (props: { value: string }) => {
 
   const copy = () => {
     setCopied(true);
+    props.onCopy?.();
     navigator.clipboard.writeText(props.value);
 
     timeout = setTimeout(() => setCopied(false), 1500);

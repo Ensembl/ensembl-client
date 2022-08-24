@@ -28,6 +28,7 @@ import { AnalyticsOptions } from 'src/analyticsHelper';
 import { AppName } from 'src/global/globalConfig';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import { TrackSet } from '../components/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 const useGenomeBrowserAnalytics = () => {
   const { activeFocusObjectId, activeGenomeId } = useGenomeBrowserIds();
@@ -161,18 +162,141 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
+  const trackTrackPanelSectionToggled = (sectionName: string) => {
+    sendTrackEvent({
+      category: 'track_panel',
+      label: sectionName,
+      action: 'section_toggled'
+    });
+  };
+
+  const trackResetIcon = () => {
+    sendTrackEvent({
+      category: 'reset_icon',
+      action: 'clicked'
+    });
+  };
+
+  const trackSidebarModalViewToggle = (view: string) => {
+    sendTrackEvent({
+      category: 'sidebar_toolstrip',
+      action: 'modal_opened',
+      label: view
+    });
+  };
+
+  const trackDrawerOpened = (drawerView: string) => {
+    sendTrackEvent({
+      category: 'track_drawer',
+      action: 'opened',
+      label: drawerView
+    });
+  };
+
+  const trackDrawerSequenceViewed = (sequenceType: string) => {
+    sendTrackEvent({
+      category: 'track_drawer',
+      action: 'sequence_viewed',
+      label: sequenceType
+    });
+  };
+
+  const trackDrawerSequenceCopied = (sequenceType: string) => {
+    sendTrackEvent({
+      category: 'track_drawer',
+      action: 'sequence_copied',
+      label: sequenceType
+    });
+  };
+
+  const trackDrawerSequenceDownloaded = (selectedOptions: string) => {
+    sendTrackEvent({
+      category: 'track_drawer',
+      action: 'sequence_downloaded',
+      label: selectedOptions
+    });
+  };
+
+  const trackSpeciesChangeLinkClicked = () => {
+    sendTrackEvent({
+      category: 'app_bar',
+      action: 'change_link_clicked'
+    });
+  };
+
+  const trackAppBarGenomeChanged = () => {
+    sendTrackEvent({
+      category: 'app_bar',
+      action: 'change_genome'
+    });
+  };
+
+  const trackTrackPanelToggled = (isOpened: boolean) => {
+    sendTrackEvent({
+      category: 'track_panel',
+      action: isOpened ? 'opened' : 'closed'
+    });
+  };
+
+  const trackTrackVisibilityToggled = (trackName: string, status: boolean) => {
+    sendTrackEvent({
+      category: 'regular_track_visibility',
+      action: 'turned_' + status ? 'on' : 'off',
+      label: trackName
+    });
+  };
+
+  const trackFocusTrackVisibilityToggled = (action: Status) => {
+    sendTrackEvent({
+      category: 'focus_track_visibility',
+      action: action === Status.SELECTED ? 'turned_on' : 'turned_off'
+    });
+  };
+
+  const trackTranscriptTrackVisibilityToggled = (
+    transcriptStableId: string,
+    status: boolean
+  ) => {
+    sendTrackEvent({
+      category: 'transcript_track_visibility',
+      action: 'turned_' + status ? 'on' : 'off',
+      label: `transcript-${transcriptStableId}`
+    });
+  };
+
+  const trackInterstitialPageNavigation = () => {
+    sendTrackEvent({
+      category: 'interstitial_page',
+      action: 'navigate_to_species_selector'
+    });
+  };
+
   return {
-    trackTrackSettingsOpened,
     trackRegionChange,
     trackRegionFieldChange,
     trackBookmarksDrawerOpened,
     trackBookmarksLinkClicked,
-    trackTrackNameToggle,
     trackFeatureLabelToggle,
     trackShowSeveralTranscriptsToggle,
     trackShowTranscriptsIdToggle,
     trackApplyToAllInTackSettings,
-    trackTrackPanelTabChange
+    trackTrackPanelTabChange,
+    trackTrackPanelSectionToggled,
+    trackTrackPanelToggled,
+    trackTrackNameToggle,
+    trackTrackVisibilityToggled,
+    trackFocusTrackVisibilityToggled,
+    trackTranscriptTrackVisibilityToggled,
+    trackTrackSettingsOpened,
+    trackResetIcon,
+    trackSidebarModalViewToggle,
+    trackDrawerSequenceViewed,
+    trackDrawerSequenceCopied,
+    trackDrawerSequenceDownloaded,
+    trackDrawerOpened,
+    trackSpeciesChangeLinkClicked,
+    trackAppBarGenomeChanged,
+    trackInterstitialPageNavigation
   };
 };
 

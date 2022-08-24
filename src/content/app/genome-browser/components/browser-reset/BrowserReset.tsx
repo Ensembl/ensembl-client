@@ -18,6 +18,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveFocusObjectId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
@@ -36,6 +37,7 @@ export const BrowserReset = () => {
   const isActive = !isDrawerOpened;
 
   const { changeFocusObject } = useGenomeBrowser();
+  const { trackResetIcon } = useGenomeBrowserAnalytics();
 
   if (!focusObjectId) {
     return null;
@@ -46,6 +48,7 @@ export const BrowserReset = () => {
   };
 
   const handleClick = () => {
+    trackResetIcon();
     changeFocusObject(focusObjectId);
   };
 

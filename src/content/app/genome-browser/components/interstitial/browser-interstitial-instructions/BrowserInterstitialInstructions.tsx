@@ -17,6 +17,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Step } from 'src/shared/components/step/Step';
@@ -32,8 +34,10 @@ import styles from './BrowserInterstitialInstructions.scss';
 
 const BrowserInterstitialInstructions = () => {
   const navigate = useNavigate();
+  const { trackInterstitialPageNavigation } = useGenomeBrowserAnalytics();
 
   const goToSpeciesSelector = () => {
+    trackInterstitialPageNavigation();
     const url = urlFor.speciesSelector();
     navigate(url);
   };

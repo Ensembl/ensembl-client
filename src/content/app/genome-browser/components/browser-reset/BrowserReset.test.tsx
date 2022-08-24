@@ -49,6 +49,13 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackResetIcon: jest.fn()
+  })
+);
+
 describe('<BrowserReset />', () => {
   beforeEach(() => {
     jest.resetAllMocks();

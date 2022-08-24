@@ -26,6 +26,7 @@ import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helper
 
 import { useGbGeneSummaryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import {
   buildFocusIdForUrl,
@@ -37,7 +38,9 @@ import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/stat
 
 import GeneSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/GeneSequenceView';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
+import InstantDownloadGene, {
+  type OnDownloadPayload
+} from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
@@ -50,6 +53,7 @@ const GeneSummary = () => {
   const { genomeIdForUrl } = useGenomeBrowserIds();
   const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
   const [shouldShowDownload, showDownload] = useState(false);
+  const { trackDrawerSequenceDownloaded } = useGenomeBrowserAnalytics();
 
   const geneQueryParams = {
     geneId: focusGene.stable_id,
@@ -84,6 +88,24 @@ const GeneSummary = () => {
   });
 
   const rowClasses = classNames(styles.row, styles.spaceAbove);
+
+  const onDownloadSuccess = (params: OnDownloadPayload) => {
+    const {
+      options: { gene, transcript }
+    } = params;
+
+    const selectedOptions = gene.genomicSequence
+      ? ['gene-genomic_sequence']
+      : [''];
+
+    Object.entries(transcript).forEach((entry) => {
+      if (entry[1]) {
+        selectedOptions.push(`transcript-${entry[0]}`);
+      }
+    });
+
+    trackDrawerSequenceDownloaded(selectedOptions.join(','));
+  };
 
   return (
     <div>
@@ -134,6 +156,7 @@ const GeneSummary = () => {
                   id: gene.stable_id,
                   isProteinCoding: isProteinCodingGene(gene)
                 }}
+                onDownloadSuccess={onDownloadSuccess}
               />
             </div>
           )}
