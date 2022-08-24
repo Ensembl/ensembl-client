@@ -15,12 +15,15 @@
  */
 
 import { useEffect } from 'react';
+import pickBy from 'lodash/pickBy';
+
 import { useAppSelector } from 'src/store';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
+import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { Status } from 'src/shared/types/status';
@@ -29,11 +32,14 @@ import type {
   TrackStates,
   TrackActivityStatus
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
   const allBrowserTrackStates = useAppSelector(getBrowserTrackStates);
-  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+  const trackSettingsForGenome =
+    useAppSelector(getAllTrackSettings)?.tracks ?? {};
+  const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
 
   const { data: genomeTrackCategories } = useGenomeTracksQuery(
     activeGenomeId as string,
@@ -54,13 +60,21 @@ const useGenomicTracks = () => {
       prepareTrackIdsList(genomeTrackCategories ?? []),
       savedGenomicTrackStates
     );
-    trackIdsList.forEach(toggleTrack);
+    trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
   }, [
     activeGenomeId,
     genomeTrackCategories,
     savedGenomicTrackStates,
     genomeBrowser
   ]);
+
+  useEffect(() => {
+    if (!genomeBrowser) {
+      return;
+    }
+
+    sendTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
+  }, [trackSettingsForGenome, genomeBrowser]);
 };
 
 type TrackIdsList = {
@@ -101,6 +115,49 @@ const combineWithSavedData = (
     } else {
       return item;
     }
+  });
+};
+
+const sendTrackSettings = (
+  trackSettings: TrackSettings,
+  genomeBrowserMethods: NonNullable<
+    Omit<ReturnType<typeof useGenomeBrowser>, 'genomeBrowser'>
+  >
+) => {
+  const genomicTrackSettings = pickBy(
+    trackSettings,
+    (_, key) => key !== 'focus'
+  ); // exclude the focus track
+  Object.entries(genomicTrackSettings).forEach(([trackId, settings]) => {
+    Object.entries(settings).forEach((keyValuePair) => {
+      const [settingName, settingValue] = keyValuePair as [string, boolean];
+      switch (settingName) {
+        case 'showTrackName':
+          genomeBrowserMethods.toggleTrackName({
+            trackId,
+            shouldShowTrackName: settingValue
+          });
+          break;
+        case 'showFeatureLabels':
+          genomeBrowserMethods.toggleFeatureLabels({
+            trackId,
+            shouldShowFeatureLabels: settingValue
+          });
+          break;
+        case 'showSeveralTranscripts':
+          genomeBrowserMethods.toggleSeveralTranscripts({
+            trackId,
+            shouldShowSeveralTranscripts: settingValue
+          });
+          break;
+        case 'showTranscriptIds':
+          genomeBrowserMethods.toggleTranscriptIds({
+            trackId,
+            shouldShowTranscriptIds: settingValue
+          });
+          break;
+      }
+    });
   });
 };
 
