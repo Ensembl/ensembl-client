@@ -23,6 +23,7 @@ import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useFocusTrack from './hooks/useFocusTrack';
+import useGenomicTracks from './hooks/useGenomicTracks';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 
@@ -82,6 +83,7 @@ export const Browser = () => {
   } = useGenomeBrowserUrlCheck();
 
   useFocusTrack();
+  useGenomicTracks();
 
   useEffect(() => {
     if (!activeGenomeId) {
