@@ -25,12 +25,14 @@ import useGenomeBrowserIds from './useGenomeBrowserIds';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import { getFocusObjectTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { Status } from 'src/shared/types/status';
 import type { FocusGeneTrack } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { GeneTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 /**
  * The purposes of this hook are:
@@ -89,6 +91,9 @@ const useFocusGene = (params: Params) => {
   const geneStableId = parsedFocusObjectId?.objectId;
   const geneIdRef = useRef(geneStableId);
   const visibleTranscriptIds = focusGene?.transcripts ?? null;
+  const trackSettingsForGenome: GeneTrackSettings | undefined = useAppSelector(
+    getAllTrackSettings
+  )?.tracks.focus as GeneTrackSettings;
 
   const stringifiedVisibleTranscriptIds = visibleTranscriptIds
     ? String([...visibleTranscriptIds].sort())
@@ -144,6 +149,13 @@ const useFocusGene = (params: Params) => {
     stringifiedVisibleTranscriptIds
   ]);
 
+  useEffect(() => {
+    if (!trackSettingsForGenome) {
+      return;
+    }
+    sendFocusGeneTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
+  }, [trackSettingsForGenome]);
+
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
       updateObjectTrackStates({
@@ -152,6 +164,37 @@ const useFocusGene = (params: Params) => {
       })
     );
   };
+};
+
+const sendFocusGeneTrackSettings = (
+  trackSettings: GeneTrackSettings,
+  genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>
+) => {
+  const trackId = 'focus';
+
+  Object.entries(trackSettings).forEach((keyValuePair) => {
+    const [settingName, settingValue] = keyValuePair as [string, boolean];
+    switch (settingName) {
+      case 'showTrackName':
+        genomeBrowserMethods.toggleTrackName({
+          trackId,
+          shouldShowTrackName: settingValue
+        });
+        break;
+      case 'showFeatureLabels':
+        genomeBrowserMethods.toggleFeatureLabels({
+          trackId,
+          shouldShowFeatureLabels: settingValue
+        });
+        break;
+      case 'showTranscriptIds':
+        genomeBrowserMethods.toggleTranscriptIds({
+          trackId,
+          shouldShowTranscriptIds: settingValue
+        });
+        break;
+    }
+  });
 };
 
 export default useFocusTrack;
