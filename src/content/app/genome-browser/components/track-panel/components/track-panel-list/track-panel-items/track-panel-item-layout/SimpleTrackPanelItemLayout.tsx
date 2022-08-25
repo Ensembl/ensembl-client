@@ -45,9 +45,6 @@ export type Props = {
   onShowMore?: () => void;
   isHighlighted?: boolean;
   highlightOnHover?: boolean;
-  visibilityIconHelpText?: {
-    [Status.PARTIALLY_SELECTED]: '';
-  };
   children: ReactNode;
 };
 
