@@ -172,6 +172,9 @@ const sendFocusGeneTrackSettings = (
 ) => {
   const trackId = 'focus';
 
+  // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
+  // message to the genome browser here. We haven't found a good way of reconciling the state
+  // of the "show five transcripts" toggle for the focus gene track, and the list of manually shown/hidden transcripts
   Object.entries(trackSettings).forEach((keyValuePair) => {
     const [settingName, settingValue] = keyValuePair as [string, boolean];
     switch (settingName) {

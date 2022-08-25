@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
-import get from 'lodash/get';
 import EnsemblGenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
 } from '@ensembl/ensembl-genome-browser';
-import cloneDeep from 'lodash/cloneDeep';
 
 import config from 'config';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
-import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
@@ -34,17 +30,11 @@ import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 
 import { useAppSelector } from 'src/store';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
-import {
-  getBrowserActiveFocusObjectId,
-  getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { Status } from 'src/shared/types/status';
 
 const useGenomeBrowser = () => {
-  const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
@@ -108,157 +98,6 @@ const useGenomeBrowser = () => {
     };
 
     genomeBrowser?.send(action);
-  };
-
-  const restoreBrowserTrackStates = () => {
-    if (!activeGenomeId || !activeFocusObjectId || !genomeBrowser) {
-      return;
-    }
-
-    const trackStatesFromStorage = browserStorageService.getTrackStates();
-    const storedCommonTracks =
-      (get(
-        trackStatesFromStorage,
-        `${activeGenomeId}.commonTracks`
-      ) as TrackStates) ?? {};
-
-    const tracksToTurnOff: string[] = [];
-    const tracksToTurnOn: string[] = [];
-
-    Object.values(storedCommonTracks).forEach((trackStates) => {
-      Object.keys(trackStates).forEach((trackId) => {
-        trackStates[trackId] === Status.SELECTED
-          ? tracksToTurnOn.push(trackId)
-          : tracksToTurnOff.push(trackId);
-      });
-    });
-
-    if (tracksToTurnOn.length) {
-      const turnOnAction: OutgoingAction = {
-        type: OutgoingActionType.TURN_ON_TRACKS,
-        payload: {
-          track_ids: tracksToTurnOn
-        }
-      };
-      genomeBrowser.send(turnOnAction);
-    }
-
-    if (tracksToTurnOff.length) {
-      const turnOffAction: OutgoingAction = {
-        type: OutgoingActionType.TURN_OFF_TRACKS,
-        payload: {
-          track_ids: tracksToTurnOff
-        }
-      };
-
-      genomeBrowser.send(turnOffAction);
-    }
-  };
-
-  const restoreTrackSettingsStates = () => {
-    if (!activeGenomeId || !genomeBrowser) {
-      return;
-    }
-
-    const emptyOnOffLists = {
-      on: [] as string[],
-      off: [] as string[]
-    };
-
-    const trackStateForSeveralTranscripts = cloneDeep(emptyOnOffLists);
-    const trackStateForTranscriptIds = cloneDeep(emptyOnOffLists);
-    const trackStateForNames = cloneDeep(emptyOnOffLists);
-    const trackStateForLabels = cloneDeep(emptyOnOffLists);
-
-    trackSettings &&
-      Object.keys(trackSettings).forEach((trackId) => {
-        const config = trackSettings[trackId];
-
-        config.showTrackName
-          ? trackStateForNames.on.push(trackId)
-          : trackStateForNames.off.push(trackId);
-
-        if (config.trackType === TrackType.GENE) {
-          config.showFeatureLabels
-            ? trackStateForLabels.on.push(trackId)
-            : trackStateForLabels.off.push(trackId);
-
-          /**
-           * TODO: think what to do about the saved state of the "several transcripts" toggle
-           * for the gene track.
-           * 1) How do we reconcile it with the transcripts we have selected manually?
-           * 2) Should we just ignore it
-           * 3) If we want (and can) to do anything about it, we should do so in the TrackPanelGene component,
-           * which also knows about the list of individual transcripts that are displayed
-           *
-           * Commenting out the problematic lines below for now.
-           */
-
-          // config.showSeveralTranscripts
-          //   ? trackStateForSeveralTranscripts.on.push(trackId)
-          //   : trackStateForSeveralTranscripts.off.push(trackId);
-
-          config.showTranscriptIds
-            ? trackStateForTranscriptIds.on.push(trackId)
-            : trackStateForTranscriptIds.off.push(trackId);
-        }
-      });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_ON_NAMES,
-      payload: {
-        track_ids: trackStateForNames.on
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_OFF_NAMES,
-      payload: {
-        track_ids: trackStateForNames.off
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_ON_LABELS,
-      payload: {
-        track_ids: trackStateForLabels.on
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_OFF_LABELS,
-      payload: {
-        track_ids: trackStateForLabels.off
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_ON_SEVERAL_TRANSCRIPTS,
-      payload: {
-        track_ids: trackStateForSeveralTranscripts.on
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_OFF_SEVERAL_TRANSCRIPTS,
-      payload: {
-        track_ids: trackStateForSeveralTranscripts.off
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_ON_TRANSCRIPT_LABELS,
-      payload: {
-        track_ids: trackStateForTranscriptIds.on
-      }
-    });
-
-    genomeBrowser.send({
-      type: OutgoingActionType.TURN_OFF_TRANSCRIPT_LABELS,
-      payload: {
-        track_ids: trackStateForTranscriptIds.off
-      }
-    });
   };
 
   const changeBrowserLocation = (locationData: {
@@ -410,8 +249,6 @@ const useGenomeBrowser = () => {
     setFocusGene,
     changeFocusObject,
     changeBrowserLocation,
-    restoreBrowserTrackStates,
-    restoreTrackSettingsStates,
     setZmenus,
     toggleTrack,
     updateFocusGeneTranscripts,
