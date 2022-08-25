@@ -34,6 +34,15 @@ import type {
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
+/**
+ * The purposes of this hook are:
+ * - tell the genome browser what tracks (apart from the focus track, which is
+ *   another hook’s responsibility) to show for any given genome id
+ * - tell the genome browser which settings to apply to the shown tracks
+ *
+ * Only one copy of this hook should be run.
+ */
+
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
   const allBrowserTrackStates = useAppSelector(getBrowserTrackStates);
