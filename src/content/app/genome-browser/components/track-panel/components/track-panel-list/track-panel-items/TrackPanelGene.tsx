@@ -144,12 +144,21 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
+  const getVisibilityIconHelpText = (status: Status) => {
+    if (status === Status.SELECTED) {
+      return 'Hide all transcripts';
+    }
+
+    return 'Show all transcripts';
+  };
+
   return (
     <>
       <GroupTrackPanelItemLayout
         isCollapsed={isCollapsed}
         visibilityStatus={geneVisibilityStatus}
         onChangeVisibility={onGeneVisibilityChange}
+        getVisibilityIconHelpText={getVisibilityIconHelpText}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >
