@@ -2,7 +2,7 @@ name: Delete removed branch from GitLab mirror
 
 on:
   delete:
-    branches-igore:
+    branches-ignore:
       - master
       - dev
 
