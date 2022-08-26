@@ -40,16 +40,16 @@ const TableHeaderCell = (props: IndividualColumn) => {
     return null;
   }
 
-  let currentColumnSortingDirection = SortingDirection.DEFAULT;
+  let currentColumnSortingDirection = SortingDirection.NONE;
   if (columnId === sortedColumnId && sortedDirection === SortingDirection.ASC) {
     currentColumnSortingDirection = SortingDirection.ASC;
   }
 
   const onSort = () => {
-    let directionToSet = SortingDirection.DEFAULT;
+    let directionToSet = SortingDirection.NONE;
     if (
       columnId !== sortedColumnId ||
-      sortedDirection === SortingDirection.DEFAULT
+      sortedDirection === SortingDirection.NONE
     ) {
       directionToSet = SortingDirection.DESC;
     } else if (sortedDirection === SortingDirection.DESC) {

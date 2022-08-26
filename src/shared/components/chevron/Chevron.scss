@@ -3,6 +3,7 @@
 .wrapper {
   display: inline-block;
   font-size: 0; // to prevent line-height's impact on the height of the element
+  cursor: pointer;
 }
 
 .chevron {

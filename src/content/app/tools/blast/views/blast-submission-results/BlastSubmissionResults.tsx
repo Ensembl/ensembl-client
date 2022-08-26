@@ -219,7 +219,7 @@ const hitsTableColumns: DataTableColumns = [
     title: 'Length',
     isSortable: true
   },
-  { width: '200px', columnId: 'view_alignment', title: '', isHideable: false },
+  { width: '200px', columnId: 'view_alignment', isHideable: false },
   {
     width: '100px',
     columnId: 'percentage_id',

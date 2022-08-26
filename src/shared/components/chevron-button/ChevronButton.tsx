@@ -14,43 +14,38 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type ButtonHTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 import Chevron, { type Direction } from '../chevron/Chevron';
 
 import styles from './ChevronButton.scss';
 
-export type Props = {
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   direction: Direction;
-  animate: boolean;
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
+  animate?: boolean;
 };
 
 const ChevronButton = (props: Props) => {
-  const wrapperClasses = classNames(styles.wrapper, props.className);
+  const {
+    className,
+    direction = 'down',
+    animate = true,
+    disabled,
+    ...buttonProps
+  } = props;
 
-  const wrapperProps = {
-    onClick: props.onClick,
-    disabled: props.disabled,
-    className: wrapperClasses
-  };
+  const buttonClasses = classNames(
+    styles.button,
+    { [styles.chevronButtonDisabled]: disabled },
+    className
+  );
 
   return (
-    <button {...wrapperProps}>
-      <Chevron
-        className={props.disabled ? styles.chevronDisabled : undefined}
-        direction={props.direction}
-        animate={props.animate}
-      />
+    <button className={buttonClasses} disabled={disabled} {...buttonProps}>
+      <Chevron direction={direction} animate={animate} />
     </button>
   );
-};
-
-ChevronButton.defaultProps = {
-  animate: false
 };
 
 export default ChevronButton;

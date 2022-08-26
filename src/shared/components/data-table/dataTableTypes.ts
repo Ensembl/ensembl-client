@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export enum SortingDirection {
   ASC = 'ascending',
   DESC = 'descending',
-  DEFAULT = 'default' // Do we need this?
+  NONE = 'none'
 }
 
 export type SortedColumn = {
@@ -52,7 +52,7 @@ export type TableCellRendererParams = {
 
 export type IndividualColumn = {
   columnId: string;
-  title: string;
+  title?: string;
   isSortable?: boolean;
   isSearchable?: boolean;
   isFilterable?: boolean;
