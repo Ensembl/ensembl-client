@@ -52,7 +52,7 @@ jest.mock(
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackResetIcon: jest.fn()
+    trackFocusObjectReset: jest.fn()
   })
 );
 

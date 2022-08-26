@@ -194,17 +194,17 @@ const trackSettingsSlice = createSlice({
       action: PayloadAction<{
         genomeId: string;
         trackId: string;
-        isSeveralTranscriptsShown: boolean;
+        areSeveralTranscriptsShown: boolean;
       }>
     ) {
-      const { genomeId, trackId, isSeveralTranscriptsShown } = action.payload;
+      const { genomeId, trackId, areSeveralTranscriptsShown } = action.payload;
       const trackSettingsState = state.settings[genomeId].tracks[trackId];
 
       if (trackSettingsState.trackType !== TrackType.GENE) {
         return;
       }
 
-      trackSettingsState.showSeveralTranscripts = isSeveralTranscriptsShown;
+      trackSettingsState.showSeveralTranscripts = areSeveralTranscriptsShown;
     },
     updateShowTranscriptIds(
       state,

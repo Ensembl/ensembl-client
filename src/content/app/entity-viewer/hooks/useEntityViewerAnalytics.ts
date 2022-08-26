@@ -123,7 +123,7 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_transcript_list', label);
   };
 
-  const trackPreviouslyViewedLinkClick = (params: {
+  const trackBookmarksLinkClickededObjectClickededLinkClick = (params: {
     linkLabel: string;
     position: number;
   }) => {
@@ -291,7 +291,7 @@ const useEntityViewerAnalytics = () => {
     trackExternalReferencesTabSelection,
     trackExternalReferenceLinkClick,
     trackExternalLinkClick,
-    trackPreviouslyViewedLinkClick,
+    trackBookmarksLinkClickededObjectClickededLinkClick,
     trackSidebarToolstripButtonClick,
     trackSearchSubmission
   };

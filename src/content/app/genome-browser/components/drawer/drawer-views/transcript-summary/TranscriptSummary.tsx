@@ -121,11 +121,11 @@ const TranscriptSummary = (props: Props) => {
 
     const selectedOptions = gene.genomicSequence
       ? ['gene-genomic_sequence']
-      : [''];
+      : [];
 
-    Object.entries(transcript).forEach((entry) => {
-      if (entry[1]) {
-        selectedOptions.push(`transcript-${entry[0]}`);
+    Object.entries(transcript).forEach(([option, isSet]) => {
+      if (isSet) {
+        selectedOptions.push(`transcript-${option}`);
       }
     });
 

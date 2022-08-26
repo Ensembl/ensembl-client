@@ -143,7 +143,9 @@ const useBrowserTrackSettings = () => {
     trackFeatureLabelToggle(selectedCog, areFeatureLabelsShown);
   };
 
-  const updateShowSeveralTranscripts = (isSeveralTranscriptsShown: boolean) => {
+  const updateShowSeveralTranscripts = (
+    areSeveralTranscriptsShown: boolean
+  ) => {
     if (!activeGenomeId) {
       return;
     }
@@ -153,12 +155,12 @@ const useBrowserTrackSettings = () => {
           updateTrackSettingsShowSeveralTranscripts({
             genomeId: activeGenomeId,
             trackId,
-            isSeveralTranscriptsShown
+            areSeveralTranscriptsShown
           })
         );
         toggleSeveralTranscripts({
           trackId,
-          shouldShowSeveralTranscripts: isSeveralTranscriptsShown
+          shouldShowSeveralTranscripts: areSeveralTranscriptsShown
         });
       });
     } else {
@@ -166,18 +168,18 @@ const useBrowserTrackSettings = () => {
         updateTrackSettingsShowSeveralTranscripts({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isSeveralTranscriptsShown
+          areSeveralTranscriptsShown
         })
       );
       toggleSeveralTranscripts({
         trackId: selectedCog,
-        shouldShowSeveralTranscripts: isSeveralTranscriptsShown
+        shouldShowSeveralTranscripts: areSeveralTranscriptsShown
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    trackShowSeveralTranscriptsToggle(selectedCog, isSeveralTranscriptsShown);
+    trackShowSeveralTranscriptsToggle(selectedCog, areSeveralTranscriptsShown);
   };
 
   const updateShowTranscriptIds = (shouldShowTranscriptIds: boolean) => {

@@ -37,7 +37,7 @@ export const BrowserReset = () => {
   const isActive = !isDrawerOpened;
 
   const { changeFocusObject } = useGenomeBrowser();
-  const { trackResetIcon } = useGenomeBrowserAnalytics();
+  const { trackFocusObjectReset } = useGenomeBrowserAnalytics();
 
   if (!focusObjectId) {
     return null;
@@ -48,7 +48,7 @@ export const BrowserReset = () => {
   };
 
   const handleClick = () => {
-    trackResetIcon();
+    trackFocusObjectReset();
     changeFocusObject(focusObjectId);
   };
 

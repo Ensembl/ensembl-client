@@ -59,6 +59,14 @@ jest.mock(
   () => () => mockGenomeBrowser
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackBookmarksLinkClicked: jest.fn(),
+    trackBookmarksDrawerOpened: jest.fn()
+  })
+);
+
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,

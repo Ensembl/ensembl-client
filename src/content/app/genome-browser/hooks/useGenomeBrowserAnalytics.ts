@@ -18,17 +18,18 @@ import { useSelector } from 'react-redux';
 
 import analyticsTracking from 'src/services/analytics-service';
 
+import useGenomeBrowserIds from './useGenomeBrowserIds';
+
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { RootState } from 'src/store';
-import { AnalyticsOptions } from 'src/analyticsHelper';
-import { AppName } from 'src/global/globalConfig';
-import useGenomeBrowserIds from './useGenomeBrowserIds';
-import { TrackSet } from '../components/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
+import type { AppName } from 'src/global/globalConfig';
+import type { TrackSet } from '../components/track-panel/trackPanelConfig';
+import type { Status } from 'src/shared/types/status';
+import type { RootState } from 'src/store';
 
 const useGenomeBrowserAnalytics = () => {
   const { activeFocusObjectId, activeGenomeId } = useGenomeBrowserIds();
@@ -44,9 +45,9 @@ const useGenomeBrowserAnalytics = () => {
     ? parseFocusObjectId(activeFocusObjectId).type
     : '';
 
-  const sendTrackEvent = (ga: AnalyticsOptions) => {
+  const sendTrackEvent = (oprions: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      ...ga,
+      ...oprions,
       species: speciesNameForAnalytics,
       feature: featureType,
       app: AppName.GENOME_BROWSER
@@ -79,9 +80,9 @@ const useGenomeBrowserAnalytics = () => {
 
   const trackBookmarksDrawerOpened = (totalBookmarks: number) => {
     sendTrackEvent({
-      category: 'drawer_open',
+      category: 'bookmarks_drawer',
       label: 'recent_bookmarks',
-      action: 'clicked',
+      action: 'opened',
       value: totalBookmarks
     });
   };
@@ -122,13 +123,13 @@ const useGenomeBrowserAnalytics = () => {
 
   const trackShowSeveralTranscriptsToggle = (
     selectedCog: string,
-    isSeveralTranscriptsShown: boolean
+    areSeveralTranscriptsShown: boolean
   ) => {
     sendTrackEvent({
       category: 'track_settings',
       label: selectedCog,
       action:
-        'several_transcripts_' + (isSeveralTranscriptsShown ? 'on' : 'off')
+        'several_transcripts_' + (areSeveralTranscriptsShown ? 'on' : 'off')
     });
   };
 
@@ -170,7 +171,7 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackResetIcon = () => {
+  const trackFocusObjectReset = () => {
     sendTrackEvent({
       category: 'reset_icon',
       action: 'clicked'
@@ -224,7 +225,7 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackAppBarGenomeChanged = () => {
+  const trackGenomeChanged = () => {
     sendTrackEvent({
       category: 'app_bar',
       action: 'change_genome'
@@ -288,14 +289,14 @@ const useGenomeBrowserAnalytics = () => {
     trackFocusTrackVisibilityToggled,
     trackTranscriptTrackVisibilityToggled,
     trackTrackSettingsOpened,
-    trackResetIcon,
+    trackFocusObjectReset,
     trackSidebarModalViewToggle,
     trackDrawerSequenceViewed,
     trackDrawerSequenceCopied,
     trackDrawerSequenceDownloaded,
     trackDrawerOpened,
     trackSpeciesChangeLinkClicked,
-    trackAppBarGenomeChanged,
+    trackGenomeChanged,
     trackInterstitialPageNavigation
   };
 };
