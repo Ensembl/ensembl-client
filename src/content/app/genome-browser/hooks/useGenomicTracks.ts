@@ -115,7 +115,7 @@ const combineWithSavedData = (
     .flatMap((trackCategory) => Object.entries(trackCategory))
     .forEach(([trackId, trackStatus]) => {
       savedTrackVisibilityMap.set(trackId, trackStatus);
-    }, {});
+    });
   return trackIdsList.map((item) => {
     const { trackId } = item;
     if (savedTrackVisibilityMap.has(trackId)) {
