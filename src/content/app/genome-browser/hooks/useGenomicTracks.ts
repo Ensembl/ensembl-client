@@ -65,8 +65,8 @@ const useGenomicTracks = () => {
       return;
     }
 
-    const trackIdsList = combineWithSavedData(
-      prepareTrackIdsList(genomeTrackCategories ?? []),
+    const trackIdsList = prepareTrackIdsList(
+      genomeTrackCategories ?? [],
       savedGenomicTrackStates
     );
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
@@ -94,14 +94,16 @@ type TrackIdsList = {
 // Create a list of tracks to enable in the genome browser.
 // Assume that all tracks should be enabled by default
 const prepareTrackIdsList = (
-  trackGroups: GenomeTrackCategory[]
+  trackGroups: GenomeTrackCategory[],
+  savedTrackStates: TrackStates
 ): TrackIdsList => {
-  return trackGroups
+  const trackIdsList = trackGroups
     .flatMap(({ track_list }) => track_list)
     .map(({ track_id }) => ({
       trackId: track_id,
       status: Status.SELECTED
     }));
+  return combineWithSavedData(trackIdsList, savedTrackStates);
 };
 
 const combineWithSavedData = (
