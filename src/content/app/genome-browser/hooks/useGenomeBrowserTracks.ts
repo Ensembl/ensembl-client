@@ -20,6 +20,8 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useFocusTrack from './useFocusTrack';
 import useGenomicTracks from './useGenomicTracks';
+import useBrowserCogList from 'src/content/app/genome-browser/components/browser-cog/useBrowserCogList';
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
 
@@ -38,8 +40,9 @@ import {
   type TrackSettings,
   type TrackSettingsForGenome
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -54,6 +57,8 @@ const useGenomeBrowserTracks = () => {
   const { currentData: trackCategories } = useGenomeTracksQuery(genomeId);
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings)?.tracks;
+  const visibleTrackIds = getVisibleTrackIds(useBrowserCogList().cogList); // get list of ids of tracks currently rendered in genome browser
+  const { toggleTrack } = useGenomeBrowser();
 
   const dispatch = useAppDispatch();
 
@@ -80,6 +85,23 @@ const useGenomeBrowserTracks = () => {
 
     dispatch(setInitialTrackSettingsForGenome({ genomeId, trackSettings }));
   }, [trackCategories, focusObject, genomeId]);
+
+  // make sure to tell genome browser to hide tracks that a given genome id doesn't have
+  useEffect(() => {
+    if (!trackSettingsForGenome || !visibleTrackIds.length) {
+      return;
+    }
+    const trackIdsForCurrentGenome = new Set(
+      Object.keys(trackSettingsForGenome)
+    );
+    const trackIdsToHide = visibleTrackIds.filter(
+      (id) => !trackIdsForCurrentGenome.has(id)
+    );
+
+    trackIdsToHide.forEach((trackId) => {
+      toggleTrack({ trackId, status: Status.UNSELECTED });
+    });
+  }, [trackSettingsForGenome, visibleTrackIds]);
 
   // run hooks responsible for communicating to genome browser the enabled tracks and their settings
   useFocusTrack();
@@ -119,6 +141,12 @@ const prepareTrackSettings = ({
     });
   });
   return defaultTrackSettings;
+};
+
+const getVisibleTrackIds = (cogsList: Record<string, number> | null) => {
+  cogsList = cogsList ?? {};
+
+  return Object.keys(cogsList);
 };
 
 export default useGenomeBrowserTracks;
