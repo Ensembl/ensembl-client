@@ -22,9 +22,8 @@ import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
-import useFocusTrack from './hooks/useFocusTrack';
-import useGenomicTracks from './hooks/useGenomicTracks';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
+import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -82,8 +81,7 @@ export const Browser = () => {
     isMissingFocusObject
   } = useGenomeBrowserUrlCheck();
 
-  useFocusTrack();
-  useGenomicTracks();
+  useGenomeBrowserTracks();
 
   useEffect(() => {
     if (!activeGenomeId) {
