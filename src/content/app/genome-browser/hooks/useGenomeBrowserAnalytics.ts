@@ -45,9 +45,9 @@ const useGenomeBrowserAnalytics = () => {
     ? parseFocusObjectId(activeFocusObjectId).type
     : '';
 
-  const sendTrackEvent = (oprions: AnalyticsOptions) => {
+  const sendTrackEvent = (options: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      ...oprions,
+      ...options,
       species: speciesNameForAnalytics,
       feature: featureType,
       app: AppName.GENOME_BROWSER
