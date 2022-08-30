@@ -25,7 +25,7 @@ export const createSelectedSpecies = (
   common_name: null,
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),
-  url_slug: null,
+  genome_tag: null,
   isEnabled: true,
   ...fragment
 });

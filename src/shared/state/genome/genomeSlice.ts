@@ -36,15 +36,15 @@ const genomeSlice = createSlice({
   extraReducers: (builder) => {
     // GenomeInfo
     builder.addMatcher(fetchGenomeInfo.matchFulfilled, (state, { payload }) => {
-      const { genomeId, urlSlug, genomeInfo } = payload;
+      const { genomeId, genomeTag, genomeInfo } = payload;
 
       state.genomes[genomeId] = genomeInfo;
 
-      if (urlSlug) {
+      if (genomeTag) {
         // TODO: fetchGenomeInfo function is going to retrieve genome info using the id from the url.
         // Consider what should happen if the id from the url becomes associated with a more recent genome id.
-        // We should probably check whether state.urlToGenomeIdMap[urlSlug] exists before updating it
-        state.urlToGenomeIdMap[urlSlug] = genomeId;
+        // We should probably check whether state.urlToGenomeIdMap[genomeTag] exists before updating it
+        state.urlToGenomeIdMap[genomeTag] = genomeId;
       } else {
         state.urlToGenomeIdMap[genomeId] = genomeId;
       }

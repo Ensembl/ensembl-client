@@ -52,7 +52,7 @@ export type CurrentItem = {
   common_name: string | null;
   scientific_name: string;
   assembly_name: string | null; // name of the selected assembly
-  url_slug: string | null;
+  genome_tag: string | null;
 };
 
 export type SpeciesSelectorState = {
@@ -233,7 +233,7 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
     common_name: data.common_name,
     scientific_name: data.scientific_name,
     assembly_name: data.assembly_name,
-    url_slug: data.url_slug
+    genome_tag: data.genome_tag
   };
 };
 
@@ -242,7 +242,7 @@ const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   common_name: data.common_name,
   scientific_name: data.scientific_name,
   assembly_name: data.assembly_name as string,
-  url_slug: data.url_slug,
+  genome_tag: data.genome_tag,
   isEnabled: true
 });
 

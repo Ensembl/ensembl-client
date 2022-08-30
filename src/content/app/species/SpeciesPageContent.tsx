@@ -60,7 +60,7 @@ const SpeciesPageContent = () => {
   const genomeId = genomeInfo?.genomeId;
 
   const changeGenomeId = (species: CommittedItem) => {
-    const genomeIdForUrl = species.url_slug ?? species.genome_id;
+    const genomeIdForUrl = species.genome_tag ?? species.genome_id;
     const params = {
       genomeId: genomeIdForUrl
     };

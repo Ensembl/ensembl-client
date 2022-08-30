@@ -74,9 +74,9 @@ const useEntityViewerIds = () => {
   const genomeId = genomeInfo?.genomeId;
   const genomeIdForUrl =
     genomeIdInUrl ??
-    genomeInfo?.urlSlug ??
+    genomeInfo?.genomeTag ??
     genomeInfo?.genomeId ??
-    savedGenomeInfo?.url_slug ??
+    savedGenomeInfo?.genome_tag ??
     savedGenomeInfo?.genome_id;
 
   let entityId;

@@ -24,7 +24,7 @@ import type { GenomeInfo, GenomeKaryotypeItem } from './genomeTypes';
 
 type GenomeInfoResponse = {
   genomeId: string;
-  urlSlug: string | null;
+  genomeTag: string | null;
   genomeInfo: GenomeInfo;
 };
 
@@ -39,11 +39,11 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
       },
       transformResponse: (response: { genome_info: GenomeInfo[] }) => {
         const genomeInfo = response.genome_info[0];
-        const { genome_id, url_slug } = genomeInfo;
+        const { genome_id, genome_tag } = genomeInfo;
 
         return {
           genomeId: genome_id,
-          urlSlug: url_slug,
+          genomeTag: genome_tag,
           genomeInfo: response.genome_info[0]
         };
       }

@@ -25,7 +25,7 @@ export type GenomeInfo = {
   assembly_name: string;
   scientific_name: string;
   example_objects: ExampleFocusObject[];
-  url_slug: string | null;
+  genome_tag: string | null;
 };
 
 export type GenomeInfoResponse = {

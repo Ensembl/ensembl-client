@@ -64,7 +64,9 @@ const useGenomeBrowserIds = () => {
 
   // TODO: check if the logic below is correct
   const genomeIdForUrl =
-    genomeIdInUrl ?? committedSpecies?.url_slug ?? committedSpecies?.genome_id;
+    genomeIdInUrl ??
+    committedSpecies?.genome_tag ??
+    committedSpecies?.genome_id;
 
   let focusObjectId;
   let focusObjectIdForUrl;

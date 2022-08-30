@@ -51,7 +51,8 @@ const MissingGenomeError = (props: Props) => {
   // TODO: In the future, we should be able to find all committed species with invalid genome ids,
   // not just the one matching this page; but it isn't yet clear how we are going to do it.
   const committedSpeciesWithInvalidGenomeId = allCommittedSpecies.find(
-    (species) => species.genome_id === genomeId || species.url_slug === genomeId
+    (species) =>
+      species.genome_id === genomeId || species.genome_tag === genomeId
   );
 
   return committedSpeciesWithInvalidGenomeId ? (

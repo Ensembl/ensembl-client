@@ -27,11 +27,11 @@ export const getGenomeById = (
   return allGenomes[genomeId] || null;
 };
 
-export const getGenomeIdFromUrlSlug = (
+export const getGenomeIdFromgenomeTag = (
   state: RootState,
-  urlSlug: string
+  genomeTag: string
 ): string | undefined => {
-  return state.genome.urlToGenomeIdMap[urlSlug];
+  return state.genome.urlToGenomeIdMap[genomeTag];
 };
 
 export const getGenomeByUrlId = (
@@ -41,7 +41,7 @@ export const getGenomeByUrlId = (
   const allGenomes = getGenomes(state);
   return (
     Object.values(allGenomes).find(
-      (genome) => genome.url_slug === id || genome.genome_id === id
+      (genome) => genome.genome_tag === id || genome.genome_id === id
     ) ?? null
   );
 };
@@ -51,7 +51,7 @@ export const getGenomeIdForUrl = (
   genomeId: string
 ): string | undefined => {
   const genome = getGenomeById(state, genomeId);
-  return genome?.url_slug ?? genome?.genome_id;
+  return genome?.genome_tag ?? genome?.genome_id;
 };
 
 export const getGenomeExampleFocusObjects = (

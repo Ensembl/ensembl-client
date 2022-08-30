@@ -24,7 +24,7 @@ export type SearchMatch = {
   scientific_name: string; // every species has a scientific name
   assembly_name: string; // display name of the assembly associated with this genome_id
   matched_substrings: MatchedSubstring[];
-  url_slug: string | null;
+  genome_tag: string | null;
 };
 
 export type SearchMatchGroup = {
@@ -54,7 +54,7 @@ export type CommittedItem = {
   common_name: string | null;
   scientific_name: string;
   assembly_name: string;
-  url_slug: string | null;
+  genome_tag: string | null;
   isEnabled: boolean;
 };
 
@@ -66,5 +66,5 @@ export type PopularSpecies = {
   image: string; // link to the svg or base64-encoded svg
   division_ids: string[]; // e.g. ['model_organism', 'ensembl_plants',...]; a popular species can belong to several divisions
   is_available: boolean; // indicates whether we have data for this species and, therefore, whether it can be selected
-  url_slug: string | null;
+  genome_tag: string | null;
 };
