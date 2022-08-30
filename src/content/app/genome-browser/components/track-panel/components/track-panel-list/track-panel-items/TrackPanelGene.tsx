@@ -158,7 +158,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         isCollapsed={isCollapsed}
         visibilityStatus={geneVisibilityStatus}
         onChangeVisibility={onGeneVisibilityChange}
-        getVisibilityIconHelpText={getVisibilityIconHelpText}
+        visibilityIconHelpText={getVisibilityIconHelpText(geneVisibilityStatus)}
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
       >

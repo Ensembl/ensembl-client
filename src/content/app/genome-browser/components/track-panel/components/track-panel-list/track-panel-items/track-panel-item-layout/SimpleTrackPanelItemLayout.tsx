@@ -39,9 +39,7 @@ import styles from './TrackPanelItemLayout.scss';
 export type Props = {
   visibilityStatus?: TrackActivityStatus | Status.PARTIALLY_SELECTED;
   onChangeVisibility?: () => void;
-  getVisibilityIconHelpText?: (
-    status: TrackActivityStatus | Status.PARTIALLY_SELECTED
-  ) => string;
+  visibilityIconHelpText?: string;
   onShowMore?: () => void;
   isHighlighted?: boolean;
   highlightOnHover?: boolean;
@@ -57,6 +55,12 @@ const SimpleTrackPanelItemLayout = (props: Props) => {
     highlightOnHover = true,
     children
   } = props;
+
+  const visibilityIconHelpText =
+    props.visibilityIconHelpText ||
+    (visibilityStatus === Status.UNSELECTED
+      ? 'Show this track'
+      : 'Hide this track');
 
   const containerClasses = classNames(styles.grid, {
     [styles.highlighted]: isHighlighted,
@@ -80,21 +84,13 @@ const SimpleTrackPanelItemLayout = (props: Props) => {
         {visibilityStatus && onChangeVisibility && (
           <VisibilityIcon
             status={visibilityStatus}
-            description={props.getVisibilityIconHelpText?.(visibilityStatus)}
+            description={visibilityIconHelpText}
             onClick={onChangeVisibility}
           />
         )}
       </div>
     </div>
   );
-};
-
-SimpleTrackPanelItemLayout.defaultProps = {
-  getVisibilityIconHelpText: (
-    status: NonNullable<Props['visibilityStatus']>
-  ) => {
-    return status === Status.UNSELECTED ? 'Show this track' : 'Hide this track';
-  }
 };
 
 export default SimpleTrackPanelItemLayout;
