@@ -37,6 +37,7 @@ import {
   getBlastSearchParameters,
   getBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import type {
   BlastProgram,
@@ -84,6 +85,8 @@ const BlastSettings = ({ config }: Props) => {
   const blastProgram = useAppSelector(getSelectedBlastProgram);
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
+  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -183,12 +186,15 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <ButtonLink
-          className={styles.previousJobs}
-          to={urlFor.blastSubmissionsList()}
-        >
-          Jobs list
-        </ButtonLink>
+        <div className={styles.actionButtons}>
+          <ButtonLink
+            to={urlFor.blastUnviewedSubmissions()}
+            isDisabled={!unviewedBlastSubmissions.length}
+          >
+            Unviewed jobs
+          </ButtonLink>
+          <ButtonLink to={urlFor.blastSubmissionsList()}>Jobs list</ButtonLink>
+        </div>
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
