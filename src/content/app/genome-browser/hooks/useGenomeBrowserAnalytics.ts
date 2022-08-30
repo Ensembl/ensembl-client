@@ -25,10 +25,11 @@ import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import { AppName } from 'src/global/globalConfig';
+import { Status } from 'src/shared/types/status';
+
 import type { AnalyticsOptions } from 'src/analyticsHelper';
-import type { AppName } from 'src/global/globalConfig';
 import type { TrackSet } from '../components/track-panel/trackPanelConfig';
-import type { Status } from 'src/shared/types/status';
 import type { RootState } from 'src/store';
 
 const useGenomeBrowserAnalytics = () => {
