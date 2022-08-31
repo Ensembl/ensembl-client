@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
-import classNames from 'classnames';
+import React, { useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -31,6 +30,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
+import Copy from 'src/shared/components/copy/Copy';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -181,40 +181,6 @@ const Sequence = (props: {
         dangerouslySetInnerHTML={{ __html: displaySequence }}
       />
     </>
-  );
-};
-
-// QUESTION: is this going to become a a standalone component?
-const Copy = (props: { value: string }) => {
-  const [copied, setCopied] = useState(false);
-
-  let timeout: ReturnType<typeof setTimeout>;
-
-  useEffect(() => {
-    return () => timeout && clearTimeout(timeout);
-  }, []);
-
-  const copy = () => {
-    setCopied(true);
-    navigator.clipboard.writeText(props.value);
-
-    timeout = setTimeout(() => setCopied(false), 1500);
-  };
-
-  const componentStyles = classNames(styles.copyLozenge, {
-    [styles.copyLozengeCopied]: copied
-  });
-
-  return (
-    <span className={componentStyles}>
-      {copied ? (
-        'Copied'
-      ) : (
-        <span className={styles.copy} onClick={copy}>
-          Copy
-        </span>
-      )}
-    </span>
   );
 };
 
