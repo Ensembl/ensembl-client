@@ -53,10 +53,14 @@ const trackPanelGeneQuery = (params: Params) => gql`
         }
         product_generating_contexts {
           product_type
+          product {
+            length
+          }
         }
         metadata {
           biotype {
             label
+            value
           }
           canonical {
             value

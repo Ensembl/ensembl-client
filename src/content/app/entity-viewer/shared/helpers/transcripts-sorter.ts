@@ -21,15 +21,28 @@ import {
   getFeatureLength,
   isProteinCodingTranscript,
   getSplicedRNALength,
-  IsProteinCodingTranscriptParam,
-  GetSplicedRNALengthParam
+  type IsProteinCodingTranscriptParam,
+  type GetSplicedRNALengthParam
 } from './entity-helpers';
 
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { Slice } from 'src/shared/types/thoas/slice';
+import type { Slice } from 'src/shared/types/thoas/slice';
+import type { ProductType } from 'src/shared/types/thoas/product';
 
 type SliceWithOnlyLength = Pick2<Slice, 'location', 'length'>;
+type DefaultSortTranscript = {
+  metadata: {
+    canonical: Record<string, unknown> | null;
+    biotype: { value: string };
+    mane: Record<string, unknown> | null;
+  };
+  product_generating_contexts: Array<{
+    product_type: ProductType;
+    product: { length: number } | null;
+  }>;
+  slice: { location: { length: number } };
+};
 
 function compareTranscriptLengths(
   transcriptOne: { slice: SliceWithOnlyLength },
@@ -57,14 +70,9 @@ const isManeTranscript = (transcript: {
   metadata: { mane: Record<string, unknown> | null };
 }) => Boolean(transcript.metadata.mane);
 
-export function defaultSort<
-  T extends Array<
-    IsProteinCodingTranscriptParam & {
-      slice: SliceWithOnlyLength;
-    } & Parameters<typeof isManeTranscript>[0] &
-      Parameters<typeof isCanonical>[0]
-  >
->(transcripts: T): T {
+export function defaultSort<T extends Array<DefaultSortTranscript>>(
+  transcripts: T
+): T {
   const [ensemblCanonicalTranscript, nonCanonicalTranscripts] = partition(
     transcripts,
     isCanonical
@@ -80,7 +88,7 @@ export function defaultSort<
     isProteinCodingTranscript
   );
 
-  proteinCodingTranscripts.sort(compareTranscriptLengths);
+  sortProteinCodingTranscripts(proteinCodingTranscripts);
   nonProteinCodingTranscripts.sort(compareTranscriptLengths);
 
   return [
@@ -90,6 +98,56 @@ export function defaultSort<
     ...nonProteinCodingTranscripts
   ] as T;
 }
+
+// sorting an array of transcripts in-place
+const sortProteinCodingTranscripts = (transcirpts: DefaultSortTranscript[]) => {
+  transcirpts.sort((t1, t2) => {
+    const t1Scores = getTranscriptScores(t1);
+    const t2Scores = getTranscriptScores(t2);
+
+    if (t1Scores.biotypeScore !== t2Scores.biotypeScore) {
+      return t2Scores.biotypeScore - t1Scores.biotypeScore; // largest score first
+    } else if (t1Scores.translationLength !== t2Scores.translationLength) {
+      return t2Scores.translationLength - t1Scores.translationLength; // longest translations first
+    } else {
+      return t2Scores.transcriptLength - t1Scores.transcriptLength; // longest transcripts first
+    }
+  });
+};
+
+const getTranscriptScores = (transcript: DefaultSortTranscript) => {
+  const {
+    metadata: {
+      biotype: { value: biotype }
+    },
+    slice: {
+      location: { length: transcriptLength }
+    }
+  } = transcript;
+  const translationLength =
+    transcript.product_generating_contexts[0].product?.length ?? 0;
+  return {
+    biotypeScore: getBiotypeScore(biotype),
+    transcriptLength,
+    translationLength
+  };
+};
+
+const getBiotypeScore = (biotype: string) => {
+  if (biotype === 'protein_coding') {
+    return 5;
+  } else if (biotype === 'nonsense_mediated_decay') {
+    return 4;
+  } else if (biotype === 'non_stop_decay') {
+    return 3;
+  } else if (biotype.startsWith('IG_')) {
+    return 2;
+  } else if (biotype === 'polymorphic_pseudogene') {
+    return 1;
+  } else {
+    return 0;
+  }
+};
 
 export function sortBySplicedLengthDesc<T extends GetSplicedRNALengthParam[]>(
   transcripts: T
@@ -124,13 +182,10 @@ export function sortByExonCountAsc<
 }
 
 export type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
+  DefaultSortTranscript &
   GetSplicedRNALengthParam & {
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
-    metadata: {
-      canonical: Record<string, unknown> | null;
-      mane: Record<string, unknown> | null;
-    };
   } & Parameters<typeof isManeTranscript>[0] &
   Parameters<typeof isCanonical>[0];
 
