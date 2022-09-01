@@ -121,6 +121,9 @@ const TableActions = () => {
         options={actionOptions.filter(
           (option) => !disabledActions?.includes(option.value)
         )}
+        disabled={[TableAction.SHOW_HIDE_COLUMNS, TableAction.FILTERS].includes(
+          selectedAction
+        )}
         onInput={onSelect}
         placeholder="Actions"
         value={selectedAction}
