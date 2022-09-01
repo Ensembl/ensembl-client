@@ -19,16 +19,14 @@ import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
-import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
+import BlastNavigationButtons from '../blast-navigation-buttons/BlastNavigationButtons';
 
 import {
   getSelectedSequenceType,
@@ -37,7 +35,6 @@ import {
   getBlastSearchParameters,
   getBlastJobName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import type {
   BlastProgram,
@@ -85,7 +82,6 @@ const BlastSettings = ({ config }: Props) => {
   const blastProgram = useAppSelector(getSelectedBlastProgram);
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
-  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
 
   const {
     updateBlastDatabase,
@@ -186,15 +182,7 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <div className={styles.actionButtons}>
-          <ButtonLink
-            to={urlFor.blastUnviewedSubmissions()}
-            isDisabled={!unviewedBlastSubmissions.length}
-          >
-            Unviewed jobs
-          </ButtonLink>
-          <ButtonLink to={urlFor.blastSubmissionsList()}>Jobs list</ButtonLink>
-        </div>
+        <BlastNavigationButtons />
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
