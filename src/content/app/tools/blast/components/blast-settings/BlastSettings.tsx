@@ -26,7 +26,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
-import BlastNavigationButtons from '../blast-navigation-buttons/BlastNavigationButtons';
+import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
 
 import {
   getSelectedSequenceType,
@@ -182,7 +182,7 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <BlastNavigationButtons />
+        <BlastJobListsNavigation />
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
