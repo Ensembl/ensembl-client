@@ -20,10 +20,6 @@ import Input from 'src/shared/components/input/Input';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './Pagination.scss';
-/*
-    - should we hide pagination when there is less number of rows or just disable it?
-
-*/
 
 const Pagination = () => {
   const { dispatch, currentPageNumber, data, rowsPerPage } = useContext(
