@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useEffect, useState, useRef } from 'react';
+import React, { type ReactNode, useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useParams } from 'react-router';
 
@@ -345,7 +345,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_score,
-          `${hitHsp.hsp_identity}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
+          `${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
             .sort()
             .join('-')}`, // genomic_location
           hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
