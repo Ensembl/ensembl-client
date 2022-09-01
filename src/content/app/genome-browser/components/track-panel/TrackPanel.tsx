@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import TrackPanelList from './components/track-panel-list/TrackPanelList';
@@ -31,21 +31,10 @@ export const TrackPanel = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeFocusObject = useSelector(getBrowserActiveFocusObject);
 
-  const {
-    genomeBrowser,
-    restoreBrowserTrackStates,
-    restoreTrackSettingsStates
-  } = useGenomeBrowser();
+  const { genomeBrowser } = useGenomeBrowser();
 
   const shouldRenderContent =
     activeGenomeId && genomeBrowser && activeFocusObject;
-
-  useEffect(() => {
-    if (genomeBrowser) {
-      restoreBrowserTrackStates();
-      restoreTrackSettingsStates();
-    }
-  }, [activeFocusObject]);
 
   return shouldRenderContent ? <TrackPanelList /> : <SidebarLoader />;
 };
