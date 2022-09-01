@@ -58,6 +58,7 @@ export const geneExternalReferencesQuery = gql`
         product_generating_contexts {
           product_type
           product {
+            length
             external_references {
               accession_id
               name
@@ -75,6 +76,9 @@ export const geneExternalReferencesQuery = gql`
             value
           }
           mane {
+            value
+          }
+          biotype {
             value
           }
         }
@@ -97,6 +101,7 @@ export type QueriedTranscript = Pick<FullTranscript, 'stable_id'> &
         'label' | 'value' | 'definition'
       > | null;
       mane: Pick<NonNullable<TranscriptMetadata['mane']>, 'value'> | null;
+      biotype: Pick<TranscriptMetadata['biotype'], 'value'>;
     };
     external_references: QueriedExternalReference[];
     product_generating_contexts: QueriedProductGeneratingContext[];
@@ -111,6 +116,7 @@ type QueriedProductGeneratingContext = Pick<
 
 type QueriedProduct = {
   external_references: QueriedExternalReference[];
+  length: number;
 };
 
 type QueriedGene = Pick<FullGene, 'stable_id' | 'symbol'> & {
