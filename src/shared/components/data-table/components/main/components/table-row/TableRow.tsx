@@ -21,7 +21,6 @@ import type { TableRowData } from 'src/shared/components/data-table/dataTableTyp
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import { RowFooter } from 'src/shared/components/table';
-import TableCell from '../table-cell/TableCell';
 import RowSelector from './components/row-selector/RowSelector';
 
 import styles from 'src/shared/components/data-table/DataTable.scss';
@@ -89,11 +88,11 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
           const Contents = () => (
             <>
               {isSelectable && index === selectableColumnIndex ? (
-                <TableCell className={styles.selectColumn}>
+                <td className={styles.selectColumn}>
                   <RowSelector rowId={props.rowId} onChange={handleSelector} />
-                </TableCell>
+                </td>
               ) : (
-                <TableCell key={index} className={bodyCellClassName}>
+                <td key={index} className={bodyCellClassName}>
                   {renderer
                     ? renderer({
                         rowData: props.rowData,
@@ -101,7 +100,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
                         cellData
                       })
                     : cellData}
-                </TableCell>
+                </td>
               )}
             </>
           );

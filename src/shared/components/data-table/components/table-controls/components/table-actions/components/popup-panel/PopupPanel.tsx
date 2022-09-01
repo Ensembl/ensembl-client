@@ -23,13 +23,6 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './PopupPanel.scss';
 
-/*
-    - used as a wrapper to display the filters and show/hide columns
-    - It can wrapped inside Actions.tsx
-    - Check if it needs to get closed on outside click?
-
-*/
-
 const PopupPanel = (props: {
   children: React.ReactNode;
   className?: string;

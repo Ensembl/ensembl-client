@@ -22,12 +22,6 @@ import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 import type { TableData } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './TableHeader.scss';
-/*
-    - Should receive an array of g items along with its configurations like tooltip, isSortable, isHighlighted
-    - First column in the header should display the total rows available
-    - Subsequent columns will display individual header items wrapped in `TableCell`
-    - Should header be fixed always? If not, make it optional.
-*/
 
 const TableHeader = () => {
   const {
@@ -89,14 +83,13 @@ const HeaderStats = (props: {
   const totalRecords = data.length;
 
   /*
-    The width of the row selector column has to match the width of the header stats (first header column)
-    To calculate the width, we calculate the total number of character that are possible in the stats
-    and multiply it be 10px for each character to get the width.
+    To calculate the width in `ch`, we calculate the total number of characters that are possible in the stats
+    and multiply it 2 and add 1 for the additional `/` 
   */
-  const width = 10 + (String(totalRecords).length * 2 + 1) * 10;
+  const totalCharacters = String(totalRecords).length * 2 + 1;
 
   if (rowsPerPage === Infinity || totalRecords < rowsPerPage) {
-    <th style={{ width, minWidth: '75px' }}>
+    <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
       {totalRecords}/{totalRecords}
     </th>;
   }
@@ -108,7 +101,7 @@ const HeaderStats = (props: {
   }
 
   return (
-    <th style={{ width, minWidth: '75px' }}>
+    <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
       {displayedRows}/{totalRecords}
     </th>
   );

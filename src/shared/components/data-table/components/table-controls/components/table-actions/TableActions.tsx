@@ -27,13 +27,6 @@ import {
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
-/*
-    - Displays the action dropdown
-    - It acts as a container to display the popup (used by filters & show/hide columns).
-    - It acts as a container for other actions elements like search & data downloads
-
-*/
-
 const actionOptions = [
   {
     value: TableAction.DEFAULT,

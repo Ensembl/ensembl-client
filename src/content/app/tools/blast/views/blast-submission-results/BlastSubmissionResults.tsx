@@ -345,7 +345,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_score,
-          `${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
+          `${hitHsp.hsp_identity}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
             .sort()
             .join('-')}`, // genomic_location
           hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',

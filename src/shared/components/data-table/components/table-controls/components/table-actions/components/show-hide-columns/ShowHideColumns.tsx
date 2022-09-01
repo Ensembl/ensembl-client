@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/*
-    - Makes use of the PopupPanel to display a list of available columns
-
-*/
-
 import React, { useContext } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
