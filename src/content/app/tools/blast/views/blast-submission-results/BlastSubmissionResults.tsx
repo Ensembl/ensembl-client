@@ -33,23 +33,24 @@ import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/Bl
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
-
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
-
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import DataTable from 'src/shared/components/data-table/DataTable';
+import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
+
 import {
   DataTableState,
   TableAction,
   type TableCellRendererParams,
   type DataTableColumns,
-  type TableData
+  type TableData,
+  SortingDirection
 } from 'src/shared/components/data-table/dataTableTypes';
-import DataTable from 'src/shared/components/data-table/DataTable';
-import BlastSequenceAlignment from '../../components/blast-sequence-alignment/BlastSequenceAlignment';
-import { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
-import { DatabaseType } from '../../types/blastSettings';
+
+import type { BlastSequenceAlignmentInput } from '../../components/blast-sequence-alignment/blastSequenceAlignmentTypes';
+import type { DatabaseType } from '../../types/blastSettings';
+import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -195,7 +196,6 @@ type SingleBlastJobResultProps = {
 
 const hitsTableColumns: DataTableColumns = [
   {
-    width: '0px',
     columnId: 'id',
     title: 'ID',
     isFilterable: false,
@@ -310,7 +310,11 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const [isExpanded, setExpanded] = useState(false);
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
-    rowsPerPage: 100
+    rowsPerPage: 100,
+    sortedColumn: {
+      columnId: 'e_value',
+      sortedDirection: SortingDirection.DESC
+    }
   });
 
   const [sequenceAlignmentData, setSequenceAlignmentData] = useState<{

@@ -36,7 +36,8 @@ const TableHeader = () => {
     rowsPerPage,
     data,
     hiddenColumnIds,
-    selectableColumnIndex
+    selectableColumnIndex,
+    currentPageNumber
   } = useContext(TableContext) || {
     columns: null,
     data: null,
@@ -62,6 +63,7 @@ const TableHeader = () => {
                 <HeaderStats
                   data={data}
                   rowsPerPage={rowsPerPage}
+                  currentPageNumber={currentPageNumber}
                   key="selectable"
                 />
               ) : (
@@ -77,8 +79,12 @@ const TableHeader = () => {
   );
 };
 
-const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
-  const { data, rowsPerPage } = props;
+const HeaderStats = (props: {
+  data: TableData;
+  rowsPerPage: number;
+  currentPageNumber: number;
+}) => {
+  const { data, rowsPerPage, currentPageNumber } = props;
 
   const totalRecords = data.length;
 
@@ -89,7 +95,17 @@ const HeaderStats = (props: { data: TableData; rowsPerPage: number }) => {
   */
   const width = 10 + (String(totalRecords).length * 2 + 1) * 10;
 
-  const displayedRows = rowsPerPage > totalRecords ? totalRecords : rowsPerPage;
+  if (rowsPerPage === Infinity || totalRecords < rowsPerPage) {
+    <th style={{ width, minWidth: '75px' }}>
+      {totalRecords}/{totalRecords}
+    </th>;
+  }
+
+  let displayedRows = currentPageNumber * rowsPerPage;
+
+  if (displayedRows > totalRecords) {
+    displayedRows = totalRecords;
+  }
 
   return (
     <th style={{ width, minWidth: '75px' }}>

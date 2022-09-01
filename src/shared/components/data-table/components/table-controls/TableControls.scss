@@ -4,6 +4,7 @@
   display: flex;
   position: relative;
   margin-bottom: 20px;
+  align-self: flex-start;
 
   .themeDark {
     background-color: $light-grey;
