@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
@@ -22,7 +22,10 @@ import RowVisibilityController from 'src/shared/components/data-table/components
 import FindInTable from './components/find-in-table/FindInTable';
 import ShowHideColumns from './components/show-hide-columns/ShowHideColumns';
 
-import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
+import {
+  type DataTableState,
+  TableAction
+} from 'src/shared/components/data-table/dataTableTypes';
 
 /*
     - Displays the action dropdown
@@ -67,11 +70,38 @@ const actionOptions = [
 ];
 
 const TableActions = () => {
-  const { dispatch, selectedAction, disabledActions } = useContext(
-    TableContext
-  ) || {
+  const {
+    dispatch,
+    selectedAction,
+    disabledActions,
+    rowsPerPage,
+    currentPageNumber,
+    sortedColumn,
+    searchText,
+    selectedRowIds,
+    hiddenRowIds,
+    hiddenRowIdsInDraft,
+    expandedRowIds
+  } = useContext(TableContext) || {
     selectedAction: TableAction.DEFAULT
   };
+
+  const [restorableTableState, setRestorableTableState] = useState<
+    Partial<DataTableState>
+  >({});
+
+  useEffect(() => {
+    setRestorableTableState({
+      currentPageNumber,
+      rowsPerPage,
+      sortedColumn,
+      searchText,
+      selectedRowIds,
+      hiddenRowIds,
+      hiddenRowIdsInDraft,
+      expandedRowIds
+    });
+  }, []);
 
   if (!dispatch) {
     return null;
@@ -80,7 +110,8 @@ const TableActions = () => {
   const onSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === TableAction.RESTORE_DEFAULTS) {
       dispatch({
-        type: 'restore_defaults'
+        type: 'restore_defaults',
+        payload: restorableTableState
       });
       return;
     }

@@ -137,6 +137,7 @@ type SetSelectedRowIdsAction = {
 
 type RestoreDefaultsAction = {
   type: 'restore_defaults';
+  payload: Partial<DataTableState>;
 };
 
 export type AllTableActions =

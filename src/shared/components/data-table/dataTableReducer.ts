@@ -76,7 +76,8 @@ export const tableReducer = (
       return { ...state, sortedColumn: null };
     case 'restore_defaults':
       return {
-        ...defaultDataTableState
+        ...state,
+        ...action.payload
       };
     default:
       return state;
