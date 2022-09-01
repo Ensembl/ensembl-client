@@ -78,11 +78,23 @@ const useSpeciesAnalytics = () => {
     });
   };
 
+  const trackSidebarToolstripButtonClick = (
+    iconName: string,
+    genomeId: string
+  ) => {
+    trackEvent({
+      category: 'species_page',
+      action: 'sidebar_toolstrip',
+      label: `${genomeId}: ${iconName}`
+    });
+  };
+
   return {
     trackDeletedSpecies,
     trackSpeciesUse,
     trackSpeciesStatsSectionOpen,
-    trackSpeciesPageExampleLink
+    trackSpeciesPageExampleLink,
+    trackSidebarToolstripButtonClick
   };
 };
 export default useSpeciesAnalytics;

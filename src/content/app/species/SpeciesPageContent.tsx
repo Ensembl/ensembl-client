@@ -27,16 +27,21 @@ import {
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
-import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
+import {
+  getIsSpeciesSidebarModalOpened,
+  isSpeciesSidebarOpen
+} from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
-import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
+import SpeciesSidebarOverview from './components/species-sidebar-overview/SpeciesSidebarOverview';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 import Chevron from 'src/shared/components/chevron/Chevron';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
+import SpeciesSidebarModal from './components/species-sidebar-modal/SpeciesSidebarModal';
+import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/SpeciesSidebarToolstrip';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -68,7 +73,7 @@ const SpeciesPageContent = () => {
     navigate(urlFor.speciesPage(params), { replace: true });
   };
 
-  const sidebarStatus = useAppSelector(isSidebarOpen);
+  const sidebarStatus = useAppSelector(isSpeciesSidebarOpen);
 
   useEffect(() => {
     if (!genomeId) {
@@ -91,16 +96,29 @@ const SpeciesPageContent = () => {
     return null; // TODO: consider some kind of a spinner?
   }
 
+  const SidebarContent = () => {
+    const isSpeciesSidebarModalOpened = useAppSelector(
+      getIsSpeciesSidebarModalOpened
+    );
+
+    return isSpeciesSidebarModalOpened ? (
+      <SpeciesSidebarModal />
+    ) : (
+      <SpeciesSidebarOverview />
+    );
+  };
+
   return (
     <div className={styles.speciesPage}>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
 
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={<SpeciesSidebar />}
+        sidebarContent={<SidebarContent />}
         sidebarNavigation={null}
         topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}
+        sidebarToolstripContent={<SpeciesSidebarToolstrip />}
         onSidebarToggle={() => {
           dispatch(toggleSidebar({ genomeId }));
         }}

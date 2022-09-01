@@ -32,8 +32,8 @@ $container-padding-right: 20px;
 
 .speciesTitleArea {
   display: grid;
-  grid-template-areas: 'icon species-name usage-toggle remove';
-  grid-template-columns: 60px fit-content(60%) 200px minmax(280px, 1fr);
+  grid-template-areas: 'icon species-name usage-toggle search remove';
+  grid-template-columns: 60px fit-content(60%) minmax(320px, 1fr) 200px 200px;
   grid-column-gap: 20px;
   align-items: center;
   height: 90px;
@@ -83,4 +83,22 @@ $container-padding-right: 20px;
 .speciesRemove {
   grid-area: remove;
   justify-self: end;
+}
+
+.search {
+  grid-area: search;
+}
+
+.findAGene {
+  color: $blue;
+  cursor: pointer;
+  margin: 30px 0 20px 10px;
+  display: inline-flex;
+  align-items: center;
+  column-gap: 12px;
+
+  svg {
+    fill: $blue;
+    width: 13px;
+  }
 }
