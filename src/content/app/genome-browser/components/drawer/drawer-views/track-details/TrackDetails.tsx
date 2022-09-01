@@ -17,13 +17,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import { trackDetailsSampleData } from '../../sampleData';
 
-import { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
+import type { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
 
 import styles from './TrackDetails.scss';
 
@@ -35,9 +37,22 @@ const TrackDetails = (props: Props) => {
   const { trackId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
-  if (!activeGenomeId) {
-    return null;
+  const { currentData: genomeTrackCategories } = useGenomeTracksQuery(
+    activeGenomeId ?? ''
+  );
+
+  if (!activeGenomeId || !genomeTrackCategories) {
+    return null; // FIXME — maybe show a spinner?
   }
+
+  // NOTE: fetching the data for all tracks to get the description of one track
+  // is clearly unscalable; but doesn't matter while we still have a handful of tracks.
+  // We will need to use a dedicated track api endpoint for a single track in the future.
+
+  // eslint-disable-next-line
+  const currentTrackData = genomeTrackCategories
+    .flatMap(({ track_list }) => track_list)
+    .find(({ track_id }) => track_id === props.drawerView.trackId);
 
   const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
 
