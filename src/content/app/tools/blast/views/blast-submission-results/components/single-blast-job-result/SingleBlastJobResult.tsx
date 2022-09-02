@@ -46,7 +46,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     <div className={styles.resultsSummaryRow}>
       <div className={styles.hitLabel}>
         <span>{alignmentsCount} </span>
-        <span>{`${pluralise('hit', alignmentsCount)}`}</span>
+        <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
         <BlastHitsDiagram job={data.result} width={diagramWidth} />

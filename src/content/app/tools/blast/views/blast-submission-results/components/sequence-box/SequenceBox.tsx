@@ -16,13 +16,17 @@
 
 import React, { useRef, useState } from 'react';
 import classNames from 'classnames';
+
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
-import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
+
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+
+import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
