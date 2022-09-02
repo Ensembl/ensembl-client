@@ -23,8 +23,6 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
-import { trackDetailsSampleData } from '../../sampleData';
-
 import type { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
 
 import styles from './TrackDetails.scss';
@@ -34,7 +32,6 @@ type Props = {
 };
 
 const TrackDetails = (props: Props) => {
-  const { trackId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
   const { currentData: genomeTrackCategories } = useGenomeTracksQuery(
@@ -54,9 +51,7 @@ const TrackDetails = (props: Props) => {
     .flatMap(({ track_list }) => track_list)
     .find(({ track_id }) => track_id === props.drawerView.trackId);
 
-  const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
-
-  if (!trackDetails) {
+  if (!currentTrackData) {
     return null;
   }
 
@@ -64,35 +59,36 @@ const TrackDetails = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.standardLabelValue}>
         <div className={styles.value}>
-          <span className={styles.trackName}>{trackDetails.track_name}</span>
+          <span className={styles.trackName}>{currentTrackData.label}</span>
 
-          {trackDetails.strand && (
-            <span className={styles.strand}>{trackDetails.strand} strand</span>
+          {currentTrackData.additional_info && (
+            <span className={styles.strand}>
+              {currentTrackData.additional_info}
+            </span>
           )}
         </div>
       </div>
 
-      {trackDetails.description && (
+      {currentTrackData.description && (
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Description</div>
           <div className={styles.value}>
-            <div>{trackDetails.description || null}</div>
+            <div>{currentTrackData.description}</div>
           </div>
         </div>
       )}
 
-      {trackDetails.source && (
-        <div className={styles.standardLabelValue}>
+      {currentTrackData.sources.map((source) => (
+        <div key={source.name} className={styles.standardLabelValue}>
           <div className={styles.value}>
-            <div>
-              <ExternalLink
-                to={trackDetails.source.url}
-                linkText={trackDetails.source.name}
-              />
-            </div>
+            {source.url ? (
+              <ExternalLink to={source.url} linkText={source.name} />
+            ) : (
+              <span>{source.name}</span>
+            )}
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };

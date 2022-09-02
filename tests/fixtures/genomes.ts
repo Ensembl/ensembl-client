@@ -49,7 +49,14 @@ const createTrack = (): GenomicTrack => {
     additional_info: faker.lorem.words(),
     colour: 'DARK_GREY',
     label: faker.lorem.words(),
-    track_id: 'gene-pc-fwd'
+    track_id: 'gene-pc-fwd',
+    description: faker.lorem.sentence(),
+    sources: [
+      {
+        name: faker.random.word(),
+        url: faker.internet.url()
+      }
+    ]
   };
 };
 export const createGenomeKaryotype = () =>

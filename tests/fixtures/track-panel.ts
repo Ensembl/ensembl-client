@@ -18,7 +18,6 @@ import { faker } from '@faker-js/faker';
 
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   fake_genome_id_1: {
@@ -27,11 +26,4 @@ export const createTrackStates = (): BrowserTrackStates => ({
       [faker.lorem.words()]: Status.UNSELECTED
     }
   }
-});
-
-export const createTrackInfo = (): GenomicTrack => ({
-  colour: 'GREY',
-  additional_info: faker.lorem.words(),
-  label: faker.lorem.words(),
-  track_id: 'gene-pc-fwd'
 });
