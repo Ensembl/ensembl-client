@@ -4,11 +4,14 @@
   padding-left: 30px;
 }
 
-.inputBox {
-  display: inline-block;
+.inputWrapper {
   width: 50px;
-  height: 27px;
   margin-right: 5px;
+  display: inline-block;
+}
+
+.inputBox {
+  height: 27px;
   text-align: center;
   border: 1px solid $blue;
 }
