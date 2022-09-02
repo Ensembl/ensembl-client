@@ -5,6 +5,7 @@
   display: inline-flex;
   column-gap: 30px;
   margin-left: 20px;
+  align-items: center;
 }
 
 .showAll {
@@ -16,18 +17,9 @@
   }
 }
 
-.selectAll {
-  cursor: pointer;
-}
-
-.deselectAll {
-  cursor: pointer;
-}
-
-.apply {
-  cursor: pointer;
-}
-
+.selectAll,
+.deselectAll,
+.apply,
 .cancel {
   cursor: pointer;
 }

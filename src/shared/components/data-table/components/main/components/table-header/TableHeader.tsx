@@ -84,25 +84,30 @@ const HeaderStats = (props: {
 
   /*
     To calculate the width in `ch`, we calculate the total number of characters that are possible in the stats
-    and multiply it 2 and add 1 for the additional `/` 
+    and multiply it by 3 and add 5 for the extra ` to ` & `/`
   */
-  const totalCharacters = String(totalRecords).length * 2 + 1;
+  const totalCharacters = String(totalRecords).length * 3 + 5;
+
+  let start = 0,
+    end = 0;
 
   if (rowsPerPage === Infinity || totalRecords < rowsPerPage) {
-    <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
-      {totalRecords}/{totalRecords}
-    </th>;
-  }
+    start = 1;
+    end = totalRecords;
+  } else {
+    let displayedRows = currentPageNumber * rowsPerPage;
 
-  let displayedRows = currentPageNumber * rowsPerPage;
+    if (displayedRows > totalRecords) {
+      displayedRows = totalRecords;
+    }
 
-  if (displayedRows > totalRecords) {
-    displayedRows = totalRecords;
+    start = displayedRows - rowsPerPage + 1;
+    end = displayedRows;
   }
 
   return (
     <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
-      {displayedRows}/{totalRecords}
+      {start} to {end}/{totalRecords}
     </th>
   );
 };

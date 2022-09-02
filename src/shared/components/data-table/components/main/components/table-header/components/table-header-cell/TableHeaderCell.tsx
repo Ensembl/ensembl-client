@@ -80,6 +80,11 @@ const TableHeaderCell = (props: IndividualColumn) => {
     headerCellClassName
   });
 
+  const titleClassNames = classNames(styles.title, {
+    [styles.titleSortable]: isSortable,
+    [styles.titleActive]: columnId === sortedColumnId
+  });
+
   const sortArrow = (
     <div
       onClick={isSortable ? onSort : undefined}
@@ -96,7 +101,7 @@ const TableHeaderCell = (props: IndividualColumn) => {
 
         <span
           onClick={isSortable ? onSort : undefined}
-          className={styles.title}
+          className={titleClassNames}
         >
           {title}
         </span>

@@ -30,7 +30,8 @@ const TableBody = () => {
     rowsPerPage,
     columns,
     sortedColumn,
-    uniqueColumnId
+    uniqueColumnId,
+    hiddenRowIds
   } = useContext(TableContext) || {
     currentPageNumber: defaultDataTableState.currentPageNumber,
     rowsPerPage: defaultDataTableState.rowsPerPage
@@ -43,8 +44,22 @@ const TableBody = () => {
   const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
   const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
 
+  const uniqueColumnIndex = uniqueColumnId
+    ? columns.findIndex((column) => column.columnId === uniqueColumnId)
+    : undefined;
+
+  const visibleRows = hiddenRowIds
+    ? data.filter((rowData, index) => {
+        const rowId =
+          uniqueColumnIndex !== undefined
+            ? String(rowData[uniqueColumnIndex])
+            : index;
+        return !!hiddenRowIds[rowId];
+      })
+    : data;
+
   // Filter the rows that needs to be displayed in the current page
-  const rowsThisPage = data.filter((_, rowIndex) => {
+  const rowsThisPage = visibleRows.filter((_, rowIndex) => {
     if (totalRows > rowsPerPage) {
       if (rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex) {
         return false;
@@ -61,19 +76,25 @@ const TableBody = () => {
       const currentValue = currentRow[sortedColumnIndex]?.toString() || '';
       const nextValue = nextRow[sortedColumnIndex]?.toString() || '';
 
-      if (currentValue < nextValue) {
-        return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
-      } else if (currentValue > nextValue) {
-        return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
+      const currentValueAsNumber = Number(currentValue);
+      const nextValueAsNumber = Number(nextValue);
+      if (!isNaN(currentValueAsNumber) && !isNaN(nextValueAsNumber)) {
+        if (currentValueAsNumber < nextValueAsNumber) {
+          return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
+        } else if (currentValueAsNumber > nextValueAsNumber) {
+          return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
+        }
+      } else {
+        if (currentValue < nextValue) {
+          return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
+        } else if (currentValue > nextValue) {
+          return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
+        }
       }
 
       return 0;
     });
   }
-
-  const uniqueColumnIndex = uniqueColumnId
-    ? columns.findIndex((column) => column.columnId === uniqueColumnId)
-    : undefined;
 
   return (
     <tbody>

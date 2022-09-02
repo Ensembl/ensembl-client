@@ -13,9 +13,24 @@
     align-items: center;
     padding-left: 5px;
 
-    .sortArrowContainer,
     .title {
+      padding-left: 18px;
+
+      &Active {
+        font-weight: $normal;
+      }
+
+      &Sortable {
+        cursor: pointer;
+      }
+    }
+
+    .sortArrowContainer {
       cursor: pointer;
+    }
+
+    .sortArrowContainer + .title {
+      padding-left: 0px;
     }
   }
 }

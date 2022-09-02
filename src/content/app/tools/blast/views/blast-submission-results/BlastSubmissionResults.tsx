@@ -242,7 +242,6 @@ const hitsTableColumns: DataTableColumns = [
     width: '300px',
     columnId: 'genomic_location',
     title: 'Genomic location',
-    isSortable: true,
     helpText: <span>Location of the hit in this species</span>
   },
   {
@@ -384,6 +383,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const onExpanded = (isExpanded: boolean, rowId: string) => {
     if (!isExpanded) {
       setExpandedContent(undefined);
+      return;
     }
     if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
       const aligment = (

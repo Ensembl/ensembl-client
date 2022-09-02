@@ -65,6 +65,7 @@ const actionOptions = [
 const TableActions = () => {
   const {
     dispatch,
+    data,
     selectedAction,
     disabledActions,
     rowsPerPage,
@@ -94,7 +95,8 @@ const TableActions = () => {
       hiddenRowIds,
       hiddenRowIdsInDraft,
       expandedRowIds,
-      hiddenColumnIds
+      hiddenColumnIds,
+      filteredData: data
     });
   }, []);
 
