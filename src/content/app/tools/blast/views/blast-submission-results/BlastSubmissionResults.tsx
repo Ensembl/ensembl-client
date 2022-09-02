@@ -374,11 +374,17 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     setSequenceAlignmentData(newSequenceAlignmentData);
   }, [data]);
 
-  const [expandedContent, setExpandedContent] = useState<{
-    [rowId: string]: ReactNode;
-  }>({});
+  const [expandedContent, setExpandedContent] = useState<
+    | {
+        [rowId: string]: ReactNode;
+      }
+    | undefined
+  >();
 
   const onExpanded = (isExpanded: boolean, rowId: string) => {
+    if (!isExpanded) {
+      setExpandedContent(undefined);
+    }
     if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
       const aligment = (
         <div className={styles.sequenceAlignment}>
@@ -389,8 +395,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         </div>
       );
       setExpandedContent({
-        ...expandedContent,
-        [rowId]: isExpanded ? aligment : undefined
+        [rowId]: aligment
       });
     }
   };
@@ -400,7 +405,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       <ShowHideColumn
         onExpanded={onExpanded}
         rowId={params.rowId}
-        isExpanded={!!expandedContent[params.rowId]}
+        isExpanded={!!expandedContent?.[params.rowId]}
       />
     );
   };

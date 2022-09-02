@@ -74,7 +74,8 @@ const TableActions = () => {
     selectedRowIds,
     hiddenRowIds,
     hiddenRowIdsInDraft,
-    expandedRowIds
+    expandedRowIds,
+    hiddenColumnIds
   } = useContext(TableContext) || {
     selectedAction: TableAction.DEFAULT
   };
@@ -92,7 +93,8 @@ const TableActions = () => {
       selectedRowIds,
       hiddenRowIds,
       hiddenRowIdsInDraft,
-      expandedRowIds
+      expandedRowIds,
+      hiddenColumnIds
     });
   }, []);
 
