@@ -87,7 +87,10 @@ const HeaderStats = (props: {
 
   return (
     <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
-      {totalRows - totalHiddenRows}/{totalRows}
+      <span className={styles.totalVisibleRows}>
+        {totalRows - totalHiddenRows}
+      </span>
+      /{totalRows}
     </th>
   );
 };
