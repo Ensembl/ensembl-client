@@ -68,7 +68,7 @@ const Main = () => {
     };
   });
 
-  const grouppedBlastResultsPerSequence = resultsGroupedBySequence.map(
+  const groupedBlastResultsPerSequence = resultsGroupedBySequence.map(
     (data) => (
       <BlastResultsPerSequence
         key={data.sequence.id}
@@ -86,7 +86,7 @@ const Main = () => {
         submission={blastSubmission}
         isAnyJobRunning={false}
       />
-      {grouppedBlastResultsPerSequence}
+      {groupedBlastResultsPerSequence}
     </div>
   );
 };
