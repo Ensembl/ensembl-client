@@ -19,7 +19,7 @@ import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
-import type { TableData } from 'src/shared/components/data-table/dataTableTypes';
+import type { TableSelectedRowId } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './TableHeader.scss';
 
@@ -27,11 +27,10 @@ const TableHeader = () => {
   const {
     columns,
     isSelectable,
-    rowsPerPage,
     data,
     hiddenColumnIds,
     selectableColumnIndex,
-    currentPageNumber
+    hiddenRowIds
   } = useContext(TableContext) || {
     columns: null,
     data: null,
@@ -55,9 +54,8 @@ const TableHeader = () => {
             <>
               {isSelectable && selectableColumnIndex === index ? (
                 <HeaderStats
-                  data={data}
-                  rowsPerPage={rowsPerPage}
-                  currentPageNumber={currentPageNumber}
+                  totalRows={data.length}
+                  hiddenRowIds={hiddenRowIds}
                   key="selectable"
                 />
               ) : (
@@ -74,40 +72,22 @@ const TableHeader = () => {
 };
 
 const HeaderStats = (props: {
-  data: TableData;
-  rowsPerPage: number;
-  currentPageNumber: number;
+  totalRows: number;
+  hiddenRowIds: TableSelectedRowId;
 }) => {
-  const { data, rowsPerPage, currentPageNumber } = props;
-
-  const totalRecords = data.length;
+  const { totalRows, hiddenRowIds } = props;
 
   /*
     To calculate the width in `ch`, we calculate the total number of characters that are possible in the stats
     and multiply it by 3 and add 5 for the extra ` to ` & `/`
   */
-  const totalCharacters = String(totalRecords).length * 3 + 5;
+  const totalCharacters = String(totalRows).length * 3 + 5;
 
-  let start = 0,
-    end = 0;
-
-  if (rowsPerPage === Infinity || totalRecords < rowsPerPage) {
-    start = 1;
-    end = totalRecords;
-  } else {
-    let displayedRows = currentPageNumber * rowsPerPage;
-
-    if (displayedRows > totalRecords) {
-      displayedRows = totalRecords;
-    }
-
-    start = displayedRows - rowsPerPage + 1;
-    end = displayedRows;
-  }
+  const totalHiddenRows = Object.keys(hiddenRowIds).length;
 
   return (
     <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
-      {start} to {end}/{totalRecords}
+      {totalRows - totalHiddenRows}/{totalRows}
     </th>
   );
 };

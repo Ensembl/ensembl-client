@@ -18,7 +18,6 @@ import { DataTableState, TableAction, AllTableActions } from './dataTableTypes';
 
 export const defaultDataTableState: DataTableState = {
   data: [],
-  filteredData: [],
   rowsPerPage: 10,
   currentPageNumber: 1,
   searchText: '',

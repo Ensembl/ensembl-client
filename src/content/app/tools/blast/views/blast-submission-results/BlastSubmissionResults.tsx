@@ -449,7 +449,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
               theme="dark"
               className={styles.hitsTable}
               expandedContent={expandedContent}
-              disabledActions={[TableAction.FILTERS]}
+              disabledActions={[
+                TableAction.FILTERS,
+                TableAction.DOWNLOAD_ALL_DATA,
+                TableAction.DOWNLOAD_SHOWN_DATA,
+                TableAction.SHOW_HIDE_ROWS
+              ]}
               uniqueColumnId="id"
             />
           </div>

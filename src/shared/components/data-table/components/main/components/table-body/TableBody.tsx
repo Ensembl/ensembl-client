@@ -54,7 +54,7 @@ const TableBody = () => {
           uniqueColumnIndex !== undefined
             ? String(rowData[uniqueColumnIndex])
             : index;
-        return !!hiddenRowIds[rowId];
+        return hiddenRowIds[rowId] !== true;
       })
     : data;
 

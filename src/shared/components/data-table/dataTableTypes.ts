@@ -73,7 +73,6 @@ export type RowsPerPage = 10 | 20 | 50 | 100 | typeof Infinity;
 
 export type DataTableState = {
   data: TableData;
-  filteredData: TableData;
   rowsPerPage: RowsPerPage;
   currentPageNumber: number;
   searchText: string;
