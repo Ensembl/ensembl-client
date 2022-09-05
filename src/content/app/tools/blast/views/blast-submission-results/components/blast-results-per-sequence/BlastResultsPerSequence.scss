@@ -2,9 +2,10 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns:
-    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr) 10px;
+  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
+      48%,
+      1050px
+    ) [species] minmax(20%, 1fr) 10px;
   column-gap: 20px;
   padding-bottom: 20px;
 }
@@ -13,12 +14,12 @@
   padding-bottom: 10px;
 }
 
-.sequenceBoxWrapper {
+.wrapper {
   padding: 24px 20px 0px 20px;
   border: 1px solid $grey;
 }
 
-.sequenceBoxWrapper + .sequenceBoxWrapper {
+.wrapper + .wrapper {
   border-top: none;
 }
 

@@ -30,9 +30,9 @@ import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/stat
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import styles from './SequenceBox.scss';
+import styles from './BlastResultsPerSequence.scss';
 
-type SequenceBoxProps = {
+type BlastResultsPerSequenceProps = {
   sequence: {
     id: number;
     value: string;
@@ -42,7 +42,7 @@ type SequenceBoxProps = {
   parameters: BlastSubmissionParameters;
 };
 
-const SequenceBox = (props: SequenceBoxProps) => {
+const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { sequence, species, blastResults, parameters } = props;
   const parsedBlastSequence = parseBlastInput(sequence.value)[0];
   const { header: sequenceHeader = '', value: sequenceValue } =
@@ -57,7 +57,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
   );
 
   return (
-    <div className={styles.sequenceBoxWrapper}>
+    <div className={styles.wrapper}>
       <div className={styles.resultsSummaryRow}>
         <div>Sequence {sequence.id}</div>
         <div className={styles.sequenceHeader}>
@@ -119,4 +119,4 @@ const SequenceBox = (props: SequenceBoxProps) => {
   );
 };
 
-export default SequenceBox;
+export default BlastResultsPerSequence;

@@ -25,7 +25,7 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
-import SequenceBox from './components/sequence-box/SequenceBox';
+import BlastResultsPerSequence from './components/blast-results-per-sequence/BlastResultsPerSequence';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -68,15 +68,17 @@ const Main = () => {
     };
   });
 
-  const sequenceBoxes = resultsGroupedBySequence.map((data) => (
-    <SequenceBox
-      key={data.sequence.id}
-      species={data.species}
-      sequence={data.sequence}
-      blastResults={data.blastResults}
-      parameters={blastSubmission.submittedData.parameters}
-    />
-  ));
+  const grouppedBlastResultsPerSequence = resultsGroupedBySequence.map(
+    (data) => (
+      <BlastResultsPerSequence
+        key={data.sequence.id}
+        species={data.species}
+        sequence={data.sequence}
+        blastResults={data.blastResults}
+        parameters={blastSubmission.submittedData.parameters}
+      />
+    )
+  );
 
   return (
     <div className={styles.blastSubmissionResultsContainer}>
@@ -84,7 +86,7 @@ const Main = () => {
         submission={blastSubmission}
         isAnyJobRunning={false}
       />
-      {sequenceBoxes}
+      {grouppedBlastResultsPerSequence}
     </div>
   );
 };
