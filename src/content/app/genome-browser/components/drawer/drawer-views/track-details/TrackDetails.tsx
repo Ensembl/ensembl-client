@@ -43,8 +43,9 @@ const TrackDetails = (props: Props) => {
   }
 
   // NOTE: fetching the data for all tracks to get the description of one track
-  // is clearly unscalable; but doesn't matter while we still have a handful of tracks.
-  // We will need to use a dedicated track api endpoint for a single track in the future.
+  // is clearly unscalable; but that doesn't matter while we still have a handful of tracks.
+  // We will need to use a dedicated track api endpoint for fetching detailed data for a single track
+  // in the future.
 
   // eslint-disable-next-line
   const currentTrackData = genomeTrackCategories
@@ -73,7 +74,9 @@ const TrackDetails = (props: Props) => {
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Description</div>
           <div className={styles.value}>
-            <div>{currentTrackData.description}</div>
+            <div className={styles.trackDescription}>
+              {currentTrackData.description}
+            </div>
           </div>
         </div>
       )}
