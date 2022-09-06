@@ -136,7 +136,6 @@ const BlastSettings = ({ config }: Props) => {
   const database = blastParameters.database || config.defaults.database;
   const databaseSequenceType = config.database_sequence_types[database];
 
-  config.database_sequence_types[database];
   const availableBlastPrograms = getAvailableBlastPrograms(
     sequenceType,
     databaseSequenceType,
