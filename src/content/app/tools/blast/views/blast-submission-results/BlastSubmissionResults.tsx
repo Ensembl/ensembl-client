@@ -25,6 +25,7 @@ import {
   type BlastSubmission,
   type BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import { setBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
@@ -38,9 +39,15 @@ import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/b
 import styles from './BlastSubmissionResults.scss';
 
 const BlastSubmissionResults = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setBlastView('submission-results'));
+  }, []);
+
   return (
     <div>
-      <BlastAppBar view="submission-results" />
+      <BlastAppBar />
       <ToolsTopBar>
         <BlastViewsNavigation />
       </ToolsTopBar>

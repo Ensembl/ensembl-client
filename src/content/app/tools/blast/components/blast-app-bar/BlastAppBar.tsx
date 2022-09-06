@@ -26,6 +26,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { placeholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
+import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
@@ -33,20 +34,11 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-type BlastView =
-  | 'blast-form'
-  | 'unviewed-submissions'
-  | 'submissions-list'
-  | 'submission-results';
-
-type Props = {
-  view: BlastView;
-};
-
-const BlastAppBar = (props: Props) => {
-  const { view } = props;
+const BlastAppBar = () => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const speciesListIds = useSelector(getSelectedSpeciesIds);
+  const blastView = useSelector(getBlastView);
+
   const dispatch = useDispatch();
 
   const speciesSelectorLink = useMemo(() => {
@@ -83,7 +75,8 @@ const BlastAppBar = (props: Props) => {
     <SpeciesLozenge key={index} theme="grey" species={species} />
   ));
 
-  const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;
+  const speciesTabs =
+    blastView === 'blast-form' ? enabledSpecies : disabledSpecies;
 
   const wrappedSpecies = (
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />

@@ -28,6 +28,7 @@ import ListedBlastSubmission, {
 } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
 
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 import blastResultsReducer, {
   BlastResultsUI,
   initialBlastResultsState,
@@ -66,6 +67,7 @@ const renderComponent = ({
   const rootReducer = combineReducers({
     blast: combineReducers({
       blastForm: blastFormReducer,
+      blastGeneral: blastGeneralReducer,
       blastResults: blastResultsReducer
     })
   });
@@ -253,6 +255,11 @@ describe('BlastSubmissionHeader', () => {
       ) as HTMLButtonElement;
 
       await userEvent.click(deleteButton);
+
+      const confirmDeletionButton = container.querySelector(
+        '.deleteMessageContainer .primaryButton'
+      ) as HTMLButtonElement;
+      await userEvent.click(confirmDeletionButton);
 
       expect(blastStorageService.deleteBlastSubmission).toHaveBeenCalledWith(
         submissionId

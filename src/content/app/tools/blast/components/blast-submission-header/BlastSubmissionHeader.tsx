@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -33,6 +33,7 @@ import {
   getUnviewedBlastSubmissions,
   getViewedBlastSubmissions
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
@@ -59,10 +60,10 @@ export const BlastSubmissionHeader = (props: Props) => {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
   const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
+  const blastView = useAppSelector(getBlastView);
 
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
@@ -92,20 +93,13 @@ export const BlastSubmissionHeader = (props: Props) => {
 
   const handleDeletion = () => {
     dispatch(deleteBlastSubmission(submissionId));
-    if (pathname.match('/blast/submissions/(.*)')) {
-      navigate(urlFor.blastForm());
-    }
 
+    //redirect to new job form/view if deleting on one submission/job result or it is the last submissions/job in either unviewed jobs and job lists
     if (
-      pathname.match('/blast/unviewed-submissions') &&
-      unviewedBlastSubmissions.length === 1
-    ) {
-      navigate(urlFor.blastForm());
-    }
-
-    if (
-      pathname.match('/blast/submissions') &&
-      viewedBlastSubmissions.length === 1
+      blastView === 'submission-results' ||
+      (blastView === 'unviewed-submissions' &&
+        unviewedBlastSubmissions.length === 1) ||
+      (blastView === 'submissions-list' && viewedBlastSubmissions.length === 1)
     ) {
       navigate(urlFor.blastForm());
     }
