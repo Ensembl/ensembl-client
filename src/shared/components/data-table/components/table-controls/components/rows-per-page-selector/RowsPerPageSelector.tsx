@@ -21,9 +21,6 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 import type { RowsPerPage } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './RowsPerPageSelector.scss';
-/*
-    - Displays the dropdown to change the number of rows displayed in a page
-*/
 
 const rowsPerPageOptions = [
   {

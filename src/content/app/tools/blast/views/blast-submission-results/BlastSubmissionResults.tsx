@@ -208,7 +208,7 @@ const hitsTableColumns: DataTableColumns = [
     isSortable: true,
     helpText: (
       <span>
-        The number of times a match is expected to occur by chance <br></br>
+        The number of times a match is expected to occur by chance <br />
         Typically, a low e-value indicates greater similarity between sequences
       </span>
     )
@@ -312,7 +312,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
     rowsPerPage: 100,
     sortedColumn: {
       columnId: 'e_value',
-      sortedDirection: SortingDirection.DESC
+      sortedDirection: SortingDirection.ASC
     }
   });
 

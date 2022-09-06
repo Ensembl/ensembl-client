@@ -36,7 +36,7 @@ const ChevronButton = (props: Props) => {
   } = props;
 
   const buttonClasses = classNames(
-    styles.button,
+    styles.chevronButton,
     { [styles.chevronButtonDisabled]: disabled },
     className
   );

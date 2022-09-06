@@ -98,10 +98,12 @@ const DataTable = (props: TableProps) => {
     >
       <div className={wrapperClasses}>
         <TableControls />
-        <Table className={tableClasses} stickyHeader={true}>
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <div className={styles.tableContainer}>
+          <Table className={tableClasses} stickyHeader={true}>
+            <TableHeader />
+            <TableBody />
+          </Table>
+        </div>
       </div>
     </TableContext.Provider>
   );

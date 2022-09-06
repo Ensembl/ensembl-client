@@ -2,5 +2,9 @@
 
 .chevronButtonDisabled {
   --chevron-fill: #{$grey};
-  cursor: default;
+  cursor: pointer;
+
+  &Disabled {
+    cursor: default;
+  }
 }
