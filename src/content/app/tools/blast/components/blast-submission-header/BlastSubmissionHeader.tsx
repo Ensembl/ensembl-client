@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -29,11 +29,16 @@ import {
   deleteBlastSubmission,
   type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  getUnviewedBlastSubmissions,
+  getViewedBlastSubmissions
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -50,8 +55,14 @@ export type Props = {
 export const BlastSubmissionHeader = (props: Props) => {
   const { submission, sequenceCount } = props;
 
+  const [deletingJob, setDeletingJob] = useState(false);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
 
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
@@ -81,6 +92,23 @@ export const BlastSubmissionHeader = (props: Props) => {
 
   const handleDeletion = () => {
     dispatch(deleteBlastSubmission(submissionId));
+    if (pathname.match('/blast/submissions/(.*)')) {
+      navigate(urlFor.blastForm());
+    }
+
+    if (
+      pathname.match('/blast/unviewed-submissions') &&
+      unviewedBlastSubmissions.length === 1
+    ) {
+      navigate(urlFor.blastForm());
+    }
+
+    if (
+      pathname.match('/blast/submissions') &&
+      viewedBlastSubmissions.length === 1
+    ) {
+      navigate(urlFor.blastForm());
+    }
   };
 
   return (
@@ -109,19 +137,34 @@ export const BlastSubmissionHeader = (props: Props) => {
           />
         )}
       </div>
-      <div className={styles.controlButtons}>
-        <DeleteButton
-          onClick={handleDeletion}
-          disabled={props.isAnyJobRunning}
-        />
-        <DownloadButton disabled={true} />
-        <ButtonLink
-          to={urlFor.blastSubmission(submissionId)}
-          isDisabled={props.isAnyJobRunning}
-        >
-          Results
-        </ButtonLink>
-      </div>
+      {!deletingJob ? (
+        <div className={styles.controlButtons}>
+          <DeleteButton
+            onClick={() => setDeletingJob(true)}
+            disabled={props.isAnyJobRunning}
+          />
+          <DownloadButton disabled={true} />
+          <ButtonLink
+            to={urlFor.blastSubmission(submissionId)}
+            isDisabled={props.isAnyJobRunning}
+          >
+            Results
+          </ButtonLink>
+        </div>
+      ) : (
+        <div className={styles.deleteMessageContainer}>
+          <span className={styles.deleteMessage}>Delete this submission</span>
+          <PrimaryButton onClick={handleDeletion}>Delete</PrimaryButton>
+          <span
+            className={styles.clickable}
+            onClick={() => {
+              setDeletingJob(false);
+            }}
+          >
+            Do not delete
+          </span>
+        </div>
+      )}
     </div>
   );
 };

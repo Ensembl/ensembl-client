@@ -11,11 +11,12 @@
   white-space: nowrap;
 }
 
-@media screen and (max-width: 1439px) {
+@media screen and (max-width: 1650px) {
   .grid {
     grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
   }
-  .controlButtons {
+  .controlButtons,
+  .deleteMessageContainer {
     padding-left: 20px;
   }
 }
@@ -72,4 +73,21 @@
 
 .controlButtons > * {
   flex-shrink: 0;
+}
+
+.deleteMessageContainer {
+  grid-column: control-buttons;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 30px;
+}
+
+.deleteMessage {
+  color: $red;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
 }
