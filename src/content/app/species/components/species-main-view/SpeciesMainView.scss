@@ -28,6 +28,7 @@
 
 .statsWrapper {
   padding: 5px 20px $global-padding-bottom 140px;
+  min-width: 820px;
 }
 
 .exampleLinkText {
@@ -53,10 +54,12 @@
 .collapsedContent {
   display: grid;
   padding: 6px 20px;
-  grid-template-columns: [title] 120px [first_summary_stat] 250px [second_summary_stat] minmax(
-      120px,
-      418px
-    ) [example-link] 150px;
+  grid-template-columns:
+    [title] 120px [first_summary_stat] minmax(
+      250px,
+      350px
+    ) [second_summary_stat] minmax(250px, 350px)
+    [example-link] 150px;
   align-items: center;
   min-height: 50px;
 
