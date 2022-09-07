@@ -94,7 +94,7 @@ export const BlastSubmissionHeader = (props: Props) => {
   const handleDeletion = () => {
     dispatch(deleteBlastSubmission(submissionId));
 
-    //redirect to new job form/view if deleting on one submission/job result or it is the last submissions/job in either unviewed jobs and job lists
+    //if nothing more is left on the page after the submission is deleted, go to the new BLAST form (This might change depending on UX)
     if (
       blastView === 'submission-results' ||
       (blastView === 'unviewed-submissions' &&
