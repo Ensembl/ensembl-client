@@ -123,7 +123,9 @@ const TopBar = () => {
         <Chevron direction="left" animate={false} />
         <span className={styles.pageTitle}>Find a Species</span>
       </div>
-      <div className={styles.dataForSpecies}>Data for this species</div>
+      <div className={styles.dataForSpecies}>
+        {/* placeholder for future species data */}
+      </div>
     </div>
   );
 };
