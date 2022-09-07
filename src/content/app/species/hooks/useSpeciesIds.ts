@@ -14,33 +14,28 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from 'src/store';
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
-import useSpeciesIds from 'src/content/app/species/hooks/useSpeciesIds';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
-
-const SpeciesSidebarSearch = () => {
-  const activeGenomeId = useSelector(getActiveGenomeId);
-  const { genomeIdForUrl } = useSpeciesIds();
-
-  return (
-    <section className="searchModal">
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="speciesHome"
-            genomeId={activeGenomeId}
-            genomeIdForUrl={genomeIdForUrl as string}
-            mode="sidebar"
-          />
-        )}
-      </div>
-    </section>
+const useSpeciesIds = () => {
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const committedSpecies = useAppSelector((state) =>
+    getCommittedSpeciesById(state, activeGenomeId ?? '')
   );
+
+  const { genomeId: genomeIdInUrl } =
+    useUrlParams<'genomeId'>('/species/:genomeId');
+
+  const genomeIdForUrl =
+    genomeIdInUrl ?? committedSpecies?.url_slug ?? committedSpecies?.genome_id;
+
+  return {
+    genomeIdForUrl
+  };
 };
 
-export default SpeciesSidebarSearch;
+export default useSpeciesIds;
