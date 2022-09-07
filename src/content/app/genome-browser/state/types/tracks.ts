@@ -21,6 +21,11 @@ export type GenomicTrack = {
   label: string;
   track_id: string;
   additional_info: string;
+  description: string;
+  sources: Array<{
+    name: string;
+    url: string | null;
+  }>;
 };
 
 export type GenomeTrackCategory = {

@@ -17,13 +17,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
-import { trackDetailsSampleData } from '../../sampleData';
-
-import { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
+import type { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
 
 import styles from './TrackDetails.scss';
 
@@ -32,16 +32,27 @@ type Props = {
 };
 
 const TrackDetails = (props: Props) => {
-  const { trackId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
-  if (!activeGenomeId) {
-    return null;
+  const { currentData: genomeTrackCategories } = useGenomeTracksQuery(
+    activeGenomeId ?? ''
+  );
+
+  if (!activeGenomeId || !genomeTrackCategories) {
+    return null; // FIXME — maybe show a spinner?
   }
 
-  const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
+  // NOTE: fetching the data for all tracks to get the description of one track
+  // is clearly unscalable; but that doesn't matter while we still have a handful of tracks.
+  // We will need to use a dedicated track api endpoint for fetching detailed data for a single track
+  // in the future.
 
-  if (!trackDetails) {
+  // eslint-disable-next-line
+  const currentTrackData = genomeTrackCategories
+    .flatMap(({ track_list }) => track_list)
+    .find(({ track_id }) => track_id === props.drawerView.trackId);
+
+  if (!currentTrackData) {
     return null;
   }
 
@@ -49,35 +60,38 @@ const TrackDetails = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.standardLabelValue}>
         <div className={styles.value}>
-          <span className={styles.trackName}>{trackDetails.track_name}</span>
+          <span className={styles.trackName}>{currentTrackData.label}</span>
 
-          {trackDetails.strand && (
-            <span className={styles.strand}>{trackDetails.strand} strand</span>
+          {currentTrackData.additional_info && (
+            <span className={styles.strand}>
+              {currentTrackData.additional_info}
+            </span>
           )}
         </div>
       </div>
 
-      {trackDetails.description && (
+      {currentTrackData.description && (
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Description</div>
           <div className={styles.value}>
-            <div>{trackDetails.description || null}</div>
-          </div>
-        </div>
-      )}
-
-      {trackDetails.source && (
-        <div className={styles.standardLabelValue}>
-          <div className={styles.value}>
-            <div>
-              <ExternalLink
-                to={trackDetails.source.url}
-                linkText={trackDetails.source.name}
-              />
+            <div className={styles.trackDescription}>
+              {currentTrackData.description}
             </div>
           </div>
         </div>
       )}
+
+      {currentTrackData.sources.map((source) => (
+        <div key={source.name} className={styles.standardLabelValue}>
+          <div className={styles.value}>
+            {source.url ? (
+              <ExternalLink to={source.url} linkText={source.name} />
+            ) : (
+              <span>{source.name}</span>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

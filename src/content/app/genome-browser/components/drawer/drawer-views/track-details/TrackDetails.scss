@@ -24,3 +24,8 @@
     grid-column: value;
   }
 }
+
+.trackDescription {
+  max-width: 60ch;
+  white-space: pre-line;
+}
