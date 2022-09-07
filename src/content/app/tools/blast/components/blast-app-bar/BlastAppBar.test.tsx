@@ -28,9 +28,7 @@ import blastFormReducer, {
 import speciesSelectorReducer, {
   SpeciesSelectorState
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import blastGeneralReducer, {
-  initialState as initialBlastGeneralState
-} from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
+import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from './BlastAppBar';
 
@@ -52,7 +50,6 @@ const mockCommittedItems = [
 
 const initialState = {
   blast: { blastForm: initialBlastFormState },
-  general: { view: initialBlastGeneralState },
   speciesSelector: {
     committedItems: mockCommittedItems
   } as SpeciesSelectorState
