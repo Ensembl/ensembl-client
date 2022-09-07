@@ -52,7 +52,7 @@ const useGenomeBrowserIds = () => {
   const focusObjectIdInUrl = urlSearchParams.get('focus');
 
   const {
-    data: genomeInfo,
+    currentData: genomeInfo,
     isFetching,
     isError,
     error

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -53,7 +53,7 @@ const TrackPanelRegularItem = (props: Props) => {
       trackId: track_id
     })
   );
-  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+  const { toggleTrack } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
   const onShowMore = () => {
@@ -84,10 +84,6 @@ const TrackPanelRegularItem = (props: Props) => {
       })
     );
   };
-
-  useEffect(() => {
-    toggleTrack({ trackId: track_id, status: trackVisibilityStatus });
-  }, [genomeBrowser]);
 
   const color = props.colour ? colorMap[props.colour] : undefined;
   const colorMarker = color ? (

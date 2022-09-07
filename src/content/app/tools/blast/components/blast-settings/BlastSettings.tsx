@@ -19,16 +19,14 @@ import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
-import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
+import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
 
 import {
   getSelectedSequenceType,
@@ -84,6 +82,7 @@ const BlastSettings = ({ config }: Props) => {
   const blastProgram = useAppSelector(getSelectedBlastProgram);
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
+
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -137,7 +136,6 @@ const BlastSettings = ({ config }: Props) => {
   const database = blastParameters.database || config.defaults.database;
   const databaseSequenceType = config.database_sequence_types[database];
 
-  config.database_sequence_types[database];
   const availableBlastPrograms = getAvailableBlastPrograms(
     sequenceType,
     databaseSequenceType,
@@ -183,12 +181,7 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <ButtonLink
-          className={styles.previousJobs}
-          to={urlFor.blastSubmissionsList()}
-        >
-          Jobs list
-        </ButtonLink>
+        <BlastJobListsNavigation />
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>

@@ -16,31 +16,38 @@
 
 import React from 'react';
 
+import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import {
+  getUnviewedBlastSubmissions,
+  getViewedBlastSubmissions
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
-import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
 
-import styles from './BlastViewsNavigation.scss';
+import styles from './BlastJobListsNavigation.scss';
 
-const BlastViewsNavigation = () => {
+const BlastJobListsNavigation = () => {
+  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
+
   return (
-    <div className={styles.blastViewsNavigation}>
-      <div className={styles.leftColumn}>
-        <div className={styles.wrapperLeft}>
-          <h1 className={styles.title}>Blast</h1>
-          <ButtonLink to={urlFor.blastForm()} end={true}>
-            New job
-          </ButtonLink>
-        </div>
-      </div>
-      <div className={styles.rightColumn}>
-        <div className={styles.wrapperRight}>
-          <BlastJobListsNavigation />
-        </div>
-      </div>
+    <div className={styles.actionButtons}>
+      <ButtonLink
+        to={urlFor.blastUnviewedSubmissions()}
+        isDisabled={!unviewedBlastSubmissions.length}
+      >
+        Unviewed jobs
+      </ButtonLink>
+      <ButtonLink
+        to={urlFor.blastSubmissionsList()}
+        isDisabled={!viewedBlastSubmissions.length}
+      >
+        Jobs list
+      </ButtonLink>
     </div>
   );
 };
 
-export default BlastViewsNavigation;
+export default BlastJobListsNavigation;

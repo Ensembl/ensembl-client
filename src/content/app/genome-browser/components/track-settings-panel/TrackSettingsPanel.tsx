@@ -36,7 +36,7 @@ const getTrackSettingsPanelComponent = (trackType: TrackType) => {
   }
 };
 
-export const TrackSettings = () => {
+export const TrackSettingsPanel = () => {
   const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const trackType = getTrackType(selectedCog);
 
@@ -47,4 +47,4 @@ export const TrackSettings = () => {
   return getTrackSettingsPanelComponent(trackType);
 };
 
-export default TrackSettings;
+export default TrackSettingsPanel;

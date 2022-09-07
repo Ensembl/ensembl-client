@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.copyLozenge {
+  display: flex;
+  height: 18px;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy {
+  color: $blue;
+  cursor: pointer;
+}
+
+.copyLozengeCopied {
+  color: $white;
+  background-color: $black;
+  border-radius: 30px;
+}
