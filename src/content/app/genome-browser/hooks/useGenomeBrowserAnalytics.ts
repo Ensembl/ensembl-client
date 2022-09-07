@@ -42,16 +42,18 @@ const useGenomeBrowserAnalytics = () => {
     ? getSpeciesAnalyticsName(committedSpecies)
     : '';
 
-  const featureType = activeFocusObjectId
-    ? parseFocusObjectId(activeFocusObjectId).type
-    : '';
+  const { type = '', objectId = '' } = activeFocusObjectId
+    ? parseFocusObjectId(activeFocusObjectId)
+    : {};
+
+  const feature = activeFocusObjectId ? `${type} - ${objectId}` : '';
 
   const sendTrackEvent = (options: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      ...options,
       species: speciesNameForAnalytics,
-      feature: featureType,
-      app: AppName.GENOME_BROWSER
+      feature,
+      app: AppName.GENOME_BROWSER,
+      ...options
     });
   };
 
@@ -255,12 +257,12 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackTranscriptTrackVisibilityToggled = (
+  const trackTranscriptInTrackVisibilityToggled = (
     transcriptStableId: string,
     status: boolean
   ) => {
     sendTrackEvent({
-      category: 'transcript_track_visibility',
+      category: 'transcript_in_track_visibility',
       action: 'turned_' + status ? 'on' : 'off',
       label: `transcript-${transcriptStableId}`
     });
@@ -288,7 +290,7 @@ const useGenomeBrowserAnalytics = () => {
     trackTrackNameToggle,
     trackTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
-    trackTranscriptTrackVisibilityToggled,
+    trackTranscriptInTrackVisibilityToggled,
     trackTrackSettingsOpened,
     trackFocusObjectReset,
     trackSidebarModalViewToggle,

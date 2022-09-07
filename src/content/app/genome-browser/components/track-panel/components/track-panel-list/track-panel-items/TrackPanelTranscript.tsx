@@ -42,7 +42,7 @@ type Props = {
 const TrackPanelTranscript = (props: Props) => {
   const { genomeId, isVisible, transcript } = props;
   const dispatch = useAppDispatch();
-  const { trackDrawerOpened, trackTranscriptTrackVisibilityToggled } =
+  const { trackDrawerOpened, trackTranscriptInTrackVisibilityToggled } =
     useGenomeBrowserAnalytics();
 
   const currentTranscriptId = transcript.stable_id;
@@ -64,7 +64,7 @@ const TrackPanelTranscript = (props: Props) => {
   };
 
   const onChangeVisibility = () => {
-    trackTranscriptTrackVisibilityToggled(transcript.stable_id, !isVisible);
+    trackTranscriptInTrackVisibilityToggled(transcript.stable_id, !isVisible);
     props.onVisibilityChange(transcript.stable_id, !isVisible);
   };
 
