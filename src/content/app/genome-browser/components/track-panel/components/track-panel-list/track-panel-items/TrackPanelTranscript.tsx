@@ -67,7 +67,8 @@ const TrackPanelTranscript = (props: Props) => {
     </span>
   ) : (
     <span className={styles.labelTextSecondary}>
-      {transcript.metadata.biotype.label}
+      {getTranscriptSupportLevel(transcript)?.label ||
+        transcript.metadata.biotype.label}
     </span>
   );
 
