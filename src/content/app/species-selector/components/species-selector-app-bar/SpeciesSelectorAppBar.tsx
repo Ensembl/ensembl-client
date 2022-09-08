@@ -30,7 +30,8 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 
 import styles from './SpeciesSelectorAppBar.scss';
 
-export const placeholderMessage = `Find and add your favourite species to use them across the site`;
+export const placeholderMessage =
+  'Find and add your favourite species to use them across the site';
 
 const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
