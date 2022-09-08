@@ -30,9 +30,7 @@ import { CommittedItem } from 'src/content/app/species-selector/types/species-se
 
 import styles from './SpeciesSelectorAppBar.scss';
 
-export const placeholderMessage = `
-Search for a species, select from popular species or browse species by data
-to manage your favourites`;
+export const placeholderMessage = `Find and add your favourite species to use them across the site`;
 
 const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
