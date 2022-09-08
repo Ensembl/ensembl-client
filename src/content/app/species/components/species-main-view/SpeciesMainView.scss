@@ -9,6 +9,13 @@
   grid-template-rows: auto;
 }
 
+@mixin narrow-stats-grid {
+  grid-template-columns:
+    [title] 120px [first_summary_stat] auto
+    [second_summary_stat] minmax(240px, 350px)
+    [example-link] 165px;
+}
+
 .speciesMainViewTop {
   display: grid;
   grid-template-columns: max-content auto;
@@ -55,10 +62,8 @@
   display: grid;
   padding: 6px 20px;
   grid-template-columns:
-    [title] 120px [first_summary_stat] minmax(
-      250px,
-      350px
-    ) [second_summary_stat] minmax(250px, 350px)
+    [title] 120px [first_summary_stat] minmax(250px, 350px)
+    [second_summary_stat] minmax(250px, 350px)
     [example-link] 150px;
   align-items: center;
   min-height: 50px;
@@ -71,6 +76,7 @@
 
   .summaryStat {
     grid-column: first_summary_stat;
+    white-space: nowrap;
 
     .value {
       font-size: 24px;
@@ -94,6 +100,10 @@
   .questionButton {
     top: 2px;
     position: relative;
+  }
+
+  @media (max-width: 1350px) {
+    @include narrow-stats-grid;
   }
 }
 
