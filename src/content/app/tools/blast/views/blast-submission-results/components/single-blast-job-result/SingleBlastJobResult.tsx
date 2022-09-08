@@ -92,7 +92,6 @@ const hitsTableColumns: DataTableColumns = [
     isSortable: true
   },
   {
-    width: '300px',
     columnId: 'genomic_location',
     title: 'Genomic location',
     helpText: <span>Location of the hit in this species</span>
