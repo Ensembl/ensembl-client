@@ -25,7 +25,12 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
-import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
+import type {
+  BlastHit,
+  BlastJob,
+  BlastJobResultResponse,
+  HSP
+} from 'src/content/app/tools/blast/types/blastJob';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -159,107 +164,6 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { data } = useFetchBlastSubmissionQuery(props.jobId);
   const [isExpanded, setExpanded] = useState(false);
 
-  const [tableState, setTableState] = useState<Partial<DataTableState>>({
-    rowsPerPage: 100,
-    sortedColumn: {
-      columnId: 'e_value',
-      sortedDirection: SortingDirection.ASC
-    }
-  });
-
-  const [sequenceAlignmentData, setSequenceAlignmentData] = useState<{
-    [key: string]: BlastSequenceAlignmentInput & { hitId: string };
-  }>();
-
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-    const { hits } = data.result;
-
-    const allTableData: TableData = [];
-    const newSequenceAlignmentData: {
-      [key: string]: BlastSequenceAlignmentInput & { hitId: string };
-    } = {};
-    let counter = 0;
-
-    hits.forEach((hit) => {
-      const { hit_hsps } = hit;
-
-      hit_hsps.forEach((hitHsp) => {
-        allTableData.push([
-          counter,
-          hitHsp.hsp_expect,
-          hitHsp.hsp_align_len,
-          '', // view_alignment
-          hitHsp.hsp_identity,
-          hitHsp.hsp_score,
-          `${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
-            .sort()
-            .join('-')}`, // genomic_location
-          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
-          hitHsp.hsp_hit_from,
-          hitHsp.hsp_hit_to,
-          hitHsp.hsp_query_from,
-          hitHsp.hsp_query_to
-        ]);
-
-        newSequenceAlignmentData[counter] = {
-          hitId: hit.hit_acc,
-          querySequence: hitHsp.hsp_qseq,
-          hitSequence: hitHsp.hsp_hseq,
-          alignmentLine: hitHsp.hsp_mseq,
-          queryStart: hitHsp.hsp_query_from,
-          queryEnd: hitHsp.hsp_query_to,
-          hitStart: hitHsp.hsp_hit_from,
-          hitEnd: hitHsp.hsp_hit_to
-        };
-
-        counter++;
-      });
-    });
-
-    setTableState({ ...tableState, data: allTableData });
-    setSequenceAlignmentData(newSequenceAlignmentData);
-  }, [data]);
-
-  const [expandedContent, setExpandedContent] = useState<
-    | {
-        [rowId: string]: ReactNode;
-      }
-    | undefined
-  >();
-
-  const onExpanded = (isExpanded: boolean, rowId: string) => {
-    if (!isExpanded) {
-      setExpandedContent(undefined);
-      return;
-    }
-    if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
-      const aligment = (
-        <div className={styles.sequenceAlignment}>
-          <BlastSequenceAlignment
-            alignment={sequenceAlignmentData[rowId]}
-            blastDatabase={blastDatabase}
-          />
-        </div>
-      );
-      setExpandedContent({
-        [rowId]: aligment
-      });
-    }
-  };
-
-  hitsTableColumns[3].renderer = (params: TableCellRendererParams) => {
-    return (
-      <ShowHideColumn
-        onExpanded={onExpanded}
-        rowId={params.rowId}
-        isExpanded={!!expandedContent?.[params.rowId]}
-      />
-    );
-  };
-
   if (!data) {
     return null;
   }
@@ -288,25 +192,165 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         </span>
       </div>
 
-      {isExpanded && (
-        <div className={styles.tableWrapper}>
-          <DataTable
-            state={tableState}
-            onStateChange={setTableState}
-            columns={hitsTableColumns}
-            theme="dark"
-            className={styles.hitsTable}
-            expandedContent={expandedContent}
-            disabledActions={[
-              TableAction.FILTERS,
-              TableAction.DOWNLOAD_ALL_DATA,
-              TableAction.DOWNLOAD_SHOWN_DATA,
-              TableAction.SHOW_HIDE_ROWS
-            ]}
-            uniqueColumnId="id"
+      {isExpanded && <HitsTable data={data} blastDatabase={blastDatabase} />}
+    </div>
+  );
+};
+
+type HitsTableProps = {
+  data: BlastJobResultResponse;
+  blastDatabase: DatabaseType;
+};
+const HitsTable = (props: HitsTableProps) => {
+  const { data, blastDatabase } = props;
+
+  const [tableState, setTableState] = useState<Partial<DataTableState>>({
+    rowsPerPage: 100,
+    sortedColumn: {
+      columnId: 'e_value',
+      sortedDirection: SortingDirection.ASC
+    }
+  });
+
+  const [sequenceAlignmentData, setSequenceAlignmentData] = useState<{
+    [key: string]: BlastSequenceAlignmentInput & { hitId: string };
+  }>();
+
+  useEffect(() => {
+    const { hits } = data.result;
+
+    const allTableData: TableData = [];
+    const newSequenceAlignmentData: {
+      [key: string]: BlastSequenceAlignmentInput & { hitId: string };
+    } = {};
+    let counter = 0;
+
+    hits.forEach((hit) => {
+      const { hit_hsps } = hit;
+      hit_hsps.forEach((hitHsp) => {
+        allTableData.push([
+          counter,
+          hitHsp.hsp_expect,
+          hitHsp.hsp_align_len,
+          '', // view_alignment
+          hitHsp.hsp_identity,
+          hitHsp.hsp_score,
+          <DynamicColumnContent
+            key={counter}
+            hit={hit}
+            blastDatabase={blastDatabase}
+            hitHsp={hitHsp}
+          />,
+          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
+          hitHsp.hsp_hit_from,
+          hitHsp.hsp_hit_to,
+          hitHsp.hsp_query_from,
+          hitHsp.hsp_query_to
+        ]);
+
+        newSequenceAlignmentData[counter] = {
+          hitId: hit.hit_acc,
+          querySequence: hitHsp.hsp_qseq,
+          hitSequence: hitHsp.hsp_hseq,
+          alignmentLine: hitHsp.hsp_mseq,
+          queryStart: hitHsp.hsp_query_from,
+          queryEnd: hitHsp.hsp_query_to,
+          hitStart: hitHsp.hsp_hit_from,
+          hitEnd: hitHsp.hsp_hit_to
+        };
+
+        counter++;
+      });
+    });
+
+    setTableState({ ...tableState, data: allTableData });
+    setSequenceAlignmentData(newSequenceAlignmentData);
+  }, []);
+
+  const [expandedContent, setExpandedContent] = useState<
+    | {
+        [rowId: string]: ReactNode;
+      }
+    | undefined
+  >();
+
+  if (!tableState.data) {
+    return null;
+  }
+
+  const onExpanded = (isExpanded: boolean, rowId: string) => {
+    if (!isExpanded) {
+      setExpandedContent(undefined);
+      return;
+    }
+    if (sequenceAlignmentData && sequenceAlignmentData[rowId]) {
+      const aligment = (
+        <div className={styles.sequenceAlignment}>
+          <BlastSequenceAlignment
+            alignment={sequenceAlignmentData[rowId]}
+            blastDatabase={blastDatabase}
           />
         </div>
-      )}
+      );
+      setExpandedContent({
+        [rowId]: aligment
+      });
+    }
+  };
+
+  const tableColumns = [...hitsTableColumns];
+
+  const genomicLocationColumnIndex = tableColumns.findIndex(
+    (column) => column.columnId === 'genomic_location'
+  );
+
+  if (blastDatabase === 'pep') {
+    tableColumns[genomicLocationColumnIndex] = {
+      columnId: 'protein_id',
+      title: 'Protein ID',
+      helpText: (
+        <span>Proteins in this species that contain sequence similarity</span>
+      )
+    };
+  } else if (blastDatabase === 'cdna') {
+    tableColumns[genomicLocationColumnIndex] = {
+      columnId: 'transcript_id',
+      title: 'Transcript ID',
+      helpText: (
+        <span>
+          Transcripts in this species that contain sequence similarity
+        </span>
+      )
+    };
+  }
+
+  tableColumns[3].renderer = (params: TableCellRendererParams) => {
+    return (
+      <ShowHideColumn
+        onExpanded={onExpanded}
+        rowId={params.rowId}
+        isExpanded={!!expandedContent?.[params.rowId]}
+      />
+    );
+  };
+
+  return (
+    <div className={styles.tableWrapper}>
+      <DataTable
+        state={tableState}
+        onStateChange={setTableState}
+        columns={tableColumns}
+        theme="dark"
+        className={styles.hitsTable}
+        expandedContent={expandedContent}
+        disabledActions={[
+          TableAction.FILTERS,
+          TableAction.DOWNLOAD_ALL_DATA,
+          TableAction.DOWNLOAD_SHOWN_DATA,
+          TableAction.SHOW_HIDE_ROWS
+        ]}
+        uniqueColumnId="id"
+      />
     </div>
   );
 };
@@ -326,6 +370,28 @@ const ShowHideColumn = (props: {
       isExpanded={props.isExpanded}
       onClick={onExpanded}
     />
+  );
+};
+
+type DynamicColumnContentProps = {
+  hit: BlastHit;
+  hitHsp: HSP;
+  blastDatabase: DatabaseType;
+};
+
+const DynamicColumnContent = (props: DynamicColumnContentProps) => {
+  const { hit, blastDatabase, hitHsp } = props;
+
+  if (blastDatabase !== 'dna') {
+    return <span className={styles.nowrap}>{hit.hit_acc}</span>;
+  }
+
+  return (
+    <span className={styles.nowrap}>
+      {`${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
+        .sort()
+        .join('-')}`}
+    </span>
   );
 };
 
