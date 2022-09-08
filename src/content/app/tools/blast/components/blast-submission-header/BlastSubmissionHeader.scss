@@ -2,7 +2,12 @@
 
 .grid {
   display: grid;
-  grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
+  grid-template-areas:
+    'sequence-number submission-name submission-details control-buttons'
+    '. . . delete-message';
+
+  grid-template-columns: auto auto 1fr 20%;
+  grid-template-rows: auto auto;
   column-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
@@ -11,18 +16,22 @@
   white-space: nowrap;
 }
 
-@media screen and (max-width: 1650px) {
+@media screen and (max-width: 1720px) {
   .grid {
-    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-rows: auto auto;
   }
-  .controlButtons,
+  .controlButtons {
+    padding-left: 20px;
+  }
   .deleteMessageContainer {
+    grid-area: delete-message;
     padding-left: 20px;
   }
 }
 
 .submissionName {
-  grid-column: submission-name;
+  grid-area: submission-name;
 }
 
 @media screen and (max-width: 1279px) {
@@ -32,7 +41,7 @@
 }
 
 .submissionDetails {
-  grid-column: submission-details;
+  grid-area: submission-details;
   justify-self: end;
   padding-right: 40px;
 }
@@ -64,7 +73,7 @@
 }
 
 .controlButtons {
-  grid-column: control-buttons;
+  grid-area: control-buttons;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -76,7 +85,7 @@
 }
 
 .deleteMessageContainer {
-  grid-column: control-buttons;
+  grid-area: control-buttons;
   display: flex;
   align-items: center;
   justify-content: flex-end;
