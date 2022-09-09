@@ -57,7 +57,7 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackTrackSettingsOpened = (trackId: string) => {
+  const reportTrackSettingsOpened = (trackId: string) => {
     sendTrackEvent({
       category: 'track_settings',
       label: trackId,
@@ -291,7 +291,7 @@ const useGenomeBrowserAnalytics = () => {
     trackTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
     trackTranscriptInTrackVisibilityToggled,
-    trackTrackSettingsOpened,
+    reportTrackSettingsOpened,
     trackFocusObjectReset,
     trackSidebarModalViewToggle,
     trackDrawerSequenceViewed,

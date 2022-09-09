@@ -28,7 +28,7 @@ jest.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackTrackSettingsOpened: jest.fn()
+    reportTrackSettingsOpened: jest.fn()
   })
 );
 

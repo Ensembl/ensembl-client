@@ -35,7 +35,7 @@ export type BrowserCogProps = {
 
 const BrowserCog = (props: BrowserCogProps) => {
   const { cogActivated, updateSelectedCog, trackId } = props;
-  const { trackTrackSettingsOpened } = useGenomeBrowserAnalytics();
+  const { reportTrackSettingsOpened } = useGenomeBrowserAnalytics();
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
@@ -51,7 +51,7 @@ const BrowserCog = (props: BrowserCogProps) => {
         updateSelectedCog(trackId);
       }, 0);
 
-      trackTrackSettingsOpened(trackId);
+      reportTrackSettingsOpened(trackId);
     } else {
       updateSelectedCog(null);
     }
