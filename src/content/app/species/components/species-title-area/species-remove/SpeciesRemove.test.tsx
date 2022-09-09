@@ -33,7 +33,8 @@ import RouteChecker from 'tests/router/RouteChecker';
 jest.mock(
   'src/content/app/species-selector/state/speciesSelectorSlice',
   () => ({
-    deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' }))
+    deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' })),
+    setSpeciesRemoveStatus: jest.fn(() => ({ type: 'setSpeciesRemoveStatus' }))
   })
 );
 jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
@@ -51,7 +52,10 @@ const mockState = {
     }
   },
   speciesSelector: {
-    committedItems: [selectedSpecies]
+    committedItems: [selectedSpecies],
+    ui: {
+      isRemovingSpecies: false
+    }
   }
 };
 
@@ -89,7 +93,7 @@ describe('SpeciesSelectionControls', () => {
       'Remove species'
     );
 
-    // open removal confitmation dialog
+    // open removal confirmation dialog
     await userEvent.click(removeSpeciesButton);
 
     expect(container.querySelector('.speciesRemovalWarning')?.textContent).toBe(

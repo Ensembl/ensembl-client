@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import useSpeciesIds from 'src/content/app/species/hooks/useSpeciesIds';
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 
@@ -25,7 +25,8 @@ import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const SpeciesSidebarSearch = () => {
   const activeGenomeId = useSelector(getActiveGenomeId);
-  const { genomeIdForUrl } = useSpeciesIds();
+  const { genomeId: genomeIdForUrl } =
+    useUrlParams<'genomeId'>('/species/:genomeId');
 
   return (
     <section className="searchModal">

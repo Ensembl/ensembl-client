@@ -24,7 +24,6 @@ import {
   closeSpeciesSidebarModal,
   SpeciesSidebarModalView
 } from '../../state/sidebar/speciesSidebarSlice';
-// import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
@@ -56,7 +55,6 @@ export const SpeciesSidebarModal = () => {
   const modalViewTitle = speciesSidebarModalTitles[speciesSidebarModalView];
 
   const onClose = () => {
-    // dispatch(closeDrawer());
     dispatch(closeSpeciesSidebarModal());
   };
 

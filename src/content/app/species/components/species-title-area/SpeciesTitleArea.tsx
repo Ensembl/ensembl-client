@@ -29,6 +29,10 @@ import {
   getPopularSpecies,
   getSpeciesRemoveStatus
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  openSpeciesSidebarModal,
+  SpeciesSidebarModalView
+} from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
@@ -38,10 +42,6 @@ import SpeciesRemove from './species-remove/SpeciesRemove';
 import { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.scss';
-import {
-  openSpeciesSidebarModal,
-  SpeciesSidebarModalView
-} from '../../state/sidebar/speciesSidebarSlice';
 
 const useSpecies = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
@@ -96,7 +96,7 @@ const SpeciesTitleArea = () => {
         <SpeciesUsageToggle />
       </div>
       {!speciesRemovalInProgress && (
-        <div className={styles.findAGene} onClick={openSearch}>
+        <div className={styles.geneSearchWrapper} onClick={openSearch}>
           <span>Find a gene</span>
           <SearchIcon />
         </div>

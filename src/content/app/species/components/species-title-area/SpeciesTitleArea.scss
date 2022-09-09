@@ -5,7 +5,7 @@ $container-padding-right: 20px;
 @mixin narrow-grid {
   grid-template-areas:
     'icon species-name usage-toggle'
-    'icon findAGene remove';
+    'icon geneSearchWrapper remove';
   grid-template-columns: 60px 150px 1fr;
   padding: 20px $container-padding-right 12px 0;
   height: auto;
@@ -33,7 +33,7 @@ $container-padding-right: 20px;
     white-space: normal;
   }
 
-  .findAGene {
+  .geneSearchWrapper {
     margin: 0;
   }
 }
@@ -98,7 +98,7 @@ $container-padding-right: 20px;
   grid-area: search;
 }
 
-.findAGene {
+.geneSearchWrapper {
   color: $blue;
   cursor: pointer;
   display: inline-flex;

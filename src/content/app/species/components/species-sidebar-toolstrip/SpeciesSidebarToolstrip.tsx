@@ -19,19 +19,18 @@ import { useParams } from 'react-router-dom';
 import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
+import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import {
   toggleSidebar,
   closeSpeciesSidebarModal,
   openSpeciesSidebarModal
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-import { SpeciesSidebarModalView } from '../../state/sidebar/speciesSidebarSlice';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import {
   getSpeciesSidebarModalView,
   isSpeciesSidebarOpen
-} from '../../state/sidebar/speciesSidebarSelectors';
+} from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -41,6 +40,7 @@ import ShareIcon from 'static/icons/icon_share.svg';
 import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
+import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
