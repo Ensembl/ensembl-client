@@ -86,7 +86,7 @@
   cursor: pointer;
 }
 
-// Leave media queries at the bottom of the file to increase css specifity
+// Leave media queries at the bottom of the file to make sure they override CSS rules defined above
 @media screen and (max-width: 1720px) {
   .grid {
     grid-template-columns: auto auto 1fr auto;
