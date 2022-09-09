@@ -26,6 +26,11 @@ $container-padding-right: 20px;
 
   .remove {
     align-self: start;
+    white-space: nowrap;
+  }
+
+  .speciesRemove {
+    white-space: normal;
   }
 
   .findAGene {

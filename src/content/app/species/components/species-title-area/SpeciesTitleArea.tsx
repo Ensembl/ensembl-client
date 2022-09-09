@@ -25,7 +25,10 @@ import SearchIcon from 'static/icons/icon_search.svg';
 import { isSpeciesSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  getPopularSpecies,
+  getSpeciesRemoveStatus
+} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
@@ -68,6 +71,7 @@ const useSpecies = () => {
 
 const SpeciesTitleArea = () => {
   const isSidebarOpen = useAppSelector(getSidebarStatus);
+  const speciesRemovalInProgress = useAppSelector(getSpeciesRemoveStatus);
   const dispatch = useAppDispatch();
   const { species, iconUrl } = useSpecies() || {};
 
@@ -91,10 +95,12 @@ const SpeciesTitleArea = () => {
       <div className={styles.speciesToggle}>
         <SpeciesUsageToggle />
       </div>
-      <div className={styles.findAGene} onClick={openSearch}>
-        <span>Find a gene</span>
-        <SearchIcon />
-      </div>
+      {!speciesRemovalInProgress && (
+        <div className={styles.findAGene} onClick={openSearch}>
+          <span>Find a gene</span>
+          <SearchIcon />
+        </div>
+      )}
       <div className={styles.speciesRemove}>
         <SpeciesRemove />
       </div>

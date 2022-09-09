@@ -25,7 +25,10 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import {
+  deleteSpeciesAndSave,
+  setSpeciesRemoveStatus
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import {
   PrimaryButton,
@@ -53,6 +56,7 @@ const SpeciesRemove = () => {
 
   const toggleRemovalDialog = () => {
     setIsRemoving(!isRemoving);
+    dispatch(setSpeciesRemoveStatus(!isRemoving));
   };
 
   const onRemove = () => {
