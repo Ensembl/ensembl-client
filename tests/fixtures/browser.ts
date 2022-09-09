@@ -79,7 +79,8 @@ export const createZmenuContentPayload = (): {
           ]
         ],
         metadata: {
-          transcript_id: 'transcript_id.1',
+          versioned_id: 'transcript_id.1',
+          unversioned_id: 'transcript_id',
           designation: 'designation',
           strand: 'forward',
           transcript_biotype: 'protein_coding',
@@ -102,8 +103,10 @@ export const createZmenuContentPayload = (): {
           ]
         ],
         metadata: {
-          id: 'gene_id',
+          versioned_id: 'gene_id.1',
+          unversioned_id: 'gene_id',
           symbol: 'symbol',
+          name: 'gene name',
           track: 'track_id',
           type: ZmenuFeatureType.GENE
         }

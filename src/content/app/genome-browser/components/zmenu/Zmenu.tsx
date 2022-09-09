@@ -105,15 +105,15 @@ const Zmenu = (props: ZmenuProps) => {
       gene = content.find(
         (feature: ZmenuContentTranscript | ZmenuContentGene) =>
           feature.metadata.type === 'gene' &&
-          feature.metadata.id === transcript?.metadata.gene_id
+          feature.metadata.versioned_id === transcript?.metadata.gene_id
       ) as ZmenuContentGene;
 
       if (gene) {
         features.push(gene);
       }
 
-      transcriptId = transcript.metadata.transcript_id;
-      featureId = `gene:${gene.metadata.id.split('.')[0]}`;
+      transcriptId = transcript.metadata.versioned_id;
+      featureId = `gene:${gene.metadata.unversioned_id}`;
     }
   }
 
