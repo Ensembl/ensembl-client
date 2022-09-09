@@ -86,7 +86,7 @@ export const createZmenuContentPayload = (): {
           transcript_biotype: 'protein_coding',
           track: 'track',
           type: ZmenuFeatureType.TRANSCRIPT,
-          gene_id: 'gene_id'
+          gene_id: 'gene_id.1'
         }
       },
       {
