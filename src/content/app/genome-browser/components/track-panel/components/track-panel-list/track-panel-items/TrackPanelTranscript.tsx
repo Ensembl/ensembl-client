@@ -83,6 +83,9 @@ const TrackPanelTranscript = (props: Props) => {
   return (
     <SimpleTrackPanelItemLayout
       visibilityStatus={visibilityStatus}
+      visibilityIconHelpText={
+        isVisible ? 'Hide this transcript' : 'Show this transcript'
+      }
       onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >

@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState, useEffect } from 'react';
-import classNames from 'classnames';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
-
-import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { markBlastSubmissionAsSeen } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
-import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
-
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
+import BlastResultsPerSequence from './components/blast-results-per-sequence/BlastResultsPerSequence';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -81,14 +68,17 @@ const Main = () => {
     };
   });
 
-  const sequenceBoxes = resultsGroupedBySequence.map((data) => (
-    <SequenceBox
-      key={data.sequence.id}
-      species={data.species}
-      sequence={data.sequence}
-      blastResults={data.blastResults}
-    />
-  ));
+  const groupedBlastResultsPerSequence = resultsGroupedBySequence.map(
+    (data) => (
+      <BlastResultsPerSequence
+        key={data.sequence.id}
+        species={data.species}
+        sequence={data.sequence}
+        blastResults={data.blastResults}
+        parameters={blastSubmission.submittedData.parameters}
+      />
+    )
+  );
 
   return (
     <div className={styles.blastSubmissionResultsContainer}>
@@ -96,119 +86,9 @@ const Main = () => {
         submission={blastSubmission}
         isAnyJobRunning={false}
       />
-      {sequenceBoxes}
+      {groupedBlastResultsPerSequence}
     </div>
   );
-};
-
-type SequenceBoxProps = {
-  sequence: {
-    id: number;
-    value: string;
-  };
-  species: Species[];
-  blastResults: BlastResult[];
-};
-
-const SequenceBox = (props: SequenceBoxProps) => {
-  const { sequence, species, blastResults } = props;
-  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
-  const { header: sequenceHeader = '', value: sequenceValue } =
-    parsedBlastSequence;
-  const rulerContainer = useRef<HTMLDivElement | null>(null);
-  const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
-  const [isExpanded, setExpanded] = useState(true);
-  const rulerWrapperClassName = classNames(
-    styles.resultsSummaryRow,
-    styles.rulerWrapper
-  );
-
-  return (
-    <div className={styles.sequenceBoxWrapper}>
-      <div className={styles.resultsSummaryRow}>
-        <div className={styles.sequenceId}>Sequence {sequence.id}</div>
-        <div className={styles.sequenceHeader}>{'>' + sequenceHeader}</div>
-        <div>
-          <span className={styles.againstText}>Against</span>{' '}
-          <span>{species.length} species</span>
-        </div>
-        <div className={styles.showHideWrapper}>
-          <ShowHide
-            isExpanded={isExpanded}
-            onClick={() => setExpanded(!isExpanded)}
-          ></ShowHide>
-        </div>
-      </div>
-
-      {isExpanded &&
-        blastResults.map((result) => {
-          // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
-          const speciesInfo = species.find(
-            (sp) => sp.genome_id === result.genomeId
-          ) as Species;
-
-          return (
-            <SingleBlastJobResult
-              key={result.jobId}
-              species={speciesInfo}
-              jobId={result.jobId}
-              diagramWidth={plotwidth}
-            />
-          );
-        })}
-      <div className={rulerWrapperClassName}>
-        <div ref={rulerContainer} className={styles.summaryPlot}>
-          {isExpanded && (
-            <BasePairsRuler
-              width={plotwidth}
-              length={sequenceValue.length}
-              standalone={true}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-type SingleBlastJobResultProps = {
-  jobId: string;
-  species: Species;
-  diagramWidth: number;
-};
-
-const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const { species: speciesInfo, diagramWidth } = props;
-  const { data } = useFetchBlastSubmissionQuery(props.jobId);
-
-  if (!data) {
-    return null;
-  }
-
-  const alignmentsCount = countAlignments(data.result);
-
-  return (
-    <div className={styles.resultsSummaryRow}>
-      <div className={styles.hitLabel}>
-        <span>{alignmentsCount} </span>
-        <span className={styles.label}>
-          {`${pluralise('hit', alignmentsCount)}`}
-        </span>
-      </div>
-      <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={data.result} width={diagramWidth} />
-      </div>
-      <div className={styles.speciesInfo}>
-        {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
-        <span>{speciesInfo.scientific_name}</span>
-        <span>{speciesInfo.assembly_name}</span>
-      </div>
-    </div>
-  );
-};
-
-const countAlignments = (blastJob: BlastJob) => {
-  return blastJob.hits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
 };
 
 export default BlastSubmissionResults;

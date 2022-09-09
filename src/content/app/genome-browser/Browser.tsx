@@ -22,8 +22,8 @@ import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
-import useFocusTrack from './hooks/useFocusTrack';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
+import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
@@ -83,8 +83,7 @@ export const Browser = () => {
   } = useGenomeBrowserUrlCheck();
 
   const { trackTrackPanelToggled } = useGenomeBrowserAnalytics();
-
-  useFocusTrack();
+  useGenomeBrowserTracks();
 
   useEffect(() => {
     if (!activeGenomeId) {

@@ -34,7 +34,7 @@ jest.mock('./hooks/useBrowserRouting', () => () => ({
 jest.mock('./hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: {}
 }));
-jest.mock('./hooks/useFocusTrack', () => jest.fn());
+jest.mock('./hooks/useGenomeBrowserTracks', () => jest.fn());
 jest.mock('./components/browser-bar/BrowserBar', () => () => (
   <div className="browserBar">BrowserBar</div>
 ));

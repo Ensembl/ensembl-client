@@ -42,10 +42,10 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${THOAS_SERVICE_SLUG}#g" ensembl_thoas_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${THOAS_SERVICE_SLUG}#g" ensembl_thoas_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_thoas_ingress.yaml 
-    # ensembl-refget
-    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_refget_ingress.yaml 
+    # ensembl-refget-proxy
+    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_service.yaml
+    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_ingress.yaml
+    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_refget_proxy_ingress.yaml 
     # ensembl-help-docs
     - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_ingress.yaml
@@ -68,9 +68,9 @@
     # ensembl-help-and-docs
     - kubectl apply -f ensembl_help_docs_service.yaml
     - kubectl apply -f ensembl_help_docs_ingress.yaml
-    # ensembl-refget
-    - kubectl apply -f ensembl_refget_service.yaml
-    - kubectl apply -f ensembl_refget_ingress.yaml
+    # ensembl-refget-proxy
+    - kubectl apply -f ensembl_refget_proxy_service.yaml
+    - kubectl apply -f ensembl_refget_proxy_ingress.yaml
     # ensembl-thoas
     - kubectl apply -f ensembl_thoas_service.yaml
     - kubectl apply -f ensembl_thoas_ingress.yaml

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -62,16 +62,7 @@ const BrowserCog = (props: BrowserCogProps) => {
     icon: CogIcon
   };
 
-  const [showTrackSettings, setShowTrackSettings] = useState(cogActivated);
-  useEffect(() => {
-    if (cogActivated) {
-      setShowTrackSettings(true);
-      return;
-    }
-    setShowTrackSettings(false);
-  }, [cogActivated]);
-
-  const transition = useTransition(showTrackSettings, {
+  const transition = useTransition(cogActivated, {
     config: { duration: 100 },
     enter: { opacity: 1 },
     from: { opacity: 0 },

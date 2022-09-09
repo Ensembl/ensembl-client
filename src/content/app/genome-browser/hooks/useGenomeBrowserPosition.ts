@@ -99,7 +99,13 @@ const useGenomeBrowserPosition = () => {
     const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
       idRef.current;
     const { stick, start, end } = action.payload;
-    const chromosome = stick.split(':')[1];
+    const [genomeId, chromosome] = stick.split(':');
+
+    if (genomeId !== activeGenomeId) {
+      // ignore the message, because it must be a delayed message for the previous species
+      // when the user has already switched to another one
+      return;
+    }
 
     if (action.type === IncomingActionType.CURRENT_POSITION) {
       dispatch(updateActualChrLocation([chromosome, start, end]));

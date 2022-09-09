@@ -15,6 +15,9 @@
  */
 
 import { faker } from '@faker-js/faker';
+import set from 'lodash/fp/set';
+import pipe from 'lodash/fp/pipe';
+import shuffle from 'lodash/shuffle';
 
 import {
   defaultSort,
@@ -33,11 +36,6 @@ import {
 const createLongProteinCodingTranscript = () => {
   const transcript = createProteinCodingTranscript();
   transcript.slice.location.length = 100_000;
-  return transcript;
-};
-const createShortProteinCodingTranscript = () => {
-  const transcript = createProteinCodingTranscript();
-  transcript.slice.location.length = 10_000;
   return transcript;
 };
 const createLongNonCodingTranscript = () => {
@@ -157,7 +155,6 @@ const createOtherMANETranscript = () => {
 };
 
 const longProteinCodingTranscript = createLongProteinCodingTranscript();
-const shortProteinCodingTranscript = createShortProteinCodingTranscript();
 const longNonCodingTranscript = createLongNonCodingTranscript();
 const shortNonCodingTranscript = createShortNonCodingTranscript();
 const transcriptWithGreatestSplicedLength =
@@ -178,32 +175,57 @@ describe('default sort', () => {
       Sorting is done in the below order
       - canonical transcript
       - MANE transcripts
-      - protein-coding transcripts
-      - protein-coding transcripts sorted by length
+      - protein-coding biotype, ordered by translation length and transcript length
+      - nonsense-mediated decay biotype, ordered by translation length and transcript length
+      - non-stop decay biotype, ordered by translation length and transcript length
+      - IG biotypes, ordered by translation length and transcript length
+      - polymorphic pseudogenes, ordered by translation length and transcript length
       - non-coding transcripts sorted by length
     */
 
-    const unsortedTranscripts = [
-      shortNonCodingTranscript,
-      shortProteinCodingTranscript,
-      longNonCodingTranscript, // this is the longest
-      otherManeTranscript,
-      longProteinCodingTranscript,
-      maneSelectTranscript
-    ];
+    const generatePCTranscript = set(
+      'metadata.biotype.value',
+      'protein_coding'
+    );
+    const generateNMDTranscript = set(
+      'metadata.biotype.value',
+      'nonsense_mediated_decay'
+    );
+    const withProteinLength = set(
+      'product_generating_contexts.0.product.length'
+    );
+    const withLength = set('slice.location.length');
 
-    const expectedTranscripts = [
-      maneSelectTranscript,
-      otherManeTranscript,
-      longProteinCodingTranscript,
-      shortProteinCodingTranscript,
-      longNonCodingTranscript,
-      shortNonCodingTranscript
-    ];
+    const t1 = maneSelectTranscript;
+    const t2 = otherManeTranscript;
+    const t3 = pipe(
+      withProteinLength(1000),
+      withLength(5000),
+      generatePCTranscript
+    )(longProteinCodingTranscript); // protein-coding transcript, 5000bp long, with protein 1000aa long
+    const t4 = pipe(
+      withProteinLength(1000),
+      withLength(3000),
+      generatePCTranscript
+    )(longProteinCodingTranscript); // protein-coding transcript, 3000bp long, with protein 1000aa long
+    const t5 = pipe(
+      withProteinLength(500),
+      withLength(5000),
+      generatePCTranscript
+    )(longProteinCodingTranscript); // protein-coding transcript, 5000bp long, with protein 500aa long
+    const t6 = pipe(
+      withProteinLength(1000),
+      withLength(5000),
+      generateNMDTranscript
+    )(longProteinCodingTranscript); // nonsense-mediated decay transcript, 5000bp long, with protein 1000aa long (impossible, but just testing the algo)
+    const t7 = longNonCodingTranscript;
+    const t8 = shortNonCodingTranscript;
 
-    const sortedTranscripts = defaultSort(unsortedTranscripts);
+    // notice that t3 and t4 both have protein-coding biotype and the same protein length, but t3 is a longer transcript
+    const expectedSortedOrder = [t1, t2, t3, t4, t5, t6, t7, t8];
+    const shuffledTranscripts = shuffle(expectedSortedOrder);
 
-    expect(sortedTranscripts).toEqual(expectedTranscripts);
+    expect(defaultSort(shuffledTranscripts)).toEqual(expectedSortedOrder);
   });
 });
 
