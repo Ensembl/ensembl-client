@@ -130,6 +130,24 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         }
       }
     }),
+    fetchAllBlastRawResults: builder.query<{ result: string }[], string[]>({
+      queryFn: async (jobIds, _queryApi, __extraOptions, baseQuery) => {
+        // there can be a lot of ids here; let's hope the BLAST api isn't rate-limiting
+
+        const requestPromises = jobIds
+          .map(
+            (jobId) =>
+              `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/out`
+          )
+          .map((url) => baseQuery(url));
+        const results = await Promise.all(requestPromises);
+
+        // FIXME: error handling?
+        return {
+          data: results.map((result) => result.data as { result: string })
+        };
+      }
+    }),
     fetchBlastSubmission: builder.query<BlastJobResultResponse, string>({
       query: (jobId) => ({
         url: `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
@@ -144,4 +162,5 @@ export const {
   useFetchAllBlastJobsQuery,
   useFetchBlastSubmissionQuery
 } = blastApiSlice;
-export const { submitBlast } = blastApiSlice.endpoints;
+export const { submitBlast, fetchAllBlastJobs, fetchAllBlastRawResults } =
+  blastApiSlice.endpoints;
