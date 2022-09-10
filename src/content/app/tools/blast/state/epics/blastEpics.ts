@@ -98,7 +98,7 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
   action$
 ) =>
   action$.pipe(
-    filter(isFulfilled(restoreBlastSubmissions)),
+    filter(isFulfilled(restoreBlastSubmissions)), // FIXME: should probably make sure that we are only taking one
     map(({ payload: submissions }) => {
       return Object.entries(submissions).flatMap(([submissionId, submission]) =>
         submission.results

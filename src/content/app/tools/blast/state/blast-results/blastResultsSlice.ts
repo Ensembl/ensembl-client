@@ -33,6 +33,7 @@ import type {
   OptionalBlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
+import type { BlastJob as BlastJobResults } from 'src/content/app/tools/blast/types/blastJob';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 export type JobStatus =
@@ -60,7 +61,7 @@ export type BlastResult = {
   sequenceId: number;
   genomeId: string;
   status: JobStatus;
-  data: null; // TODO: add data type
+  data: null | BlastJobResults;
 };
 
 export type BlastSubmission = {

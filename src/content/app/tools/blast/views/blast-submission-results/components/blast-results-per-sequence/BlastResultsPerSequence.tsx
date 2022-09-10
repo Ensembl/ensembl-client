@@ -39,7 +39,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  blastResults: BlastResult[];
+  blastResults: Array<BlastResult & { data: NonNullable<BlastResult['data']> }>;
   parameters: BlastSubmissionParameters;
 };
 
@@ -100,7 +100,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <SingleBlastJobResult
               key={result.jobId}
               species={speciesInfo}
-              jobId={result.jobId}
+              jobResult={result}
               diagramWidth={plotwidth}
               blastDatabase={parameters.database as DatabaseType}
             />

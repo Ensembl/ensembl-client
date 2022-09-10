@@ -16,7 +16,6 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 
-import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
@@ -31,6 +30,7 @@ import type {
   BlastJobResultResponse,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -46,7 +46,7 @@ import {
 import styles from './SingleBlastJobResult.scss';
 
 type SingleBlastJobResultProps = {
-  jobId: string;
+  jobResult: BlastResult & { data: NonNullable<BlastResult['data']> };
   species: Species;
   diagramWidth: number;
   blastDatabase: DatabaseType;
@@ -160,15 +160,10 @@ const hitsTableColumns: DataTableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const { species: speciesInfo, diagramWidth, blastDatabase } = props;
-  const { data } = useFetchBlastSubmissionQuery(props.jobId);
+  const { species: speciesInfo, jobResult, diagramWidth, blastDatabase } = props;
   const [isExpanded, setExpanded] = useState(false);
 
-  if (!data) {
-    return null;
-  }
-
-  const alignmentsCount = countAlignments(data.result);
+  const alignmentsCount = countAlignments(jobResult.data);
 
   return (
     <div className={styles.resultsSummaryRow}>
@@ -177,7 +172,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={data.result} width={diagramWidth} />
+        <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
       </div>
       <div className={styles.speciesInfo}>
         {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}

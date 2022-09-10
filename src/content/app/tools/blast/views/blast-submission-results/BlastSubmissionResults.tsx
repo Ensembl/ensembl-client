@@ -18,6 +18,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { markBlastSubmissionAsSeen } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -26,6 +27,9 @@ import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/Bl
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 import BlastResultsPerSequence from './components/blast-results-per-sequence/BlastResultsPerSequence';
+import { CircleLoader } from 'src/shared/components/loader';
+
+import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastSubmissionResults.scss';
 
@@ -48,19 +52,39 @@ const Main = () => {
   );
   const dispatch = useAppDispatch();
 
+  const blastSubmissionJobIds = blastSubmission.results.map((job) => job.jobId);
+  const {
+    currentData: allBlastJobResults,
+    isLoading,
+    error
+  } = useFetchAllBlastJobsQuery(blastSubmissionJobIds);
+
   useEffect(() => {
-    if (blastSubmission) {
+    if (!blastSubmission.seen) {
       dispatch(markBlastSubmissionAsSeen(blastSubmission.id));
     }
   }, [blastSubmission?.id]);
 
   if (!blastSubmission) {
     return null;
+  } else if (isLoading) {
+    return <CircleLoader />;
+  } else if (error) {
+    return (
+      <div>An error occurred while loading data for this BLAST submission</div>
+    );
   }
 
-  const { submittedData, results } = blastSubmission;
+  const allJobResultsWithData = blastSubmission.results.map((job, index) => ({
+    ...job,
+    data: (allBlastJobResults as BlastJobResultResponse[])[index].result
+  }));
+
+  const { submittedData } = blastSubmission;
   const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {
-    const blastResults = results.filter((r) => r.sequenceId === sequence.id);
+    const blastResults = allJobResultsWithData.filter(
+      (r) => r.sequenceId === sequence.id
+    );
     return {
       sequence,
       species: submittedData.species,
