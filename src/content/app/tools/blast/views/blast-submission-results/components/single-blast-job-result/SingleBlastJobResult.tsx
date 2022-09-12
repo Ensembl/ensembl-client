@@ -27,7 +27,6 @@ import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast
 import type {
   BlastHit,
   BlastJob,
-  BlastJobResultResponse,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -160,7 +159,12 @@ const hitsTableColumns: DataTableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const { species: speciesInfo, jobResult, diagramWidth, blastDatabase } = props;
+  const {
+    species: speciesInfo,
+    jobResult,
+    diagramWidth,
+    blastDatabase
+  } = props;
   const [isExpanded, setExpanded] = useState(false);
 
   const alignmentsCount = countAlignments(jobResult.data);
@@ -187,17 +191,19 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         </span>
       </div>
 
-      {isExpanded && <HitsTable data={data} blastDatabase={blastDatabase} />}
+      {isExpanded && (
+        <HitsTable jobResult={jobResult} blastDatabase={blastDatabase} />
+      )}
     </div>
   );
 };
 
 type HitsTableProps = {
-  data: BlastJobResultResponse;
+  jobResult: SingleBlastJobResultProps['jobResult'];
   blastDatabase: DatabaseType;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { data, blastDatabase } = props;
+  const { jobResult, blastDatabase } = props;
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
@@ -212,7 +218,7 @@ const HitsTable = (props: HitsTableProps) => {
   }>();
 
   useEffect(() => {
-    const { hits } = data.result;
+    const { hits } = jobResult.data;
 
     const allTableData: TableData = [];
     const newSequenceAlignmentData: {
