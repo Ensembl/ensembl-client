@@ -8,6 +8,7 @@
 
   grid-template-columns: auto auto 1fr 20%;
   column-gap: 20px;
+  row-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
   padding-top: 20px;
