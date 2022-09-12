@@ -48,7 +48,8 @@ const RowVisibilityController = () => {
       hiddenRowIds &&
       rowsPerPage &&
       columns &&
-      currentPageNumber
+      currentPageNumber &&
+      uniqueColumnId
     )
   ) {
     return null;

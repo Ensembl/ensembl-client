@@ -42,7 +42,7 @@ const TableBody = () => {
     hiddenRowIds: {}
   };
 
-  if (!(data && columns)) {
+  if (!(data && columns && uniqueColumnId)) {
     return null;
   }
   const uniqueColumnIndex = columns.findIndex(
