@@ -36,7 +36,7 @@ type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
   theme: TableTheme;
-  uniqueColumnId?: string;
+  uniqueColumnId: string;
   selectableColumnIndex: number;
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
@@ -51,7 +51,7 @@ export type TableProps = {
   columns: DataTableColumns;
   state?: Partial<DataTableState>;
   theme: TableTheme;
-  uniqueColumnId?: string; // Values in this column will be used to identify individual rows
+  uniqueColumnId: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;
   className?: string;
   expandedContent: { [rowId: string]: ReactNode };

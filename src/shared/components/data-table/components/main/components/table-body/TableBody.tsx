@@ -21,7 +21,11 @@ import TableRow from '../table-row/TableRow';
 
 import { defaultDataTableState } from 'src/shared/components/data-table/dataTableReducer';
 
-import { SortingDirection } from 'src/shared/components/data-table/dataTableTypes';
+import {
+  DataTableColumns,
+  DataTableState,
+  SortingDirection
+} from 'src/shared/components/data-table/dataTableTypes';
 
 const TableBody = () => {
   const {
@@ -34,38 +38,25 @@ const TableBody = () => {
     hiddenRowIds
   } = useContext(TableContext) || {
     currentPageNumber: defaultDataTableState.currentPageNumber,
-    rowsPerPage: defaultDataTableState.rowsPerPage
+    rowsPerPage: defaultDataTableState.rowsPerPage,
+    hiddenRowIds: {}
   };
 
   if (!(data && columns)) {
     return null;
   }
-  const totalRows = data.length;
-  const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
-  const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
-
-  const uniqueColumnIndex = uniqueColumnId
-    ? columns.findIndex((column) => column.columnId === uniqueColumnId)
-    : undefined;
-
-  const visibleRows = hiddenRowIds
-    ? data.filter((rowData, index) => {
-        const rowId =
-          uniqueColumnIndex !== undefined
-            ? String(rowData[uniqueColumnIndex])
-            : index;
-        return hiddenRowIds[rowId] !== true;
-      })
-    : data;
+  const uniqueColumnIndex = columns.findIndex(
+    (column) => column.columnId === uniqueColumnId
+  );
 
   // Filter the rows that needs to be displayed in the current page
-  const rowsThisPage = visibleRows.filter((_, rowIndex) => {
-    if (totalRows > rowsPerPage) {
-      if (rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex) {
-        return false;
-      }
-    }
-    return true;
+  const rowsThisPage = getCurrentPageRows({
+    hiddenRowIds,
+    data,
+    currentPageNumber,
+    uniqueColumnId,
+    rowsPerPage,
+    columns
   });
 
   if (sortedColumn) {
@@ -99,10 +90,7 @@ const TableBody = () => {
   return (
     <tbody>
       {rowsThisPage.map((rowData, index) => {
-        const rowId =
-          uniqueColumnIndex !== undefined
-            ? String(rowData[uniqueColumnIndex])
-            : index;
+        const rowId = String(rowData[uniqueColumnIndex]);
 
         return (
           <TableRow key={index} rowData={rowData} rowId={rowId as string} />
@@ -110,6 +98,51 @@ const TableBody = () => {
       })}
     </tbody>
   );
+};
+
+type GetCurrentPageRowsParams = Pick<
+  DataTableState,
+  'hiddenRowIds' | 'data' | 'currentPageNumber' | 'rowsPerPage'
+> & {
+  uniqueColumnId?: string;
+  columns: DataTableColumns;
+};
+
+export const getCurrentPageRows = (params: GetCurrentPageRowsParams) => {
+  const {
+    hiddenRowIds,
+    data,
+    currentPageNumber,
+    uniqueColumnId,
+    rowsPerPage,
+    columns
+  } = params;
+
+  const uniqueColumnIndex = columns.findIndex(
+    (column) => column.columnId === uniqueColumnId
+  );
+
+  const totalRows = data.length;
+  const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
+  const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
+
+  const visibleRows = hiddenRowIds
+    ? data.filter((rowData) => {
+        const rowId = String(rowData[uniqueColumnIndex]);
+
+        return hiddenRowIds[rowId] !== true;
+      })
+    : data;
+
+  // Filter the rows that needs to be displayed in the current page
+  return visibleRows.filter((_, rowIndex) => {
+    if (totalRows > rowsPerPage) {
+      if (rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex) {
+        return false;
+      }
+    }
+    return true;
+  });
 };
 
 export default TableBody;

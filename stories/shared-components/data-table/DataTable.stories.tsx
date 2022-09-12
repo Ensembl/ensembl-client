@@ -65,11 +65,10 @@ export const DataTableStory = () => {
         direction="row"
       />
       <DataTable
-        {...tableState}
+        state={tableState}
         columns={tableData.columns}
         theme={tableTheme}
         uniqueColumnId={'0'}
-        selectableColumnIndex={2}
         onStateChange={setTableState}
         className={styles.wrapper}
       />
@@ -114,7 +113,7 @@ export const DataTableWithExpandStory = () => {
 
   return (
     <DataTable
-      {...tableState}
+      state={tableState}
       columns={sampleTableDataForExpand.columns}
       uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}

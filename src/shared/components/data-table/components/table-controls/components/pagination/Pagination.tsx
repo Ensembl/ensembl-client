@@ -22,18 +22,21 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 import styles from './Pagination.scss';
 
 const Pagination = () => {
-  const { dispatch, currentPageNumber, data, rowsPerPage } = useContext(
-    TableContext
-  ) || {
-    currentPageNumber: 1,
-    rowsPerPage: 100
-  };
+  const { dispatch, currentPageNumber, data, rowsPerPage, hiddenRowIds } =
+    useContext(TableContext) || {
+      currentPageNumber: 1,
+      rowsPerPage: 100,
+      hiddenRowIds: {}
+    };
 
   if (!dispatch || !data) {
     return null;
   }
 
-  const highestPageNumber = Math.ceil(data?.length / rowsPerPage);
+  const totalHiddenRows = Object.keys(hiddenRowIds).length;
+  const totalVisibleRecords = data.length - totalHiddenRows;
+
+  const highestPageNumber = Math.ceil(totalVisibleRecords / rowsPerPage);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let pageNumberFromInput = Number(event.target.value);

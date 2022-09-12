@@ -17,6 +17,9 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
+
+import { getCurrentPageRows } from 'src/shared/components/data-table/components/main/components/table-body/TableBody';
+
 import {
   TableAction,
   type TableSelectedRowId
@@ -26,12 +29,43 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 import styles from './RowVisibilityController.scss';
 
 const RowVisibilityController = () => {
-  const { hiddenRowIdsInDraft, hiddenRowIds, data, dispatch } =
-    useContext(TableContext) || {};
+  const {
+    hiddenRowIdsInDraft,
+    hiddenRowIds,
+    data,
+    dispatch,
+    currentPageNumber,
+    uniqueColumnId,
+    rowsPerPage,
+    columns
+  } = useContext(TableContext) || {};
 
-  if (!(hiddenRowIdsInDraft && dispatch && data && hiddenRowIds)) {
+  if (
+    !(
+      hiddenRowIdsInDraft &&
+      dispatch &&
+      data &&
+      hiddenRowIds &&
+      rowsPerPage &&
+      columns &&
+      currentPageNumber
+    )
+  ) {
     return null;
   }
+
+  const currentPageRows = getCurrentPageRows({
+    hiddenRowIds,
+    data,
+    currentPageNumber,
+    uniqueColumnId,
+    rowsPerPage,
+    columns
+  });
+
+  const uniqueColumnIndex = columns.findIndex(
+    (column) => column.columnId === uniqueColumnId
+  );
 
   const cancelChanges = () => {
     dispatch({
@@ -45,14 +79,13 @@ const RowVisibilityController = () => {
   };
 
   const selectAll = () => {
-    const totalRows = data.length;
-
     const newRowIdsInDraft: TableSelectedRowId = {};
 
-    // TODO: Select only rows that are currently visible
-    for (let i = 0; i < totalRows; i++) {
-      newRowIdsInDraft[i] = false;
-    }
+    currentPageRows.forEach((row) => {
+      const rowId = String(row[uniqueColumnIndex]);
+      newRowIdsInDraft[rowId] = false;
+    });
+
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
       payload: newRowIdsInDraft
@@ -60,13 +93,13 @@ const RowVisibilityController = () => {
   };
 
   const deselectAll = () => {
-    const totalRows = data.length;
-
     const newRowIdsInDraft: TableSelectedRowId = {};
 
-    for (let i = 0; i < totalRows; i++) {
-      newRowIdsInDraft[i] = true;
-    }
+    currentPageRows.forEach((row) => {
+      const rowId = String(row[uniqueColumnIndex]);
+      newRowIdsInDraft[rowId] = true;
+    });
+
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
       payload: newRowIdsInDraft
