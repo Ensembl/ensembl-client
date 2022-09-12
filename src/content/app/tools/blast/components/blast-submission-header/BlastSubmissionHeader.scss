@@ -4,7 +4,7 @@
   display: grid;
   grid-template-areas:
     'sequence-number submission-name submission-details control-buttons'
-    '. . . delete-message';
+    '. . delete-message delete-message';
 
   grid-template-columns: auto auto 1fr 20%;
   column-gap: 20px;
