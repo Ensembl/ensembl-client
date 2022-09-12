@@ -27,6 +27,8 @@ import {
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
+import styles from './TableActions.scss';
+
 const actionOptions = [
   {
     value: TableAction.DEFAULT,
@@ -120,6 +122,7 @@ const TableActions = () => {
   return (
     <>
       <SimpleSelect
+        className={styles.simpleSelect}
         options={actionOptions.filter(
           (option) => !disabledActions?.includes(option.value)
         )}
