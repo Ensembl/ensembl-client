@@ -104,7 +104,7 @@ type GetCurrentPageRowsParams = Pick<
   DataTableState,
   'hiddenRowIds' | 'data' | 'currentPageNumber' | 'rowsPerPage'
 > & {
-  uniqueColumnId?: string;
+  uniqueColumnId: string;
   columns: DataTableColumns;
 };
 

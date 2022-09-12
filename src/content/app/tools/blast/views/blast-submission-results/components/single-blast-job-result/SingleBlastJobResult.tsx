@@ -346,8 +346,7 @@ const HitsTable = (props: HitsTableProps) => {
         disabledActions={[
           TableAction.FILTERS,
           TableAction.DOWNLOAD_ALL_DATA,
-          TableAction.DOWNLOAD_SHOWN_DATA,
-          TableAction.SHOW_HIDE_ROWS
+          TableAction.DOWNLOAD_SHOWN_DATA
         ]}
         uniqueColumnId="id"
       />
