@@ -32,7 +32,7 @@ const SelectArrowhead = (props: Props) => {
     props.direction === Direction.DOWN ? '0,0 8,0 4,8' : '0,8 8,8 4,0';
 
   return (
-    <svg className={styles.selectArrowhead} focusable="false" viewBox="0 0 8 8">
+    <svg className={styles.selectArrowhead} viewBox="0 0 8 8">
       <polygon points={points} />
     </svg>
   );
