@@ -1,0 +1,10 @@
+@import 'src/styles/common';
+
+.chevronButtonDisabled {
+  --chevron-fill: #{$grey};
+  cursor: pointer;
+
+  &Disabled {
+    cursor: default;
+  }
+}

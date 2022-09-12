@@ -21,7 +21,7 @@ import noop from 'lodash/noop';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
-import Chevron from 'src/shared/components/chevron/Chevron';
+import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -125,7 +125,7 @@ StandardAppLayout.defaultProps = {
 const SidebarModeToggle = (props: SidebarModeToggleProps) => {
   return (
     <div className={styles.sidebarModeToggle}>
-      <Chevron
+      <ChevronButton
         direction={
           props.showAction === SidebarModeToggleAction.OPEN ? 'left' : 'right'
         }

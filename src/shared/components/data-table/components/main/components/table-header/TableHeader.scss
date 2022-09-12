@@ -1,0 +1,67 @@
+@import 'src/styles/common';
+
+.header {
+  .headerCell {
+    font-weight: $light;
+    user-select: none;
+  }
+
+  .headerCellContent {
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-items: center;
+    padding-left: 5px;
+
+    .title {
+      padding-left: 18px;
+
+      &Active {
+        font-weight: $normal;
+      }
+
+      &Sortable {
+        cursor: pointer;
+      }
+    }
+
+    .sortArrowContainer {
+      cursor: pointer;
+    }
+
+    .sortArrowContainer + .title {
+      padding-left: 0px;
+    }
+  }
+}
+
+.questionButton {
+  margin-left: 15px;
+  height: 14px;
+  width: 14px;
+}
+
+.sort {
+  display: inline-block;
+  position: relative;
+}
+
+.sortArrow {
+  margin-right: 0.8em;
+  height: 8px;
+  width: 8px;
+  transform: rotate(180deg);
+  fill: $grey;
+
+  &Active {
+    fill: $blue;
+  }
+
+  &Up {
+    transform: unset;
+  }
+}
+
+.totalVisibleRows {
+  font-weight: $normal;
+}

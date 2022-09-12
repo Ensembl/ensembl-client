@@ -21,16 +21,13 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { createServerSideRootReducer } from 'src/root/rootReducer';
 
-const middleware = [
-  thoasApiSlice.middleware,
-  restApiSlice.middleware
-];
+const middleware = [thoasApiSlice.middleware, restApiSlice.middleware];
 
 export const getServerSideReduxStore = () => {
   return configureStore({
     reducer: createServerSideRootReducer(),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(middleware),
+      getDefaultMiddleware().concat(middleware)
   });
 };
 

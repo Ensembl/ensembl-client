@@ -55,7 +55,11 @@ const viewRouter = async (req: Request, res: Response) => {
 
   if (matchedPageConfig.serverFetch) {
     try {
-      const fetchResult = await matchedPageConfig.serverFetch({ path: req.path, store: reduxStore }) ?? {};
+      const fetchResult =
+        (await matchedPageConfig.serverFetch({
+          path: req.path,
+          store: reduxStore
+        })) ?? {};
       if ('status' in (fetchResult as { status?: number })) {
         status = (fetchResult as { status: number }).status;
       }
@@ -119,9 +123,7 @@ const viewRouter = async (req: Request, res: Response) => {
     res.status(404);
   }
 
-  res
-    .status(status)
-    .send(responseString);
+  res.status(status).send(responseString);
 };
 
 export default viewRouter;

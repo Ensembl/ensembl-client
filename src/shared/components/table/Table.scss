@@ -25,15 +25,15 @@
 }
 
 .table td {
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .table tr + tr:not(.rowFooter) {
   border-top: 1px solid var(--table-row-border-color, #{$grey});
 }
 
-.table tr:last-of-type {
-  border-bottom: 1px solid $grey;
+.table tr:last-of-type:not(thead tr) {
+  border-bottom: 1px solid var(--table-row-border-color, #{$grey});
 }
 
 .rowFooter td {

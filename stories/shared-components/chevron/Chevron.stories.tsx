@@ -16,9 +16,9 @@
 
 import React, { useState } from 'react';
 
-import Chevron, {
-  Direction as ChevronDirection
-} from 'src/shared/components/chevron/Chevron';
+import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
+import { Direction as ChevronDirection } from 'src/shared/components/chevron/Chevron';
+
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
 import styles from './Chevron.stories.scss';
@@ -73,7 +73,7 @@ export const ChevronStory = () => {
     <div className={styles.storyWrapper}>
       <div className={styles.showRoom}>
         <span className={styles.label}>Some text next to a chevron</span>
-        <Chevron
+        <ChevronButton
           direction={direction}
           animate={animation}
           className={customClass ? styles.customChevron : undefined}
@@ -125,7 +125,7 @@ export const ChevronWrappedInButtonStory = () => {
     <div className={styles.storyWrapper}>
       <div className={styles.showRoom}>
         <span className={styles.label}>Click the chevron →</span>
-        <Chevron
+        <ChevronButton
           direction={direction as ChevronDirection}
           animate={true}
           onClick={handleClick}
@@ -138,5 +138,5 @@ export const ChevronWrappedInButtonStory = () => {
 ChevronWrappedInButtonStory.storyName = 'as button';
 
 export default {
-  title: 'Components/Shared Components/Chevron'
+  title: 'Components/Shared Components/ChevronButton'
 };

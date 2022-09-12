@@ -30,14 +30,6 @@ type Props = {
 };
 
 const BlastSequenceAlignment = (props: Props) => {
-  if (props.blastDatabase === 'dna') {
-    return <GenomicBlastAlignment {...props} />;
-  } else {
-    return null;
-  }
-};
-
-const GenomicBlastAlignment = (props: Props) => {
   const alignmentLines = createBlastSequenceAlignment(props.alignment);
 
   const { hitId } = props.alignment;

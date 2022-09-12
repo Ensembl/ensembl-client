@@ -1,10 +1,33 @@
+@import 'src/styles/common';
+
 .resultsSummaryRow {
   display: grid;
   grid-template-columns:
     [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr) 10px;
-  column-gap: 20px;
+    [species] minmax(20%, 1fr);
+
+  grid-template-areas:
+    'sequence-label hits-diagram species'
+    'table table table';
+
+  gap: 20px;
   padding-bottom: 20px;
+  padding-left: 24px;
+  padding-right: 24px;
+
+  &:first-of-type {
+    padding-top: 24px;
+  }
+
+  &:last-of-type {
+    padding-bottom: 46px;
+  }
+
+  .tableWrapper {
+    grid-area: table;
+    margin-left: -43px;
+    margin-right: -43px;
+  }
 }
 
 .hitLabel {
@@ -16,6 +39,33 @@
   grid-column: hits-diagram;
 }
 
-.speciesInfo span {
-  padding-right: 20px;
+.speciesInfo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.hitsTable {
+  padding: 20px;
+  border-top: 1px solid $grey;
+  border-bottom: 1px solid $grey;
+  width: 100%;
+
+  + .resultsSummaryRow {
+    padding-top: 24px;
+  }
+}
+
+.showHide {
+  margin-left: 20px;
+  display: inline-block;
+}
+
+.sequenceAlignment {
+  margin-left: 200px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }

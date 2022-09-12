@@ -218,7 +218,7 @@ export const deleteBrowserActiveFocusObjectIdAndSave = (): ThunkAction<
     browserStorageService.updateActiveFocusObjectIds(
       updatedActiveFocusObjectIds
     );
-  }
+  };
 };
 
 export const setChrLocation: ActionCreator<

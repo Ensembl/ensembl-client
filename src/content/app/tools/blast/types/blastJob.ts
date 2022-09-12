@@ -28,13 +28,13 @@ export type BlastJob = {
   hits: BlastHit[];
 };
 
-type BlastHit = {
+export type BlastHit = {
   hit_acc: string;
   hit_def: string;
   hit_hsps: HSP[];
 };
 
-type HSP = {
+export type HSP = {
   hsp_score: number;
   hsp_bit_score: number;
   hsp_expect: number;

@@ -43,10 +43,12 @@ const graphqlBaseQuery =
           }
         };
       }
-      return { error: {
-        status: 500,
-        meta: { error: (error as Error).message }
-      }};
+      return {
+        error: {
+          status: 500,
+          meta: { error: (error as Error).message }
+        }
+      };
     }
   };
 

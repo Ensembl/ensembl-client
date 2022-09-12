@@ -28,7 +28,7 @@ import React from 'react';
 import SimpleTrackPanelItemLayout, {
   Props as SimpleTrackPanelItemLayoutProps
 } from './SimpleTrackPanelItemLayout';
-import Chevron from 'src/shared/components/chevron/Chevron';
+import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 
 import styles from './TrackPanelItemLayout.scss';
 
@@ -44,7 +44,7 @@ const GroupTrackPanelItemLayout = (props: Props) => {
     <SimpleTrackPanelItemLayout {...otherProps}>
       <div className={styles.groupItemMain}>
         <div className={styles.groupItemContent}>{children}</div>
-        <Chevron
+        <ChevronButton
           onClick={toggleExpand}
           direction={isCollapsed ? 'down' : 'up'}
           className={styles.chevron}

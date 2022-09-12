@@ -1,0 +1,21 @@
+@import 'src/styles/common';
+
+.pagination {
+  padding-left: 30px;
+}
+
+.inputWrapper {
+  width: 50px;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.inputBox {
+  height: 27px;
+  text-align: center;
+  border: 1px solid $blue;
+}
+
+.showHide {
+  padding: 0 15px;
+}

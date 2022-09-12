@@ -29,6 +29,7 @@ import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputPar
 import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastResultsPerSequence.scss';
 
@@ -101,6 +102,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
               species={speciesInfo}
               jobId={result.jobId}
               diagramWidth={plotwidth}
+              blastDatabase={parameters.database as DatabaseType}
             />
           );
         })}

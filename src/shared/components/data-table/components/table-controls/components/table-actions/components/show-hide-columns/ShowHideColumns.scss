@@ -1,0 +1,11 @@
+.popupPanel {
+  flex-direction: column;
+  width: 300px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 20px 0 20px 30px;
+}
+
+.checkbox {
+  display: block;
+}

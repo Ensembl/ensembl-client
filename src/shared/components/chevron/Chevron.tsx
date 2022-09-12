@@ -26,7 +26,6 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 export type Props = {
   direction: Direction;
   animate: boolean;
-  onClick?: () => void;
   className?: string;
 };
 
@@ -38,19 +37,16 @@ const Chevron = (props: Props) => {
     { [styles.chevron_animated]: props.animate }
   );
 
-  const Wrapper = props.onClick ? 'button' : 'span';
-
   const wrapperClasses = classNames(styles.wrapper, props.className);
 
   const wrapperProps = {
-    onClick: props.onClick,
     className: wrapperClasses
   };
 
   return (
-    <Wrapper {...wrapperProps}>
+    <span {...wrapperProps}>
       <ChevronDown className={chevronClasses} />
-    </Wrapper>
+    </span>
   );
 };
 
