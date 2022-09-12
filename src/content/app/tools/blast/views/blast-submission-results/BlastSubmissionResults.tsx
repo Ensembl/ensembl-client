@@ -68,7 +68,11 @@ const Main = () => {
   if (!blastSubmission) {
     return null;
   } else if (isLoading) {
-    return <CircleLoader />;
+    return (
+      <div className={styles.loaderContainer}>
+        <CircleLoader />
+      </div>
+    );
   } else if (error) {
     return (
       <div>An error occurred while loading data for this BLAST submission</div>
