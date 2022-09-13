@@ -31,7 +31,7 @@ const ShowHideColumns = () => {
   const onChange = (columnId: string, checked: boolean) => {
     dispatch({
       type: 'set_hidden_column_ids',
-      payload: { ...hiddenColumnIds, [columnId]: !checked }
+      payload: { [columnId]: !checked }
     });
   };
 

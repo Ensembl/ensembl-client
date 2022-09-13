@@ -32,13 +32,13 @@ import {
 
 import styles from './DataTable.scss';
 
-type TableContextType = DataTableState & {
+export type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
-  theme: TableTheme;
+  theme?: TableTheme;
   uniqueColumnId?: string;
-  selectableColumnIndex: number;
-  expandedContent: { [rowId: string]: ReactNode };
+  selectableColumnIndex?: number;
+  expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
 };
 
@@ -50,11 +50,11 @@ export type TableProps = {
   onStateChange?: (newState: DataTableState) => void;
   columns: DataTableColumns;
   state?: Partial<DataTableState>;
-  theme: TableTheme;
+  theme?: TableTheme;
   uniqueColumnId?: string; // Values in this column will be used to identify individual rows
-  selectableColumnIndex: number;
+  selectableColumnIndex?: number;
   className?: string;
-  expandedContent: { [rowId: string]: ReactNode };
+  expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
 };
 const DataTable = (props: TableProps) => {
