@@ -30,8 +30,8 @@ import {
   getSpeciesRemoveStatus
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
-  openSpeciesSidebarModal,
-  SpeciesSidebarModalView
+  SpeciesSidebarModalView,
+  updateSpeciesSidebarModalForGenome
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
@@ -70,6 +70,7 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
+  const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
   const isSidebarOpen = useAppSelector(getSidebarStatus);
   const speciesRemovalInProgress = useAppSelector(getSpeciesRemoveStatus);
   const dispatch = useAppDispatch();
@@ -79,8 +80,17 @@ const SpeciesTitleArea = () => {
     [styles.speciesTitleAreaNarrow]: isSidebarOpen
   });
 
+  if (!activeGenomeId) {
+    return null;
+  }
+
   const openSearch = () => {
-    dispatch(openSpeciesSidebarModal(SpeciesSidebarModalView.SEARCH));
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: SpeciesSidebarModalView.SEARCH }
+      })
+    );
   };
 
   return species && iconUrl ? (
