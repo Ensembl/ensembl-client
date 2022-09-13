@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -49,7 +49,11 @@ const BlastAppBar = (props: Props) => {
   const speciesListIds = useSelector(getSelectedSpeciesIds);
   const dispatch = useDispatch();
 
-  if (speciesList.length === 0) {
+  const speciesSelectorLink = useMemo(() => {
+    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+  }, []);
+
+  if (!speciesList.length) {
     return <AppBar appName={AppName.TOOLS} mainContent={placeholderMessage} />;
   }
 
@@ -80,8 +84,6 @@ const BlastAppBar = (props: Props) => {
   ));
 
   const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;
-
-  const speciesSelectorLink = <Link to={urlFor.speciesSelector()}>Change</Link>;
 
   const wrappedSpecies = (
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />
