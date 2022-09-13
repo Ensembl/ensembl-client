@@ -66,21 +66,18 @@ describe('<ShowHideColumns />', () => {
 
   test('skips a column if it is not hideable', () => {
     // Make the first and the last column not hideable
-    const modifiedColumns = [...columns];
+    const newColumns = createDataTableSampleData(1, 10).columns;
 
-    modifiedColumns[0] = { ...modifiedColumns[0], isHideable: false };
-    modifiedColumns[columns.length - 1] = {
-      ...modifiedColumns[columns.length - 1],
-      isHideable: false
-    };
+    newColumns[0].isHideable = false;
+    newColumns[columns.length - 1].isHideable = false;
 
     const expectedHiddenColumnTitles = [
-      modifiedColumns[0].title,
-      modifiedColumns[columns.length - 1].title
+      newColumns[0].title,
+      newColumns[columns.length - 1].title
     ];
 
     container = renderShowHideColumns({
-      columns: modifiedColumns
+      columns: newColumns
     }).container;
     const checkboxLabels: string[] = [];
 
