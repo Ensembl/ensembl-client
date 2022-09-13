@@ -108,13 +108,26 @@ const blastApiSlice = restApiSlice.injectEndpoints({
             (jobId) =>
               `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
           )
-          .map((url) => baseQuery(url));
-        const results = await Promise.all(requestPromises);
+          .map((url) =>
+            Promise.resolve(baseQuery(url)).then((result) => {
+              if (result.error) {
+                throw result.error;
+              } else {
+                return result;
+              }
+            })
+          );
 
-        // FIXME: error handling?
-        return {
-          data: results.map((result) => result.data as BlastJobResultResponse)
-        };
+        try {
+          const results = await Promise.all(requestPromises);
+          return {
+            data: results.map((result) => result.data as BlastJobResultResponse)
+          };
+        } catch {
+          return {
+            error: 'Some BLAST jobs failed to load' as any // RTK is happy with the FetchBaseQueryError type that has the following shape: { status: number, statusMessage: string, data: string }
+          };
+        }
       }
     }),
     fetchBlastSubmission: builder.query<BlastJobResultResponse, string>({
