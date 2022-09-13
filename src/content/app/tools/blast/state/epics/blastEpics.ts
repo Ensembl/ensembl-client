@@ -25,6 +25,7 @@ import {
   concatMap,
   filter,
   expand,
+  take,
   tap,
   toArray
 } from 'rxjs';
@@ -98,7 +99,8 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
   action$
 ) =>
   action$.pipe(
-    filter(isFulfilled(restoreBlastSubmissions)), // FIXME: should probably make sure that we are only taking one
+    filter(isFulfilled(restoreBlastSubmissions)),
+    take(1), // we expect this action to happen only once at app's bootstrapping; but due to double calls to useEffect in React StrictMode in dev, it is being called twice
     map(({ payload: submissions }) => {
       return Object.entries(submissions).flatMap(([submissionId, submission]) =>
         submission.results
