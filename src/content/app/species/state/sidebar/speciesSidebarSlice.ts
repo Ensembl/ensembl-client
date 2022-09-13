@@ -151,66 +151,18 @@ const speciesPageSidebarSlice = createSlice({
       state,
       action: PayloadAction<{
         activeGenomeId: string;
-        data: Partial<StateForGenome>;
+        fragment: Partial<StateForGenome>;
       }>
     ) {
-      const { activeGenomeId, data } = action.payload;
+      const { activeGenomeId, fragment } = action.payload;
 
       state[activeGenomeId] = {
         ...state[activeGenomeId],
-        ...data
+        ...fragment
       };
     }
   }
 });
-
-export const openSpeciesSidebarModal =
-  (
-    sidebarModalView: SpeciesSidebarModalView
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...state.speciesPage.sidebar[activeGenomeId],
-      sidebarModalView
-    };
-
-    dispatch(
-      updateSpeciesSidebarModalForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
-
-export const closeSpeciesSidebarModal =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...state.speciesPage.sidebar[activeGenomeId],
-      sidebarModalView: null
-    };
-
-    dispatch(
-      updateSpeciesSidebarModalForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
 
 export const { toggleSidebar, updateSpeciesSidebarModalForGenome } =
   speciesPageSidebarSlice.actions;

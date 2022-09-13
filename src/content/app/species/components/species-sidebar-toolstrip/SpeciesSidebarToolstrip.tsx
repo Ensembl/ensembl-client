@@ -23,8 +23,7 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 
 import {
   toggleSidebar,
-  closeSpeciesSidebarModal,
-  openSpeciesSidebarModal
+  updateSpeciesSidebarModalForGenome
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import {
@@ -62,10 +61,20 @@ export const SpeciesSidebarToolstrip = () => {
     }
 
     if (selectedItem === sidebarModalView) {
-      dispatch(closeSpeciesSidebarModal());
+      dispatch(
+        updateSpeciesSidebarModalForGenome({
+          activeGenomeId,
+          fragment: { sidebarModalView: null }
+        })
+      );
     } else {
       trackSidebarToolstripButtonClick(selectedItem, params.genomeId as string);
-      dispatch(openSpeciesSidebarModal(selectedItem));
+      dispatch(
+        updateSpeciesSidebarModalForGenome({
+          activeGenomeId,
+          fragment: { sidebarModalView: selectedItem }
+        })
+      );
     }
   };
 
