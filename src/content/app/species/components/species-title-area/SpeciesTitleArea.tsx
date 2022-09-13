@@ -70,7 +70,7 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
-  const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const isSidebarOpen = useAppSelector(getSidebarStatus);
   const speciesRemovalInProgress = useAppSelector(getSpeciesRemoveStatus);
   const dispatch = useAppDispatch();

@@ -20,9 +20,10 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getSpeciesSidebarModalView } from '../../state/sidebar/speciesSidebarSelectors';
 
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import {
-  closeSpeciesSidebarModal,
-  SpeciesSidebarModalView
+  SpeciesSidebarModalView,
+  updateSpeciesSidebarModalForGenome
 } from '../../state/sidebar/speciesSidebarSlice';
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
@@ -45,9 +46,10 @@ export const speciesSidebarModalTitles: { [key: string]: string } = {
 
 export const SpeciesSidebarModal = () => {
   const speciesSidebarModalView = useAppSelector(getSpeciesSidebarModalView);
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const dispatch = useAppDispatch();
 
-  if (!speciesSidebarModalView) {
+  if (!speciesSidebarModalView || !activeGenomeId) {
     return null;
   }
 
@@ -55,7 +57,12 @@ export const SpeciesSidebarModal = () => {
   const modalViewTitle = speciesSidebarModalTitles[speciesSidebarModalView];
 
   const onClose = () => {
-    dispatch(closeSpeciesSidebarModal());
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: null }
+      })
+    );
   };
 
   return (
