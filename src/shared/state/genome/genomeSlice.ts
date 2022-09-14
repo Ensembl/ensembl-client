@@ -21,12 +21,12 @@ import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import type { GenomeInfo } from './genomeTypes';
 
 export type GenomesState = Readonly<{
-  urlToGenomeIdMap: Record<string, string>; // maps the id used in the url to the genome uuid
+  genomeTagToGenomeIdMap: Record<string, string>; // maps the id used in the url to the genome uuid
   genomes: Record<string, GenomeInfo>;
 }>;
 
 const defaultGenomeState: GenomesState = {
-  urlToGenomeIdMap: {},
+  genomeTagToGenomeIdMap: {},
   genomes: {}
 };
 const genomeSlice = createSlice({
@@ -43,10 +43,10 @@ const genomeSlice = createSlice({
       if (genomeTag) {
         // TODO: fetchGenomeInfo function is going to retrieve genome info using the id from the url.
         // Consider what should happen if the id from the url becomes associated with a more recent genome id.
-        // We should probably check whether state.urlToGenomeIdMap[genomeTag] exists before updating it
-        state.urlToGenomeIdMap[genomeTag] = genomeId;
+        // We should probably check whether state.genomeTagToGenomeIdMap[genomeTag] exists before updating it
+        state.genomeTagToGenomeIdMap[genomeTag] = genomeId;
       } else {
-        state.urlToGenomeIdMap[genomeId] = genomeId;
+        state.genomeTagToGenomeIdMap[genomeId] = genomeId;
       }
     });
   }

@@ -27,11 +27,11 @@ export const getGenomeById = (
   return allGenomes[genomeId] || null;
 };
 
-export const getGenomeIdFromgenomeTag = (
+export const getGenomeIdForGenomeTag = (
   state: RootState,
   genomeTag: string
 ): string | undefined => {
-  return state.genome.urlToGenomeIdMap[genomeTag];
+  return state.genome.genomeTagToGenomeIdMap[genomeTag];
 };
 
 export const getGenomeByUrlId = (
