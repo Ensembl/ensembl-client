@@ -2,13 +2,8 @@
 
 .grid {
   display: grid;
-  grid-template-areas:
-    'sequence-number submission-name submission-details control-buttons'
-    '. . delete-message delete-message';
-
-  grid-template-columns: auto auto 1fr 20%;
+  grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
   column-gap: 20px;
-  row-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
   padding-top: 20px;
@@ -17,17 +12,11 @@
 }
 
 .submissionName {
-  grid-area: submission-name;
-}
-
-@media screen and (max-width: 1279px) {
-  .submissionName {
-    display: none;
-  }
+  grid-column: submission-name;
 }
 
 .submissionDetails {
-  grid-area: submission-details;
+  grid-column: submission-details;
   justify-self: end;
   padding-right: 40px;
 }
@@ -59,7 +48,7 @@
 }
 
 .controlButtons {
-  grid-area: control-buttons;
+  grid-column: control-buttons;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -71,11 +60,11 @@
 }
 
 .deleteMessageContainer {
-  grid-area: control-buttons;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   column-gap: 30px;
+  margin: 20px 0px;
 }
 
 .deleteMessage {
@@ -88,16 +77,17 @@
 }
 
 // Leave media queries at the bottom of the file to make sure they override CSS rules defined above
-@media screen and (max-width: 1720px) {
+@media screen and (max-width: 1439px) {
   .grid {
-    grid-template-columns: auto auto 1fr auto;
-    grid-template-rows: auto auto;
+    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
   }
   .controlButtons {
     padding-left: 20px;
   }
-  .deleteMessageContainer {
-    grid-area: delete-message;
-    padding-left: 20px;
+}
+
+@media screen and (max-width: 1279px) {
+  .submissionName {
+    display: none;
   }
 }

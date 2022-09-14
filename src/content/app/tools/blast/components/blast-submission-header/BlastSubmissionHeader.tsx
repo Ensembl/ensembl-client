@@ -106,46 +106,47 @@ export const BlastSubmissionHeader = (props: Props) => {
   };
 
   return (
-    <div className={styles.grid}>
-      <div>{blastProgram}</div>
-      <div className={styles.submissionName}>
-        {/* placeholder for submission name */}
-      </div>
-      <div className={styles.submissionDetails}>
-        <span className={styles.submissionIdLabel}>Submission</span>
-        <span>{submissionId}</span>
-        <span className={styles.editSubmission} onClick={editSubmission}>
-          Edit/rerun
-        </span>
-        <span className={styles.timeStamp}>
-          <span>{submissionTime}</span>
-          <span className={styles.timeZone}>GMT</span>
-        </span>
-        {sequenceCount && sequenceCount > 1 && (
-          <ShowHide
-            className={styles.showHide}
-            isExpanded={props.isExpanded || false}
-            onClick={() =>
-              props.toggleExpanded && props.toggleExpanded(!props.isExpanded)
-            }
-          />
-        )}
-      </div>
-      {!deletingJob ? (
+    <>
+      <div className={styles.grid}>
+        <div>{blastProgram}</div>
+        <div className={styles.submissionName}>
+          {/* placeholder for submission name */}
+        </div>
+        <div className={styles.submissionDetails}>
+          <span className={styles.submissionIdLabel}>Submission</span>
+          <span>{submissionId}</span>
+          <span className={styles.editSubmission} onClick={editSubmission}>
+            Edit/rerun
+          </span>
+          <span className={styles.timeStamp}>
+            <span>{submissionTime}</span>
+            <span className={styles.timeZone}>GMT</span>
+          </span>
+          {sequenceCount && sequenceCount > 1 && (
+            <ShowHide
+              className={styles.showHide}
+              isExpanded={props.isExpanded || false}
+              onClick={() =>
+                props.toggleExpanded && props.toggleExpanded(!props.isExpanded)
+              }
+            />
+          )}
+        </div>
         <div className={styles.controlButtons}>
           <DeleteButton
             onClick={() => setDeletingJob(true)}
-            disabled={props.isAnyJobRunning}
+            disabled={props.isAnyJobRunning || deletingJob}
           />
-          <DownloadButton disabled={true} />
+          <DownloadButton disabled={true || deletingJob} />
           <ButtonLink
             to={urlFor.blastSubmission(submissionId)}
-            isDisabled={props.isAnyJobRunning}
+            isDisabled={props.isAnyJobRunning || deletingJob}
           >
             Results
           </ButtonLink>
         </div>
-      ) : (
+      </div>
+      {deletingJob && (
         <div className={styles.deleteMessageContainer}>
           <span className={styles.deleteMessage}>Delete this submission</span>
           <PrimaryButton onClick={handleDeletion}>Delete</PrimaryButton>
@@ -159,7 +160,7 @@ export const BlastSubmissionHeader = (props: Props) => {
           </span>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
