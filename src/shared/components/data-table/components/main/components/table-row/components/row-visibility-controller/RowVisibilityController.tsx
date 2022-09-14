@@ -13,56 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import { getCurrentPageRows } from 'src/shared/components/data-table/components/main/components/table-body/TableBody';
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 import {
   TableAction,
   type TableSelectedRowId
 } from 'src/shared/components/data-table/dataTableTypes';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './RowVisibilityController.scss';
 
 const RowVisibilityController = () => {
   const {
+    getCurrentPageRows,
     hiddenRowIdsInDraft,
     hiddenRowIds,
-    data,
     dispatch,
-    currentPageNumber,
     uniqueColumnId,
-    rowsPerPage,
     columns
-  } = useContext(TableContext) || {};
+  } = useDataTable();
 
-  if (
-    !(
-      hiddenRowIdsInDraft &&
-      dispatch &&
-      data &&
-      hiddenRowIds &&
-      rowsPerPage &&
-      columns &&
-      currentPageNumber &&
-      uniqueColumnId
-    )
-  ) {
-    return null;
-  }
-
-  const currentPageRows = getCurrentPageRows({
-    hiddenRowIds,
-    data,
-    currentPageNumber,
-    uniqueColumnId,
-    rowsPerPage,
-    columns
-  });
+  const currentPageRows = getCurrentPageRows();
 
   const uniqueColumnIndex = columns.findIndex(
     (column) => column.columnId === uniqueColumnId
