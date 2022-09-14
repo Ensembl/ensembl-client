@@ -245,7 +245,7 @@ const useGenomeBrowserAnalytics = () => {
   const trackTrackVisibilityToggled = (trackName: string, status: boolean) => {
     sendTrackEvent({
       category: 'regular_track_visibility',
-      action: 'turned_' + status ? 'on' : 'off',
+      action: 'turned_' + (status ? 'on' : 'off'),
       label: trackName
     });
   };
@@ -263,7 +263,7 @@ const useGenomeBrowserAnalytics = () => {
   ) => {
     sendTrackEvent({
       category: 'transcript_in_track_visibility',
-      action: 'turned_' + status ? 'on' : 'off',
+      action: 'turned_' + (status ? 'on' : 'off'),
       label: `transcript-${transcriptStableId}`
     });
   };

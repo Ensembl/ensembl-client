@@ -116,7 +116,7 @@ export const TrackPanelList = () => {
                   <AccordionItemButton
                     className={accordionButtonClassNames}
                     disabled={!category.track_list.length}
-                    onClick={() =>
+                    onToggle={() =>
                       trackTrackPanelSectionToggled(category.label)
                     }
                   >

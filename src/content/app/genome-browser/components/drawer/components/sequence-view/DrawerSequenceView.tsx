@@ -72,7 +72,6 @@ const DrawerSequenceView = (props: Props) => {
     sequence,
     sequenceTypes,
     selectedSequenceType,
-    onSequenceTypeChange,
     isReverseComplement,
     onReverseComplementChange
   } = props;
@@ -101,6 +100,11 @@ const DrawerSequenceView = (props: Props) => {
     if (!isExpanded) {
       trackDrawerSequenceViewed(selectedSequenceType);
     }
+  };
+
+  const onSequenceTypeChange = (sequenceType: SequenceType) => {
+    trackDrawerSequenceViewed(sequenceType);
+    props.onSequenceTypeChange(sequenceType);
   };
 
   return (

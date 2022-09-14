@@ -29,8 +29,9 @@ import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;
-  toggleExpanded(): void;
+  toggleExpanded: () => void;
   disabled?: boolean;
+  onToggle?: () => void;
 };
 
 export const AccordionItemButton = (props: Props) => {
@@ -53,11 +54,19 @@ export const AccordionItemButton = (props: Props) => {
     );
   }
 
+  const onClick = () => {
+    if (props && props.onToggle) {
+      props.onToggle();
+    }
+
+    toggleExpanded();
+  };
+
   return (
     <div
       {...rest}
       className={styles}
-      onClick={disabled ? noop : toggleExpanded}
+      onClick={disabled ? noop : onClick}
       data-accordion-component="AccordionItemButton"
     >
       <div>{children}</div>
@@ -77,7 +86,7 @@ AccordionItemButton.defaultProps = {
   extendDefaultStyles: true
 };
 
-type WrapperProps = { disabled?: boolean } & Pick<
+type WrapperProps = { disabled?: boolean; onToggle?: () => void } & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;
