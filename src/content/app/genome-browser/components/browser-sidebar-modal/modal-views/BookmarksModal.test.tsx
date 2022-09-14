@@ -62,7 +62,7 @@ jest.mock(
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackBookmarksLinkClicked: jest.fn(),
+    trackPreviouslyViewedObjectClicked: jest.fn(),
     trackBookmarksDrawerOpened: jest.fn()
   })
 );

@@ -34,7 +34,7 @@ jest.mock('react-router-dom', () => ({
 jest.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
   () => () => ({
-    trackBookmarksLinkClicked: jest.fn()
+    trackPreviouslyViewedObjectClicked: jest.fn()
   })
 );
 

@@ -90,7 +90,7 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackBookmarksLinkClicked = (
+  const trackPreviouslyViewedObjectClicked = (
     objectType: string,
     linkPositionFromTop: number
   ) => {
@@ -279,7 +279,7 @@ const useGenomeBrowserAnalytics = () => {
     trackRegionChange,
     trackRegionFieldChange,
     trackBookmarksDrawerOpened,
-    trackBookmarksLinkClicked,
+    trackPreviouslyViewedObjectClicked,
     trackFeatureLabelToggle,
     trackShowSeveralTranscriptsToggle,
     trackShowTranscriptsIdToggle,

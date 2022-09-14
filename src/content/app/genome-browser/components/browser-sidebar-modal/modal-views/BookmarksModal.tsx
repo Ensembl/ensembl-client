@@ -40,7 +40,7 @@ export const PreviouslyViewedLinks = () => {
     getPreviouslyViewedObjects
   ).slice(0, 20);
 
-  const { trackBookmarksLinkClicked } = useGenomeBrowserAnalytics();
+  const { trackPreviouslyViewedObjectClicked } = useGenomeBrowserAnalytics();
 
   return (
     <div data-test-id="previously viewed links">
@@ -59,7 +59,10 @@ export const PreviouslyViewedLinks = () => {
               event.preventDefault();
             }
           : () =>
-              trackBookmarksLinkClicked(previouslyViewedObject.type, index + 1);
+              trackPreviouslyViewedObjectClicked(
+                previouslyViewedObject.type,
+                index + 1
+              );
 
         return (
           <div

@@ -38,10 +38,10 @@ const DrawerBookmarks = () => {
     getPreviouslyViewedObjects
   ).slice(20);
   const dispatch = useAppDispatch();
-  const { trackBookmarksLinkClicked } = useGenomeBrowserAnalytics();
+  const { trackPreviouslyViewedObjectClicked } = useGenomeBrowserAnalytics();
 
   const onClick = (objectType: string, index: number) => {
-    trackBookmarksLinkClicked(objectType, index + 1);
+    trackPreviouslyViewedObjectClicked(objectType, index + 1);
 
     dispatch(closeBrowserSidebarModal());
     dispatch(closeDrawer());
