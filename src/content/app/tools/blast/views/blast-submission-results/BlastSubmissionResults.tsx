@@ -20,7 +20,10 @@ import { useParams } from 'react-router';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
-import { markBlastSubmissionAsSeen } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  markBlastSubmissionAsSeen,
+  type BlastResultWithData
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
@@ -79,10 +82,20 @@ const Main = () => {
     );
   }
 
-  const allJobResultsWithData = blastSubmission.results.map((job, index) => ({
-    ...job,
-    data: (allBlastJobResults as BlastJobResultResponse[])[index].result
-  }));
+  const allJobResultsWithData = blastSubmission.results
+    .map((job, index) => {
+      const blastJobResult = allBlastJobResults?.[index].result;
+      if (!blastJobResult) {
+        // shouldn't happen if the api behaves correctly
+        return job;
+      } else {
+        return {
+          ...job,
+          data: (allBlastJobResults as BlastJobResultResponse[])[index].result
+        };
+      }
+    })
+    .filter((job) => !!job.data) as BlastResultWithData[]; // only care about BLAST jobs that have the results from the server; they all should do if the apis behave properly
 
   const { submittedData } = blastSubmission;
   const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {

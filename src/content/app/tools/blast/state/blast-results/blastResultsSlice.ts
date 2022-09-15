@@ -33,7 +33,7 @@ import type {
   OptionalBlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
-import type { BlastJob as BlastJobResults } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastJob as BlastJobResultsFromAPI } from 'src/content/app/tools/blast/types/blastJob';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 export type JobStatus =
@@ -61,7 +61,11 @@ export type BlastResult = {
   sequenceId: number;
   genomeId: string;
   status: JobStatus;
-  data: null | BlastJobResults;
+  data: null | BlastJobResultsFromAPI;
+};
+
+export type BlastResultWithData = Omit<BlastResult, 'data'> & {
+  data: NonNullable<BlastResult['data']>;
 };
 
 export type BlastSubmission = {
@@ -75,8 +79,6 @@ export type BlastSubmission = {
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
-
-export type BlastJob = BlastSubmission['results'][number];
 
 export type BlastResultsUI = {
   unviewedJobsPage: {
@@ -134,7 +136,7 @@ const blastResultsSlice = createSlice({
       action: PayloadAction<{
         submissionId: string;
         jobId: string;
-        fragment: Partial<BlastJob>;
+        fragment: Partial<BlastResult>;
       }>
     ) {
       const { submissionId, jobId, fragment } = action.payload;

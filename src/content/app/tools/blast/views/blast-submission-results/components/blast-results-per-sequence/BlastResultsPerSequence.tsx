@@ -26,8 +26,10 @@ import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResul
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
-import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastSubmissionParameters,
+  BlastResult
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
