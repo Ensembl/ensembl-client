@@ -31,7 +31,7 @@ const TableControls = () => {
 
   const hiddenRowsCount = Object.keys(hiddenRowIds).length;
   const visibleRowsCount = data.length - hiddenRowsCount;
-  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage);
+  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage) || 1;
 
   return (
     <div className={styles.tableControls}>
