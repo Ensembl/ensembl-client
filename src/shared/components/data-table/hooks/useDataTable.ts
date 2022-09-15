@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import sortBy from 'lodash/sortBy';
 import { useContext } from 'react';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
@@ -27,78 +28,55 @@ const useDataTable = () => {
   }
 
   const {
-    data,
+    rows,
     currentPageNumber,
     rowsPerPage,
     columns,
-    uniqueColumnId,
     hiddenRowIds,
     sortedColumn
   } = dataTableContext;
 
   const getCurrentPageRows = () => {
-    const uniqueColumnIndex = columns?.findIndex(
-      (column) => column.columnId === uniqueColumnId
-    );
-
-    const totalRows = data.length;
+    const totalRows = rows.length;
     const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
     const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
 
     const visibleRows = hiddenRowIds
-      ? data.filter((rowData) => {
-          const rowId = String(rowData[uniqueColumnIndex]);
+      ? rows.filter((row) => {
+          const { rowId } = row;
 
           return !hiddenRowIds[rowId];
         })
-      : data;
+      : rows;
+
+    if (totalRows < rowsPerPage) {
+      return visibleRows;
+    }
 
     // Filter the rows that needs to be displayed in the current page
-    return visibleRows.filter((_, rowIndex) => {
-      if (totalRows > rowsPerPage) {
-        if (
-          rowIndex < rowIndexLowerBound ||
-          rowIndexUpperBound - 1 < rowIndex
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
+    return visibleRows.filter(
+      (_, rowIndex) =>
+        !(rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex)
+    );
   };
 
   const getSortedCurrentPageRows = () => {
     const rowsThisPage = getCurrentPageRows();
 
-    if (!sortedColumn) {
+    if (
+      !sortedColumn ||
+      sortedColumn?.sortedDirection === SortingDirection.NONE
+    ) {
       return rowsThisPage;
     }
 
     const sortedColumnIndex = columns.findIndex(
       (column) => column.columnId === sortedColumn.columnId
     );
-    return rowsThisPage.sort((currentRow, nextRow) => {
-      const currentValue = currentRow[sortedColumnIndex]?.toString() || '';
-      const nextValue = nextRow[sortedColumnIndex]?.toString() || '';
 
-      const currentValueAsNumber = Number(currentValue);
-      const nextValueAsNumber = Number(nextValue);
-      if (!isNaN(currentValueAsNumber) && !isNaN(nextValueAsNumber)) {
-        if (currentValueAsNumber < nextValueAsNumber) {
-          return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
-        } else if (currentValueAsNumber > nextValueAsNumber) {
-          return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
-        }
-      } else {
-        if (currentValue < nextValue) {
-          return sortedColumn.sortedDirection === SortingDirection.ASC ? -1 : 1;
-        } else if (currentValue > nextValue) {
-          return sortedColumn.sortedDirection === SortingDirection.ASC ? 1 : -1;
-        }
-      }
-
-      return 0;
-    });
+    return sortedColumn.sortedDirection === SortingDirection.ASC
+      ? sortBy(rowsThisPage, (row) => row.cells[sortedColumnIndex])
+      : sortBy(rowsThisPage, (row) => row.cells[sortedColumnIndex]).reverse();
   };
 
   return {

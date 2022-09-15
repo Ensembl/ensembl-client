@@ -21,25 +21,17 @@ import TableRow from '../table-row/TableRow';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 const TableBody = () => {
-  const { getSortedCurrentPageRows, data, columns, uniqueColumnId } =
-    useDataTable();
-
-  if (!(data && columns && uniqueColumnId)) {
-    return null;
-  }
-  const uniqueColumnIndex = columns.findIndex(
-    (column) => column.columnId === uniqueColumnId
-  );
+  const { getSortedCurrentPageRows } = useDataTable();
 
   // Filter the rows that needs to be displayed in the current page
   const rowsThisPage = getSortedCurrentPageRows();
 
   return (
     <tbody>
-      {rowsThisPage.map((rowData, index) => {
-        const rowId = String(rowData[uniqueColumnIndex]);
+      {rowsThisPage.map((row, index) => {
+        const { rowId } = row;
         return (
-          <TableRow key={index} rowData={rowData} rowId={rowId as string} />
+          <TableRow key={index} rowData={row.cells} rowId={rowId as string} />
         );
       })}
     </tbody>

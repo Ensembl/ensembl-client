@@ -28,20 +28,10 @@ import {
 import styles from './RowVisibilityController.scss';
 
 const RowVisibilityController = () => {
-  const {
-    getCurrentPageRows,
-    hiddenRowIdsInDraft,
-    hiddenRowIds,
-    dispatch,
-    uniqueColumnId,
-    columns
-  } = useDataTable();
+  const { getCurrentPageRows, hiddenRowIdsInDraft, hiddenRowIds, dispatch } =
+    useDataTable();
 
   const currentPageRows = getCurrentPageRows();
-
-  const uniqueColumnIndex = columns.findIndex(
-    (column) => column.columnId === uniqueColumnId
-  );
 
   const cancelChanges = () => {
     dispatch({
@@ -58,7 +48,7 @@ const RowVisibilityController = () => {
     const newRowIdsInDraft: TableSelectedRowId = {};
 
     currentPageRows.forEach((row) => {
-      const rowId = String(row[uniqueColumnIndex]);
+      const { rowId } = row;
       newRowIdsInDraft[rowId] = false;
     });
 
@@ -72,7 +62,7 @@ const RowVisibilityController = () => {
     const newRowIdsInDraft: TableSelectedRowId = {};
 
     currentPageRows.forEach((row) => {
-      const rowId = String(row[uniqueColumnIndex]);
+      const { rowId } = row;
       newRowIdsInDraft[rowId] = true;
     });
 

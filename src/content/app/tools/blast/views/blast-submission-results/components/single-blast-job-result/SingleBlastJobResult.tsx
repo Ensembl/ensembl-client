@@ -54,12 +54,6 @@ type SingleBlastJobResultProps = {
 
 const hitsTableColumns: DataTableColumns = [
   {
-    columnId: 'id',
-    title: 'ID',
-    isFilterable: false,
-    isHideable: false
-  },
-  {
     width: '130px',
     columnId: 'e_value',
     title: 'E-value',
@@ -229,7 +223,6 @@ const HitsTable = (props: HitsTableProps) => {
       const { hit_hsps } = hit;
       hit_hsps.forEach((hitHsp) => {
         allTableData.push([
-          counter,
           hitHsp.hsp_expect,
           hitHsp.hsp_align_len,
           '', // view_alignment
@@ -324,7 +317,7 @@ const HitsTable = (props: HitsTableProps) => {
     };
   }
 
-  tableColumns[3].renderer = (params: TableCellRendererParams) => {
+  tableColumns[2].renderer = (params: TableCellRendererParams) => {
     return (
       <ShowHideColumn
         onExpanded={onExpanded}
@@ -348,7 +341,6 @@ const HitsTable = (props: HitsTableProps) => {
           TableAction.DOWNLOAD_ALL_DATA,
           TableAction.DOWNLOAD_SHOWN_DATA
         ]}
-        uniqueColumnId="id"
       />
     </div>
   );

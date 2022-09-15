@@ -33,15 +33,15 @@ const Pagination = () => {
     return null;
   }
 
-  const totalHiddenRows = Object.keys(hiddenRowIds).length;
-  const totalVisibleRecords = data.length - totalHiddenRows;
+  const hiddenRowsCount = Object.keys(hiddenRowIds).length;
+  const visibleRowsCount = data.length - hiddenRowsCount;
 
-  const highestPageNumber = Math.ceil(totalVisibleRecords / rowsPerPage);
+  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let pageNumberFromInput = Number(event.target.value);
 
-    if (isNaN(pageNumberFromInput) || pageNumberFromInput > highestPageNumber) {
+    if (isNaN(pageNumberFromInput) || pageNumberFromInput > lastPageNumber) {
       pageNumberFromInput = currentPageNumber;
     }
 
@@ -78,12 +78,12 @@ const Pagination = () => {
           disabled={data?.length < rowsPerPage}
         />
       </div>
-      of {rowsPerPage === Infinity ? 1 : highestPageNumber}
+      of {rowsPerPage === Infinity ? 1 : lastPageNumber}
       <ChevronButton
         direction="right"
         className={styles.showHide}
         disabled={
-          rowsPerPage === Infinity || currentPageNumber === highestPageNumber
+          rowsPerPage === Infinity || currentPageNumber === lastPageNumber
         }
         onClick={() => onChevronClick(currentPageNumber + 1)}
       />
