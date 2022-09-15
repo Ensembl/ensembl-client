@@ -52,7 +52,7 @@ describe('DeletionConfirmation', () => {
     const deleteButton = container.querySelector('button') as HTMLButtonElement;
     expect(deleteButton?.textContent).toBe('Remove');
 
-    const cancelLink = container.querySelector('.clickable') as HTMLElement;
+    const cancelLink = container.querySelector('.cancel') as HTMLElement;
     expect(cancelLink?.textContent).toBe('Do not remove');
 
     const warningText = container.querySelector('.warningText') as HTMLElement;
@@ -65,9 +65,10 @@ describe('DeletionConfirmation', () => {
     );
 
     const deletionConfirmation = container.firstChild as HTMLElement;
-    expect(
-      deletionConfirmation.classList.contains('.componentClass')
-    ).toBeTruthy();
+
+    expect(deletionConfirmation.classList.contains('componentClass')).toBe(
+      true
+    );
   });
 
   it('it calls correct callback on confirmation', async () => {
@@ -81,7 +82,7 @@ describe('DeletionConfirmation', () => {
 
   it('it calls correct callback on cancellation', async () => {
     const { container } = render(<DeletionConfirmation {...props} />);
-    const cancelLabel = container.querySelector('.clickable') as HTMLElement;
+    const cancelLabel = container.querySelector('.cancel') as HTMLElement;
 
     await userEvent.click(cancelLabel);
 
