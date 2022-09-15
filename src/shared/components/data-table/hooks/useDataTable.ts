@@ -36,18 +36,22 @@ const useDataTable = () => {
     sortedColumn
   } = dataTableContext;
 
-  const getCurrentPageRows = () => {
-    const totalRows = rows.length;
-    const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
-    const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
-
-    const visibleRows = hiddenRowIds
+  const getAllVisibleRows = () => {
+    return hiddenRowIds
       ? rows.filter((row) => {
           const { rowId } = row;
 
           return !hiddenRowIds[rowId];
         })
       : rows;
+  };
+
+  const getCurrentPageRows = () => {
+    const totalRows = rows.length;
+    const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
+    const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
+
+    const visibleRows = getAllVisibleRows();
 
     if (totalRows < rowsPerPage) {
       return visibleRows;
@@ -61,25 +65,39 @@ const useDataTable = () => {
   };
 
   const getSortedCurrentPageRows = () => {
-    const rowsThisPage = getCurrentPageRows();
+    const visibleRows = getAllVisibleRows();
+    const totalRows = rows.length;
+    const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
+    const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
+
+    let sortedRows = visibleRows;
 
     if (
-      !sortedColumn ||
-      sortedColumn?.sortedDirection === SortingDirection.NONE
+      sortedColumn &&
+      sortedColumn.sortedDirection !== SortingDirection.NONE
     ) {
-      return rowsThisPage;
+      const sortedColumnIndex = columns.findIndex(
+        (column) => column.columnId === sortedColumn.columnId
+      );
+
+      sortedRows =
+        sortedColumn.sortedDirection === SortingDirection.ASC
+          ? sortBy(sortedRows, (row) => row.cells[sortedColumnIndex])
+          : sortBy(sortedRows, (row) => row.cells[sortedColumnIndex]).reverse();
     }
 
-    const sortedColumnIndex = columns.findIndex(
-      (column) => column.columnId === sortedColumn.columnId
-    );
-
-    return sortedColumn.sortedDirection === SortingDirection.ASC
-      ? sortBy(rowsThisPage, (row) => row.cells[sortedColumnIndex])
-      : sortBy(rowsThisPage, (row) => row.cells[sortedColumnIndex]).reverse();
+    return totalRows > rowsPerPage
+      ? sortedRows.filter(
+          (_, rowIndex) =>
+            !(
+              rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex
+            )
+        )
+      : sortedRows;
   };
 
   return {
+    getAllVisibleRows,
     getCurrentPageRows,
     getSortedCurrentPageRows,
     ...dataTableContext
