@@ -37,7 +37,6 @@ type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
   theme: TableTheme;
-  // uniqueColumnId: string;
   selectableColumnIndex: number;
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
