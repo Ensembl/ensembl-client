@@ -3,16 +3,16 @@
 .deleteConfirmationContainer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  column-gap: 30px;
-  margin: 20px 0px;
+  justify-content: var(--container-justify-content, flex-end);
+  column-gap: var(--container-column-gap, 30px);
+  margin: var(--container-margin, 20px 0px);
 }
 
 .warningText {
-  color: $red;
+  color: var(--warning-text-color, #{$red});
 }
 
 .clickable {
-  color: $blue;
+  color: var(--clickable-color, #{$blue});
   cursor: pointer;
 }
