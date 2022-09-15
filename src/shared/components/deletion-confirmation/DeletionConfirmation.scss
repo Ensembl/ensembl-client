@@ -1,0 +1,18 @@
+@import 'src/styles/common';
+
+.deleteMessageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 30px;
+  margin: 20px 0px;
+}
+
+.deleteMessage {
+  color: $red;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
+}
