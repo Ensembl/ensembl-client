@@ -32,16 +32,42 @@ describe('DeletionConfirmation', () => {
     jest.resetAllMocks();
   });
 
-  it('renders a button with correct label', () => {
+  it('renders with default message', () => {
+    const { container } = render(<DeletionConfirmation {...props} />);
+
+    const deleteButton = container.querySelector('button') as HTMLButtonElement;
+    expect(deleteButton?.textContent).toBe('Delete');
+  });
+
+  it('applies custom messages provided by parent', () => {
     const { container } = render(
-      <DeletionConfirmation {...props} confirmButtonLabel="Remove" />
+      <DeletionConfirmation
+        {...props}
+        confirmationText="Remove"
+        cancellationText="Do not remove"
+        warningText="Do you want to remove?"
+      />
     );
 
     const deleteButton = container.querySelector('button') as HTMLButtonElement;
     expect(deleteButton?.textContent).toBe('Remove');
+
+    const cancelLink = container.querySelector('.clickable') as HTMLElement;
+    expect(cancelLink?.textContent).toBe('Do not remove');
+
+    const warningText = container.querySelector('.warningText') as HTMLElement;
+    expect(warningText?.textContent).toBe('Do you want to remove?');
   });
 
-  it('calls confirmDeletion onClick when clicked', async () => {
+  it('applies custom class name passed from the parent', () => {
+    const { container } = render(
+      <DeletionConfirmation {...props} className="componentClass" />
+    );
+
+    expect(container.querySelector('.componentClass')).toBeTruthy();
+  });
+
+  it('it calls correct callback on confirmation', async () => {
     const { container } = render(<DeletionConfirmation {...props} />);
     const button = container.querySelector('button') as HTMLButtonElement;
 
@@ -50,7 +76,7 @@ describe('DeletionConfirmation', () => {
     expect(props.onConfirm).toHaveBeenCalled();
   });
 
-  it('calls cancelDeletion onClick when clicked', async () => {
+  it('it calls correct callback on cancellation', async () => {
     const { container } = render(<DeletionConfirmation {...props} />);
     const cancelLabel = container.querySelector('.clickable') as HTMLElement;
 
