@@ -20,10 +20,10 @@
  */
 
 export type BlastJobResultResponse = {
-  result: BlastJob;
+  result: BlastJobResult;
 };
 
-export type BlastJob = {
+export type BlastJobResult = {
   query_len: number; // length of the query sequence
   hits: BlastHit[];
 };

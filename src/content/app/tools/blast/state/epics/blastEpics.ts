@@ -46,7 +46,7 @@ import {
   updateJob,
   restoreBlastSubmissions,
   type JobStatus,
-  type BlastResult
+  type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { POLLING_INTERVAL } from './blastEpicConstants';
@@ -132,7 +132,7 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
  */
 const poll = () =>
   pipe(
-    expand((input: { submissionId: string; job: BlastResult }[]) => {
+    expand((input: { submissionId: string; job: BlastJob }[]) => {
       const runningJobsList = input.filter(
         ({ job }) => job.status === 'RUNNING'
       );
@@ -149,9 +149,7 @@ const poll = () =>
   );
 
 // query all running jobs once, one job after the other
-const checkJobStatuses = (
-  input: { submissionId: string; job: BlastResult }[]
-) => {
+const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
   return from(input).pipe(
     concatMap(({ submissionId, job }) => {
       const { jobId } = job;
@@ -174,7 +172,7 @@ const checkJobStatuses = (
 // save polling results to database
 const databaseUpdaterSubject = new Subject<{
   submissionId: string;
-  job: BlastResult;
+  job: BlastJob;
 }>().pipe(
   // make sure to wait until the async job of saving to indexedDb has been completed before starting a new one
   concatMap((pollingResult) => {

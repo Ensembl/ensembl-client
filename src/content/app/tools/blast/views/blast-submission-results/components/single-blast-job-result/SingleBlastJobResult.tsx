@@ -26,10 +26,10 @@ import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast
 
 import type {
   BlastHit,
-  BlastJob,
+  BlastJobResult,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type { BlastJobWithResults } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -45,7 +45,7 @@ import {
 import styles from './SingleBlastJobResult.scss';
 
 type SingleBlastJobResultProps = {
-  jobResult: BlastResult & { data: NonNullable<BlastResult['data']> };
+  jobResult: BlastJobWithResults;
   species: Species;
   diagramWidth: number;
   blastDatabase: DatabaseType;
@@ -396,7 +396,7 @@ const DynamicColumnContent = (props: DynamicColumnContentProps) => {
   );
 };
 
-const countAlignments = (blastJob: BlastJob) => {
+const countAlignments = (blastJob: BlastJobResult) => {
   return blastJob.hits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
 };
 

@@ -22,7 +22,7 @@ import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/bla
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import {
   markBlastSubmissionAsSeen,
-  type BlastResultWithData
+  type BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
@@ -95,7 +95,7 @@ const Main = () => {
         };
       }
     })
-    .filter((job) => !!job.data) as BlastResultWithData[]; // only care about BLAST jobs that have the results from the server; they all should do if the apis behave properly
+    .filter((job) => !!job.data) as BlastJobWithResults[]; // only care about BLAST jobs that have the results from the server; they all should do if the apis behave properly
 
   const { submittedData } = blastSubmission;
   const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {

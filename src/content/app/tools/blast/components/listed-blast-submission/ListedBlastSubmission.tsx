@@ -24,7 +24,7 @@ import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHea
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import {
   type BlastSubmission,
-  type BlastResult,
+  type BlastJob,
   updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
@@ -118,7 +118,7 @@ const CollapsedSequencesBox = (props: Props) => {
 
 type SequenceBoxProps = {
   sequence: { id: number; value: string };
-  jobs: BlastResult[];
+  jobs: BlastJob[];
 };
 
 const SequenceBox = (props: SequenceBoxProps) => {
@@ -136,7 +136,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
   );
 };
 
-const StatusElement = ({ jobs }: { jobs: BlastResult[] }) => {
+const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
   const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
   const hasFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
