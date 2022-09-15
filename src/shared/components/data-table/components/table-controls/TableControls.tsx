@@ -16,18 +16,32 @@
 
 import React from 'react';
 
-import Pagination from './components/pagination/Pagination';
+import Pagination from 'src/shared/components/pagination/Pagination';
 import RowsPerPageSelector from './components/rows-per-page-selector/RowsPerPageSelector';
+
+import useDataTable from '../../hooks/useDataTable';
+
 import TableActions from './components/table-actions/TableActions';
 
 import styles from './TableControls.scss';
 
 const TableControls = () => {
+  const { setPageNumber, currentPageNumber, data, rowsPerPage, hiddenRowIds } =
+    useDataTable();
+
+  const hiddenRowsCount = Object.keys(hiddenRowIds).length;
+  const visibleRowsCount = data.length - hiddenRowsCount;
+  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage);
+
   return (
     <div className={styles.tableControls}>
       <TableActions />
       <RowsPerPageSelector />
-      <Pagination />
+      <Pagination
+        onChange={setPageNumber}
+        currentPageNumber={currentPageNumber}
+        lastPageNumber={lastPageNumber}
+      />
     </div>
   );
 };

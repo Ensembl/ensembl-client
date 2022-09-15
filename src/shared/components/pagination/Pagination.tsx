@@ -13,53 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import Input from 'src/shared/components/input/Input';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './Pagination.scss';
 
-const Pagination = () => {
-  const { dispatch, currentPageNumber, data, rowsPerPage, hiddenRowIds } =
-    useContext(TableContext) || {
-      currentPageNumber: 1,
-      rowsPerPage: 100,
-      hiddenRowIds: {}
-    };
+export type PaginationProps = {
+  currentPageNumber: number;
+  lastPageNumber: number;
+  onChange: (pageNumber: number) => void;
+};
 
-  if (!dispatch || !data) {
-    return null;
-  }
-
-  const hiddenRowsCount = Object.keys(hiddenRowIds).length;
-  const visibleRowsCount = data.length - hiddenRowsCount;
-
-  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage);
+const Pagination = (props: PaginationProps) => {
+  const { currentPageNumber, lastPageNumber } = props;
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let pageNumberFromInput = Number(event.target.value);
 
-    if (isNaN(pageNumberFromInput) || pageNumberFromInput > lastPageNumber) {
+    if (isNaN(pageNumberFromInput)) {
       pageNumberFromInput = currentPageNumber;
+    } else if (pageNumberFromInput > lastPageNumber) {
+      pageNumberFromInput = lastPageNumber;
+    } else if (pageNumberFromInput < 1) {
+      pageNumberFromInput = 1;
     }
 
-    if (pageNumberFromInput > data?.length) {
-      pageNumberFromInput = data?.length;
-    }
-
-    dispatch({
-      type: 'set_current_page_number',
-      payload: pageNumberFromInput
-    });
-  };
-
-  const onChevronClick = (value: number) => {
-    dispatch({
-      type: 'set_current_page_number',
-      payload: value
-    });
+    props.onChange(pageNumberFromInput);
   };
 
   return (
@@ -68,24 +49,22 @@ const Pagination = () => {
         direction="left"
         className={styles.showHide}
         disabled={currentPageNumber === 1}
-        onClick={() => onChevronClick(currentPageNumber - 1)}
+        onClick={() => props.onChange(currentPageNumber - 1)}
       />
       <div className={styles.inputWrapper}>
         <Input
           value={currentPageNumber}
           onChange={onChange}
           className={styles.inputBox}
-          disabled={data?.length < rowsPerPage}
+          disabled={lastPageNumber === 1}
         />
       </div>
-      of {rowsPerPage === Infinity ? 1 : lastPageNumber}
+      of {lastPageNumber}
       <ChevronButton
         direction="right"
         className={styles.showHide}
-        disabled={
-          rowsPerPage === Infinity || currentPageNumber === lastPageNumber
-        }
-        onClick={() => onChevronClick(currentPageNumber + 1)}
+        disabled={currentPageNumber === lastPageNumber}
+        onClick={() => props.onChange(currentPageNumber + 1)}
       />
     </div>
   );

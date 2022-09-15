@@ -33,7 +33,8 @@ const useDataTable = () => {
     rowsPerPage,
     columns,
     hiddenRowIds,
-    sortedColumn
+    sortedColumn,
+    dispatch
   } = dataTableContext;
 
   const getAllVisibleRows = () => {
@@ -96,10 +97,18 @@ const useDataTable = () => {
       : sortedRows;
   };
 
+  const setPageNumber = (value: number) => {
+    dispatch({
+      type: 'set_current_page_number',
+      payload: value
+    });
+  };
+
   return {
     getAllVisibleRows,
     getCurrentPageRows,
     getSortedCurrentPageRows,
+    setPageNumber,
     ...dataTableContext
   };
 };
