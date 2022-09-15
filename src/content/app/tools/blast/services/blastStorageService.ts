@@ -18,7 +18,7 @@ import IndexedDB from 'src/services/indexeddb-service';
 
 import type {
   BlastSubmission,
-  BlastJob
+  BlastResult
 } from '../state/blast-results/blastResultsSlice';
 
 const STORE_NAME = 'blast-submissions';
@@ -70,7 +70,7 @@ export const updateBlastSubmission = async (
 export const updateSavedBlastJob = async (params: {
   submissionId: string;
   jobId: string;
-  fragment: Partial<BlastJob>;
+  fragment: Partial<BlastResult>;
 }) => {
   const { submissionId, jobId, fragment } = params;
   const submission = await getBlastSubmission(submissionId);

@@ -23,7 +23,7 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import type {
   BlastSubmission,
-  BlastJob,
+  BlastResult,
   JobStatus
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -87,7 +87,9 @@ export const createBlastJobs = ({
   return jobs;
 };
 
-export const createBlastJob = (fragment: Partial<BlastJob> = {}): BlastJob => {
+export const createBlastJob = (
+  fragment: Partial<BlastResult> = {}
+): BlastResult => {
   return {
     jobId: faker.datatype.uuid(),
     sequenceId: parseInt(faker.random.numeric()),
