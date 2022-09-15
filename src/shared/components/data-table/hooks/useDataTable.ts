@@ -57,7 +57,7 @@ const useDataTable = () => {
       return visibleRows;
     }
 
-    // Filter the rows that needs to be displayed in the current page
+    // Filter the rows that need to be displayed in the current page
     return visibleRows.filter(
       (_, rowIndex) =>
         !(rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex)
