@@ -3,15 +3,15 @@
 .deleteConfirmationContainer {
   display: flex;
   align-items: center;
-  justify-content: var(--container-justify-content, flex-end);
+  justify-content: flex-end;
   column-gap: 30px;
 }
 
 .warningText {
-  color: var(--warning-text-color, #{$red});
+  color: var(--deletion-confirmation-warning-color, #{$red});
 }
 
 .cancel {
-  color: var(--clickable-color, #{$blue});
+  color: var(--deletion-confirmation-cancel-color, #{$blue});
   cursor: pointer;
 }

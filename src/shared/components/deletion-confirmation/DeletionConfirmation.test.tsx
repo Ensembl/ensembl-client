@@ -23,6 +23,9 @@ import DeletionConfirmation, {
 } from './DeletionConfirmation';
 
 const props: DeletionConfirmationProps = {
+  confirmText: 'Remove',
+  cancelText: 'Do not remove',
+  warningText: 'Do you want to remove?',
   onConfirm: jest.fn(),
   onCancel: jest.fn()
 };
@@ -32,22 +35,8 @@ describe('DeletionConfirmation', () => {
     jest.resetAllMocks();
   });
 
-  it('renders with default message', () => {
-    const { container } = render(<DeletionConfirmation {...props} />);
-
-    const deleteButton = container.querySelector('button') as HTMLButtonElement;
-    expect(deleteButton?.textContent).toBe('Delete');
-  });
-
   it('applies custom messages provided by parent', () => {
-    const { container } = render(
-      <DeletionConfirmation
-        {...props}
-        confirmText="Remove"
-        cancelText="Do not remove"
-        warningText="Do you want to remove?"
-      />
-    );
+    const { container } = render(<DeletionConfirmation {...props} />);
 
     const deleteButton = container.querySelector('button') as HTMLButtonElement;
     expect(deleteButton?.textContent).toBe('Remove');
@@ -60,12 +49,14 @@ describe('DeletionConfirmation', () => {
   });
 
   it('applies custom class name passed from the parent', () => {
-    const { container } = render(
-      <DeletionConfirmation {...props} className="componentClass" />
-    );
+    const { container, rerender } = render(<DeletionConfirmation {...props} />);
 
     const deletionConfirmation = container.firstChild as HTMLElement;
+    expect(
+      deletionConfirmation.classList.contains('deleteConfirmationContainer')
+    ).toBe(true);
 
+    rerender(<DeletionConfirmation {...props} className="componentClass" />);
     expect(deletionConfirmation.classList.contains('componentClass')).toBe(
       true
     );

@@ -22,9 +22,9 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import styles from './DeletionConfirmation.scss';
 
 export type DeletionConfirmationProps = {
-  warningText?: string;
-  confirmText?: string;
-  cancelText?: string;
+  warningText: string;
+  confirmText: string;
+  cancelText: string;
   onConfirm: () => void;
   onCancel: () => void;
   className?: string;
@@ -47,12 +47,6 @@ const DeletionConfirmation = (props: DeletionConfirmationProps) => {
       </span>
     </div>
   );
-};
-
-DeletionConfirmation.defaultProps = {
-  warningText: 'Are you sure you want to delete?',
-  confirmText: 'Delete',
-  cancelText: 'Do not delete'
 };
 
 export default DeletionConfirmation;
