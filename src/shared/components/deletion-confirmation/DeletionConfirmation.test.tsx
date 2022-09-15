@@ -43,8 +43,8 @@ describe('DeletionConfirmation', () => {
     const { container } = render(
       <DeletionConfirmation
         {...props}
-        confirmationText="Remove"
-        cancellationText="Do not remove"
+        confirmText="Remove"
+        cancelText="Do not remove"
         warningText="Do you want to remove?"
       />
     );
@@ -64,7 +64,10 @@ describe('DeletionConfirmation', () => {
       <DeletionConfirmation {...props} className="componentClass" />
     );
 
-    expect(container.querySelector('.componentClass')).toBeTruthy();
+    const deletionConfirmation = container.firstChild as HTMLElement;
+    expect(
+      deletionConfirmation.classList.contains('.componentClass')
+    ).toBeTruthy();
   });
 
   it('it calls correct callback on confirmation', async () => {

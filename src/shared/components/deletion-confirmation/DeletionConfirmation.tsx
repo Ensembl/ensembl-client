@@ -23,8 +23,8 @@ import styles from './DeletionConfirmation.scss';
 
 export type DeletionConfirmationProps = {
   warningText?: string;
-  confirmationText?: string;
-  cancellationText?: string;
+  confirmText?: string;
+  cancelText?: string;
   onConfirm: () => void;
   onCancel: () => void;
   className?: string;
@@ -40,10 +40,10 @@ const DeletionConfirmation = (props: DeletionConfirmationProps) => {
     <div className={containerClass}>
       <span className={styles.warningText}>{props.warningText}</span>
       <PrimaryButton onClick={props.onConfirm}>
-        {props.confirmationText}
+        {props.confirmText}
       </PrimaryButton>
-      <span className={styles.clickable} onClick={props.onCancel}>
-        {props.cancellationText}
+      <span className={styles.cancel} onClick={props.onCancel}>
+        {props.cancelText}
       </span>
     </div>
   );
@@ -51,8 +51,8 @@ const DeletionConfirmation = (props: DeletionConfirmationProps) => {
 
 DeletionConfirmation.defaultProps = {
   warningText: 'Are you sure you want to delete?',
-  confirmationText: 'Delete',
-  cancellationText: 'Do not delete'
+  confirmText: 'Delete',
+  cancelText: 'Do not delete'
 };
 
 export default DeletionConfirmation;
