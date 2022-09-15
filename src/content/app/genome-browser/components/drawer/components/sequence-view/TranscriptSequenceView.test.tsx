@@ -46,7 +46,9 @@ jest.mock(
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => jest.fn()
+  () => () => ({
+    trackDrawerSequenceViewed: jest.fn()
+  })
 );
 
 const renderTranscriptSequenceView = (props: Props) => {
