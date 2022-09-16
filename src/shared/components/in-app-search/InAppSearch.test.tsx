@@ -113,10 +113,12 @@ describe('<InAppSearch />', () => {
       jest
         .spyOn(inAppSearchSlice, 'search')
         .mockImplementation(() => ({ type: 'action' } as any));
+      const onSearchSubmit = jest.fn();
+      const props = { ...defaultProps, onSearchSubmit };
 
       const { container, rerender } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
+          <InAppSearch {...props} />
         </Provider>
       );
 
@@ -135,11 +137,12 @@ describe('<InAppSearch />', () => {
         page: 1,
         per_page: 50
       });
+      expect(onSearchSubmit).toHaveBeenCalledWith('BRCA2');
 
       // let's try passing a different app name and a different genome id in props
       rerender(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} app="entityViewer" genomeId="wheat" />
+          <InAppSearch {...props} app="entityViewer" genomeId="wheat" />
         </Provider>
       );
 
@@ -157,6 +160,8 @@ describe('<InAppSearch />', () => {
         page: 1,
         per_page: 50
       });
+      expect(onSearchSubmit).toHaveBeenCalledWith('Traes');
+
       (inAppSearchSlice.search as any).mockRestore();
     });
 
