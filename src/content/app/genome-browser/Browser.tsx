@@ -82,7 +82,7 @@ export const Browser = () => {
     isMissingFocusObject
   } = useGenomeBrowserUrlCheck();
 
-  const { trackTrackPanelToggled } = useGenomeBrowserAnalytics();
+  const { reportTrackPanelToggled } = useGenomeBrowserAnalytics();
   useGenomeBrowserTracks();
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export const Browser = () => {
   const onSidebarToggle = () => {
     dispatch(toggleTrackPanel(!isTrackPanelOpened)); // FIXME
 
-    trackTrackPanelToggled(!isTrackPanelOpened);
+    reportTrackPanelToggled(!isTrackPanelOpened);
   };
 
   const onDrawerClose = () => {

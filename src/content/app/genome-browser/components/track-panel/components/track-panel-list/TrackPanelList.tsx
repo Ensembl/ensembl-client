@@ -51,7 +51,7 @@ export const TrackPanelList = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
-  const { trackTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
+  const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
 
   const dispatch = useAppDispatch();
 
@@ -117,7 +117,7 @@ export const TrackPanelList = () => {
                     className={accordionButtonClassNames}
                     disabled={!category.track_list.length}
                     onToggle={() =>
-                      trackTrackPanelSectionToggled(category.label)
+                      reportTrackPanelSectionToggled(category.label)
                     }
                   >
                     {category.label}

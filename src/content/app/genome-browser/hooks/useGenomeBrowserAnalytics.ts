@@ -51,7 +51,6 @@ const useGenomeBrowserAnalytics = () => {
   const sendTrackEvent = (options: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
       species: speciesNameForAnalytics,
-      feature,
       app: AppName.GENOME_BROWSER,
       ...options
     });
@@ -69,7 +68,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'browser_navigation',
       label: 'region_editor',
-      action: 'change_region'
+      action: 'change_region',
+      feature
     });
   };
 
@@ -77,7 +77,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'browser_navigation',
       label: 'region_field',
-      action: 'change_region'
+      action: 'change_region',
+      feature
     });
   };
 
@@ -132,7 +133,8 @@ const useGenomeBrowserAnalytics = () => {
       category: 'track_settings',
       label: selectedCog,
       action:
-        'several_transcripts_' + (areSeveralTranscriptsShown ? 'on' : 'off')
+        'several_transcripts_' + (areSeveralTranscriptsShown ? 'on' : 'off'),
+      feature
     });
   };
 
@@ -143,11 +145,12 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'track_settings',
       label: selectedCog,
-      action: 'transcript_labels_' + (shouldShowTranscriptIds ? 'on' : 'off')
+      action: 'transcript_labels_' + (shouldShowTranscriptIds ? 'on' : 'off'),
+      feature
     });
   };
 
-  const trackApplyToAllInTackSettings = (
+  const trackApplyToAllInTrackSettings = (
     selectedCog: string,
     shouldApplyToAll: boolean
   ) => {
@@ -158,26 +161,29 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackTrackPanelTabChange = (selectedTrackPanelTab: TrackSet) => {
+  const reportTrackPanelTabChange = (selectedTrackPanelTab: TrackSet) => {
     sendTrackEvent({
       category: 'track_panel_tab',
       label: selectedTrackPanelTab,
-      action: 'selected'
+      action: 'selected',
+      feature
     });
   };
 
-  const trackTrackPanelSectionToggled = (sectionName: string) => {
+  const reportTrackPanelSectionToggled = (sectionName: string) => {
     sendTrackEvent({
       category: 'track_panel',
       label: sectionName,
-      action: 'section_toggled'
+      action: 'section_toggled',
+      feature
     });
   };
 
   const trackFocusObjectReset = () => {
     sendTrackEvent({
       category: 'reset_icon',
-      action: 'clicked'
+      action: 'clicked',
+      feature
     });
   };
 
@@ -185,7 +191,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'sidebar_toolstrip',
       action: 'modal_opened',
-      label: view
+      label: view,
+      feature
     });
   };
 
@@ -193,7 +200,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'track_drawer',
       action: 'opened',
-      label: drawerView
+      label: drawerView,
+      feature
     });
   };
 
@@ -201,7 +209,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'track_drawer',
       action: 'sequence_viewed',
-      label: sequenceType
+      label: sequenceType,
+      feature
     });
   };
 
@@ -209,7 +218,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'track_drawer',
       action: 'sequence_copied',
-      label: sequenceType
+      label: sequenceType,
+      feature
     });
   };
 
@@ -217,11 +227,12 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'track_drawer',
       action: 'sequence_downloaded',
-      label: selectedOptions
+      label: selectedOptions,
+      feature
     });
   };
 
-  const trackSpeciesChangeLinkClicked = () => {
+  const trackSpeciesChange = () => {
     sendTrackEvent({
       category: 'app_bar',
       action: 'change_link_clicked'
@@ -235,14 +246,14 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackTrackPanelToggled = (isOpened: boolean) => {
+  const reportTrackPanelToggled = (isOpened: boolean) => {
     sendTrackEvent({
       category: 'track_panel',
       action: isOpened ? 'opened' : 'closed'
     });
   };
 
-  const trackTrackVisibilityToggled = (trackName: string, status: boolean) => {
+  const reportTrackVisibilityToggled = (trackName: string, status: boolean) => {
     sendTrackEvent({
       category: 'regular_track_visibility',
       action: 'turned_' + (status ? 'on' : 'off'),
@@ -253,7 +264,8 @@ const useGenomeBrowserAnalytics = () => {
   const trackFocusTrackVisibilityToggled = (action: Status) => {
     sendTrackEvent({
       category: 'focus_track_visibility',
-      action: action === Status.SELECTED ? 'turned_on' : 'turned_off'
+      action: action === Status.SELECTED ? 'turned_on' : 'turned_off',
+      feature
     });
   };
 
@@ -264,7 +276,8 @@ const useGenomeBrowserAnalytics = () => {
     sendTrackEvent({
       category: 'transcript_in_track_visibility',
       action: 'turned_' + (status ? 'on' : 'off'),
-      label: `transcript-${transcriptStableId}`
+      label: `transcript-${transcriptStableId}`,
+      feature
     });
   };
 
@@ -283,12 +296,12 @@ const useGenomeBrowserAnalytics = () => {
     trackFeatureLabelToggle,
     trackShowSeveralTranscriptsToggle,
     trackShowTranscriptsIdToggle,
-    trackApplyToAllInTackSettings,
-    trackTrackPanelTabChange,
-    trackTrackPanelSectionToggled,
-    trackTrackPanelToggled,
+    trackApplyToAllInTrackSettings,
+    reportTrackPanelTabChange,
+    reportTrackPanelSectionToggled,
+    reportTrackPanelToggled,
     trackTrackNameToggle,
-    trackTrackVisibilityToggled,
+    reportTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
     trackTranscriptInTrackVisibilityToggled,
     reportTrackSettingsOpened,
@@ -298,7 +311,7 @@ const useGenomeBrowserAnalytics = () => {
     trackDrawerSequenceCopied,
     trackDrawerSequenceDownloaded,
     trackDrawerOpened,
-    trackSpeciesChangeLinkClicked,
+    trackSpeciesChange,
     trackGenomeChanged,
     trackInterstitialPageNavigation
   };

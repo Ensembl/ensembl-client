@@ -114,7 +114,7 @@ jest.mock(
     trackTrackNameToggle: jest.fn(),
     trackShowSeveralTranscriptsToggle: jest.fn(),
     trackShowTranscriptsIdToggle: jest.fn(),
-    trackApplyToAllInTackSettings: jest.fn()
+    trackApplyToAllInTrackSettings: jest.fn()
   })
 );
 

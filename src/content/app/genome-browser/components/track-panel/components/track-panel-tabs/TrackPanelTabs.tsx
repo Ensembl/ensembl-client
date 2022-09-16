@@ -46,7 +46,7 @@ export const TrackPanelTabs = () => {
   const isBrowserSidebarModalOpened = useAppSelector(
     getIsBrowserSidebarModalOpened
   );
-  const { trackTrackPanelTabChange } = useGenomeBrowserAnalytics();
+  const { reportTrackPanelTabChange } = useGenomeBrowserAnalytics();
   const dispatch = useAppDispatch();
 
   const handleTabClick = (value: TrackSet) => {
@@ -62,7 +62,7 @@ export const TrackPanelTabs = () => {
       dispatch(closeDrawer());
     }
 
-    trackTrackPanelTabChange(value);
+    reportTrackPanelTabChange(value);
 
     dispatch(selectTrackPanelTab(value));
   };

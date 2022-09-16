@@ -54,7 +54,7 @@ const TrackPanelRegularItem = (props: Props) => {
       trackId: track_id
     })
   );
-  const { trackTrackVisibilityToggled, trackDrawerOpened } =
+  const { reportTrackVisibilityToggled, trackDrawerOpened } =
     useGenomeBrowserAnalytics();
   const { toggleTrack } = useGenomeBrowser();
   const dispatch = useAppDispatch();
@@ -80,7 +80,7 @@ const TrackPanelRegularItem = (props: Props) => {
         : Status.SELECTED;
 
     toggleTrack({ trackId: track_id, status: newStatus });
-    trackTrackVisibilityToggled(track_id, newStatus === Status.SELECTED);
+    reportTrackVisibilityToggled(track_id, newStatus === Status.SELECTED);
 
     dispatch(
       updateCommonTrackStates({

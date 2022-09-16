@@ -56,7 +56,7 @@ const useBrowserTrackSettings = () => {
     trackFeatureLabelToggle,
     trackShowSeveralTranscriptsToggle,
     trackShowTranscriptsIdToggle,
-    trackApplyToAllInTackSettings
+    trackApplyToAllInTrackSettings
   } = useGenomeBrowserAnalytics();
 
   useEffect(() => {
@@ -254,7 +254,7 @@ const useBrowserTrackSettings = () => {
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
     updateShowTranscriptIds(shouldShowTranscriptIds);
 
-    trackApplyToAllInTackSettings(selectedCog, shouldApplyToAll);
+    trackApplyToAllInTrackSettings(selectedCog, shouldApplyToAll);
   };
 
   return {

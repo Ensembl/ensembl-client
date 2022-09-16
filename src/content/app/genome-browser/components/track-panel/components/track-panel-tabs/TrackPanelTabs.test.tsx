@@ -33,7 +33,7 @@ import { TrackSet } from '../../trackPanelConfig';
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackTrackPanelTabChange: jest.fn()
+    reportTrackPanelTabChange: jest.fn()
   })
 );
 

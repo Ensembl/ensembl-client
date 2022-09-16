@@ -82,7 +82,7 @@ jest.mock(
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackTrackPanelToggled: jest.fn()
+    reportTrackPanelToggled: jest.fn()
   })
 );
 

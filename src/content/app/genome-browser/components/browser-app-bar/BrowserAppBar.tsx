@@ -41,7 +41,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
-  const { trackSpeciesChangeLinkClicked, trackGenomeChanged } =
+  const { trackSpeciesChange, trackGenomeChanged } =
     useGenomeBrowserAnalytics();
 
   const onSpeciesSelect = (species: CommittedItem) => {
@@ -63,10 +63,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
 
   const speciesSelectorLink = useMemo(() => {
     return (
-      <Link
-        to={urlFor.speciesSelector()}
-        onClick={trackSpeciesChangeLinkClicked}
-      >
+      <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
         Change
       </Link>
     );
