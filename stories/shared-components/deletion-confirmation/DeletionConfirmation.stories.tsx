@@ -24,6 +24,9 @@ type DefaultArgs = {
 
 export const DefaultDeletionConfirmation = (args: DefaultArgs) => (
   <DeletionConfirmation
+    warningText="Are you sure you want to delete?"
+    confirmText="Delete"
+    cancelText="Do not delete"
     onConfirm={() => args.onClick('Confirmed')}
     onCancel={() => args.onClick('Cancel')}
     {...args}
