@@ -30,14 +30,15 @@ const Pagination = (props: PaginationProps) => {
   const { currentPageNumber, lastPageNumber } = props;
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let pageNumberFromInput = Number(event.target.value);
+    const pageNumberFromInput = Number(event.target.value);
 
-    if (isNaN(pageNumberFromInput)) {
-      pageNumberFromInput = currentPageNumber;
-    } else if (pageNumberFromInput > lastPageNumber) {
-      pageNumberFromInput = lastPageNumber;
-    } else if (pageNumberFromInput < 1) {
-      pageNumberFromInput = 1;
+    if (
+      isNaN(pageNumberFromInput) ||
+      pageNumberFromInput > lastPageNumber ||
+      pageNumberFromInput < 1
+    ) {
+      event.preventDefault();
+      return;
     }
 
     props.onChange(pageNumberFromInput);

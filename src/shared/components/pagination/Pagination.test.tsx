@@ -36,12 +36,12 @@ describe('<Pagination />', () => {
     jest.resetAllMocks();
   });
 
-  test('renders without error', () => {
+  it('renders without error', () => {
     container = renderPagination().container;
     expect(() => container).not.toThrow();
   });
 
-  test('left chevron button is disabled on first page', () => {
+  it('left chevron button is disabled on first page', () => {
     container = renderPagination({
       currentPageNumber: 1
     }).container;
@@ -50,7 +50,7 @@ describe('<Pagination />', () => {
     expect(leftChevronButton.hasAttribute('disabled')).toBe(true);
   });
 
-  test('left chevron button is enabled when currentPageNumber > 1 ', () => {
+  it('left chevron button is enabled when currentPageNumber > 1 ', () => {
     container = renderPagination({
       currentPageNumber: 2
     }).container;
@@ -59,7 +59,7 @@ describe('<Pagination />', () => {
     expect(leftChevronButton.hasAttribute('disabled')).toBe(false);
   });
 
-  test('right chevron button is enabled when currentPageNumber is less lastPageNumber', () => {
+  it('right chevron button is enabled when currentPageNumber is less lastPageNumber', () => {
     container = renderPagination({
       currentPageNumber: 9,
       lastPageNumber: 10
@@ -69,7 +69,7 @@ describe('<Pagination />', () => {
     expect(rightChevronButton.hasAttribute('disabled')).toBe(false);
   });
 
-  test('right chevron button is disabled when currentPageNumber is equal to lastPageNumber', () => {
+  it('right chevron button is disabled when currentPageNumber is equal to lastPageNumber', () => {
     container = renderPagination({
       currentPageNumber: 10,
       lastPageNumber: 10
@@ -79,33 +79,25 @@ describe('<Pagination />', () => {
     expect(rightChevronButton.hasAttribute('disabled')).toBe(true);
   });
 
-  test('prevents invalid user inputs', async () => {
+  it('prevents invalid user inputs', async () => {
     container = renderPagination().container;
     const inputElement = container.querySelector('input') as Element;
 
     // Typing non-numeric characters
     await userEvent.type(inputElement, 'a');
-    expect(defaultProps.onChange).toBeCalledWith(
-      defaultProps.currentPageNumber
-    );
+    expect(defaultProps.onChange).not.toBeCalled();
 
-    // Entering a number less than 1
-    await userEvent.type(inputElement, '0');
-    expect(defaultProps.onChange).toBeCalledWith(
-      defaultProps.currentPageNumber
-    );
+    // clearing the input
+    await userEvent.clear(inputElement);
+    expect(defaultProps.onChange).not.toBeCalled();
 
     // Entering a number greater than total pages count
     await userEvent.type(inputElement, String(defaultProps.lastPageNumber + 1));
-    expect(defaultProps.onChange).toBeCalledWith(
-      defaultProps.currentPageNumber
-    );
+    expect(defaultProps.onChange).not.toBeCalledWith();
 
     // Pasting a number greater than total pages count
     await userEvent.click(inputElement);
     await userEvent.paste(String(defaultProps.lastPageNumber + 1));
-    expect(defaultProps.onChange).toBeCalledWith(
-      defaultProps.currentPageNumber
-    );
+    expect(defaultProps.onChange).not.toBeCalledWith();
   });
 });
