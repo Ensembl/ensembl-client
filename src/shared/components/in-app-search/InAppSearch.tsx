@@ -57,6 +57,7 @@ export type Props = {
   genomeId: string;
   genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   mode: InAppSearchMode;
+  onSearchSubmit?: (query: string) => void;
 };
 
 const InAppSearch = (props: Props) => {
@@ -76,6 +77,7 @@ const InAppSearch = (props: Props) => {
 
   const onSearchSubmit = async () => {
     setIsLoading(true);
+    props.onSearchSubmit?.(query);
 
     const searchParams = {
       app,
