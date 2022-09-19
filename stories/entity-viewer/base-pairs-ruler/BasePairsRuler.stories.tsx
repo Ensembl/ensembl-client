@@ -54,7 +54,12 @@ export const BasePairsRulerStory = () => {
 
   return (
     <div className={styles.container}>
-      <BasePairsRuler length={length} width={800} standalone={true} />
+      <BasePairsRuler
+        length={length}
+        width={800}
+        unitsLabel="bp"
+        standalone={true}
+      />
       <div>
         <LengthInputForm value={length} onChange={handleLenghtChange} />
       </div>

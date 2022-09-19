@@ -6,11 +6,11 @@
 
 .axis,
 .tick {
-  fill: $orange;
+  fill: var(--sequence-ruler-color, #{$orange});
 }
 
 .label {
-  fill: white;
+  fill: var(--sequence-ruler-label-color, black);
   font-size: 10px;
   font-family: $font-family-monospace;
 }

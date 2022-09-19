@@ -15,7 +15,6 @@
  */
 
 import React, { useRef, useState } from 'react';
-import classNames from 'classnames';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
@@ -54,10 +53,6 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
-  const rulerWrapperClassName = classNames(
-    styles.resultsSummaryRow,
-    styles.rulerWrapper
-  );
 
   return (
     <div className={styles.wrapper}>
@@ -108,8 +103,8 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             />
           );
         })}
-      <div className={rulerWrapperClassName}>
-        <div ref={rulerContainer} className={styles.summaryPlot}>
+      <div className={styles.rulerPlacementGrid}>
+        <div ref={rulerContainer} className={styles.rulerContainer}>
           {shouldShowJobResult && (
             <BasePairsRuler
               width={plotwidth}
