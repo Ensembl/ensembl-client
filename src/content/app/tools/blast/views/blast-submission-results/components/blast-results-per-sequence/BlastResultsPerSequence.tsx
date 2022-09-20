@@ -26,8 +26,10 @@ import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResul
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
-import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastSubmissionParameters,
+  BlastJobWithResults
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -39,7 +41,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  blastResults: BlastResult[];
+  blastResults: BlastJobWithResults[];
   parameters: BlastSubmissionParameters;
 };
 
@@ -100,7 +102,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <SingleBlastJobResult
               key={result.jobId}
               species={speciesInfo}
-              jobId={result.jobId}
+              jobResult={result}
               diagramWidth={plotwidth}
               blastDatabase={parameters.database as DatabaseType}
             />

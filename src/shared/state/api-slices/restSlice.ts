@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
 import {
   fetch as crossFetch,
   Headers as crossFetchHeaders,
   Request as crossFetchRequest,
   Response as crossFetchResponse
 } from 'cross-fetch';
+
+import type { FetchArgs } from '@reduxjs/toolkit/dist/query/fetchBaseQuery';
 
 /**
  * TODO:
@@ -38,8 +40,31 @@ if (!globalThis.fetch) {
   globalThis.Response = crossFetchResponse;
 }
 
+// all queries will retry up to 5 times upon server error with the status code within the 500 range
+// see docs: https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#automatic-retries
+const staggeredBaseQueryWithBailout = retry(
+  async (args: string | FetchArgs, api, extraOptions) => {
+    const result = await fetchBaseQuery({ baseUrl: '/', fetchFn: fetch })(
+      args,
+      api,
+      extraOptions
+    );
+
+    // bail out of re-tries immediately if the error is in the 400 range (client's fault);
+    // this is unlikely to change; and subsequent retries will be redundant
+    if (Number(result.error?.status) < 500) {
+      retry.fail(result.error);
+    }
+
+    return result;
+  },
+  {
+    maxRetries: 5
+  }
+);
+
 export default createApi({
   reducerPath: 'restApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/', fetchFn: fetch }),
+  baseQuery: staggeredBaseQueryWithBailout,
   endpoints: () => ({}) // will inject endpoints in other files
 });

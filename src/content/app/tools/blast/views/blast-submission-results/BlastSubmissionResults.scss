@@ -1,8 +1,16 @@
 @import 'src/styles/common';
 
 $double_standard_gutter: calc($standard-gutter * 2);
+$container_max_width: 1860px;
 
 .blastSubmissionResultsContainer {
-  max-width: 1860px;
+  max-width: $container_max_width;
   padding: 0 $standard-gutter $global-padding-bottom $double_standard_gutter;
+}
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  max-width: $container_max_width;
+  padding: 1rem 0 2rem;
 }
