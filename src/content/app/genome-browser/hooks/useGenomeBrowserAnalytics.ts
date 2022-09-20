@@ -170,11 +170,14 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const reportTrackPanelSectionToggled = (sectionName: string) => {
+  const reportTrackPanelSectionToggled = (
+    sectionName: string,
+    status: boolean
+  ) => {
     sendTrackEvent({
       category: 'track_panel',
       label: sectionName,
-      action: 'section_toggled',
+      action: 'section_' + (status ? 'opened' : 'closed'),
       feature
     });
   };

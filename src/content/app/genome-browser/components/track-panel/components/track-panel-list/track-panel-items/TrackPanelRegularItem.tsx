@@ -80,7 +80,7 @@ const TrackPanelRegularItem = (props: Props) => {
         : Status.SELECTED;
 
     toggleTrack({ trackId: track_id, status: newStatus });
-    reportTrackVisibilityToggled(track_id, newStatus === Status.SELECTED);
+    reportTrackVisibilityToggled(props.label, newStatus === Status.SELECTED);
 
     dispatch(
       updateCommonTrackStates({

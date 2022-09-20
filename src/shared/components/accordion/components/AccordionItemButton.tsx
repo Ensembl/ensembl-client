@@ -31,7 +31,7 @@ type Props = DivAttributes & {
   extendDefaultStyles: boolean;
   toggleExpanded: () => void;
   disabled?: boolean;
-  onToggle?: () => void;
+  onToggle?: (status: boolean) => void;
 };
 
 export const AccordionItemButton = (props: Props) => {
@@ -56,7 +56,7 @@ export const AccordionItemButton = (props: Props) => {
 
   const onClick = () => {
     if (props && props.onToggle) {
-      props.onToggle();
+      props.onToggle(!Boolean(rest['aria-expanded']));
     }
 
     toggleExpanded();
@@ -86,7 +86,10 @@ AccordionItemButton.defaultProps = {
   extendDefaultStyles: true
 };
 
-type WrapperProps = { disabled?: boolean; onToggle?: () => void } & Pick<
+type WrapperProps = {
+  disabled?: boolean;
+  onToggle?: (status: boolean) => void;
+} & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;
