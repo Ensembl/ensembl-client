@@ -51,20 +51,24 @@ const BlastSubmissionResults = () => {
 
 const Main = () => {
   const { submissionId } = useParams() as { submissionId: string };
+  // Since reading from IndexedDB is asynchronous; it is conceivable that blastSubmission may be null/undefined
   const blastSubmission = useAppSelector((state) =>
     getBlastSubmissionById(state, submissionId)
   );
   const dispatch = useAppDispatch();
 
-  const blastSubmissionJobIds = blastSubmission.results.map((job) => job.jobId);
+  const blastSubmissionJobIds =
+    blastSubmission?.results.map((job) => job.jobId) || [];
   const {
     currentData: allBlastJobResults,
     isLoading,
     error
-  } = useFetchAllBlastJobsQuery(blastSubmissionJobIds);
+  } = useFetchAllBlastJobsQuery(blastSubmissionJobIds, {
+    skip: !blastSubmissionJobIds.length
+  });
 
   useEffect(() => {
-    if (!blastSubmission.seen) {
+    if (blastSubmission && !blastSubmission.seen) {
       dispatch(markBlastSubmissionAsSeen(blastSubmission.id));
     }
   }, [blastSubmission?.id]);
