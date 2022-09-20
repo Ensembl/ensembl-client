@@ -28,11 +28,11 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 import UnsplicedTranscript, {
   UnsplicedTranscriptProps
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import styles from './GeneOverviewImage.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
@@ -64,7 +64,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
       <StrandIndicator {...props} />
       <NumberOfTranscripts {...props} />
       <div className={styles.ruler}>
-        <BasePairsRuler
+        <FeatureLengthRuler
           length={length}
           width={gene_image_width}
           unitsLabel="bp"

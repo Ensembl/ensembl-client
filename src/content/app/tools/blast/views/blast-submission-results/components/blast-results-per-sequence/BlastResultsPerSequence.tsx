@@ -19,7 +19,7 @@ import React, { useRef, useState } from 'react';
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 
@@ -106,7 +106,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
       <div className={styles.rulerPlacementGrid}>
         <div ref={rulerContainer} className={styles.rulerContainer}>
           {shouldShowJobResult && (
-            <BasePairsRuler
+            <FeatureLengthRuler
               width={plotwidth}
               length={sequenceValue.length}
               standalone={true}

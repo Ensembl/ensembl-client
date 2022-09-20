@@ -16,7 +16,7 @@
 
 import React, { useState, useRef } from 'react';
 
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import styles from './BasePairsRuler.stories.scss';
 
@@ -44,7 +44,7 @@ const LengthInputForm = (props: ContainerProps) => {
   );
 };
 
-export const BasePairsRulerStory = () => {
+export const FeatureLengthRulerStory = () => {
   const initialLength = 80792;
   const [length, setLength] = useState(initialLength);
 
@@ -54,7 +54,7 @@ export const BasePairsRulerStory = () => {
 
   return (
     <div className={styles.container}>
-      <BasePairsRuler
+      <FeatureLengthRuler
         length={length}
         width={800}
         unitsLabel="bp"
@@ -67,8 +67,8 @@ export const BasePairsRulerStory = () => {
   );
 };
 
-BasePairsRulerStory.storyName = 'default';
+FeatureLengthRulerStory.storyName = 'default';
 
 export default {
-  title: 'Components/Entity Viewer/BasePairsRuler'
+  title: 'Components/Shared Components/BasePairsRuler'
 };

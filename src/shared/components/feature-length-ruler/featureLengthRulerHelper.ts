@@ -94,18 +94,16 @@ const getLabelledTicks = (
   return labelledTicks;
 };
 
-const buildFilterForLabels = (powerOfTen: number, totalLength: number) => (
-  tick: number,
-  index: number,
-  ticks: number[]
-) => {
-  const lastIndex = ticks.length - 1;
+const buildFilterForLabels =
+  (powerOfTen: number, totalLength: number) =>
+  (tick: number, index: number, ticks: number[]) => {
+    const lastIndex = ticks.length - 1;
 
-  if (tick % powerOfTen !== 0) {
-    return false;
-  } else if (index !== lastIndex) {
-    return true;
-  } else {
-    return totalLength - tick > totalLength * 0.1;
-  }
-};
+    if (tick % powerOfTen !== 0) {
+      return false;
+    } else if (index !== lastIndex) {
+      return true;
+    } else {
+      return totalLength - tick > totalLength * 0.1;
+    }
+  };

@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import BasePairsRuler from './BasePairsRuler';
+import BasePairsRuler from './FeatureLengthRuler';
 
 const defaultProps = {
   length: 80792,
