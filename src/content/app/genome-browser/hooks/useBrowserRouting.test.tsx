@@ -64,7 +64,7 @@ const humanGenomeInfo = {
   common_name: 'Human',
   genome_id: 'homo_sapiens_GCA_000001405_28',
   scientific_name: 'Homo sapiens',
-  url_slug: 'grch38'
+  genome_tag: 'grch38'
 };
 
 const wheatGenomeInfo = {
@@ -72,19 +72,19 @@ const wheatGenomeInfo = {
   common_name: null,
   genome_id: 'triticum_aestivum_GCA_900519105_1',
   scientific_name: 'Triticum aestivum',
-  url_slug: 'iwgsc'
+  genome_tag: 'iwgsc'
 };
 
 const committedHuman = {
   ...createSelectedSpecies(),
   genome_id: humanGenomeInfo.genome_id,
-  url_slug: humanGenomeInfo.url_slug
+  genome_tag: humanGenomeInfo.genome_tag
 };
 
 const committedWheat = {
   ...createSelectedSpecies(),
   genome_id: wheatGenomeInfo.genome_id,
-  url_slug: wheatGenomeInfo.url_slug
+  genome_tag: wheatGenomeInfo.genome_tag
 };
 
 const mockState = {
@@ -170,7 +170,7 @@ const server = setupServer(
 
     if (
       genomeId === humanGenomeInfo.genome_id ||
-      genomeId === humanGenomeInfo.url_slug
+      genomeId === humanGenomeInfo.genome_tag
     ) {
       return res(
         ctx.json({
@@ -179,7 +179,7 @@ const server = setupServer(
       );
     } else if (
       genomeId === wheatGenomeInfo.genome_id ||
-      genomeId === wheatGenomeInfo.url_slug
+      genomeId === wheatGenomeInfo.genome_tag
     ) {
       return res(
         ctx.json({
@@ -219,7 +219,7 @@ describe('useBrowserRouting', () => {
       // yet this is how the code currently behaves
       await waitFor(() => {
         expect(testContext.url).toBe(
-          `/genome-browser/${wheatGenomeInfo.url_slug}`
+          `/genome-browser/${wheatGenomeInfo.genome_tag}`
         );
       });
     });
@@ -232,7 +232,7 @@ describe('useBrowserRouting', () => {
       // is reformatted to gene:ENSG00000139618 in the url;
       // this can be tested by examining TestComponent after a switch to react-router v6
       expect(testContext.url).toBe(
-        `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
+        `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
       );
     });
 
@@ -252,7 +252,7 @@ describe('useBrowserRouting', () => {
 
       // this is useless behaviour; yet this is how the code currently behaves
       expect(testContext.url).toBe(
-        `/genome-browser/${committedWheat.url_slug}`
+        `/genome-browser/${committedWheat.genome_tag}`
       );
     });
   });
@@ -260,7 +260,7 @@ describe('useBrowserRouting', () => {
   describe('navigation to /genome-browser/:genome_id', () => {
     it('sets the data from the url in redux', async () => {
       const { store } = renderComponent({
-        path: `/genome-browser/${wheatGenomeInfo.url_slug}`
+        path: `/genome-browser/${wheatGenomeInfo.genome_tag}`
       });
 
       await waitFor(() => {
@@ -272,11 +272,13 @@ describe('useBrowserRouting', () => {
     });
 
     it('redirects to url containing focus id if available in redux', async () => {
-      renderComponent({ path: `/genome-browser/${humanGenomeInfo.url_slug}` });
+      renderComponent({
+        path: `/genome-browser/${humanGenomeInfo.genome_tag}`
+      });
 
       await waitFor(() => {
         expect(testContext.url).toBe(
-          `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618`
+          `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618`
         );
       });
     });
@@ -285,7 +287,7 @@ describe('useBrowserRouting', () => {
   describe('navigation to /genome-browser/:genome_id with focus object', () => {
     it('sets the data from the url in redux', async () => {
       const geneStableId = 'TraesCS1D02G435500';
-      const url = `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:${geneStableId}`;
+      const url = `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:${geneStableId}`;
       const { store } = renderComponent({
         path: url
       });
@@ -307,7 +309,7 @@ describe('useBrowserRouting', () => {
 
     it('tells genome browser to switch to the focus object from the url', async () => {
       const geneStableId = 'ENSG00000139618';
-      const url = `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618`;
+      const url = `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618`;
       renderComponent({
         path: url
       });
@@ -324,7 +326,7 @@ describe('useBrowserRouting', () => {
   describe('navigation to /genome-browser/:genome_id with focus object and location', () => {
     it('sets the data from the url in redux', async () => {
       const geneStableId = 'TraesCS1D02G435500';
-      const url = `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:${geneStableId}&location=3D:100-200`;
+      const url = `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:${geneStableId}&location=3D:100-200`;
       const { store } = renderComponent({
         path: url
       });
@@ -350,7 +352,7 @@ describe('useBrowserRouting', () => {
 
     it('tells genome browser to set the focus object and the location from the url', async () => {
       renderComponent({
-        path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
+        path: `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
       });
 
       await waitFor(() => {
@@ -367,7 +369,7 @@ describe('useBrowserRouting', () => {
     describe('changeGenomeId', () => {
       it('redirects to correct url when focus id and location for new genome are unavailable', () => {
         renderComponent({
-          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
+          path: `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
         });
 
         act(() => {
@@ -375,7 +377,7 @@ describe('useBrowserRouting', () => {
         });
 
         expect(testContext.url).toBe(
-          `/genome-browser/${wheatGenomeInfo.url_slug}`
+          `/genome-browser/${wheatGenomeInfo.genome_tag}`
         );
       });
 
@@ -387,7 +389,7 @@ describe('useBrowserRouting', () => {
         );
         renderComponent({
           state: updatedState,
-          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
+          path: `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
         });
 
         act(() => {
@@ -395,7 +397,7 @@ describe('useBrowserRouting', () => {
         });
 
         expect(testContext.url).toBe(
-          `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:TraesCS3D02G273600`
+          `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:TraesCS3D02G273600`
         );
       });
 
@@ -412,7 +414,7 @@ describe('useBrowserRouting', () => {
         );
         renderComponent({
           state: updatedState,
-          path: `/genome-browser/${humanGenomeInfo.url_slug}?focus=gene:ENSG00000139618&location=13:100-200`
+          path: `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
         });
 
         act(() => {
@@ -420,7 +422,7 @@ describe('useBrowserRouting', () => {
         });
 
         expect(testContext.url).toBe(
-          `/genome-browser/${wheatGenomeInfo.url_slug}?focus=gene:TraesCS3D02G273600&location=3D:1000-1100`
+          `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:TraesCS3D02G273600&location=3D:1000-1100`
         );
       });
     });

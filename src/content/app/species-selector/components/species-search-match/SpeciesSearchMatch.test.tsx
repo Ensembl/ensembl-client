@@ -33,7 +33,7 @@ const matchTemplate = {
       match: MatchedFieldName.COMMON_NAME
     }
   ],
-  url_slug: null
+  genome_tag: null
 };
 
 describe('<SpeciesSearchMatch />', () => {

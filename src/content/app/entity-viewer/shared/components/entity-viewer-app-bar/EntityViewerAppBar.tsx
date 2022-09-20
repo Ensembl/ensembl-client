@@ -38,7 +38,7 @@ const EntityViewerAppBar = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
 
   const onSpeciesTabClick = (species: CommittedItem) => {
-    const genomeIdForUrl = species.url_slug ?? species.genome_id;
+    const genomeIdForUrl = species.genome_tag ?? species.genome_id;
     const url = urlFor.entityViewer({
       genomeId: genomeIdForUrl
     });

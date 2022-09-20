@@ -60,7 +60,7 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   const navigate = useNavigate();
 
   const showSpeciesPage = (species: CommittedItem) => {
-    const genomeIdForUrl = species.url_slug ?? species.genome_id;
+    const genomeIdForUrl = species.genome_tag ?? species.genome_id;
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: genomeIdForUrl
     });
