@@ -22,6 +22,7 @@ import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/bla
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import {
   markBlastSubmissionAsSeen,
+  type BlastSubmission,
   type BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -71,12 +72,9 @@ const Main = () => {
   if (!blastSubmission) {
     return null;
   } else if (isLoading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <CircleLoader />
-      </div>
-    );
+    return <LoadingView submission={blastSubmission} />;
   } else if (error) {
+    // TODO: replace this with a proper error component when it is designed
     return (
       <div>An error occurred while loading data for this BLAST submission</div>
     );
@@ -128,6 +126,22 @@ const Main = () => {
         isAnyJobRunning={false}
       />
       {groupedBlastResultsPerSequence}
+    </div>
+  );
+};
+
+const LoadingView = (props: { submission: BlastSubmission }) => {
+  return (
+    <div className={styles.blastSubmissionResultsContainer}>
+      <BlastSubmissionHeader
+        submission={props.submission}
+        isAnyJobRunning={
+          true
+        } /* this will disable control buttons of the header */
+      />
+      <div className={styles.loaderContainer}>
+        <CircleLoader />
+      </div>
     </div>
   );
 };
