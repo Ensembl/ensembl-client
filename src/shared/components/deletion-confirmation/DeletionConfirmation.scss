@@ -2,13 +2,21 @@
 
 .deleteConfirmationContainer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  column-gap: 30px;
+  gap: 30px;
 }
 
 .warningText {
   color: var(--deletion-confirmation-warning-color, #{$red});
+}
+
+.controlsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 30px;
 }
 
 .cancel {

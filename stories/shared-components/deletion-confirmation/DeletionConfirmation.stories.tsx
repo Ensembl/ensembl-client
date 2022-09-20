@@ -35,6 +35,19 @@ export const DefaultDeletionConfirmation = (args: DefaultArgs) => (
 
 DefaultDeletionConfirmation.storyName = 'default';
 
+export const wrappedDeletionConfirmation = (args: DefaultArgs) => (
+  <DeletionConfirmation
+    warningText="This is a very long text which will wrap to the next line and we want the text to stay on the line and only the buttons to wrap to the next line. Are you sure you want to to remove this item?"
+    confirmText="Remove this item"
+    cancelText="Do not remove this item"
+    onConfirm={() => args.onClick('Confirmed')}
+    onCancel={() => args.onClick('Cancel')}
+    {...args}
+  />
+);
+
+wrappedDeletionConfirmation.storyName = 'Text wrapping';
+
 export default {
   title: 'Components/Shared Components/Deletion Confirmation',
   argTypes: { onClick: { action: 'click' } }

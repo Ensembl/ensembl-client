@@ -38,13 +38,15 @@ const DeletionConfirmation = (props: DeletionConfirmationProps) => {
 
   return (
     <div className={containerClass}>
-      <span className={styles.warningText}>{props.warningText}</span>
-      <PrimaryButton onClick={props.onConfirm}>
-        {props.confirmText}
-      </PrimaryButton>
-      <span className={styles.cancel} onClick={props.onCancel}>
-        {props.cancelText}
-      </span>
+      <div className={styles.warningText}>{props.warningText}</div>
+      <div className={styles.controlsContainer}>
+        <PrimaryButton onClick={props.onConfirm}>
+          {props.confirmText}
+        </PrimaryButton>
+        <span className={styles.cancel} onClick={props.onCancel}>
+          {props.cancelText}
+        </span>
+      </div>
     </div>
   );
 };
