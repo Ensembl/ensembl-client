@@ -42,7 +42,7 @@ if (!globalThis.fetch) {
 
 // all queries will retry up to 5 times upon server error with the status code within the 500 range
 // see docs: https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#automatic-retries
-const staggeredBaseQueryWithBailOut = retry(
+const staggeredBaseQueryWithBailout = retry(
   async (args: string | FetchArgs, api, extraOptions) => {
     const result = await fetchBaseQuery({ baseUrl: '/', fetchFn: fetch })(
       args,
@@ -65,6 +65,6 @@ const staggeredBaseQueryWithBailOut = retry(
 
 export default createApi({
   reducerPath: 'restApi',
-  baseQuery: staggeredBaseQueryWithBailOut,
+  baseQuery: staggeredBaseQueryWithBailout,
   endpoints: () => ({}) // will inject endpoints in other files
 });

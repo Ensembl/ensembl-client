@@ -28,7 +28,7 @@ import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputPar
 
 import type {
   BlastSubmissionParameters,
-  BlastJob
+  BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -41,7 +41,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  blastResults: Array<BlastJob & { data: NonNullable<BlastJob['data']> }>;
+  blastResults: BlastJobWithResults[];
   parameters: BlastSubmissionParameters;
 };
 
