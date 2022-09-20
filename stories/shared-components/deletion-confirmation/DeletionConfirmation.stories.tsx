@@ -18,6 +18,8 @@ import React from 'react';
 
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
+import styles from './DeletionConfirmation.scss';
+
 type DefaultArgs = {
   onClick: (...args: any) => void;
 };
@@ -36,17 +38,20 @@ export const DefaultDeletionConfirmation = (args: DefaultArgs) => (
 DefaultDeletionConfirmation.storyName = 'default';
 
 export const wrappedDeletionConfirmation = (args: DefaultArgs) => (
-  <DeletionConfirmation
-    warningText="This is a very long text which will wrap to the next line and we want the text to stay on the line and only the buttons to wrap to the next line. Are you sure you want to to remove this item?"
-    confirmText="Remove this item"
-    cancelText="Do not remove this item"
-    onConfirm={() => args.onClick('Confirmed')}
-    onCancel={() => args.onClick('Cancel')}
-    {...args}
-  />
+  <div className={styles.wrapper}>
+    <DeletionConfirmation
+      warningText="This is a very long text which will wrap to the next line and we want the text to stay on the line and only the buttons to wrap to the next line. Are you sure you want to to remove this item?"
+      confirmText="Remove this item"
+      cancelText="Do not remove this item"
+      contentAlignRight={true}
+      onConfirm={() => args.onClick('Confirmed')}
+      onCancel={() => args.onClick('Cancel')}
+      {...args}
+    />
+  </div>
 );
 
-wrappedDeletionConfirmation.storyName = 'Text wrapping';
+wrappedDeletionConfirmation.storyName = 'Text wrapping and align right';
 
 export default {
   title: 'Components/Shared Components/Deletion Confirmation',

@@ -4,8 +4,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  column-gap: 30px;
+  row-gap: 10px;
+}
+
+.contentAlignRight {
   justify-content: flex-end;
-  gap: 30px;
 }
 
 .warningText {
@@ -15,7 +19,6 @@
 .controlsContainer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   column-gap: 30px;
 }
 
