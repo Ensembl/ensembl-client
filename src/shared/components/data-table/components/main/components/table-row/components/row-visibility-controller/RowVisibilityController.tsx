@@ -28,10 +28,14 @@ import {
 import styles from './RowVisibilityController.scss';
 
 const RowVisibilityController = () => {
-  const { getCurrentPageRows, hiddenRowIdsInDraft, hiddenRowIds, dispatch } =
-    useDataTable();
+  const {
+    getSortedCurrentPageRows,
+    hiddenRowIdsInDraft,
+    hiddenRowIds,
+    dispatch
+  } = useDataTable();
 
-  const currentPageRows = getCurrentPageRows();
+  const currentPageRows = getSortedCurrentPageRows();
 
   const cancelChanges = () => {
     dispatch({

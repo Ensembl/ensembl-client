@@ -47,24 +47,6 @@ const useDataTable = () => {
       : rows;
   };
 
-  const getCurrentPageRows = () => {
-    const totalRows = rows.length;
-    const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
-    const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
-
-    const visibleRows = getAllVisibleRows();
-
-    if (totalRows < rowsPerPage) {
-      return visibleRows;
-    }
-
-    // Filter the rows that need to be displayed in the current page
-    return visibleRows.filter(
-      (_, rowIndex) =>
-        !(rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex)
-    );
-  };
-
   const getSortedCurrentPageRows = () => {
     const visibleRows = getAllVisibleRows();
     const totalRows = rows.length;
@@ -106,7 +88,6 @@ const useDataTable = () => {
 
   return {
     getAllVisibleRows,
-    getCurrentPageRows,
     getSortedCurrentPageRows,
     setPageNumber,
     ...dataTableContext

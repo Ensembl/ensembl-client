@@ -2,9 +2,10 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns:
-    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr);
+  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
+      48%,
+      1050px
+    ) [species] minmax(20%, 1fr);
 
   grid-template-areas:
     'sequence-label hits-diagram species'
@@ -68,4 +69,8 @@
 
 .nowrap {
   white-space: nowrap;
+}
+
+.hitOrientation {
+  font-weight: $light;
 }

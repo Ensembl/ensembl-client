@@ -235,7 +235,9 @@ const HitsTable = (props: HitsTableProps) => {
             blastDatabase={blastDatabase}
             hitHsp={hitHsp}
           />,
-          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
+          <span key={counter} className={styles.hitOrientation}>
+            {hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse'}
+          </span>,
           hitHsp.hsp_hit_from,
           hitHsp.hsp_hit_to,
           hitHsp.hsp_query_from,
