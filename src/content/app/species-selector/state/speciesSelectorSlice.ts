@@ -61,7 +61,6 @@ export type SpeciesSelectorState = {
   };
   ui: {
     isSelectingStrain: boolean;
-    isRemovingSpecies: boolean;
   };
   search: {
     text: string;
@@ -176,8 +175,7 @@ const initialState: SpeciesSelectorState = {
     search: LoadingState.NOT_REQUESTED
   },
   ui: {
-    isSelectingStrain: false,
-    isRemovingSpecies: false
+    isSelectingStrain: false
   },
   search: {
     text: '',
@@ -192,9 +190,6 @@ const speciesSelectorSlice = createSlice({
   name: 'species-selector',
   initialState,
   reducers: {
-    setSpeciesRemoveStatus(state, action: PayloadAction<boolean>) {
-      state.ui.isRemovingSpecies = action.payload;
-    },
     setSearchText(state, action: PayloadAction<string>) {
       state.search.text = action.payload;
     },
@@ -252,7 +247,6 @@ const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
 });
 
 export const {
-  setSpeciesRemoveStatus,
   setSearchText,
   updateCommittedSpecies,
   setSelectedSpecies,

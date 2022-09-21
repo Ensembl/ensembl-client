@@ -22,9 +22,6 @@ import find from 'lodash/find';
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-export const getSpeciesRemoveStatus = (state: RootState) =>
-  state.speciesSelector.ui.isRemovingSpecies;
-
 export const getSearchText = (state: RootState) =>
   state.speciesSelector.search.text;
 
