@@ -44,7 +44,7 @@ import { RootState } from 'src/store';
 import styles from './SpeciesTitleArea.scss';
 
 const useSpecies = () => {
-  const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const popularSpecies = useAppSelector(getPopularSpecies);
   const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)

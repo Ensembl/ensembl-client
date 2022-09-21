@@ -35,7 +35,7 @@ import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSide
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
-import SpeciesSidebarOverview from './components/species-sidebar-overview/SpeciesSidebarOverview';
+import SpeciesPageSidebar from './components/species-page-sidebar/SpeciesPageSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 import Chevron from 'src/shared/components/chevron/Chevron';
@@ -104,7 +104,7 @@ const SpeciesPageContent = () => {
     return isSpeciesSidebarModalOpened ? (
       <SpeciesSidebarModal />
     ) : (
-      <SpeciesSidebarOverview />
+      <SpeciesPageSidebar />
     );
   };
 

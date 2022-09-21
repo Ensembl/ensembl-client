@@ -26,9 +26,9 @@ import { getActiveGenomeSidebarPayload } from 'src/content/app/species/state/sid
 
 import { fetchSidebarPayload } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
-import styles from './SpeciesSidebarOverview.scss';
+import styles from './SpeciesPageSidebar.scss';
 
-const SpeciesSidebarOverview = () => {
+const SpeciesPageSidebar = () => {
   const dispatch = useAppDispatch();
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const sidebarPayload = useAppSelector(getActiveGenomeSidebarPayload);
@@ -166,4 +166,4 @@ const SpeciesSidebarOverview = () => {
   );
 };
 
-export default SpeciesSidebarOverview;
+export default SpeciesPageSidebar;
