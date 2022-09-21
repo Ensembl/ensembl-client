@@ -18,7 +18,7 @@ import React, { useState, useRef } from 'react';
 
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
-import styles from './BasePairsRuler.stories.scss';
+import styles from './FeatureLengthRuler.stories.scss';
 
 type ContainerProps = {
   value: number;
@@ -70,5 +70,5 @@ export const FeatureLengthRulerStory = () => {
 FeatureLengthRulerStory.storyName = 'default';
 
 export default {
-  title: 'Components/Shared Components/BasePairsRuler'
+  title: 'Components/Shared Components/FeatureLengthRuler'
 };
