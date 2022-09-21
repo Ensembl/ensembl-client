@@ -72,7 +72,10 @@ const useGenomeBrowserTracks = () => {
     // skip the effect if track categories have not yet been fetched
     // or if they have already been set
     if (
-      !(trackCategories && focusObject && trackSettingsForGenome && genomeId)
+      !trackCategories ||
+      !focusObject ||
+      trackSettingsForGenome ||
+      !genomeId
     ) {
       return;
     }
