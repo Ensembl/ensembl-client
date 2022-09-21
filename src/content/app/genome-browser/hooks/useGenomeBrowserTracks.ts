@@ -54,7 +54,9 @@ import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes
 
 const useGenomeBrowserTracks = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const { currentData: trackCategories } = useGenomeTracksQuery(genomeId);
+  const { currentData: trackCategories } = useGenomeTracksQuery(genomeId, {
+    skip: !genomeId
+  });
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings)?.tracks;
   const visibleTrackIds = getVisibleTrackIds(useBrowserCogList().cogList); // get list of ids of tracks currently rendered in genome browser
