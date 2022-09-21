@@ -30,7 +30,7 @@ import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 import type { AppDispatch } from 'src/store';
 import type {
   BlastSubmission,
-  BlastResult
+  BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 /**
@@ -60,13 +60,13 @@ import type {
 
  */
 
-type EnrichedBlastResult = BlastResult & {
+type EnrichedBlastJobWithResults = BlastJobWithResults & {
   csv: string;
   raw: string;
 };
 
 type EnrichedBlastSubmission = BlastSubmission & {
-  results: EnrichedBlastResult[];
+  results: EnrichedBlastJobWithResults[];
 };
 
 const downloadBlastSubmission = async (

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { BlastJob as BlastJobResults } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
-export const createCSVForGenomicBlast = (blastJobResults: BlastJobResults) => {
+export const createCSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -32,7 +32,7 @@ export const createCSVForGenomicBlast = (blastJobResults: BlastJobResults) => {
 
   const rows = [columnNames] as Array<string | number>[];
 
-  for (const hit of blastJobResults.hits) {
+  for (const hit of blastJobResult.hits) {
     for (const hsp of hit.hit_hsps) {
       const {
         evalue,
@@ -65,9 +65,7 @@ export const createCSVForGenomicBlast = (blastJobResults: BlastJobResults) => {
   return formatCSV(rows);
 };
 
-export const createCSVForTranscriptBlast = (
-  blastJobResults: BlastJobResults
-) => {
+export const createCSVForTranscriptBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -83,7 +81,7 @@ export const createCSVForTranscriptBlast = (
 
   const rows = [columnNames] as Array<string | number>[];
 
-  for (const hit of blastJobResults.hits) {
+  for (const hit of blastJobResult.hits) {
     for (const hsp of hit.hit_hsps) {
       const {
         evalue,
@@ -116,7 +114,7 @@ export const createCSVForTranscriptBlast = (
   return formatCSV(rows);
 };
 
-export const createCSVForProteinBlast = (blastJobResults: BlastJobResults) => {
+export const createCSVForProteinBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -132,7 +130,7 @@ export const createCSVForProteinBlast = (blastJobResults: BlastJobResults) => {
 
   const rows = [columnNames] as Array<string | number>[];
 
-  for (const hit of blastJobResults.hits) {
+  for (const hit of blastJobResult.hits) {
     for (const hsp of hit.hit_hsps) {
       const {
         evalue,
@@ -168,7 +166,7 @@ export const createCSVForProteinBlast = (blastJobResults: BlastJobResults) => {
 const getCommonFields = ({
   blastHsp
 }: {
-  blastHsp: BlastJobResults['hits'][number]['hit_hsps'][number];
+  blastHsp: BlastJobResult['hits'][number]['hit_hsps'][number];
 }) => ({
   evalue: blastHsp.hsp_expect,
   hitLength: blastHsp.hsp_align_len,
