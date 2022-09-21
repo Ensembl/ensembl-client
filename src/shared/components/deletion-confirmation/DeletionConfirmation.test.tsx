@@ -62,6 +62,20 @@ describe('DeletionConfirmation', () => {
     );
   });
 
+  it('applies alignment class set from the parent', () => {
+    const { container, rerender } = render(<DeletionConfirmation {...props} />);
+
+    const deletionConfirmation = container.firstChild as HTMLElement;
+    expect(
+      deletionConfirmation.classList.contains('deleteConfirmationContainer')
+    ).toBe(true);
+
+    rerender(<DeletionConfirmation {...props} alignContent="right" />);
+    expect(deletionConfirmation.classList.contains('contentAlignRight')).toBe(
+      true
+    );
+  });
+
   it('it calls correct callback on confirmation', async () => {
     const { container } = render(<DeletionConfirmation {...props} />);
     const button = container.querySelector('button') as HTMLButtonElement;

@@ -25,7 +25,7 @@ export type DeletionConfirmationProps = {
   warningText: string;
   confirmText: string;
   cancelText: string;
-  contentAlignRight?: boolean;
+  alignContent?: 'left' | 'right';
   onConfirm: () => void;
   onCancel: () => void;
   className?: string;
@@ -34,7 +34,7 @@ export type DeletionConfirmationProps = {
 const DeletionConfirmation = (props: DeletionConfirmationProps) => {
   const containerClass = classNames(
     styles.deleteConfirmationContainer,
-    props.contentAlignRight && styles.contentAlignRight,
+    { [styles.contentAlignRight]: props.alignContent === 'right' },
     props.className
   );
 

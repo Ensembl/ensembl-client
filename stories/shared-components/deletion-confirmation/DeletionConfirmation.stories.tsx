@@ -43,7 +43,7 @@ export const wrappedDeletionConfirmation = (args: DefaultArgs) => (
       warningText="This is a very long text which will wrap to the next line and we want the text to stay on the line and only the buttons to wrap to the next line. Are you sure you want to to remove this item?"
       confirmText="Remove this item"
       cancelText="Do not remove this item"
-      contentAlignRight={true}
+      alignContent="right"
       onConfirm={() => args.onClick('Confirmed')}
       onCancel={() => args.onClick('Cancel')}
       {...args}
