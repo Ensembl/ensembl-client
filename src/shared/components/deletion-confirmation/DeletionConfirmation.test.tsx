@@ -39,13 +39,13 @@ describe('DeletionConfirmation', () => {
     const { container } = render(<DeletionConfirmation {...props} />);
 
     const deleteButton = container.querySelector('button') as HTMLButtonElement;
-    expect(deleteButton?.textContent).toBe('Remove');
+    expect(deleteButton?.textContent).toBe(props.confirmText);
 
     const cancelLink = container.querySelector('.cancel') as HTMLElement;
-    expect(cancelLink?.textContent).toBe('Do not remove');
+    expect(cancelLink?.textContent).toBe(props.cancelText);
 
     const warningText = container.querySelector('.warningText') as HTMLElement;
-    expect(warningText?.textContent).toBe('Do you want to remove?');
+    expect(warningText?.textContent).toBe(props.warningText);
   });
 
   it('applies custom class name passed from the parent', () => {
@@ -62,7 +62,7 @@ describe('DeletionConfirmation', () => {
     );
   });
 
-  it('applies alignment class set from the parent', () => {
+  it('applies alignment set from the parent', () => {
     const { container, rerender } = render(<DeletionConfirmation {...props} />);
 
     const deletionConfirmation = container.firstChild as HTMLElement;
