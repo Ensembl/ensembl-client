@@ -39,7 +39,7 @@ import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -147,18 +147,15 @@ export const BlastSubmissionHeader = (props: Props) => {
         </div>
       </div>
       {deletingJob && (
-        <div className={styles.deleteMessageContainer}>
-          <span className={styles.deleteMessage}>Delete this submission</span>
-          <PrimaryButton onClick={handleDeletion}>Delete</PrimaryButton>
-          <span
-            className={styles.clickable}
-            onClick={() => {
-              setDeletingJob(false);
-            }}
-          >
-            Do not delete
-          </span>
-        </div>
+        <DeletionConfirmation
+          warningText="Delete this submission?"
+          confirmText="Delete"
+          cancelText="Do not delete"
+          className={styles.deleteMessageContainer}
+          onCancel={() => setDeletingJob(false)}
+          onConfirm={handleDeletion}
+          alignContent="right"
+        />
       )}
     </>
   );
