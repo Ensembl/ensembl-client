@@ -172,12 +172,12 @@ const useGenomeBrowserAnalytics = () => {
 
   const reportTrackPanelSectionToggled = (
     sectionName: string,
-    status: boolean
+    isExpanded: boolean
   ) => {
     sendTrackEvent({
       category: 'track_panel',
       label: sectionName,
-      action: 'section_' + (status ? 'opened' : 'closed'),
+      action: 'section_' + (isExpanded ? 'opened' : 'closed'),
       feature
     });
   };

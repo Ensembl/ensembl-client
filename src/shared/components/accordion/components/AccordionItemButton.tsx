@@ -31,7 +31,7 @@ type Props = DivAttributes & {
   extendDefaultStyles: boolean;
   toggleExpanded: () => void;
   disabled?: boolean;
-  onToggle?: (status: boolean) => void;
+  onToggle?: (isExpanded: boolean) => void;
 };
 
 export const AccordionItemButton = (props: Props) => {
@@ -43,6 +43,8 @@ export const AccordionItemButton = (props: Props) => {
     children,
     ...rest
   } = props;
+
+  const isExpanded = Boolean(rest['aria-expanded']);
 
   let styles = className;
 
@@ -56,7 +58,7 @@ export const AccordionItemButton = (props: Props) => {
 
   const onClick = () => {
     if (props && props.onToggle) {
-      props.onToggle(!Boolean(rest['aria-expanded']));
+      props.onToggle(!isExpanded);
     }
 
     toggleExpanded();
@@ -72,10 +74,7 @@ export const AccordionItemButton = (props: Props) => {
       <div>{children}</div>
       {!disabled && (
         <div>
-          <Chevron
-            direction={rest['aria-expanded'] ? 'up' : 'down'}
-            animate={true}
-          />
+          <Chevron direction={isExpanded ? 'up' : 'down'} animate={true} />
         </div>
       )}
     </div>
@@ -88,7 +87,7 @@ AccordionItemButton.defaultProps = {
 
 type WrapperProps = {
   disabled?: boolean;
-  onToggle?: (status: boolean) => void;
+  onToggle?: (isExpanded: boolean) => void;
 } & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>

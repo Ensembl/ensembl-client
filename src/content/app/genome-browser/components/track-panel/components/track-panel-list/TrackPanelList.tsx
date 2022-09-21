@@ -116,8 +116,8 @@ export const TrackPanelList = () => {
                   <AccordionItemButton
                     className={accordionButtonClassNames}
                     disabled={!category.track_list.length}
-                    onToggle={(status: boolean) =>
-                      reportTrackPanelSectionToggled(category.label, status)
+                    onToggle={(isExpanded: boolean) =>
+                      reportTrackPanelSectionToggled(category.label, isExpanded)
                     }
                   >
                     {category.label}
