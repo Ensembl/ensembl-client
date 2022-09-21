@@ -124,7 +124,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
         common_name: genomeInfo.common_name,
         scientific_name: genomeInfo.scientific_name,
         assembly_name: genomeInfo.assembly_name,
-        url_slug: genomeInfo.url_slug,
+        genome_tag: genomeInfo.genome_tag,
         isEnabled: true
       };
       const allCommittedSpecies = [...getCommittedSpecies(state), newSpecies];
@@ -180,7 +180,7 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
         common_name: genome.common_name,
         scientific_name: genome.scientific_name,
         assembly_name: genome.assembly_name,
-        url_slug: genome.url_slug,
+        genome_tag: genome.genome_tag,
         isEnabled: true
       }));
       const allCommittedSpecies = [

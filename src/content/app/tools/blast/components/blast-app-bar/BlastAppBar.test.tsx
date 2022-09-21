@@ -42,7 +42,7 @@ const mockCommittedItems = [
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     assembly_name: 'GRCh37.p13',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   }
 ];

@@ -26,5 +26,5 @@ export const createPopularSpecies = (): PopularSpecies => ({
   image: faker.image.imageUrl(),
   division_ids: [],
   is_available: true,
-  url_slug: null
+  genome_tag: null
 });

@@ -20,7 +20,7 @@ export default [
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     assembly_name: 'GRCh38',
-    url_slug: 'grch38',
+    genome_tag: 'grch38',
     isEnabled: true
   },
   {
@@ -28,7 +28,7 @@ export default [
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     assembly_name: 'GRCh37',
-    url_slug: 'grch37',
+    genome_tag: 'grch37',
     isEnabled: true
   },
   {
@@ -36,7 +36,7 @@ export default [
     common_name: null,
     scientific_name: 'Bifidobacterium longum subsp. longum CECT 7347',
     assembly_name: 'ASM105055v1',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -44,7 +44,7 @@ export default [
     common_name: null,
     scientific_name: 'Arabidopsis thaliana',
     assembly_name: 'TAIR10',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -52,7 +52,7 @@ export default [
     common_name: null,
     scientific_name: 'Drosophila melanogaster',
     assembly_name: 'BDGP6.22',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -60,7 +60,7 @@ export default [
     common_name: null,
     scientific_name: 'Drosophila yakuba',
     assembly_name: 'dyak_caf1',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -68,7 +68,7 @@ export default [
     common_name: null,
     scientific_name: 'Caenorhabditis elegans',
     assembly_name: 'WBcel235',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -76,7 +76,7 @@ export default [
     common_name: 'Mouse',
     scientific_name: 'Mus musculus',
     assembly_name: 'GRCm38.p6',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -84,7 +84,7 @@ export default [
     common_name: 'Dog',
     scientific_name: 'Canis lupus familiaris',
     assembly_name: 'GRCm38.p6',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -92,7 +92,7 @@ export default [
     common_name: 'Maize',
     scientific_name: 'Zea mays',
     assembly_name: 'B73_RefGen_v4',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   },
   {
@@ -100,7 +100,7 @@ export default [
     common_name: null,
     scientific_name: 'Escherichia coli O157:H7 str. EDL933',
     assembly_name: 'ASM666v1',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   }
 ];

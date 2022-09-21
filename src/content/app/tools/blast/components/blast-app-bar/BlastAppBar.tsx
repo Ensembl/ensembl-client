@@ -25,6 +25,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { placeholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
@@ -47,6 +48,14 @@ const BlastAppBar = (props: Props) => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const speciesListIds = useSelector(getSelectedSpeciesIds);
   const dispatch = useDispatch();
+
+  const speciesSelectorLink = useMemo(() => {
+    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+  }, []);
+
+  if (!speciesList.length) {
+    return <AppBar appName={AppName.TOOLS} mainContent={placeholderMessage} />;
+  }
 
   const speciesLozengeClick = (species: CommittedItem) => {
     if (!speciesListIds.includes(species.genome_id)) {
@@ -75,10 +84,6 @@ const BlastAppBar = (props: Props) => {
   ));
 
   const speciesTabs = view === 'blast-form' ? enabledSpecies : disabledSpecies;
-
-  const speciesSelectorLink = useMemo(() => {
-    return <Link to={urlFor.speciesSelector()}>Change</Link>;
-  }, []);
 
   const wrappedSpecies = (
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />

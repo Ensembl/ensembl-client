@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
+import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 export const getBlastSubmissions = (state: RootState) =>
   state.blast.blastResults.submissions;
@@ -34,5 +35,7 @@ export const getViewedBlastSubmissions = (state: RootState) => {
   );
 };
 
-export const getBlastSubmissionById = (state: RootState, id: string) =>
-  state.blast.blastResults.submissions[id];
+export const getBlastSubmissionById = (
+  state: RootState,
+  id: string
+): BlastSubmission | undefined => state.blast.blastResults.submissions[id];

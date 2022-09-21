@@ -71,7 +71,7 @@ const PopularSpeciesButton = (props: Props) => {
     } else if (isSpeciesCommitted) {
       navigate(
         urlFor.speciesPage({
-          genomeId: species.url_slug ?? species.genome_id
+          genomeId: species.genome_tag ?? species.genome_id
         })
       );
     } else {

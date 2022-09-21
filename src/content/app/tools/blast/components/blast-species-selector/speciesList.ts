@@ -20,44 +20,43 @@ const speciesList = [
   {
     assembly_name: 'GRCh38.p13',
     common_name: 'Human',
-    genome_id: 'homo_sapiens_GCA_000001405_28',
+    genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Homo sapiens'
   },
   {
     assembly_name: 'IWGSC',
     common_name: null,
-    genome_id: 'triticum_aestivum_GCA_900519105_1',
+    genome_id: 'a73357ab-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Triticum aestivum'
   },
   {
     assembly_name: 'GRCh37.p13',
     common_name: 'Human',
-    genome_id: 'homo_sapiens_GCA_000001405_14',
+    genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
     scientific_name: 'Homo sapiens'
   },
   {
     assembly_name: 'WBcel235',
     common_name: null,
-    genome_id: 'caenorhabditis_elegans_GCA_000002985_3',
+    genome_id: 'a733550b-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Caenorhabditis elegans'
   },
   {
     assembly_name: 'R64-1-1',
     common_name: null,
-    genome_id: 'saccharomyces_cerevisiae_GCA_000146045_2',
+    genome_id: 'a733574a-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Saccharomyces cerevisiae'
   },
   {
     assembly_name: 'ASM584v2',
     common_name: null,
-    genome_id:
-      'escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2',
+    genome_id: 'a73351f7-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Escherichia coli str. K-12 substr. MG1655'
   },
   {
     assembly_name: 'ASM276v2',
     common_name: null,
-    genome_id: 'plasmodium_falciparum_GCA_000002765_2',
+    genome_id: 'a73356e1-93e7-11ec-a39d-005056b38ce3',
     scientific_name: 'Plasmodium falciparum 3D7'
   }
 ];
