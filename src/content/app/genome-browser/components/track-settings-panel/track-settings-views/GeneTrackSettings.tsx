@@ -90,7 +90,7 @@ export const GeneTrackSettings = () => {
         <div className={styles.subLabel}>Show</div>
         <div>
           <div className={styles.toggleWrapper}>
-            <label>5 transcripts</label>
+            <label>First 5 transcripts</label>
             <SlideToggle
               isOn={shouldShowSeveralTranscripts}
               onChange={handleSeveralTranscriptsToggle}
