@@ -27,7 +27,8 @@ import {
   TableAction,
   type DataTableState,
   type TableTheme,
-  type DataTableColumns
+  type DataTableColumns,
+  type TableRows
 } from './dataTableTypes';
 
 import styles from './DataTable.scss';
@@ -36,10 +37,10 @@ type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
   theme: TableTheme;
-  uniqueColumnId?: string;
   selectableColumnIndex: number;
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
+  rows: TableRows;
 };
 
 export const TableContext = React.createContext(
@@ -51,7 +52,6 @@ export type TableProps = {
   columns: DataTableColumns;
   state?: Partial<DataTableState>;
   theme: TableTheme;
-  uniqueColumnId?: string; // Values in this column will be used to identify individual rows
   selectableColumnIndex: number;
   className?: string;
   expandedContent: { [rowId: string]: ReactNode };
@@ -89,8 +89,11 @@ const DataTable = (props: TableProps) => {
         ...tableState,
         dispatch,
         columns: props.columns,
+        rows: tableState.data.map((row, index) => ({
+          rowId: index,
+          cells: row
+        })),
         theme: props.theme,
-        uniqueColumnId: props.uniqueColumnId,
         selectableColumnIndex: props.selectableColumnIndex,
         expandedContent: props.expandedContent,
         disabledActions: props.disabledActions

@@ -38,7 +38,7 @@ export const tableReducer = (
 ): DataTableState => {
   switch (action.type) {
     case 'set_rows_per_page':
-      return { ...state, rowsPerPage: action.payload };
+      return { ...state, rowsPerPage: action.payload, currentPageNumber: 1 };
     case 'set_search_text':
       return { ...state, searchText: action.payload };
     case 'set_current_page_number':

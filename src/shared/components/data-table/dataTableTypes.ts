@@ -42,6 +42,11 @@ export type TableCellData = ReactNode;
 
 export type TableRowData = TableCellData[];
 
+export type TableRows = {
+  cells: TableCellData[];
+  rowId: string | number;
+}[];
+
 export type TableData = TableRowData[];
 
 export type TableCellRendererParams = {

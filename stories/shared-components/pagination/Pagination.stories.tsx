@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
-import TableRow from '../table-row/TableRow';
+import Pagination from 'src/shared/components/pagination/Pagination';
 
-import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
-
-const TableBody = () => {
-  const { getSortedCurrentPageRows } = useDataTable();
-
-  // Filter the rows that needs to be displayed in the current page
-  const rowsThisPage = getSortedCurrentPageRows();
+export const PaginationDefaultStory = () => {
+  const [pageNumber, setPageNumber] = useState(1);
 
   return (
-    <tbody>
-      {rowsThisPage.map((row, index) => {
-        const { rowId } = row;
-        return (
-          <TableRow key={index} rowData={row.cells} rowId={rowId as string} />
-        );
-      })}
-    </tbody>
+    <Pagination
+      currentPageNumber={pageNumber}
+      lastPageNumber={10}
+      onChange={setPageNumber}
+    ></Pagination>
   );
 };
 
-export default TableBody;
+PaginationDefaultStory.storyName = 'default';
+
+export default {
+  title: 'Components/Shared Components/Pagination'
+};

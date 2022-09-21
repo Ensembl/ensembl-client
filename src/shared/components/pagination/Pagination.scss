@@ -2,6 +2,9 @@
 
 .pagination {
   padding-left: 30px;
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
 }
 
 .inputWrapper {

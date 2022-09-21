@@ -87,21 +87,20 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
 
           const Contents = () => (
             <>
-              {isSelectable && index === selectableColumnIndex ? (
+              {isSelectable && index === selectableColumnIndex && (
                 <td className={styles.selectColumn}>
                   <RowSelector rowId={props.rowId} onChange={handleSelector} />
                 </td>
-              ) : (
-                <td key={index} className={bodyCellClassName}>
-                  {renderer
-                    ? renderer({
-                        rowData: props.rowData,
-                        rowId: props.rowId,
-                        cellData
-                      })
-                    : cellData}
-                </td>
               )}
+              <td key={index} className={bodyCellClassName}>
+                {renderer
+                  ? renderer({
+                      rowData: props.rowData,
+                      rowId: props.rowId,
+                      cellData
+                    })
+                  : cellData}
+              </td>
             </>
           );
 
