@@ -17,18 +17,18 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import BasePairsRuler from './FeatureLengthRuler';
+import FeatureLengthRuler from './FeatureLengthRuler';
 
 const defaultProps = {
   length: 80792,
   width: 600
 };
 
-describe('<BasePairsRuler />', () => {
+describe('<FeatureLengthRuler />', () => {
   describe('rendering', () => {
     it('renders an <svg> element if standalone', () => {
       const { container } = render(
-        <BasePairsRuler {...defaultProps} standalone={true} />
+        <FeatureLengthRuler {...defaultProps} standalone={true} />
       );
       expect((container.firstChild as Element).tagName).toBe('svg');
     });
@@ -36,7 +36,7 @@ describe('<BasePairsRuler />', () => {
     it('renders a <g> element (svg group) if not standalone', () => {
       const { getByTestId } = render(
         <svg data-test-id="test wrapper">
-          <BasePairsRuler {...defaultProps} />
+          <FeatureLengthRuler {...defaultProps} />
         </svg>
       );
       const wrapper = getByTestId('test wrapper');
@@ -52,7 +52,7 @@ describe('<BasePairsRuler />', () => {
 
     it('passes calculated ticks to the callback', () => {
       const callback = jest.fn();
-      render(<BasePairsRuler {...props} onTicksCalculated={callback} />);
+      render(<FeatureLengthRuler {...props} onTicksCalculated={callback} />);
       expect(callback).toHaveBeenCalledTimes(1);
 
       const payload = callback.mock.calls[0][0];
