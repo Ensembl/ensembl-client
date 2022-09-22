@@ -4,29 +4,11 @@
   max-width: 1380px;
 }
 
-@mixin narrow-top-grid {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
-
-@mixin narrow-stats-grid {
-  grid-template-columns:
-    [title] 120px [first_summary_stat] auto
-    [second_summary_stat] minmax(240px, 350px)
-    [example-link] 165px;
-}
-
 .speciesMainViewTop {
   display: grid;
   grid-template-columns: max-content auto;
   align-items: center;
   padding-top: 20px;
-
-  &Narrow {
-    @media (max-width: 1200px) {
-      @include narrow-top-grid;
-    }
-  }
 }
 
 .speciesLabelBlock {
@@ -100,10 +82,6 @@
   .questionButton {
     top: 2px;
     position: relative;
-  }
-
-  @media (max-width: 1350px) {
-    @include narrow-stats-grid;
   }
 }
 
