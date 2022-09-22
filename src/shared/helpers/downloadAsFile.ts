@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * See https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_files
- *
- * Ideally, we would have used browser.downloads.download() method; but Safari does not support it.
- */
-
 export const downloadTextAsFile = async (
   content: string | string[],
   fileName: string,
