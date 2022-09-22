@@ -124,7 +124,8 @@ const downloadBlastSubmission = async (
   });
 
   const blob = await zip.generateAsync({ type: 'blob' });
-  downloadAsFile(blob, 'test.zip', { type: '' });
+  const zipFileName = getNameForZipRoot(submission);
+  downloadAsFile(blob, `${zipFileName}.zip`, { type: '' });
 };
 
 const createZipArchive = async (submission: EnrichedBlastSubmission) => {
@@ -146,19 +147,20 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
 
   for (const blastResult of results) {
     const { genomeId, sequenceId, csv, raw } = blastResult;
-    const csvFileName = 'table'; // FIXME: this will probably change
-    const rawFileName = 'output'; // FIXME: this will probably change
+    const csvFileName = 'table'; // NOTE: this will probably change
+    const rawFileName = 'output'; // NOTE: this will probably change
     const speciesFolderName = speciesFolderNamesMap.get(genomeId);
+    const sequenceFolderName = `Query sequence ${sequenceId}`; // NOTE: this name will probably change as well
     if (!speciesFolderName) {
       // should never happen
       continue;
     }
     rootFolder?.file(
-      `${speciesFolderName}/${sequenceId}/${csvFileName}.csv`,
+      `${speciesFolderName}/${sequenceFolderName}/${csvFileName}.csv`,
       csv
     );
     rootFolder?.file(
-      `${speciesFolderName}/${sequenceId}/${rawFileName}.txt`,
+      `${speciesFolderName}/${sequenceFolderName}/${rawFileName}.txt`,
       raw
     );
   }
@@ -166,7 +168,7 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
   return zip;
 };
 
-const getNameForZipRoot = (submission: EnrichedBlastSubmission) => {
+const getNameForZipRoot = (submission: BlastSubmission) => {
   const {
     id,
     submittedData: {
