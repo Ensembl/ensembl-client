@@ -25,7 +25,7 @@ import {
   createCSVForTranscriptBlast,
   createCSVForProteinBlast
 } from './createBlastCSVTable';
-import downloadAsFile from 'src/shared/helpers/downloadAsFile';
+import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type { AppDispatch } from 'src/store';
 import type {
@@ -125,7 +125,7 @@ const downloadBlastSubmission = async (
 
   const blob = await zip.generateAsync({ type: 'blob' });
   const zipFileName = getNameForZipRoot(submission);
-  downloadAsFile(blob, `${zipFileName}.zip`, { type: '' });
+  await downloadBlobAsFile(blob, `${zipFileName}.zip`);
 };
 
 const createZipArchive = async (submission: EnrichedBlastSubmission) => {

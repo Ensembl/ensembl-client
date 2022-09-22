@@ -14,23 +14,39 @@
  * limitations under the License.
  */
 
-const downloadAsFile = (
-  content: string | string[] | Blob,
+/**
+ * See https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Working_with_files
+ *
+ * Ideally, we would have used browser.downloads.download() method; but Safari does not support it.
+ */
+
+export const downloadTextAsFile = async (
+  content: string | string[],
   fileName: string,
-  options: { type: string }
+  options?: BlobPropertyBag
 ) => {
   if (typeof content === 'string') {
     content = [content];
   }
   const blob = content instanceof Blob ? content : new Blob(content, options);
+
+  await downloadBlobAsFile(blob, fileName);
+};
+
+// should accept Blob or File objects generated elsewhere in the code
+export const downloadBlobAsFile = async (blob: Blob, fileName: string) => {
   const blobUrl = URL.createObjectURL(blob);
   const downloadLink = document.createElement('a');
   downloadLink.href = blobUrl;
   downloadLink.download = fileName;
   downloadLink.click();
-  setTimeout(() => {
-    URL.revokeObjectURL(blobUrl);
-  }, 100);
-};
 
-export default downloadAsFile;
+  const cleanupPromise = new Promise((resolve) => {
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+      resolve(null);
+    }, 100);
+  });
+
+  await cleanupPromise;
+};
