@@ -33,7 +33,7 @@ import {
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
-import type { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './DefaultTranscriptsList.scss';

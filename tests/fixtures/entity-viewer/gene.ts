@@ -25,7 +25,7 @@ import {
 } from './transcript';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
-import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 type GeneFixture = Omit<FullGene, 'transcripts'> & {
   transcripts: ProteinCodingTranscript[];
