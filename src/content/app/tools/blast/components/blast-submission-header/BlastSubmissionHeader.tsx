@@ -126,9 +126,7 @@ export const BlastSubmissionHeader = (props: Props) => {
             <ShowHide
               className={styles.showHide}
               isExpanded={props.isExpanded || false}
-              onClick={() =>
-                props.toggleExpanded && props.toggleExpanded(!props.isExpanded)
-              }
+              onClick={() => props.toggleExpanded?.(!props.isExpanded)}
             />
           )}
         </div>
