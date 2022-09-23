@@ -16,9 +16,20 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-// one job is one sequence against one or multiple species
-// each sequence is one job and user can submit multiple sequence against one or more species in one form which will become one submission will multiple jobs
-// There can be confusion with the language on the UI which mention "jobs"
+/**
+ * LANGUAGE NOTE:
+ *
+ * We use the following terminology in the codebase:
+ * - A BLAST submission is a result of submitting the BLAST form.
+ *   Since a form may include multiple query sequences and multiple target species,
+ *   a BLAST submission may contain one or more BLAST jobs
+ * - A BLAST job is the result of running the BLAST program for one query sequence against one species
+ *
+ * Confusingly, the UI uses the terms "submission" and "job" interchangeably,
+ * especially in the buttons "New job", "Unviewed jobs", "Jobs list", in order to save screen space
+ *
+ */
+
 type BlastView =
   | 'blast-form' //new job form - form for submitting a new batch of BLASTS jobs
   | 'unviewed-submissions' //unviewed BLAST submissions - once the submission result are viewed they are moved to job list

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getBlastView = (state: RootState) => state.blast.blastGeneral.view;
