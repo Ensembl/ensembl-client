@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -29,11 +29,17 @@ import {
   deleteBlastSubmission,
   type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  getUnviewedBlastSubmissions,
+  getViewedBlastSubmissions
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -50,8 +56,14 @@ export type Props = {
 export const BlastSubmissionHeader = (props: Props) => {
   const { submission, sequenceCount } = props;
 
+  const [deletingJob, setDeletingJob] = useState(false);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
+  const blastView = useAppSelector(getBlastView);
 
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
@@ -81,48 +93,69 @@ export const BlastSubmissionHeader = (props: Props) => {
 
   const handleDeletion = () => {
     dispatch(deleteBlastSubmission(submissionId));
+
+    //if nothing more is left on the page after the submission is deleted, go to the new BLAST form (This might change depending on UX)
+    if (
+      blastView === 'submission-results' ||
+      (blastView === 'unviewed-submissions' &&
+        unviewedBlastSubmissions.length === 1) ||
+      (blastView === 'submissions-list' && viewedBlastSubmissions.length === 1)
+    ) {
+      navigate(urlFor.blastForm());
+    }
   };
 
   return (
-    <div className={styles.grid}>
-      <div>{blastProgram}</div>
-      <div className={styles.submissionName}>
-        {/* placeholder for submission name */}
-      </div>
-      <div className={styles.submissionDetails}>
-        <span className={styles.submissionIdLabel}>Submission</span>
-        <span>{submissionId}</span>
-        <span className={styles.editSubmission} onClick={editSubmission}>
-          Edit/rerun
-        </span>
-        <span className={styles.timeStamp}>
-          <span>{submissionTime}</span>
-          <span className={styles.timeZone}>GMT</span>
-        </span>
-        {sequenceCount && sequenceCount > 1 && (
-          <ShowHide
-            className={styles.showHide}
-            isExpanded={props.isExpanded || false}
-            onClick={() =>
-              props.toggleExpanded && props.toggleExpanded(!props.isExpanded)
-            }
+    <>
+      <div className={styles.grid}>
+        <div>{blastProgram}</div>
+        <div className={styles.submissionName}>
+          {/* placeholder for submission name */}
+        </div>
+        <div className={styles.submissionDetails}>
+          <span className={styles.submissionIdLabel}>Submission</span>
+          <span>{submissionId}</span>
+          <span className={styles.editSubmission} onClick={editSubmission}>
+            Edit/rerun
+          </span>
+          <span className={styles.timeStamp}>
+            <span>{submissionTime}</span>
+            <span className={styles.timeZone}>GMT</span>
+          </span>
+          {sequenceCount && sequenceCount > 1 && (
+            <ShowHide
+              className={styles.showHide}
+              isExpanded={props.isExpanded || false}
+              onClick={() => props.toggleExpanded?.(!props.isExpanded)}
+            />
+          )}
+        </div>
+        <div className={styles.controlButtons}>
+          <DeleteButton
+            onClick={() => setDeletingJob(true)}
+            disabled={props.isAnyJobRunning || deletingJob}
           />
-        )}
+          <DownloadButton disabled={true || deletingJob} />
+          <ButtonLink
+            to={urlFor.blastSubmission(submissionId)}
+            isDisabled={props.isAnyJobRunning || deletingJob}
+          >
+            Results
+          </ButtonLink>
+        </div>
       </div>
-      <div className={styles.controlButtons}>
-        <DeleteButton
-          onClick={handleDeletion}
-          disabled={props.isAnyJobRunning}
+      {deletingJob && (
+        <DeletionConfirmation
+          warningText="Delete this submission?"
+          confirmText="Delete"
+          cancelText="Do not delete"
+          className={styles.deleteMessageContainer}
+          onCancel={() => setDeletingJob(false)}
+          onConfirm={handleDeletion}
+          alignContent="right"
         />
-        <DownloadButton disabled={true} />
-        <ButtonLink
-          to={urlFor.blastSubmission(submissionId)}
-          isDisabled={props.isAnyJobRunning}
-        >
-          Results
-        </ButtonLink>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

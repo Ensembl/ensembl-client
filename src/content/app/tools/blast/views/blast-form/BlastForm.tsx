@@ -28,6 +28,7 @@ import {
   switchToSequencesStep,
   switchToSpeciesStep
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import { setBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
@@ -45,13 +46,19 @@ import styles from './BlastForm.scss';
 const BlastForm = () => {
   const { data: config } = useBlastConfigQuery();
 
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setBlastView('blast-form'));
+  }, []);
+
   if (!config) {
     return null;
   }
 
   return (
     <div className={styles.container}>
-      <BlastAppBar view="blast-form" />
+      <BlastAppBar />
       <ToolsTopBar>
         <BlastSettings config={config} />
       </ToolsTopBar>
