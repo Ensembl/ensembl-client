@@ -26,7 +26,7 @@ const useSpeciesAnalytics = () => {
   const trackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
       ...ga,
-      app: AppName.SPECIES_SELECTOR
+      app: AppName.SPEICES_PAGE
     });
   };
 
@@ -78,14 +78,11 @@ const useSpeciesAnalytics = () => {
     });
   };
 
-  const trackSidebarToolstripButtonClick = (
-    iconName: string,
-    genomeId: string
-  ) => {
+  const trackSidebarModelOpen = (iconName: string) => {
     trackEvent({
-      category: 'species_page',
-      action: 'sidebar_toolstrip',
-      label: `${genomeId}: ${iconName}`
+      category: 'sidebar_toolstrip',
+      action: 'model_opened',
+      label: iconName
     });
   };
 
@@ -94,7 +91,7 @@ const useSpeciesAnalytics = () => {
     trackSpeciesUse,
     trackSpeciesStatsSectionOpen,
     trackSpeciesPageExampleLink,
-    trackSidebarToolstripButtonClick
+    trackSidebarModelOpen
   };
 };
 export default useSpeciesAnalytics;

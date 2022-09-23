@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -48,8 +47,7 @@ export const SpeciesSidebarToolstrip = () => {
   const sidebarModalView = useAppSelector(getSpeciesSidebarModalView);
   const isSidebarOpen = useAppSelector(isSpeciesSidebarOpen);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const params = useParams<'genomeId'>();
-  const { trackSidebarToolstripButtonClick } = useSpeciesAnalytics();
+  const { trackSidebarModelOpen } = useSpeciesAnalytics();
 
   if (!activeGenomeId) {
     return null;
@@ -68,7 +66,7 @@ export const SpeciesSidebarToolstrip = () => {
         })
       );
     } else {
-      trackSidebarToolstripButtonClick(selectedItem, params.genomeId as string);
+      trackSidebarModelOpen(selectedItem);
       dispatch(
         updateSpeciesSidebarModalForGenome({
           activeGenomeId,

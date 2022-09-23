@@ -33,8 +33,12 @@ import type {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import type { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
+<<<<<<< HEAD
 import type { AnalyticsOptions } from 'src/analyticsHelper';
 import { AppName } from 'src/global/globalConfig';
+=======
+import { AnalyticsOptions } from 'src/analyticsHelper';
+>>>>>>> 006973d85 (analytics updated)
 
 type TrackDownloadPayload = {
   category: string;
@@ -256,14 +260,11 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_transcript_list' });
   };
 
-  const trackSidebarToolstripButtonClick = (
-    iconName: string,
-    genomeId: string
-  ) => {
+  const trackSidebarModelOpen = (iconName: string) => {
     sendTrackEvent({
       category: 'entity_viewer_sidebar_toolstrip',
       action: 'modal_opened',
-      label: `${genomeId}: ${iconName}`
+      label: iconName
     });
   };
 
@@ -292,7 +293,7 @@ const useEntityViewerAnalytics = () => {
     trackExternalReferenceLinkClick,
     trackExternalLinkClick,
     trackPreviouslyViewedObjectClicked,
-    trackSidebarToolstripButtonClick,
+    trackSidebarModelOpen,
     trackSearchSubmission
   };
 };
