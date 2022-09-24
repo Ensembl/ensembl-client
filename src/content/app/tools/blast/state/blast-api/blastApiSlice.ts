@@ -101,7 +101,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       }
     }),
     fetchAllBlastJobs: builder.query<BlastJobResultResponse[], string[]>({
-      queryFn: async (jobIds, _queryApi, __extraOptions, baseQuery) => {
+      queryFn: async (jobIds, _queryApi, _extraOptions, baseQuery) => {
         try {
           const format = 'json';
           const results = await commonFetchAllBlastJobs(
@@ -120,7 +120,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       }
     }),
     fetchAllBlastRawResults: builder.query<{ result: string }[], string[]>({
-      queryFn: async (jobIds, _queryApi, __extraOptions, baseQuery) => {
+      queryFn: async (jobIds, _queryApi, _extraOptions, baseQuery) => {
         try {
           const format = 'raw';
           const results = await commonFetchAllBlastJobs(

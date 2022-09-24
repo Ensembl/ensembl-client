@@ -45,7 +45,11 @@ export const createCSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
         queryStart,
         queryEnd
       } = getCommonFields({ blastHsp: hsp });
-      const genomicLocation = `${hit.hit_acc}:${hsp.hsp_hit_from}-${hsp.hsp_hit_to}`;
+      const genomicStart =
+        hitOrientation === 'Forward' ? hsp.hsp_hit_from : hsp.hsp_hit_to;
+      const genomicEnd =
+        hitOrientation === 'Forward' ? hsp.hsp_hit_to : hsp.hsp_hit_from;
+      const genomicLocation = `${hit.hit_acc}:${genomicStart}-${genomicEnd}`;
       const newRow = [
         evalue,
         hitLength,
@@ -172,7 +176,7 @@ const getCommonFields = ({
   hitLength: blastHsp.hsp_align_len,
   percentId: blastHsp.hsp_identity,
   score: blastHsp.hsp_bit_score,
-  hitOrientation: blastHsp.hsp_hit_frame,
+  hitOrientation: blastHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
   hitStart: blastHsp.hsp_hit_from,
   hitEnd: blastHsp.hsp_hit_to,
   queryStart: blastHsp.hsp_query_from,
