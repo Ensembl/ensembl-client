@@ -22,7 +22,7 @@ import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { sampleData } from '../../sample-data';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 
 export enum SpeciesStatsSection {
   CODING_STATS = 'coding_stats',
@@ -570,7 +570,7 @@ type StatsGroup = {
 
 export type StatsSection = {
   section: SpeciesStatsSection;
-  exampleLinks?: UrlObj;
+  exampleLinks?: LinksConfig;
   summaryStats?: IndividualStat[];
   groups: StatsGroup[];
 };
@@ -648,7 +648,7 @@ const getExampleLinks = (props: {
 }) => {
   const { section, genomeIdForUrl, exampleFocusObjects } = props;
 
-  let exampleLinks: UrlObj = {};
+  let exampleLinks: LinksConfig = {};
 
   if (section === SpeciesStatsSection.CODING_STATS) {
     const geneExample = exampleFocusObjects.find(

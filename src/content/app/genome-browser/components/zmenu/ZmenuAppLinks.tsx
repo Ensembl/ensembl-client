@@ -23,7 +23,9 @@ import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeB
 import useGenomeBrowser from '../../hooks/useGenomeBrowser';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
-import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import ViewInApp, {
+  LinksConfig
+} from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
 import { useNavigate } from 'react-router';
@@ -46,15 +48,6 @@ const ZmenuAppLinks = (props: Props) => {
     return null;
   }
 
-  const links: UrlObj = {
-    entityViewer: {
-      url: urlFor.entityViewer({
-        genomeId: genomeIdForUrl,
-        entityId: featureId
-      })
-    }
-  };
-
   const onGenomeBrowserAppClick = () => {
     if (!(focusObjectIdForUrl && focusObjectId)) {
       return;
@@ -74,17 +67,23 @@ const ZmenuAppLinks = (props: Props) => {
     }
   };
 
+  const links: LinksConfig = {
+    genomeBrowser: onGenomeBrowserAppClick,
+    entityViewer: {
+      url: urlFor.entityViewer({
+        genomeId: genomeIdForUrl,
+        entityId: featureId
+      })
+    }
+  };
+
   return (
     <div className={styles.zmenuAppLinks}>
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         label="Download"
       />
-      <ViewInApp
-        links={links}
-        onAnyAppClick={props.destroyZmenu}
-        onAppClick={{ genomeBrowser: onGenomeBrowserAppClick }}
-      />
+      <ViewInApp links={links} onAnyAppClick={props.destroyZmenu} />
     </div>
   );
 };
