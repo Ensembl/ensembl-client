@@ -132,6 +132,22 @@ const useBrowserRouting = () => {
         replace: true
       });
     } else if (focusObjectId && !chrLocation) {
+      if (
+        focusObjectId === activeFocusObjectId &&
+        allChrLocations[activeFocusObjectId]
+      ) {
+        navigate(
+          urlFor.browser({
+            genomeId: genomeIdForUrl,
+            focus: focusObjectIdInUrl,
+            location: getChrLocationStr(allChrLocations[activeFocusObjectId])
+          }),
+          {
+            replace: true
+          }
+        );
+        return;
+      }
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
