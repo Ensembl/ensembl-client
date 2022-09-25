@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, memo } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
+import {
+  IncomingActionType,
+  GenomeBrowserErrorType,
+  type GenomeBrowserErrorAction,
+  type GenomeBrowserError as GenomeBrowserErrorObj
+} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserPosition from 'src/content/app/genome-browser/hooks/useGenomeBrowserPosition';
@@ -25,6 +31,7 @@ import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/genome-browser/components/zmenu';
 import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
+import GenomeBrowserError from 'src/content/app/genome-browser/components/genome-browser-error/GenomeBrowserError';
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
@@ -39,6 +46,8 @@ import styles from './BrowserImage.scss';
 export const BrowserImage = () => {
   const browserRef = useRef<HTMLDivElement>(null);
   const browserActivatedRef = useRef(false);
+  const [genomeBrowserError, setGenomeBrowserError] =
+    useState<GenomeBrowserErrorObj | null>(null);
 
   const { activateGenomeBrowser, clearGenomeBrowser, genomeBrowser } =
     useGenomeBrowser();
@@ -61,6 +70,19 @@ export const BrowserImage = () => {
     return () => clearGenomeBrowser();
   }, []);
 
+  useEffect(() => {
+    const subscription = genomeBrowser?.subscribe(
+      IncomingActionType.OUT_OF_DATE, // TODO: change to IncomingActionType.ERROR when genome browser starts sending proper errors
+      (action: GenomeBrowserErrorAction) => {
+        const error = action.payload;
+        if (error.type === GenomeBrowserErrorType.BAD_VERSION) {
+          setGenomeBrowserError(error);
+        }
+      }
+    );
+    return () => subscription?.unsubscribe();
+  }, [genomeBrowser]);
+
   const browserContainerClassNames = classNames(styles.browserStage, {
     [styles.shorter]: isNavbarOpen
   });
@@ -71,9 +93,10 @@ export const BrowserImage = () => {
         id={BROWSER_CONTAINER_ID}
         className={browserContainerClassNames}
         ref={browserRef}
-      />
-      <BrowserCogList />
-      <ZmenuController browserRef={browserRef} />
+      >
+        <BrowserCogList />
+        <ZmenuController browserRef={browserRef} />
+      </div>
       {isDisabled ? <Overlay /> : null}
     </div>
   );
@@ -85,7 +108,11 @@ export const BrowserImage = () => {
           <CircleLoader />
         </div>
       )}
-      {browserImageContents}
+      {genomeBrowserError ? (
+        <GenomeBrowserError error={genomeBrowserError} />
+      ) : (
+        browserImageContents
+      )}
     </>
   );
 };
