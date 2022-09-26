@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import {
   getUnviewedBlastSubmissions,
@@ -24,6 +24,7 @@ import {
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import { useSubmitBlastMutation } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+import { setBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/BlastAppBar';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
@@ -40,9 +41,17 @@ type Props = {
 };
 
 const BlastSubmissions = (props: Props) => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setBlastView(props.unviewed ? 'unviewed-submissions' : 'submissions-list')
+    );
+  }, []);
+
   return (
     <div>
-      <BlastAppBar view="unviewed-submissions" />
+      <BlastAppBar />
       <ToolsTopBar>
         <BlastViewsNavigation />
       </ToolsTopBar>

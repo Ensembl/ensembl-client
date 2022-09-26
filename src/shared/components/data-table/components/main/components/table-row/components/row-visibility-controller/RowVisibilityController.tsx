@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
+
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+
 import {
   TableAction,
   type TableSelectedRowId
 } from 'src/shared/components/data-table/dataTableTypes';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import styles from './RowVisibilityController.scss';
 
 const RowVisibilityController = () => {
-  const { hiddenRowIdsInDraft, hiddenRowIds, data, dispatch } =
-    useContext(TableContext) || {};
+  const {
+    getSortedCurrentPageRows,
+    hiddenRowIdsInDraft,
+    hiddenRowIds,
+    dispatch
+  } = useDataTable();
 
-  if (!(hiddenRowIdsInDraft && dispatch && data && hiddenRowIds)) {
-    return null;
-  }
+  const currentPageRows = getSortedCurrentPageRows();
 
   const cancelChanges = () => {
     dispatch({
@@ -45,14 +49,13 @@ const RowVisibilityController = () => {
   };
 
   const selectAll = () => {
-    const totalRows = data.length;
-
     const newRowIdsInDraft: TableSelectedRowId = {};
 
-    // TODO: Select only rows that are currently visible
-    for (let i = 0; i < totalRows; i++) {
-      newRowIdsInDraft[i] = false;
-    }
+    currentPageRows.forEach((row) => {
+      const { rowId } = row;
+      newRowIdsInDraft[rowId] = false;
+    });
+
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
       payload: newRowIdsInDraft
@@ -60,13 +63,13 @@ const RowVisibilityController = () => {
   };
 
   const deselectAll = () => {
-    const totalRows = data.length;
-
     const newRowIdsInDraft: TableSelectedRowId = {};
 
-    for (let i = 0; i < totalRows; i++) {
-      newRowIdsInDraft[i] = true;
-    }
+    currentPageRows.forEach((row) => {
+      const { rowId } = row;
+      newRowIdsInDraft[rowId] = true;
+    });
+
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
       payload: newRowIdsInDraft

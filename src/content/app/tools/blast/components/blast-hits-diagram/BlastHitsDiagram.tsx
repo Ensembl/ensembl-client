@@ -17,7 +17,7 @@
 import React from 'react';
 import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
-import type { BlastJob } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastHitsDiagram.scss';
 
@@ -25,7 +25,7 @@ const BACKBONE_HEIGHT = 1;
 const BLOCK_HEIGHT = 6;
 
 type Props = {
-  job: BlastJob;
+  job: BlastJobResult;
   width: number;
 };
 
@@ -81,7 +81,7 @@ const MatchedRegion = (props: {
   );
 };
 
-const getMatchedRegions = (job: BlastJob) => {
+const getMatchedRegions = (job: BlastJobResult) => {
   const queryMatchedRegions = job.hits
     .map((hit) =>
       hit.hit_hsps.map((hsp) => ({

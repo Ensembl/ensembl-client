@@ -28,6 +28,7 @@ import blastFormReducer, {
 import speciesSelectorReducer, {
   SpeciesSelectorState
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from './BlastAppBar';
 
@@ -42,7 +43,7 @@ const mockCommittedItems = [
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     assembly_name: 'GRCh37.p13',
-    url_slug: null,
+    genome_tag: null,
     isEnabled: true
   }
 ];
@@ -56,7 +57,8 @@ const initialState = {
 
 const rootReducer = combineReducers({
   blast: combineReducers({
-    blastForm: blastFormReducer
+    blastForm: blastFormReducer,
+    blastGeneral: blastGeneralReducer
   }),
   speciesSelector: speciesSelectorReducer
 });
@@ -70,7 +72,7 @@ const renderComponent = () => {
   const renderResult = render(
     <Provider store={store}>
       <MemoryRouter>
-        <BlastAppBar view="blast-form" />
+        <BlastAppBar />
       </MemoryRouter>
     </Provider>
   );

@@ -25,28 +25,16 @@ import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocat
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
-import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserBar.scss';
 
-export type BrowserBarProps = {
-  chrLocation: ChrLocation | null;
-  defaultChrLocation: ChrLocation | null;
-  isDrawerOpened: boolean;
-  focusObject: FocusObject | null;
-};
-
 export const BrowserBar = () => {
-  const chrLocation = useSelector(getChrLocation);
   const focusObject = useSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
-  if (!(chrLocation && focusObject)) {
+  if (!focusObject) {
     return <div />;
   }
 

@@ -46,11 +46,9 @@ export const DataTableStory = () => {
         direction="row"
       />
       <DataTable
-        {...tableState}
+        state={tableState}
         columns={tableData.columns}
         theme={tableTheme}
-        uniqueColumnId={'0'}
-        selectableColumnIndex={2}
         onStateChange={setTableState}
         className={styles.wrapper}
       />
@@ -63,8 +61,6 @@ DataTableStory.storyName = 'default';
 const sampleTableDataForExpand = createDataTableSampleData(5, 5);
 
 export const DataTableWithExpandStory = () => {
-  const uniqueColumnId = '0';
-
   const [expandedContent, setExpandedContent] = useState<{
     [rowId: string]: ReactNode;
   }>({});
@@ -95,9 +91,8 @@ export const DataTableWithExpandStory = () => {
 
   return (
     <DataTable
-      {...tableState}
+      state={tableState}
       columns={sampleTableDataForExpand.columns}
-      uniqueColumnId={uniqueColumnId}
       onStateChange={setTableState}
       className={styles.wrapper}
       expandedContent={expandedContent}

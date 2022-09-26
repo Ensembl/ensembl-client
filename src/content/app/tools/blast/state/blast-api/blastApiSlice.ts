@@ -99,6 +99,37 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         };
       }
     }),
+    fetchAllBlastJobs: builder.query<BlastJobResultResponse[], string[]>({
+      queryFn: async (jobIds, _queryApi, __extraOptions, baseQuery) => {
+        // there can be a lot of ids here; let's hope the BLAST api isn't rate-limiting
+
+        const requestPromises = jobIds
+          .map(
+            (jobId) =>
+              `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
+          )
+          .map((url) =>
+            Promise.resolve(baseQuery(url)).then((result) => {
+              if (result.error) {
+                throw result.error;
+              } else {
+                return result;
+              }
+            })
+          );
+
+        try {
+          const results = await Promise.all(requestPromises);
+          return {
+            data: results.map((result) => result.data as BlastJobResultResponse)
+          };
+        } catch {
+          return {
+            error: 'Some BLAST jobs failed to load' as any // RTK is happy with the FetchBaseQueryError type that has the following shape: { status: number, statusMessage: string, data: string }
+          };
+        }
+      }
+    }),
     fetchBlastSubmission: builder.query<BlastJobResultResponse, string>({
       query: (jobId) => ({
         url: `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
@@ -110,6 +141,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
 export const {
   useBlastConfigQuery,
   useSubmitBlastMutation,
+  useFetchAllBlastJobsQuery,
   useFetchBlastSubmissionQuery
 } = blastApiSlice;
 export const { submitBlast } = blastApiSlice.endpoints;

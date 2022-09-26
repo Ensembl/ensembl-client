@@ -54,10 +54,10 @@ import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gen
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader';
-import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './GeneView.scss';
@@ -102,8 +102,7 @@ const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const { genomeIdForUrl, entityIdInUrl } = useGeneViewIds();
-  const [basePairsRulerTicks, setBasePairsRulerTicks] =
-    useState<TicksAndScale | null>(null);
+  const [rulerTicks, setRulerTicks] = useState<TicksAndScale | null>(null);
 
   const isFilterPanelOpen = useAppSelector(getFilterPanelOpen);
   const sortingRule = useAppSelector(getSortingRule);
@@ -166,7 +165,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.featureImage}>
         <GeneOverviewImage
           gene={props.gene}
-          onTicksCalculated={setBasePairsRulerTicks}
+          onTicksCalculated={setRulerTicks}
         />
       </div>
       <div className={styles.viewInLinks}>
@@ -207,11 +206,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 
       <div className={styles.geneViewTabContent}>
         {selectedTabs.primaryTab === GeneViewTabName.TRANSCRIPTS &&
-          basePairsRulerTicks && (
-            <DefaultTranscriptsList
-              gene={props.gene}
-              rulerTicks={basePairsRulerTicks}
-            />
+          rulerTicks && (
+            <DefaultTranscriptsList gene={props.gene} rulerTicks={rulerTicks} />
           )}
 
         {selectedTabs.primaryTab === GeneViewTabName.GENE_FUNCTION && (

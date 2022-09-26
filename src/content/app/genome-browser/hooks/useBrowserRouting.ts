@@ -177,7 +177,7 @@ const useBrowserRouting = () => {
       const species = allCommittedSpecies.find(
         (species) => species.genome_id === genomeId
       ) as CommittedItem;
-      const genomeIdForUrl = species.url_slug ?? species.genome_id;
+      const genomeIdForUrl = species.genome_tag ?? species.genome_id;
       const chrLocation = allChrLocations[genomeId];
       const activeFocusObjectId = allActiveFocusObjectIds[genomeId];
       const focusIdForUrl = activeFocusObjectId

@@ -11,23 +11,8 @@
   white-space: nowrap;
 }
 
-@media screen and (max-width: 1439px) {
-  .grid {
-    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
-  }
-  .controlButtons {
-    padding-left: 20px;
-  }
-}
-
 .submissionName {
   grid-column: submission-name;
-}
-
-@media screen and (max-width: 1279px) {
-  .submissionName {
-    display: none;
-  }
 }
 
 .submissionDetails {
@@ -72,4 +57,33 @@
 
 .controlButtons > * {
   flex-shrink: 0;
+}
+
+.deleteMessageContainer {
+  margin: 20px 0;
+}
+
+.deleteMessage {
+  color: $red;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
+}
+
+// Leave media queries at the bottom of the file to make sure they override CSS rules defined above
+@media screen and (max-width: 1439px) {
+  .grid {
+    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
+  }
+  .controlButtons {
+    padding-left: 20px;
+  }
+}
+
+@media screen and (max-width: 1279px) {
+  .submissionName {
+    display: none;
+  }
 }

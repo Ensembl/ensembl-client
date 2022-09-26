@@ -33,6 +33,7 @@ import type {
   OptionalBlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
+import type { BlastJobResult as BlastJobResultsFromAPI } from 'src/content/app/tools/blast/types/blastJob';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 export type JobStatus =
@@ -55,12 +56,16 @@ export type BlastSubmissionParameters = MandatorySubmissionParameters &
     stype: SequenceType;
   };
 
-export type BlastResult = {
+export type BlastJob = {
   jobId: string;
   sequenceId: number;
   genomeId: string;
   status: JobStatus;
-  data: null; // TODO: add data type
+  data: null | BlastJobResultsFromAPI;
+};
+
+export type BlastJobWithResults = Omit<BlastJob, 'data'> & {
+  data: BlastJobResultsFromAPI;
 };
 
 export type BlastSubmission = {
@@ -70,12 +75,10 @@ export type BlastSubmission = {
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     parameters: BlastSubmissionParameters;
   };
-  results: BlastResult[];
+  results: BlastJob[];
   submittedAt: number; // timestamp
   seen: boolean; // whether the user has viewed the results of this submission
 };
-
-export type BlastJob = BlastSubmission['results'][number];
 
 export type BlastResultsUI = {
   unviewedJobsPage: {

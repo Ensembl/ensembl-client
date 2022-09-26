@@ -16,7 +16,6 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 
-import { useFetchBlastSubmissionQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
@@ -27,10 +26,10 @@ import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast
 
 import type {
   BlastHit,
-  BlastJob,
-  BlastJobResultResponse,
+  BlastJobResult,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastJobWithResults } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -46,19 +45,13 @@ import {
 import styles from './SingleBlastJobResult.scss';
 
 type SingleBlastJobResultProps = {
-  jobId: string;
+  jobResult: BlastJobWithResults;
   species: Species;
   diagramWidth: number;
   blastDatabase: DatabaseType;
 };
 
 const hitsTableColumns: DataTableColumns = [
-  {
-    columnId: 'id',
-    title: 'ID',
-    isFilterable: false,
-    isHideable: false
-  },
   {
     width: '130px',
     columnId: 'e_value',
@@ -160,15 +153,15 @@ const hitsTableColumns: DataTableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const { species: speciesInfo, diagramWidth, blastDatabase } = props;
-  const { data } = useFetchBlastSubmissionQuery(props.jobId);
+  const {
+    species: speciesInfo,
+    jobResult,
+    diagramWidth,
+    blastDatabase
+  } = props;
   const [isExpanded, setExpanded] = useState(false);
 
-  if (!data) {
-    return null;
-  }
-
-  const alignmentsCount = countAlignments(data.result);
+  const alignmentsCount = countAlignments(jobResult.data);
 
   return (
     <div className={styles.resultsSummaryRow}>
@@ -177,7 +170,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={data.result} width={diagramWidth} />
+        <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
       </div>
       <div className={styles.speciesInfo}>
         {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
@@ -192,17 +185,19 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         </span>
       </div>
 
-      {isExpanded && <HitsTable data={data} blastDatabase={blastDatabase} />}
+      {isExpanded && (
+        <HitsTable jobResult={jobResult} blastDatabase={blastDatabase} />
+      )}
     </div>
   );
 };
 
 type HitsTableProps = {
-  data: BlastJobResultResponse;
+  jobResult: SingleBlastJobResultProps['jobResult'];
   blastDatabase: DatabaseType;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { data, blastDatabase } = props;
+  const { jobResult, blastDatabase } = props;
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
@@ -217,7 +212,7 @@ const HitsTable = (props: HitsTableProps) => {
   }>();
 
   useEffect(() => {
-    const { hits } = data.result;
+    const { hits } = jobResult.data;
 
     const allTableData: TableData = [];
     const newSequenceAlignmentData: {
@@ -229,7 +224,6 @@ const HitsTable = (props: HitsTableProps) => {
       const { hit_hsps } = hit;
       hit_hsps.forEach((hitHsp) => {
         allTableData.push([
-          counter,
           hitHsp.hsp_expect,
           hitHsp.hsp_align_len,
           '', // view_alignment
@@ -241,7 +235,9 @@ const HitsTable = (props: HitsTableProps) => {
             blastDatabase={blastDatabase}
             hitHsp={hitHsp}
           />,
-          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
+          <span key={counter} className={styles.hitOrientation}>
+            {hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse'}
+          </span>,
           hitHsp.hsp_hit_from,
           hitHsp.hsp_hit_to,
           hitHsp.hsp_query_from,
@@ -324,7 +320,7 @@ const HitsTable = (props: HitsTableProps) => {
     };
   }
 
-  tableColumns[3].renderer = (params: TableCellRendererParams) => {
+  tableColumns[2].renderer = (params: TableCellRendererParams) => {
     return (
       <ShowHideColumn
         onExpanded={onExpanded}
@@ -346,10 +342,8 @@ const HitsTable = (props: HitsTableProps) => {
         disabledActions={[
           TableAction.FILTERS,
           TableAction.DOWNLOAD_ALL_DATA,
-          TableAction.DOWNLOAD_SHOWN_DATA,
-          TableAction.SHOW_HIDE_ROWS
+          TableAction.DOWNLOAD_SHOWN_DATA
         ]}
-        uniqueColumnId="id"
       />
     </div>
   );
@@ -395,7 +389,7 @@ const DynamicColumnContent = (props: DynamicColumnContentProps) => {
   );
 };
 
-const countAlignments = (blastJob: BlastJob) => {
+const countAlignments = (blastJob: BlastJobResult) => {
   return blastJob.hits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
 };
 

@@ -15,19 +15,20 @@
  */
 
 import React, { useRef, useState } from 'react';
-import classNames from 'classnames';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
-import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { BlastResult } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastSubmissionParameters,
+  BlastJobWithResults
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
@@ -39,7 +40,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  blastResults: BlastResult[];
+  blastResults: BlastJobWithResults[];
   parameters: BlastSubmissionParameters;
 };
 
@@ -52,10 +53,6 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
-  const rulerWrapperClassName = classNames(
-    styles.resultsSummaryRow,
-    styles.rulerWrapper
-  );
 
   return (
     <div className={styles.wrapper}>
@@ -100,16 +97,16 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <SingleBlastJobResult
               key={result.jobId}
               species={speciesInfo}
-              jobId={result.jobId}
+              jobResult={result}
               diagramWidth={plotwidth}
               blastDatabase={parameters.database as DatabaseType}
             />
           );
         })}
-      <div className={rulerWrapperClassName}>
-        <div ref={rulerContainer} className={styles.summaryPlot}>
+      <div className={styles.rulerPlacementGrid}>
+        <div ref={rulerContainer} className={styles.rulerContainer}>
           {shouldShowJobResult && (
-            <BasePairsRuler
+            <FeatureLengthRuler
               width={plotwidth}
               length={sequenceValue.length}
               standalone={true}

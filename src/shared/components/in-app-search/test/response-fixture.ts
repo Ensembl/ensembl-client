@@ -31,7 +31,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'BRCA2',
       name: 'BRCA2 DNA repair associated ',
-      genome_id: 'homo_sapiens_GCA_000001405_28',
+      genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
       transcript_count: 10,
       slice: {
         location: {
@@ -53,7 +53,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'EMSY',
       name: 'EMSY transcriptional repressor, BRCA2 interacting ',
-      genome_id: 'homo_sapiens_GCA_000001405_28',
+      genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
       transcript_count: 18,
       slice: {
         location: {
@@ -75,7 +75,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'PALB2',
       name: 'partner and localizer of BRCA2 ',
-      genome_id: 'homo_sapiens_GCA_000001405_14',
+      genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
       transcript_count: 6,
       slice: {
         location: {
@@ -97,7 +97,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'CNTROB',
       name: 'centrobin, centrosomal BRCA2 interacting protein ',
-      genome_id: 'homo_sapiens_GCA_000001405_14',
+      genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
       transcript_count: 16,
       slice: {
         location: {
@@ -119,7 +119,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'PALB2',
       name: 'partner and localizer of BRCA2 ',
-      genome_id: 'homo_sapiens_GCA_000001405_28',
+      genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
       transcript_count: 6,
       slice: {
         location: {
@@ -141,7 +141,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'BCCIP',
       name: 'BRCA2 and CDKN1A interacting protein ',
-      genome_id: 'homo_sapiens_GCA_000001405_14',
+      genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
       transcript_count: 6,
       slice: {
         location: {
@@ -163,7 +163,7 @@ export const brca2SearchResults = {
       biotype: 'processed_pseudogene',
       symbol: 'BRCC3P1',
       name: 'BRCA1/BRCA2-containing complex subunit 3 pseudogene 1 ',
-      genome_id: 'homo_sapiens_GCA_000001405_28',
+      genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
       transcript_count: 1,
       slice: {
         location: {
@@ -185,7 +185,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'BCCIP',
       name: 'BRCA2 and CDKN1A interacting protein ',
-      genome_id: 'homo_sapiens_GCA_000001405_28',
+      genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
       transcript_count: 5,
       slice: {
         location: {
@@ -207,7 +207,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'BRCC3',
       name: 'BRCA1/BRCA2-containing complex, subunit 3 ',
-      genome_id: 'homo_sapiens_GCA_000001405_14',
+      genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
       transcript_count: 8,
       slice: {
         location: {
@@ -229,7 +229,7 @@ export const brca2SearchResults = {
       biotype: 'protein_coding',
       symbol: 'BRCC3',
       name: 'BRCA1/BRCA2-containing complex, subunit 3 ',
-      genome_id: 'homo_sapiens_GCA_000001405_14',
+      genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
       transcript_count: 8,
       slice: {
         location: {
