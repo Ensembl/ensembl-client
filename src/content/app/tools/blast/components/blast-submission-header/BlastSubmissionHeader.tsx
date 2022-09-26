@@ -23,6 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
@@ -105,6 +106,10 @@ export const BlastSubmissionHeader = (props: Props) => {
     }
   };
 
+  const handleDownload = async () => {
+    await downloadBlastSubmission(submission, dispatch);
+  };
+
   return (
     <>
       <div className={styles.grid}>
@@ -135,7 +140,10 @@ export const BlastSubmissionHeader = (props: Props) => {
             onClick={() => setDeletingJob(true)}
             disabled={props.isAnyJobRunning || deletingJob}
           />
-          <DownloadButton disabled={true || deletingJob} />
+          <DownloadButton
+            onClick={handleDownload}
+            disabled={props.isAnyJobRunning}
+          />
           <ButtonLink
             to={urlFor.blastSubmission(submissionId)}
             isDisabled={props.isAnyJobRunning || deletingJob}
