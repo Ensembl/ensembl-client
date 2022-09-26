@@ -54,7 +54,7 @@ type AppClickHandlers = Partial<Record<AppName, () => void>>;
  * The fields of ViewInAppProps have the following semantics:
  * - the buttons rendered by the ViewInApp component,
  *   as well as the default behaviour upon a click on a given button
- *   are determined by the mandatory `links` property
+ *   are determined by the keys of the `links` object passed as a mandatory property
  * - the optional `onAppClick` property describes additional behaviour
  *   upon a click on a given button
  * - the optional `onAnyAppClick` property describes additional behaviour
@@ -62,12 +62,12 @@ type AppClickHandlers = Partial<Record<AppName, () => void>>;
  *
  * QUESTION: why not make the `links` property only ever contain url strings,
  * and pass functions describing more complex on-click behaviour
- * only via the `onAppClick` property?
+ * via the `onAppClick` property?
  *
  * ANSWER: because the `links` property is mandatory. Consider an edge case
  * in which the on-click behaviour on any button has to be described in a function.
- * That would require the consumer of the component to pass an empty `links` opject
- * into the component, which looks like a strange api.
+ * That would require the consumer of the component to pass an empty `links` object
+ * into the component, which makes for an awkward api.
  */
 
 export type ViewInAppProps = {
