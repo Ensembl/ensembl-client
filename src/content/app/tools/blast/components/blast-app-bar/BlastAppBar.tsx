@@ -34,6 +34,8 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
+import styles from './BlastAppBar.scss';
+
 const BlastAppBar = () => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const speciesListIds = useSelector(getSelectedSpeciesIds);
@@ -66,13 +68,19 @@ const BlastAppBar = () => {
     <SpeciesLozenge
       key={index}
       theme="blue"
+      className={styles.speciesLozenge}
       species={species}
       onClick={() => speciesLozengeClick(species)}
     />
   ));
 
   const disabledSpecies = speciesList.map((species, index) => (
-    <SpeciesLozenge key={index} theme="grey" species={species} />
+    <SpeciesLozenge
+      key={index}
+      theme="grey"
+      className={styles.speciesLozenge}
+      species={species}
+    />
   ));
 
   const speciesTabs =
