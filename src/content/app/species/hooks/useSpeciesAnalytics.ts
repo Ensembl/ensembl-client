@@ -34,7 +34,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_page',
+      category: 'remove_species',
       label: speciesNameForAnalytics,
       action: 'remove',
       species: speciesNameForAnalytics
@@ -47,7 +47,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_page',
+      category: 'species_use',
       label: speciesNameForAnalytics,
       action: updatedStatus,
       species: speciesNameForAnalytics
@@ -59,8 +59,8 @@ const useSpeciesAnalytics = () => {
     sectionName: string
   ) => {
     trackEvent({
-      category: 'species_page',
-      action: 'open_section',
+      category: 'stats_section',
+      action: 'open',
       label: sectionName,
       species: getSpeciesAnalyticsName(species)
     });
@@ -71,8 +71,8 @@ const useSpeciesAnalytics = () => {
     exampleLinkType: string
   ) => {
     trackEvent({
-      category: 'species_page',
-      action: 'example_link_selected',
+      category: 'example_link',
+      action: 'clicked',
       label: exampleLinkType,
       species: getSpeciesAnalyticsName(species)
     });
@@ -81,7 +81,7 @@ const useSpeciesAnalytics = () => {
   const trackSidebarModelOpen = (iconName: string) => {
     trackEvent({
       category: 'sidebar_toolstrip',
-      action: 'model_opened',
+      action: 'modal_opened',
       label: iconName
     });
   };
