@@ -324,6 +324,8 @@ const browserGeneralSlice = createSlice({
 
       if (chrLocation) {
         state.chrLocations[activeGenomeId] = chrLocation;
+      } else {
+        delete state.chrLocations[activeGenomeId];
       }
     },
     updateBrowserActiveFocusObjectIds(
