@@ -34,7 +34,11 @@ const columns: DataTableColumns = createDataTableSampleData(1, 10).columns;
 const defaultProps = {
   ...defaultDataTableState,
   dispatch: jest.fn(),
-  columns
+  columns,
+  rows: defaultDataTableState.data.map((row, index) => ({
+    rowId: index,
+    cells: row
+  }))
 };
 
 describe('<ShowHideColumns />', () => {
@@ -51,12 +55,12 @@ describe('<ShowHideColumns />', () => {
     jest.resetAllMocks();
   });
 
-  test('renders without error', () => {
+  it('renders without error', () => {
     container = renderShowHideColumns().container;
     expect(() => container).not.toThrow();
   });
 
-  test('displays the correct set of options', () => {
+  it('displays the correct set of options', () => {
     container = renderShowHideColumns().container;
     const totalOptions =
       container.getElementsByClassName('checkboxDefault').length;
@@ -64,7 +68,7 @@ describe('<ShowHideColumns />', () => {
     expect(totalOptions).toBe(columns.length);
   });
 
-  test('skips a column if it is not hideable', () => {
+  it('skips a column if it is not hideable', () => {
     // Make the first and the last column not hideable
     const newColumns = createDataTableSampleData(1, 10).columns;
 
@@ -97,7 +101,7 @@ describe('<ShowHideColumns />', () => {
     ).toBe(true);
   });
 
-  test('calls the dispatch with the correct type and columnID', async () => {
+  it('calls the dispatch with the correct type and columnID', async () => {
     container = renderShowHideColumns().container;
 
     const allOptions = container.querySelectorAll('input[type="checkbox"]');

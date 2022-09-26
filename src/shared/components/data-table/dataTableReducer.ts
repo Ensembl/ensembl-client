@@ -26,7 +26,6 @@ export const defaultDataTableState: DataTableState = {
   sortedColumn: null,
   fixedHeader: false,
   selectedRowIds: {},
-  expandedRowIds: {},
   hiddenRowIds: {},
   hiddenRowIdsInDraft: {},
   hiddenColumnIds: {}

@@ -36,9 +36,9 @@ import styles from './DataTable.scss';
 export type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
-  theme: TableTheme;
-  selectableColumnIndex: number;
-  expandedContent: { [rowId: string]: ReactNode };
+  theme?: TableTheme;
+  selectableColumnIndex?: number;
+  expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
   rows: TableRows;
 };
@@ -51,8 +51,8 @@ export type TableProps = {
   onStateChange?: (newState: DataTableState) => void;
   columns: DataTableColumns;
   state?: Partial<DataTableState>;
-  theme: TableTheme;
-  selectableColumnIndex: number;
+  theme?: TableTheme;
+  selectableColumnIndex?: number;
   className?: string;
   expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];

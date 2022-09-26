@@ -33,7 +33,6 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     columns,
     hiddenColumnIds,
     hiddenRowIds,
-    data,
     selectableColumnIndex,
     expandedContent
   } = useContext(TableContext) || {
@@ -41,7 +40,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     selectableColumnIndex: 0
   };
 
-  if (!(data && props.rowData && dispatch && columns)) {
+  if (!(props.rowData && dispatch && columns)) {
     return null;
   }
 

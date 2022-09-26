@@ -36,7 +36,11 @@ const columns: DataTableColumns = createDataTableSampleData(1, 10).columns;
 const defaultProps = {
   ...defaultDataTableState,
   dispatch: jest.fn(),
-  columns
+  columns,
+  rows: defaultDataTableState.data.map((row, index) => ({
+    rowId: index,
+    cells: row
+  }))
 };
 
 describe('<TableActions />', () => {
@@ -53,12 +57,12 @@ describe('<TableActions />', () => {
     jest.resetAllMocks();
   });
 
-  test('renders without error', () => {
+  it('renders without error', () => {
     container = renderTableActions().container;
     expect(() => container).not.toThrow();
   });
 
-  test('respects the disabledActions list', () => {
+  it('respects the disabledActions list', () => {
     container = renderTableActions({
       disabledActions: [TableAction.FILTERS, TableAction.DEFAULT]
     }).container;

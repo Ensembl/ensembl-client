@@ -29,7 +29,11 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 const defaultProps = {
   ...defaultDataTableState,
   dispatch: jest.fn(),
-  columns: []
+  columns: [],
+  rows: defaultDataTableState.data.map((row, index) => ({
+    rowId: index,
+    cells: row
+  }))
 };
 
 import FindInTable from './FindInTable';
@@ -48,12 +52,12 @@ describe('<FindInTable />', () => {
     jest.resetAllMocks();
   });
 
-  test('renders without error', () => {
+  it('renders without error', () => {
     container = renderFindInTable().container;
     expect(() => container).not.toThrow();
   });
 
-  test('dispatches the correct search text', async () => {
+  it('dispatches the correct search text', async () => {
     container = renderFindInTable().container;
 
     const textInput = container.querySelector('input') as Element;
@@ -71,7 +75,7 @@ describe('<FindInTable />', () => {
     });
   });
 
-  test('click on cancel link dispatched the correct action', async () => {
+  it('click on cancel link dispatched the correct action', async () => {
     container = renderFindInTable().container;
 
     const cancelLink = container.querySelector('.cancel') as Element;

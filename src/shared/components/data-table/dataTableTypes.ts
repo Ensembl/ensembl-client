@@ -89,7 +89,6 @@ export type DataTableState = {
   hiddenRowIds: TableSelectedRowId;
   hiddenRowIdsInDraft: TableSelectedRowId;
   hiddenColumnIds: TableSelectedRowId;
-  expandedRowIds: TableSelectedRowId;
 };
 
 type SetRowsPerPageAction = {
