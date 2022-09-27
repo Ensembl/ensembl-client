@@ -26,7 +26,7 @@ const useSpeciesAnalytics = () => {
   const trackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
       ...ga,
-      app: AppName.SPEICES_PAGE
+      app: AppName.SPECIES_PAGE
     });
   };
 
@@ -34,8 +34,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'remove_species',
-      label: speciesNameForAnalytics,
+      category: 'species_data',
       action: 'remove',
       species: speciesNameForAnalytics
     });
@@ -71,8 +70,8 @@ const useSpeciesAnalytics = () => {
     exampleLinkType: string
   ) => {
     trackEvent({
-      category: 'example_link',
-      action: 'clicked',
+      category: 'species_data',
+      action: 'example_link_clicked',
       label: exampleLinkType,
       species: getSpeciesAnalyticsName(species)
     });

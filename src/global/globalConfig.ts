@@ -35,7 +35,7 @@ export type ScrollPosition = {
 export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',
-  SPEICES_PAGE = 'Species page',
+  SPECIES_PAGE = 'Species page',
   CUSTOM_DOWNLOADS = 'Custom downloads',
   ENTITY_VIEWER = 'Entity viewer',
   TOOLS = 'Tools' // this is the name of a group of apps
