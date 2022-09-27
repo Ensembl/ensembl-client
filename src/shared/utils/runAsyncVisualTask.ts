@@ -30,35 +30,29 @@ import {
   type Observable
 } from 'rxjs';
 
-// TODO: write the actual hook
-const useAsyncTask = () => {
-  return {
-    run: runAsyncVisualTask
-  };
-};
-
 /**
  * This is a function for handling asynchronous tasks that are accompanied
- * by a change in the UI (e.g. a spinner) indicating that they are running.
+ * by a change in the UI indicating that they are running (e.g. a spinner).
  *
- * It is impossible to predict how long such a task may take — it may finish
- * almost immediately, or may take a long time. The purpose of the runAsyncVisualTask
- * function is to avoid unwelcome flickering on the screen caused by the loading indicator
- * quickly appearing and disappearing when the task is too quick to finish.
+ * It is impossible to predict how long a task may take — it may finish almost immediately,
+ * or may run for a long time. The purpose of the runAsyncVisualTask utility function
+ * is to prevent unwelcome flickering on the screen caused by the loading indicator
+ * briefly appearing and disappearing when the task finishes too quickly
+ * after the indicator is displayed.
  *
- * Therefore, runAsyncVisualTask does the following:
+ * The runAsyncVisualTask function wraps an asynchronous task and does the following:
  * - if the task finishes very quickly (faster than the interval set by the ignoreTime option),
- *   then do not bother displaying the loading indicator
- * - if the task takes longer than the ignoreTime period to complete, register
- *   the loading state, and maintain it for at least the interval defined by the minimumRunningTime
- *   option
- * - if the task finishes after the ignoreTime interval, but before the minimumRunningTime interval,
- *   keep the loading state until the minimumRunningTime interval expires
+ *   then no signal for showing the loading indicator will be sent
+ * - if the task takes longer than the ignoreTime period to complete, then the function
+ *   sends a signal to show the loading indicator, and waits for at least the length of time
+ *   defined by the minimumRunningTime option before sending a different signal
+ * - thus, if the task completes after the ignoreTime interval, but before the minimumRunningTime expires,
+ *   then its completion will be reported only after the minimumRunningTime interval runs out
  *
  * The implementation was inspired by https://stackblitz.com/edit/rxjs-spinner-flickering?file=index.ts
  */
 
-export const runAsyncVisualTask = <T>(params: {
+const runAsyncVisualTask = <T>(params: {
   task: Promise<T> | Observable<T>; // using observable option for testability
   ignoreTime?: number;
   minimumRunningTime?: number;
@@ -122,4 +116,4 @@ export const runAsyncVisualTask = <T>(params: {
   );
 };
 
-export default useAsyncTask;
+export default runAsyncVisualTask;

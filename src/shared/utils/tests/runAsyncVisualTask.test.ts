@@ -16,7 +16,7 @@
 
 import { timer, map, mergeMap, throwError } from 'rxjs';
 
-import { runAsyncVisualTask } from '../useAsyncTask';
+import runAsyncVisualTask from '../runAsyncVisualTask';
 
 jest.useFakeTimers();
 
