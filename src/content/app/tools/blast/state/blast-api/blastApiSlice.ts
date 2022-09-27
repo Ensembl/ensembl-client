@@ -27,6 +27,7 @@ import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/b
 export type BlastSubmissionPayload = {
   species: Species[];
   sequences: { id: number; value: string }[];
+  preset: string;
   parameters: Record<string, string>;
 };
 
@@ -91,6 +92,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
             submittedData: {
               species: payload.species,
               sequences: payload.sequences,
+              preset: payload.preset,
               parameters: payload.parameters
             },
             results,

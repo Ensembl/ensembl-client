@@ -31,6 +31,7 @@ const databaseLabelsMap: Record<DatabaseType, string> = {
 
 type JobParametersProps = {
   sequenceValue: string;
+  preset: string;
   parameters: BlastSubmissionParameters;
 };
 
@@ -49,6 +50,10 @@ const JobParameters = (props: JobParametersProps) => {
             <tr>
               <td>Database</td>
               <td>{databaseLabelsMap[parameters.database as DatabaseType]}</td>
+            </tr>
+            <tr>
+              <td>Sensitivity</td>
+              <td>{props.preset}</td>
             </tr>
             <tr>
               <td>Max. alignments</td>

@@ -38,12 +38,14 @@ export const createBlastSubmission = (params?: {
   const { sequencesCount = 2, speciesCount = 1 } = params?.options ?? {};
   const species = times(speciesCount, () => createSelectedSpecies());
   const sequences = createSubmittedSequences(sequencesCount);
+  const preset = 'normal';
 
   return {
     id: faker.datatype.uuid(),
     submittedData: {
       species,
       sequences,
+      preset,
       parameters: defaultBlastParameters
     },
     results: createBlastJobs({ species, sequences }),

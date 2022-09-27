@@ -40,6 +40,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
+  preset: string;
   blastResults: BlastJobWithResults[];
   parameters: BlastSubmissionParameters;
 };
@@ -70,6 +71,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <JobParameters
               sequenceValue={sequence.value}
               parameters={parameters}
+              preset={props.preset}
             />
           )}
         </div>
