@@ -15,34 +15,114 @@
  */
 
 import React, {
+  useState,
   forwardRef,
-  type HTMLAttributes,
+  type ComponentProps,
   type ForwardedRef
 } from 'react';
 import classNames from 'classnames';
 
+import { CircleLoader } from 'src/shared/components/loader';
+
 import DownloadIcon from 'static/icons/icon_download.svg';
+import Checkmark from 'static/icons/icon_tick.svg';
+import Cross from 'static/icons/icon_cross.svg';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './DownloadButton.scss';
 
-type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'> & {
-  disabled?: boolean;
+type Props = Omit<ComponentProps<'button'>, 'children' | 'onClick'> & {
+  onClick: () => unknown;
 };
 
 const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
-  const { className, ...otherProps } = props;
+  const [status, setStatus] = useState(LoadingState.NOT_REQUESTED);
+  const { onClick, ...otherProps } = props;
+
+  const clickHandler = async () => {
+    setStatus(LoadingState.LOADING);
+    try {
+      await onClick();
+      setStatus(LoadingState.SUCCESS);
+    } catch {
+      setStatus(LoadingState.ERROR);
+    } finally {
+      setTimeout(() => {
+        setStatus(LoadingState.NOT_REQUESTED);
+      }, 1000);
+    }
+  };
+
+  // const { className, ...otherProps } = props;
+
+  // const elementClasses = classNames(
+  //   styles.downloadButton,
+  //   { [styles.downloadButtonDisabled]: props.disabled },
+  //   className
+  // );
+
+  return (
+    <ControlledDownloadButtonWithForwardedRef
+      {...otherProps}
+      ref={ref}
+      status={status}
+      onClick={clickHandler}
+    />
+  );
+};
+
+type ControlledProps = Props & {
+  status: LoadingState;
+};
+
+const ControlledDownloadButton = (
+  props: ControlledProps,
+  ref: ForwardedRef<HTMLButtonElement>
+) => {
+  const { className, status, ...otherProps } = props;
 
   const elementClasses = classNames(
     styles.downloadButton,
-    { [styles.downloadButtonDisabled]: props.disabled },
+    {
+      [styles.downloadButtonDisabled]: props.disabled,
+      [styles.downloadButtonLoading]: status === LoadingState.LOADING,
+      [styles.downloadButtonSuccess]: status === LoadingState.SUCCESS,
+      [styles.downloadButtonError]: status === LoadingState.ERROR
+    },
     className
   );
 
+  const isDisabled = status !== LoadingState.NOT_REQUESTED || props.disabled;
+
   return (
-    <button {...otherProps} ref={ref} className={elementClasses}>
-      <DownloadIcon />
+    <button
+      {...otherProps}
+      ref={ref}
+      className={elementClasses}
+      disabled={isDisabled}
+    >
+      {getButtonContent(status)}
     </button>
   );
 };
 
+const getButtonContent = (status: LoadingState) => {
+  switch (status) {
+    case LoadingState.LOADING:
+      return <CircleLoader size="small" />;
+    case LoadingState.SUCCESS:
+      return <Checkmark />;
+    case LoadingState.ERROR:
+      return <Cross />;
+    default:
+      return <DownloadIcon />;
+  }
+};
+
+const ControlledDownloadButtonWithForwardedRef = forwardRef(
+  ControlledDownloadButton
+);
+
+export { ControlledDownloadButtonWithForwardedRef as ControlledDownloadButton };
 export default forwardRef(DownloadButton);
