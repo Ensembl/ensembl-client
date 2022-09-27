@@ -61,8 +61,8 @@ const runAsyncVisualTask = <T>(params: {
 }) => {
   const { ignoreTime = 100, minimumRunningTime = 1000 } = params;
 
-  const promise$ = from(params.task).pipe(
-    shareReplay(1), // make sure that task doesn't need to run from the start when it connects to withRegisteredTask
+  const task$ = from(params.task).pipe(
+    shareReplay(1), // make sure that the task won't need to run from the start when it is consumed by withRegisteredTask
     tap((result) => {
       params.onComplete?.(result);
     }),
@@ -83,7 +83,7 @@ const runAsyncVisualTask = <T>(params: {
   const ignoreTimer$ = timer(ignoreTime).pipe(map(() => 'registered'));
   const minimumRunningTimer$ = timer(minimumRunningTime).pipe(startWith(null));
 
-  const withRegisteredTask = (task: typeof promise$) => {
+  const withRegisteredTask = (task: typeof task$) => {
     return combineLatest([
       minimumRunningTimer$,
       task.pipe(startWith({ status: 'loading', result: null }))
@@ -101,12 +101,12 @@ const runAsyncVisualTask = <T>(params: {
     );
   };
 
-  return race(promise$, ignoreTimer$).pipe(
+  return race(task$, ignoreTimer$).pipe(
     mergeMap((winner) => {
       if (typeof winner === 'string') {
         // Meaning that the ignoreTimer$ stream has completed,
         // and that we should register the task
-        return withRegisteredTask(promise$);
+        return withRegisteredTask(task$);
       } else {
         // The task completed before the ignoreTimer$ stream
         // No need to report it to the user
