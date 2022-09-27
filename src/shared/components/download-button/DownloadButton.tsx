@@ -54,14 +54,6 @@ const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
     }
   };
 
-  // const { className, ...otherProps } = props;
-
-  // const elementClasses = classNames(
-  //   styles.downloadButton,
-  //   { [styles.downloadButtonDisabled]: props.disabled },
-  //   className
-  // );
-
   return (
     <ControlledDownloadButtonWithForwardedRef
       {...otherProps}
