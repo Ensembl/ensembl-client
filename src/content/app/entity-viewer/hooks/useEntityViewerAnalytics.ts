@@ -28,12 +28,12 @@ import {
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import {
-  Filters,
+  type Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
-import { AnalyticsOptions } from 'src/analyticsHelper';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 import { AppName } from 'src/global/globalConfig';
 
 type TrackDownloadPayload = {
