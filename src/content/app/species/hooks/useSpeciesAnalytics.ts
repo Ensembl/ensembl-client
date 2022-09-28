@@ -46,7 +46,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_use',
+      category: 'species_management',
       label: speciesNameForAnalytics,
       action: updatedStatus,
       species: speciesNameForAnalytics
