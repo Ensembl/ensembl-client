@@ -33,12 +33,8 @@ import type {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import type { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
-<<<<<<< HEAD
 import type { AnalyticsOptions } from 'src/analyticsHelper';
 import { AppName } from 'src/global/globalConfig';
-=======
-import { AnalyticsOptions } from 'src/analyticsHelper';
->>>>>>> 006973d85 (analytics updated)
 
 type TrackDownloadPayload = {
   category: string;
