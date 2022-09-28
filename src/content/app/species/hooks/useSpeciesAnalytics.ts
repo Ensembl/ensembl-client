@@ -34,7 +34,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_data',
+      category: 'species_management',
       action: 'remove',
       species: speciesNameForAnalytics
     });
