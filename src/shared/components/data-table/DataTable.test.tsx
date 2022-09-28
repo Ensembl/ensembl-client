@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
+import React from 'react';
+import { render } from '@testing-library/react';
 import { times } from 'lodash';
+import userEvent from '@testing-library/user-event';
+
+import DataTable from './DataTable';
+import { defaultDataTableState } from 'src/shared/components/data-table/dataTableReducer';
+
+import { type TableProps } from 'src/shared/components/data-table/DataTable';
+
 import { TableData, DataTableColumns } from './dataTableTypes';
 
 export const createDataTableSampleData = (
@@ -33,3 +42,92 @@ export const createDataTableSampleData = (
     }))
   };
 };
+
+const { columns, data } = createDataTableSampleData(15, 10);
+
+const defaultProps = {
+  state: {
+    ...defaultDataTableState,
+    data
+  },
+  columns
+};
+
+describe('<DataTable />', () => {
+  const renderDataTable = (props: Partial<TableProps> = {}) =>
+    render(<DataTable {...defaultProps} {...props} />);
+
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('renders without error', () => {
+    container = renderDataTable().container;
+    expect(() => container).not.toThrow();
+  });
+
+  it('displays correct number of rows per page', () => {
+    container = renderDataTable({
+      state: {
+        ...defaultProps.state,
+        rowsPerPage: 10
+      }
+    }).container;
+
+    expect(container.querySelectorAll('tbody tr').length).toBe(10);
+
+    container = renderDataTable({
+      state: {
+        ...defaultProps.state,
+        rowsPerPage: 20
+      }
+    }).container;
+
+    expect(container.querySelectorAll('tbody tr').length).toBe(
+      defaultProps.state.data.length
+    );
+
+    container = renderDataTable({
+      state: {
+        ...defaultProps.state,
+        rowsPerPage: Infinity
+      }
+    }).container;
+
+    expect(container.querySelectorAll('tbody tr').length).toBe(
+      defaultProps.state.data.length
+    );
+
+    container = renderDataTable({
+      state: {
+        ...defaultProps.state,
+        rowsPerPage: 10,
+        currentPageNumber: 2
+      }
+    }).container;
+
+    expect(container.querySelectorAll('tbody tr').length).toBe(5);
+  });
+
+  it.skip('respects onStateChange', async () => {
+    const onStateChange = jest.fn();
+
+    container = renderDataTable({
+      onStateChange
+    }).container;
+
+    // On page change
+    const paginationInputElement = container.querySelector(
+      '.pagination .inputBox'
+    ) as HTMLInputElement;
+
+    await userEvent.type(paginationInputElement, '2');
+
+    expect(onStateChange).toBeCalledWith({
+      ...defaultProps.state,
+      currentPageNumber: '2'
+    });
+  });
+});
