@@ -34,14 +34,9 @@
 .downloadButtonSuccess,
 .downloadButtonError {
   background-color: var(--download-button-success-background, transparent);
-  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  svg {
-    height: auto;
-  }
 }
 
 .downloadButtonSuccess {
@@ -53,7 +48,7 @@
 }
 
 .downloadButtonError {
-  background-color: var(--download-button-success-background, transparent);
+  background-color: var(--download-button-error-background, transparent);
 
   svg {
     fill: $red;
