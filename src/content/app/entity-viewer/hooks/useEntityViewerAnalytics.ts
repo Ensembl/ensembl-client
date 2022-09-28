@@ -34,6 +34,7 @@ import {
 import { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
 import { AnalyticsOptions } from 'src/analyticsHelper';
+import { AppName } from 'src/global/globalConfig';
 
 type TrackDownloadPayload = {
   category: string;
@@ -61,7 +62,8 @@ const useEntityViewerAnalytics = () => {
     analyticsTracking.trackEvent({
       ...ga,
       species: speciesNameForAnalytics,
-      feature: featureType
+      feature: featureType,
+      app: AppName.ENTITY_VIEWER
     });
   };
 
