@@ -27,14 +27,13 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import {
+import type {
   Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { AppName } from 'src/global/globalConfig';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
-import { AnalyticsOptions } from 'src/analyticsHelper';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 import { AppName } from 'src/global/globalConfig';
 
 type TrackDownloadPayload = {
