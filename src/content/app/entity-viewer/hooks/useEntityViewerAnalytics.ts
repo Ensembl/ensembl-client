@@ -27,8 +27,8 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import {
-  type Filters,
+import type {
+  Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import type { RootState } from 'src/store';
