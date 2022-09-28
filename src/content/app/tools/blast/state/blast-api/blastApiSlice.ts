@@ -19,7 +19,10 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
+import type {
+  Option,
+  BlastSettingsConfig
+} from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
@@ -27,7 +30,7 @@ import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/b
 export type BlastSubmissionPayload = {
   species: Species[];
   sequences: { id: number; value: string }[];
-  preset: string;
+  preset: Option;
   parameters: Record<string, string>;
 };
 

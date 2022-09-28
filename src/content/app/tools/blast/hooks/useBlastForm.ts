@@ -134,13 +134,13 @@ const useBlastForm = () => {
     );
   };
 
-  const updateSensitivityPresets = (presetName: string) => {
+  const updateSensitivityPresets = (presetValue: string) => {
     if (!config) {
       return;
     }
     dispatch(
       changeSensitivityPresetsAction({
-        presetName,
+        presetValue,
         config
       })
     );

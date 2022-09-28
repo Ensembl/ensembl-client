@@ -71,7 +71,7 @@ const mockState = merge({}, initialState, {
     jobName,
     sequenceType: 'dna',
     program: 'blastn',
-    preset: 'normal',
+    preset: { label: 'Normal', value: 'normal' },
     parameters: {
       database,
       ...blastParameters
@@ -85,7 +85,7 @@ const expectedPayload = {
     id: index + 1,
     value: toFasta(seq)
   })),
-  preset: 'normal',
+  preset: { label: 'Normal', value: 'normal' },
   parameters: {
     title: jobName,
     database,

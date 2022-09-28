@@ -19,7 +19,10 @@ import React from 'react';
 import Copy from 'src/shared/components/copy/Copy';
 
 import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
+import type {
+  DatabaseType,
+  Option
+} from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './JobParameters.scss';
 
@@ -31,7 +34,7 @@ const databaseLabelsMap: Record<DatabaseType, string> = {
 
 type JobParametersProps = {
   sequenceValue: string;
-  preset: string;
+  preset: Option;
   parameters: BlastSubmissionParameters;
 };
 
@@ -53,7 +56,7 @@ const JobParameters = (props: JobParametersProps) => {
             </tr>
             <tr>
               <td>Sensitivity</td>
-              <td>{props.preset}</td>
+              <td>{props.preset.label}</td>
             </tr>
             <tr>
               <td>Max. alignments</td>

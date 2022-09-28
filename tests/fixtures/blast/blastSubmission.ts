@@ -38,7 +38,7 @@ export const createBlastSubmission = (params?: {
   const { sequencesCount = 2, speciesCount = 1 } = params?.options ?? {};
   const species = times(speciesCount, () => createSelectedSpecies());
   const sequences = createSubmittedSequences(sequencesCount);
-  const preset = 'normal';
+  const preset = { label: 'Normal', value: 'normal' };
 
   return {
     id: faker.datatype.uuid(),
