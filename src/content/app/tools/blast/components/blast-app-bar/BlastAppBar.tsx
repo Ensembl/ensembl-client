@@ -15,12 +15,16 @@
  */
 
 import React, { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { AppName } from 'src/global/globalConfig';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
+import useMediaQuery from 'src/shared/hooks/useMediaQuery';
+
+import { smallViewportMediaQuery } from 'src/content/app/tools/blast/views/blast-form/blastFormConstants';
+
+import { getStep as getBlastFormStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -32,16 +36,18 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
+import { AppName } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-import styles from './BlastAppBar.scss';
-
 const BlastAppBar = () => {
-  const speciesList = useSelector(getEnabledCommittedSpecies);
-  const speciesListIds = useSelector(getSelectedSpeciesIds);
-  const blastView = useSelector(getBlastView);
+  const speciesList = useAppSelector(getEnabledCommittedSpecies);
+  const speciesListIds = useAppSelector(getSelectedSpeciesIds);
+  const blastView = useAppSelector(getBlastView);
+  const blastFormStep = useAppSelector(getBlastFormStep);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  const isSmallViewport = useMediaQuery(smallViewportMediaQuery);
 
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
@@ -64,27 +70,24 @@ const BlastAppBar = () => {
     }
   };
 
-  const enabledSpecies = speciesList.map((species, index) => (
-    <SpeciesLozenge
-      key={index}
-      theme="blue"
-      className={styles.speciesLozenge}
-      species={species}
-      onClick={() => speciesLozengeClick(species)}
-    />
-  ));
+  const shouldEnableSpecies =
+    (blastView === 'blast-form' && !isSmallViewport) ||
+    (blastView === 'blast-form' &&
+      isSmallViewport &&
+      blastFormStep === 'species');
 
-  const disabledSpecies = speciesList.map((species, index) => (
-    <SpeciesLozenge
-      key={index}
-      theme="grey"
-      className={styles.speciesLozenge}
-      species={species}
-    />
-  ));
-
-  const speciesTabs =
-    blastView === 'blast-form' ? enabledSpecies : disabledSpecies;
+  const speciesTabs = shouldEnableSpecies
+    ? speciesList.map((species, index) => (
+        <SpeciesLozenge
+          key={index}
+          theme="blue"
+          species={species}
+          onClick={() => speciesLozengeClick(species)}
+        />
+      ))
+    : speciesList.map((species, index) => (
+        <SpeciesLozenge key={index} theme="grey" species={species} />
+      ));
 
   const wrappedSpecies = (
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />

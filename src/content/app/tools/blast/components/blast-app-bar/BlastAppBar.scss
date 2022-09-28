@@ -1,8 +1,0 @@
-@import 'src/styles/common';
-
-.speciesLozenge {
-  @media (max-width: 1900px) {
-    --species-lozenge-bg-color: #{$grey};
-    pointer-events: none;
-  }
-}
