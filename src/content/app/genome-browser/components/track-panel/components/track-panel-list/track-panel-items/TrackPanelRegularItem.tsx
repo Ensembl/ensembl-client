@@ -19,6 +19,7 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -53,10 +54,14 @@ const TrackPanelRegularItem = (props: Props) => {
       trackId: track_id
     })
   );
+  const { reportTrackVisibilityToggled, trackDrawerOpened } =
+    useGenomeBrowserAnalytics();
   const { toggleTrack } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
   const onShowMore = () => {
+    trackDrawerOpened('track_details');
+
     dispatch(
       changeDrawerViewForGenome({
         genomeId,
@@ -75,6 +80,7 @@ const TrackPanelRegularItem = (props: Props) => {
         : Status.SELECTED;
 
     toggleTrack({ trackId: track_id, status: newStatus });
+    reportTrackVisibilityToggled(props.label, newStatus === Status.SELECTED);
 
     dispatch(
       updateCommonTrackStates({

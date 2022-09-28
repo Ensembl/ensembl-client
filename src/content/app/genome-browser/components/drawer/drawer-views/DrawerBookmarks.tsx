@@ -19,11 +19,10 @@ import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-
-import analyticsTracking from 'src/services/analytics-service';
 
 import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -35,18 +34,14 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 import styles from './DrawerBookmarks.scss';
 
 const DrawerBookmarks = () => {
-  const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects).slice(
-    20
-  );
+  const previouslyViewedObjects = useAppSelector(
+    getPreviouslyViewedObjects
+  ).slice(20);
   const dispatch = useAppDispatch();
+  const { trackPreviouslyViewedObjectClicked } = useGenomeBrowserAnalytics();
 
   const onClick = (objectType: string, index: number) => {
-    analyticsTracking.trackEvent({
-      category: 'recent_bookmark_link',
-      label: objectType,
-      action: 'clicked',
-      value: index + 1
-    });
+    trackPreviouslyViewedObjectClicked(objectType, index + 1);
 
     dispatch(closeBrowserSidebarModal());
     dispatch(closeDrawer());

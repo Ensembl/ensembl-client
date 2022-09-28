@@ -30,6 +30,13 @@ import { TrackPanelTabs } from './TrackPanelTabs';
 
 import { TrackSet } from '../../trackPanelConfig';
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    reportTrackPanelTabChange: jest.fn()
+  })
+);
+
 const mockState = createMockBrowserState();
 const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 

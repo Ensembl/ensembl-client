@@ -19,6 +19,8 @@ import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import { TrackSet } from '../../trackPanelConfig';
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -41,8 +43,10 @@ export const TrackPanelTabs = () => {
   const isDrawerOpened = useAppSelector(getIsDrawerOpened);
   const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
   const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
-  const isBrowserSidebarModalOpened = useAppSelector(getIsBrowserSidebarModalOpened);
-
+  const isBrowserSidebarModalOpened = useAppSelector(
+    getIsBrowserSidebarModalOpened
+  );
+  const { reportTrackPanelTabChange } = useGenomeBrowserAnalytics();
   const dispatch = useAppDispatch();
 
   const handleTabClick = (value: TrackSet) => {
@@ -57,6 +61,8 @@ export const TrackPanelTabs = () => {
     if (isDrawerOpened) {
       dispatch(closeDrawer());
     }
+
+    reportTrackPanelTabChange(value);
 
     dispatch(selectTrackPanelTab(value));
   };

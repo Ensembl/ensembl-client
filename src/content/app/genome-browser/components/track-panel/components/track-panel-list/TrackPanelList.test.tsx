@@ -47,6 +47,11 @@ jest.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
   <div className="trackPanelRegularItem" />
 ));
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
 const mockState = createMockBrowserState();
 const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 

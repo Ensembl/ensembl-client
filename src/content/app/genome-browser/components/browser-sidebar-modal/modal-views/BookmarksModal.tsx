@@ -21,8 +21,8 @@ import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
-import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
@@ -40,14 +40,7 @@ export const PreviouslyViewedLinks = () => {
     getPreviouslyViewedObjects
   ).slice(0, 20);
 
-  const onLinkClick = (objectType: string, index: number) => {
-    analyticsTracking.trackEvent({
-      category: 'recent_bookmark_link',
-      label: objectType,
-      action: 'clicked',
-      value: index + 1
-    });
-  };
+  const { trackPreviouslyViewedObjectClicked } = useGenomeBrowserAnalytics();
 
   return (
     <div data-test-id="previously viewed links">
@@ -65,7 +58,11 @@ export const PreviouslyViewedLinks = () => {
               changeFocusObject(focusObjectId);
               event.preventDefault();
             }
-          : () => onLinkClick(previouslyViewedObject.type, index);
+          : () =>
+              trackPreviouslyViewedObjectClicked(
+                previouslyViewedObject.type,
+                index + 1
+              );
 
         return (
           <div
@@ -92,13 +89,10 @@ export const BookmarksModal = () => {
   const previouslyViewedObjects = useAppSelector(getPreviouslyViewedObjects);
   const dispatch = useAppDispatch();
 
+  const { trackBookmarksDrawerOpened } = useGenomeBrowserAnalytics();
+
   const onMoreClick = () => {
-    analyticsTracking.trackEvent({
-      category: 'drawer_open',
-      label: 'recent_bookmarks',
-      action: 'clicked',
-      value: previouslyViewedObjects.length
-    });
+    trackBookmarksDrawerOpened(previouslyViewedObjects.length);
 
     dispatch(changeDrawerViewAndOpen({ name: 'bookmarks' }));
   };

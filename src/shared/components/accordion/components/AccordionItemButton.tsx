@@ -29,8 +29,9 @@ import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;
-  toggleExpanded(): void;
+  toggleExpanded: () => void;
   disabled?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
 };
 
 export const AccordionItemButton = (props: Props) => {
@@ -43,6 +44,8 @@ export const AccordionItemButton = (props: Props) => {
     ...rest
   } = props;
 
+  const isExpanded = Boolean(rest['aria-expanded']);
+
   let styles = className;
 
   if (extendDefaultStyles) {
@@ -53,20 +56,25 @@ export const AccordionItemButton = (props: Props) => {
     );
   }
 
+  const onClick = () => {
+    if (props && props.onToggle) {
+      props.onToggle(!isExpanded);
+    }
+
+    toggleExpanded();
+  };
+
   return (
     <div
       {...rest}
       className={styles}
-      onClick={disabled ? noop : toggleExpanded}
+      onClick={disabled ? noop : onClick}
       data-accordion-component="AccordionItemButton"
     >
       <div>{children}</div>
       {!disabled && (
         <div>
-          <Chevron
-            direction={rest['aria-expanded'] ? 'up' : 'down'}
-            animate={true}
-          />
+          <Chevron direction={isExpanded ? 'up' : 'down'} animate={true} />
         </div>
       )}
     </div>
@@ -77,7 +85,10 @@ AccordionItemButton.defaultProps = {
   extendDefaultStyles: true
 };
 
-type WrapperProps = { disabled?: boolean } & Pick<
+type WrapperProps = {
+  disabled?: boolean;
+  onToggle?: (isExpanded: boolean) => void;
+} & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;

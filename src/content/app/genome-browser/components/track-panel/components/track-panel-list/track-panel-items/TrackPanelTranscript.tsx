@@ -18,6 +18,8 @@ import React from 'react';
 
 import { useAppDispatch } from 'src/store';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
@@ -40,12 +42,16 @@ type Props = {
 const TrackPanelTranscript = (props: Props) => {
   const { genomeId, isVisible, transcript } = props;
   const dispatch = useAppDispatch();
+  const { trackDrawerOpened, trackTranscriptInTrackVisibilityToggled } =
+    useGenomeBrowserAnalytics();
 
   const currentTranscriptId = transcript.stable_id;
 
   const isCanonicalTranscript = transcript.metadata.canonical?.value ?? false;
 
   const onShowMore = () => {
+    trackDrawerOpened('transcript_summary');
+
     dispatch(
       changeDrawerViewForGenome({
         genomeId,
@@ -58,6 +64,7 @@ const TrackPanelTranscript = (props: Props) => {
   };
 
   const onChangeVisibility = () => {
+    trackTranscriptInTrackVisibilityToggled(transcript.stable_id, !isVisible);
     props.onVisibilityChange(transcript.stable_id, !isVisible);
   };
 

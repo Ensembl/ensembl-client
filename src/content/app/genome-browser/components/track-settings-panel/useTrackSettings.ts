@@ -35,8 +35,7 @@ import {
   TrackType
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
-import analyticsTracking from 'src/services/analytics-service';
-
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import { type OptionValue } from 'src/shared/components/radio-group/RadioGroup';
@@ -51,6 +50,14 @@ const useBrowserTrackSettings = () => {
   const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
   const dispatch = useAppDispatch();
+
+  const {
+    trackTrackNameToggle,
+    trackFeatureLabelToggle,
+    trackShowSeveralTranscriptsToggle,
+    trackShowTranscriptsIdToggle,
+    trackApplyToAllInTrackSettings
+  } = useGenomeBrowserAnalytics();
 
   useEffect(() => {
     shouldApplyToAllRef.current = shouldApplyToAll;
@@ -95,11 +102,7 @@ const useBrowserTrackSettings = () => {
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
-    });
+    trackTrackNameToggle(selectedCog, isTrackNameShown);
   };
 
   const updateFeatureLabelsVisibility = (areFeatureLabelsShown: boolean) => {
@@ -137,14 +140,12 @@ const useBrowserTrackSettings = () => {
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'feature_labels_' + (areFeatureLabelsShown ? 'on' : 'off')
-    });
+    trackFeatureLabelToggle(selectedCog, areFeatureLabelsShown);
   };
 
-  const updateShowSeveralTranscripts = (isSeveralTranscriptsShown: boolean) => {
+  const updateShowSeveralTranscripts = (
+    areSeveralTranscriptsShown: boolean
+  ) => {
     if (!activeGenomeId) {
       return;
     }
@@ -154,12 +155,12 @@ const useBrowserTrackSettings = () => {
           updateTrackSettingsShowSeveralTranscripts({
             genomeId: activeGenomeId,
             trackId,
-            isSeveralTranscriptsShown
+            areSeveralTranscriptsShown
           })
         );
         toggleSeveralTranscripts({
           trackId,
-          shouldShowSeveralTranscripts: isSeveralTranscriptsShown
+          shouldShowSeveralTranscripts: areSeveralTranscriptsShown
         });
       });
     } else {
@@ -167,23 +168,18 @@ const useBrowserTrackSettings = () => {
         updateTrackSettingsShowSeveralTranscripts({
           genomeId: activeGenomeId,
           trackId: selectedCog,
-          isSeveralTranscriptsShown
+          areSeveralTranscriptsShown
         })
       );
       toggleSeveralTranscripts({
         trackId: selectedCog,
-        shouldShowSeveralTranscripts: isSeveralTranscriptsShown
+        shouldShowSeveralTranscripts: areSeveralTranscriptsShown
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action:
-        'several_transcripts_' + (isSeveralTranscriptsShown ? 'on' : 'off')
-    });
+    trackShowSeveralTranscriptsToggle(selectedCog, areSeveralTranscriptsShown);
   };
 
   const updateShowTranscriptIds = (shouldShowTranscriptIds: boolean) => {
@@ -220,11 +216,7 @@ const useBrowserTrackSettings = () => {
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'transcript_labels_' + (shouldShowTranscriptIds ? 'on' : 'off')
-    });
+    trackShowTranscriptsIdToggle(selectedCog, shouldShowTranscriptIds);
   };
 
   const toggleApplyToAll = (value: OptionValue) => {
@@ -262,11 +254,7 @@ const useBrowserTrackSettings = () => {
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
     updateShowTranscriptIds(shouldShowTranscriptIds);
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'apply_to_all - ' + (shouldApplyToAll ? 'unselected' : 'selected')
-    });
+    trackApplyToAllInTrackSettings(selectedCog, shouldApplyToAll);
   };
 
   return {

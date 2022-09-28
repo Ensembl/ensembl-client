@@ -36,6 +36,13 @@ jest.mock(
     <button onClick={props.onClick}>{props.description}</button>
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackSidebarModalViewToggle: jest.fn()
+  })
+);
+
 const fakeGenomeId = 'human';
 
 const mockState = {

@@ -66,6 +66,11 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
 jest.mock('src/content/app/genome-browser/helpers/browserHelper');
 
 // TODO: Update these tests when the component is changed to fit the updated design

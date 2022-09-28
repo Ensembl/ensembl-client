@@ -107,6 +107,17 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackFeatureLabelToggle: jest.fn(),
+    trackTrackNameToggle: jest.fn(),
+    trackShowSeveralTranscriptsToggle: jest.fn(),
+    trackShowTranscriptsIdToggle: jest.fn(),
+    trackApplyToAllInTrackSettings: jest.fn()
+  })
+);
+
 describe('<TrackSettingsPanel />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
