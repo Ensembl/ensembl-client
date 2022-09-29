@@ -37,7 +37,6 @@ import type {
   BlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type {
-  Option,
   BlastParameterName,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
@@ -45,7 +44,7 @@ import type {
 export type PayloadParams = {
   species: Species[];
   sequences: { id: number; value: string }[];
-  preset: Option;
+  preset: string;
   parameters: Partial<Record<BlastParameterName, string>> & {
     title: string;
     stype: SequenceType;

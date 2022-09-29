@@ -29,7 +29,6 @@ import {
 import { submitBlast } from '../blast-api/blastApiSlice';
 
 import type {
-  Option,
   MandatoryBlastParameterName,
   OptionalBlastParameterName,
   SequenceType
@@ -74,7 +73,7 @@ export type BlastSubmission = {
   submittedData: {
     species: Species[];
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
-    preset: Option;
+    preset: string;
     parameters: BlastSubmissionParameters;
   };
   results: BlastJob[];

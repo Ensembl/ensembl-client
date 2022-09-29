@@ -30,10 +30,7 @@ import type {
   BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import type {
-  DatabaseType,
-  Option
-} from 'src/content/app/tools/blast/types/blastSettings';
+import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastResultsPerSequence.scss';
 
@@ -43,7 +40,7 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  preset: Option;
+  preset: string;
   blastResults: BlastJobWithResults[];
   parameters: BlastSubmissionParameters;
 };

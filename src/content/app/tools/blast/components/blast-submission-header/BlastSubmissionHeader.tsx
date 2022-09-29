@@ -85,7 +85,7 @@ export const BlastSubmissionHeader = (props: Props) => {
         jobName: title,
         sequenceType: stype,
         program: program as BlastProgram,
-        preset,
+        preset: preset,
         parameters: otherParameters
       }
     };

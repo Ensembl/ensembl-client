@@ -111,8 +111,8 @@ const BlastSettings = ({ config }: Props) => {
     updateBlastProgram(program as BlastProgram);
   };
 
-  const onSearchSensitivityChange = (presetValue: string) => {
-    updateSensitivityPresets(presetValue);
+  const onSearchSensitivityChange = (presetName: string) => {
+    updateSensitivityPresets(presetName);
   };
 
   const onBlastParameterChange = (
@@ -165,7 +165,7 @@ const BlastSettings = ({ config }: Props) => {
           <div>
             {buildSelect({
               ...(getPresetsList(config) as BlastSelectSetting),
-              selectedOption: searchSensitivity.value,
+              selectedOption: searchSensitivity,
               onChange: onSearchSensitivityChange
             })}
           </div>

@@ -21,7 +21,6 @@ import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTyp
 
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 import type {
-  Option,
   BlastParameterName,
   BlastSettingsConfig,
   BlastProgram,
@@ -34,7 +33,7 @@ type BlastFormSettings = {
   sequenceSelectionMode: 'automatic' | 'manual';
   databaseSelectionMode: 'automatic' | 'manual';
   program: BlastProgram;
-  preset: Option;
+  preset: string;
   parameters: Partial<Record<BlastParameterName, string>>;
 };
 
@@ -60,7 +59,7 @@ export const initialBlastFormSettings: BlastFormSettings = {
   sequenceSelectionMode: 'automatic',
   databaseSelectionMode: 'automatic',
   program: 'blastn',
-  preset: { label: 'Normal', value: 'normal' },
+  preset: 'normal',
   parameters: {}
 };
 
@@ -136,14 +135,11 @@ const autoUpdateSettings = (
     config
   });
 
-  const presetValue = initialBlastFormSettings.preset.value;
-  const parameters = config.presets.settings[programName][presetValue];
-  const presetLabel = config.presets.options.find(
-    (obj) => obj.value === presetValue
-  )?.label as string;
+  const presetName = initialBlastFormSettings.preset;
+  const parameters = config.presets.settings[programName][presetName];
 
   state.settings.program = programName;
-  state.settings.preset = { label: presetLabel, value: presetValue };
+  state.settings.preset = presetName;
   state.settings.parameters = { ...parameters, database };
 };
 
@@ -279,13 +275,10 @@ const blastFormSlice = createSlice({
       }>
     ) {
       const { program, config } = action.payload;
-      const presetValue = initialBlastFormSettings.preset.value;
-      const parameters = config.presets.settings[program][presetValue];
-      const presetLabel = config.presets.options.find(
-        (obj) => obj.value === presetValue
-      )?.label as string;
+      const presetName = initialBlastFormSettings.preset;
+      const parameters = config.presets.settings[program][presetName];
       state.settings.program = program;
-      state.settings.preset = { label: presetLabel, value: presetValue };
+      state.settings.preset = presetName;
       state.settings.parameters = {
         ...parameters,
         database: state.settings.parameters.database
@@ -294,17 +287,14 @@ const blastFormSlice = createSlice({
     changeSensitivityPresets(
       state,
       action: PayloadAction<{
-        presetValue: string;
+        presetName: string;
         config: BlastSettingsConfig;
       }>
     ) {
-      const { presetValue, config } = action.payload;
+      const { presetName, config } = action.payload;
       const program = state.settings.program;
-      const parameters = config.presets.settings[program][presetValue];
-      const presetLabel = config.presets.options.find(
-        (obj) => obj.value === presetValue
-      )?.label as string;
-      state.settings.preset = { label: presetLabel, value: presetValue };
+      const parameters = config.presets.settings[program][presetName];
+      state.settings.preset = presetName;
       state.settings.parameters = {
         ...parameters,
         database: state.settings.parameters.database
