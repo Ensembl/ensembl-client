@@ -19,8 +19,6 @@ import noop from 'lodash/noop';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import styles from './ToolboxExpandableContent.scss';
-
 export type ToolboxContext = {
   toggleExpanded: () => void;
   isExpanded: boolean;
@@ -29,6 +27,7 @@ export type ToolboxContext = {
 type ToolboxExpandableContentProps = {
   mainContent: ReactNode;
   footerContent: ReactNode;
+  className?: string;
 };
 
 type ToggleButtonProps = {
@@ -51,8 +50,8 @@ const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
     <ToolboxExpandableContentContext.Provider
       value={{ toggleExpanded, isExpanded }}
     >
-      <div>
-        <div className={styles.main}>{props.mainContent}</div>
+      <div className={props.className}>
+        <div>{props.mainContent}</div>
         {isExpanded && <div>{props.footerContent}</div>}
       </div>
     </ToolboxExpandableContentContext.Provider>
