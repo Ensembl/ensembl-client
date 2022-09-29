@@ -21,8 +21,6 @@ import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useG
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
-
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import BlastSequenceButton from 'src/shared/components/blast-sequence-button/BlastSequenceButton';
@@ -126,16 +124,14 @@ const DrawerSequenceView = (props: Props) => {
           )}
           {isLoading && <Loading />}
           {isError && <LoadFailure refetch={refetch} />}
-          {!isEnvironment([Environment.PRODUCTION]) && (
-            <div className={styles.asideTop}>
-              <BlastSequenceButton
-                className={styles.blastSequenceButton}
-                sequence={sequence}
-                species={species}
-                sequenceType={sequenceTypeForBlast}
-              />
-            </div>
-          )}
+          <div className={styles.asideTop}>
+            <BlastSequenceButton
+              className={styles.blastSequenceButton}
+              sequence={sequence}
+              species={species}
+              sequenceType={sequenceTypeForBlast}
+            />
+          </div>
           <div className={styles.asideBottom}>
             <div className={styles.sequenceTypeSelection}>
               <RadioGroup
