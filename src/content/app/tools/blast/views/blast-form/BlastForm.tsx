@@ -23,6 +23,8 @@ import { BlastFormContextContainer } from './BlastFormContext';
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
+import { smallViewportMediaQuery } from './blastFormConstants';
+
 import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
   switchToSequencesStep,
@@ -68,7 +70,7 @@ const BlastForm = () => {
 };
 
 const Main = () => {
-  const isSmallViewport = useMediaQuery('(max-width: 1900px)');
+  const isSmallViewport = useMediaQuery(smallViewportMediaQuery);
 
   if (isSmallViewport === null) {
     return null;
