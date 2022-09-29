@@ -47,8 +47,10 @@ type BlastResultsPerSequenceProps = {
 const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { sequence, species, blastResults, parameters } = props;
   const parsedBlastSequence = parseBlastInput(sequence.value)[0];
-  const { header: sequenceHeader = '', value: sequenceValue } =
-    parsedBlastSequence;
+  const { header: sequenceHeader, value: sequenceValue } = parsedBlastSequence;
+  const sequenceHeaderLabel =
+    '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
+
   const rulerContainer = useRef<HTMLDivElement | null>(null);
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
@@ -61,7 +63,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         <div className={styles.sequenceHeader}>
           <div>
             <ShowHide
-              label={'>' + sequenceHeader}
+              label={sequenceHeaderLabel}
               isExpanded={shouldShowParamaters}
               onClick={() => showParamaters(!shouldShowParamaters)}
             ></ShowHide>
