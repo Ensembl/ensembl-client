@@ -16,11 +16,8 @@
 
 import React, { useState, useContext, ReactNode } from 'react';
 import noop from 'lodash/noop';
-import classNames from 'classnames';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-
-import styles from './ToolboxExpandableContent.scss';
 
 export type ToolboxContext = {
   toggleExpanded: () => void;
@@ -49,14 +46,12 @@ const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
     setIsExpanded(updated);
   };
 
-  const wrapperClasses = classNames(styles.main, props.className);
-
   return (
     <ToolboxExpandableContentContext.Provider
       value={{ toggleExpanded, isExpanded }}
     >
-      <div>
-        <div className={wrapperClasses}>{props.mainContent}</div>
+      <div className={props.className}>
+        <div>{props.mainContent}</div>
         {isExpanded && <div>{props.footerContent}</div>}
       </div>
     </ToolboxExpandableContentContext.Provider>
