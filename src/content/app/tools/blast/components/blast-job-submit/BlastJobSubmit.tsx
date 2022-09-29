@@ -75,12 +75,6 @@ const BlastJobSubmit = () => {
     submission.then(() => submission.reset());
     navigate(urlFor.blastUnviewedSubmissions());
 
-    // QUESTION: should the form be cleared immediately on submission,
-    // or after the successful response is received (in which case
-    // the line below should be run in a then clause of the submission promise)?
-    // Edge case with clearing the form immediately: if the submission fails the form data will be lost
-    // Edge case with clearing the form after submission request completes:
-    // it may take several seconds, and the user may return to the form
     dispatch(clearBlastForm());
   };
 
