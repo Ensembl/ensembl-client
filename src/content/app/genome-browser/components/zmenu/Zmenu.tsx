@@ -145,6 +145,7 @@ const Zmenu = (props: ZmenuProps) => {
           <ToolboxExpandableContent
             mainContent={mainContent}
             footerContent={getToolboxFooterContent(transcriptId)}
+            className={styles.toolBoxWrapper}
           />
         </Toolbox>
       )}
