@@ -79,11 +79,9 @@ const Launchbar = () => {
               enabled={true}
             />
           </div>
-          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-            <div className={styles.category}>
-              <BlastLaunchbarButton />
-            </div>
-          )}
+          <div className={styles.category}>
+            <BlastLaunchbarButton />
+          </div>
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
               <LaunchbarButton
