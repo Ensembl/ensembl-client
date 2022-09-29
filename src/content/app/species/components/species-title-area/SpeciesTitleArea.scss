@@ -4,9 +4,9 @@ $container-padding-right: 20px;
 
 @mixin narrow-grid {
   grid-template-areas:
-    'icon species-name species-name species-name'
-    'icon use-dont-use . remove';
-  grid-template-columns: 60px 150px 20px 1fr;
+    'icon species-name usage-toggle'
+    'icon geneSearchWrapper remove';
+  grid-template-columns: 60px 150px 1fr;
   padding: 20px $container-padding-right 12px 0;
   height: auto;
 
@@ -21,19 +21,27 @@ $container-padding-right: 20px;
   }
 
   .speciesToggle {
-    align-self: start;
     padding: 0;
   }
 
   .remove {
     align-self: start;
+    white-space: nowrap;
+  }
+
+  .speciesRemove {
+    white-space: normal;
+  }
+
+  .geneSearchWrapper {
+    margin: 0;
   }
 }
 
 .speciesTitleArea {
   display: grid;
-  grid-template-areas: 'icon species-name usage-toggle remove';
-  grid-template-columns: 60px fit-content(60%) 200px minmax(280px, 1fr);
+  grid-template-areas: 'icon species-name usage-toggle search remove';
+  grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
   grid-column-gap: 20px;
   align-items: center;
   height: 90px;
@@ -83,4 +91,23 @@ $container-padding-right: 20px;
 .speciesRemove {
   grid-area: remove;
   justify-self: end;
+  white-space: nowrap;
+}
+
+.search {
+  grid-area: search;
+}
+
+.geneSearchWrapper {
+  color: $blue;
+  cursor: pointer;
+  display: inline-flex;
+  column-gap: 12px;
+  white-space: nowrap;
+  justify-self: start;
+
+  svg {
+    fill: $blue;
+    width: 13px;
+  }
 }

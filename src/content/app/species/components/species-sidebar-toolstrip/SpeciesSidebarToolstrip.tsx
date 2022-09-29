@@ -18,18 +18,17 @@ import React from 'react';
 import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import {
-  isEntityViewerSidebarOpen,
-  getEntityViewerSidebarModalView
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import {
   toggleSidebar,
-  closeSidebarModal,
-  openSidebarModal
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
-import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+  updateSpeciesSidebarModalForGenome
+} from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+import {
+  getSpeciesSidebarModalView,
+  isSpeciesSidebarOpen
+} from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -39,30 +38,45 @@ import ShareIcon from 'static/icons/icon_share.svg';
 import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
+import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export const EntityViewerSidebarToolstrip = () => {
+export const SpeciesSidebarToolstrip = () => {
   const dispatch = useAppDispatch();
-  const sidebarModalView = useAppSelector(getEntityViewerSidebarModalView);
-  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
+  const sidebarModalView = useAppSelector(getSpeciesSidebarModalView);
+  const isSidebarOpen = useAppSelector(isSpeciesSidebarOpen);
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const { trackSidebarModelOpen } = useSpeciesAnalytics();
 
-  const { trackSidebarModelOpen } = useEntityViewerAnalytics();
+  if (!activeGenomeId) {
+    return null;
+  }
 
-  const toggleModalView = (selectedItem: SidebarModalView) => {
+  const toggleModalView = (selectedItem: SpeciesSidebarModalView) => {
     if (!isSidebarOpen) {
-      dispatch(toggleSidebar());
+      dispatch(toggleSidebar({ genomeId: activeGenomeId }));
     }
 
     if (selectedItem === sidebarModalView) {
-      dispatch(closeSidebarModal());
+      dispatch(
+        updateSpeciesSidebarModalForGenome({
+          activeGenomeId,
+          fragment: { sidebarModalView: null }
+        })
+      );
     } else {
       trackSidebarModelOpen(selectedItem);
-      dispatch(openSidebarModal(selectedItem));
+      dispatch(
+        updateSpeciesSidebarModalForGenome({
+          activeGenomeId,
+          fragment: { sidebarModalView: selectedItem }
+        })
+      );
     }
   };
 
-  const getViewIconStatus = (selectedItem: SidebarModalView) => {
+  const getViewIconStatus = (selectedItem: SpeciesSidebarModalView) => {
     return selectedItem === sidebarModalView && isSidebarOpen
       ? Status.SELECTED
       : Status.UNSELECTED;
@@ -71,18 +85,18 @@ export const EntityViewerSidebarToolstrip = () => {
   return (
     <>
       <ImageButton
-        status={getViewIconStatus(SidebarModalView.SEARCH)}
+        status={getViewIconStatus(SpeciesSidebarModalView.SEARCH)}
         description="Search"
         className={styles.sidebarIcon}
-        onClick={() => toggleModalView(SidebarModalView.SEARCH)}
+        onClick={() => toggleModalView(SpeciesSidebarModalView.SEARCH)}
         image={SearchIcon}
       />
       <ImageButton
-        status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
+        status={Status.DISABLED}
         description="Previously viewed"
         className={styles.sidebarIcon}
-        key={SidebarModalView.BOOKMARKS}
-        onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
+        key={SpeciesSidebarModalView.BOOKMARKS}
+        onClick={noop}
         image={BookmarkIcon}
       />
       <ImageButton
@@ -94,14 +108,14 @@ export const EntityViewerSidebarToolstrip = () => {
         image={ShareIcon}
       />
       <ImageButton
-        status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
+        status={Status.DISABLED}
         description="Download"
         className={styles.sidebarIcon}
-        onClick={() => toggleModalView(SidebarModalView.DOWNLOADS)}
+        onClick={noop}
         image={DownloadIcon}
       />
     </>
   );
 };
 
-export default EntityViewerSidebarToolstrip;
+export default SpeciesSidebarToolstrip;

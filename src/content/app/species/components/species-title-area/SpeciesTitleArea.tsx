@@ -20,11 +20,16 @@ import classNames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
+import SearchIcon from 'static/icons/icon_search.svg';
 
-import { isSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
+import { isSpeciesSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  SpeciesSidebarModalView,
+  updateSpeciesSidebarModalForGenome
+} from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
@@ -36,7 +41,7 @@ import { RootState } from 'src/store';
 import styles from './SpeciesTitleArea.scss';
 
 const useSpecies = () => {
-  const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const popularSpecies = useAppSelector(getPopularSpecies);
   const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
@@ -62,12 +67,27 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const isSidebarOpen = useAppSelector(getSidebarStatus);
+  const dispatch = useAppDispatch();
   const { species, iconUrl } = useSpecies() || {};
 
   const blockClasses = classNames(styles.speciesTitleArea, {
     [styles.speciesTitleAreaNarrow]: isSidebarOpen
   });
+
+  if (!activeGenomeId) {
+    return null;
+  }
+
+  const openSearch = () => {
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: SpeciesSidebarModalView.SEARCH }
+      })
+    );
+  };
 
   return species && iconUrl ? (
     <div className={blockClasses}>
@@ -80,6 +100,10 @@ const SpeciesTitleArea = () => {
       </div>
       <div className={styles.speciesToggle}>
         <SpeciesUsageToggle />
+      </div>
+      <div className={styles.geneSearchWrapper} onClick={openSearch}>
+        <span>Find a gene</span>
+        <SearchIcon />
       </div>
       <div className={styles.speciesRemove}>
         <SpeciesRemove />

@@ -19,44 +19,42 @@ $left-padding: 15px;
     margin-right: 10px;
   }
 
-  .scientificName{
+  .scientificName {
     font-style: italic;
     font-weight: $bold;
   }
 
-  .commonName + .scientificName{
+  .commonName + .scientificName {
     font-weight: $light;
   }
 }
 
 .strainDetails {
-  margin-top:10px;
+  margin-top: 10px;
   .strainType {
     padding-left: $left-padding;
     font-weight: $light;
   }
 
-  .strainValue{
+  .strainValue {
     margin-left: 10px;
   }
 }
 
 .assemblyDetails {
-
   padding-left: $left-padding;
-  
+
   .assemblyName {
     padding-bottom: 15px;
     font-weight: $bold;
   }
 
-  .assemblySource{
+  .assemblySource {
     padding-bottom: 15px;
   }
 }
 
-
-.annotationDetails{
+.annotationDetails {
   padding-left: $left-padding;
 }
 
@@ -69,8 +67,8 @@ $left-padding: 15px;
     font-weight: $light;
     width: 100px;
 
-    &Short{
-      width:50px;
+    &Short {
+      width: 50px;
     }
   }
 
@@ -84,6 +82,6 @@ $left-padding: 15px;
   }
 }
 
-.notesContent{
+.notesContent {
   padding-left: $left-padding;
 }

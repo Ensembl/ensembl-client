@@ -18,7 +18,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 import type { Strand } from 'src/shared/types/thoas/strand';
 
-export type AppName = 'genomeBrowser' | 'entityViewer';
+export type AppName = 'speciesHome' | 'genomeBrowser' | 'entityViewer';
 
 export type SearchMeta = {
   total_hits: number;
@@ -106,6 +106,7 @@ export const search = createAsyncThunk(
 );
 
 const initialState: State = {
+  speciesHome: {},
   genomeBrowser: {},
   entityViewer: {}
 };

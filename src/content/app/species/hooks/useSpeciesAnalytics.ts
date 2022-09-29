@@ -26,7 +26,7 @@ const useSpeciesAnalytics = () => {
   const trackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
       ...ga,
-      app: AppName.SPECIES_SELECTOR
+      app: AppName.SPECIES_PAGE
     });
   };
 
@@ -34,8 +34,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_page',
-      label: speciesNameForAnalytics,
+      category: 'species_management',
       action: 'remove',
       species: speciesNameForAnalytics
     });
@@ -47,7 +46,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     trackEvent({
-      category: 'species_page',
+      category: 'species_management',
       label: speciesNameForAnalytics,
       action: updatedStatus,
       species: speciesNameForAnalytics
@@ -59,8 +58,8 @@ const useSpeciesAnalytics = () => {
     sectionName: string
   ) => {
     trackEvent({
-      category: 'species_page',
-      action: 'open_section',
+      category: 'stats_section',
+      action: 'open',
       label: sectionName,
       species: getSpeciesAnalyticsName(species)
     });
@@ -71,10 +70,18 @@ const useSpeciesAnalytics = () => {
     exampleLinkType: string
   ) => {
     trackEvent({
-      category: 'species_page',
-      action: 'example_link_selected',
+      category: 'species_data',
+      action: 'example_link_clicked',
       label: exampleLinkType,
       species: getSpeciesAnalyticsName(species)
+    });
+  };
+
+  const trackSidebarModelOpen = (iconName: string) => {
+    trackEvent({
+      category: 'sidebar_toolstrip',
+      action: 'modal_opened',
+      label: iconName
     });
   };
 
@@ -82,7 +89,8 @@ const useSpeciesAnalytics = () => {
     trackDeletedSpecies,
     trackSpeciesUse,
     trackSpeciesStatsSectionOpen,
-    trackSpeciesPageExampleLink
+    trackSpeciesPageExampleLink,
+    trackSidebarModelOpen
   };
 };
 export default useSpeciesAnalytics;

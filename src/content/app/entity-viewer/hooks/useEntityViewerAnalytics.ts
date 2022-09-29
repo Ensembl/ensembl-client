@@ -256,14 +256,11 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_transcript_list' });
   };
 
-  const trackSidebarToolstripButtonClick = (
-    iconName: string,
-    genomeId: string
-  ) => {
+  const trackSidebarModelOpen = (iconName: string) => {
     sendTrackEvent({
       category: 'entity_viewer_sidebar_toolstrip',
       action: 'modal_opened',
-      label: `${genomeId}: ${iconName}`
+      label: iconName
     });
   };
 
@@ -292,7 +289,7 @@ const useEntityViewerAnalytics = () => {
     trackExternalReferenceLinkClick,
     trackExternalLinkClick,
     trackPreviouslyViewedObjectClicked,
-    trackSidebarToolstripButtonClick,
+    trackSidebarModelOpen,
     trackSearchSubmission
   };
 };
