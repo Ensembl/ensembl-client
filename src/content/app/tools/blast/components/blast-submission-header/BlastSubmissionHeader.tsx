@@ -72,7 +72,7 @@ export const BlastSubmissionHeader = (props: Props) => {
   const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
 
   const editSubmission = () => {
-    const { sequences, species, parameters } = submission.submittedData;
+    const { sequences, species, preset, parameters } = submission.submittedData;
     const parsedSequences = sequences.flatMap((sequence) =>
       parseBlastInput(sequence.value)
     );
@@ -85,6 +85,7 @@ export const BlastSubmissionHeader = (props: Props) => {
         jobName: title,
         sequenceType: stype,
         program: program as BlastProgram,
+        preset,
         parameters: otherParameters
       }
     };

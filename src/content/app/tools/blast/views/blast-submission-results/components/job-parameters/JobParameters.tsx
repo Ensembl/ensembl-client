@@ -16,26 +16,34 @@
 
 import React from 'react';
 
+import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+
 import Copy from 'src/shared/components/copy/Copy';
 
 import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
+import type { Option } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './JobParameters.scss';
 
-const databaseLabelsMap: Record<DatabaseType, string> = {
-  dna: 'Genomic sequence',
-  cdna: 'cDNA',
-  pep: 'Protein sequence'
-};
-
 type JobParametersProps = {
   sequenceValue: string;
+  preset: string;
   parameters: BlastSubmissionParameters;
 };
 
 const JobParameters = (props: JobParametersProps) => {
-  const { sequenceValue, parameters } = props;
+  const { sequenceValue, parameters, preset } = props;
+  const { data: config } = useBlastConfigQuery();
+  const database = parameters.database;
+
+  const sensitivityPresetLabel =
+    config?.presets?.options.find((option) => option.value === preset)?.label ||
+    '';
+
+  const databaseLabel =
+    ((config?.parameters.database.options as Option[]) || undefined)?.find(
+      (option) => option.value === database
+    )?.label || '';
 
   return (
     <div className={styles.submissionParameters}>
@@ -48,7 +56,11 @@ const JobParameters = (props: JobParametersProps) => {
           <tbody>
             <tr>
               <td>Database</td>
-              <td>{databaseLabelsMap[parameters.database as DatabaseType]}</td>
+              <td>{databaseLabel}</td>
+            </tr>
+            <tr>
+              <td>Sensitivity</td>
+              <td>{sensitivityPresetLabel}</td>
             </tr>
             <tr>
               <td>Max. alignments</td>
