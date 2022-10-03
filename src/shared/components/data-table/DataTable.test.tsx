@@ -17,7 +17,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { times } from 'lodash';
-import userEvent from '@testing-library/user-event';
 
 import DataTable from './DataTable';
 import { defaultDataTableState } from 'src/shared/components/data-table/dataTableReducer';
@@ -111,23 +110,12 @@ describe('<DataTable />', () => {
     expect(container.querySelectorAll('tbody tr').length).toBe(5);
   });
 
-  it.skip('respects onStateChange', async () => {
+  it('respects onStateChange', async () => {
     const onStateChange = jest.fn();
-
     container = renderDataTable({
       onStateChange
     }).container;
 
-    // On page change
-    const paginationInputElement = container.querySelector(
-      '.pagination .inputBox'
-    ) as HTMLInputElement;
-
-    await userEvent.type(paginationInputElement, '2');
-
-    expect(onStateChange).toBeCalledWith({
-      ...defaultProps.state,
-      currentPageNumber: '2'
-    });
+    expect(onStateChange).toBeCalledWith(defaultProps.state);
   });
 });
