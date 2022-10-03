@@ -70,7 +70,12 @@ const hitsTableColumns: DataTableColumns = [
     title: 'Length',
     isSortable: true
   },
-  { width: '200px', columnId: 'view_alignment', isHideable: false },
+  {
+    width: '200px',
+    columnId: 'view_alignment',
+    isHideable: false,
+    isExportable: false
+  },
   {
     width: '100px',
     columnId: 'percentage_id',
@@ -199,6 +204,8 @@ type HitsTableProps = {
 const HitsTable = (props: HitsTableProps) => {
   const { jobResult, blastDatabase } = props;
 
+  const { jobId } = jobResult;
+
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
     sortedColumn: {
@@ -229,12 +236,11 @@ const HitsTable = (props: HitsTableProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_score,
-          <DynamicColumnContent
-            key={counter}
-            hit={hit}
-            blastDatabase={blastDatabase}
-            hitHsp={hitHsp}
-          />,
+          getDynamicColumnContent({
+            hit,
+            blastDatabase,
+            hitHsp
+          }),
           <span key={counter} className={styles.hitOrientation}>
             {hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse'}
           </span>,
@@ -339,11 +345,8 @@ const HitsTable = (props: HitsTableProps) => {
         theme="dark"
         className={styles.hitsTable}
         expandedContent={expandedContent}
-        disabledActions={[
-          TableAction.FILTERS,
-          TableAction.DOWNLOAD_ALL_DATA,
-          TableAction.DOWNLOAD_SHOWN_DATA
-        ]}
+        disabledActions={[TableAction.FILTERS]}
+        exportFileName={`ensembl-blast_${jobId}.csv`}
       />
     </div>
   );
@@ -373,7 +376,7 @@ type DynamicColumnContentProps = {
   blastDatabase: DatabaseType;
 };
 
-const DynamicColumnContent = (props: DynamicColumnContentProps) => {
+const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
   const { hit, blastDatabase, hitHsp } = props;
 
   if (blastDatabase !== 'dna') {
