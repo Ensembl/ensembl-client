@@ -25,8 +25,7 @@ import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
 import { createCSVForGenomicBlast } from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
-import { getNameForZipRoot } from 'src/content/app/tools/blast/blast-download/submissionDownload';
-import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type {
   BlastHit,
@@ -193,11 +192,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       </div>
 
       {isExpanded && (
-        <HitsTable
-          jobResult={jobResult}
-          submission={submission}
-          species={speciesInfo}
-        />
+        <HitsTable jobResult={jobResult} submission={submission} />
       )}
     </div>
   );
@@ -206,15 +201,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 type HitsTableProps = {
   jobResult: SingleBlastJobResultProps['jobResult'];
   submission: BlastSubmission;
-  species: Species;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { jobResult, submission, species } = props;
+  const { jobResult, submission } = props;
 
   const blastDatabase = submission.submittedData.parameters
     .database as DatabaseType;
-
-  const zipFileName = getNameForZipRoot(submission) + '.zip';
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
@@ -347,26 +339,9 @@ const HitsTable = (props: HitsTableProps) => {
   };
 
   const downloadHandler = async () => {
-    const JSZip = await import('jszip').then((module) => module.default); // use a dynamic import to split this library off in a separate chunk
     const csv = createCSVForGenomicBlast(jobResult.data);
 
-    const zip = new JSZip();
-    const rootFolder = zip.folder(getNameForZipRoot(submission));
-
-    const { sequenceId } = jobResult;
-
-    const speciesFolderName = `${species.scientific_name}-${species.genome_id}`;
-    const sequenceFolderName = `Query sequence ${sequenceId}`; // NOTE: this name will probably change as well
-    const csvFileName = 'table';
-
-    rootFolder?.file(
-      `${speciesFolderName}/${sequenceFolderName}/${csvFileName}.csv`,
-      csv
-    );
-
-    const blob = await zip.generateAsync({ type: 'blob' });
-
-    await downloadBlobAsFile(blob, zipFileName);
+    await downloadTextAsFile(csv, 'table.csv');
   };
 
   return (
@@ -384,7 +359,6 @@ const HitsTable = (props: HitsTableProps) => {
           TableAction.DOWNLOAD_SHOWN_DATA
         ]}
         downloadHandler={downloadHandler}
-        downloadFileName={zipFileName}
       />
     </div>
   );

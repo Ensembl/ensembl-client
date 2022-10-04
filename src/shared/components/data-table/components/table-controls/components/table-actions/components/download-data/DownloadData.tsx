@@ -97,7 +97,7 @@ const DownloadData = () => {
 
   return (
     <div className={styles.downloadData}>
-      <span>{downloadFileName ?? 'Table export.csv'}</span>
+      <span>{downloadFileName ?? 'table.csv'}</span>
       <PrimaryButton onClick={handleDownload}>Download</PrimaryButton>
       <span className={styles.cancel} onClick={onCancel}>
         cancel
