@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import routesConfig from 'src/routes/routesConfig';
 
 import analyticsTracking from 'src/services/analytics-service';
+import useGlobalAnalytics from 'src/global/hooks/useGlobalAnalytics';
 
 import { changeCurrentApp } from 'src/global/globalSlice';
 
@@ -40,6 +41,7 @@ const AppContainer = () => {
   }, [location.pathname]);
 
   useLocationReporting();
+  useGlobalAnalytics();
 
   return <App />;
 };

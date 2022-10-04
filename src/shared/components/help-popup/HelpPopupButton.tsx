@@ -34,6 +34,15 @@ const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
 
   const openModal = () => {
+    const trackHelpPopupOpen = new CustomEvent('analytics', {
+      detail: {
+        category: 'contextual-help',
+        action: 'opened'
+      }
+    });
+
+    window.dispatchEvent(trackHelpPopupOpen);
+
     setShouldShowModal(true);
   };
 
