@@ -15,13 +15,14 @@
  */
 import React, { ReactNode } from 'react';
 
-import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
+import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
+
 import styles from './DownloadData.scss';
-import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 const getReactNodeText = (node: ReactNode): string => {
   if (['string', 'number'].includes(typeof node)) {
