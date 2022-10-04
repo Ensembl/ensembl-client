@@ -40,7 +40,8 @@ type TableContextType = DataTableState & {
   selectableColumnIndex: number;
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
-  exportFileName?: string;
+  downloadFileName?: string;
+  downloadHandler?: () => void;
   rows: TableRows;
 };
 
@@ -56,7 +57,8 @@ export type TableProps = {
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
   className?: string;
-  exportFileName?: string;
+  downloadFileName?: string;
+  downloadHandler?: () => void;
   onStateChange?: (newState: DataTableState) => void;
 };
 const DataTable = (props: TableProps) => {
@@ -99,7 +101,8 @@ const DataTable = (props: TableProps) => {
         selectableColumnIndex: props.selectableColumnIndex,
         expandedContent: props.expandedContent,
         disabledActions: props.disabledActions,
-        exportFileName: props.exportFileName
+        downloadFileName: props.downloadFileName,
+        downloadHandler: props.downloadHandler
       }}
     >
       <div className={wrapperClasses}>

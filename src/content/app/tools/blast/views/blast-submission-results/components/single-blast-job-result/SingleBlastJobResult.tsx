@@ -24,12 +24,19 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
+import { createCSVForGenomicBlast } from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
+import { getNameForZipRoot } from 'src/content/app/tools/blast/blast-download/submissionDownload';
+import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
+
 import type {
   BlastHit,
   BlastJobResult,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
-import type { BlastJobWithResults } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastJobWithResults,
+  BlastSubmission
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -48,7 +55,7 @@ type SingleBlastJobResultProps = {
   jobResult: BlastJobWithResults;
   species: Species;
   diagramWidth: number;
-  blastDatabase: DatabaseType;
+  submission: BlastSubmission;
 };
 
 const hitsTableColumns: DataTableColumns = [
@@ -158,12 +165,7 @@ const hitsTableColumns: DataTableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const {
-    species: speciesInfo,
-    jobResult,
-    diagramWidth,
-    blastDatabase
-  } = props;
+  const { species: speciesInfo, jobResult, diagramWidth, submission } = props;
   const [isExpanded, setExpanded] = useState(false);
 
   const alignmentsCount = countAlignments(jobResult.data);
@@ -191,7 +193,11 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       </div>
 
       {isExpanded && (
-        <HitsTable jobResult={jobResult} blastDatabase={blastDatabase} />
+        <HitsTable
+          jobResult={jobResult}
+          submission={submission}
+          species={speciesInfo}
+        />
       )}
     </div>
   );
@@ -199,12 +205,16 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
 type HitsTableProps = {
   jobResult: SingleBlastJobResultProps['jobResult'];
-  blastDatabase: DatabaseType;
+  submission: BlastSubmission;
+  species: Species;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { jobResult, blastDatabase } = props;
+  const { jobResult, submission, species } = props;
 
-  const { jobId } = jobResult;
+  const blastDatabase = submission.submittedData.parameters
+    .database as DatabaseType;
+
+  const zipFileName = getNameForZipRoot(submission) + '.zip';
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
@@ -336,6 +346,29 @@ const HitsTable = (props: HitsTableProps) => {
     );
   };
 
+  const downloadHandler = async () => {
+    const JSZip = await import('jszip').then((module) => module.default); // use a dynamic import to split this library off in a separate chunk
+    const csv = createCSVForGenomicBlast(jobResult.data);
+
+    const zip = new JSZip();
+    const rootFolder = zip.folder(getNameForZipRoot(submission));
+
+    const { sequenceId } = jobResult;
+
+    const speciesFolderName = `${species.scientific_name}-${species.genome_id}`;
+    const sequenceFolderName = `Query sequence ${sequenceId}`; // NOTE: this name will probably change as well
+    const csvFileName = 'table';
+
+    rootFolder?.file(
+      `${speciesFolderName}/${sequenceFolderName}/${csvFileName}.csv`,
+      csv
+    );
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+
+    await downloadBlobAsFile(blob, zipFileName);
+  };
+
   return (
     <div className={styles.tableWrapper}>
       <DataTable
@@ -345,8 +378,13 @@ const HitsTable = (props: HitsTableProps) => {
         theme="dark"
         className={styles.hitsTable}
         expandedContent={expandedContent}
-        disabledActions={[TableAction.FILTERS]}
-        exportFileName={`ensembl-blast_${jobId}.csv`}
+        disabledActions={[
+          TableAction.FILTERS,
+          TableAction.FIND_IN_TABLE,
+          TableAction.DOWNLOAD_SHOWN_DATA
+        ]}
+        downloadHandler={downloadHandler}
+        downloadFileName={zipFileName}
       />
     </div>
   );

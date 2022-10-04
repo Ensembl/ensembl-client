@@ -55,7 +55,7 @@ const actionOptions = [
   },
   {
     value: TableAction.DOWNLOAD_ALL_DATA,
-    label: 'Download all data'
+    label: 'Download this table'
   },
   {
     value: TableAction.RESTORE_DEFAULTS,

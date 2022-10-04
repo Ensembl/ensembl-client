@@ -39,10 +39,11 @@ const DownloadData = () => {
   const {
     dispatch,
     rows,
-    exportFileName,
+    downloadFileName,
     columns,
     selectedAction,
-    hiddenRowIds
+    hiddenRowIds,
+    downloadHandler
   } = useDataTable();
 
   const onCancel = () => {
@@ -53,6 +54,10 @@ const DownloadData = () => {
   };
 
   const handleDownload = () => {
+    if (downloadHandler) {
+      downloadHandler();
+      return;
+    }
     const dataForExport: string[][] = [];
     dataForExport[0] = [
       ...columns
@@ -86,12 +91,12 @@ const DownloadData = () => {
 
     const csv = formatCSV(dataForExport);
 
-    downloadTextAsFile(csv, exportFileName ?? 'Table export.csv');
+    downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
   };
 
   return (
     <div className={styles.downloadData}>
-      <span>{exportFileName ?? 'Table export.csv'}</span>
+      <span>{downloadFileName ?? 'Table export.csv'}</span>
       <PrimaryButton onClick={handleDownload}>Download</PrimaryButton>
       <span className={styles.cancel} onClick={onCancel}>
         cancel
