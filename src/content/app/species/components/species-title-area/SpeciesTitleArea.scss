@@ -84,17 +84,10 @@ $container-padding-right: 20px;
   .speciesTitleArea {
     grid-template-areas:
       'icon species-name usage-toggle remove'
-      'icon remove-message . .'
-      'icon search . .';
+      '. remove-message . .'
+      '. search . .';
     grid-template-columns: 60px 150px auto 1fr;
     grid-template-rows: 80px auto auto auto;
-    padding: 20px $container-padding-right 12px 0;
-    height: auto;
-  }
-
-  .speciesIcon {
-    grid-area: icon;
-    align-self: start;
   }
 
   .speciesNameWrapper {
@@ -135,11 +128,11 @@ $container-padding-right: 20px;
   .speciesTitleArea {
     grid-template-areas:
       'icon species-name .'
-      'icon usage-toggle remove'
-      'icon remove-message .'
-      'icon search .';
+      '. usage-toggle remove'
+      '. remove-message .'
+      '. search .';
     grid-template-columns: 60px 150px 1fr;
-    grid-template-rows: 60px 0px auto 40px;
+    grid-template-rows: 80px 0px auto 40px;
     grid-row-gap: 10px;
   }
   .speciesRemoveMessage {
