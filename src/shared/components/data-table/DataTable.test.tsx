@@ -65,24 +65,10 @@ describe('<DataTable />', () => {
   });
 
   it('displays correct number of rows per page', () => {
-    container = renderDataTable({
-      state: {
-        ...defaultProps.state,
-        rowsPerPage: 10
-      }
-    }).container;
-
-    expect(container.querySelectorAll('tbody tr').length).toBe(10);
-
-    container = renderDataTable({
-      state: {
-        ...defaultProps.state,
-        rowsPerPage: 20
-      }
-    }).container;
+    container = renderDataTable().container;
 
     expect(container.querySelectorAll('tbody tr').length).toBe(
-      defaultProps.state.data.length
+      defaultDataTableState.rowsPerPage
     );
 
     container = renderDataTable({
@@ -99,7 +85,6 @@ describe('<DataTable />', () => {
     container = renderDataTable({
       state: {
         ...defaultProps.state,
-        rowsPerPage: 10,
         currentPageNumber: 2
       }
     }).container;
