@@ -39,7 +39,7 @@ export const tableReducer = (
     case 'set_rows_per_page':
       return { ...state, rowsPerPage: action.payload, currentPageNumber: 1 };
     case 'set_search_text':
-      return { ...state, searchText: action.payload };
+      return { ...state, searchText: action.payload, currentPageNumber: 1 };
     case 'set_current_page_number':
       return { ...state, currentPageNumber: action.payload };
     case 'set_hidden_row_ids':

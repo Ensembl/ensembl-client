@@ -15,7 +15,7 @@
  */
 
 import sortBy from 'lodash/sortBy';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import { SortingDirection } from '../dataTableTypes';
@@ -28,32 +28,49 @@ const useDataTable = () => {
   }
 
   const {
-    rows,
+    rows: allRows,
     currentPageNumber,
     rowsPerPage,
     columns,
     hiddenRowIds,
     sortedColumn,
-    dispatch
+    dispatch,
+    searchText
   } = dataTableContext;
+
+  const [filteredRows, setFilteredRows] = useState(allRows);
+
+  useEffect(() => {
+    const filteredRows = !searchText
+      ? allRows
+      : [...allRows].filter((row) => {
+          return row.cells.some((cell, index) => {
+            const currentColumn = columns[index];
+            if (currentColumn.isSearchable) {
+              return false;
+            }
+            return cell?.toString().toLowerCase().includes(searchText);
+          });
+        });
+
+    setFilteredRows(filteredRows);
+  }, [searchText]);
 
   const getAllVisibleRows = () => {
     return hiddenRowIds
-      ? rows.filter((row) => {
+      ? filteredRows.filter((row) => {
           const { rowId } = row;
 
           return !hiddenRowIds[rowId];
         })
-      : rows;
+      : filteredRows;
   };
 
   const getSortedCurrentPageRows = () => {
-    const visibleRows = getAllVisibleRows();
-    const totalRows = rows.length;
+    let rows = [...filteredRows];
+    const totalRows = filteredRows.length;
     const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
     const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
-
-    let sortedRows = visibleRows;
 
     if (
       sortedColumn &&
@@ -63,20 +80,20 @@ const useDataTable = () => {
         (column) => column.columnId === sortedColumn.columnId
       );
 
-      sortedRows =
+      rows =
         sortedColumn.sortedDirection === SortingDirection.ASC
-          ? sortBy(sortedRows, (row) => row.cells[sortedColumnIndex])
-          : sortBy(sortedRows, (row) => row.cells[sortedColumnIndex]).reverse();
+          ? sortBy(rows, (row) => row.cells[sortedColumnIndex])
+          : sortBy(rows, (row) => row.cells[sortedColumnIndex]).reverse();
     }
 
     return totalRows > rowsPerPage
-      ? sortedRows.filter(
+      ? rows.filter(
           (_, rowIndex) =>
             !(
               rowIndex < rowIndexLowerBound || rowIndexUpperBound - 1 < rowIndex
             )
         )
-      : sortedRows;
+      : rows;
   };
 
   const setPageNumber = (value: number) => {
@@ -90,6 +107,7 @@ const useDataTable = () => {
     getAllVisibleRows,
     getSortedCurrentPageRows,
     setPageNumber,
+    filteredRows,
     ...dataTableContext
   };
 };

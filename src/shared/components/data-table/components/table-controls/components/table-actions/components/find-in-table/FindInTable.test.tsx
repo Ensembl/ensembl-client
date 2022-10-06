@@ -75,7 +75,7 @@ describe('<FindInTable />', () => {
     });
   });
 
-  it('click on cancel link dispatched the correct action', async () => {
+  it('dispatches the correct action on cancel link click', async () => {
     container = renderFindInTable().container;
 
     const cancelLink = container.querySelector('.cancel') as Element;

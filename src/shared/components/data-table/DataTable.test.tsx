@@ -34,10 +34,7 @@ export const createDataTableSampleData = (
       times(columns, (column) => `Cell ${row},${column}`)
     ),
     columns: times(columns, (column) => ({
-      columnId: `${column}`,
-      title: `Column ${column}`,
-      helpText: `Column ${column} help text`,
-      isSortable: true
+      columnId: `${column}`
     }))
   };
 };
