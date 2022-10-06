@@ -168,7 +168,7 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
   return zip;
 };
 
-export const getNameForZipRoot = (submission: BlastSubmission) => {
+const getNameForZipRoot = (submission: BlastSubmission) => {
   const {
     id,
     submittedData: {

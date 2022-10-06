@@ -24,7 +24,11 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
-import { createCSVForGenomicBlast } from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
+import {
+  createCSVForGenomicBlast,
+  createCSVForProteinBlast,
+  createCSVForTranscriptBlast
+} from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type {
@@ -339,7 +343,14 @@ const HitsTable = (props: HitsTableProps) => {
   };
 
   const downloadHandler = async () => {
-    const csv = createCSVForGenomicBlast(jobResult.data);
+    let csv = '';
+    if (blastDatabase === 'dna') {
+      csv = createCSVForGenomicBlast(jobResult.data);
+    } else if (blastDatabase === 'cdna') {
+      csv = createCSVForTranscriptBlast(jobResult.data);
+    } else if (blastDatabase === 'pep') {
+      csv = createCSVForProteinBlast(jobResult.data);
+    }
 
     await downloadTextAsFile(csv, 'table.csv');
   };
@@ -397,6 +408,7 @@ const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
 
   return (
     <span className={styles.nowrap}>
+      <span>hello</span>
       {`${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
         .sort()
         .join('-')}`}

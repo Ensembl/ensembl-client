@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 import React, { ReactNode } from 'react';
+import ReactDOM from 'react-dom/client';
+import { memoize } from 'lodash';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import LoadingButton from 'src/shared/components/loading-button';
 
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './DownloadData.scss';
 
+const getReactRenderer = memoize(() => {
+  const element = document.createElement('div');
+  const root = ReactDOM.createRoot(element);
+
+  return {
+    element,
+    renderer: root
+  };
+});
+
 const getReactNodeText = (node: ReactNode): string => {
-  if (['string', 'number'].includes(typeof node)) {
-    return node?.toString() || '';
-  }
-
-  if (typeof node === 'object' && node && 'props' in node) {
-    return getReactNodeText(node.props.children);
-  }
-
-  return '';
+  const { element, renderer } = getReactRenderer();
+  renderer.render(node);
+  return element.innerText;
 };
 
 const DownloadData = () => {
@@ -54,7 +60,7 @@ const DownloadData = () => {
     });
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (downloadHandler) {
       downloadHandler();
       return;
@@ -95,10 +101,17 @@ const DownloadData = () => {
     downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
   };
 
+  const onSuccess = () => {
+    // show the green tick momentarily before we close it
+    setTimeout(onCancel, 1000);
+  };
+
   return (
     <div className={styles.downloadData}>
       <span>{downloadFileName ?? 'table.csv'}</span>
-      <PrimaryButton onClick={handleDownload}>Download</PrimaryButton>
+      <LoadingButton onClick={handleDownload} onSuccess={onSuccess}>
+        Download
+      </LoadingButton>
       <span className={styles.cancel} onClick={onCancel}>
         cancel
       </span>
