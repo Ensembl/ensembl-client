@@ -26,15 +26,16 @@ const useGlobalAnalytics = () => {
   const appName: string =
     location.pathname.split('/').filter(Boolean)[0] || 'homepage';
 
-  const handleAnalyticsCustomEvent = (event: CustomEvent<AnalyticsOptions>) => {
-    const { category, action, species, feature, app } = event.detail;
-
+  const sendTrackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      category,
-      action,
-      species,
-      feature,
-      app: app ?? appName
+      ...ga,
+      app: ga.app ?? appName
+    });
+  };
+
+  const handleAnalyticsCustomEvent = (event: CustomEvent<AnalyticsOptions>) => {
+    sendTrackEvent({
+      ...event.detail
     });
   };
 

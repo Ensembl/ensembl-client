@@ -219,6 +219,15 @@ const ContactUsInitialForm = () => {
       return; // shouldn't happen, but makes Typescript happy
     }
 
+    const trackContactUsSubmission = new CustomEvent('analytics', {
+      detail: {
+        category: 'contact_us',
+        action: 'contact_form_submited'
+      }
+    });
+
+    window.dispatchEvent(trackContactUsSubmission);
+
     setSubmissionState(LoadingState.LOADING);
 
     const submitPromise = submitForm({

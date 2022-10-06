@@ -43,6 +43,18 @@ const HelpPopupBody = (props: Props) => {
   const historyRef = useRef<HelpPopupHistory | null>(null);
 
   useEffect(() => {
+    const trackHelpArticleViewed = new CustomEvent('analytics', {
+      detail: {
+        category: 'contextual-help',
+        action: article?.type + '_article_opened',
+        label: article?.title
+      }
+    });
+
+    window.dispatchEvent(trackHelpArticleViewed);
+  }, [article]);
+
+  useEffect(() => {
     historyRef.current = new HelpPopupHistory(currentReference);
   }, []);
 

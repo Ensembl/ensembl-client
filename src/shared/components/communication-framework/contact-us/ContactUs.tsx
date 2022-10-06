@@ -42,11 +42,24 @@ const ContactUs = () => {
     );
   }
 
+  const onContactUsButtonClick = () => {
+    const trackContactUsButtonClick = new CustomEvent('analytics', {
+      detail: {
+        category: 'contact_us',
+        action: 'opened'
+      }
+    });
+
+    window.dispatchEvent(trackContactUsButtonClick);
+
+    setShouldShowForm(!shouldShowForm);
+  };
+
   return (
     <div className={styles.wrapper}>
       <section>
         <Invitation />
-        <SecondaryButton onClick={() => setShouldShowForm(!shouldShowForm)}>
+        <SecondaryButton onClick={onContactUsButtonClick}>
           Contact us
         </SecondaryButton>
       </section>

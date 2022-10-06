@@ -17,8 +17,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import useCommonAnalytics from 'src/shared/hooks/useCommonAnalytics';
-
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 
 import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
@@ -34,10 +32,15 @@ type Props = {
 const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
 
-  const { trackContextualHelpOpened } = useCommonAnalytics();
-
   const onClick = () => {
-    trackContextualHelpOpened();
+    const trackCommunicationPanelOpen = new CustomEvent('analytics', {
+      detail: {
+        category: 'communication_panel',
+        action: 'opened'
+      }
+    });
+
+    window.dispatchEvent(trackCommunicationPanelOpen);
 
     dispatch(toggleCommunicationPanel());
   };
