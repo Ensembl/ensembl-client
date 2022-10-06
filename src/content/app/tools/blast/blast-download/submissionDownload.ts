@@ -100,7 +100,7 @@ const downloadBlastSubmission = async (
       csv = createCSVForGenomicBlast(job.data);
     } else if (blastedAgainst === 'cdna') {
       csv = createCSVForTranscriptBlast(job.data);
-    } else if (blastedAgainst === 'protein') {
+    } else if (blastedAgainst === 'pep') {
       csv = createCSVForProteinBlast(job.data);
     }
 
