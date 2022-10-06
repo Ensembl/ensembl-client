@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 
 import type { TableRowData } from 'src/shared/components/data-table/dataTableTypes';
-
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import { RowFooter } from 'src/shared/components/table';
 import RowSelector from './components/row-selector/RowSelector';
 
 import styles from 'src/shared/components/data-table/DataTable.scss';
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
   const {
@@ -34,17 +33,11 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     hiddenColumnIds,
     hiddenRowIds,
     selectableColumnIndex,
-    expandedContent
-  } = useContext(TableContext) || {
-    isSelectable: true,
-    selectableColumnIndex: 0
-  };
+    expandedContent,
+    selectedRowIds
+  } = useDataTable();
 
-  if (!(props.rowData && dispatch && columns)) {
-    return null;
-  }
-
-  if (hiddenRowIds && hiddenRowIds[props.rowId]) {
+  if (hiddenRowIds && hiddenRowIds.has(props.rowId)) {
     return null;
   }
 
@@ -65,11 +58,15 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
   }
 
   const handleSelector = (params: { rowId: string; checked: boolean }) => {
+    if (params.checked) {
+      selectedRowIds.add(params.rowId);
+    } else {
+      selectedRowIds.delete(params.rowId);
+    }
+
     dispatch({
       type: 'set_selected_row_ids',
-      payload: {
-        [params.rowId]: params.checked
-      }
+      payload: selectedRowIds
     });
   };
 
@@ -78,7 +75,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
       <tr className={styles.row}>
         {cells?.map((cellData, index) => {
           const currentColumn = columns[index];
-          if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
+          if (hiddenColumnIds && hiddenColumnIds.has(currentColumn.columnId)) {
             return null;
           }
 

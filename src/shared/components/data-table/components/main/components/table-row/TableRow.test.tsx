@@ -66,8 +66,11 @@ describe('<TableRow />', () => {
   });
 
   it('respects hiddenRowIds and renders nothing', () => {
+    const hiddenRowIds: Set<string> = new Set();
+    hiddenRowIds.add(String(defaultProps.rows[0].rowId));
+
     container = renderTableRow({
-      hiddenRowIds: { [defaultProps.rows[0].rowId]: true }
+      hiddenRowIds
     }).container;
 
     const tableRowElement = container.querySelector('tr');
@@ -81,8 +84,10 @@ describe('<TableRow />', () => {
     let firstCellElement = container.querySelector('td');
     expect(firstCellElement?.textContent).toBe(firstCellContent);
 
+    const hiddenColumnIds: Set<string> = new Set();
+    hiddenColumnIds.add(defaultProps.columns[0].columnId);
     container = renderTableRow({
-      hiddenColumnIds: { [defaultProps.columns[0].columnId]: true }
+      hiddenColumnIds
     }).container;
 
     firstCellElement = container.querySelector('td');

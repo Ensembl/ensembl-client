@@ -108,11 +108,11 @@ describe('<ShowHideColumns />', () => {
 
     await userEvent.click(allOptions[0]);
 
+    const expectedHiddenColumnIds = new Set().add(columns[0].columnId);
+
     expect(defaultProps.dispatch).toBeCalledWith({
       type: 'set_hidden_column_ids',
-      payload: {
-        [columns[0].columnId]: true
-      }
+      payload: expectedHiddenColumnIds
     });
   });
 });

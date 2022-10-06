@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import React from 'react';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import { Status } from 'src/shared/types/status';
 
 import styles from './RowSelector.scss';
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 export type RowSelectorProps = {
   rowId: string;
@@ -36,28 +36,24 @@ const RowSelector = (props: RowSelectorProps) => {
     hiddenRowIdsInDraft,
     selectedRowIds,
     selectedAction,
-    columns,
     dispatch
-  } = useContext(TableContext) || {
-    hiddenRowIds: null,
-    hiddenRowIdsInDraft: null
-  };
+  } = useDataTable();
 
-  if (!(dispatch && columns)) {
-    return null;
-  }
-
-  const mergedHiddenRowIds = { ...hiddenRowIds, ...hiddenRowIdsInDraft };
-
-  const isCurrentRowSelected = selectedRowIds?.[props.rowId] === true;
-  const isCurrentRowVisible = mergedHiddenRowIds?.[props.rowId] !== true;
+  const isCurrentRowSelected = selectedRowIds.has(props.rowId);
+  const isCurrentRowVisible = !(
+    hiddenRowIds.has(props.rowId) || hiddenRowIdsInDraft.has(props.rowId)
+  );
 
   const onVisibilityChange = (params: { status: boolean; rowId: string }) => {
+    if (params.status) {
+      hiddenRowIdsInDraft.add(params.rowId);
+    } else {
+      hiddenRowIdsInDraft.delete(params.rowId);
+    }
+
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
-      payload: {
-        [params.rowId]: !params.status
-      }
+      payload: hiddenRowIdsInDraft
     });
   };
 

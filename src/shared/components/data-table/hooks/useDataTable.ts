@@ -61,7 +61,7 @@ const useDataTable = () => {
       ? filteredRows.filter((row) => {
           const { rowId } = row;
 
-          return !hiddenRowIds[rowId];
+          return !hiddenRowIds.has(String(rowId));
         })
       : filteredRows;
   };

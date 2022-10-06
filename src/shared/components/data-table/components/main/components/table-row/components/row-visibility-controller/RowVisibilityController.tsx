@@ -22,7 +22,7 @@ import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 import {
   TableAction,
-  type TableSelectedRowId
+  type TableSelectedRowIds
 } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './RowVisibilityController.scss';
@@ -49,25 +49,17 @@ const RowVisibilityController = () => {
   };
 
   const selectAll = () => {
-    const newRowIdsInDraft: TableSelectedRowId = {};
-
-    currentPageRows.forEach((row) => {
-      const { rowId } = row;
-      newRowIdsInDraft[rowId] = false;
-    });
-
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
-      payload: newRowIdsInDraft
+      payload: new Set()
     });
   };
 
   const deselectAll = () => {
-    const newRowIdsInDraft: TableSelectedRowId = {};
-
+    const newRowIdsInDraft: TableSelectedRowIds = new Set();
     currentPageRows.forEach((row) => {
       const { rowId } = row;
-      newRowIdsInDraft[rowId] = true;
+      newRowIdsInDraft.add(String(rowId));
     });
 
     dispatch({
@@ -79,7 +71,7 @@ const RowVisibilityController = () => {
   const showAll = () => {
     dispatch({
       type: 'set_hidden_row_ids',
-      payload: {}
+      payload: new Set()
     });
 
     dispatch({

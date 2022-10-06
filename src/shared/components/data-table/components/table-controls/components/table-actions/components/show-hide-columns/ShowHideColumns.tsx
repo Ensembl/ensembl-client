@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import { TableContext } from 'src/shared/components/data-table/DataTable';
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import PopupPanel from '../popup-panel/PopupPanel';
 
 import styles from './ShowHideColumns.scss';
 
 const ShowHideColumns = () => {
-  const { hiddenColumnIds, dispatch, columns } = useContext(TableContext) || {};
-
-  if (!(hiddenColumnIds && dispatch && columns)) {
-    return null;
-  }
+  const { hiddenColumnIds, dispatch, columns } = useDataTable();
 
   const onChange = (columnId: string, checked: boolean) => {
+    if (!checked) {
+      hiddenColumnIds.add(columnId);
+    } else {
+      hiddenColumnIds.delete(columnId);
+    }
+
     dispatch({
       type: 'set_hidden_column_ids',
-      payload: { [columnId]: !checked }
+      payload: hiddenColumnIds
     });
   };
 
@@ -44,7 +46,7 @@ const ShowHideColumns = () => {
             <Checkbox
               key={key}
               label={column.title}
-              checked={hiddenColumnIds[column.columnId] !== true}
+              checked={!hiddenColumnIds.has(column.columnId)}
               onChange={(checked) => onChange(column.columnId, checked)}
               className={styles.checkbox}
             />
