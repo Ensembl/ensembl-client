@@ -16,18 +16,15 @@
 
 import React, { useState } from 'react';
 
-import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import {
-  getBrowserActiveGenomeTrackStates,
-  getBrowserTrackState
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getFocusGeneVisibleTranscripts } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
@@ -52,18 +49,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     genomeId,
     geneId
   });
-  const trackStatus = useAppSelector((state: RootState) =>
-    getBrowserTrackState(state, {
-      genomeId,
-      objectId: focusObjectId,
-      tracksGroup: 'objectTracks'
-    })
-  );
   const visibleTranscriptIds = useAppSelector((state) => {
-    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
-    return (
-      genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? null
-    );
+    return getFocusGeneVisibleTranscripts(state, focusObjectId);
   });
 
   const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
@@ -92,30 +79,32 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     : Status.PARTIALLY_SELECTED;
 
   const onGeneVisibilityChange = () => {
+    let visibleTranscriptIds: string[];
+    let nextStatus: Status;
+
     if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
       // show all transcripts
-      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
+      visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       updateFocusGeneTranscripts(visibleTranscriptIds);
-      trackFocusTrackVisibilityToggled(Status.SELECTED);
-      return;
-    }
-
-    const newStatus =
-      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-
-    if (newStatus === Status.SELECTED) {
+      nextStatus = Status.SELECTED;
+    } else if (geneVisibilityStatus === Status.UNSELECTED) {
+      // also show all transcripts, but also tell genome browser to enable focus track
+      visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       setFocusGene(focusObjectId);
-      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
-      updateFocusGeneTranscripts(visibleTranscriptIds);
+      nextStatus = Status.SELECTED;
     } else {
-      updateFocusGeneTranscripts([]);
+      // hide all transcripts and hide the track
+      visibleTranscriptIds = [];
+      nextStatus = Status.UNSELECTED;
     }
 
-    trackFocusTrackVisibilityToggled(newStatus);
+    updateFocusGeneTranscripts(visibleTranscriptIds);
+    trackFocusTrackVisibilityToggled(nextStatus);
 
     dispatch(
-      updateObjectTrackStates({
-        status: newStatus
+      updateFocusGeneTranscriptsVisibility({
+        focusGeneId: focusObjectId,
+        visibleTranscriptIds: visibleTranscriptIds
       })
     );
   };

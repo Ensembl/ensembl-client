@@ -21,6 +21,8 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 
+import isGeneFocusObject from './isGeneFocusObject';
+
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
@@ -77,7 +79,8 @@ export const buildGeneObject = (params: BuildGeneObjectParams): FocusGene => {
     stable_id: params.gene.unversioned_stable_id,
     versioned_stable_id: params.gene.stable_id,
     bio_type: params.gene.metadata.biotype.label,
-    strand
+    strand,
+    visibleTranscriptIds: null
   };
 };
 
@@ -190,6 +193,16 @@ export const fetchFocusObject = createAsyncThunk(
   }
 );
 
+export const updateFocusGeneTranscriptsVisibility = createAsyncThunk(
+  'genome-browser/udpate-focus-gene-transcripts-visibility',
+  async (payload: { focusGeneId: string; visibleTranscriptIds: string[] }) => {
+    // focusGeneId is in the focus object id format, i.e. "<genome_id>:gene:<stable_id>"
+
+    // TODO: save to persistent browser storage
+    return payload;
+  }
+);
+
 const focusObjectSlice = createSlice({
   name: 'genome-browser-focus-object',
   initialState: {} as FocusObjectsState,
@@ -198,6 +211,17 @@ const focusObjectSlice = createSlice({
     builder.addCase(fetchFocusObject.fulfilled, (state, action) => {
       state = Object.assign(state, action.payload);
     });
+    builder.addCase(
+      updateFocusGeneTranscriptsVisibility.fulfilled,
+      (state, action) => {
+        const { focusGeneId, visibleTranscriptIds } = action.payload;
+        const focusObject = state[focusGeneId]?.data;
+        if (isGeneFocusObject(focusObject)) {
+          // this should always be the case, but just checking
+          focusObject.visibleTranscriptIds = visibleTranscriptIds;
+        }
+      }
+    );
   }
 });
 
