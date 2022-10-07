@@ -18,6 +18,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -26,6 +27,7 @@ import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 const SearchModal = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const { genomeIdForUrl } = useGenomeBrowserIds();
+  const { trackSidebarSearch } = useGenomeBrowserAnalytics();
 
   return (
     <section className="searchModal">
@@ -36,6 +38,7 @@ const SearchModal = () => {
             genomeId={activeGenomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             mode="sidebar"
+            onSearchSubmit={trackSidebarSearch}
           />
         )}
       </div>
