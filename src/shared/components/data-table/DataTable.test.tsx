@@ -17,6 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { times } from 'lodash';
+import userEvent from '@testing-library/user-event';
 
 import DataTable from './DataTable';
 import { defaultDataTableState } from 'src/shared/components/data-table/dataTableReducer';
@@ -92,12 +93,20 @@ describe('<DataTable />', () => {
     expect(container.querySelectorAll('tbody tr').length).toBe(5);
   });
 
-  it('respects onStateChange', async () => {
+  it('calls onStateChange with the updated state when the state changes', async () => {
     const onStateChange = jest.fn();
     container = renderDataTable({
       onStateChange
     }).container;
 
-    expect(onStateChange).toBeCalledWith(defaultProps.state);
+    expect(onStateChange).not.toBeCalled();
+
+    const rightPaginationArrow = container.querySelectorAll('.showHide')[1];
+    await userEvent.click(rightPaginationArrow);
+
+    expect(onStateChange).toBeCalledWith({
+      ...defaultProps.state,
+      currentPageNumber: 2
+    });
   });
 });

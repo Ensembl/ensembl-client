@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { type ReactNode, useEffect, useReducer } from 'react';
+import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
 import classNames from 'classnames';
 
 import Table from '../table/Table';
@@ -63,13 +63,17 @@ const DataTable = (props: TableProps) => {
     ...(props.state || {})
   };
 
+  const firstRenderRef = useRef(true);
   const [tableState, dispatch] = useReducer(
     tableReducer,
     initialDataTableState
   );
 
   useEffect(() => {
-    props.onStateChange?.(tableState);
+    if (!firstRenderRef.current) {
+      props.onStateChange?.(tableState);
+    }
+    firstRenderRef.current = false;
   }, [tableState]);
 
   const wrapperClasses = classNames(
