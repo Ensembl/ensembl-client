@@ -408,7 +408,6 @@ const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
 
   return (
     <span className={styles.nowrap}>
-      <span>hello</span>
       {`${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
         .sort()
         .join('-')}`}

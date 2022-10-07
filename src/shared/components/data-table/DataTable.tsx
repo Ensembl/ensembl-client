@@ -41,7 +41,7 @@ type TableContextType = DataTableState & {
   expandedContent: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
   downloadFileName?: string;
-  downloadHandler?: () => void;
+  downloadHandler?: () => Promise<void>;
   rows: TableRows;
 };
 
@@ -58,7 +58,7 @@ export type TableProps = {
   disabledActions?: TableAction[];
   className?: string;
   downloadFileName?: string;
-  downloadHandler?: () => void;
+  downloadHandler?: () => Promise<void>;
   onStateChange?: (newState: DataTableState) => void;
 };
 const DataTable = (props: TableProps) => {
