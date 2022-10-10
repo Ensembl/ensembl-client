@@ -26,9 +26,7 @@ import HomeIcon from 'static/icons/icon_home.svg';
 
 import styles from './Header.scss';
 
-export const ReleaseVersion = () => (
-  <div className={styles.release}>Pre-release</div>
-);
+export const ReleaseVersion = () => <div className={styles.release}>Beta</div>;
 
 export const Copyright = () => (
   <div className={styles.copyright}>
