@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
@@ -31,16 +31,18 @@ type Props = {
 
 const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
+  const analyticsRef = useRef<HTMLDivElement | null>(null);
 
   const onClick = () => {
     const trackCommunicationPanelOpen = new CustomEvent('analytics', {
       detail: {
         category: 'communication_panel',
         action: 'opened'
-      }
+      },
+      bubbles: true
     });
 
-    window.dispatchEvent(trackCommunicationPanelOpen);
+    analyticsRef.current?.dispatchEvent(trackCommunicationPanelOpen);
 
     dispatch(toggleCommunicationPanel());
   };
@@ -48,7 +50,11 @@ const ConversationIcon = (props: Props) => {
   return (
     <>
       <CommunicationPanel />
-      <div className={styles.conversationIconWrapper} onClick={onClick}>
+      <div
+        className={styles.conversationIconWrapper}
+        onClick={onClick}
+        ref={analyticsRef}
+      >
         {props.withLabel && 'Contact us'}
         <ConversationImageIcon className={styles.conversationIcon} />
       </div>

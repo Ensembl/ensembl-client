@@ -41,7 +41,6 @@ const AppContainer = () => {
   }, [location.pathname]);
 
   useLocationReporting();
-  useGlobalAnalytics();
 
   return <App />;
 };
@@ -57,12 +56,12 @@ const useLocationReporting = () => {
 
 const App = memo(() => {
   const routes = useRoutes(routesConfig);
-
+  const { globalAnalyticsRef } = useGlobalAnalytics();
   return (
-    <>
+    <div ref={globalAnalyticsRef}>
       <Header />
       {routes}
-    </>
+    </div>
   );
 });
 

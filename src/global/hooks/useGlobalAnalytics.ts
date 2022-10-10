@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -24,6 +24,7 @@ import { getCurrentApp } from '../globalSelectors';
 
 const useGlobalAnalytics = () => {
   const appName = useAppSelector(getCurrentApp) || 'homepage';
+  const globalAnalyticsRef = useRef<HTMLDivElement | null>(null);
 
   const sendTrackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
@@ -39,17 +40,21 @@ const useGlobalAnalytics = () => {
   };
 
   useEffect(() => {
-    window.addEventListener(
+    globalAnalyticsRef.current?.addEventListener(
       'analytics',
       handleAnalyticsCustomEvent as EventListener
     );
     return () => {
-      window.removeEventListener(
+      globalAnalyticsRef.current?.removeEventListener(
         'analytics',
         handleAnalyticsCustomEvent as EventListener
       );
     };
-  }, []);
+  }, [globalAnalyticsRef, appName]);
+
+  return {
+    globalAnalyticsRef
+  };
 };
 
 export default useGlobalAnalytics;

@@ -41,20 +41,21 @@ const HelpPopupBody = (props: Props) => {
     useState<SlugReference>(props);
   const { article, loadingState } = useHelpArticle(currentReference);
   const historyRef = useRef<HelpPopupHistory | null>(null);
+  const analyticsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (article) {
       const trackHelpArticleViewed = new CustomEvent('analytics', {
         detail: {
           category: 'contextual-help',
-          action: article.type + '_article_opened',
+          action: article.type + '_opened',
           label: article.title
-        }
+        },
+        bubbles: true
       });
-
-      window.dispatchEvent(trackHelpArticleViewed);
+      analyticsRef.current?.dispatchEvent(trackHelpArticleViewed);
     }
-  }, [article]);
+  }, [article, analyticsRef]);
 
   useEffect(() => {
     historyRef.current = new HelpPopupHistory(currentReference);
@@ -91,7 +92,7 @@ const HelpPopupBody = (props: Props) => {
 
   if (article) {
     return (
-      <>
+      <div ref={analyticsRef} className={styles.wrapper}>
         <HelpArticleGrid className={styles.grid}>
           {article.type === 'article' ? (
             <TextArticle article={article} />
@@ -113,7 +114,7 @@ const HelpPopupBody = (props: Props) => {
             </aside>
           )}
         </HelpArticleGrid>
-      </>
+      </div>
     );
   } else {
     return null;

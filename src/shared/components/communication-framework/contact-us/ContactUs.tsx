@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { ContactUsInitialForm } from './contact-us-form';
 import { Invitation, Header } from './preform-header/PreformHeader';
@@ -29,6 +29,7 @@ import styles from './ContactUs.scss';
 
 const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);
+  const analyticsRef = useRef<HTMLDivElement | null>(null);
 
   if (shouldShowForm) {
     return (
@@ -47,16 +48,17 @@ const ContactUs = () => {
       detail: {
         category: 'contact_us',
         action: 'opened'
-      }
+      },
+      bubbles: true
     });
 
-    window.dispatchEvent(trackContactUsButtonClick);
+    analyticsRef.current?.dispatchEvent(trackContactUsButtonClick);
 
     setShouldShowForm(!shouldShowForm);
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={analyticsRef}>
       <section>
         <Invitation />
         <SecondaryButton onClick={onContactUsButtonClick}>

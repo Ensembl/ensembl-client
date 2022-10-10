@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import Modal from 'src/shared/components/modal/Modal';
@@ -32,16 +32,18 @@ type Props = {
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
+  const analyticsRef = useRef<HTMLDivElement | null>(null);
 
   const openModal = () => {
     const trackHelpPopupOpen = new CustomEvent('analytics', {
       detail: {
         category: 'contextual-help',
         action: 'opened'
-      }
+      },
+      bubbles: true
     });
 
-    window.dispatchEvent(trackHelpPopupOpen);
+    analyticsRef.current?.dispatchEvent(trackHelpPopupOpen);
 
     setShouldShowModal(true);
   };
@@ -54,7 +56,7 @@ const HelpPopupButton = (props: Props) => {
 
   return (
     <>
-      <div className={styles.wrapper} onClick={openModal}>
+      <div className={styles.wrapper} onClick={openModal} ref={analyticsRef}>
         <span className={labelClasses}>{props.label}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
