@@ -86,7 +86,6 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -95,8 +94,11 @@ const SpeciesTitleArea = () => {
   const [display, setDisplay] = useState(Display.FULL);
   const { trackDeletedSpecies } = useSpeciesAnalytics();
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
+  // TODO:
+  // Remove the useEffect below when all of our target browsers support CSS container queries
   useEffect(() => {
     if (containerWidth < SMALL_WIDTH) {
       display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
