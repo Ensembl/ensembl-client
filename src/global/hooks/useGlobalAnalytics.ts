@@ -15,16 +15,15 @@
  */
 
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 import analyticsTracking from 'src/services/analytics-service';
 
 import { type AnalyticsOptions } from 'src/analyticsHelper';
+import { useAppSelector } from 'src/store';
+import { getCurrentApp } from '../globalSelectors';
 
 const useGlobalAnalytics = () => {
-  const location = useLocation();
-  const appName: string =
-    location.pathname.split('/').filter(Boolean)[0] || 'homepage';
+  const appName = useAppSelector(getCurrentApp) || 'homepage';
 
   const sendTrackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
