@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
+
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import { isSpeciesSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -37,7 +39,6 @@ import {
   SpeciesSidebarModalView,
   updateSpeciesSidebarModalForGenome
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-
 import {
   fetchPopularSpecies,
   deleteSpeciesAndSave
@@ -48,6 +49,15 @@ import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 import { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.scss';
+
+const MEDIUM_WIDTH = 1199;
+const SMALL_WIDTH = 1040;
+
+enum Display {
+  FULL = 'full',
+  COMPACT = 'compact',
+  MINIMAL = 'minimal'
+}
 
 const useSpecies = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -76,16 +86,29 @@ const useSpecies = () => {
 };
 
 const SpeciesTitleArea = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const isSidebarOpen = useAppSelector(getSidebarStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { species, iconUrl } = useSpecies() || {};
   const [isRemoving, setIsRemoving] = useState(false);
+  const [display, setDisplay] = useState(Display.FULL);
   const { trackDeletedSpecies } = useSpeciesAnalytics();
 
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  useEffect(() => {
+    if (containerWidth < SMALL_WIDTH) {
+      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
+    } else if (containerWidth < MEDIUM_WIDTH) {
+      display !== Display.COMPACT && setDisplay(Display.COMPACT);
+    } else {
+      display !== Display.FULL && setDisplay(Display.FULL);
+    }
+  }, [containerWidth]);
+
   const blockClasses = classNames(styles.speciesTitleArea, {
-    [styles.speciesTitleAreaNarrow]: isSidebarOpen
+    [styles.speciesTitleAreaMinimal]: display === Display.MINIMAL
   });
 
   if (!activeGenomeId) {
@@ -112,7 +135,7 @@ const SpeciesTitleArea = () => {
   };
 
   return species && iconUrl ? (
-    <div className={blockClasses}>
+    <div className={blockClasses} ref={containerRef}>
       <div className={styles.speciesIcon}>
         <img src={iconUrl} />
       </div>
