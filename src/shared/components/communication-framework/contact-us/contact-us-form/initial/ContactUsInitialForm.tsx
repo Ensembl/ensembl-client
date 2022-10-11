@@ -226,22 +226,14 @@ const ContactUsInitialForm = () => {
       return; // shouldn't happen, but makes Typescript happy
     }
 
-    const trackContactUsSubmission = new CustomEvent('analytics', {
-      detail: {
-        category: 'contact_us',
-        action: 'contact_form_submited'
-      },
-      bubbles: true
-    });
-
-    elementRef.current?.dispatchEvent(trackContactUsSubmission);
-
     setSubmissionState(LoadingState.LOADING);
 
     const submitPromise = submitForm({
       ...stateRef.current,
       form_type: FORM_NAME
     });
+
+    trackFormSubmission(); // probably best track it here, regardless of whether the submission was successful; it represents intent to submit
 
     noEarlierThan(submitPromise, 1000)
       .then(() => {
@@ -254,6 +246,19 @@ const ContactUsInitialForm = () => {
         setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
       });
   }, []);
+
+  // dispatches an event that the "Contact us" form has been submitted; used for analytics purposes
+  const trackFormSubmission = () => {
+    const trackContactUsSubmission = new CustomEvent('analytics', {
+      detail: {
+        category: 'contact_us',
+        action: 'contact_form_submited'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(trackContactUsSubmission);
+  };
 
   if (submissionState === LoadingState.SUCCESS) {
     return <SubmissionSuccess />;

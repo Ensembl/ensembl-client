@@ -34,7 +34,13 @@ const ConversationIcon = (props: Props) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   const onClick = () => {
-    const trackCommunicationPanelOpen = new CustomEvent('analytics', {
+    dispatch(toggleCommunicationPanel());
+    trackButtonClick();
+  };
+
+  // dispatches an event that the conversation button has been clicked; used for analytics purposes
+  const trackButtonClick = () => {
+    const event = new CustomEvent('analytics', {
       detail: {
         category: 'communication_panel',
         action: 'opened'
@@ -42,9 +48,7 @@ const ConversationIcon = (props: Props) => {
       bubbles: true
     });
 
-    elementRef.current?.dispatchEvent(trackCommunicationPanelOpen);
-
-    dispatch(toggleCommunicationPanel());
+    elementRef.current?.dispatchEvent(event);
   };
 
   return (

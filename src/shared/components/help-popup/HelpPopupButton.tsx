@@ -35,7 +35,17 @@ const HelpPopupButton = (props: Props) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   const openModal = () => {
-    const trackHelpPopupOpen = new CustomEvent('analytics', {
+    setShouldShowModal(true);
+    reportHelpButtonClick();
+  };
+
+  const closeModal = () => {
+    setShouldShowModal(false);
+  };
+
+  // dispatches an event that the help button has been clicked; used for analytics purposes
+  const reportHelpButtonClick = () => {
+    const event = new CustomEvent('analytics', {
       detail: {
         category: 'contextual-help',
         action: 'opened'
@@ -43,13 +53,7 @@ const HelpPopupButton = (props: Props) => {
       bubbles: true
     });
 
-    elementRef.current?.dispatchEvent(trackHelpPopupOpen);
-
-    setShouldShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShouldShowModal(false);
+    elementRef.current?.dispatchEvent(event);
   };
 
   const labelClasses = classNames(styles.label, props.labelClass);

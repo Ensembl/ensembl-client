@@ -44,7 +44,13 @@ const ContactUs = () => {
   }
 
   const onContactUsButtonClick = () => {
-    const trackContactUsButtonClick = new CustomEvent('analytics', {
+    setShouldShowForm(!shouldShowForm);
+    trackContactUsClick();
+  };
+
+  // dispatches an event that the "Contact us" button has been clicked; used for analytics purposes
+  const trackContactUsClick = () => {
+    const event = new CustomEvent('analytics', {
       detail: {
         category: 'contact_us',
         action: 'opened'
@@ -52,9 +58,7 @@ const ContactUs = () => {
       bubbles: true
     });
 
-    elementRef.current?.dispatchEvent(trackContactUsButtonClick);
-
-    setShouldShowForm(!shouldShowForm);
+    elementRef.current?.dispatchEvent(event);
   };
 
   return (

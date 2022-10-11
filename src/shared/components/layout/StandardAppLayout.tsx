@@ -84,7 +84,13 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       return;
     }
 
-    const trackSidebarToggle = new CustomEvent('analytics', {
+    trackSidebarToggle();
+    props.onSidebarToggle();
+  };
+
+  // dispatches an event that the sidebar has been opened or closed; used for analytics purposes
+  const trackSidebarToggle = () => {
+    const event = new CustomEvent('analytics', {
       detail: {
         category: 'sidebar',
         action: props.isSidebarOpen ? 'closed' : 'opened'
@@ -92,9 +98,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       bubbles: true
     });
 
-    elementRef.current?.dispatchEvent(trackSidebarToggle);
-
-    props.onSidebarToggle();
+    elementRef.current?.dispatchEvent(event);
   };
 
   return (
