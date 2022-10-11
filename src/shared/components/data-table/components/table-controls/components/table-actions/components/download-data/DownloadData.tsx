@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import memoize from 'lodash/memoize';
 
@@ -53,11 +53,23 @@ const DownloadData = () => {
     downloadHandler
   } = useDataTable();
 
+  const allowComponentResetRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      allowComponentResetRef.current = false;
+    };
+  }, []);
+
   const restoreDefaults = () => {
-    dispatch({
-      type: 'set_selected_action',
-      payload: TableAction.DEFAULT
-    });
+    setTimeout(() => {
+      if (allowComponentResetRef.current) {
+        dispatch({
+          type: 'set_selected_action',
+          payload: TableAction.DEFAULT
+        });
+      }
+    }, 1000);
   };
 
   const handleDownload = async () => {
@@ -101,7 +113,7 @@ const DownloadData = () => {
 
     downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
 
-    setTimeout(restoreDefaults, 1000);
+    restoreDefaults();
   };
 
   return (
