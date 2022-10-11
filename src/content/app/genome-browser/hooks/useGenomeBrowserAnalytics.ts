@@ -249,14 +249,6 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const reportTrackPanelToggled = (isOpened: boolean) => {
-    sendTrackEvent({
-      category: 'track_panel',
-      action: isOpened ? 'opened' : 'closed',
-      feature
-    });
-  };
-
   const reportTrackVisibilityToggled = (trackName: string, status: boolean) => {
     sendTrackEvent({
       category: 'regular_track_visibility',
@@ -320,7 +312,6 @@ const useGenomeBrowserAnalytics = () => {
     trackApplyToAllInTrackSettings,
     reportTrackPanelTabChange,
     reportTrackPanelSectionToggled,
-    reportTrackPanelToggled,
     trackTrackNameToggle,
     reportTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
