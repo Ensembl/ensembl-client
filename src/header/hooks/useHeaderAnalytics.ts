@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { getCurrentApp } from 'src/global/globalSelectors';
+import { type AnalyticsOptions } from 'src/analyticsHelper';
 
-const useCommonAnalytics = () => {
-  const currentAppName = useSelector(getCurrentApp);
+const useHeaderAnalytics = () => {
+  const location = useLocation();
+  const appName: string =
+    location.pathname.split('/').filter(Boolean)[0] || 'homepage';
 
-  /* Contextual Help */
-  const trackContextualHelpOpened = () => {
+  const sendTrackEvent = (ga: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      category: currentAppName,
-      action: 'open_contextual_help'
+      ...ga,
+      app: ga.app ?? appName
+    });
+  };
+
+  const trackLaunchbarAppChange = (selectedApp: string) => {
+    sendTrackEvent({
+      category: 'launchbar',
+      action: 'app_selected',
+      label: selectedApp
     });
   };
 
   return {
-    trackContextualHelpOpened
+    trackLaunchbarAppChange
   };
 };
-export default useCommonAnalytics;
+
+export default useHeaderAnalytics;

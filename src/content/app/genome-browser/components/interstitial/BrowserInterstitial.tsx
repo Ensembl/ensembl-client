@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -37,6 +38,7 @@ import styles from './BrowserInterstitial.scss';
 
 const BrowserInterstitial = () => {
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
+  const { trackInterstitialPageSearch } = useGenomeBrowserAnalytics();
 
   const dispatch = useAppDispatch();
 
@@ -59,6 +61,7 @@ const BrowserInterstitial = () => {
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}
           mode="interstitial"
+          onSearchSubmit={trackInterstitialPageSearch}
         />
       </div>
       <ExampleLinks />

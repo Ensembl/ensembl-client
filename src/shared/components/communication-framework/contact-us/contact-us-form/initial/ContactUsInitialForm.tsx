@@ -142,6 +142,7 @@ const ContactUsInitialForm = () => {
   );
 
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
 
@@ -163,6 +164,12 @@ const ContactUsInitialForm = () => {
     onUpload: onFileChange,
     allowMultiple: true
   });
+
+  const callbackElementRef = useCallback((element: HTMLDivElement) => {
+    // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
+    elementRef.current = element;
+    dropAreaRef(element);
+  }, []);
 
   const { clearSavedForm } = useSavedForm({
     formName: FORM_NAME,
@@ -226,6 +233,8 @@ const ContactUsInitialForm = () => {
       form_type: FORM_NAME
     });
 
+    trackFormSubmission(); // probably best track it here, regardless of whether the submission was successful; it represents intent to submit
+
     noEarlierThan(submitPromise, 1000)
       .then(() => {
         dispatch({ type: 'clear-form' });
@@ -238,6 +247,19 @@ const ContactUsInitialForm = () => {
       });
   }, []);
 
+  // dispatches an event that the "Contact us" form has been submitted; used for analytics purposes
+  const trackFormSubmission = () => {
+    const trackContactUsSubmission = new CustomEvent('analytics', {
+      detail: {
+        category: 'contact_us',
+        action: 'contact_form_submited'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(trackContactUsSubmission);
+  };
+
   if (submissionState === LoadingState.SUCCESS) {
     return <SubmissionSuccess />;
   }
@@ -247,7 +269,7 @@ const ContactUsInitialForm = () => {
   });
 
   return (
-    <div className={containerClasses} ref={dropAreaRef}>
+    <div className={containerClasses} ref={callbackElementRef}>
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
           <span>All fields are required</span>

@@ -79,12 +79,6 @@ jest.mock(
     isMissingFocusObject: false
   })
 );
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    reportTrackPanelToggled: jest.fn()
-  })
-);
 
 const mockState = createMockBrowserState();
 const mockStore = configureMockStore([thunk]);

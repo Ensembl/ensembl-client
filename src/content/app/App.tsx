@@ -17,7 +17,11 @@
 import React, { useEffect, memo } from 'react';
 import { useLocation, useRoutes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+
 import routesConfig from 'src/routes/routesConfig';
+
+import useGlobalAnalytics from 'src/global/hooks/useGlobalAnalytics';
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -28,6 +32,8 @@ import Header from 'src/header/Header';
 const AppContainer = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const [ref, callbackRef] = useRefWithRerender<HTMLElement>(null);
+  useGlobalAnalytics(ref);
 
   useEffect(() => {
     const appName: string = location.pathname.split('/').filter(Boolean)[0];
@@ -38,6 +44,11 @@ const AppContainer = () => {
       dispatch(changeCurrentApp(''));
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    const reactRootElement = document.getElementById('ens-app') as HTMLElement;
+    callbackRef(reactRootElement);
+  }, []);
 
   useLocationReporting();
 
@@ -55,7 +66,6 @@ const useLocationReporting = () => {
 
 const App = memo(() => {
   const routes = useRoutes(routesConfig);
-
   return (
     <>
       <Header />
