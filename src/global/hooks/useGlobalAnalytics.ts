@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type MutableRefObject } from 'react';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -22,14 +22,33 @@ import { type AnalyticsOptions } from 'src/analyticsHelper';
 import { useAppSelector } from 'src/store';
 import { getCurrentApp } from '../globalSelectors';
 
-const useGlobalAnalytics = () => {
+const useGlobalAnalytics = <T extends HTMLElement>(
+  ref: MutableRefObject<T | null>
+) => {
   const appName = useAppSelector(getCurrentApp) || 'homepage';
-  const globalAnalyticsRef = useRef<HTMLDivElement | null>(null);
+  const appNameRef = useRef(appName);
 
-  const sendTrackEvent = (ga: AnalyticsOptions) => {
+  useEffect(() => {
+    ref?.current?.addEventListener(
+      'analytics',
+      handleAnalyticsCustomEvent as EventListener
+    );
+    return () => {
+      ref?.current?.removeEventListener(
+        'analytics',
+        handleAnalyticsCustomEvent as EventListener
+      );
+    };
+  }, [ref?.current]);
+
+  useEffect(() => {
+    appNameRef.current = appName;
+  }, [appName]);
+
+  const sendTrackEvent = (payload: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
-      ...ga,
-      app: ga.app ?? appName
+      ...payload,
+      app: payload.app ?? appNameRef.current
     });
   };
 
@@ -37,23 +56,6 @@ const useGlobalAnalytics = () => {
     sendTrackEvent({
       ...event.detail
     });
-  };
-
-  useEffect(() => {
-    globalAnalyticsRef.current?.addEventListener(
-      'analytics',
-      handleAnalyticsCustomEvent as EventListener
-    );
-    return () => {
-      globalAnalyticsRef.current?.removeEventListener(
-        'analytics',
-        handleAnalyticsCustomEvent as EventListener
-      );
-    };
-  }, [globalAnalyticsRef, appName]);
-
-  return {
-    globalAnalyticsRef
   };
 };
 
