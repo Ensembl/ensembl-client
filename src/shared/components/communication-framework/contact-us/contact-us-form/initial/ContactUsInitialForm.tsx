@@ -165,6 +165,12 @@ const ContactUsInitialForm = () => {
     allowMultiple: true
   });
 
+  const callbackElementRef = useCallback((element: HTMLDivElement) => {
+    // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
+    elementRef.current = element;
+    dropAreaRef(element);
+  }, []);
+
   const { clearSavedForm } = useSavedForm({
     formName: FORM_NAME,
     currentState: state,
@@ -258,8 +264,8 @@ const ContactUsInitialForm = () => {
   });
 
   return (
-    <div className={containerClasses} ref={dropAreaRef}>
-      <div className={commonStyles.grid} ref={elementRef}>
+    <div className={containerClasses} ref={callbackElementRef}>
+      <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
           <span>All fields are required</span>
           <span>
