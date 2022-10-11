@@ -50,8 +50,8 @@ import { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.scss';
 
-const MEDIUM_WIDTH = 1199;
-const SMALL_WIDTH = 1040;
+const MEDIUM_WIDTH = 720;
+const SMALL_WIDTH = 560;
 
 enum Display {
   FULL = 'full',
@@ -110,7 +110,8 @@ const SpeciesTitleArea = () => {
   }, [containerWidth]);
 
   const blockClasses = classNames(styles.speciesTitleArea, {
-    [styles.speciesTitleAreaMinimal]: display === Display.MINIMAL
+    [styles.speciesTitleAreaMinimal]: display === Display.MINIMAL,
+    [styles.speciesTitleAreaCompact]: display === Display.COMPACT
   });
 
   if (!activeGenomeId) {
