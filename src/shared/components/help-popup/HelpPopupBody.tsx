@@ -41,7 +41,7 @@ const HelpPopupBody = (props: Props) => {
     useState<SlugReference>(props);
   const { article, loadingState } = useHelpArticle(currentReference);
   const historyRef = useRef<HelpPopupHistory | null>(null);
-  const analyticsRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (article) {
@@ -53,9 +53,9 @@ const HelpPopupBody = (props: Props) => {
         },
         bubbles: true
       });
-      analyticsRef.current?.dispatchEvent(trackHelpArticleViewed);
+      elementRef.current?.dispatchEvent(trackHelpArticleViewed);
     }
-  }, [article, analyticsRef]);
+  }, [article, elementRef]);
 
   useEffect(() => {
     historyRef.current = new HelpPopupHistory(currentReference);
@@ -92,7 +92,7 @@ const HelpPopupBody = (props: Props) => {
 
   if (article) {
     return (
-      <div ref={analyticsRef} className={styles.wrapper}>
+      <div ref={elementRef} className={styles.wrapper}>
         <HelpArticleGrid className={styles.grid}>
           {article.type === 'article' ? (
             <TextArticle article={article} />

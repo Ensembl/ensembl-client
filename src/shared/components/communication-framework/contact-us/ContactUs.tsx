@@ -29,7 +29,7 @@ import styles from './ContactUs.scss';
 
 const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);
-  const analyticsRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   if (shouldShowForm) {
     return (
@@ -52,13 +52,13 @@ const ContactUs = () => {
       bubbles: true
     });
 
-    analyticsRef.current?.dispatchEvent(trackContactUsButtonClick);
+    elementRef.current?.dispatchEvent(trackContactUsButtonClick);
 
     setShouldShowForm(!shouldShowForm);
   };
 
   return (
-    <div className={styles.wrapper} ref={analyticsRef}>
+    <div className={styles.wrapper} ref={elementRef}>
       <section>
         <Invitation />
         <SecondaryButton onClick={onContactUsButtonClick}>

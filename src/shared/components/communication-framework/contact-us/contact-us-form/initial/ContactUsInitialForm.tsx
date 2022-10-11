@@ -142,7 +142,7 @@ const ContactUsInitialForm = () => {
   );
 
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
-  const analyticsRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
 
@@ -228,7 +228,7 @@ const ContactUsInitialForm = () => {
       bubbles: true
     });
 
-    analyticsRef.current?.dispatchEvent(trackContactUsSubmission);
+    elementRef.current?.dispatchEvent(trackContactUsSubmission);
 
     setSubmissionState(LoadingState.LOADING);
 
@@ -259,7 +259,7 @@ const ContactUsInitialForm = () => {
 
   return (
     <div className={containerClasses} ref={dropAreaRef}>
-      <div className={commonStyles.grid} ref={analyticsRef}>
+      <div className={commonStyles.grid} ref={elementRef}>
         <p className={commonStyles.advisory}>
           <span>All fields are required</span>
           <span>

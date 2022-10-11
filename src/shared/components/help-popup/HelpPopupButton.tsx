@@ -32,7 +32,7 @@ type Props = {
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const analyticsRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   const openModal = () => {
     const trackHelpPopupOpen = new CustomEvent('analytics', {
@@ -43,7 +43,7 @@ const HelpPopupButton = (props: Props) => {
       bubbles: true
     });
 
-    analyticsRef.current?.dispatchEvent(trackHelpPopupOpen);
+    elementRef.current?.dispatchEvent(trackHelpPopupOpen);
 
     setShouldShowModal(true);
   };
@@ -56,7 +56,7 @@ const HelpPopupButton = (props: Props) => {
 
   return (
     <>
-      <div className={styles.wrapper} onClick={openModal} ref={analyticsRef}>
+      <div className={styles.wrapper} onClick={openModal} ref={elementRef}>
         <span className={labelClasses}>{props.label}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />

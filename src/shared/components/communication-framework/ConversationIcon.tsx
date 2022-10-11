@@ -31,7 +31,7 @@ type Props = {
 
 const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
-  const analyticsRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   const onClick = () => {
     const trackCommunicationPanelOpen = new CustomEvent('analytics', {
@@ -42,7 +42,7 @@ const ConversationIcon = (props: Props) => {
       bubbles: true
     });
 
-    analyticsRef.current?.dispatchEvent(trackCommunicationPanelOpen);
+    elementRef.current?.dispatchEvent(trackCommunicationPanelOpen);
 
     dispatch(toggleCommunicationPanel());
   };
@@ -53,7 +53,7 @@ const ConversationIcon = (props: Props) => {
       <div
         className={styles.conversationIconWrapper}
         onClick={onClick}
-        ref={analyticsRef}
+        ref={elementRef}
       >
         {props.withLabel && 'Contact us'}
         <ConversationImageIcon className={styles.conversationIcon} />
