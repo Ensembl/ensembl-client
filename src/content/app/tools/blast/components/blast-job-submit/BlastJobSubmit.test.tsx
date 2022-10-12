@@ -87,7 +87,7 @@ const expectedPayload = {
   })),
   preset: 'normal',
   parameters: {
-    title: jobName,
+    jobName: jobName,
     database,
     program: 'blastn',
     stype: 'dna',
