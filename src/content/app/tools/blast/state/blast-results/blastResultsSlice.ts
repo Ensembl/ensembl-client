@@ -52,7 +52,7 @@ export type OptionalSubmissionParameters = Partial<
 >;
 export type BlastSubmissionParameters = MandatorySubmissionParameters &
   OptionalSubmissionParameters & {
-    title: string;
+    jobName: string;
     stype: SequenceType;
   };
 

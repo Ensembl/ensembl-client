@@ -307,7 +307,7 @@ const BlastJobName = () => {
 
   return (
     <div className={styles.blastJobName}>
-      <span>Name this job</span>
+      <span>Submission name</span>
       <ShadedInput value={jobName} onChange={onChange} placeholder="optional" />
     </div>
   );

@@ -126,6 +126,7 @@ const defaultBlastParameters = {
   title: '',
   database: 'dna',
   stype: 'dna',
+  jobName: '',
   program: 'blastn',
   alignments: '100',
   scores: '50',

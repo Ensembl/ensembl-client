@@ -28,7 +28,9 @@ export type BlastSubmissionPayload = {
   species: Species[];
   sequences: { id: number; value: string }[];
   preset: string;
-  parameters: Record<string, string>;
+  parameters: Record<string, string> & {
+    jobName?: string;
+  };
 };
 
 export type BlastSubmissionResponse = {
