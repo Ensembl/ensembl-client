@@ -16,6 +16,8 @@
 
 import { openDB, IDBPDatabase } from 'idb';
 
+import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageConstants';
+
 const DB_NAME = 'ensembl-website';
 const DB_VERSION = 1;
 
@@ -29,6 +31,15 @@ const getDbPromise = () => {
       if (!db.objectStoreNames.contains('blast-submissions')) {
         db.createObjectStore('blast-submissions');
       }
+      if (!db.objectStoreNames.contains(GB_TRACK_SETTINGS_STORE_NAME)) {
+        const trackSettingsObjectStore = db.createObjectStore(
+          GB_TRACK_SETTINGS_STORE_NAME,
+          { keyPath: ['genomeId', 'trackId'] }
+        );
+        trackSettingsObjectStore.createIndex('genomeId', 'genomeId', {
+          unique: false
+        });
+      }
     }
   });
 };
@@ -36,7 +47,7 @@ const getDbPromise = () => {
 class IndexedDB {
   static db: IDBPDatabase | null = null;
 
-  private static async getDB() {
+  static async getDB() {
     if (!this.db) {
       this.db = await getDbPromise();
     }
