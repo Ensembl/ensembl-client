@@ -21,11 +21,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
-import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
