@@ -84,7 +84,11 @@ const DownloadData = () => {
         setTimeout(restoreDefaults, 1000);
       } catch {
         setDownloadState(LoadingState.ERROR);
-        setTimeout(() => setDownloadState(LoadingState.NOT_REQUESTED), 2000);
+        setTimeout(() => {
+          if (allowComponentResetRef.current) {
+            setDownloadState(LoadingState.NOT_REQUESTED);
+          }
+        }, 2000);
       }
 
       return;
