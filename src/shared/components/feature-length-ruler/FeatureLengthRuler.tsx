@@ -79,7 +79,10 @@ const FeatureLengthRuler = (props: Props) => {
       <g>
         <rect className={styles.tick} width={1} height={6} />
         <text className={styles.label} x={0} y={20} textAnchor="end">
-          {props.unitsLabel ? `${props.unitsLabel} 1` : 1}
+          {props.unitsLabel && (
+            <tspan className={styles.rulerName}>{props.unitsLabel}</tspan>
+          )}
+          <tspan>1</tspan>
         </text>
       </g>
       {ticks.map((tick) => (

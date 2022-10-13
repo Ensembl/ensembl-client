@@ -9,6 +9,10 @@
   fill: var(--sequence-ruler-color, #{$orange});
 }
 
+.rulerName {
+  fill: var(--sequence-ruler-name-color, black);
+}
+
 .label {
   fill: var(--sequence-ruler-label-color, black);
   font-size: 10px;
