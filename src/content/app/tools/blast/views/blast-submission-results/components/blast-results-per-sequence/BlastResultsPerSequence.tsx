@@ -112,6 +112,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
           {shouldShowJobResult && (
             <FeatureLengthRuler
               rulerLabel="Length"
+              rulerLabelOffset={2.5}
               width={plotwidth}
               length={sequenceValue.length}
               standalone={true}
