@@ -272,6 +272,13 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
+  const trackSpeciesChange = () => {
+    sendTrackEvent({
+      category: 'app_bar',
+      action: 'change_link_clicked'
+    });
+  };
+
   return {
     trackTabChange,
     trackFiltersPanelOpen,
@@ -290,7 +297,8 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick,
     trackPreviouslyViewedObjectClicked,
     trackSidebarModelOpen,
-    trackSearchSubmission
+    trackSearchSubmission,
+    trackSpeciesChange
   };
 };
 

@@ -249,18 +249,12 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const reportTrackPanelToggled = (isOpened: boolean) => {
-    sendTrackEvent({
-      category: 'track_panel',
-      action: isOpened ? 'opened' : 'closed'
-    });
-  };
-
   const reportTrackVisibilityToggled = (trackName: string, status: boolean) => {
     sendTrackEvent({
       category: 'regular_track_visibility',
       action: 'turned_' + (status ? 'on' : 'off'),
-      label: trackName
+      label: trackName,
+      feature
     });
   };
 
@@ -291,6 +285,22 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
+  const trackInterstitialPageSearch = (searchTerm: string) => {
+    sendTrackEvent({
+      category: 'interstitial_page',
+      action: 'search_submitted',
+      label: searchTerm
+    });
+  };
+
+  const trackSidebarSearch = (searchTerm: string) => {
+    sendTrackEvent({
+      category: 'sidebar_toolstrip',
+      action: 'search_submitted',
+      label: searchTerm
+    });
+  };
+
   return {
     trackRegionChange,
     trackRegionFieldChange,
@@ -302,7 +312,6 @@ const useGenomeBrowserAnalytics = () => {
     trackApplyToAllInTrackSettings,
     reportTrackPanelTabChange,
     reportTrackPanelSectionToggled,
-    reportTrackPanelToggled,
     trackTrackNameToggle,
     reportTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
@@ -316,7 +325,9 @@ const useGenomeBrowserAnalytics = () => {
     trackDrawerOpened,
     trackSpeciesChange,
     trackGenomeChanged,
-    trackInterstitialPageNavigation
+    trackInterstitialPageNavigation,
+    trackInterstitialPageSearch,
+    trackSidebarSearch
   };
 };
 

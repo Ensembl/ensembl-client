@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
@@ -52,6 +52,8 @@ type StandardAppLayoutProps = {
 };
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
+  const elementRef = useRef<HTMLDivElement | null>(null);
+
   // TODO: is there any way to run this smarter?
   // Ideally, it should run only once per app life cycle to check whether user is on small screen and close the sidebar if they are
   useEffect(() => {
@@ -76,8 +78,31 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
   const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
+  const handleClick = () => {
+    if (props.isDrawerOpen) {
+      props.onDrawerClose();
+      return;
+    }
+
+    trackSidebarToggle();
+    props.onSidebarToggle();
+  };
+
+  // dispatches an event that the sidebar has been opened or closed; used for analytics purposes
+  const trackSidebarToggle = () => {
+    const event = new CustomEvent('analytics', {
+      detail: {
+        category: 'sidebar',
+        action: props.isSidebarOpen ? 'closed' : 'opened'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(event);
+  };
+
   return (
-    <div className={styles.standardAppLayout}>
+    <div className={styles.standardAppLayout} ref={elementRef}>
       <div className={topbarClassnames}>
         {props.topbarContent}
         {shouldShowSidebarNavigation && props.sidebarNavigation}
@@ -88,11 +113,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
           <div className={styles.sidebarToolstrip}>
             <SidebarModeToggle
-              onClick={
-                props.isDrawerOpen
-                  ? () => props.onDrawerClose()
-                  : () => props.onSidebarToggle()
-              }
+              onClick={handleClick}
               showAction={
                 props.isSidebarOpen
                   ? SidebarModeToggleAction.CLOSE

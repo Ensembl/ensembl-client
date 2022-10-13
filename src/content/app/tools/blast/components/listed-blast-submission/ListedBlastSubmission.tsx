@@ -22,6 +22,8 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+
 import {
   type BlastSubmission,
   type BlastJob,
@@ -123,10 +125,15 @@ type SequenceBoxProps = {
 
 const SequenceBox = (props: SequenceBoxProps) => {
   const { sequence, jobs } = props;
+  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
+  const { header: sequenceHeader } = parsedBlastSequence;
+  const sequenceHeaderLabel =
+    '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
 
   return (
     <div className={styles.sequenceBox}>
       <div>Sequence {sequence.id}</div>
+      <div className={styles.sequenceHeader}>{sequenceHeaderLabel}</div>
       <div className={styles.speciesCount}>
         <span className={styles.againstText}>Against</span> {jobs.length}{' '}
         species

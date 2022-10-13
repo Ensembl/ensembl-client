@@ -21,7 +21,8 @@ const useHomeAnalytics = () => {
     analyticsTracking.trackEvent({
       category: 'homepage-action-button',
       action: 'clicked',
-      label: buttonText
+      label: buttonText,
+      app: 'homepage'
     });
   };
 

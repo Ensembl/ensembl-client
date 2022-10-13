@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import Modal from 'src/shared/components/modal/Modal';
@@ -32,20 +32,35 @@ type Props = {
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   const openModal = () => {
     setShouldShowModal(true);
+    reportHelpButtonClick();
   };
 
   const closeModal = () => {
     setShouldShowModal(false);
   };
 
+  // dispatches an event that the help button has been clicked; used for analytics purposes
+  const reportHelpButtonClick = () => {
+    const event = new CustomEvent('analytics', {
+      detail: {
+        category: 'contextual-help',
+        action: 'opened'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(event);
+  };
+
   const labelClasses = classNames(styles.label, props.labelClass);
 
   return (
     <>
-      <div className={styles.wrapper} onClick={openModal}>
+      <div className={styles.wrapper} onClick={openModal} ref={elementRef}>
         <span className={labelClasses}>{props.label}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />

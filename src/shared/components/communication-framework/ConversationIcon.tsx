@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-
-import useCommonAnalytics from 'src/shared/hooks/useCommonAnalytics';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 
@@ -33,19 +31,34 @@ type Props = {
 
 const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
-
-  const { trackContextualHelpOpened } = useCommonAnalytics();
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   const onClick = () => {
-    trackContextualHelpOpened();
-
     dispatch(toggleCommunicationPanel());
+    trackButtonClick();
+  };
+
+  // dispatches an event that the conversation button has been clicked; used for analytics purposes
+  const trackButtonClick = () => {
+    const event = new CustomEvent('analytics', {
+      detail: {
+        category: 'communication_panel',
+        action: 'opened'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(event);
   };
 
   return (
     <>
       <CommunicationPanel />
-      <div className={styles.conversationIconWrapper} onClick={onClick}>
+      <div
+        className={styles.conversationIconWrapper}
+        onClick={onClick}
+        ref={elementRef}
+      >
         {props.withLabel && 'Contact us'}
         <ConversationImageIcon className={styles.conversationIcon} />
       </div>

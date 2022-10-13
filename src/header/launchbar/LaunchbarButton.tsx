@@ -18,6 +18,8 @@ import React, { FunctionComponent } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
+import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
+
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
@@ -37,6 +39,8 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
   const location = useLocation();
+
+  const { trackLaunchbarAppChange } = useHeaderAnalytics();
   const isActive = new RegExp(`^${props.path}`).test(location.pathname);
   const imageButtonStatus = getImageButtonStatus({
     isDisabled: !props.enabled,
@@ -68,6 +72,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
         isActive ? activeButtonClass : styles.launchbarButton
       }
       to={props.path}
+      onClick={() => trackLaunchbarAppChange(props.description)}
     >
       {imageButton}
     </NavLink>

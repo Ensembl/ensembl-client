@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { ContactUsInitialForm } from './contact-us-form';
 import { Invitation, Header } from './preform-header/PreformHeader';
@@ -29,6 +29,7 @@ import styles from './ContactUs.scss';
 
 const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   if (shouldShowForm) {
     return (
@@ -42,11 +43,29 @@ const ContactUs = () => {
     );
   }
 
+  const onContactUsButtonClick = () => {
+    setShouldShowForm(!shouldShowForm);
+    trackContactUsClick();
+  };
+
+  // dispatches an event that the "Contact us" button has been clicked; used for analytics purposes
+  const trackContactUsClick = () => {
+    const event = new CustomEvent('analytics', {
+      detail: {
+        category: 'contact_us',
+        action: 'opened'
+      },
+      bubbles: true
+    });
+
+    elementRef.current?.dispatchEvent(event);
+  };
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={elementRef}>
       <section>
         <Invitation />
-        <SecondaryButton onClick={() => setShouldShowForm(!shouldShowForm)}>
+        <SecondaryButton onClick={onContactUsButtonClick}>
           Contact us
         </SecondaryButton>
       </section>
