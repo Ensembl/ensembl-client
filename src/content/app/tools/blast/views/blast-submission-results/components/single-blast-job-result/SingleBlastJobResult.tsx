@@ -241,7 +241,7 @@ const HitsTable = (props: HitsTableProps) => {
           hitHsp.hsp_align_len,
           '', // view_alignment
           hitHsp.hsp_identity,
-          hitHsp.hsp_score,
+          hitHsp.hsp_bit_score,
           getDynamicColumnContent({
             hit,
             blastDatabase,
