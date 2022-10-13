@@ -42,10 +42,10 @@ type PreviouslyViewedLinksProps = {
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const { genomeIdForUrl } = useEntityViewerIds();
-  const { trackPreviouslyViewedLinkClick } = useEntityViewerAnalytics();
+  const { trackPreviouslyViewedObjectClicked } = useEntityViewerAnalytics();
 
   const handleClick = (linkLabel: string | string[], index: number) => {
-    trackPreviouslyViewedLinkClick({
+    trackPreviouslyViewedObjectClicked({
       linkLabel:
         typeof linkLabel === 'string' ? linkLabel : linkLabel.join(' '),
       position: index + 1

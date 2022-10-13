@@ -61,6 +61,11 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
 const server = setupServer(
   rest.get(`${mockGenomeSearchApi}/genome/karyotype`, (req, res, ctx) => {
     const genomeId = req.url.searchParams.get('genome_id');

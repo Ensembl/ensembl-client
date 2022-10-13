@@ -23,6 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
@@ -71,7 +72,7 @@ export const BlastSubmissionHeader = (props: Props) => {
   const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
 
   const editSubmission = () => {
-    const { sequences, species, parameters } = submission.submittedData;
+    const { sequences, species, preset, parameters } = submission.submittedData;
     const parsedSequences = sequences.flatMap((sequence) =>
       parseBlastInput(sequence.value)
     );
@@ -84,6 +85,7 @@ export const BlastSubmissionHeader = (props: Props) => {
         jobName: title,
         sequenceType: stype,
         program: program as BlastProgram,
+        preset,
         parameters: otherParameters
       }
     };
@@ -103,6 +105,10 @@ export const BlastSubmissionHeader = (props: Props) => {
     ) {
       navigate(urlFor.blastForm());
     }
+  };
+
+  const handleDownload = async () => {
+    await downloadBlastSubmission(submission, dispatch);
   };
 
   return (
@@ -135,7 +141,10 @@ export const BlastSubmissionHeader = (props: Props) => {
             onClick={() => setDeletingJob(true)}
             disabled={props.isAnyJobRunning || deletingJob}
           />
-          <DownloadButton disabled={true || deletingJob} />
+          <DownloadButton
+            onClick={handleDownload}
+            disabled={props.isAnyJobRunning}
+          />
           <ButtonLink
             to={urlFor.blastSubmission(submissionId)}
             isDisabled={props.isAnyJobRunning || deletingJob}

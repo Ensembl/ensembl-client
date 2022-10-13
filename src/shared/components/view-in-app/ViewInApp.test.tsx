@@ -26,7 +26,7 @@ import {
   Apps,
   type AppName,
   type ViewInAppProps,
-  type UrlObj
+  type LinksConfig
 } from './ViewInApp';
 import RouteChecker from 'tests/router/RouteChecker';
 
@@ -74,7 +74,7 @@ const links = tuplesSample.reduce((result, tuple) => {
     ...result,
     [appName]: { url: link }
   };
-}, {}) as UrlObj;
+}, {}) as LinksConfig;
 
 describe('<ViewInApp />', () => {
   beforeEach(() => {
@@ -130,6 +130,23 @@ describe('<ViewInApp />', () => {
 
     expect(routerInfo.location?.pathname).toBe(links.genomeBrowser.url);
     expect(routerInfo.navigationType).toBe('REPLACE');
+  });
+
+  it('correctly handles links as functions', async () => {
+    const genomeBrowserLinkFn = jest.fn();
+    const links = {
+      genomeBrowser: genomeBrowserLinkFn
+    };
+
+    renderComponent({ links });
+
+    const appButtonContainer = screen.getByTestId('genomeBrowser');
+
+    await userEvent.click(
+      appButtonContainer.querySelector('button') as HTMLButtonElement
+    );
+
+    expect(genomeBrowserLinkFn).toHaveBeenCalled();
   });
 
   describe('onClick behaviour', () => {

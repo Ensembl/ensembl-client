@@ -48,6 +48,7 @@ const createRootReducer = () =>
 
 export const createServerSideRootReducer = () =>
   combineReducers({
+    global,
     speciesSelector,
     entityViewer,
     genome,

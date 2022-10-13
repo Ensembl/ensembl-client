@@ -17,10 +17,9 @@
 import React, { useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
-
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
@@ -71,7 +70,6 @@ const DrawerSequenceView = (props: Props) => {
     sequence,
     sequenceTypes,
     selectedSequenceType,
-    onSequenceTypeChange,
     isReverseComplement,
     onReverseComplementChange
   } = props;
@@ -79,6 +77,8 @@ const DrawerSequenceView = (props: Props) => {
   const species = useAppSelector((state) =>
     getCommittedSpeciesById(state, genomeId)
   ) as CommittedItem;
+
+  const { trackDrawerSequenceViewed } = useGenomeBrowserAnalytics();
 
   // BLAST has a different labelling for sequence types than what is passed with props
   const sequenceTypeForBlast =
@@ -91,12 +91,26 @@ const DrawerSequenceView = (props: Props) => {
 
   const canHaveReverseComplement = selectedSequenceType === 'genomic';
 
+  const onShowHideClick = () => {
+    toggleSequenceVisibility();
+
+    // Track only when it is opened
+    if (!isExpanded) {
+      trackDrawerSequenceViewed(selectedSequenceType);
+    }
+  };
+
+  const onSequenceTypeChange = (sequenceType: SequenceType) => {
+    trackDrawerSequenceViewed(sequenceType);
+    props.onSequenceTypeChange(sequenceType);
+  };
+
   return (
     <div>
       <ShowHide
         label="Sequences"
         isExpanded={isExpanded}
-        onClick={toggleSequenceVisibility}
+        onClick={onShowHideClick}
         className={isExpanded ? styles.showHide : undefined}
       />
       {isExpanded && (
@@ -110,16 +124,14 @@ const DrawerSequenceView = (props: Props) => {
           )}
           {isLoading && <Loading />}
           {isError && <LoadFailure refetch={refetch} />}
-          {!isEnvironment([Environment.PRODUCTION]) && (
-            <div className={styles.asideTop}>
-              <BlastSequenceButton
-                className={styles.blastSequenceButton}
-                sequence={sequence}
-                species={species}
-                sequenceType={sequenceTypeForBlast}
-              />
-            </div>
-          )}
+          <div className={styles.asideTop}>
+            <BlastSequenceButton
+              className={styles.blastSequenceButton}
+              sequence={sequence}
+              species={species}
+              sequenceType={sequenceTypeForBlast}
+            />
+          </div>
           <div className={styles.asideBottom}>
             <div className={styles.sequenceTypeSelection}>
               <RadioGroup
@@ -151,6 +163,12 @@ const Sequence = (props: {
   isReverseComplement: boolean;
   sequenceType: SequenceType;
 }) => {
+  const { trackDrawerSequenceCopied } = useGenomeBrowserAnalytics();
+
+  const onCopy = () => {
+    trackDrawerSequenceCopied(sequenceType);
+  };
+
   const { sequence, sequenceType, isReverseComplement } = props;
 
   const displaySequence = useMemo(() => {
@@ -168,7 +186,7 @@ const Sequence = (props: {
             {sequenceLengthUnits}
           </span>
         </span>
-        <Copy value={displaySequence} />
+        <Copy value={displaySequence} onCopy={onCopy} />
       </div>
 
       {/*

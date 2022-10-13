@@ -22,7 +22,6 @@ import {
 } from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
-import analyticsTracking from 'src/services/analytics-service';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
@@ -81,12 +80,6 @@ export const selectTrackPanelTab =
     if (!activeGenomeId) {
       return;
     }
-
-    analyticsTracking.trackEvent({
-      category: 'track_panel_tab',
-      label: selectedTrackPanelTab,
-      action: 'selected'
-    });
 
     dispatch(closeBrowserSidebarModal());
 

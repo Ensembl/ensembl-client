@@ -55,6 +55,14 @@ jest.mock(
     changeFocusObject: mockChangeFocusObject
   })
 );
+
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackRegionFieldChange: jest.fn()
+  })
+);
+
 const mockState = createMockBrowserState();
 
 const mockStore = configureMockStore([thunk]);

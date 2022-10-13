@@ -25,6 +25,8 @@ import { AppName } from 'src/global/globalConfig';
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
@@ -37,6 +39,7 @@ const EntityViewerAppBar = () => {
   const speciesList = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
 
+  const { trackSpeciesChange } = useEntityViewerAnalytics();
   const onSpeciesTabClick = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
     const url = urlFor.entityViewer({
@@ -54,7 +57,11 @@ const EntityViewerAppBar = () => {
     />
   ));
   const speciesSelectorLink = useMemo(() => {
-    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+    return (
+      <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
+        Change
+      </Link>
+    );
   }, []);
 
   const wrappedSpecies = (

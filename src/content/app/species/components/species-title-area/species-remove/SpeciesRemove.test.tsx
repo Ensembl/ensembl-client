@@ -89,7 +89,7 @@ describe('SpeciesSelectionControls', () => {
       'Remove species'
     );
 
-    // open removal confitmation dialog
+    // open removal confirmation dialog
     await userEvent.click(removeSpeciesButton);
 
     expect(container.querySelector('.speciesRemovalWarning')?.textContent).toBe(

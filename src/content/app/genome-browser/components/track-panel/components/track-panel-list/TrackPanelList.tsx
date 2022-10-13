@@ -19,6 +19,7 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import {
   getBrowserActiveFocusObject,
@@ -50,6 +51,8 @@ export const TrackPanelList = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
+  const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
+
   const dispatch = useAppDispatch();
 
   const { data: genomeTrackCategories } = useGenomeTracksQuery(activeGenomeId);
@@ -113,6 +116,9 @@ export const TrackPanelList = () => {
                   <AccordionItemButton
                     className={accordionButtonClassNames}
                     disabled={!category.track_list.length}
+                    onToggle={(isExpanded: boolean) =>
+                      reportTrackPanelSectionToggled(category.label, isExpanded)
+                    }
                   >
                     {category.label}
                   </AccordionItemButton>

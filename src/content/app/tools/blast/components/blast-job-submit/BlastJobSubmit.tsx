@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { useSubmitBlastMutation } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
@@ -27,6 +27,8 @@ import { isBlastFormValid } from 'src/content/app/tools/blast/utils/blastFormVal
 
 import { getBlastFormData } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+
+import { clearBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
@@ -44,6 +46,7 @@ import type {
 export type PayloadParams = {
   species: Species[];
   sequences: { id: number; value: string }[];
+  preset: string;
   parameters: Partial<Record<BlastParameterName, string>> & {
     title: string;
     stype: SequenceType;
@@ -60,6 +63,7 @@ const BlastJobSubmit = () => {
     // and the user must be fantastically fast; so it is most likely a non-issue
     fixedCacheKey: 'submit-blast-form'
   });
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const isDisabled = !isBlastFormValid(selectedSpeciesIds, sequences);
@@ -71,6 +75,8 @@ const BlastJobSubmit = () => {
     const submission = submitBlast(payload);
     submission.then(() => submission.reset());
     navigate(urlFor.blastUnviewedSubmissions());
+
+    dispatch(clearBlastForm());
   };
 
   return (
@@ -93,6 +99,7 @@ export const createBlastSubmissionData = (
   return {
     species: blastFormData.selectedSpecies,
     sequences,
+    preset: blastFormData.settings.preset,
     parameters: {
       title: blastFormData.settings.jobName,
       database: blastFormData.settings.parameters.database,

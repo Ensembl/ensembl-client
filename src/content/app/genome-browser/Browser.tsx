@@ -90,7 +90,7 @@ export const Browser = () => {
   }, [activeGenomeId]);
 
   const onSidebarToggle = () => {
-    dispatch(toggleTrackPanel(!isTrackPanelOpened)); // FIXME
+    dispatch(toggleTrackPanel(!isTrackPanelOpened));
   };
 
   const onDrawerClose = () => {

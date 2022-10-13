@@ -42,16 +42,36 @@ export const Apps = {
 
 export type AppName = keyof typeof Apps;
 
-export type LinkObj = { url: string; replaceState?: boolean };
+export type LinkObject = { url: string; replaceState?: boolean };
 
-export type UrlObj = Partial<Record<AppName, LinkObj>>;
+export type LinkFunction = () => void;
 
-type AppClickHandlers = Partial<
-  Record<AppName, (event?: React.MouseEvent<HTMLDivElement>) => void>
->;
+export type LinksConfig = Partial<Record<AppName, LinkObject | LinkFunction>>;
+
+type AppClickHandlers = Partial<Record<AppName, () => void>>;
+
+/**
+ * The fields of ViewInAppProps have the following semantics:
+ * - the buttons rendered by the ViewInApp component,
+ *   as well as the default behaviour upon a click on a given button
+ *   are determined by the keys of the `links` object passed as a mandatory property
+ * - the optional `onAppClick` property describes additional behaviour
+ *   upon a click on a given button
+ * - the optional `onAnyAppClick` property describes additional behaviour
+ *   upon a click on any button.
+ *
+ * QUESTION: why not make the `links` property only ever contain url strings,
+ * and pass functions describing more complex on-click behaviour
+ * via the `onAppClick` property?
+ *
+ * ANSWER: because the `links` property is mandatory. Consider an edge case
+ * in which the on-click behaviour on any button has to be described in a function.
+ * That would require the consumer of the component to pass an empty `links` object
+ * into the component, which makes for an awkward api.
+ */
 
 export type ViewInAppProps = {
-  links: UrlObj;
+  links: LinksConfig;
   onAppClick?: AppClickHandlers;
   onAnyAppClick?: (appName?: AppName) => void;
   classNames?: {
@@ -60,8 +80,6 @@ export type ViewInAppProps = {
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
-  const { onAppClick, onAnyAppClick: onAnyAppClickFn } = props;
-
   const labelClass = classNames(styles.label, props.classNames?.label);
 
   const navigate = useNavigate();
@@ -69,8 +87,27 @@ export const ViewInApp = (props: ViewInAppProps) => {
     return null;
   }
 
+  const handleClick = (app: AppName) => {
+    const linkConfig = props.links[app];
+    if (!linkConfig) {
+      return; // shouldn't happen; but keeps the types sound
+    }
+
+    props.onAnyAppClick?.(app);
+    props.onAppClick?.[app]?.();
+
+    if (typeof linkConfig === 'function') {
+      // the parent knows better how to handle a click on a link; delegate decision to the parent
+      const linkClickHandler = linkConfig; // creating a new variable because writing `linkConfig()` looks awkward
+      linkClickHandler();
+    } else {
+      navigate(linkConfig.url, {
+        replace: linkConfig.replaceState
+      });
+    }
+  };
+
   const enabledApps = Object.keys({
-    ...(props.onAppClick || {}),
     ...props.links
   }) as AppName[];
 
@@ -79,25 +116,6 @@ export const ViewInApp = (props: ViewInAppProps) => {
       <span className={labelClass}>View in</span>
 
       {enabledApps.map((appName, index) => {
-        const currentLinkObj = props.links[appName] as LinkObj;
-
-        const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
-          const onAppClickFn = onAppClick?.[appName];
-
-          if (onAnyAppClickFn) {
-            onAnyAppClickFn(appName);
-          }
-
-          if (onAppClickFn) {
-            onAppClickFn(event);
-          }
-          if (currentLinkObj) {
-            navigate(currentLinkObj.url, {
-              replace: currentLinkObj.replaceState
-            });
-          }
-        };
-
         return (
           <div
             className={styles.viewInAppLink}
@@ -108,9 +126,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
               status={Status.DEFAULT}
               description={Apps[appName].tooltip}
               image={Apps[appName].icon}
-              onClick={(event?: React.MouseEvent<HTMLDivElement>) =>
-                handleClick(event)
-              }
+              onClick={() => handleClick(appName)}
             />
           </div>
         );

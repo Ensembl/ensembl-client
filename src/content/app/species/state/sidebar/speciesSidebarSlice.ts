@@ -28,6 +28,13 @@ import { RootState } from 'src/store';
 
 import { sidebarData } from 'src/content/app/species/sample-data';
 
+export enum SpeciesSidebarModalView {
+  SEARCH = 'search',
+  BOOKMARKS = 'previously viewed',
+  SHARE = 'share',
+  DOWNLOADS = 'downloads'
+}
+
 type Notes = {
   heading: string;
   body: string;
@@ -63,11 +70,13 @@ export type SpeciesSidebarPayload = {
 type StateForGenome = {
   payload: SpeciesSidebarPayload | null;
   isSidebarOpen: boolean;
+  sidebarModalView: SpeciesSidebarModalView | null;
 };
 
 const initialStateForGenome: StateForGenome = {
   payload: null,
-  isSidebarOpen: true
+  isSidebarOpen: true,
+  sidebarModalView: null
 };
 
 type SpeciesPageSidebarState = {
@@ -105,6 +114,12 @@ const updateStateForGenome = (
   state[genomeId] = updatedStateForGenome;
 };
 
+export const buildInitialStateForGenome = (
+  genomeId: string
+): SpeciesPageSidebarState => ({
+  [genomeId]: initialStateForGenome
+});
+
 const speciesPageSidebarSlice = createSlice({
   name: 'species-page-sidebar',
   initialState,
@@ -130,10 +145,26 @@ const speciesPageSidebarSlice = createSlice({
       updateStateForGenome(state, action.payload.genomeId, {
         payload: action.payload.sidebarPayload
       });
+    },
+
+    updateSpeciesSidebarModalForGenome(
+      state,
+      action: PayloadAction<{
+        activeGenomeId: string;
+        fragment: Partial<StateForGenome>;
+      }>
+    ) {
+      const { activeGenomeId, fragment } = action.payload;
+
+      state[activeGenomeId] = {
+        ...state[activeGenomeId],
+        ...fragment
+      };
     }
   }
 });
 
-export const { toggleSidebar } = speciesPageSidebarSlice.actions;
+export const { toggleSidebar, updateSpeciesSidebarModalForGenome } =
+  speciesPageSidebarSlice.actions;
 
 export default speciesPageSidebarSlice.reducer;

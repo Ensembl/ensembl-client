@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
-const downloadAsFile = (
+export const downloadTextAsFile = async (
   content: string | string[],
   fileName: string,
-  options: { type: string }
+  options?: BlobPropertyBag
 ) => {
   if (typeof content === 'string') {
     content = [content];
   }
-  const blob = new Blob(content, options);
+  const blob = content instanceof Blob ? content : new Blob(content, options);
+
+  await downloadBlobAsFile(blob, fileName);
+};
+
+// should accept Blob or File objects generated elsewhere in the code
+export const downloadBlobAsFile = async (blob: Blob, fileName: string) => {
   const blobUrl = URL.createObjectURL(blob);
   const downloadLink = document.createElement('a');
   downloadLink.href = blobUrl;
   downloadLink.download = fileName;
   downloadLink.click();
-  setTimeout(() => {
-    URL.revokeObjectURL(blobUrl);
-  }, 100);
-};
 
-export default downloadAsFile;
+  const cleanupPromise = new Promise((resolve) => {
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+      resolve(null);
+    }, 100);
+  });
+
+  await cleanupPromise;
+};

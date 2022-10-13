@@ -4,22 +4,11 @@
   max-width: 1380px;
 }
 
-@mixin narrow-top-grid {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
-
 .speciesMainViewTop {
   display: grid;
   grid-template-columns: max-content auto;
   align-items: center;
   padding-top: 20px;
-
-  &Narrow {
-    @media (max-width: 1200px) {
-      @include narrow-top-grid;
-    }
-  }
 }
 
 .speciesLabelBlock {
@@ -28,6 +17,7 @@
 
 .statsWrapper {
   padding: 5px 20px $global-padding-bottom 140px;
+  min-width: 820px;
 }
 
 .exampleLinkText {
@@ -53,7 +43,10 @@
 .collapsedContent {
   display: grid;
   padding: 6px 20px;
-  grid-template-columns: [title] 120px [first_summary_stat] 250px [second_summary_stat] auto [example-link] 150px;
+  grid-template-columns:
+    [title] 120px [first_summary_stat] minmax(250px, 350px)
+    [second_summary_stat] minmax(250px, 350px)
+    [example-link] 150px;
   align-items: center;
   min-height: 50px;
 
@@ -65,6 +58,7 @@
 
   .summaryStat {
     grid-column: first_summary_stat;
+    white-space: nowrap;
 
     .value {
       font-size: 24px;

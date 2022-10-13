@@ -16,7 +16,7 @@
 
 import { wrap } from 'comlink';
 
-import downloadAsFile from 'src/shared/helpers/downloadAsFile';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import { TranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 import { fetchGeneSequenceMetadata } from './fetchSequenceChecksums';
@@ -76,7 +76,7 @@ export const fetchForGene = async (payload: FetchPayload) => {
 
   worker.terminate();
 
-  downloadAsFile(sequences, `${geneId}.fasta`, {
+  await downloadTextAsFile(sequences, `${geneId}.fasta`, {
     type: 'text/x-fasta'
   });
 };

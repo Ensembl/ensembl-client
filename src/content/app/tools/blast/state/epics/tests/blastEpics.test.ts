@@ -58,6 +58,11 @@ jest.mock('../blastEpicConstants', () => ({
   POLLING_INTERVAL: 0
 }));
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => jest.fn()
+);
+
 const buildReduxStore = () => {
   const { epic, shutdownEpic } = createCancellableTestEpic(
     Object.values(blastEpics)

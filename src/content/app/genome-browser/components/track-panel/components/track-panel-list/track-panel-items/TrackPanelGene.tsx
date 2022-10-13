@@ -18,6 +18,8 @@ import React, { useState } from 'react';
 
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
@@ -65,6 +67,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   });
 
   const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
+  const { trackDrawerOpened, trackFocusTrackVisibilityToggled } =
+    useGenomeBrowserAnalytics();
+
   const dispatch = useAppDispatch();
 
   if (!currentData) {
@@ -91,6 +96,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       // show all transcripts
       const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       updateFocusGeneTranscripts(visibleTranscriptIds);
+      trackFocusTrackVisibilityToggled(Status.SELECTED);
       return;
     }
 
@@ -104,6 +110,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     } else {
       updateFocusGeneTranscripts([]);
     }
+
+    trackFocusTrackVisibilityToggled(newStatus);
 
     dispatch(
       updateObjectTrackStates({
@@ -133,6 +141,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   };
 
   const onShowMore = () => {
+    trackDrawerOpened('gene_summary');
+
     dispatch(
       changeDrawerViewForGenome({
         genomeId,

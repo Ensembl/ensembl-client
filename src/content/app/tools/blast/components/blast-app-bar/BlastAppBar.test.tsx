@@ -37,6 +37,11 @@ jest.mock(
   () => () => <div>ConversationIcon</div>
 );
 
+jest.mock(
+  'src/shared/hooks/useMediaQuery',
+  () => () => false // no match
+);
+
 const mockCommittedItems = [
   {
     genome_id: 'homo_sapiens_GCA_000001405_14',

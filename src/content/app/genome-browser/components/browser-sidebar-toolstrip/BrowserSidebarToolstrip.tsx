@@ -18,6 +18,8 @@ import React from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
+import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+
 import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
@@ -50,6 +52,8 @@ const BrowserSidebarToolstrip = () => {
   const isTrackPanelOpened = useAppSelector(getIsTrackPanelOpened);
   const browserSidebarModalView = useAppSelector(getBrowserSidebarModalView);
   const isDrawerOpened = useAppSelector(getIsDrawerOpened);
+  const { trackSidebarModalViewToggle } = useGenomeBrowserAnalytics();
+
   const dispatch = useAppDispatch();
 
   const toggleModalView = (selectedItem: BrowserSidebarModalView) => {
@@ -60,6 +64,8 @@ const BrowserSidebarToolstrip = () => {
     if (isDrawerOpened) {
       dispatch(closeDrawer());
     }
+
+    trackSidebarModalViewToggle(selectedItem);
 
     if (selectedItem === BrowserSidebarModalView.SEARCH) {
       dispatch(

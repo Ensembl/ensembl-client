@@ -52,3 +52,5 @@ export type HSP = {
   hsp_mseq: string; // line of characters for showing matches between the query and the hit
   hsp_hseq: string; // alignment string for subject (with gaps)
 };
+
+export type BlastJobResultFormat = 'json' | 'raw';

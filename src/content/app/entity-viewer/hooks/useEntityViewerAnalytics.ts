@@ -27,13 +27,14 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import {
+import type {
   Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
-import { AnalyticsOptions } from 'src/analyticsHelper';
+import type { AnalyticsOptions } from 'src/analyticsHelper';
+import { AppName } from 'src/global/globalConfig';
 
 type TrackDownloadPayload = {
   category: string;
@@ -61,7 +62,8 @@ const useEntityViewerAnalytics = () => {
     analyticsTracking.trackEvent({
       ...ga,
       species: speciesNameForAnalytics,
-      feature: featureType
+      feature: featureType,
+      app: AppName.ENTITY_VIEWER
     });
   };
 
@@ -121,7 +123,7 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_transcript_list', label);
   };
 
-  const trackPreviouslyViewedLinkClick = (params: {
+  const trackPreviouslyViewedObjectClicked = (params: {
     linkLabel: string;
     position: number;
   }) => {
@@ -254,14 +256,11 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_transcript_list' });
   };
 
-  const trackSidebarToolstripButtonClick = (
-    iconName: string,
-    genomeId: string
-  ) => {
+  const trackSidebarModelOpen = (iconName: string) => {
     sendTrackEvent({
       category: 'entity_viewer_sidebar_toolstrip',
       action: 'modal_opened',
-      label: `${genomeId}: ${iconName}`
+      label: iconName
     });
   };
 
@@ -270,6 +269,13 @@ const useEntityViewerAnalytics = () => {
       category: 'entity_viewer_sidebar_search',
       action: 'submit_search',
       label: value
+    });
+  };
+
+  const trackSpeciesChange = () => {
+    sendTrackEvent({
+      category: 'app_bar',
+      action: 'change_link_clicked'
     });
   };
 
@@ -289,9 +295,10 @@ const useEntityViewerAnalytics = () => {
     trackExternalReferencesTabSelection,
     trackExternalReferenceLinkClick,
     trackExternalLinkClick,
-    trackPreviouslyViewedLinkClick,
-    trackSidebarToolstripButtonClick,
-    trackSearchSubmission
+    trackPreviouslyViewedObjectClicked,
+    trackSidebarModelOpen,
+    trackSearchSubmission,
+    trackSpeciesChange
   };
 };
 

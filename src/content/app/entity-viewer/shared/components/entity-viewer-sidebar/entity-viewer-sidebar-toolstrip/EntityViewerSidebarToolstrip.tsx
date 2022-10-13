@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -48,9 +47,7 @@ export const EntityViewerSidebarToolstrip = () => {
   const sidebarModalView = useAppSelector(getEntityViewerSidebarModalView);
   const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
 
-  const params = useParams<'genomeId' | 'entityId'>();
-
-  const { trackSidebarToolstripButtonClick } = useEntityViewerAnalytics();
+  const { trackSidebarModelOpen } = useEntityViewerAnalytics();
 
   const toggleModalView = (selectedItem: SidebarModalView) => {
     if (!isSidebarOpen) {
@@ -60,7 +57,7 @@ export const EntityViewerSidebarToolstrip = () => {
     if (selectedItem === sidebarModalView) {
       dispatch(closeSidebarModal());
     } else {
-      trackSidebarToolstripButtonClick(selectedItem, params.genomeId as string);
+      trackSidebarModelOpen(selectedItem);
       dispatch(openSidebarModal(selectedItem));
     }
   };

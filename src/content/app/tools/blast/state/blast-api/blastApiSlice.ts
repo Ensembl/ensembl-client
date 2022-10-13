@@ -15,6 +15,7 @@
  */
 
 import config from 'config';
+import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
@@ -26,6 +27,7 @@ import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/b
 export type BlastSubmissionPayload = {
   species: Species[];
   sequences: { id: number; value: string }[];
+  preset: string;
   parameters: Record<string, string>;
 };
 
@@ -90,6 +92,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
             submittedData: {
               species: payload.species,
               sequences: payload.sequences,
+              preset: payload.preset,
               parameters: payload.parameters
             },
             results,
@@ -100,26 +103,14 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       }
     }),
     fetchAllBlastJobs: builder.query<BlastJobResultResponse[], string[]>({
-      queryFn: async (jobIds, _queryApi, __extraOptions, baseQuery) => {
-        // there can be a lot of ids here; let's hope the BLAST api isn't rate-limiting
-
-        const requestPromises = jobIds
-          .map(
-            (jobId) =>
-              `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
-          )
-          .map((url) =>
-            Promise.resolve(baseQuery(url)).then((result) => {
-              if (result.error) {
-                throw result.error;
-              } else {
-                return result;
-              }
-            })
-          );
-
+      queryFn: async (jobIds, _queryApi, _extraOptions, baseQuery) => {
         try {
-          const results = await Promise.all(requestPromises);
+          const format = 'json';
+          const results = await commonFetchAllBlastJobs(
+            jobIds,
+            format,
+            baseQuery
+          );
           return {
             data: results.map((result) => result.data as BlastJobResultResponse)
           };
@@ -130,18 +121,62 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         }
       }
     }),
-    fetchBlastSubmission: builder.query<BlastJobResultResponse, string>({
-      query: (jobId) => ({
-        url: `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/json`
-      })
+    fetchAllBlastRawResults: builder.query<{ result: string }[], string[]>({
+      queryFn: async (jobIds, _queryApi, _extraOptions, baseQuery) => {
+        try {
+          const format = 'raw';
+          const results = await commonFetchAllBlastJobs(
+            jobIds,
+            format,
+            baseQuery
+          );
+          return {
+            data: results.map((result) => result.data as { result: string })
+          };
+        } catch {
+          return {
+            error: 'Some BLAST jobs failed to load' as any // RTK is happy with the FetchBaseQueryError type that has the following shape: { status: number, statusMessage: string, data: string }
+          };
+        }
+      }
     })
   })
 });
 
+const buildBlastJobResultUrl = (jobId: string, format: string) => {
+  if (format === 'raw') {
+    format = 'out'; // "out" is the actual url parameter used by EBI BLAST; while "raw" describes more precisely what this format represents
+  }
+
+  return `${config.toolsApiBaseUrl}/blast/jobs/result/${jobId}/${format}`;
+};
+
+// type of baseQuery copied from redux-toolkit type definitions
+const commonFetchAllBlastJobs = <BaseQuery extends BaseQueryFn>(
+  jobIds: string[],
+  format: string,
+  baseQuery: (arg: Parameters<BaseQuery>[0]) => ReturnType<BaseQuery>
+) => {
+  // there can be a lot of ids here; let's hope the BLAST api isn't rate-limiting
+  const requestPromises = jobIds
+    .map((jobId) => buildBlastJobResultUrl(jobId, format))
+    .map((url) =>
+      Promise.resolve(baseQuery(url)).then((result) => {
+        if (result.error) {
+          throw result.error;
+        } else {
+          return result;
+        }
+      })
+    );
+
+  return Promise.all(requestPromises);
+};
+
 export const {
   useBlastConfigQuery,
   useSubmitBlastMutation,
-  useFetchAllBlastJobsQuery,
-  useFetchBlastSubmissionQuery
+  useFetchAllBlastJobsQuery
 } = blastApiSlice;
-export const { submitBlast } = blastApiSlice.endpoints;
+export const { submitBlast, fetchAllBlastJobs, fetchAllBlastRawResults } =
+  blastApiSlice.endpoints;

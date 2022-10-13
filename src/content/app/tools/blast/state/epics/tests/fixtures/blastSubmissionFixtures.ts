@@ -37,6 +37,7 @@ export const createBlastSubmissionPayload = (
   const submission = {
     species: [human],
     sequences: [{ id: 1, value: 'ACGT' }],
+    preset: 'normal',
     parameters: {}
   };
 

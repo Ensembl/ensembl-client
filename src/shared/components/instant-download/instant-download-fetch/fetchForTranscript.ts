@@ -17,7 +17,7 @@
 import { wrap } from 'comlink';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import downloadAsFile from 'src/shared/helpers/downloadAsFile';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import {
   transcriptOptionsOrder,
@@ -83,7 +83,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 
   worker.terminate();
 
-  downloadAsFile(sequences, `${transcriptId}.fasta`, {
+  await downloadTextAsFile(sequences, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };

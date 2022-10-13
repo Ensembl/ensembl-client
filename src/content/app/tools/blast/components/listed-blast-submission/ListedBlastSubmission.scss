@@ -32,6 +32,10 @@ and also that it can be of variable width
   border-top: none;
 }
 
+.sequenceHeader {
+  font-weight: $light;
+}
+
 .speciesCount {
   grid-column: species-count;
 }

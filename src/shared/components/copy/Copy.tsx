@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import styles from './Copy.scss';
 
-const Copy = (props: { value: string }) => {
+const Copy = (props: { value: string; onCopy?: () => void }) => {
   const [copied, setCopied] = useState(false);
 
   let timeout: ReturnType<typeof setTimeout>;
@@ -30,6 +30,7 @@ const Copy = (props: { value: string }) => {
 
   const copy = () => {
     setCopied(true);
+    props.onCopy?.();
     navigator.clipboard.writeText(props.value);
 
     timeout = setTimeout(() => setCopied(false), 1500);

@@ -38,7 +38,7 @@ import {
 } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
-import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   StatsSection,
@@ -49,7 +49,7 @@ import {
 import styles from './SpeciesMainView.scss';
 
 type ExampleLinkPopupProps = {
-  links: UrlObj;
+  links: LinksConfig;
   children: ReactNode;
 };
 

@@ -37,6 +37,7 @@ import BlastLaunchbarButton from './BlastLaunchbarButton';
 import Logotype from 'static/img/brand/logotype.svg';
 
 import styles from './Launchbar.scss';
+import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
 export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
@@ -79,11 +80,9 @@ const Launchbar = () => {
               enabled={true}
             />
           </div>
-          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-            <div className={styles.category}>
-              <BlastLaunchbarButton />
-            </div>
-          )}
+          <div className={styles.category}>
+            <BlastLaunchbarButton />
+          </div>
           {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
             <div className={styles.category}>
               <LaunchbarButton
@@ -109,12 +108,20 @@ const Launchbar = () => {
   );
 };
 
-const AboutEnsembl = () => (
-  <Link to="/about" className={styles.aboutEnsembl}>
-    About the
-    <Logotype className={styles.logotype} />
-    team & its work
-  </Link>
-);
+const AboutEnsembl = () => {
+  const { trackLaunchbarAppChange } = useHeaderAnalytics();
+
+  return (
+    <Link
+      to="/about"
+      className={styles.aboutEnsembl}
+      onClick={() => trackLaunchbarAppChange('About')}
+    >
+      About the
+      <Logotype className={styles.logotype} />
+      team & its work
+    </Link>
+  );
+};
 
 export default Launchbar;
