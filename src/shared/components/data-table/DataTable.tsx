@@ -58,20 +58,34 @@ export type TableProps = {
   disabledActions?: TableAction[];
 };
 const DataTable = (props: TableProps) => {
-  const initialDataTableState = {
+  const initialState = {
     ...defaultDataTableState,
     ...(props.state || {})
   };
 
   const firstRenderRef = useRef(true);
-  const [tableState, dispatch] = useReducer(
-    tableReducer,
-    initialDataTableState
-  );
+  const shouldResetStateRef = useRef(true);
+
+  const [tableState, dispatch] = useReducer(tableReducer, initialState);
+
+  /*
+    The useReducer used above does not update the tableState when the parent component updates the state.
+    To fix this, we need to check if state property has changed by the parent and reset it if necessary.
+  */
+  useEffect(() => {
+    if (shouldResetStateRef.current && !firstRenderRef.current) {
+      dispatch({
+        type: 'restore_defaults',
+        payload: initialState
+      });
+    }
+    shouldResetStateRef.current = true;
+  }, [props.state]);
 
   useEffect(() => {
     if (!firstRenderRef.current) {
       props.onStateChange?.(tableState);
+      shouldResetStateRef.current = false;
     }
     firstRenderRef.current = false;
   }, [tableState]);
