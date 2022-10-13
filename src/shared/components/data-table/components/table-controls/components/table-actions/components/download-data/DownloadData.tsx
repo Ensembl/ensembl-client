@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import memoize from 'lodash/memoize';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
-import LoadingButton from 'src/shared/components/loading-button';
+import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './DownloadData.scss';
 
@@ -53,31 +54,42 @@ const DownloadData = () => {
     downloadHandler
   } = useDataTable();
 
+  const [downloadState, setDownloadState] = useState<LoadingState>(
+    LoadingState.NOT_REQUESTED
+  );
   const allowComponentResetRef = useRef(true);
 
   useEffect(() => {
+    allowComponentResetRef.current = true;
     return () => {
       allowComponentResetRef.current = false;
     };
   }, []);
 
   const restoreDefaults = () => {
-    setTimeout(() => {
-      if (allowComponentResetRef.current) {
-        dispatch({
-          type: 'set_selected_action',
-          payload: TableAction.DEFAULT
-        });
-      }
-    }, 1000);
+    if (allowComponentResetRef.current) {
+      dispatch({
+        type: 'set_selected_action',
+        payload: TableAction.DEFAULT
+      });
+    }
   };
 
   const handleDownload = async () => {
+    setDownloadState(LoadingState.LOADING);
     if (downloadHandler) {
-      await downloadHandler();
-      setTimeout(restoreDefaults, 1000);
+      try {
+        await downloadHandler();
+        setDownloadState(LoadingState.SUCCESS);
+        setTimeout(restoreDefaults, 1000);
+      } catch {
+        setDownloadState(LoadingState.ERROR);
+        setTimeout(() => setDownloadState(LoadingState.NOT_REQUESTED), 2000);
+      }
+
       return;
     }
+
     const dataForExport: string[][] = [];
     dataForExport[0] = [
       ...columns
@@ -104,7 +116,13 @@ const DownloadData = () => {
               })
             : cell;
 
-          dataForExport[rowIndex + 1].push(getReactNodeText(cellExportData));
+          if (typeof cellExportData === 'string') {
+            dataForExport[rowIndex + 1].push(cellExportData);
+          } else if (typeof cellExportData === 'number') {
+            dataForExport[rowIndex + 1].push(String(cellExportData));
+          } else {
+            dataForExport[rowIndex + 1].push(getReactNodeText(cellExportData));
+          }
         }
       });
     });
@@ -112,14 +130,16 @@ const DownloadData = () => {
     const csv = formatCSV(dataForExport);
 
     downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
-
-    restoreDefaults();
+    setDownloadState(LoadingState.SUCCESS);
+    setTimeout(restoreDefaults, 1000);
   };
 
   return (
     <div className={styles.downloadData}>
       <span>{downloadFileName ?? 'table.csv'}</span>
-      <LoadingButton onClick={handleDownload}>Download</LoadingButton>
+      <ControlledLoadingButton status={downloadState} onClick={handleDownload}>
+        Download
+      </ControlledLoadingButton>
       <span className={styles.cancel} onClick={restoreDefaults}>
         cancel
       </span>
