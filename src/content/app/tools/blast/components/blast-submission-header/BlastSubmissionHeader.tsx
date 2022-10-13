@@ -83,7 +83,7 @@ export const BlastSubmissionHeader = (props: Props) => {
       sequences: parsedSequences,
       selectedSpecies: species,
       settings: {
-        jobName: jobName,
+        jobName,
         sequenceType: stype,
         program: program as BlastProgram,
         preset,
@@ -123,7 +123,7 @@ export const BlastSubmissionHeader = (props: Props) => {
           </div>
         )}
         <div className={styles.submissionDetails}>
-          <span className={styles.submissionIdLabel}>Submission</span>
+          <span className={styles.submissionNameLabel}>Submission</span>
           <span>{submissionId}</span>
           <span className={styles.editSubmission} onClick={editSubmission}>
             Edit/rerun
