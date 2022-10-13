@@ -111,7 +111,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         <div ref={rulerContainer} className={styles.rulerContainer}>
           {shouldShowJobResult && (
             <FeatureLengthRuler
-              unitsLabel="Label"
+              rulerLabel="Length"
               width={plotwidth}
               length={sequenceValue.length}
               standalone={true}

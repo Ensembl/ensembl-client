@@ -50,7 +50,8 @@ export type TicksAndScale = Ticks & {
 type Props = {
   length: number; // number of biological building blocks (e.g. nucleotides) in the feature
   width: number; // number of pixels allotted to the axis on the screen
-  unitsLabel?: string; // optional label showing what the ruler is measuring; will be displayed at the start of the ruler if present
+  rulerLabel?: string; // optional label showing what the ruler is measuring; will be displayed at the start of the ruler if present
+  rulerLabelOffset?: number; // in ch units (roughly, one character width) — how much space to put between the ruler label and the first tick label, defaults to 2 ch
   onTicksCalculated?: (payload: TicksAndScale) => void; // way to pass the ticks to the parent if it is interested in them
   standalone?: boolean; // wrap the component in an svg element if true
 };
@@ -79,10 +80,15 @@ const FeatureLengthRuler = (props: Props) => {
       <g>
         <rect className={styles.tick} width={1} height={6} />
         <text className={styles.label} x={0} y={20} textAnchor="end">
-          {props.unitsLabel && (
-            <tspan className={styles.rulerName}>{props.unitsLabel}</tspan>
+          {props.rulerLabel && (
+            <tspan
+              className={styles.rulerName}
+              x={`-${props.rulerLabelOffset ?? 2}ch`}
+            >
+              {props.rulerLabel}
+            </tspan>
           )}
-          <tspan>1</tspan>
+          <tspan x={0}>1</tspan>
         </text>
       </g>
       {ticks.map((tick) => (
