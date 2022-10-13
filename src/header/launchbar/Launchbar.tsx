@@ -17,18 +17,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { useAppSelector } from 'src/store';
-
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
 import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
   GlobalSearchIcon,
   EntityViewerIcon,
-  CustomDownloadIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
@@ -44,8 +37,6 @@ export const getCategoryClass = (separator: boolean): string => {
 };
 
 const Launchbar = () => {
-  const committedSpecies = useAppSelector(getEnabledCommittedSpecies);
-
   return (
     <div className={styles.launchbar}>
       <div className={styles.categoriesWrapper}>
@@ -83,16 +74,6 @@ const Launchbar = () => {
           <div className={styles.category}>
             <BlastLaunchbarButton />
           </div>
-          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-            <div className={styles.category}>
-              <LaunchbarButton
-                path="/custom-download"
-                description="Downloads"
-                icon={CustomDownloadIcon}
-                enabled={committedSpecies.length > 0}
-              />
-            </div>
-          )}
           <div className={styles.category}>
             <LaunchbarButton
               path="/help"

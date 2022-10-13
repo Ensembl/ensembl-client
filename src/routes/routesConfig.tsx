@@ -26,7 +26,6 @@ import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
 import BlastPage from 'src/content/app/tools/blast/BlastPage';
-import CustomDownloadPage from 'src/content/app/custom-download/CustomDownloadPage';
 import AboutPage from 'src/content/app/about/AboutPage';
 import HelpPage from 'src/content/app/help/HelpPage';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
@@ -77,10 +76,6 @@ const routes: RouteConfig[] = [
   {
     path: '/help/*',
     element: <HelpPage />
-  },
-  {
-    path: '/custom-download',
-    element: <CustomDownloadPage />
   },
   {
     path: '*',

@@ -18,7 +18,6 @@ import { combineReducers } from 'redux';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
 import genome from 'src/shared/state/genome/genomeSlice';
-import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
 import global from 'src/global/globalSlice';
 import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
@@ -33,7 +32,6 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 const createRootReducer = () =>
   combineReducers({
     browser,
-    customDownload,
     communication,
     inAppSearch,
     genome,
