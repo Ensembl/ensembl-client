@@ -109,4 +109,29 @@ describe('<DataTable />', () => {
       currentPageNumber: 2
     });
   });
+
+  it('updates tableState when the state from the parent changes', async () => {
+    const onStateChange = jest.fn();
+    const { container, rerender } = renderDataTable({
+      onStateChange
+    });
+
+    const paginationInput = container.querySelector('.pagination input');
+
+    expect(paginationInput?.getAttribute('value')).toBe('1');
+
+    rerender(
+      <DataTable
+        {...defaultProps}
+        {...{
+          state: {
+            ...defaultProps.state,
+            currentPageNumber: 2
+          }
+        }}
+      />
+    );
+
+    expect(paginationInput?.getAttribute('value')).toBe('2');
+  });
 });

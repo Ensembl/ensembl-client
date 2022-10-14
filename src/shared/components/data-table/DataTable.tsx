@@ -79,12 +79,23 @@ const DataTable = (props: TableProps) => {
         payload: initialState
       });
     }
+
+    /* 
+      Here we reset shouldResetStateRef to false so that the 
+      dispatch above gets executed when the state from the parent changes
+    */
     shouldResetStateRef.current = true;
   }, [props.state]);
 
   useEffect(() => {
     if (!firstRenderRef.current) {
       props.onStateChange?.(tableState);
+
+      /*
+        The onStateChange call above will update a state in the parent component which will trigger a rerender.
+        At this point, we do not want to reset the tableState in the useEffect above
+        So to prevent it, we set shouldResetStateRef to false
+      */
       shouldResetStateRef.current = false;
     }
     firstRenderRef.current = false;
