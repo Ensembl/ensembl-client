@@ -67,7 +67,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
         <FeatureLengthRuler
           length={length}
           width={gene_image_width}
-          unitsLabel="bp"
+          rulerLabel="bp"
           onTicksCalculated={props.onTicksCalculated}
           standalone={true}
         />
