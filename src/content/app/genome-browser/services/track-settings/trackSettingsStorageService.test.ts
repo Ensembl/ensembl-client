@@ -35,7 +35,7 @@ import {
   buildDefaultGeneTrack,
   buildDefaultFocusGeneTrack,
   buildDefaultRegularTrack
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import { GB_TRACK_SETTINGS_STORE_NAME } from './trackSettingsStorageConstants';
 

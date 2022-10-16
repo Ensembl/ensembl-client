@@ -17,40 +17,39 @@
 import React from 'react';
 
 import { useAppSelector } from 'src/store';
+import useTrackSettings from '../useTrackSettings';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
 
-import { type GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   getApplyToAllSettings,
-  getBrowserSelectedCog,
   getTrackSettingsForTrackId
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
-import useTrackSettings from '../useTrackSettings';
+import type { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import styles from '../TrackSettingsPanel.scss';
 
-export const GeneTrackSettings = () => {
-  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
-  const selectedTrackSettings = useAppSelector(
-    (state) =>
-      getTrackSettingsForTrackId(
-        state,
-        selectedCog
-      ) as GeneTrackSettingsType | null
-  );
+type Props = {
+  trackId: string;
+};
+
+export const GeneTrackSettings = (props: Props) => {
+  const { trackId } = props;
+  const selectedTrackSettings = useAppSelector((state) =>
+    getTrackSettingsForTrackId(state, trackId)
+  )?.settings as GeneTrackSettingsType;
 
   const {
     updateTrackName,
     updateFeatureLabelsVisibility,
     updateShowSeveralTranscripts,
-    updateShowTranscriptIds
-  } = useTrackSettings();
+    updateShowTranscriptIds,
+    toggleApplyToAll
+  } = useTrackSettings({ selectedTrackId: trackId });
 
   const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
-  const { toggleApplyToAll } = useTrackSettings();
 
   if (!selectedTrackSettings) {
     return null;

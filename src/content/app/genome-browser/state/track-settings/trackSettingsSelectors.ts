@@ -15,39 +15,41 @@
  */
 
 import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
-import { defaultTrackSettingsForGenome } from './trackSettingsSlice';
 
+import type {
+  TrackSettingsForGenome,
+  TrackSettings
+} from './trackSettingsSlice';
 import type { RootState } from 'src/store';
-
-export const getBrowserSelectedCog = (state: RootState) => {
-  return state.browser.trackSettings.selectedCog;
-};
 
 export const getTrackSettingsForTrackId = (
   state: RootState,
   trackId: string
-) => {
-  const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
-    return null;
-  }
-  return state.browser.trackSettings.settings[genomeId].tracks[trackId];
+): TrackSettings | null => {
+  const allTrackSettingsForGenome = getAllTrackSettings(state);
+  return (
+    allTrackSettingsForGenome?.settingsForIndividualTracks[trackId] ?? null
+  );
 };
 
-export const getAllTrackSettings = (state: RootState) => {
-  const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
-    return null;
-  }
-  return state.browser.trackSettings.settings[genomeId];
+// FIXME: rename to getAllTrackSettingsForGenome; probably reguire genome id, or rename to getAllTrackSettingsForActiveGenome
+export const getAllTrackSettings = (
+  state: RootState
+): TrackSettingsForGenome | null => {
+  const genomeId = getBrowserActiveGenomeId(state) ?? '';
+  return state.browser.trackSettings[genomeId] ?? null;
+};
+
+export const getAllTrackSettingsForGenome = (
+  state: RootState,
+  genomeId: string
+): TrackSettingsForGenome | null => {
+  return state.browser.trackSettings[genomeId] ?? null;
 };
 
 export const getApplyToAllSettings = (state: RootState) => {
-  const genomeId = getBrowserActiveGenomeId(state);
-  if (!genomeId || !state.browser.trackSettings.settings[genomeId]) {
-    return defaultTrackSettingsForGenome.shouldApplyToAll;
-  }
+  const allTrackSettingsForGenome = getAllTrackSettings(state);
   return (
-    state.browser.trackSettings.settings[genomeId]?.shouldApplyToAll ?? false
+    allTrackSettingsForGenome?.settingsForAllTracks.shouldApplyToAll ?? false
   );
 };

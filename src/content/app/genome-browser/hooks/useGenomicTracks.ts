@@ -32,7 +32,7 @@ import type {
   TrackStates,
   TrackActivityStatus
 } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 /**
  * The purposes of this hook are:
@@ -45,9 +45,9 @@ import type { TrackSettings } from 'src/content/app/genome-browser/state/track-s
 
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
-  const allBrowserTrackStates = useAppSelector(getBrowserTrackStates);
+  const allBrowserTrackStates = useAppSelector(getBrowserTrackStates); // FIXME
   const trackSettingsForGenome =
-    useAppSelector(getAllTrackSettings)?.tracks ?? {};
+    useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
   const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
 
   const { data: genomeTrackCategories } = useGenomeTracksQuery(
@@ -58,7 +58,7 @@ const useGenomicTracks = () => {
   );
 
   const savedGenomicTrackStates =
-    allBrowserTrackStates[activeGenomeId ?? '']?.commonTracks ?? {};
+    allBrowserTrackStates[activeGenomeId ?? '']?.commonTracks ?? {}; // FIXME
 
   useEffect(() => {
     if (!genomeBrowser) {
@@ -78,7 +78,7 @@ const useGenomicTracks = () => {
   ]);
 
   useEffect(() => {
-    if (!genomeBrowser) {
+    if (!genomeBrowser || !trackSettingsForGenome) {
       return;
     }
 
@@ -130,7 +130,7 @@ const combineWithSavedData = (
 };
 
 const sendTrackSettings = (
-  trackSettings: TrackSettings,
+  trackSettings: TrackSettingsPerTrack,
   genomeBrowserMethods: NonNullable<
     Omit<ReturnType<typeof useGenomeBrowser>, 'genomeBrowser'>
   >
@@ -139,7 +139,7 @@ const sendTrackSettings = (
     trackSettings,
     (_, key) => key !== 'focus'
   ); // exclude the focus track
-  Object.entries(genomicTrackSettings).forEach(([trackId, settings]) => {
+  Object.entries(genomicTrackSettings).forEach(([trackId, { settings }]) => {
     Object.entries(settings).forEach((keyValuePair) => {
       const [settingName, settingValue] = keyValuePair as [string, boolean];
       switch (settingName) {

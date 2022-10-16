@@ -16,14 +16,12 @@
 
 import IndexedDB from 'src/services/indexeddb-service';
 
-import {
-  getDefaultGeneTrackSettings,
-  getDefaultRegularTrackSettings,
-  TrackType,
-  TrackSettings
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
-import { GB_TRACK_SETTINGS_STORE_NAME } from './trackSettingsStorageConstants';
+import {
+  GB_TRACK_SETTINGS_STORE_NAME,
+  trackSettingFieldsMap
+} from './trackSettingsStorageConstants';
 
 // the combination of genome id and track id will be used as a composite key
 type StoredTrack = {
@@ -203,18 +201,3 @@ const cleanUpStoredTrack = (track: StoredTrack) => {
   track.settings = Object.fromEntries(verifiedSettingsEntries);
   return track;
 };
-
-// keep a list of which settings are allowed for which known types of tracks
-const trackSettingFieldsMap = new Map<string, Set<string>>();
-trackSettingFieldsMap.set(
-  TrackType.GENE,
-  new Set(Object.keys(getDefaultGeneTrackSettings()))
-);
-trackSettingFieldsMap.set(
-  TrackType.FOCUS_GENE,
-  new Set(Object.keys(getDefaultGeneTrackSettings()))
-);
-trackSettingFieldsMap.set(
-  TrackType.REGULAR,
-  new Set(Object.keys(getDefaultRegularTrackSettings()))
-);

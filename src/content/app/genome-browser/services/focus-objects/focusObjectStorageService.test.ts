@@ -35,7 +35,6 @@ import type { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 const getDatabase = async () => {
   return await openDB('test-db', 1, {
     upgrade(db) {
-      // FIXME use constants for object store names
       const trackSettingsObjectStore = db.createObjectStore(
         GB_FOCUS_OBJECTS_STORE_NAME
       );

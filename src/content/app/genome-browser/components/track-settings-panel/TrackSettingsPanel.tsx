@@ -19,32 +19,34 @@ import React from 'react';
 import GeneTrackSettings from './track-settings-views/GeneTrackSettings';
 import RegularTrackSettings from './track-settings-views/RegularTrackSettings';
 
-import { useAppSelector } from 'src/store';
-import {
-  getTrackType,
-  TrackType
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { getTrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-import { getBrowserSelectedCog } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+type Props = {
+  trackId: string;
+};
 
 const getTrackSettingsPanelComponent = (trackType: TrackType) => {
   switch (trackType) {
     case TrackType.GENE:
-      return <GeneTrackSettings />;
+    case TrackType.FOCUS_GENE:
+      return GeneTrackSettings;
     case TrackType.REGULAR:
-      return <RegularTrackSettings />;
+      return RegularTrackSettings;
   }
 };
 
-export const TrackSettingsPanel = () => {
-  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
-  const trackType = getTrackType(selectedCog);
+export const TrackSettingsPanel = (props: Props) => {
+  const { trackId } = props;
+  const trackType = getTrackType(trackId); // FIXME: probably should use a redux selector to get the type of the track given genome id and track id
 
   if (!trackType) {
     return null;
   }
 
-  return getTrackSettingsPanelComponent(trackType);
+  const Track = getTrackSettingsPanelComponent(trackType);
+
+  return <Track trackId={trackId} />;
 };
 
 export default TrackSettingsPanel;

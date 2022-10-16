@@ -14,4 +14,26 @@
  * limitations under the License.
  */
 
+import {
+  getDefaultGeneTrackSettings,
+  getDefaultRegularTrackSettings
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
+
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
+
 export const GB_TRACK_SETTINGS_STORE_NAME = 'genome-browser-track-settings';
+
+// keep a list of which settings are allowed for which known types of tracks
+export const trackSettingFieldsMap = new Map<string, Set<string>>();
+trackSettingFieldsMap.set(
+  TrackType.GENE,
+  new Set(Object.keys(getDefaultGeneTrackSettings()))
+);
+trackSettingFieldsMap.set(
+  TrackType.FOCUS_GENE,
+  new Set(Object.keys(getDefaultGeneTrackSettings()))
+);
+trackSettingFieldsMap.set(
+  TrackType.REGULAR,
+  new Set(Object.keys(getDefaultRegularTrackSettings()))
+);

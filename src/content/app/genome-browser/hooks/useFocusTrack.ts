@@ -30,7 +30,10 @@ import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-
 import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import { Status } from 'src/shared/types/status';
-import type { GeneTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import type {
+  FocusGeneTrack,
+  GeneTrackSettings
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import type {
   FocusGene,
   FocusObjectIdConstituents
@@ -89,9 +92,8 @@ const useFocusGene = (params: Params) => {
   const focusObjectIdRef = useRef(focusObjectId);
   const geneIdRef = useRef(geneStableId);
   const visibleTranscriptIds = focusGene?.visibleTranscriptIds ?? null;
-  const trackSettingsForGenome: GeneTrackSettings | undefined = useAppSelector(
-    getAllTrackSettings
-  )?.tracks.focus as GeneTrackSettings;
+  const trackSettingsForGenome = useAppSelector(getAllTrackSettings)
+    ?.settingsForIndividualTracks.focus as FocusGeneTrack | undefined;
 
   const stringifiedVisibleTranscriptIds = visibleTranscriptIds
     ? String([...visibleTranscriptIds].sort())
@@ -152,7 +154,10 @@ const useFocusGene = (params: Params) => {
     if (!trackSettingsForGenome) {
       return;
     }
-    sendFocusGeneTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
+    sendFocusGeneTrackSettings(
+      trackSettingsForGenome.settings,
+      genomeBrowserMethods
+    );
   }, [trackSettingsForGenome]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {

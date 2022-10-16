@@ -22,6 +22,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import isGeneFocusObject from './isGeneFocusObject';
+import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -195,11 +196,28 @@ export const fetchFocusObject = createAsyncThunk(
 
 export const updateFocusGeneTranscriptsVisibility = createAsyncThunk(
   'genome-browser/udpate-focus-gene-transcripts-visibility',
-  async (payload: { focusGeneId: string; visibleTranscriptIds: string[] }) => {
+  async (
+    payload: { focusGeneId: string; visibleTranscriptIds: string[] },
+    thunkAPI
+  ) => {
     // focusGeneId is in the focus object id format, i.e. "<genome_id>:gene:<stable_id>"
+    const { focusGeneId, visibleTranscriptIds } = payload;
+    const state = thunkAPI.getState() as RootState;
+    const focusGene = state.browser.focusObjects[focusGeneId]?.data;
 
-    // TODO: save to persistent browser storage
-    return payload;
+    if (!isGeneFocusObject(focusGene)) {
+      return null; // this shouldn't happen
+    }
+
+    const updatedFocusGene = {
+      ...focusGene,
+      visibleTranscriptIds: visibleTranscriptIds
+    };
+    await focusObjectStorageService.updateFocusObject(
+      focusGeneId,
+      updatedFocusGene
+    );
+    return updatedFocusGene;
   }
 );
 
@@ -214,11 +232,9 @@ const focusObjectSlice = createSlice({
     builder.addCase(
       updateFocusGeneTranscriptsVisibility.fulfilled,
       (state, action) => {
-        const { focusGeneId, visibleTranscriptIds } = action.payload;
-        const focusObject = state[focusGeneId]?.data;
-        if (isGeneFocusObject(focusObject)) {
-          // this should always be the case, but just checking
-          focusObject.visibleTranscriptIds = visibleTranscriptIds;
+        const focusGene = action.payload;
+        if (focusGene) {
+          state[focusGene.object_id].data = focusGene;
         }
       }
     );

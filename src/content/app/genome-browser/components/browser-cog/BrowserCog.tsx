@@ -38,7 +38,7 @@ const BrowserCog = (props: BrowserCogProps) => {
   const { reportTrackSettingsOpened } = useGenomeBrowserAnalytics();
 
   const toggleCog = useCallback(() => {
-    if (cogActivated === false) {
+    if (!cogActivated) {
       // Wrapping updateSelectedCog in a setTimeout below is a cheap workaround for the way we currently keep track
       // of which TrackSettingsPanel is open.
       // Imagine a user clicks on one cog (to open one TrackSettingsPanel), and then clicks on another cog.
@@ -47,10 +47,11 @@ const BrowserCog = (props: BrowserCogProps) => {
       // we allow the time for the click outside the opened TrackSettingsPanel to get registered and for the component to get closed
       // before dispatching the action that will open the TrackSettingsPanel for the newly clicked cog.
       // (In the future, we should probably review how the state of the cogs is maintained. Does it even need to be in redux?)
-      setTimeout(() => {
-        updateSelectedCog(trackId);
-      }, 0);
+      // setTimeout(() => {
+      //   updateSelectedCog(trackId);
+      // }, 0);
 
+      updateSelectedCog(trackId);
       reportTrackSettingsOpened(trackId);
     } else {
       updateSelectedCog(null);
@@ -85,7 +86,7 @@ const BrowserCog = (props: BrowserCogProps) => {
         return (
           item && (
             <animated.div key="trackSettingsPanel" style={style}>
-              <TrackSettingsPanel />
+              <TrackSettingsPanel trackId={trackId} />
             </animated.div>
           )
         );

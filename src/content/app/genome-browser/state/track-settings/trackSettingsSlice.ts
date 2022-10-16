@@ -16,100 +16,107 @@
 
 import {
   createSlice,
-  type Action,
-  type ActionCreator,
-  type PayloadAction,
-  type ThunkAction
+  createAsyncThunk,
+  type PayloadAction
 } from '@reduxjs/toolkit';
-import pick from 'lodash/pick';
 
-import trackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
+import * as trackSettingsStorageService from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
+import { getAllTrackSettingsForGenome } from './trackSettingsSelectors';
+
+import { isGeneTrack, TrackType } from './trackSettingsConstants';
+
+import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { RootState } from 'src/store';
 
+// FIXME: check if this type can be deleted/moved?
 export type CogList = {
   [key: string]: number;
 };
-
-export enum TrackType {
-  GENE = 'gene',
-  REGULAR = 'regular'
-}
 
 export type GeneTrackSettings = {
   showSeveralTranscripts: boolean;
   showTranscriptIds: boolean;
   showTrackName: boolean;
   showFeatureLabels: boolean;
-  trackType: TrackType.GENE;
 };
 
 export type RegularTrackSettings = {
   showTrackName: boolean;
-  trackType: TrackType.REGULAR;
 };
 
-export type Settings = GeneTrackSettings | RegularTrackSettings;
+export type GeneTrack = {
+  id: string;
+  trackType: TrackType.GENE;
+  status: TrackActivityStatus;
+  settings: GeneTrackSettings;
+};
 
-export type TrackSettings = {
-  [trackId: string]: Settings;
+export type FocusGeneTrack = {
+  id: string;
+  trackType: TrackType.FOCUS_GENE;
+  settings: GeneTrackSettings;
+};
+
+export type RegularTrack = {
+  id: string;
+  trackType: TrackType.REGULAR;
+  status: TrackActivityStatus;
+  settings: RegularTrackSettings;
+};
+
+export type TrackSettings = GeneTrack | FocusGeneTrack | RegularTrack;
+
+export type TrackSettingsPerTrack = {
+  [trackId: string]: TrackSettings;
 };
 
 export type TrackSettingsForGenome = Readonly<{
-  shouldApplyToAll: boolean;
-  tracks: TrackSettings;
+  settingsForAllTracks: {
+    shouldApplyToAll: boolean;
+  };
+  settingsForIndividualTracks: TrackSettingsPerTrack;
 }>;
 
 export type GenomeTrackSettings = {
   [genomeId: string]: TrackSettingsForGenome;
 };
 
-/**
- *
- * The cogs, which rely on the information about tracks sent from the genome browser,
- * are genome-independent. I.e. if a genome changes, but both the list of the tracks
- * and the height of the tracks remains the same, from the genome browser’s point of view,
- * nothing has really changed.
- * Hopefully, we’ll be able to to remove the cogs from the redux state altogether
- */
 type TrackSettingsState = {
-  selectedCog: string | null;
-  settings: GenomeTrackSettings;
+  [genomeId: string]: TrackSettingsForGenome;
 };
 
+// FIXME: this constant is now meaningless?
 export const defaultTrackSettingsForGenome: TrackSettingsForGenome = {
-  shouldApplyToAll: false,
-  tracks: {}
+  settingsForAllTracks: {
+    shouldApplyToAll: false
+  },
+  settingsForIndividualTracks: {}
 };
 
-export const getDefaultGeneTrackSettings = (): GeneTrackSettings => ({
-  showSeveralTranscripts: false,
-  showTranscriptIds: false,
-  showTrackName: false,
-  showFeatureLabels: true,
-  trackType: TrackType.GENE
-});
+export const saveTrackSettingsForGenome = createAsyncThunk(
+  'genome-browser-track-settings/save-track-settings-for-genome',
+  async (genomeId: string, thunkAPI) => {
+    const state = thunkAPI.getState() as RootState;
+    const trackSettingsForGenome = getAllTrackSettingsForGenome(
+      state,
+      genomeId
+    );
+    if (!trackSettingsForGenome) {
+      return; // shouldn't happen
+    }
 
-export const getDefaultRegularTrackSettings = (): RegularTrackSettings => ({
-  showTrackName: false,
-  trackType: TrackType.REGULAR
-});
+    const trackSettingsArray = Object.values(
+      trackSettingsForGenome.settingsForIndividualTracks
+    );
 
-export const saveTrackSettingsForGenome: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = (genomeId: string) => (_, getState: () => RootState) => {
-  const state = getState();
-  const trackSettingsForGenome = state.browser.trackSettings.settings[genomeId];
-  const fieldsForSaving = pick(trackSettingsForGenome, [
-    'shouldApplyToAll',
-    'tracks'
-  ]);
-
-  trackSettingsStorageService.setTrackSettings({
-    genomeId,
-    fragment: fieldsForSaving
-  });
-};
+    // trackSettingsStorageService.saveTrackSettingsForGenome(genomeId, trackSettingsArray);
+    trackSettingsStorageService.updateTrackSettingsForGenome(
+      genomeId,
+      trackSettingsArray
+    );
+  }
+);
 
 // TODO: get proper data from the backend in order not to hack track id
 export const getTrackType = (trackId: string) => {
@@ -124,10 +131,7 @@ export const getTrackType = (trackId: string) => {
   }
 };
 
-const initialState: TrackSettingsState = {
-  selectedCog: null,
-  settings: {}
-};
+const initialState: TrackSettingsState = {};
 
 const trackSettingsSlice = createSlice({
   name: 'genome-track-settings',
@@ -137,18 +141,16 @@ const trackSettingsSlice = createSlice({
       state,
       action: PayloadAction<{
         genomeId: string;
-        trackSettings: Partial<TrackSettingsForGenome>;
+        trackSettings: TrackSettingsPerTrack;
       }>
     ) {
       const { genomeId, trackSettings } = action.payload;
-      state.settings[genomeId] = {
+      state[genomeId] = {
         ...defaultTrackSettingsForGenome,
-        ...trackSettings
+        settingsForIndividualTracks: {
+          ...trackSettings // would need to check whether these fields are actually valid for a given track
+        }
       };
-    },
-    updateSelectedCog(state, action: PayloadAction<string | null>) {
-      const selectedCog = action.payload;
-      state.selectedCog = selectedCog;
     },
     updateApplyToAll(
       state,
@@ -158,7 +160,7 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, isSelected } = action.payload;
-      state.settings[genomeId].shouldApplyToAll = isSelected;
+      state[genomeId].settingsForAllTracks.shouldApplyToAll = isSelected;
     },
     updateTrackName(
       state,
@@ -169,8 +171,9 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, trackId, isTrackNameShown } = action.payload;
-      const trackSettingsState = state.settings[genomeId].tracks[trackId];
-      trackSettingsState.showTrackName = isTrackNameShown;
+      const trackSettingsState =
+        state[genomeId].settingsForIndividualTracks[trackId];
+      trackSettingsState.settings.showTrackName = isTrackNameShown;
     },
     updateFeatureLabelsVisibility(
       state,
@@ -181,13 +184,14 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, trackId, areFeatureLabelsShown } = action.payload;
-      const trackSettingsState = state.settings[genomeId].tracks[trackId];
+      const trackSettingsState =
+        state[genomeId].settingsForIndividualTracks[trackId];
 
-      if (trackSettingsState.trackType !== TrackType.GENE) {
+      if (!isGeneTrack(trackSettingsState)) {
         return;
       }
 
-      trackSettingsState.showFeatureLabels = areFeatureLabelsShown;
+      trackSettingsState.settings.showFeatureLabels = areFeatureLabelsShown;
     },
     updateShowSeveralTranscripts(
       state,
@@ -198,13 +202,15 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, trackId, areSeveralTranscriptsShown } = action.payload;
-      const trackSettingsState = state.settings[genomeId].tracks[trackId];
+      const trackSettingsState =
+        state[genomeId].settingsForIndividualTracks[trackId];
 
-      if (trackSettingsState.trackType !== TrackType.GENE) {
+      if (!isGeneTrack(trackSettingsState)) {
         return;
       }
 
-      trackSettingsState.showSeveralTranscripts = areSeveralTranscriptsShown;
+      trackSettingsState.settings.showSeveralTranscripts =
+        areSeveralTranscriptsShown;
     },
     updateShowTranscriptIds(
       state,
@@ -215,24 +221,24 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, trackId, shouldShowTranscriptIds } = action.payload;
-      const trackSettingsState = state.settings[genomeId].tracks[trackId];
+      const trackSettingsState =
+        state[genomeId].settingsForIndividualTracks[trackId];
 
-      if (trackSettingsState.trackType !== TrackType.GENE) {
+      if (!isGeneTrack(trackSettingsState)) {
         return;
       }
 
-      trackSettingsState.showTranscriptIds = shouldShowTranscriptIds;
+      trackSettingsState.settings.showTranscriptIds = shouldShowTranscriptIds;
     },
     deleteTrackSettingsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
-      delete state.settings[genomeId];
+      delete state[genomeId];
     }
   }
 });
 
 export const {
   setInitialTrackSettingsForGenome,
-  updateSelectedCog,
   updateApplyToAll,
   updateTrackName,
   updateFeatureLabelsVisibility,
