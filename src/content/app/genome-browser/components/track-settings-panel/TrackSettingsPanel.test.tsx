@@ -158,7 +158,7 @@ describe('<TrackSettingsPanel />', () => {
       expect(trackSettingsSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        trackId: updatedState.browser.trackSettings.selectedCog
+        trackId: selectedTrackId
       });
       expect(
         updatedState.browser.trackSettings[genomeId]
@@ -180,7 +180,7 @@ describe('<TrackSettingsPanel />', () => {
       ).toHaveBeenCalledWith({
         genomeId,
         areFeatureLabelsShown: true,
-        trackId: updatedState.browser.trackSettings.selectedCog
+        trackId: selectedTrackId
       });
       const trackInfo =
         updatedState.browser.trackSettings[genomeId]
