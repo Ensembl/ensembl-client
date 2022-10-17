@@ -28,6 +28,7 @@ import set from 'lodash/fp/set';
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 import { deleteTrackSettingsForGenome as deleteStoredTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
+import { deleteAllFocusObjectsForGenome as deleteStoredFocusObjectsForGenome } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -254,7 +255,7 @@ export const deleteSpeciesInGenomeBrowser = (
 
     const updatedActiveFocusObjectIds = pickBy(
       getBrowserActiveFocusObjectIds(state),
-      (value, key) => key !== genomeIdToRemove
+      (_, key) => key !== genomeIdToRemove
     );
 
     dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
@@ -262,6 +263,7 @@ export const deleteSpeciesInGenomeBrowser = (
     browserStorageService.deleteGenome(genomeIdToRemove);
     browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
     await deleteStoredTrackSettingsForGenome(genomeIdToRemove);
+    await deleteStoredFocusObjectsForGenome(genomeIdToRemove);
   };
 };
 
