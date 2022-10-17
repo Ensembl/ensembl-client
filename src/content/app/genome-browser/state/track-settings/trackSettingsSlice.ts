@@ -26,7 +26,6 @@ import { getAllTrackSettingsForGenome } from './trackSettingsSelectors';
 
 import { isGeneTrack, TrackType } from './trackSettingsConstants';
 
-import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import type { RootState } from 'src/store';
 
 // FIXME: check if this type can be deleted/moved?
@@ -39,29 +38,31 @@ export type GeneTrackSettings = {
   showTranscriptIds: boolean;
   showTrackName: boolean;
   showFeatureLabels: boolean;
+  isVisible: boolean;
 };
+
+export type FocusGeneTrackSettings = Omit<GeneTrackSettings, 'isVisible'>;
 
 export type RegularTrackSettings = {
   showTrackName: boolean;
+  isVisible: boolean;
 };
 
 export type GeneTrack = {
   id: string;
   trackType: TrackType.GENE;
-  status: TrackActivityStatus;
   settings: GeneTrackSettings;
 };
 
 export type FocusGeneTrack = {
   id: string;
   trackType: TrackType.FOCUS_GENE;
-  settings: GeneTrackSettings;
+  settings: FocusGeneTrackSettings;
 };
 
 export type RegularTrack = {
   id: string;
   trackType: TrackType.REGULAR;
-  status: TrackActivityStatus;
   settings: RegularTrackSettings;
 };
 
@@ -111,10 +112,47 @@ export const saveTrackSettingsForGenome = createAsyncThunk(
     );
 
     // trackSettingsStorageService.saveTrackSettingsForGenome(genomeId, trackSettingsArray);
-    trackSettingsStorageService.updateTrackSettingsForGenome(
+    await trackSettingsStorageService.updateTrackSettingsForGenome(
       genomeId,
       trackSettingsArray
     );
+  }
+);
+
+export const updateTrackSettingsAndSave = createAsyncThunk(
+  'genome-browser-track-settings/update-track-settings-and-save',
+  async (
+    params: {
+      genomeId: string;
+      trackId: string;
+      settings: Record<string, unknown>;
+    },
+    thunkAPI
+  ) => {
+    const { genomeId, trackId, settings: newSettings } = params;
+    const state = thunkAPI.getState() as RootState;
+    const track =
+      state.browser.trackSettings[genomeId].settingsForIndividualTracks[
+        trackId
+      ] ?? null;
+
+    if (!track) {
+      return; // shouldn't happen
+    }
+
+    const updatedTrack = {
+      ...track,
+      settings: {
+        ...track.settings,
+        ...newSettings
+      }
+    } as TrackSettings;
+
+    await trackSettingsStorageService.updateTrackSettings(
+      genomeId,
+      updatedTrack
+    );
+    return params;
   }
 );
 
@@ -162,6 +200,21 @@ const trackSettingsSlice = createSlice({
       const { genomeId, isSelected } = action.payload;
       state[genomeId].settingsForAllTracks.shouldApplyToAll = isSelected;
     },
+    // updateTrackSettings(state, action: PayloadAction<{
+    //   genomeId: string;
+    //   trackId: string;
+    //   settings: Record<string, unknown>
+    // }>) {
+    //   const { genomeId, trackId, settings } = action.payload;
+    //   const track = state[genomeId].settingsForIndividualTracks[trackId];
+    //   if (!track) {
+    //     return; // shouldn't happen
+    //   }
+    //   track.settings = {
+    //     ...track.settings,
+    //     ...settings // it's interesting that Typescript allows this. Technically, this can write all sorts of nonsense into settings; but practically, that shouldn't happen
+    //   };
+    // },
     updateTrackName(
       state,
       action: PayloadAction<{
@@ -234,6 +287,23 @@ const trackSettingsSlice = createSlice({
       const genomeId = action.payload;
       delete state[genomeId];
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateTrackSettingsAndSave.fulfilled, (state, action) => {
+      if (!action.payload) {
+        return;
+      }
+
+      const { genomeId, trackId, settings } = action.payload;
+      const track = state[genomeId].settingsForIndividualTracks[trackId];
+      if (!track) {
+        return; // shouldn't happen
+      }
+      track.settings = {
+        ...track.settings,
+        ...settings // it's interesting that Typescript allows this. Technically, this can write all sorts of nonsense into settings; but practically, that shouldn't happen
+      };
+    });
   }
 });
 

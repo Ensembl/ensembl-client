@@ -32,7 +32,7 @@ import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-bro
 import { Status } from 'src/shared/types/status';
 import type {
   FocusGeneTrack,
-  GeneTrackSettings
+  FocusGeneTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import type {
   FocusGene,
@@ -133,7 +133,7 @@ const useFocusGene = (params: Params) => {
     if (trackStatus === Status.SELECTED) {
       setFocusGene(focusObjectId);
     } else {
-      toggleTrack({ trackId: 'focus', status: Status.UNSELECTED });
+      toggleTrack({ trackId: 'focus', isTurnedOn: false });
     }
   }, [genomeBrowser, focusObjectId, stringifiedVisibleTranscriptIds]);
 
@@ -171,7 +171,7 @@ const useFocusGene = (params: Params) => {
 };
 
 const sendFocusGeneTrackSettings = (
-  trackSettings: GeneTrackSettings,
+  trackSettings: FocusGeneTrackSettings,
   genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>
 ) => {
   const trackId = 'focus';

@@ -34,7 +34,6 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-import { Status } from 'src/shared/types/status';
 
 const useGenomeBrowser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
@@ -193,9 +192,8 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleTrack = (params: { trackId: string; status: Status }) => {
-    const { trackId, status } = params;
-    const isTurnedOn = status === Status.SELECTED;
+  const toggleTrack = (params: { trackId: string; isTurnedOn: boolean }) => {
+    const { trackId, isTurnedOn } = params;
     const trackSettings =
       trackSettingsForGenome?.settingsForIndividualTracks[trackId]?.settings ??
       ({} as Partial<TrackSettings['settings']>);

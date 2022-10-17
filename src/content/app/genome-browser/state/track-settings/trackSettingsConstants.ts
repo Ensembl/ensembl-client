@@ -16,14 +16,13 @@
 
 import type {
   GeneTrackSettings,
+  FocusGeneTrackSettings,
   RegularTrackSettings,
   GeneTrack,
   FocusGeneTrack,
   RegularTrack,
   TrackSettings
 } from './trackSettingsSlice';
-
-import { Status } from 'src/shared/types/status';
 
 export enum TrackType {
   GENE = 'gene',
@@ -35,17 +34,25 @@ export const getDefaultGeneTrackSettings = (): GeneTrackSettings => ({
   showSeveralTranscripts: false,
   showTranscriptIds: false,
   showTrackName: false,
-  showFeatureLabels: true
+  showFeatureLabels: true,
+  isVisible: true
 });
 
+export const getDefaultFocusGeneTrackSettings = (): FocusGeneTrackSettings => {
+  const geneTrackSettings =
+    getDefaultGeneTrackSettings() as Partial<GeneTrackSettings>;
+  delete geneTrackSettings.isVisible;
+  return geneTrackSettings as FocusGeneTrackSettings;
+};
+
 export const getDefaultRegularTrackSettings = (): RegularTrackSettings => ({
-  showTrackName: false
+  showTrackName: false,
+  isVisible: true
 });
 
 export const buildDefaultGeneTrack = (trackId: string): GeneTrack => ({
   id: trackId,
   trackType: TrackType.GENE,
-  status: Status.SELECTED,
   settings: getDefaultGeneTrackSettings()
 });
 
@@ -60,7 +67,6 @@ export const buildDefaultFocusGeneTrack = (
 export const buildDefaultRegularTrack = (trackId: string): RegularTrack => ({
   id: trackId,
   trackType: TrackType.REGULAR,
-  status: Status.SELECTED,
   settings: getDefaultGeneTrackSettings()
 });
 

@@ -46,7 +46,6 @@ import {
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -106,7 +105,7 @@ const useGenomeBrowserTracks = () => {
     );
 
     trackIdsToHide.forEach((trackId) => {
-      toggleTrack({ trackId, status: Status.UNSELECTED });
+      toggleTrack({ trackId, isTurnedOn: false });
     });
   }, [trackSettingsForGenome, visibleTrackIds]);
 

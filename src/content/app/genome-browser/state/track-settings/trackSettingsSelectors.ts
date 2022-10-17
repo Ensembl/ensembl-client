@@ -32,6 +32,16 @@ export const getTrackSettingsForTrackId = (
   );
 };
 
+export const getTrackVisibility = (state: RootState, trackId: string) => {
+  const trackSettings = getTrackSettingsForTrackId(state, trackId)?.settings;
+
+  if (trackSettings && 'isVisible' in trackSettings) {
+    return trackSettings.isVisible;
+  } else {
+    return null;
+  }
+};
+
 // FIXME: rename to getAllTrackSettingsForGenome; probably reguire genome id, or rename to getAllTrackSettingsForActiveGenome
 export const getAllTrackSettings = (
   state: RootState

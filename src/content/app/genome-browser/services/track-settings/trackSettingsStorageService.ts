@@ -99,7 +99,7 @@ export const updateTrackSettings = async (
       ...trackSettings.settings
     };
     retrievedTrack.updatedAt = Date.now();
-    await saveStoredTracksSettingsForGenome(genomeId, [retrievedTrack]);
+    await saveStoredTracksSettings([retrievedTrack]);
   } else {
     await saveTrackSettings(genomeId, trackSettings);
   }
@@ -131,7 +131,7 @@ export const updateTrackSettingsForGenome = async (
   }
 
   if (updatedStoredTracks.length) {
-    await saveStoredTracksSettingsForGenome(genomeId, updatedStoredTracks);
+    await saveStoredTracksSettings(updatedStoredTracks);
   }
   if (newTrackSettings.length) {
     await saveTrackSettingsForGenome(genomeId, newTrackSettings);
@@ -156,10 +156,7 @@ export const deleteTrackSettingsForGenome = async (genomeId: string) => {
   }
 };
 
-const saveStoredTracksSettingsForGenome = async (
-  genomeId: string,
-  storedTracks: StoredTrack[]
-) => {
+const saveStoredTracksSettings = async (storedTracks: StoredTrack[]) => {
   const database = await IndexedDB.getDB();
 
   const transaction = database.transaction(
