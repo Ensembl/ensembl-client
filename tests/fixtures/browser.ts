@@ -28,7 +28,6 @@ import {
   getChrLocationStr,
   type RegionValidationMessages
 } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import {
   getDefaultGeneTrackSettings,
@@ -199,7 +198,6 @@ export const createMockBrowserState = () => {
         activeFocusObjectIds: {
           [fakeGenomeId]: `${fakeGenomeId}:gene:fake_gene_stable_id_1`
         },
-        trackStates: createTrackStates(),
         chrLocations: {
           [fakeGenomeId]: ['13', 32304804, 32384454] as [string, number, number]
         },

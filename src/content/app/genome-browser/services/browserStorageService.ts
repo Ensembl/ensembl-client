@@ -17,10 +17,6 @@
 import storageService, {
   type StorageServiceInterface
 } from 'src/services/storage-service';
-import type {
-  BrowserTrackStates,
-  GenomeTrackStates
-} from '../components/track-panel/trackPanelConfig';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type {
@@ -82,20 +78,6 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
-  public getTrackStates(): BrowserTrackStates {
-    return this.storageService.get(StorageKeys.TRACK_STATES) || {};
-  }
-
-  public saveTrackStates(trackStates: BrowserTrackStates) {
-    this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
-  }
-
-  public updateTrackStates(trackStates: {
-    [genomeId: string]: GenomeTrackStates | undefined;
-  }) {
-    this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
-  }
-
   public getTrackPanels(): { [genomeId: string]: Partial<TrackPanelState> } {
     return this.storageService.get(StorageKeys.TRACK_PANELS) || {};
   }
@@ -119,9 +101,6 @@ export class BrowserStorageService {
       [genomeIdToDelete]: undefined
     });
     this.updateTrackPanels({
-      [genomeIdToDelete]: undefined
-    });
-    this.updateTrackStates({
       [genomeIdToDelete]: undefined
     });
   }
