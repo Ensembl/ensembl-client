@@ -25,6 +25,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 // FIXME: delete this module?
 // import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
+import { getTrackSettingsForGenome as restoreTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
 import {
   getBrowserActiveGenomeId,
@@ -84,26 +85,12 @@ const useGenomeBrowserTracks = () => {
       return;
     }
 
-    const defaultTracksForGenome = prepareTrackSettings({
+    initialiseTrackSettingsForGenome({
+      genomeId,
+      dispatch,
       trackCategories,
       focusObject
     });
-
-    // FIXME: make sure saved track settings are loaded upon refresh
-    // const savedTrackSettingsForGenome =
-    //   getPersistentTrackSettingsForGenome(genomeId);
-
-    // const trackSettings = {
-    //   tracks: defaultTracksForGenome,
-    //   // ...savedTrackSettingsForGenome
-    // };
-
-    dispatch(
-      setInitialTrackSettingsForGenome({
-        genomeId,
-        trackSettings: defaultTracksForGenome
-      })
-    );
   }, [trackCategories, focusObject, genomeId]);
 
   // make sure to tell genome browser to hide tracks that a given genome id doesn't have
@@ -135,6 +122,36 @@ const useGenomeBrowserTracks = () => {
 //   const trackSettings = browserTrackSettingsStorageService.getTrackSettings();
 //   return trackSettings[genomeId] ?? {};
 // };
+
+const initialiseTrackSettingsForGenome = async (params: {
+  genomeId: string;
+  trackCategories: GenomeTrackCategory[];
+  focusObject: FocusObject | null;
+  dispatch: ReturnType<typeof useAppDispatch>;
+}) => {
+  const { genomeId, dispatch } = params;
+  const trackSettingsForGenome = prepareTrackSettings(params);
+  const restoredTrackSettings = await restoreTrackSettingsForGenome(genomeId);
+
+  for (const trackId in trackSettingsForGenome) {
+    const storedTrackData = restoredTrackSettings.find(
+      (item) => trackId === item.trackId
+    );
+    if (storedTrackData) {
+      trackSettingsForGenome[trackId].settings = {
+        ...trackSettingsForGenome[trackId].settings,
+        ...storedTrackData.settings
+      };
+    }
+  }
+
+  dispatch(
+    setInitialTrackSettingsForGenome({
+      genomeId,
+      trackSettings: trackSettingsForGenome
+    })
+  );
+};
 
 // NOTE: this function should probably be responsible for reading stored track data? But remember that this is an asynchronous operation
 const prepareTrackSettings = ({

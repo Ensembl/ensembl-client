@@ -27,7 +27,7 @@ import set from 'lodash/fp/set';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
 import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
-import trackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
+import { deleteTrackSettingsForGenome as deleteStoredTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -245,7 +245,7 @@ export const setChrLocation: ActionCreator<
 export const deleteSpeciesInGenomeBrowser = (
   genomeIdToRemove: string
 ): ThunkAction<void, any, void, Action<string>> => {
-  return (dispatch, getState: () => RootState) => {
+  return async (dispatch, getState: () => RootState) => {
     const state = getState();
 
     dispatch(deleteBrowserDataForGenome(genomeIdToRemove));
@@ -261,7 +261,7 @@ export const deleteSpeciesInGenomeBrowser = (
 
     browserStorageService.deleteGenome(genomeIdToRemove);
     browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
-    trackSettingsStorageService.deleteTrackSettings(genomeIdToRemove);
+    await deleteStoredTrackSettingsForGenome(genomeIdToRemove);
   };
 };
 

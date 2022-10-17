@@ -26,6 +26,7 @@ import * as focusObjectStorageService from 'src/content/app/genome-browser/servi
 
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
   buildFocusObjectId,
@@ -33,6 +34,8 @@ import {
 } from 'src/shared/helpers/focusObjectHelpers';
 import { getFocusObjectLoadingStatus } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
+
+import { getFocusObject as getFocusObjectFromStorage } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
@@ -183,6 +186,12 @@ export const fetchFocusObject = createAsyncThunk(
         genomeId,
         gene: result.data?.gene as TrackPanelGene
       });
+
+      const storedFocusGeneData = await getFocusObjectFromStorage(
+        focusObjectId
+      );
+      geneFocusObject.visibleTranscriptIds =
+        storedFocusGeneData?.visibleTranscriptIds ?? null;
 
       return buildLoadedObject({
         id: focusObjectId,
