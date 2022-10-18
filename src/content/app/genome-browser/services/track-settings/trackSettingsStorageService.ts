@@ -24,7 +24,7 @@ import {
 } from './trackSettingsStorageConstants';
 
 // the combination of genome id and track id will be used as a composite key
-type StoredTrack = {
+export type StoredTrack = {
   genomeId: string;
   trackId: string;
   trackType: string;

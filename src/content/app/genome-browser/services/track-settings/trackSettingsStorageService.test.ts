@@ -28,7 +28,8 @@ import {
   updateTrackSettings,
   updateTrackSettingsForGenome,
   deleteTrackSettings,
-  deleteTrackSettingsForGenome
+  deleteTrackSettingsForGenome,
+  type StoredTrack
 } from './trackSettingsStorageService';
 
 import {
@@ -161,14 +162,14 @@ describe('trackSettingsStorageService', () => {
           genomeId,
           geneTrackId
         );
-        expect(retrievedGeneTrack.trackId).toBe(geneTrackId);
+        expect(retrievedGeneTrack?.trackId).toBe(geneTrackId);
       });
 
       it('removes outdated track settings', async () => {
-        const retrievedGeneTrack = await getTrackSettings(
+        const retrievedGeneTrack = (await getTrackSettings(
           genomeId,
           oldGeneTrackId
-        );
+        )) as Awaited<StoredTrack>;
         const allowedSettings = new Set(Object.keys(geneTrack.settings));
 
         const hasOnlyAllowedFields = Object.keys(
@@ -236,7 +237,7 @@ describe('trackSettingsStorageService', () => {
     describe('updateTrackSettings', () => {
       it('updates a single track', async () => {
         const trackBefore = await getTrackSettings(genomeId, geneTrackId);
-        expect(trackBefore.settings.showTranscriptIds).toBe(false);
+        expect(trackBefore?.settings.showTranscriptIds).toBe(false);
 
         const updatedTrackSettings = set(
           'settings.showTranscriptIds',
@@ -246,7 +247,7 @@ describe('trackSettingsStorageService', () => {
         await updateTrackSettings(genomeId, updatedTrackSettings);
 
         const trackAfter = await getTrackSettings(genomeId, geneTrackId);
-        expect(trackAfter.settings.showTranscriptIds).toBe(true);
+        expect(trackAfter?.settings.showTranscriptIds).toBe(true);
       });
     });
 
