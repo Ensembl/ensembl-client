@@ -28,11 +28,6 @@ import { isGeneTrack, TrackType } from './trackSettingsConstants';
 
 import type { RootState } from 'src/store';
 
-// FIXME: check if this type can be deleted/moved?
-export type CogList = {
-  [key: string]: number;
-};
-
 export type GeneTrackSettings = {
   showSeveralTranscripts: boolean;
   showTranscriptIds: boolean;

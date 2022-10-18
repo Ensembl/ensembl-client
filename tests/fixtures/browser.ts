@@ -34,8 +34,7 @@ import {
   getDefaultRegularTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-// FIXME
-import type { CogList } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import type { CogList } from 'src/content/app/genome-browser/Browser';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';

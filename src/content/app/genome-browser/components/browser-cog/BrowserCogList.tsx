@@ -31,12 +31,11 @@ import { useAppSelector } from 'src/store';
 import useBrowserCogList from './useBrowserCogList';
 
 import {
-  type CogList // FIXME: this should not be exported from the slice
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
+import type { CogList } from 'src/content/app/genome-browser/Browser';
 
 import styles from './BrowserCogList.scss';
 
