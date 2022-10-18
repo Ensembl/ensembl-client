@@ -290,7 +290,6 @@ const trackSettingsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(updateTrackSettingsAndSave.fulfilled, (state, action) => {
-      console.log('updateTrackSettingsAndSave.fulfilled');
       if (!action.payload) {
         return;
       }

@@ -78,10 +78,13 @@ export const getTrackSettingsForGenome = async (genomeId: string) => {
 // retrieve a single track whose genome id and track id is known
 export const getTrackSettings = async (genomeId: string, trackId: string) => {
   const database = await IndexedDB.getDB();
-  const retrievedTrack = await database.get(GB_TRACK_SETTINGS_STORE_NAME, [
-    genomeId,
-    trackId
-  ]);
+  const retrievedTrack: Awaited<StoredTrack | undefined> = await database.get(
+    GB_TRACK_SETTINGS_STORE_NAME,
+    [genomeId, trackId]
+  );
+  if (!retrievedTrack) {
+    return null;
+  }
   return cleanUpStoredTrack(retrievedTrack);
 };
 
