@@ -23,8 +23,6 @@ import useGenomicTracks from './useGenomicTracks';
 import useBrowserCogList from 'src/content/app/genome-browser/components/browser-cog/useBrowserCogList';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-// FIXME: delete this module?
-// import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
 import { getTrackSettingsForGenome as restoreTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
 import {
@@ -113,14 +111,6 @@ const useGenomeBrowserTracks = () => {
   useFocusTrack();
   useGenomicTracks();
 };
-
-// FIXME: recover track state from browser storage
-// const getPersistentTrackSettingsForGenome = (
-//   genomeId: string
-// ): Partial<TrackSettingsForGenome> => {
-//   const trackSettings = browserTrackSettingsStorageService.getTrackSettings();
-//   return trackSettings[genomeId] ?? {};
-// };
 
 const initialiseTrackSettingsForGenome = async (params: {
   genomeId: string;

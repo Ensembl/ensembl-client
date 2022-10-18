@@ -82,7 +82,6 @@ type TrackSettingsState = {
   [genomeId: string]: TrackSettingsForGenome;
 };
 
-// FIXME: this constant is now meaningless?
 export const defaultTrackSettingsForGenome: TrackSettingsForGenome = {
   settingsForAllTracks: {
     shouldApplyToAll: false
@@ -106,7 +105,6 @@ export const saveTrackSettingsForGenome = createAsyncThunk(
       trackSettingsForGenome.settingsForIndividualTracks
     );
 
-    // trackSettingsStorageService.saveTrackSettingsForGenome(genomeId, trackSettingsArray);
     await trackSettingsStorageService.updateTrackSettingsForGenome(
       genomeId,
       trackSettingsArray
@@ -181,7 +179,7 @@ const trackSettingsSlice = createSlice({
       state[genomeId] = {
         ...defaultTrackSettingsForGenome,
         settingsForIndividualTracks: {
-          ...trackSettings // would need to check whether these fields are actually valid for a given track
+          ...trackSettings
         }
       };
     },
@@ -195,21 +193,6 @@ const trackSettingsSlice = createSlice({
       const { genomeId, isSelected } = action.payload;
       state[genomeId].settingsForAllTracks.shouldApplyToAll = isSelected;
     },
-    // updateTrackSettings(state, action: PayloadAction<{
-    //   genomeId: string;
-    //   trackId: string;
-    //   settings: Record<string, unknown>
-    // }>) {
-    //   const { genomeId, trackId, settings } = action.payload;
-    //   const track = state[genomeId].settingsForIndividualTracks[trackId];
-    //   if (!track) {
-    //     return; // shouldn't happen
-    //   }
-    //   track.settings = {
-    //     ...track.settings,
-    //     ...settings // it's interesting that Typescript allows this. Technically, this can write all sorts of nonsense into settings; but practically, that shouldn't happen
-    //   };
-    // },
     updateTrackName(
       state,
       action: PayloadAction<{

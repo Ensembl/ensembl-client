@@ -93,7 +93,6 @@ const prepareTrackIdsList = (
   trackGroups: GenomeTrackCategory[],
   trackSettings: TrackSettingsPerTrack
 ): TrackIdsList => {
-  // const trackSettingsArray = Object.values(trackSettings);
   const trackIdsList = trackGroups
     .flatMap(({ track_list }) => track_list)
     .map(({ track_id }) => {
