@@ -86,7 +86,7 @@ const RowVisibilityController = () => {
     });
   };
 
-  const hasSomeRowsHidden = Object.values(hiddenRowIds).some(Boolean);
+  const hasSomeRowsHidden = hiddenRowIds.size > 0;
 
   const showAllClassNames = classNames(styles.showAll, {
     [styles.showAllDisabled]: !hasSomeRowsHidden
