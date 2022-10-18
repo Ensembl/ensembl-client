@@ -24,12 +24,22 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
+import {
+  createCSVForGenomicBlast,
+  createCSVForProteinBlast,
+  createCSVForTranscriptBlast
+} from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
+
 import type {
   BlastHit,
   BlastJobResult,
   HSP
 } from 'src/content/app/tools/blast/types/blastJob';
-import type { BlastJobWithResults } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import type {
+  BlastJobWithResults,
+  BlastSubmission
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSequenceAlignmentInput } from 'src/content/app/tools/blast/components/blast-sequence-alignment/blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
@@ -48,7 +58,7 @@ type SingleBlastJobResultProps = {
   jobResult: BlastJobWithResults;
   species: Species;
   diagramWidth: number;
-  blastDatabase: DatabaseType;
+  submission: BlastSubmission;
 };
 
 const hitsTableColumns: DataTableColumns = [
@@ -70,7 +80,12 @@ const hitsTableColumns: DataTableColumns = [
     title: 'Length',
     isSortable: true
   },
-  { width: '200px', columnId: 'view_alignment', isHideable: false },
+  {
+    width: '200px',
+    columnId: 'view_alignment',
+    isHideable: false,
+    isExportable: false
+  },
   {
     width: '100px',
     columnId: 'percentage_id',
@@ -153,12 +168,7 @@ const hitsTableColumns: DataTableColumns = [
 ];
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
-  const {
-    species: speciesInfo,
-    jobResult,
-    diagramWidth,
-    blastDatabase
-  } = props;
+  const { species: speciesInfo, jobResult, diagramWidth, submission } = props;
   const [isExpanded, setExpanded] = useState(false);
 
   const alignmentsCount = countAlignments(jobResult.data);
@@ -186,7 +196,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       </div>
 
       {isExpanded && (
-        <HitsTable jobResult={jobResult} blastDatabase={blastDatabase} />
+        <HitsTable jobResult={jobResult} submission={submission} />
       )}
     </div>
   );
@@ -194,10 +204,13 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
 type HitsTableProps = {
   jobResult: SingleBlastJobResultProps['jobResult'];
-  blastDatabase: DatabaseType;
+  submission: BlastSubmission;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { jobResult, blastDatabase } = props;
+  const { jobResult, submission } = props;
+
+  const blastDatabase = submission.submittedData.parameters
+    .database as DatabaseType;
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
@@ -228,13 +241,12 @@ const HitsTable = (props: HitsTableProps) => {
           hitHsp.hsp_align_len,
           '', // view_alignment
           hitHsp.hsp_identity,
-          hitHsp.hsp_score,
-          <DynamicColumnContent
-            key={counter}
-            hit={hit}
-            blastDatabase={blastDatabase}
-            hitHsp={hitHsp}
-          />,
+          hitHsp.hsp_bit_score,
+          getDynamicColumnContent({
+            hit,
+            blastDatabase,
+            hitHsp
+          }),
           <span key={counter} className={styles.hitOrientation}>
             {hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse'}
           </span>,
@@ -330,6 +342,19 @@ const HitsTable = (props: HitsTableProps) => {
     );
   };
 
+  const downloadHandler = async () => {
+    let csv = '';
+    if (blastDatabase === 'dna') {
+      csv = createCSVForGenomicBlast(jobResult.data);
+    } else if (blastDatabase === 'cdna') {
+      csv = createCSVForTranscriptBlast(jobResult.data);
+    } else if (blastDatabase === 'pep') {
+      csv = createCSVForProteinBlast(jobResult.data);
+    }
+
+    await downloadTextAsFile(csv, 'table.csv');
+  };
+
   return (
     <div className={styles.tableWrapper}>
       <DataTable
@@ -341,9 +366,10 @@ const HitsTable = (props: HitsTableProps) => {
         expandedContent={expandedContent}
         disabledActions={[
           TableAction.FILTERS,
-          TableAction.DOWNLOAD_ALL_DATA,
+          TableAction.FIND_IN_TABLE,
           TableAction.DOWNLOAD_SHOWN_DATA
         ]}
+        downloadHandler={downloadHandler}
       />
     </div>
   );
@@ -373,7 +399,7 @@ type DynamicColumnContentProps = {
   blastDatabase: DatabaseType;
 };
 
-const DynamicColumnContent = (props: DynamicColumnContentProps) => {
+const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
   const { hit, blastDatabase, hitHsp } = props;
 
   if (blastDatabase !== 'dna') {

@@ -124,9 +124,8 @@ const Main = () => {
         key={data.sequence.id}
         species={data.species}
         sequence={data.sequence}
-        preset={blastSubmission.submittedData.preset}
+        submission={blastSubmission}
         blastResults={data.blastResults}
-        parameters={blastSubmission.submittedData.parameters}
       />
     )
   );

@@ -40,6 +40,8 @@ export type TableContextType = DataTableState & {
   selectableColumnIndex?: number;
   expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
+  downloadFileName?: string;
+  downloadHandler?: () => Promise<void>;
   rows: TableRows;
 };
 
@@ -48,14 +50,16 @@ export const TableContext = React.createContext(
 );
 
 export type TableProps = {
-  onStateChange?: (newState: DataTableState) => void;
-  columns: DataTableColumns;
   state?: Partial<DataTableState>;
+  columns: DataTableColumns;
   theme?: TableTheme;
   selectableColumnIndex?: number;
   className?: string;
   expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
+  downloadFileName?: string;
+  downloadHandler?: () => Promise<void>;
+  onStateChange?: (newState: DataTableState) => void;
 };
 const DataTable = (props: TableProps) => {
   const initialState = {
@@ -125,7 +129,9 @@ const DataTable = (props: TableProps) => {
         theme: props.theme,
         selectableColumnIndex: props.selectableColumnIndex,
         expandedContent: props.expandedContent,
-        disabledActions: props.disabledActions
+        disabledActions: props.disabledActions,
+        downloadFileName: props.downloadFileName,
+        downloadHandler: props.downloadHandler
       }}
     >
       <div className={wrapperClasses}>

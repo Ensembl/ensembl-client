@@ -21,6 +21,7 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 import RowVisibilityController from 'src/shared/components/data-table/components/main/components/table-row/components/row-visibility-controller/RowVisibilityController';
 import FindInTable from './components/find-in-table/FindInTable';
 import ShowHideColumns from './components/show-hide-columns/ShowHideColumns';
+import DownloadData from './components/download-data/DownloadData';
 
 import {
   type DataTableState,
@@ -54,7 +55,7 @@ const actionOptions = [
   },
   {
     value: TableAction.DOWNLOAD_ALL_DATA,
-    label: 'Download all data'
+    label: 'Download this table'
   },
   {
     value: TableAction.RESTORE_DEFAULTS,
@@ -142,6 +143,10 @@ const getActionComponent = (selectedAction: TableAction) => {
       return <ShowHideColumns />;
     case TableAction.SHOW_HIDE_ROWS:
       return <RowVisibilityController />;
+    case TableAction.DOWNLOAD_ALL_DATA:
+      return <DownloadData />;
+    case TableAction.DOWNLOAD_SHOWN_DATA:
+      return <DownloadData />;
     default:
       return null;
   }

@@ -26,11 +26,10 @@ import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResul
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import type {
-  BlastSubmissionParameters,
-  BlastJobWithResults
+  BlastJobWithResults,
+  BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastResultsPerSequence.scss';
 
@@ -40,13 +39,19 @@ type BlastResultsPerSequenceProps = {
     value: string;
   };
   species: Species[];
-  preset: string;
   blastResults: BlastJobWithResults[];
-  parameters: BlastSubmissionParameters;
+  submission: BlastSubmission;
 };
 
 const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
-  const { sequence, species, blastResults, parameters } = props;
+  const {
+    sequence,
+    species,
+    blastResults,
+    submission: {
+      submittedData: { parameters, preset }
+    }
+  } = props;
   const parsedBlastSequence = parseBlastInput(sequence.value)[0];
   const { header: sequenceHeader, value: sequenceValue } = parsedBlastSequence;
   const sequenceHeaderLabel =
@@ -73,7 +78,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <JobParameters
               sequenceValue={sequence.value}
               parameters={parameters}
-              preset={props.preset}
+              preset={preset}
             />
           )}
         </div>
@@ -103,7 +108,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
               species={speciesInfo}
               jobResult={result}
               diagramWidth={plotwidth}
-              blastDatabase={parameters.database as DatabaseType}
+              submission={props.submission}
             />
           );
         })}
@@ -111,6 +116,8 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         <div ref={rulerContainer} className={styles.rulerContainer}>
           {shouldShowJobResult && (
             <FeatureLengthRuler
+              rulerLabel="Length"
+              rulerLabelOffset={2.5}
               width={plotwidth}
               length={sequenceValue.length}
               standalone={true}

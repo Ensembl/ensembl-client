@@ -14,31 +14,50 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
+
+import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
+
+import { SecondaryButton } from 'src/shared/components/button/Button';
+import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
+
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import { isSpeciesSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import {
   SpeciesSidebarModalView,
   updateSpeciesSidebarModalForGenome
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-
-import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import {
+  fetchPopularSpecies,
+  deleteSpeciesAndSave
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
-import SpeciesRemove from './species-remove/SpeciesRemove';
 
 import { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.scss';
+
+const MEDIUM_WIDTH = 720;
+const SMALL_WIDTH = 560;
+
+enum Display {
+  FULL = 'full',
+  COMPACT = 'compact',
+  MINIMAL = 'minimal'
+}
 
 const useSpecies = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -68,12 +87,31 @@ const useSpecies = () => {
 
 const SpeciesTitleArea = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const isSidebarOpen = useAppSelector(getSidebarStatus);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { species, iconUrl } = useSpecies() || {};
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [display, setDisplay] = useState(Display.FULL);
+  const { trackDeletedSpecies } = useSpeciesAnalytics();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  // TODO:
+  // Remove the useEffect below when all of our target browsers support CSS container queries
+  useEffect(() => {
+    if (containerWidth < SMALL_WIDTH) {
+      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
+    } else if (containerWidth < MEDIUM_WIDTH) {
+      display !== Display.COMPACT && setDisplay(Display.COMPACT);
+    } else {
+      display !== Display.FULL && setDisplay(Display.FULL);
+    }
+  }, [containerWidth]);
 
   const blockClasses = classNames(styles.speciesTitleArea, {
-    [styles.speciesTitleAreaNarrow]: isSidebarOpen
+    [styles.speciesTitleAreaMinimal]: display === Display.MINIMAL,
+    [styles.speciesTitleAreaCompact]: display === Display.COMPACT
   });
 
   if (!activeGenomeId) {
@@ -89,8 +127,18 @@ const SpeciesTitleArea = () => {
     );
   };
 
+  const toggleRemovalDialog = () => {
+    setIsRemoving(!isRemoving);
+  };
+
+  const onRemove = () => {
+    dispatch(deleteSpeciesAndSave(activeGenomeId));
+    species && trackDeletedSpecies(species);
+    navigate(urlFor.speciesSelector());
+  };
+
   return species && iconUrl ? (
-    <div className={blockClasses}>
+    <div className={blockClasses} ref={containerRef}>
       <div className={styles.speciesIcon}>
         <img src={iconUrl} />
       </div>
@@ -106,8 +154,24 @@ const SpeciesTitleArea = () => {
         <SearchIcon />
       </div>
       <div className={styles.speciesRemove}>
-        <SpeciesRemove />
+        <SecondaryButton
+          onClick={toggleRemovalDialog}
+          isDisabled={isRemoving}
+          className={classNames({ [styles.disabledRemoveButton]: isRemoving })}
+        >
+          Remove species
+        </SecondaryButton>
       </div>
+      {isRemoving && (
+        <DeletionConfirmation
+          warningText="If you remove this species, any views you have configured will be lost — do you wish to continue?"
+          confirmText="Remove"
+          cancelText="Do not remove"
+          className={styles.speciesRemoveMessage}
+          onCancel={toggleRemovalDialog}
+          onConfirm={onRemove}
+        />
+      )}
     </div>
   ) : (
     <div className={blockClasses} />

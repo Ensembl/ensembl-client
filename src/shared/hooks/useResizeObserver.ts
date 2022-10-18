@@ -73,7 +73,7 @@ export default function <T extends HTMLElement>(params: Params<T> = {}) {
     resizeObserver.observe(element);
 
     return () => resizeObserver.unobserve(element);
-  }, [ref]);
+  }, [ref?.current]);
 
   return { ref, ...size };
 }

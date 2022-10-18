@@ -62,6 +62,7 @@ export type IndividualColumn = {
   isSearchable?: boolean;
   isFilterable?: boolean;
   isHideable?: boolean;
+  isExportable?: boolean;
   headerCellClassName?: string;
   bodyCellClassName?: string;
   helpText?: ReactNode;

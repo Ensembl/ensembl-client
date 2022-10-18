@@ -2,61 +2,17 @@
 
 $container-padding-right: 20px;
 
-@mixin narrow-grid {
-  grid-template-areas:
-    'icon species-name usage-toggle'
-    'icon geneSearchWrapper remove';
-  grid-template-columns: 60px 150px 1fr;
-  padding: 20px $container-padding-right 12px 0;
-  height: auto;
-
-  .speciesIcon {
-    align-self: start;
-  }
-
-  .speciesNameWrapper {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-  }
-
-  .speciesToggle {
-    padding: 0;
-  }
-
-  .remove {
-    align-self: start;
-    white-space: nowrap;
-  }
-
-  .speciesRemove {
-    white-space: normal;
-  }
-
-  .geneSearchWrapper {
-    margin: 0;
-  }
-}
-
 .speciesTitleArea {
   display: grid;
-  grid-template-areas: 'icon species-name usage-toggle search remove';
+  grid-template-areas:
+    'icon species-name usage-toggle search remove'
+    '. remove-message remove-message remove-message remove-message';
   grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
+  grid-template-rows: 80px auto;
   grid-column-gap: 20px;
   align-items: center;
-  height: 90px;
   margin-left: 60px;
   padding-right: $container-padding-right;
-
-  @media (max-width: 999px) {
-    @include narrow-grid;
-  }
-
-  &Narrow {
-    @media (max-width: 1199px) {
-      @include narrow-grid;
-    }
-  }
 }
 
 .speciesIcon {
@@ -85,6 +41,7 @@ $container-padding-right: 20px;
 }
 
 .speciesToggle {
+  grid-area: usage-toggle;
   padding-left: 25px;
 }
 
@@ -94,11 +51,21 @@ $container-padding-right: 20px;
   white-space: nowrap;
 }
 
-.search {
-  grid-area: search;
+.disabledRemoveButton {
+  background-color: $grey;
+  color: $white;
+  border: 1px solid $grey;
+  cursor: default;
+}
+
+.speciesRemoveMessage {
+  grid-area: remove-message;
+  justify-content: end;
+  margin-bottom: 20px;
 }
 
 .geneSearchWrapper {
+  grid-area: search;
   color: $blue;
   cursor: pointer;
   display: inline-flex;
@@ -109,5 +76,68 @@ $container-padding-right: 20px;
   svg {
     fill: $blue;
     width: 13px;
+  }
+}
+
+.speciesTitleAreaCompact {
+  grid-template-areas:
+    'icon species-name usage-toggle remove'
+    '. remove-message remove-message remove-message'
+    '. search . .';
+  grid-template-columns: 60px 150px auto 1fr;
+  grid-template-rows: 80px auto auto;
+  margin-bottom: 20px;
+
+  .speciesNameWrapper {
+    grid-area: species-name;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  .speciesToggle {
+    grid-area: usage-toggle;
+    padding: 0;
+  }
+
+  .remove {
+    grid-area: remove;
+    align-self: start;
+    white-space: nowrap;
+  }
+
+  .speciesRemove {
+    white-space: normal;
+  }
+
+  .speciesRemoveMessage {
+    grid-area: remove-message;
+    justify-content: start;
+  }
+
+  .geneSearchWrapper {
+    grid-area: search;
+    margin: 0;
+  }
+}
+
+.speciesTitleAreaMinimal {
+  grid-template-areas:
+    'icon species-name .'
+    '. usage-toggle remove'
+    '. remove-message remove-message'
+    '. search .';
+  grid-template-columns: 60px 150px 1fr;
+  grid-template-rows: 80px 0px auto 40px;
+  grid-row-gap: 10px;
+  margin-bottom: 20px;
+
+  .speciesRemoveMessage {
+    margin-top: 20px;
+    justify-content: start;
+  }
+
+  .speciesToggle {
+    padding: 0;
   }
 }

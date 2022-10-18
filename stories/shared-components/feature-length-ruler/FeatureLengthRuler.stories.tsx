@@ -57,7 +57,7 @@ export const FeatureLengthRulerStory = () => {
       <FeatureLengthRuler
         length={length}
         width={800}
-        unitsLabel="bp"
+        rulerLabel="bp"
         standalone={true}
       />
       <div>
