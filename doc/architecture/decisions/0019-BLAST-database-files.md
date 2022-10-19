@@ -28,14 +28,14 @@ Files, and directories are named after our inital implementation of genome IDs -
 
 ### FASTA headers
 Each FASTA header contains the default obtained from the FTP site prefixed with, for reasons of job scheduling, the term 'ENSEMBL:'. An example is
->ENSEMBL:ENST00000613293.4 cdna chromosome:GRCh38:4:22692914:22819568:1 gene:ENSG00000249948.6 gene_biotype:polymorphic_pseudogene transcript_biotype:protein_coding gene_symbol:GBA3 description:glucosylceramidase beta 3 (gene/pseudogene) [Source:HGNC Symbol;Acc:HGNC:19069]
+`>ENSEMBL:ENST00000613293.4 cdna chromosome:GRCh38:4:22692914:22819568:1 gene:ENSG00000249948.6 gene_biotype:polymorphic_pseudogene transcript_biotype:protein_coding gene_symbol:GBA3 description:glucosylceramidase beta 3 (gene/pseudogene) [Source:HGNC Symbol;Acc:HGNC:19069]`
 
-## Consequences
-
-Updates will be needed as we continue to develop BLAST
+## Known Issues
 
 ### File naming
-Since naming the files in this way we have developed our concept of genome IDs, moving from using a combination of species name and GCA to a UUID. The genome ID is defined as the combination of the genome and its associated annotation. For some species this will change with every release, but since the sequence of the genome itself will not change as frequently having a single, UUID based naming system for both of these types of files feels inappropriate. In the abscence of a decision on how to proceed in the future we have not changed this.
+Since making decisions to name the files in this way we have developed our concept of genome IDs, moving from using a combination of species name and GCA to a UUID. The genome ID is defined as the combination of the genome and its associated annotation. For some species this will change with every release, but since the sequence of the genome itself will not change as frequently having a single, UUID based naming system for both of these types of files feels inappropriate. In the abscence of a decision on how to proceed in the future we have not changed this.
+
+## Future Development
 
 ### FASTA headers
 The content of the FASTA headers is returned by BLAST and these are therefore sources of information that could potentially be used to add value to the results in future developments of the BLAST interface, for example in adding information on the genomic location of transcripts.
