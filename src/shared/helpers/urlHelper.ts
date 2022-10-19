@@ -20,7 +20,6 @@ import config from 'config';
 
 export const home = () => '/';
 export const speciesSelector = () => '/species-selector';
-export const customDownload = () => '/custom-download';
 
 type BrowserUrlParams = {
   genomeId?: string | null;

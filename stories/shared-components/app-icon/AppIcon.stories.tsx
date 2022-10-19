@@ -22,7 +22,6 @@ import {
   GlobalSearchIcon,
   EntityViewerIcon,
   BlastIcon,
-  CustomDownloadIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 
@@ -49,10 +48,6 @@ export const AppIconStory = () => (
     <div className={styles.appIconWrapper}>
       <BlastIcon />
       <div>Blast</div>
-    </div>
-    <div className={styles.appIconWrapper}>
-      <CustomDownloadIcon />
-      <div>Custom download (temporary name)</div>
     </div>
     <div className={styles.appIconWrapper}>
       <HelpIcon />

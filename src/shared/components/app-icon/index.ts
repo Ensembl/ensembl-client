@@ -19,5 +19,4 @@ export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
 export { default as GlobalSearchIcon } from './GlobalSearchIcon';
 export { default as EntityViewerIcon } from './EntityViewerIcon';
 export { default as BlastIcon } from './BlastIcon';
-export { default as CustomDownloadIcon } from './CustomDownloadIcon';
 export { default as HelpIcon } from './HelpIcon';

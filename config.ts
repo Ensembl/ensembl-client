@@ -25,7 +25,6 @@ export type BaseApiUrls = {
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
   tracksApiBaseUrl: string;
-  customDownloadGeneSearch: string;
   toolsApiBaseUrl: string;
 };
 
@@ -40,7 +39,6 @@ const defaultApiUrls: BaseApiUrls = {
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
   tracksApiBaseUrl: '/api/tracks',
-  customDownloadGeneSearch: '',
   toolsApiBaseUrl: '/api/tools'
 };
 
@@ -65,7 +63,6 @@ const getBaseApiUrls = (): BaseApiUrls => {
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
-    customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch, // irrelevant for server-side rendering
     toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl
   };
 };
@@ -103,10 +100,6 @@ export default {
   // TODO: remove this from the config in the future (will require refactoring of the apiService)
   // We will instead be passing base urls for differeent microservices individually
   apiHost: '',
-
-  // Genesearch endpoint (used by Custom Download)
-  // TODO: change the name of this field to something returned from getBaseApiUrls when we continue work on Custom Download
-  genesearchAPIEndpoint: getBaseApiUrls().customDownloadGeneSearch,
 
   ...getBaseApiUrls(),
   ...getKeys()
