@@ -52,7 +52,6 @@ export type OptionalSubmissionParameters = Partial<
 >;
 export type BlastSubmissionParameters = MandatorySubmissionParameters &
   OptionalSubmissionParameters & {
-    jobName: string;
     stype: SequenceType;
   };
 
@@ -74,6 +73,7 @@ export type BlastSubmission = {
     species: Species[];
     sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     preset: string;
+    submissionName: string;
     parameters: BlastSubmissionParameters;
   };
   results: BlastJob[];

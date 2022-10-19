@@ -28,7 +28,7 @@ import {
   changeSensitivityPresets as changeSensitivityPresetsAction,
   setHasUncommittedSequence as setHasUncommittedSequenceAction,
   clearBlastForm as clearBlastFormAction,
-  setBlastJobName as setBlastJobNameAction,
+  setBlastSubmissionName as setBlastSubmissionNameAction,
   setBlastParameter as setBlastParameterAction,
   type Species
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -169,8 +169,8 @@ const useBlastForm = () => {
     );
   };
 
-  const setBlastJobName = (name: string) => {
-    dispatch(setBlastJobNameAction(name));
+  const setBlastSubmissionName = (name: string) => {
+    dispatch(setBlastSubmissionNameAction(name));
   };
 
   const setBlastParameter = (params: {
@@ -192,7 +192,7 @@ const useBlastForm = () => {
     updateBlastProgram,
     updateSensitivityPresets,
     setUncommittedSequencePresence,
-    setBlastJobName,
+    setBlastSubmissionName,
     setBlastParameter
   };
 };

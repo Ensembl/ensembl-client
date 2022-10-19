@@ -69,21 +69,21 @@ export const BlastSubmissionHeader = (props: Props) => {
   const blastProgram =
     submission.submittedData.parameters.program.toUpperCase();
   const submissionId = submission.id;
+  const submissionName = submission.submittedData.submissionName;
   const submissionTime = getFormattedDateTime(new Date(submission.submittedAt));
-  const { jobName } = submission.submittedData.parameters;
 
   const editSubmission = () => {
     const { sequences, species, preset, parameters } = submission.submittedData;
     const parsedSequences = sequences.flatMap((sequence) =>
       parseBlastInput(sequence.value)
     );
-    const { jobName, program, stype, ...otherParameters } = parameters;
+    const { program, stype, ...otherParameters } = parameters;
 
     const payload = {
       sequences: parsedSequences,
       selectedSpecies: species,
       settings: {
-        jobName,
+        submissionName,
         sequenceType: stype,
         program: program as BlastProgram,
         preset,
@@ -116,10 +116,10 @@ export const BlastSubmissionHeader = (props: Props) => {
     <>
       <div className={styles.grid}>
         <div>{blastProgram}</div>
-        {jobName && (
+        {submissionName && (
           <div className={styles.submissionName}>
             <span className={styles.submissionIdLabel}>Submission name</span>
-            {jobName}
+            {submissionName}
           </div>
         )}
         <div className={styles.submissionDetails}>

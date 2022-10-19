@@ -28,9 +28,8 @@ export type BlastSubmissionPayload = {
   species: Species[];
   sequences: { id: number; value: string }[];
   preset: string;
-  parameters: Record<string, string> & {
-    jobName?: string;
-  };
+  submissionName: string;
+  parameters: Record<string, string>;
 };
 
 export type BlastSubmissionResponse = {
@@ -95,6 +94,7 @@ const blastApiSlice = restApiSlice.injectEndpoints({
               species: payload.species,
               sequences: payload.sequences,
               preset: payload.preset,
+              submissionName: payload.submissionName,
               parameters: payload.parameters
             },
             results,

@@ -47,7 +47,7 @@ const selectedMouse = {
 };
 
 const selectedSpecies = [selectedHuman, selectedMouse];
-const jobName = faker.lorem.words();
+const submissionName = faker.lorem.words();
 const database = faker.lorem.word();
 const blastParameters = {
   alignments: '50',
@@ -68,7 +68,7 @@ const mockState = merge({}, initialState, {
   sequences,
   selectedSpecies,
   settings: {
-    jobName,
+    submissionName,
     sequenceType: 'dna',
     program: 'blastn',
     preset: 'normal',
@@ -86,8 +86,8 @@ const expectedPayload = {
     value: toFasta(seq)
   })),
   preset: 'normal',
+  submissionName,
   parameters: {
-    jobName,
     database,
     program: 'blastn',
     stype: 'dna',

@@ -39,6 +39,7 @@ export const createBlastSubmission = (params?: {
   const species = times(speciesCount, () => createSelectedSpecies());
   const sequences = createSubmittedSequences(sequencesCount);
   const preset = 'normal';
+  const submissionName = '';
 
   return {
     id: faker.datatype.uuid(),
@@ -46,6 +47,7 @@ export const createBlastSubmission = (params?: {
       species,
       sequences,
       preset,
+      submissionName,
       parameters: defaultBlastParameters
     },
     results: createBlastJobs({ species, sequences }),
@@ -126,7 +128,6 @@ const defaultBlastParameters = {
   title: '',
   database: 'dna',
   stype: 'dna',
-  jobName: '',
   program: 'blastn',
   alignments: '100',
   scores: '50',

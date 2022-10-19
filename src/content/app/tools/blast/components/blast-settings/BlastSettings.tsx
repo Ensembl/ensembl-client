@@ -33,7 +33,7 @@ import {
   getSelectedBlastProgram,
   getSelectedSearchSensitivity,
   getBlastSearchParameters,
-  getBlastJobName
+  getBlastSubmissionName
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 
 import type {
@@ -177,7 +177,7 @@ const BlastSettings = ({ config }: Props) => {
             />
           </div>
           <div className={styles.blastJobBlock}>
-            <BlastJobName />
+            <BlastSubmissionName />
             <BlastJobSubmit />
           </div>
         </div>
@@ -296,19 +296,23 @@ const BlastSettings = ({ config }: Props) => {
   );
 };
 
-const BlastJobName = () => {
-  const jobName = useAppSelector(getBlastJobName);
-  const { setBlastJobName } = useBlastForm();
+const BlastSubmissionName = () => {
+  const submissionName = useAppSelector(getBlastSubmissionName);
+  const { setBlastSubmissionName } = useBlastForm();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value;
-    setBlastJobName(name);
+    setBlastSubmissionName(name);
   };
 
   return (
-    <div className={styles.blastJobName}>
+    <div className={styles.blastSubmissionName}>
       <span>Submission name</span>
-      <ShadedInput value={jobName} onChange={onChange} placeholder="optional" />
+      <ShadedInput
+        value={submissionName}
+        onChange={onChange}
+        placeholder="optional"
+      />
     </div>
   );
 };
