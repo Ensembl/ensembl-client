@@ -307,12 +307,14 @@ const BlastSubmissionName = () => {
 
   return (
     <div className={styles.blastSubmissionName}>
-      <span>Submission name</span>
-      <ShadedInput
-        value={submissionName}
-        onChange={onChange}
-        placeholder="optional"
-      />
+      <label>
+        <span>Submission name</span>
+        <ShadedInput
+          value={submissionName}
+          onChange={onChange}
+          placeholder="Optional"
+        />
+      </label>
     </div>
   );
 };
