@@ -61,6 +61,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
+  const needsGenomicHitsDiagram = parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   return (
     <div className={styles.wrapper}>
@@ -114,7 +115,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         })}
       <div className={styles.rulerPlacementGrid}>
         <div ref={rulerContainer} className={styles.rulerContainer}>
-          {shouldShowJobResult && (
+          {shouldShowJobResult && !needsGenomicHitsDiagram && (
             <FeatureLengthRuler
               rulerLabel="Length"
               rulerLabelOffset={2.5}

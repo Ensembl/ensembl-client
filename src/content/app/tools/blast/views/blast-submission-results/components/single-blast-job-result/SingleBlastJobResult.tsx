@@ -22,6 +22,7 @@ import DataTable from 'src/shared/components/data-table/DataTable';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
+import { BlastGenomicHitsDiagram } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 
 import {
@@ -169,7 +170,10 @@ const hitsTableColumns: DataTableColumns = [
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { species: speciesInfo, jobResult, diagramWidth, submission } = props;
+  const blastDatabase = submission.submittedData.parameters.database;
   const [isExpanded, setExpanded] = useState(false);
+
+  const needsGenomicHitsDiagram = blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   const alignmentsCount = countAlignments(jobResult.data);
 
@@ -180,7 +184,15 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
+        {needsGenomicHitsDiagram ? (
+          <BlastGenomicHitsDiagram
+            genomeId={speciesInfo.genome_id}
+            job={jobResult.data}
+            width={diagramWidth}
+          />
+        ) : (
+          <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
+        )}
       </div>
       <div className={styles.speciesInfo}>
         {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}

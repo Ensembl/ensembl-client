@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.regionName {
+  fill: $black;
+  font-size: 10px;
+}
+
+.backbone {
+  fill: $medium-dark-grey;
+}
+
+.hit {
+  fill: $black;
+  opacity: 0.3;
+}
+
+.topHit {
+  stroke: red;
+  fill: none;
+}
