@@ -39,6 +39,7 @@
   grid-template-columns: 140px 110px;
 }
 
+.blastSubmissionName label span,
 .select label span {
   font-weight: $light;
   line-height: 27px;
@@ -73,7 +74,7 @@
   margin-left: 20px;
 }
 
-.blastJobName {
+.blastSubmissionName label {
   display: inline-flex;
   column-gap: 11px;
   align-items: center;
