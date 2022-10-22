@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import sortBy from 'lodash/sortBy';
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import BlastGenomicRegionHeatmap from './BlastGenomicRegionHeatmap';
+import PillButton from 'src/shared/components/pill-button/PillButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
+
+import styles from './BlastGenomicHitsDiagram.scss';
 
 type Props = {
   genomeId: string;
@@ -40,6 +44,7 @@ type Props = {
 
 const BlastGenomicHitsDiagram = (props: Props) => {
   const { genomeId, job, width } = props;
+  const [isExpanded, setIsExpanded] = useState(false);
   const { currentData: genomeKaryotype } = useGenomeKaryotypeQuery(genomeId); // the karyotype data has properly sorted top-level sequences
 
   if (!genomeKaryotype) {
@@ -56,9 +61,24 @@ const BlastGenomicHitsDiagram = (props: Props) => {
     .map(({ name }) => name)
     .filter((name) => regionNamesForCompactView.has(name));
 
+  const regionNamesForExpandedView = new Set(
+    job.hits.map((hit) => hit.hit_acc)
+  );
+  const sortedRegionNamesForExpandedView = genomeKaryotype
+    .map(({ name }) => name)
+    .filter((name) => regionNamesForExpandedView.has(name));
+
+  const remainderToExpandedRegionNamesList =
+    sortedRegionNamesForExpandedView.length -
+    sortedRegionNamesForCompactView.length;
+
+  const regionNamesForDisplay = isExpanded
+    ? sortedRegionNamesForExpandedView
+    : sortedRegionNamesForCompactView;
+
   return (
     <div>
-      {sortedRegionNamesForCompactView.map((name) => (
+      {regionNamesForDisplay.map((name) => (
         <BlastGenomicRegionHeatmap
           key={name}
           job={job}
@@ -67,12 +87,38 @@ const BlastGenomicHitsDiagram = (props: Props) => {
           topHits={topMatches.filter((match) => match.regionName === name)}
         />
       ))}
-      <p></p>
+      <RegionsExpandToggle
+        count={remainderToExpandedRegionNamesList}
+        isExpanded={isExpanded}
+        onClick={() => setIsExpanded(!isExpanded)}
+      />
     </div>
   );
 };
 
-// FIXME: will there be a problem with circular chromosomes?
+const RegionsExpandToggle = (props: {
+  count: number;
+  onClick: () => void;
+  isExpanded: boolean;
+}) => {
+  const { count, onClick, isExpanded } = props;
+
+  if (!count) {
+    return null;
+  }
+
+  return (
+    <div className={styles.regionsExpandToggle}>
+      <span>Other regions with hits</span>
+      {isExpanded ? (
+        <CloseButton onClick={onClick} />
+      ) : (
+        <PillButton onClick={onClick}>+{count}</PillButton>
+      )}
+    </div>
+  );
+};
+
 const getTopMatchesWithRegionNames = (job: BlastJobResult) => {
   // order all hit_hsps by their e-value, and return regions containing the top five
 

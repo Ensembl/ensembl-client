@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { default as BlastGenomicHitsDiagram } from './BlastGenomicHitsDiagram';
-export { default as BlastGenomicHitsDiagramLegend } from './BlastGenomicHitsDiagramLegend';
+import React, {
+  forwardRef,
+  type ComponentProps,
+  type ForwardedRef
+} from 'react';
+import classNames from 'classnames';
+
+import styles from './PillButton.scss';
+
+type Props = ComponentProps<'button'>;
+
+const PillButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+  const { className, ...otherProps } = props;
+
+  const buttonClass = classNames(styles.pillButton, className);
+
+  return <button className={buttonClass} ref={ref} {...otherProps} />;
+};
+
+export default forwardRef(PillButton);

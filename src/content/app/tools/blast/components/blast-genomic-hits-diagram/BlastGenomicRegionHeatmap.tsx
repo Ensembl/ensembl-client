@@ -38,8 +38,8 @@ type Props = {
 
 // 12px font; 7 px small circle; 13px large circle => 25px height
 
-const LABEL_HEIGHT = 12;
-const LABEL_TO_BACKBONE_DISTANCE = 5;
+const LABEL_HEIGHT = 10;
+const LABEL_TO_BACKBONE_DISTANCE = 7;
 const TOP_HIT_MARK_RADIUS = 6.5;
 const HIT_MARK_RADIUS = 3.5;
 const BACKBONE_HEIGHT = 1;

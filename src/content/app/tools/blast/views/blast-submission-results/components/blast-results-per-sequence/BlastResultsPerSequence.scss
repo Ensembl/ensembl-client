@@ -9,6 +9,12 @@
   padding-bottom: 20px;
 }
 
+.headerWithLegend {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1.5rem;
+}
+
 /* The distances in this grid are mostly repeating the distances of the grid for SingleBlastJobResult */
 .rulerPlacementGrid {
   display: grid;
