@@ -20,7 +20,6 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useFocusTrack from './useFocusTrack';
 import useGenomicTracks from './useGenomicTracks';
-import useBrowserCogList from 'src/content/app/genome-browser/components/browser-cog/useBrowserCogList';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import { getTrackSettingsForGenome as restoreTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
@@ -30,6 +29,7 @@ import {
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getDisplayedTrackIds } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
 
 import {
   setInitialTrackSettingsForGenome,
@@ -64,7 +64,7 @@ const useGenomeBrowserTracks = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
   const trackSettingsForGenome =
     useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
-  const visibleTrackIds = getVisibleTrackIds(useBrowserCogList().cogList); // get list of ids of tracks currently rendered in genome browser
+  const visibleTrackIds = useAppSelector(getDisplayedTrackIds); // get list of ids of tracks currently rendered in genome browser
   const { toggleTrack } = useGenomeBrowser();
 
   const dispatch = useAppDispatch();
@@ -171,12 +171,6 @@ const prepareTrackSettings = ({
     });
   });
   return defaultTrackSettings;
-};
-
-const getVisibleTrackIds = (cogsList: Record<string, number> | null) => {
-  cogsList = cogsList ?? {};
-
-  return Object.keys(cogsList);
 };
 
 export default useGenomeBrowserTracks;

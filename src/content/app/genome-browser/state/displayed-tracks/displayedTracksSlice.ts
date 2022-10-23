@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { GenomeBrowserContext } from '../../Browser';
-
-const useBrowserCogList = () => {
-  const genomeBrowserContext = useContext(GenomeBrowserContext);
-
-  if (!genomeBrowserContext) {
-    throw new Error(
-      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
-    );
-  }
-
-  const { cogList, setCogList } = genomeBrowserContext;
-
-  return {
-    cogList,
-    setCogList
-  };
+type DisplayedTrack = {
+  id: string;
+  height: number;
+  offsetTop: number;
 };
 
-export default useBrowserCogList;
+type DisplayedTracksState = DisplayedTrack[];
+
+const displayedTracksSlice = createSlice({
+  name: 'genome-browser-displayed-tracks',
+  initialState: [] as DisplayedTracksState,
+  reducers: {
+    setDisplayedTracks(state, action: PayloadAction<DisplayedTrack[]>) {
+      return action.payload;
+    }
+  }
+});
+
+export const { setDisplayedTracks } = displayedTracksSlice.actions;
+
+export default displayedTracksSlice.reducer;

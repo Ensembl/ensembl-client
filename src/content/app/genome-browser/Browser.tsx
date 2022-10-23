@@ -162,15 +162,11 @@ const SidebarContent = () => {
   return isBrowserSidebarModalOpened ? <BrowserSidebarModal /> : <TrackPanel />;
 };
 
-export type CogList = Record<string, number>;
-
 type GenomeBrowserContextType = {
   genomeBrowser: EnsemblGenomeBrowser | null;
   setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
   zmenus: StateZmenu;
   setZmenus: (zmenus: StateZmenu) => void;
-  cogList: CogList | null;
-  setCogList: (cogList: CogList) => void;
 };
 
 export const GenomeBrowserContext = React.createContext<
@@ -182,7 +178,6 @@ const GenomeBrowserInitContainer = () => {
     useState<EnsemblGenomeBrowser | null>(null);
 
   const [zmenus, setZmenus] = useState<StateZmenu>({});
-  const [cogList, setCogList] = useState<CogList | null>(null);
 
   const browser = useMemo(() => {
     return <Browser />;
@@ -194,9 +189,7 @@ const GenomeBrowserInitContainer = () => {
         genomeBrowser,
         setGenomeBrowser,
         zmenus,
-        setZmenus,
-        cogList,
-        setCogList
+        setZmenus
       }}
     >
       {browser}
