@@ -26,8 +26,8 @@ import styles from './RowSelector.scss';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 export type RowSelectorProps = {
-  rowId: string;
-  onChange: (params: { checked: boolean; rowId: string }) => void;
+  rowId: string | number;
+  onChange: (params: { checked: boolean; rowId: string | number }) => void;
 };
 
 const RowSelector = (props: RowSelectorProps) => {
@@ -44,11 +44,14 @@ const RowSelector = (props: RowSelectorProps) => {
     hiddenRowIds.has(props.rowId) || hiddenRowIdsInDraft.has(props.rowId)
   );
 
-  const onVisibilityChange = (params: { status: boolean; rowId: string }) => {
+  const onVisibilityChange = (params: {
+    status: boolean;
+    rowId: string | number;
+  }) => {
     if (params.status) {
-      hiddenRowIdsInDraft.add(params.rowId);
-    } else {
       hiddenRowIdsInDraft.delete(params.rowId);
+    } else {
+      hiddenRowIdsInDraft.add(params.rowId);
     }
 
     dispatch({

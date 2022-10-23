@@ -59,7 +59,7 @@ const RowVisibilityController = () => {
     const newRowIdsInDraft: TableSelectedRowIds = new Set();
     currentPageRows.forEach((row) => {
       const { rowId } = row;
-      newRowIdsInDraft.add(String(rowId));
+      newRowIdsInDraft.add(rowId);
     });
 
     dispatch({

@@ -104,7 +104,7 @@ const DownloadData = () => {
     const rowsToDownload =
       selectedAction === TableAction.DOWNLOAD_ALL_DATA
         ? rows
-        : rows.filter((row) => !hiddenRowIds.has(String(row.rowId)));
+        : rows.filter((row) => !hiddenRowIds.has(row.rowId));
 
     rowsToDownload.forEach((row, rowIndex) => {
       dataForExport[rowIndex + 1] = [];

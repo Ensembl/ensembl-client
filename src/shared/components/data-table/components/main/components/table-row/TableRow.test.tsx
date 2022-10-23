@@ -46,7 +46,7 @@ describe('<TableRow />', () => {
         <table>
           <tbody>
             <TableRow
-              rowId={String(defaultProps.rows[0].rowId)}
+              rowId={defaultProps.rows[0].rowId}
               rowData={defaultProps.rows[0].cells}
             />
           </tbody>
@@ -66,8 +66,8 @@ describe('<TableRow />', () => {
   });
 
   it('respects hiddenRowIds and renders nothing', () => {
-    const hiddenRowIds: Set<string> = new Set();
-    hiddenRowIds.add(String(defaultProps.rows[0].rowId));
+    const hiddenRowIds: Set<string | number> = new Set();
+    hiddenRowIds.add(defaultProps.rows[0].rowId);
 
     container = renderTableRow({
       hiddenRowIds
@@ -107,7 +107,7 @@ describe('<TableRow />', () => {
 
     expect(renderer).toBeCalledWith({
       rowData: defaultProps.rows[0].cells,
-      rowId: String(defaultProps.rows[0].rowId),
+      rowId: defaultProps.rows[0].rowId,
       cellData: defaultProps.rows[0].cells[indexOfColumnWithRenderer]
     });
   });

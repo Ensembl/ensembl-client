@@ -65,7 +65,7 @@ export const DataTableWithExpandStory = () => {
     [rowId: string]: ReactNode;
   }>({});
 
-  const onExpanded = (isExpanded: boolean, rowId: string) => {
+  const onExpanded = (isExpanded: boolean, rowId: string | number) => {
     setExpandedContent({
       ...expandedContent,
       [rowId]: isExpanded ? (
@@ -102,8 +102,8 @@ export const DataTableWithExpandStory = () => {
 
 const ShowHideColumn = (props: {
   isExpanded: boolean;
-  onExpanded: (isExpanded: boolean, rowId: string) => void;
-  rowId: string;
+  onExpanded: (isExpanded: boolean, rowId: string | number) => void;
+  rowId: string | number;
 }) => {
   const onExpanded = () => {
     props.onExpanded(!props.isExpanded, props.rowId);

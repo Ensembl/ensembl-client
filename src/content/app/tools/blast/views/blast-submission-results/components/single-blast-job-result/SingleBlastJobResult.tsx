@@ -286,7 +286,7 @@ const HitsTable = (props: HitsTableProps) => {
     return null;
   }
 
-  const onExpanded = (isExpanded: boolean, rowId: string) => {
+  const onExpanded = (isExpanded: boolean, rowId: string | number) => {
     if (!isExpanded) {
       setExpandedContent(undefined);
       return;
@@ -377,8 +377,8 @@ const HitsTable = (props: HitsTableProps) => {
 
 const ShowHideColumn = (props: {
   isExpanded: boolean;
-  onExpanded: (isExpanded: boolean, rowId: string) => void;
-  rowId: string;
+  onExpanded: (isExpanded: boolean, rowId: string | number) => void;
+  rowId: string | number;
 }) => {
   const onExpanded = () => {
     props.onExpanded(!props.isExpanded, props.rowId);

@@ -24,7 +24,7 @@ import RowSelector from './components/row-selector/RowSelector';
 import styles from 'src/shared/components/data-table/DataTable.scss';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
-const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
+const TableRow = (props: { rowData: TableRowData; rowId: string | number }) => {
   const {
     isSelectable,
     searchText,
@@ -57,7 +57,10 @@ const TableRow = (props: { rowData: TableRowData; rowId: string }) => {
     }
   }
 
-  const handleSelector = (params: { rowId: string; checked: boolean }) => {
+  const handleSelector = (params: {
+    rowId: string | number;
+    checked: boolean;
+  }) => {
     if (params.checked) {
       selectedRowIds.add(params.rowId);
     } else {
