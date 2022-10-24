@@ -36,8 +36,6 @@ type Props = {
   topHits?: HitLocation[];
 };
 
-// 12px font; 7 px small circle; 13px large circle => 25px height
-
 const LABEL_HEIGHT = 10;
 const LABEL_TO_BACKBONE_DISTANCE = 7;
 const TOP_HIT_MARK_RADIUS = 6.5;
@@ -59,9 +57,6 @@ const BlastGenomicRegionHeatmap = (props: Props) => {
     .range([1, width])
     .interpolate(interpolateRound)
     .clamp(true);
-
-  // return JSON.stringify(props);
-  //  <rect x={0} y={0} width={width} height={ELEMENT_HEIGHT} />
 
   return (
     <svg

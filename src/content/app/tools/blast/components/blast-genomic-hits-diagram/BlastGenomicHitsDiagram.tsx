@@ -31,16 +31,7 @@ type Props = {
   genomeId: string;
   job: BlastJobResult;
   width: number;
-  // isExpanded: boolean;
 };
-
-// sort all matches by evalue
-// take the top five matches after sorting
-// if collapsed, only showing the regions that include the top five matches
-// if expanded, show all regions sorted by length (not necessarily having the top matches)
-// hack? exclude patches from human genomic hits?
-
-// NOTE: there may or may not be regions beyond the ones with the top five hits
 
 const BlastGenomicHitsDiagram = (props: Props) => {
   const { genomeId, job, width } = props;
