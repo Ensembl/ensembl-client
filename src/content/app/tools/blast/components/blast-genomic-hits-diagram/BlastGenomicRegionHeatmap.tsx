@@ -19,10 +19,11 @@ import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
 import {
   LABEL_HEIGHT,
-  LABEL_TO_BACKBONE_DISTANCE,
   TOP_HIT_MARK_RADIUS,
   HIT_MARK_RADIUS,
-  BACKBONE_HEIGHT
+  BACKBONE_HEIGHT,
+  BACKBONE_Y,
+  ELEMENT_HEIGHT
 } from './blastGenomicHitsDiagramConstants';
 
 import type {
@@ -43,11 +44,6 @@ type Props = {
   regionName: string; // name of the genomic region (chromosome) that the heatmap is built for
   topHits?: HitLocation[];
 };
-
-const BACKBONE_Y = LABEL_HEIGHT + LABEL_TO_BACKBONE_DISTANCE;
-
-const ELEMENT_HEIGHT =
-  LABEL_HEIGHT + LABEL_TO_BACKBONE_DISTANCE + TOP_HIT_MARK_RADIUS;
 
 const BlastGenomicRegionHeatmap = (props: Props) => {
   const { width, job, regionName } = props;

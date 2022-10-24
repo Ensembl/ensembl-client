@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
-export const LABEL_HEIGHT = 10;
-export const LABEL_TO_BACKBONE_DISTANCE = 7;
-export const TOP_HIT_MARK_RADIUS = 6.5;
-export const HIT_MARK_RADIUS = 3.5;
-export const BACKBONE_HEIGHT = 1;
+import React from 'react';
 
-export const BACKBONE_Y = LABEL_HEIGHT + LABEL_TO_BACKBONE_DISTANCE;
+import {
+  BACKBONE_HEIGHT,
+  BACKBONE_Y,
+  ELEMENT_HEIGHT
+} from './blastGenomicHitsDiagramConstants';
 
-export const ELEMENT_HEIGHT =
-  LABEL_HEIGHT + LABEL_TO_BACKBONE_DISTANCE + TOP_HIT_MARK_RADIUS;
+import styles from './BlastGenomicHitsDiagram.scss';
+
+type Props = {
+  width: number;
+};
+
+const RegionWithoutMatches = (props: Props) => {
+  const { width } = props;
+
+  return (
+    <svg viewBox={`0 0 ${width} ${ELEMENT_HEIGHT}`} width={width}>
+      <rect
+        x={0}
+        y={BACKBONE_Y}
+        className={styles.backbone}
+        width={width}
+        height={BACKBONE_HEIGHT}
+      />
+    </svg>
+  );
+};
+
+export default RegionWithoutMatches;

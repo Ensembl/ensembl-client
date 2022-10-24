@@ -20,6 +20,7 @@ import sortBy from 'lodash/sortBy';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import BlastGenomicRegionHeatmap from './BlastGenomicRegionHeatmap';
+import RegionWithoutMatches from './BlastGenomicRegionWithoutMatches';
 import PillButton from 'src/shared/components/pill-button/PillButton';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -66,6 +67,10 @@ const BlastGenomicHitsDiagram = (props: Props) => {
   const regionNamesForDisplay = isExpanded
     ? sortedRegionNamesForExpandedView
     : sortedRegionNamesForCompactView;
+
+  if (!regionNamesForDisplay.length) {
+    return <RegionWithoutMatches width={width} />;
+  }
 
   return (
     <div>
