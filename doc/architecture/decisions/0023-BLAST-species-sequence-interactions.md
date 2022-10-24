@@ -9,7 +9,7 @@ Draft
 ## Context
 This document summarises the interactions between the input sequences and selection of species.
 
-## Summary
+## Decision
 
 To ensure fair usage we have applied a limit of 30 sequences to be submitted in a single submission. 
 
@@ -23,3 +23,8 @@ For example, if a user chooses to submit 2 sequences to search against 3 species
 2. Submitting jobs against multiple species requires production of a combined species database which is not available at the moment.
 3. Submitting individual jobs provides better turnover than searching against a bigger database of multiple genomes
 4. Results from genomes with varying genomic lengths affecting e-values/ percent identities?
+
+## Known issues and future developments
+
+- There are currently no known issues.
+- We may apply limit to species selection as the species list grows.
