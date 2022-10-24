@@ -93,6 +93,7 @@ const RegionsExpandToggle = (props: {
   isExpanded: boolean;
 }) => {
   const { count, onClick, isExpanded } = props;
+  const isCollapsed = !isExpanded;
 
   if (!count) {
     return null;
@@ -100,11 +101,13 @@ const RegionsExpandToggle = (props: {
 
   return (
     <div className={styles.regionsExpandToggle}>
-      <span>Other regions with hits</span>
-      {isExpanded ? (
-        <CloseButton onClick={onClick} />
+      {isCollapsed ? (
+        <>
+          <span>Other regions with hits</span>
+          <PillButton onClick={onClick}>+{count}</PillButton>
+        </>
       ) : (
-        <PillButton onClick={onClick}>+{count}</PillButton>
+        <CloseButton onClick={onClick} />
       )}
     </div>
   );
