@@ -20,7 +20,7 @@
   display: grid;
   grid-template-columns: 11ch [ruler] minmax(48%, 1050px) minmax(20%, 1fr);
   column-gap: 20px;
-  padding: 0 24px 10px 24px;
+  padding-bottom: 10px;
 }
 
 .rulerContainer {

@@ -16,10 +16,12 @@
 
 import React from 'react';
 
-import styles from './BlastGenomicHitsDiagram.scss';
+import {
+  TOP_HIT_MARK_RADIUS,
+  HIT_MARK_RADIUS
+} from './blastGenomicHitsDiagramConstants';
 
-const TOP_HIT_MARK_RADIUS = 6.5;
-const HIT_MARK_RADIUS = 3.5;
+import styles from './BlastGenomicHitsDiagram.scss';
 
 const BlastGenomicHitsDiagramLegend = () => {
   return (
