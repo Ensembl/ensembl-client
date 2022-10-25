@@ -21,9 +21,9 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
-import { getBrowserTrackState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getTrackVisibility } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
-import { updateCommonTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateTrackSettingsAndSave } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
@@ -45,14 +45,9 @@ type Props = GenomicTrack & {
 };
 
 const TrackPanelRegularItem = (props: Props) => {
-  const { genomeId, category, track_id } = props;
-  const trackVisibilityStatus = useAppSelector((state: RootState) =>
-    getBrowserTrackState(state, {
-      genomeId,
-      tracksGroup: 'commonTracks',
-      categoryName: category,
-      trackId: track_id
-    })
+  const { genomeId, track_id } = props;
+  const isTrackVisible = useAppSelector((state: RootState) =>
+    getTrackVisibility(state, track_id)
   );
   const { reportTrackVisibilityToggled, trackDrawerOpened } =
     useGenomeBrowserAnalytics();
@@ -74,19 +69,14 @@ const TrackPanelRegularItem = (props: Props) => {
   };
 
   const onChangeVisibility = () => {
-    const newStatus =
-      trackVisibilityStatus === Status.SELECTED
-        ? Status.UNSELECTED
-        : Status.SELECTED;
-
-    toggleTrack({ trackId: track_id, status: newStatus });
-    reportTrackVisibilityToggled(props.label, newStatus === Status.SELECTED);
+    toggleTrack({ trackId: track_id, isTurnedOn: !isTrackVisible });
+    reportTrackVisibilityToggled(props.label, !isTrackVisible);
 
     dispatch(
-      updateCommonTrackStates({
-        category,
+      updateTrackSettingsAndSave({
+        genomeId,
         trackId: track_id,
-        status: newStatus
+        settings: { isVisible: !isTrackVisible }
       })
     );
   };
@@ -98,7 +88,7 @@ const TrackPanelRegularItem = (props: Props) => {
 
   return (
     <SimpleTrackPanelItemLayout
-      visibilityStatus={trackVisibilityStatus}
+      visibilityStatus={isTrackVisible ? Status.SELECTED : Status.UNSELECTED}
       onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >

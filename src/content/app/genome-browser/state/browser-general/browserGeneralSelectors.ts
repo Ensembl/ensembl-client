@@ -17,10 +17,8 @@
 import { getGenomes } from 'src/shared/state/genome/genomeSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
-import { Status } from 'src/shared/types/status';
 import type { RootState } from 'src/store';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import type { FocusTrack } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserGeneral.activeGenomeId;
@@ -46,66 +44,6 @@ export const getBrowserActiveFocusObject = (state: RootState) => {
     return null;
   }
   return getFocusObjectById(state, activeObjectId);
-};
-
-export const getBrowserTrackStates = (state: RootState) =>
-  state.browser.browserGeneral.trackStates;
-
-export const getBrowserTrackState = (
-  state: RootState,
-  params: {
-    genomeId: string;
-  } & (
-    | {
-        objectId: string;
-        tracksGroup: 'objectTracks';
-      }
-    | {
-        categoryName: string;
-        tracksGroup: 'commonTracks';
-        trackId: string;
-      }
-  )
-) => {
-  const { genomeId, tracksGroup } = params;
-  const allBrowserTrackStates = getBrowserTrackStates(state);
-
-  let savedTrackStatus;
-
-  if (tracksGroup === 'objectTracks') {
-    savedTrackStatus =
-      allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]
-        ?.status;
-  } else {
-    savedTrackStatus =
-      allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.categoryName]?.[
-        params.trackId
-      ];
-  }
-
-  return savedTrackStatus ?? Status.SELECTED;
-};
-
-export const getFocusObjectTrackState = (
-  state: RootState,
-  params: {
-    genomeId: string;
-    focusObjectId: string;
-  }
-): FocusTrack | null => {
-  const { genomeId, focusObjectId } = params;
-  const allBrowserTrackStates = getBrowserTrackStates(state);
-  return (
-    allBrowserTrackStates?.[genomeId]?.objectTracks?.[focusObjectId] ?? null
-  );
-};
-
-export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return activeGenomeId
-    ? state.browser.browserGeneral.trackStates[activeGenomeId]
-    : null;
 };
 
 export const getAllChrLocations = (state: RootState) =>

@@ -31,14 +31,14 @@ import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { useAppSelector } from 'src/store';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import { Status } from 'src/shared/types/status';
+import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 const useGenomeBrowser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
-  const trackSettings = trackSettingsForGenome?.tracks;
 
   if (!genomeBrowserContext) {
     throw new Error(
@@ -191,9 +191,11 @@ const useGenomeBrowser = () => {
     });
   };
 
-  const toggleTrack = (params: { trackId: string; status: Status }) => {
-    const { trackId, status } = params;
-    const isTurnedOn = status === Status.SELECTED;
+  const toggleTrack = (params: { trackId: string; isTurnedOn: boolean }) => {
+    const { trackId, isTurnedOn } = params;
+    const trackSettings =
+      trackSettingsForGenome?.settingsForIndividualTracks[trackId]?.settings ??
+      ({} as Partial<TrackSettings['settings']>);
 
     genomeBrowser?.send({
       type: isTurnedOn
@@ -204,11 +206,9 @@ const useGenomeBrowser = () => {
       }
     });
 
-    const trackInfo = trackSettings && trackSettings[trackId];
-
-    if (trackInfo && 'showFeatureLabels' in trackInfo && isTurnedOn) {
+    if ('showFeatureLabels' in trackSettings && isTurnedOn) {
       genomeBrowser?.send({
-        type: trackInfo?.showFeatureLabels
+        type: trackSettings.showFeatureLabels
           ? OutgoingActionType.TURN_ON_LABELS
           : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
@@ -217,11 +217,9 @@ const useGenomeBrowser = () => {
       });
     }
 
-    const allTrackNamesOn =
-      trackSettings && trackSettings[trackId]?.showTrackName;
-    if (allTrackNamesOn && isTurnedOn) {
+    if ('showTrackName' in trackSettings && isTurnedOn) {
       genomeBrowser?.send({
-        type: allTrackNamesOn
+        type: trackSettings.showTrackName
           ? OutgoingActionType.TURN_ON_NAMES
           : OutgoingActionType.TURN_OFF_NAMES,
         payload: {

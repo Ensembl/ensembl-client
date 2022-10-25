@@ -38,6 +38,7 @@ export type FocusGene = BasicFocusObject & {
   versioned_stable_id: string;
   bio_type: string;
   strand: Strand;
+  visibleTranscriptIds: string[] | null; // null means that chrome doesn't have an opinion on which transcripts should be visible in the genome browser
 };
 
 export type FocusRegion = BasicFocusObject & {

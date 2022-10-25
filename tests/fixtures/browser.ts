@@ -28,13 +28,13 @@ import {
   getChrLocationStr,
   type RegionValidationMessages
 } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import {
   getDefaultGeneTrackSettings,
-  getDefaultRegularTrackSettings,
-  type CogList
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+  getDefaultRegularTrackSettings
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
+
+import type { CogList } from 'src/content/app/genome-browser/Browser';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -197,7 +197,6 @@ export const createMockBrowserState = () => {
         activeFocusObjectIds: {
           [fakeGenomeId]: `${fakeGenomeId}:gene:fake_gene_stable_id_1`
         },
-        trackStates: createTrackStates(),
         chrLocations: {
           [fakeGenomeId]: ['13', 32304804, 32384454] as [string, number, number]
         },

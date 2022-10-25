@@ -23,7 +23,7 @@ import useGenomicTracks from './useGenomicTracks';
 import useBrowserCogList from 'src/content/app/genome-browser/components/browser-cog/useBrowserCogList';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import browserTrackSettingsStorageService from 'src/content/app/genome-browser/components/track-settings-panel/services/trackSettingsStorageService';
+import { getTrackSettingsForGenome as restoreTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
 import {
   getBrowserActiveGenomeId,
@@ -33,16 +33,17 @@ import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-
 
 import {
   setInitialTrackSettingsForGenome,
-  getDefaultGeneTrackSettings,
-  getDefaultRegularTrackSettings,
   getTrackType,
-  TrackType,
-  type TrackSettings,
-  type TrackSettingsForGenome
+  type TrackSettingsPerTrack
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import {
+  buildDefaultFocusGeneTrack,
+  buildDefaultGeneTrack,
+  buildDefaultRegularTrack,
+  TrackType
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -61,7 +62,8 @@ const useGenomeBrowserTracks = () => {
     }
   );
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
-  const trackSettingsForGenome = useAppSelector(getAllTrackSettings)?.tracks;
+  const trackSettingsForGenome =
+    useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
   const visibleTrackIds = getVisibleTrackIds(useBrowserCogList().cogList); // get list of ids of tracks currently rendered in genome browser
   const { toggleTrack } = useGenomeBrowser();
 
@@ -80,20 +82,12 @@ const useGenomeBrowserTracks = () => {
       return;
     }
 
-    const defaultTracksForGenome = prepareTrackSettings({
+    initialiseTrackSettingsForGenome({
+      genomeId,
+      dispatch,
       trackCategories,
       focusObject
     });
-
-    const savedTrackSettingsForGenome =
-      getPersistentTrackSettingsForGenome(genomeId);
-
-    const trackSettings = {
-      tracks: defaultTracksForGenome,
-      ...savedTrackSettingsForGenome
-    };
-
-    dispatch(setInitialTrackSettingsForGenome({ genomeId, trackSettings }));
   }, [trackCategories, focusObject, genomeId]);
 
   // make sure to tell genome browser to hide tracks that a given genome id doesn't have
@@ -109,7 +103,7 @@ const useGenomeBrowserTracks = () => {
     );
 
     trackIdsToHide.forEach((trackId) => {
-      toggleTrack({ trackId, status: Status.UNSELECTED });
+      toggleTrack({ trackId, isTurnedOn: false });
     });
   }, [trackSettingsForGenome, visibleTrackIds]);
 
@@ -118,13 +112,37 @@ const useGenomeBrowserTracks = () => {
   useGenomicTracks();
 };
 
-const getPersistentTrackSettingsForGenome = (
-  genomeId: string
-): Partial<TrackSettingsForGenome> => {
-  const trackSettings = browserTrackSettingsStorageService.getTrackSettings();
-  return trackSettings[genomeId] ?? {};
+const initialiseTrackSettingsForGenome = async (params: {
+  genomeId: string;
+  trackCategories: GenomeTrackCategory[];
+  focusObject: FocusObject | null;
+  dispatch: ReturnType<typeof useAppDispatch>;
+}) => {
+  const { genomeId, dispatch } = params;
+  const trackSettingsForGenome = prepareTrackSettings(params);
+  const restoredTrackSettings = await restoreTrackSettingsForGenome(genomeId);
+
+  for (const trackId in trackSettingsForGenome) {
+    const storedTrackData = restoredTrackSettings.find(
+      (item) => trackId === item.trackId
+    );
+    if (storedTrackData) {
+      trackSettingsForGenome[trackId].settings = {
+        ...trackSettingsForGenome[trackId].settings,
+        ...storedTrackData.settings
+      };
+    }
+  }
+
+  dispatch(
+    setInitialTrackSettingsForGenome({
+      genomeId,
+      trackSettings: trackSettingsForGenome
+    })
+  );
 };
 
+// NOTE: this function should probably be responsible for reading stored track data? But remember that this is an asynchronous operation
 const prepareTrackSettings = ({
   trackCategories,
   focusObject
@@ -132,10 +150,12 @@ const prepareTrackSettings = ({
   trackCategories: GenomeTrackCategory[];
   focusObject: FocusObject | null;
 }) => {
-  const defaultTrackSettings: TrackSettings = {};
+  const defaultTrackSettings: TrackSettingsPerTrack = {};
 
   if (focusObject?.type === TrackType.GENE) {
-    defaultTrackSettings[TrackId.GENE] = getDefaultGeneTrackSettings();
+    defaultTrackSettings[TrackId.GENE] = buildDefaultFocusGeneTrack(
+      TrackId.GENE
+    );
   }
 
   trackCategories.forEach((category) => {
@@ -144,9 +164,9 @@ const prepareTrackSettings = ({
       const trackType = getTrackType(track_id);
 
       if (trackType === TrackType.GENE) {
-        defaultTrackSettings[track_id] = getDefaultGeneTrackSettings();
+        defaultTrackSettings[track_id] = buildDefaultGeneTrack(track_id);
       } else {
-        defaultTrackSettings[track_id] = getDefaultRegularTrackSettings();
+        defaultTrackSettings[track_id] = buildDefaultRegularTrack(track_id);
       }
     });
   });

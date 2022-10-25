@@ -53,7 +53,6 @@ import MissingGenomeError from 'src/shared/components/error-screen/url-errors/Mi
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import type { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/ZmenuController';
-import type { CogList } from './state/track-settings/trackSettingsSlice';
 
 import styles from './Browser.scss';
 
@@ -162,6 +161,8 @@ const SidebarContent = () => {
 
   return isBrowserSidebarModalOpened ? <BrowserSidebarModal /> : <TrackPanel />;
 };
+
+export type CogList = Record<string, number>;
 
 type GenomeBrowserContextType = {
   genomeBrowser: EnsemblGenomeBrowser | null;

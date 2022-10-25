@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import {
   IncomingActionType,
@@ -27,26 +27,22 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import BrowserCog from './BrowserCog';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
 import useBrowserCogList from './useBrowserCogList';
 
-import { getBrowserSelectedCog } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
-import {
-  type CogList,
-  updateSelectedCog
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import type { CogList } from 'src/content/app/genome-browser/Browser';
+
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
-  const selectedCog = useAppSelector(getBrowserSelectedCog);
+  const [selectedCog, setSelectedCog] = useState<string | null>(null);
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const objectId = useAppSelector(getBrowserActiveFocusObjectId);
-  const dispatch = useAppDispatch();
+  const focusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
 
   const { genomeBrowser } = useGenomeBrowser();
 
@@ -60,10 +56,10 @@ export const BrowserCogList = () => {
       }
     );
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser, genomeId, objectId]);
+  }, [genomeBrowser, genomeId, focusObjectId]);
 
   const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
-    if (!objectId) {
+    if (!focusObjectId) {
       return;
     }
 
@@ -85,11 +81,11 @@ export const BrowserCogList = () => {
 
   useEffect(() => {
     // make sure to close the floating track config panel if the user switches to a different species
-    dispatch(updateSelectedCog(null));
+    updateSelectedCog(null);
   }, [genomeId]);
 
-  const handleCogSelect = (trackId: string | null) => {
-    dispatch(updateSelectedCog(trackId));
+  const updateSelectedCog = (trackId: string | null) => {
+    setSelectedCog(trackId);
   };
 
   const cogs =
@@ -102,7 +98,7 @@ export const BrowserCogList = () => {
           <BrowserCog
             cogActivated={selectedCog === name}
             trackId={name}
-            updateSelectedCog={handleCogSelect}
+            updateSelectedCog={updateSelectedCog}
           />
         </div>
       );

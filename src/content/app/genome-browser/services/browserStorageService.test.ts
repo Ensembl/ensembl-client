@@ -15,8 +15,6 @@
  */
 
 import { BrowserStorageService, StorageKeys } from './browserStorageService';
-import { Status } from 'src/shared/types/status';
-import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -27,78 +25,9 @@ const mockStorageService = {
   clearAll: jest.fn()
 };
 
-const trackStates = {
-  main: {
-    focus: 'active'
-  },
-  Assembly: {
-    gc: 'inactive'
-  }
-};
-
 describe('BrowserStorageService', () => {
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  describe('.getTrackStates()', () => {
-    it('gets saved track states from storage service', () => {
-      jest
-        .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => trackStates);
-
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-
-      const result = browserStorageService.getTrackStates();
-
-      expect(mockStorageService.get).toHaveBeenCalledWith(
-        StorageKeys.TRACK_STATES
-      );
-      expect(result).toEqual(trackStates);
-
-      mockStorageService.get.mockRestore();
-    });
-
-    it('returns an empty object if there are no saved track states', () => {
-      jest.spyOn(mockStorageService, 'get').mockImplementation(() => null);
-
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-      const result = browserStorageService.getTrackStates();
-
-      expect(result).toEqual({});
-
-      mockStorageService.get.mockRestore();
-    });
-  });
-
-  describe('.saveTrackStates()', () => {
-    it('saves track states via storage service', () => {
-      const browserStorageService = new BrowserStorageService(
-        mockStorageService
-      );
-
-      const toggledTrack = {
-        homo_sapiens38: {
-          objectTracks: {
-            homo_sapiens38_brca2: {
-              type: 'gene' as const,
-              status: Status.UNSELECTED as TrackActivityStatus
-            }
-          }
-        }
-      };
-
-      browserStorageService.saveTrackStates(toggledTrack);
-
-      expect(mockStorageService.save).toHaveBeenCalledWith(
-        StorageKeys.TRACK_STATES,
-        toggledTrack
-      );
-    });
   });
 
   describe('.getTrackPanels()', () => {

@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
 import get from 'lodash/get';
+
+import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
+import isGeneFocusObject from './isGeneFocusObject';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import {
+import type {
   FocusObject,
+  FocusGene,
   FocusObjectIdConstituents
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getFocusObjectLoadingStatus = (
   state: RootState,
@@ -75,3 +79,18 @@ export const getExampleGenes = (state: RootState): FocusObject[] => {
     (entity) => entity.type === 'gene'
   );
 };
+
+export const getFocusGene = (
+  state: RootState,
+  focusGeneId: string
+): FocusGene | null => {
+  const focusObject = state.browser.focusObjects[focusGeneId]?.data;
+  return isGeneFocusObject(focusObject) ? focusObject : null;
+};
+
+export const getFocusGeneVisibleTranscripts = createSelector(
+  getFocusGene,
+  (focusGene: FocusGene | null): string[] | null => {
+    return focusGene?.visibleTranscriptIds ?? null;
+  }
+);

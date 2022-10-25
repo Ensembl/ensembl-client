@@ -22,8 +22,7 @@ import useBrowserCogList from '../browser-cog/useBrowserCogList';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getTrackSettingsForTrackId,
-  getApplyToAllSettings,
-  getBrowserSelectedCog
+  getApplyToAllSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   updateTrackName as updateTrackSettingsTrackName,
@@ -31,21 +30,25 @@ import {
   updateShowSeveralTranscripts as updateTrackSettingsShowSeveralTranscripts,
   updateShowTranscriptIds as updateTrackSettingsShowTranscriptIds,
   updateApplyToAll,
-  saveTrackSettingsForGenome,
-  TrackType
+  saveTrackSettingsForGenome
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { isGeneTrack as checkGeneTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
-import { type OptionValue } from 'src/shared/components/radio-group/RadioGroup';
+import type { OptionValue } from 'src/shared/components/radio-group/RadioGroup';
 
-const useBrowserTrackSettings = () => {
+type Params = {
+  selectedTrackId: string;
+};
+
+const useBrowserTrackSettings = (params: Params) => {
+  const { selectedTrackId } = params;
   const { cogList } = useBrowserCogList();
-  const selectedCog = useAppSelector(getBrowserSelectedCog) || '';
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const selectedTrackSettings = useAppSelector((state: RootState) =>
-    getTrackSettingsForTrackId(state, selectedCog)
+    getTrackSettingsForTrackId(state, selectedTrackId)
   );
   const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
   const shouldApplyToAllRef = useRef(shouldApplyToAll);
@@ -90,19 +93,19 @@ const useBrowserTrackSettings = () => {
       dispatch(
         updateTrackSettingsTrackName({
           genomeId: activeGenomeId,
-          trackId: selectedCog,
+          trackId: selectedTrackId,
           isTrackNameShown
         })
       );
       toggleTrackName({
-        trackId: selectedCog,
+        trackId: selectedTrackId,
         shouldShowTrackName: isTrackNameShown
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    trackTrackNameToggle(selectedCog, isTrackNameShown);
+    trackTrackNameToggle(selectedTrackId, isTrackNameShown);
   };
 
   const updateFeatureLabelsVisibility = (areFeatureLabelsShown: boolean) => {
@@ -128,19 +131,19 @@ const useBrowserTrackSettings = () => {
       dispatch(
         updateTrackSettingsFeatureLabelsVisibility({
           genomeId: activeGenomeId,
-          trackId: selectedCog,
+          trackId: selectedTrackId,
           areFeatureLabelsShown
         })
       );
       toggleFeatureLabels({
-        trackId: selectedCog,
+        trackId: selectedTrackId,
         shouldShowFeatureLabels: areFeatureLabelsShown
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    trackFeatureLabelToggle(selectedCog, areFeatureLabelsShown);
+    trackFeatureLabelToggle(selectedTrackId, areFeatureLabelsShown);
   };
 
   const updateShowSeveralTranscripts = (
@@ -167,19 +170,22 @@ const useBrowserTrackSettings = () => {
       dispatch(
         updateTrackSettingsShowSeveralTranscripts({
           genomeId: activeGenomeId,
-          trackId: selectedCog,
+          trackId: selectedTrackId,
           areSeveralTranscriptsShown
         })
       );
       toggleSeveralTranscripts({
-        trackId: selectedCog,
+        trackId: selectedTrackId,
         shouldShowSeveralTranscripts: areSeveralTranscriptsShown
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    trackShowSeveralTranscriptsToggle(selectedCog, areSeveralTranscriptsShown);
+    trackShowSeveralTranscriptsToggle(
+      selectedTrackId,
+      areSeveralTranscriptsShown
+    );
   };
 
   const updateShowTranscriptIds = (shouldShowTranscriptIds: boolean) => {
@@ -204,19 +210,19 @@ const useBrowserTrackSettings = () => {
       dispatch(
         updateTrackSettingsShowTranscriptIds({
           genomeId: activeGenomeId,
-          trackId: selectedCog,
+          trackId: selectedTrackId,
           shouldShowTranscriptIds
         })
       );
       toggleTranscriptIds({
-        trackId: selectedCog,
+        trackId: selectedTrackId,
         shouldShowTranscriptIds
       });
     }
 
     dispatch(saveTrackSettingsForGenome(activeGenomeId));
 
-    trackShowTranscriptsIdToggle(selectedCog, shouldShowTranscriptIds);
+    trackShowTranscriptsIdToggle(selectedTrackId, shouldShowTranscriptIds);
   };
 
   const toggleApplyToAll = (value: OptionValue) => {
@@ -224,21 +230,20 @@ const useBrowserTrackSettings = () => {
       return;
     }
 
-    const shouldShowTrackName = selectedTrackSettings.showTrackName;
-    const shouldShowFeatureLabels =
-      selectedTrackSettings.trackType === TrackType.GENE
-        ? selectedTrackSettings.showFeatureLabels
-        : false;
+    const shouldShowTrackName = selectedTrackSettings.settings.showTrackName;
+    const isGeneTrack = checkGeneTrack(selectedTrackSettings);
 
-    const shouldShowSeveralTranscripts =
-      selectedTrackSettings.trackType === TrackType.GENE
-        ? selectedTrackSettings.showSeveralTranscripts
-        : false;
+    const shouldShowFeatureLabels = isGeneTrack
+      ? selectedTrackSettings.settings.showFeatureLabels
+      : false;
 
-    const shouldShowTranscriptIds =
-      selectedTrackSettings.trackType === TrackType.GENE
-        ? selectedTrackSettings.showTranscriptIds
-        : false;
+    const shouldShowSeveralTranscripts = isGeneTrack
+      ? selectedTrackSettings.settings.showSeveralTranscripts
+      : false;
+
+    const shouldShowTranscriptIds = isGeneTrack
+      ? selectedTrackSettings.settings.showTranscriptIds
+      : false;
 
     dispatch(
       updateApplyToAll({
@@ -254,7 +259,7 @@ const useBrowserTrackSettings = () => {
     updateShowSeveralTranscripts(shouldShowSeveralTranscripts);
     updateShowTranscriptIds(shouldShowTranscriptIds);
 
-    trackApplyToAllInTrackSettings(selectedCog, shouldApplyToAll);
+    trackApplyToAllInTrackSettings(selectedTrackId, shouldApplyToAll); // FIXME: why are we passing track id in this function?
   };
 
   return {

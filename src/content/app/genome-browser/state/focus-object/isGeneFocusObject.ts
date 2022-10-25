@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { faker } from '@faker-js/faker';
+import {
+  FocusObject,
+  FocusGene
+} from 'src/shared/types/focus-object/focusObjectTypes';
 
-import { Status } from 'src/shared/types/status';
-import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+// utility function to
+const isGeneFocusObject = (
+  object?: FocusObject | null
+): object is FocusGene => {
+  return object?.type === 'gene';
+};
 
-export const createTrackStates = (): BrowserTrackStates => ({
-  fake_genome_id_1: {
-    [faker.lorem.words()]: {
-      [faker.lorem.words()]: Status.SELECTED,
-      [faker.lorem.words()]: Status.UNSELECTED
-    }
-  }
-});
+export default isGeneFocusObject;

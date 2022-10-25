@@ -18,6 +18,8 @@ import { faker } from '@faker-js/faker';
 
 import {
   FocusObject,
+  FocusGene,
+  FocusRegion,
   FocusObjectType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/thoas/strand';
@@ -25,17 +27,43 @@ import { Strand } from 'src/shared/types/thoas/strand';
 export const createFocusObject = (
   objectType?: FocusObjectType
 ): FocusObject => {
-  const genome_id = faker.lorem.word();
-  const type = objectType || 'gene';
-  const object_id = `${genome_id}:${objectType}:${faker.datatype.uuid()};`;
+  switch (objectType) {
+    case 'region':
+      return createFocusRegion();
+    default:
+      return createFocusGene();
+  }
+};
 
+const createFocusGene = (): FocusGene => {
+  const genome_id = faker.lorem.word();
+  const object_id = `${genome_id}:gene:${faker.datatype.uuid()};`;
+
+  return {
+    ...commonFocusObjectFields({ genome_id }),
+    type: 'gene',
+    object_id,
+    visibleTranscriptIds: []
+  };
+};
+
+const createFocusRegion = (): FocusRegion => {
+  const genome_id = faker.lorem.word();
+  const object_id = `${genome_id}:gene:${faker.datatype.uuid()};`;
+
+  return {
+    ...commonFocusObjectFields({ genome_id }),
+    type: 'region',
+    object_id
+  };
+};
+
+const commonFocusObjectFields = ({ genome_id }: { genome_id: string }) => {
   return {
     bio_type: faker.lorem.words(),
     label: faker.lorem.word(),
-    object_id,
     genome_id,
     location: createLocation(),
-    type,
     stable_id: faker.lorem.word(),
     versioned_stable_id: faker.lorem.word(),
     strand: Strand.FORWARD
