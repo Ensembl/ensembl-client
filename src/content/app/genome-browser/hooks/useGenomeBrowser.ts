@@ -39,7 +39,6 @@ const useGenomeBrowser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const trackSettingsForGenome = useAppSelector(getAllTrackSettings);
   const genomeBrowserContext = useContext(GenomeBrowserContext);
-  // const trackSettings = trackSettingsForGenome;
 
   if (!genomeBrowserContext) {
     throw new Error(
