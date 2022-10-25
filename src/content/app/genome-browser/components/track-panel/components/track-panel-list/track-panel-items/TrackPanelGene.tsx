@@ -85,7 +85,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
       // show all transcripts
       visibleTranscriptIds = pluckStableIds(sortedTranscripts);
-      updateFocusGeneTranscripts(visibleTranscriptIds);
       nextStatus = Status.SELECTED;
     } else if (geneVisibilityStatus === Status.UNSELECTED) {
       // also show all transcripts, but also tell genome browser to enable focus track
