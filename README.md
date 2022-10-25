@@ -4,7 +4,7 @@
 
 This repository is an all-new frontend for the Ensembl website, written in React, Rust and WASM. The current public release can be seen at https://beta.ensembl.org. The new site will integrate genomes from across the taxonomic space, including vertebrates, invertebrates, plants, fungi and bacteria.
 
-If you are interested in the latest developments in this project, please join our Slack channel #ensembl2020 or follow our [blog](https://www.ensembl.info).
+If you are interested in the latest developments in this project, please join our Slack channel #ensemblbeta or follow our [blog](https://www.ensembl.info).
 
 ## Installation
 
@@ -36,7 +36,7 @@ Since we aim to include all the current Ensembl species in the finished site, ea
 
 ### Entity Viewer
 
-View detailed information about annotation features: genes, transcripts, proteins, variants, etc.
+View detailed information about annotation features: genes, transcripts and proteins.
 
 ### Gene name Search
 
