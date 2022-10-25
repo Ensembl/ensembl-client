@@ -34,6 +34,7 @@ import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transc
 import TrackPanelTranscript from './TrackPanelTranscript';
 import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
+import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
 
@@ -162,25 +163,45 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     return 'Show all transcripts';
   };
 
+  const trackPanelItemChildren = (
+    <div className={styles.label}>
+      <span className={styles.labelTextStrong}>
+        {gene.symbol ?? gene.stable_id}
+      </span>
+      <span className={styles.labelTextSecondary}>
+        {gene.metadata.biotype.label}
+      </span>
+    </div>
+  );
+
   return (
     <>
-      <GroupTrackPanelItemLayout
-        isCollapsed={isCollapsed}
-        visibilityStatus={geneVisibilityStatus}
-        onChangeVisibility={onGeneVisibilityChange}
-        visibilityIconHelpText={getVisibilityIconHelpText(geneVisibilityStatus)}
-        onShowMore={onShowMore}
-        toggleExpand={toggleExpand}
-      >
-        <div className={styles.label}>
-          <span className={styles.labelTextStrong}>
-            {gene.symbol ?? gene.stable_id}
-          </span>
-          <span className={styles.labelTextSecondary}>
-            {gene.metadata.biotype.label}
-          </span>
-        </div>
-      </GroupTrackPanelItemLayout>
+      {sortedTranscripts.length === 1 ? (
+        <SimpleTrackPanelItemLayout
+          visibilityStatus={geneVisibilityStatus}
+          onChangeVisibility={onGeneVisibilityChange}
+          visibilityIconHelpText={getVisibilityIconHelpText(
+            geneVisibilityStatus
+          )}
+          onShowMore={onShowMore}
+        >
+          {trackPanelItemChildren}
+        </SimpleTrackPanelItemLayout>
+      ) : (
+        <GroupTrackPanelItemLayout
+          isCollapsed={isCollapsed}
+          visibilityStatus={geneVisibilityStatus}
+          onChangeVisibility={onGeneVisibilityChange}
+          visibilityIconHelpText={getVisibilityIconHelpText(
+            geneVisibilityStatus
+          )}
+          onShowMore={onShowMore}
+          toggleExpand={toggleExpand}
+        >
+          {trackPanelItemChildren}
+        </GroupTrackPanelItemLayout>
+      )}
+
       {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
           transcript={transcript}
