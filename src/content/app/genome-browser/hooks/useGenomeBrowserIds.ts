@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router-dom';
+import { useContext } from 'react';
 
-import {
-  buildFocusIdForUrl,
-  parseFocusIdFromUrl,
-  buildFocusObjectId
-} from 'src/shared/helpers/focusObjectHelpers';
+import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 
 import { useAppSelector } from 'src/store';
-import { useUrlParams } from 'src/shared/hooks/useUrlParams';
-import {
-  useGenomeInfoQuery,
-  isGenomeNotFoundError
-} from 'src/shared/state/genome/genomeApiSlice';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObjectId
@@ -41,57 +31,29 @@ import {
 const useGenomeBrowserIds = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
-  const committedSpecies = useAppSelector((state) =>
-    getCommittedSpeciesById(state, activeGenomeId ?? '')
-  );
-  const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
-  const { search } = useLocation();
+  const genomeBrowserContext = useContext(GenomeBrowserContext);
 
-  const { genomeId: genomeIdInUrl } = params;
-  const urlSearchParams = new URLSearchParams(search);
-  const focusObjectIdInUrl = urlSearchParams.get('focus');
-
-  const {
-    currentData: genomeInfo,
-    isFetching,
-    isError,
-    error
-  } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
-    skip: !genomeIdInUrl
-  });
-  const genomeId = genomeInfo?.genomeId;
-  const isMissingGenomeId = isError && isGenomeNotFoundError(error);
-
-  // TODO: check if the logic below is correct
-  const genomeIdForUrl =
-    genomeIdInUrl ??
-    committedSpecies?.genome_tag ??
-    committedSpecies?.genome_id;
-
-  let focusObjectId;
-  let focusObjectIdForUrl;
-  let parsedFocusObjectId;
-  let isMalformedFocusObjectId = false;
-
-  if (focusObjectIdInUrl) {
-    focusObjectIdForUrl = focusObjectIdInUrl;
-    if (genomeId) {
-      try {
-        parsedFocusObjectId = {
-          genomeId,
-          ...parseFocusIdFromUrl(focusObjectIdInUrl)
-        };
-        focusObjectId = buildFocusObjectId(parsedFocusObjectId);
-      } catch {
-        isMalformedFocusObjectId = true;
-      }
-    }
-  } else if (activeFocusObjectId) {
-    focusObjectIdForUrl = buildFocusIdForUrl(activeFocusObjectId);
+  if (!genomeBrowserContext) {
+    throw new Error(
+      'useGenomeBrowserIds must be used with GenomeBrowserContext Provider'
+    );
   }
 
+  const {
+    genomeIdInUrl,
+    genomeIdForUrl,
+    focusObjectIdInUrl,
+    isFetchingGenomeId,
+    isMissingGenomeId,
+    genomeId,
+    focusObjectId,
+    focusObjectIdForUrl,
+    parsedFocusObjectId,
+    isMalformedFocusObjectId
+  } = genomeBrowserContext;
+
   return {
-    isFetchingGenomeId: isFetching,
+    isFetchingGenomeId,
     isMissingGenomeId,
     genomeId,
     genomeIdInUrl,
