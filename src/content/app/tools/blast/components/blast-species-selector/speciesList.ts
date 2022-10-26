@@ -18,12 +18,6 @@
 // Check if we need the sorting and which field we need to submit a job
 const speciesList = [
   {
-    assembly_name: 'GRCh38.p13',
-    common_name: 'Human',
-    genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
-    scientific_name: 'Homo sapiens'
-  },
-  {
     assembly_name: 'IWGSC',
     common_name: null,
     genome_id: 'a73357ab-93e7-11ec-a39d-005056b38ce3',
@@ -60,6 +54,14 @@ const speciesList = [
     scientific_name: 'Plasmodium falciparum 3D7'
   }
 ];
+
+const grch38 = {
+  assembly_name: 'GRCh38.p13',
+  common_name: 'Human',
+  genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
+  scientific_name: 'Homo sapiens'
+};
+
 // species with common name first and sort alphabetically by common name
 // If no common name, then sort by scientific name alphabetically
 speciesList.sort((a, b) => {
@@ -75,5 +77,7 @@ speciesList.sort((a, b) => {
     return 1;
   }
 });
+
+speciesList.unshift(grch38);
 
 export default speciesList;
