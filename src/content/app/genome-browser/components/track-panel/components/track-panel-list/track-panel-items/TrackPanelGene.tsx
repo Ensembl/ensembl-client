@@ -37,6 +37,7 @@ import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanel
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
+import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItem.scss';
 
@@ -163,6 +164,13 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     return 'Show all transcripts';
   };
 
+  const commonComponentProps = {
+    visibilityStatus: geneVisibilityStatus as TrackActivityStatus,
+    onChangeVisibility: onGeneVisibilityChange,
+    visibilityIconHelpText: getVisibilityIconHelpText(geneVisibilityStatus),
+    onShowMore: onShowMore
+  };
+
   const trackPanelItemChildren = (
     <div className={styles.label}>
       <span className={styles.labelTextStrong}>
@@ -177,25 +185,13 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   return (
     <>
       {sortedTranscripts.length === 1 ? (
-        <SimpleTrackPanelItemLayout
-          visibilityStatus={geneVisibilityStatus}
-          onChangeVisibility={onGeneVisibilityChange}
-          visibilityIconHelpText={getVisibilityIconHelpText(
-            geneVisibilityStatus
-          )}
-          onShowMore={onShowMore}
-        >
+        <SimpleTrackPanelItemLayout {...commonComponentProps}>
           {trackPanelItemChildren}
         </SimpleTrackPanelItemLayout>
       ) : (
         <GroupTrackPanelItemLayout
+          {...commonComponentProps}
           isCollapsed={isCollapsed}
-          visibilityStatus={geneVisibilityStatus}
-          onChangeVisibility={onGeneVisibilityChange}
-          visibilityIconHelpText={getVisibilityIconHelpText(
-            geneVisibilityStatus
-          )}
-          onShowMore={onShowMore}
           toggleExpand={toggleExpand}
         >
           {trackPanelItemChildren}
