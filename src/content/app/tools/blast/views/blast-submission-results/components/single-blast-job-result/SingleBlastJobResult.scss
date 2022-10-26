@@ -2,10 +2,9 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
-      48%,
-      1050px
-    ) [species] minmax(20%, 1fr);
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr);
 
   grid-template-areas:
     'sequence-label hits-diagram species'
@@ -13,8 +12,6 @@
 
   gap: 20px;
   padding-bottom: 20px;
-  padding-left: 24px;
-  padding-right: 24px;
 
   &:first-of-type {
     padding-top: 24px;
@@ -26,8 +23,8 @@
 
   .tableWrapper {
     grid-area: table;
-    margin-left: -43px;
-    margin-right: -43px;
+    margin-left: -20px;
+    margin-right: -20px;
   }
 }
 

@@ -22,6 +22,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
+import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
@@ -61,18 +62,24 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
+  const shouldUseGenomicHitsDiagram = parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
+
+  const headerClasses = shouldUseGenomicHitsDiagram
+    ? styles.headerWithLegend
+    : undefined;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.resultsSummaryRow}>
         <div>Sequence {sequence.id}</div>
         <div className={styles.sequenceHeader}>
-          <div>
+          <div className={headerClasses}>
             <ShowHide
               label={sequenceHeaderLabel}
               isExpanded={shouldShowParamaters}
               onClick={() => showParamaters(!shouldShowParamaters)}
             ></ShowHide>
+            {shouldUseGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
           </div>
           {shouldShowParamaters && (
             <JobParameters
@@ -114,7 +121,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         })}
       <div className={styles.rulerPlacementGrid}>
         <div ref={rulerContainer} className={styles.rulerContainer}>
-          {shouldShowJobResult && (
+          {shouldShowJobResult && !shouldUseGenomicHitsDiagram && (
             <FeatureLengthRuler
               rulerLabel="Length"
               rulerLabelOffset={2.5}
