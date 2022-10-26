@@ -60,7 +60,7 @@ You can BLAST against a range of databases (proteins, transcripts, and genomic s
 - `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
 - `npm run lint:styles` - Runs `stylelint` against SCSS files to make sure they conform to the style guide.
 - `npm run check-types` – Runs typescript compiler to check for type correctness.
-- `npm test` - Runs the suit of unit tests with `jest`.
+- `npm test` - Runs the suite of unit tests with `jest`.
 - `npm test:watch` - Runs `jest` in watch mode.
 - `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
 
