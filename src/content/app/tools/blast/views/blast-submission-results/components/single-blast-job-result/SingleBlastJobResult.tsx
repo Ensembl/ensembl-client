@@ -173,7 +173,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const blastDatabase = submission.submittedData.parameters.database;
   const [isExpanded, setExpanded] = useState(false);
 
-  const needsGenomicHitsDiagram = blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
+  const shouldUseGenomicHitsDiagram = blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   const alignmentsCount = countAlignments(jobResult.data);
 
@@ -184,7 +184,7 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
-        {needsGenomicHitsDiagram ? (
+        {shouldUseGenomicHitsDiagram ? (
           <BlastGenomicHitsDiagram
             genomeId={speciesInfo.genome_id}
             job={jobResult.data}

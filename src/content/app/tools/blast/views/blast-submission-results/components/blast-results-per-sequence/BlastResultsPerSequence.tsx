@@ -62,9 +62,9 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
-  const needsGenomicHitsDiagram = parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
+  const shouldUseGenomicHitsDiagram = parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
 
-  const headerClasses = needsGenomicHitsDiagram
+  const headerClasses = shouldUseGenomicHitsDiagram
     ? styles.headerWithLegend
     : undefined;
 
@@ -79,7 +79,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
               isExpanded={shouldShowParamaters}
               onClick={() => showParamaters(!shouldShowParamaters)}
             ></ShowHide>
-            {needsGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
+            {shouldUseGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
           </div>
           {shouldShowParamaters && (
             <JobParameters
@@ -121,7 +121,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
         })}
       <div className={styles.rulerPlacementGrid}>
         <div ref={rulerContainer} className={styles.rulerContainer}>
-          {shouldShowJobResult && !needsGenomicHitsDiagram && (
+          {shouldShowJobResult && !shouldUseGenomicHitsDiagram && (
             <FeatureLengthRuler
               rulerLabel="Length"
               rulerLabelOffset={2.5}
