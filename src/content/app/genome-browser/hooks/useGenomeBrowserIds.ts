@@ -16,7 +16,7 @@
 
 import { useContext } from 'react';
 
-import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
+import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/Browser';
 
 import { useAppSelector } from 'src/store';
 
@@ -31,11 +31,11 @@ import {
 const useGenomeBrowserIds = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
-  const genomeBrowserContext = useContext(GenomeBrowserContext);
+  const genomeBrowserIdsContext = useContext(GenomeBrowserIdsContext);
 
-  if (!genomeBrowserContext) {
+  if (!genomeBrowserIdsContext) {
     throw new Error(
-      'useGenomeBrowserIds must be used with GenomeBrowserContext Provider'
+      'useGenomeBrowserIds must be used with GenomeBrowserIdsContext Provider'
     );
   }
 
@@ -50,7 +50,7 @@ const useGenomeBrowserIds = () => {
     focusObjectIdForUrl,
     parsedFocusObjectId,
     isMalformedFocusObjectId
-  } = genomeBrowserContext;
+  } = genomeBrowserIdsContext;
 
   return {
     isFetchingGenomeId,

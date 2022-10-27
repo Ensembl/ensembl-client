@@ -179,7 +179,15 @@ const SidebarContent = () => {
 
 export type CogList = Record<string, number>;
 
-// QUESTION: Should this be a different context?
+type GenomeBrowserContextType = {
+  genomeBrowser: EnsemblGenomeBrowser | null;
+  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
+  zmenus: StateZmenu;
+  setZmenus: (zmenus: StateZmenu) => void;
+  cogList: CogList | null;
+  setCogList: (cogList: CogList) => void;
+};
+
 type GenomeBrowserIdsContextType = {
   genomeIdInUrl: string | undefined;
   genomeIdForUrl: string | undefined;
@@ -199,26 +207,17 @@ type GenomeBrowserIdsContextType = {
   isMalformedFocusObjectId: boolean;
 };
 
-type GenomeBrowserContextType = {
-  genomeBrowser: EnsemblGenomeBrowser | null;
-  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
-  zmenus: StateZmenu;
-  setZmenus: (zmenus: StateZmenu) => void;
-  cogList: CogList | null;
-  setCogList: (cogList: CogList) => void;
-} & GenomeBrowserIdsContextType;
-
 export const GenomeBrowserContext = React.createContext<
   GenomeBrowserContextType | undefined
 >(undefined);
 
-const GenomeBrowserInitContainer = () => {
-  const [genomeBrowser, setGenomeBrowser] =
-    useState<EnsemblGenomeBrowser | null>(null);
+export const GenomeBrowserIdsContext = React.createContext<
+  GenomeBrowserIdsContextType | undefined
+>(undefined);
 
-  const [zmenus, setZmenus] = useState<StateZmenu>({});
-  const [cogList, setCogList] = useState<CogList | null>(null);
-
+export const GenomeBrowserIdsProvider = (props: {
+  children?: React.ReactNode;
+}) => {
   const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
   const { genomeId: genomeIdInUrl } = params;
 
@@ -270,19 +269,9 @@ const GenomeBrowserInitContainer = () => {
     focusObjectIdForUrl = buildFocusIdForUrl(activeFocusObjectId);
   }
 
-  const browser = useMemo(() => {
-    return <Browser />;
-  }, []);
-
   return (
-    <GenomeBrowserContext.Provider
+    <GenomeBrowserIdsContext.Provider
       value={{
-        genomeBrowser,
-        setGenomeBrowser,
-        zmenus,
-        setZmenus,
-        cogList,
-        setCogList,
         genomeIdInUrl,
         genomeIdForUrl,
         focusObjectIdInUrl,
@@ -295,7 +284,34 @@ const GenomeBrowserInitContainer = () => {
         isMalformedFocusObjectId
       }}
     >
-      {browser}
+      {props.children}
+    </GenomeBrowserIdsContext.Provider>
+  );
+};
+
+const GenomeBrowserInitContainer = () => {
+  const [genomeBrowser, setGenomeBrowser] =
+    useState<EnsemblGenomeBrowser | null>(null);
+
+  const [zmenus, setZmenus] = useState<StateZmenu>({});
+  const [cogList, setCogList] = useState<CogList | null>(null);
+
+  const browser = useMemo(() => {
+    return <Browser />;
+  }, []);
+
+  return (
+    <GenomeBrowserContext.Provider
+      value={{
+        genomeBrowser,
+        setGenomeBrowser,
+        zmenus,
+        setZmenus,
+        cogList,
+        setCogList
+      }}
+    >
+      <GenomeBrowserIdsProvider>{browser}</GenomeBrowserIdsProvider>
     </GenomeBrowserContext.Provider>
   );
 };
