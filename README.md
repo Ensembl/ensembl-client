@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository is an all-new frontend for the Ensembl website, written in React, Rust and WASM. The current public release can be seen at https://beta.ensembl.org. The new site will integrate genomes from across the taxonomic space, including vertebrates, invertebrates, plants, fungi and bacteria.
+This repository is an all-new frontend for the Ensembl website. The current public release can be seen at https://beta.ensembl.org. The new site will integrate genomes from across the taxonomic space, including vertebrates, invertebrates, plants, fungi and bacteria.
 
 If you are interested in the latest developments in this project, please join our Slack channel #ensemblbeta or follow our [blog](https://www.ensembl.info).
 
@@ -40,11 +40,11 @@ View detailed information about annotation features: genes, transcripts and prot
 
 ### Gene name Search
 
-You can search for gene names from any of the applications above. Global Search, which will allow you to search for gene names and symbols and other identifiers is for future development.
+You can search for gene names from any of the applications above. Global Search, which will allow you to search for gene names and symbols and other identifiers, is for future development.
 
 ### BLAST
 
-You can BLAST against a range of databases (proteins, transcripts, and genomic sequence) view the results in graphic and tabular format, and download the data.
+You can BLAST against a range of databases (proteins, transcripts, and genomic sequence), view the results in graphic and tabular format, and download the data.
 
 # Running the ensembl-client application
 
