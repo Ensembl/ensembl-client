@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import React, { memo, type FunctionComponent } from 'react';
+import React, {
+  memo,
+  type FunctionComponent,
+  type ButtonHTMLAttributes
+} from 'react';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 
@@ -24,7 +28,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { Status } from 'src/shared/types/status';
 
-import imageButtonStyles from './ImageButton.scss';
+import styles from './ImageButton.scss';
 
 export type ImageButtonStatus =
   | Status.DEFAULT
@@ -32,44 +36,52 @@ export type ImageButtonStatus =
   | Status.UNSELECTED
   | Status.DISABLED;
 
-export type Props = {
-  status: ImageButtonStatus;
-  description: string;
+type ChildlessButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+>;
+
+export type Props = ChildlessButtonProps & {
+  status?: ImageButtonStatus;
+  description?: string;
   image: FunctionComponent | string;
-  className?: string;
-  statusClasses?: { [key in ImageButtonStatus]?: string };
-  onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
+  // className?: string;
+  // statusClasses?: { [key in ImageButtonStatus]?: string };
+  // onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export const ImageButton = (props: Props) => {
+  const {
+    status = Status.DEFAULT,
+    description,
+    image: Image,
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    props.onClick && props.onClick(event);
-  };
-
-  const buttonProps =
-    props.status === Status.DISABLED ? {} : { onClick: handleClick };
-
-  const styles = props.statusClasses
-    ? { ...imageButtonStyles, ...props.statusClasses }
-    : imageButtonStyles;
-
   const imageButtonClasses = classNames(
-    imageButtonStyles.imageButton,
-    props.className,
-    styles[props.status]
+    styles.imageButton,
+    styles[status],
+    classNameFromProps
   );
 
-  const shouldShowTooltip = Boolean(props.description) && isHovered;
+  const shouldShowTooltip = Boolean(description) && isHovered;
 
+  // NOTE: the only reason to wrap the button in a div element is so that we could react in a custon manner
+  // to a hover event over a disabled button (i.e. show the tooltip).
+  // If we were satisfied with just the `title` attribute, we wouldn't need this wrapper
   return (
-    <div ref={hoverRef} className={imageButtonClasses} {...buttonProps}>
-      <button>
+    <div ref={hoverRef} className={styles.wrapper}>
+      <button
+        className={imageButtonClasses}
+        {...otherProps}
+        disabled={status === Status.DISABLED}
+      >
         {typeof props.image === 'string' ? (
           <img src={props.image} alt={props.description} />
         ) : (
-          <props.image />
+          <Image />
         )}
       </button>
       {shouldShowTooltip && (
@@ -79,11 +91,6 @@ export const ImageButton = (props: Props) => {
       )}
     </div>
   );
-};
-
-ImageButton.defaultProps = {
-  status: Status.DEFAULT,
-  description: ''
 };
 
 export default memo(ImageButton, isEqual);

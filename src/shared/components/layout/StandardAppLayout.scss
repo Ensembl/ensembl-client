@@ -109,6 +109,8 @@ $drawerWindowWidth: 45px;
 }
 
 .sidebarToolstripContent {
+  display: flex;
+  flex-direction: column;
   overflow-x: hidden;
 }
 

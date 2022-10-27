@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
@@ -38,17 +37,55 @@ export const ImageButtonStory = () => {
   const [status, setStatus] = useState(Status.DEFAULT);
 
   const toggleImage = () => {
-    switch (status) {
-      case Status.DEFAULT:
-        return setStatus(Status.UNSELECTED);
-      case Status.UNSELECTED:
-        return setStatus(Status.SELECTED);
-      default:
-        return setStatus(Status.DEFAULT);
-    }
+    const statusSequence = [Status.DEFAULT, Status.SELECTED, Status.UNSELECTED];
+    const currentStatusIndex = statusSequence.indexOf(status);
+    const nextStatusIndex = (currentStatusIndex + 1) % statusSequence.length;
+    const nextStatus = statusSequence[nextStatusIndex];
+    setStatus(nextStatus);
   };
+
   return (
-    <>
+    <div className={styles.defaultStoryContainer}>
+      <ImageButton
+        status={status as ImageButtonStatus}
+        description={`This is image button in ${status} state`}
+        image={icon.image}
+        onClick={toggleImage}
+      />
+      <p>
+        I am an image button, and my status is {status}. Click me to move to the
+        next status
+      </p>
+      <ImageButton
+        status={Status.DISABLED}
+        description="I am a disabled button; but I will still show a tooltip when moused over"
+        image={icon.image}
+        onClick={toggleImage}
+      />
+      <p>
+        I am a disabled button; but I will still show a tooltip when moused over
+      </p>
+      <ImageButton
+        status={Status.DEFAULT}
+        description="I am a disabled button; but I will still show a tooltip when moused over"
+        image={icon.image}
+        className={styles.styledDefaultStoryButton}
+        onClick={toggleImage}
+      />
+      <p>I am a button styled via a CSS class passed by the parent</p>
+    </div>
+  );
+};
+
+ImageButtonStory.storyName = 'default';
+
+export default {
+  title: 'Components/Shared Components/ImageButton'
+};
+
+/**
+ * 
+ 
       <div className={classNames(styles.containerStyles)}>
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
@@ -117,12 +154,7 @@ export const ImageButtonStory = () => {
           </div>
         </div>
       </div>
-    </>
-  );
-};
 
-ImageButtonStory.storyName = 'default';
 
-export default {
-  title: 'Components/Shared Components/ImageButton'
-};
+ * 
+ */

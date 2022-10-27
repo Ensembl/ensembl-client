@@ -1,40 +1,39 @@
 @import 'src/styles/common';
 
-/* stylelint-disable no-descending-specificity */
-// stylelint doesn't like that the 'imageButton button > svg' selector is more specific than ".default svg" and others;
-// but moving it below the rest of the selectors feels weird
+.wrapper {
+  font-size: 0;
+  line-height: 0;
+  position: relative;
+  display: inline-block; // buttons are normally inline-block elements
+  vertical-align: middle;
+}
 
 .imageButton {
-  position: relative;
-  font-size: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--image-button-width, auto);
+  height: var(--image-button-height, auto);
 
-  svg {
+  & > svg {
+    width: var(--image-button-svg-width, 100%);
+    height: var(--image-button-svg-height, 100%);
     transition: opacity 0.4s;
-  }
-
-  button {
-    width: 100%;
-    height: 100%;
-  }
-
-  // if a button's immediate child is an svg, it should be the same size as the button
-  button > svg {
-    width: 100%;
-    height: 100%;
   }
 }
 
 .default {
+  background-color: var(--image-button-default-bg-color, initial);
   svg {
-    fill: $blue;
+    fill: var(--image-button-default-svg-color, #{$blue});
   }
 }
 
 .selected {
-  background-color: $blue;
+  background-color: var(--image-button-selected-bg-color, #{$blue});
 
   svg {
-    fill: $white;
+    fill: var(--image-button-selected-svg-color, #{$white});
   }
   &svg:hover {
     opacity: 0.8;
@@ -42,8 +41,10 @@
 }
 
 .unselected {
+  background-color: var(--image-button-unselected-bg-color, none);
+
   svg {
-    fill: $blue;
+    fill: var(--image-button-unselected-svg-color, #{$blue});
   }
   &svg:hover {
     opacity: 0.8;
@@ -51,11 +52,10 @@
 }
 
 .disabled {
+  background-color: var(--image-button-disabled-bg-color, none);
+  cursor: default;
   svg {
-    fill: $grey;
+    fill: var(--image-button-disabled-svg-color, #{$grey});
     opacity: 1;
-  }
-  button {
-    cursor: default;
   }
 }

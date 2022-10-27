@@ -59,7 +59,6 @@ export const BrowserReset = () => {
       image={ResetIcon}
       onClick={handleClick}
       className={styles.resetButton}
-      statusClasses={{ disabled: styles.imageButtonDisabled }}
     />
   );
 };
