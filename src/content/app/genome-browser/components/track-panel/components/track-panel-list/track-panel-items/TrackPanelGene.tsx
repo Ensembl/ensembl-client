@@ -31,8 +31,10 @@ import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transc
 import TrackPanelTranscript from './TrackPanelTranscript';
 import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
+import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
+import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItem.scss';
 
@@ -150,25 +152,40 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     return 'Show all transcripts';
   };
 
+  const commonComponentProps = {
+    visibilityStatus: geneVisibilityStatus as TrackActivityStatus,
+    onChangeVisibility: onGeneVisibilityChange,
+    visibilityIconHelpText: getVisibilityIconHelpText(geneVisibilityStatus),
+    onShowMore: onShowMore
+  };
+
+  const trackPanelItemChildren = (
+    <div className={styles.label}>
+      <span className={styles.labelTextStrong}>
+        {gene.symbol ?? gene.stable_id}
+      </span>
+      <span className={styles.labelTextSecondary}>
+        {gene.metadata.biotype.label}
+      </span>
+    </div>
+  );
+
   return (
     <>
-      <GroupTrackPanelItemLayout
-        isCollapsed={isCollapsed}
-        visibilityStatus={geneVisibilityStatus}
-        onChangeVisibility={onGeneVisibilityChange}
-        visibilityIconHelpText={getVisibilityIconHelpText(geneVisibilityStatus)}
-        onShowMore={onShowMore}
-        toggleExpand={toggleExpand}
-      >
-        <div className={styles.label}>
-          <span className={styles.labelTextStrong}>
-            {gene.symbol ?? gene.stable_id}
-          </span>
-          <span className={styles.labelTextSecondary}>
-            {gene.metadata.biotype.label}
-          </span>
-        </div>
-      </GroupTrackPanelItemLayout>
+      {sortedTranscripts.length === 1 ? (
+        <SimpleTrackPanelItemLayout {...commonComponentProps}>
+          {trackPanelItemChildren}
+        </SimpleTrackPanelItemLayout>
+      ) : (
+        <GroupTrackPanelItemLayout
+          {...commonComponentProps}
+          isCollapsed={isCollapsed}
+          toggleExpand={toggleExpand}
+        >
+          {trackPanelItemChildren}
+        </GroupTrackPanelItemLayout>
+      )}
+
       {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
           transcript={transcript}
