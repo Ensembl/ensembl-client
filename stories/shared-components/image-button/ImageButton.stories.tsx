@@ -26,13 +26,6 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './ImageButton.stories.scss';
 
-const icon = {
-  image: DownloadIcon,
-  imageName: 'ImageButton',
-  imagePath: 'static/icons/download.svg',
-  imageClass: ''
-};
-
 export const ImageButtonStory = () => {
   const [status, setStatus] = useState(Status.DEFAULT);
 
@@ -49,7 +42,7 @@ export const ImageButtonStory = () => {
       <ImageButton
         status={status as ImageButtonStatus}
         description={`This is image button in ${status} state`}
-        image={icon.image}
+        image={DownloadIcon}
         onClick={toggleImage}
       />
       <p>
@@ -59,7 +52,7 @@ export const ImageButtonStory = () => {
       <ImageButton
         status={Status.DISABLED}
         description="I am a disabled button; but I will still show a tooltip when moused over"
-        image={icon.image}
+        image={DownloadIcon}
         onClick={toggleImage}
       />
       <p>
@@ -68,7 +61,7 @@ export const ImageButtonStory = () => {
       <ImageButton
         status={Status.DEFAULT}
         description="I am a disabled button; but I will still show a tooltip when moused over"
-        image={icon.image}
+        image={DownloadIcon}
         className={styles.styledDefaultStoryButton}
         onClick={toggleImage}
       />
@@ -82,79 +75,3 @@ ImageButtonStory.storyName = 'default';
 export default {
   title: 'Components/Shared Components/ImageButton'
 };
-
-/**
- * 
- 
-      <div className={classNames(styles.containerStyles)}>
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={status as ImageButtonStatus}
-              description={'enable/disable'}
-              image={icon.image}
-              onClick={toggleImage}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>{status}</div>
-        </div>
-
-        <div className={classNames(styles.codeContent)}>
-          <h3>Usage:</h3>
-          {`import ImageButton, {ImageButtonStatus} from 'src/shared/image-button/ImageButton';`}
-          <br />
-          {`import { ReactComponent as ${icon.imageName} } from '${icon.imagePath}';`}
-          <br />
-          {`
-              <ImageButton status={ImageButtonStatus.${status.toUpperCase()}} 
-                description={'enable/disable'} 
-                image={${icon.imageName}}
-              />
-            `}
-        </div>
-      </div>
-      <div className={classNames(styles.containerStyles)}>
-        <div>Available styles:</div>
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.UNSELECTED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.UNSELECTED}
-          </div>
-        </div>
-
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.SELECTED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.SELECTED}
-          </div>
-        </div>
-
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.DISABLED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.DISABLED}
-          </div>
-        </div>
-      </div>
-
-
- * 
- */
