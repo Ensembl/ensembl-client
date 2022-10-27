@@ -1,4 +1,4 @@
-# 1. BLAST input parameters
+# 22. BLAST input parameters
 
 Date: 2022-10-17
 
