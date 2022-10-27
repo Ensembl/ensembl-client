@@ -76,6 +76,10 @@ Automatic detection of sequence type has been implemented which determines wheth
 
   (For more info please refer NCBI Blast docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
 
-## Known issues and future developments
+## Known issues
 
 There are currently any known issues with sequence formats.
+
+## Future developments
+
+Sequence IDs as input may be supported in the future.

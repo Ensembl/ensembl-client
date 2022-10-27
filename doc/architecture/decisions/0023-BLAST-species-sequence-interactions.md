@@ -24,7 +24,10 @@ For example, if a user chooses to submit 2 sequences to search against 3 species
 3. Submitting individual jobs provides better turnover than searching against a bigger database of multiple genomes
 4. Results from genomes with varying genomic lengths affecting e-values/ percent identities?
 
-## Known issues and future developments
+## Known issues
 
 - There are currently no known issues.
+
+## Future developments
+
 - We may apply limit to species selection as the species list grows.
