@@ -30,10 +30,6 @@ For all sequences inserted in the blast input field we do a set of automatic for
 2. Remove all spaces (or tabs) between characters
 3. Split the input into 60-character lines (Ensembl standard), except for the header line of FASTA-formatted sequences
 
-## Validation
-For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
-
-
 | Input type  | Transformations | Support |
 | ------------- | ------------- | ------- |
 | Bare sequence  | None  | Yes |
@@ -44,6 +40,9 @@ For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Bla
 | A combination of bare sequences and FASTA sequences in one input. | An unlikely scenario, but, technically, can rely on both blank lines and FASTA headers as sequence separators. | Yes |
 | Sequence id | Fetch sequence by its id and insert in the input field | No |
 
+
+## Validation
+For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
 ### Sequence type detection 
 
 Automatic detection of sequence type has been implemented which determines whether the input sequence is nucleotide or protein as soon as they are entered. Users can always override this selection and run a job. If the input sequence is detected as an amino acid sequence, we change the “Database” to Proteins and select “blastp” as the default Program
