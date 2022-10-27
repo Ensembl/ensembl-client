@@ -21,7 +21,6 @@ Like other blast search providers we also support 2 ways of input - by pasting s
 - Sequence to be split into 60-character-long lines (Ensembl standard)
 - Will not implement example data for blast as we don't have it on the current site (and no complaints)
 
-
 ## Automatic formatting and validation
 
 For all sequences inserted in the blast input field we do a set of automatic formatting and validation to capture any accidental errors and highlight them on screen.
@@ -33,6 +32,17 @@ For all sequences inserted in the blast input field we do a set of automatic for
 
 ## Validation
 For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
+
+
+| Input type  | Transformations | Support |
+| ------------- | ------------- | ------- |
+| Bare sequence  | None  | Yes |
+| Bare sequence with numbered lines | Accept that a line starting with a digit is valid, and automatically delete the digits. In contrast, treating any digit in the middle of a line is invalid input. | Yes |
+| Bare sequence with empty lines | According to NCBI, blank lines are not allowed in the middle of a bare sequence input. However, we can show leniency and treat empty lines as sequence separators (and split the input into multiple sequences) | Yes |
+| FASTA sequence | Interpret the header line as a separator, and split into multiple sequences if input contains multiple header lines | Yes |
+| FASTA sequence with blank lines | Blank lines are not allowed in the middle of a FASTA input. However, we can show leniency and interpret blank lines as sequence separators. | Yes |
+| A combination of bare sequences and FASTA sequences in one input. | An unlikely scenario, but, technically, can rely on both blank lines and FASTA headers as sequence separators. | Yes |
+| Sequence id | Fetch sequence by its id and insert in the input field | No |
 
 ### Sequence type detection 
 
