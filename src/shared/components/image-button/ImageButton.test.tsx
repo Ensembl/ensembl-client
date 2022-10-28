@@ -38,47 +38,27 @@ describe('<ImageButton />', () => {
   const renderImageButton = (props: Partial<ImageButtonProps> = {}) =>
     render(<ImageButton {...defaultProps} {...props} />);
 
-  it('renders without error', () => {
-    expect(() => renderImageButton().container).not.toThrow();
-  });
-
-  describe('prop status', () => {
-    it('has a status set by default', () => {
-      const container = renderImageButton().container;
-      expect(
-        container
-          .querySelectorAll('.imageButton')[0]
-          .classList.contains(Status.DEFAULT)
-      ).toBeTruthy();
-    });
-  });
-
-  describe('prop description', () => {
-    it('has a description set by default', () => {
-      const container = renderImageButton().container;
-      expect(container.querySelector('img')?.alt).toEqual('');
-    });
-
-    it('respects the description prop', () => {
-      const container = renderImageButton({ description: 'foo' }).container;
-      expect(container.querySelector('img')?.alt).toEqual('foo');
-    });
-  });
-
-  describe('prop image', () => {
-    it('has an image set by default', () => {
-      const container = renderImageButton().container;
-      expect(container.querySelector('img')?.getAttribute('src')).toEqual('');
+  describe('rendering', () => {
+    it('renders without error', () => {
+      expect(() => renderImageButton().container).not.toThrow();
     });
 
     it('renders an img tag if a path to an image file is passed', () => {
-      const container = renderImageButton({ image: 'foo.png' }).container;
+      const { container } = renderImageButton({ image: 'foo.png' });
       expect(
         container.querySelector('button img')?.getAttribute('src')
       ).toEqual('foo.png');
     });
 
-    it('renders the svg file passed in', () => {
+    it('sets alt text when rendering img element if provided with description', () => {
+      const { container, rerender } = renderImageButton();
+      expect(container.querySelector('img')?.alt).toEqual('');
+
+      rerender(<ImageButton {...defaultProps} description="foo" />);
+      expect(container.querySelector('img')?.alt).toEqual('foo');
+    });
+
+    it('renders the svg element if provided with React svg component', () => {
       const mockSVG = () => {
         return <svg className="test_svg" />;
       };
@@ -86,44 +66,65 @@ describe('<ImageButton />', () => {
       const container = renderImageButton({ image: mockSVG }).container;
       expect(container.querySelector('button .test_svg')).toBeTruthy();
     });
-  });
 
-  describe('prop classNames', () => {
-    it('applies the default className when no status is provided', () => {
-      const container = renderImageButton().container;
+    it('applies the appropriate css class to the button depending on its status', () => {
+      // default status
+      const { container, rerender } = renderImageButton();
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLButtonElement;
 
-      expect(container.querySelectorAll('.default')).toHaveLength(1);
+      expect(imageButton.classList.contains(Status.DEFAULT)).toBe(true);
+
+      rerender(<ImageButton {...defaultProps} status={Status.SELECTED} />);
+      expect(imageButton.classList.contains(Status.DEFAULT)).toBe(false);
+      expect(imageButton.classList.contains(Status.SELECTED)).toBe(true);
+
+      rerender(<ImageButton {...defaultProps} status={Status.UNSELECTED} />);
+      expect(imageButton.classList.contains(Status.SELECTED)).toBe(false);
+      expect(imageButton.classList.contains(Status.UNSELECTED)).toBe(true);
+
+      rerender(<ImageButton {...defaultProps} status={Status.DISABLED} />);
+      expect(imageButton.classList.contains(Status.UNSELECTED)).toBe(false);
+      expect(imageButton.classList.contains(Status.DISABLED)).toBe(true);
     });
 
-    it('applies the respective className depending on the button status', () => {
-      const container = renderImageButton({
-        status: Status.SELECTED
-      }).container;
+    it('applies the class name passed from the parent to the button', () => {
+      const customClassName = 'classFromParent';
+      const { container } = renderImageButton({ className: customClassName });
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLButtonElement;
 
-      expect(container.querySelectorAll('.selected')).toHaveLength(1);
+      expect(imageButton.classList.contains(customClassName)).toBe(true);
     });
   });
 
-  describe('prop onClick', () => {
+  describe('behaviour on click', () => {
     const onClick = jest.fn();
     afterEach(() => {
       jest.resetAllMocks();
     });
 
     it('calls the onClick prop when clicked', async () => {
-      const container = renderImageButton({ onClick }).container;
-      await userEvent.click(container.querySelectorAll('button')[0]);
+      const { container } = renderImageButton({ onClick });
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLButtonElement;
+      await userEvent.click(imageButton);
 
       expect(onClick).toBeCalled();
     });
 
     it('does not call the onClick prop when clicked if the status is disabled', async () => {
-      const container = renderImageButton({
+      const { container } = renderImageButton({
         onClick,
         status: Status.DISABLED
-      }).container;
-
-      await userEvent.click(container.querySelectorAll('button')[0]);
+      });
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLButtonElement;
+      await userEvent.click(imageButton);
 
       expect(onClick).not.toBeCalled();
     });
@@ -138,35 +139,41 @@ describe('<ImageButton />', () => {
       image: mockSVG,
       description
     };
+
     it('shows tooltip when moused over', () => {
-      const container = renderImageButton(props).container;
-      expect(container.querySelectorAll('.tooltip').length).toBe(0);
+      const { container } = renderImageButton(props);
+      expect(container.querySelector('.tooltip')).toBeFalsy();
 
-      fireEvent.mouseEnter(container.querySelectorAll('.imageButton')[0]);
+      // Have to mouse specifically over the button wrapper (top-level element rendered by the ImageButton component).
+      // Because, it seems, the mouseEnter event doesn't bubble from the button to the button wrapper in the test environment ¯\_(ツ)_/¯
+      const imageButton = container.firstChild as HTMLElement;
+      fireEvent.mouseEnter(imageButton);
 
-      const tooltip = container.querySelectorAll('.tooltip');
-      expect(tooltip).toHaveLength(1);
-      expect(tooltip[0].textContent).toBe(description);
+      const tooltip = container.querySelector('.tooltip');
+      expect(tooltip?.textContent).toBe(description);
     });
 
     it('does not show tooltip if clicked', async () => {
-      const container = renderImageButton(props).container;
+      const { container } = renderImageButton(props);
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLElement;
 
-      fireEvent.mouseEnter(container.querySelectorAll('.imageButton')[0]);
-      await userEvent.click(container.querySelectorAll('.imageButton')[0]);
+      fireEvent.mouseEnter(imageButton);
+      await userEvent.click(imageButton);
 
-      expect(container.querySelectorAll('.tooltip').length).toBe(0);
+      expect(container.querySelector('.tooltip')).toBeFalsy();
     });
 
     it('does not show tooltip if description is not provided', () => {
-      const container = renderImageButton({
-        ...props,
-        description: ''
-      }).container;
+      const { container } = renderImageButton();
+      const imageButton = container.querySelector(
+        '.imageButton'
+      ) as HTMLElement;
 
-      fireEvent.mouseEnter(container.querySelectorAll('.imageButton')[0]);
+      fireEvent.mouseEnter(imageButton);
 
-      expect(container.querySelectorAll('.tooltip').length).toBe(0);
+      expect(container.querySelector('.tooltip')).toBeFalsy();
     });
   });
 });

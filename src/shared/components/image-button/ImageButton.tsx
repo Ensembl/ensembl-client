@@ -45,9 +45,6 @@ export type Props = ChildlessButtonProps & {
   status?: ImageButtonStatus;
   description?: string;
   image: FunctionComponent | string;
-  // className?: string;
-  // statusClasses?: { [key in ImageButtonStatus]?: string };
-  // onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export const ImageButton = (props: Props) => {
