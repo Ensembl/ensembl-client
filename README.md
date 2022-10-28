@@ -2,9 +2,9 @@
 
 ## Introduction
 
-This repository is an all-new frontend for the Ensembl website, written in React, Rust and WASM. The current public release can be seen at https://2020.ensembl.org. The new site will integrate genomes from across the taxonomic space, including vertebrates, invertebrates, plants, fungi and bacteria.
+This repository is an all-new frontend for the Ensembl website. The current public release can be seen at https://beta.ensembl.org. The new site will integrate genomes from across the taxonomic space, including vertebrates, invertebrates, plants, fungi and bacteria.
 
-If you are interested in the latest developments in this project, please join our Slack channel #ensembl2020 or follow our [blog](https://www.ensembl.info).
+If you are interested in the latest developments in this project, please join our Slack channel #ensemblbeta or follow our [blog](https://www.ensembl.info).
 
 ## Installation
 
@@ -32,20 +32,19 @@ The new genome browser uses Rust, WASM and WebGL to provide a fast, smooth inter
 
 ### Species Selector
 
-Since we aim to include all the current Ensembl species in the finished site, easy selection of genomes is of paramount importance. Our Species Selector home page displays icons for our 42 most popular genomes, or you can search for any species by common or scientific name.
+Since we aim to include all the current Ensembl species in the finished site, easy selection of genomes is of paramount importance. Our Species Selector home page displays icons for our 42 most popular genomes, or you can search for any species by common or scientific name. 
 
 ### Entity Viewer
 
-View detailed information about annotation features: genes, transcripts, proteins, variants, etc.
+View detailed information about annotation features: genes, transcripts and proteins.
 
-### Custom Download
+### Gene name Search
 
-We are replacing BioMart with a more scalable and performant solution that allows you to quickly configure a custom dataset and download it. (Note that there will also be downloads of individual sequences available through other apps such as Entity Viewer.)
+You can search for gene names from any of the applications above. Global Search, which will allow you to search for gene names and symbols and other identifiers, is for future development.
 
-### Global Search
+### BLAST
 
-Similar to our current site-wide search, the Global Search will allow you to search for gene names and symbols and other identifiers.
-
+You can BLAST against a range of databases (proteins, transcripts, and genomic sequence), view the results in graphic and tabular format, and download the data.
 
 # Running the ensembl-client application
 
@@ -61,7 +60,7 @@ Similar to our current site-wide search, the Global Search will allow you to sea
 - `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
 - `npm run lint:styles` - Runs `stylelint` against SCSS files to make sure they conform to the style guide.
 - `npm run check-types` – Runs typescript compiler to check for type correctness.
-- `npm test` - Runs the suit of unit tests with `jest`.
+- `npm test` - Runs the suite of unit tests with `jest`.
 - `npm test:watch` - Runs `jest` in watch mode.
 - `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
 
