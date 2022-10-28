@@ -40,13 +40,6 @@ import LocationDisplay, {
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
-const mockChangeFocusObjectFromZmenu = jest.fn();
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    changeFocusObjectFromZmenu: mockChangeFocusObjectFromZmenu
-  })
-);
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
