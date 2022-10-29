@@ -93,16 +93,13 @@ describe('<SimpleTrackPanelItemLayout />', () => {
         <MainContent />
       </SimpleTrackPanelItemLayout>
     );
-    const visibilitySwitchContainer = container.querySelector(
+    const imageButton = container.querySelector(
       '.visibilitySwitch .imageButton'
     );
-    const visibilitySwitch = visibilitySwitchContainer?.querySelector('button');
 
-    await userEvent.click(visibilitySwitch as HTMLButtonElement);
+    await userEvent.click(imageButton as HTMLButtonElement);
 
-    expect(visibilitySwitchContainer?.classList.contains('selected')).toBe(
-      true
-    );
+    expect(imageButton?.classList.contains('selected')).toBe(true);
     expect(onChangeVisibility).toHaveBeenCalledTimes(1);
   });
 

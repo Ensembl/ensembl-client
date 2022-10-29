@@ -15,16 +15,11 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import { VisibilityIcon } from './VisibilityIcon';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { Status } from 'src/shared/types/status';
-
-jest.mock('src/shared/components/image-button/ImageButton', () => {
-  return jest.fn(() => <div data-test-id="image button" />);
-});
 
 describe('<VisibilityIcon />', () => {
   const onClick = jest.fn();
@@ -34,21 +29,22 @@ describe('<VisibilityIcon />', () => {
   });
 
   it('renders ImageButton', () => {
-    render(<VisibilityIcon status={Status.SELECTED} onClick={onClick} />);
-
-    expect(screen.queryByTestId('image button')).toBeTruthy();
+    const { container } = render(
+      <VisibilityIcon status={Status.SELECTED} onClick={onClick} />
+    );
+    expect(container.querySelector('.imageButton')).toBeTruthy();
   });
 
-  it('passes the DEFAULT status to ImageButton when partially selected', () => {
-    render(
+  it('passes appropriate class to ImageButton when partially selected', () => {
+    const { container } = render(
       <VisibilityIcon status={Status.PARTIALLY_SELECTED} onClick={onClick} />
     );
 
-    const imageButtonProps = (ImageButton as any).mock.calls[0][0];
+    const imageButton = container.querySelector('.imageButton');
 
-    // image button status should be default
-    expect(imageButtonProps.status).toBe(Status.DEFAULT);
-    // however, the default class of the image button should be partiallySelected
-    expect(imageButtonProps.statusClasses.default).toBe('partiallySelected');
+    expect(imageButton?.classList.contains('default')).toBe(true); // this css class is determined by the button's default status
+    expect(
+      imageButton?.classList.contains('visibilityIconPartiallySelected')
+    ).toBe(true); // this css class is passed to the image button from the visibility icon component
   });
 });
