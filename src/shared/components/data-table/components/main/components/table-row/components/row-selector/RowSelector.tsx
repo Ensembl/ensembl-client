@@ -48,15 +48,16 @@ const RowSelector = (props: RowSelectorProps) => {
     status: boolean;
     rowId: string | number;
   }) => {
+    const updatedIds = new Set(hiddenRowIdsInDraft);
     if (params.status) {
-      hiddenRowIdsInDraft.delete(params.rowId);
+      updatedIds.delete(params.rowId);
     } else {
-      hiddenRowIdsInDraft.add(params.rowId);
+      updatedIds.add(params.rowId);
     }
 
     dispatch({
       type: 'set_hidden_row_ids_in_draft',
-      payload: hiddenRowIdsInDraft
+      payload: updatedIds
     });
   };
 

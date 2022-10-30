@@ -82,7 +82,7 @@ const RowVisibilityController = () => {
   const applyChanges = () => {
     dispatch({
       type: 'set_hidden_row_ids',
-      payload: hiddenRowIdsInDraft
+      payload: new Set(hiddenRowIdsInDraft)
     });
   };
 
