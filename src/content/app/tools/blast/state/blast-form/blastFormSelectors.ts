@@ -42,8 +42,8 @@ export const getSelectedSearchSensitivity = (state: RootState) =>
 export const getBlastSearchParameters = (state: RootState) =>
   state.blast.blastForm.settings.parameters;
 
-export const getBlastJobName = (state: RootState) =>
-  state.blast.blastForm.settings.jobName;
+export const getBlastSubmissionName = (state: RootState) =>
+  state.blast.blastForm.settings.submissionName;
 
 export const getStep = (state: RootState) => state.blast.blastForm.step;
 

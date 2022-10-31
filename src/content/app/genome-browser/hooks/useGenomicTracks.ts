@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import pickBy from 'lodash/pickBy';
 
 import { useAppSelector } from 'src/store';
@@ -24,15 +24,9 @@ import useGenomeBrowserIds from './useGenomeBrowserIds';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
-import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { Status } from 'src/shared/types/status';
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
-import type {
-  TrackStates,
-  TrackActivityStatus
-} from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 /**
  * The purposes of this hook are:
@@ -45,10 +39,10 @@ import type { TrackSettings } from 'src/content/app/genome-browser/state/track-s
 
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
-  const allBrowserTrackStates = useAppSelector(getBrowserTrackStates);
   const trackSettingsForGenome =
-    useAppSelector(getAllTrackSettings)?.tracks ?? {};
+    useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
   const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
+  const genomeIdInitialisedRef = useRef('');
 
   const { data: genomeTrackCategories } = useGenomeTracksQuery(
     activeGenomeId as string,
@@ -57,28 +51,30 @@ const useGenomicTracks = () => {
     }
   );
 
-  const savedGenomicTrackStates =
-    allBrowserTrackStates[activeGenomeId ?? '']?.commonTracks ?? {};
-
   useEffect(() => {
-    if (!genomeBrowser) {
+    if (
+      !genomeBrowser ||
+      !trackSettingsForGenome ||
+      genomeIdInitialisedRef.current === activeGenomeId
+    ) {
       return;
     }
 
     const trackIdsList = prepareTrackIdsList(
       genomeTrackCategories ?? [],
-      savedGenomicTrackStates
+      trackSettingsForGenome
     );
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
+    genomeIdInitialisedRef.current = activeGenomeId as string;
   }, [
     activeGenomeId,
     genomeTrackCategories,
-    savedGenomicTrackStates,
+    trackSettingsForGenome,
     genomeBrowser
   ]);
 
   useEffect(() => {
-    if (!genomeBrowser) {
+    if (!genomeBrowser || !trackSettingsForGenome) {
       return;
     }
 
@@ -88,49 +84,31 @@ const useGenomicTracks = () => {
 
 type TrackIdsList = {
   trackId: string;
-  status: Status;
+  isTurnedOn: boolean;
 }[];
 
 // Create a list of tracks to enable in the genome browser.
 // Assume that all tracks should be enabled by default
 const prepareTrackIdsList = (
   trackGroups: GenomeTrackCategory[],
-  savedTrackStates: TrackStates
+  trackSettings: TrackSettingsPerTrack
 ): TrackIdsList => {
   const trackIdsList = trackGroups
     .flatMap(({ track_list }) => track_list)
-    .map(({ track_id }) => ({
-      trackId: track_id,
-      status: Status.SELECTED
-    }));
-  return combineWithSavedData(trackIdsList, savedTrackStates);
-};
-
-const combineWithSavedData = (
-  trackIdsList: TrackIdsList,
-  savedTrackStates: TrackStates
-): TrackIdsList => {
-  const savedTrackVisibilityMap = new Map<string, TrackActivityStatus>();
-  Object.values(savedTrackStates)
-    .flatMap((trackCategory) => Object.entries(trackCategory))
-    .forEach(([trackId, trackStatus]) => {
-      savedTrackVisibilityMap.set(trackId, trackStatus);
+    .map(({ track_id }) => {
+      const track = trackSettings[track_id];
+      const isVisibleTrack =
+        'isVisible' in track?.settings && track.settings.isVisible;
+      return {
+        trackId: track_id,
+        isTurnedOn: isVisibleTrack ?? true
+      };
     });
-  return trackIdsList.map((item) => {
-    const { trackId } = item;
-    if (savedTrackVisibilityMap.has(trackId)) {
-      const savedTrackStatus = savedTrackVisibilityMap.get(
-        trackId
-      ) as TrackActivityStatus;
-      return { ...item, status: savedTrackStatus };
-    } else {
-      return item;
-    }
-  });
+  return trackIdsList;
 };
 
 const sendTrackSettings = (
-  trackSettings: TrackSettings,
+  trackSettings: TrackSettingsPerTrack,
   genomeBrowserMethods: NonNullable<
     Omit<ReturnType<typeof useGenomeBrowser>, 'genomeBrowser'>
   >
@@ -139,7 +117,7 @@ const sendTrackSettings = (
     trackSettings,
     (_, key) => key !== 'focus'
   ); // exclude the focus track
-  Object.entries(genomicTrackSettings).forEach(([trackId, settings]) => {
+  Object.entries(genomicTrackSettings).forEach(([trackId, { settings }]) => {
     Object.entries(settings).forEach((keyValuePair) => {
       const [settingName, settingValue] = keyValuePair as [string, boolean];
       switch (settingName) {

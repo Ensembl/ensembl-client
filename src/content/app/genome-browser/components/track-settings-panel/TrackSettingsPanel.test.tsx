@@ -15,68 +15,79 @@
  */
 
 import React from 'react';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 
+import createRootReducer from 'src/root/rootReducer';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import * as trackSettingsSlice from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import TrackSettingsPanel from './TrackSettingsPanel';
 
 const genomeId = 'fake_genome_id_1';
 const selectedTrackId = 'focus';
-const renderComponent = () => {
-  const rootReducer = combineReducers({
-    browser: combineReducers({
-      browserGeneral: browserGeneralSlice.default,
-      trackSettings: trackSettingsSlice.default
-    })
-  });
 
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackTrackNameToggle: jest.fn(),
+    trackFeatureLabelToggle: jest.fn(),
+    trackShowSeveralTranscriptsToggle: jest.fn(),
+    trackShowTranscriptsIdToggle: jest.fn(),
+    trackApplyToAllInTrackSettings: jest.fn()
+  })
+);
+
+const renderComponent = () => {
   const fragment = {
-    tracks: {
-      [selectedTrackId]: {
+    [selectedTrackId]: {
+      id: selectedTrackId,
+      trackType: TrackType.GENE,
+      status: 'selected',
+      settings: {
         showSeveralTranscripts: false,
         showTranscriptIds: false,
         showTrackName: false,
-        showFeatureLabels: false,
-        trackType: trackSettingsSlice.TrackType.GENE
+        showFeatureLabels: false
       }
     }
-  };
+  } as const;
 
   const initialState = {
     browser: {
-      browserGeneral: Object.assign(
-        {},
-        browserGeneralSlice.defaultBrowserGeneralState,
-        { activeGenomeId: genomeId }
-      ),
+      browserGeneral: {
+        ...browserGeneralSlice.defaultBrowserGeneralState,
+        activeGenomeId: genomeId
+      },
+      displayedTracks: [
+        {
+          id: selectedTrackId,
+          height: 100,
+          offsetTop: 0
+        }
+      ],
       trackSettings: {
-        selectedCog: selectedTrackId,
-        settings: {
-          [genomeId]: Object.assign(
-            {},
-            trackSettingsSlice.defaultTrackSettingsForGenome,
-            fragment
-          )
+        [genomeId]: {
+          ...trackSettingsSlice.defaultTrackSettingsForGenome,
+          settingsForIndividualTracks: fragment
         }
       }
     }
   };
 
   const store = configureStore({
-    reducer: rootReducer,
-    preloadedState: initialState
+    reducer: createRootReducer(),
+    preloadedState: initialState as any
   });
 
   const renderResult = render(
     <Provider store={store}>
-      <TrackSettingsPanel />
+      <TrackSettingsPanel trackId={selectedTrackId} />
     </Provider>
   );
   return {
@@ -95,15 +106,6 @@ jest.mock(
     toggleFeatureLabels: jest.fn(),
     toggleTranscriptIds: jest.fn(),
     toggleSeveralTranscripts: jest.fn()
-  })
-);
-
-jest.mock(
-  'src/content/app/genome-browser/components/browser-cog/useBrowserCogList',
-  () => () => ({
-    cogList: {
-      [selectedTrackId]: 0
-    }
   })
 );
 
@@ -141,7 +143,8 @@ describe('<TrackSettingsPanel />', () => {
         isSelected: true
       });
       expect(
-        updatedState.browser.trackSettings.settings[genomeId].shouldApplyToAll
+        updatedState.browser.trackSettings[genomeId].settingsForAllTracks
+          .shouldApplyToAll
       ).toBeTruthy();
     });
 
@@ -158,12 +161,11 @@ describe('<TrackSettingsPanel />', () => {
       expect(trackSettingsSlice.updateTrackName).toHaveBeenCalledWith({
         genomeId,
         isTrackNameShown: true,
-        trackId: updatedState.browser.trackSettings.selectedCog
+        trackId: selectedTrackId
       });
       expect(
-        updatedState.browser.trackSettings.settings[genomeId].tracks[
-          selectedTrackId
-        ].showTrackName
+        updatedState.browser.trackSettings[genomeId]
+          .settingsForIndividualTracks[selectedTrackId].settings.showTrackName
       ).toBeTruthy();
     });
 
@@ -181,14 +183,13 @@ describe('<TrackSettingsPanel />', () => {
       ).toHaveBeenCalledWith({
         genomeId,
         areFeatureLabelsShown: true,
-        trackId: updatedState.browser.trackSettings.selectedCog
+        trackId: selectedTrackId
       });
       const trackInfo =
-        updatedState.browser.trackSettings.settings[genomeId].tracks[
-          selectedTrackId
-        ];
-      if (trackInfo.trackType === trackSettingsSlice.TrackType.GENE) {
-        expect(trackInfo.showFeatureLabels).toBeTruthy();
+        updatedState.browser.trackSettings[genomeId]
+          .settingsForIndividualTracks[selectedTrackId];
+      if (trackInfo.trackType === TrackType.GENE) {
+        expect(trackInfo.settings.showFeatureLabels).toBeTruthy();
       }
     });
   });

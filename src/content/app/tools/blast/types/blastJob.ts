@@ -29,8 +29,9 @@ export type BlastJobResult = {
 };
 
 export type BlastHit = {
-  hit_acc: string;
+  hit_acc: string; // name of the hit; a hit also contains a `hit_id` field that seems to be identical to `hit_acc`
   hit_def: string;
+  hit_len: number;
   hit_hsps: HSP[];
 };
 

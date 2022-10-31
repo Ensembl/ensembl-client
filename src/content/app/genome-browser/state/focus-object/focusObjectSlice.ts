@@ -15,14 +15,18 @@
  */
 
 import {
-  Action,
   createAsyncThunk,
   createSlice,
-  ThunkAction
+  type Action,
+  type ThunkAction
 } from '@reduxjs/toolkit';
+
+import isGeneFocusObject from './isGeneFocusObject';
+import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
   buildFocusObjectId,
@@ -30,6 +34,8 @@ import {
 } from 'src/shared/helpers/focusObjectHelpers';
 import { getFocusObjectLoadingStatus } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
+
+import { getFocusObject as getFocusObjectFromStorage } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
@@ -77,7 +83,8 @@ export const buildGeneObject = (params: BuildGeneObjectParams): FocusGene => {
     stable_id: params.gene.unversioned_stable_id,
     versioned_stable_id: params.gene.stable_id,
     bio_type: params.gene.metadata.biotype.label,
-    strand
+    strand,
+    visibleTranscriptIds: null
   };
 };
 
@@ -180,6 +187,12 @@ export const fetchFocusObject = createAsyncThunk(
         gene: result.data?.gene as TrackPanelGene
       });
 
+      const storedFocusGeneData = await getFocusObjectFromStorage(
+        focusObjectId
+      );
+      geneFocusObject.visibleTranscriptIds =
+        storedFocusGeneData?.visibleTranscriptIds ?? null;
+
       return buildLoadedObject({
         id: focusObjectId,
         data: geneFocusObject
@@ -187,6 +200,33 @@ export const fetchFocusObject = createAsyncThunk(
     } catch (error) {
       thunkAPI.rejectWithValue(error as Error);
     }
+  }
+);
+
+export const updateFocusGeneTranscriptsVisibility = createAsyncThunk(
+  'genome-browser/udpate-focus-gene-transcripts-visibility',
+  async (
+    payload: { focusGeneId: string; visibleTranscriptIds: string[] },
+    thunkAPI
+  ) => {
+    // focusGeneId is in the focus object id format, i.e. "<genome_id>:gene:<stable_id>"
+    const { focusGeneId, visibleTranscriptIds } = payload;
+    const state = thunkAPI.getState() as RootState;
+    const focusGene = state.browser.focusObjects[focusGeneId]?.data;
+
+    if (!isGeneFocusObject(focusGene)) {
+      return null; // this shouldn't happen
+    }
+
+    const updatedFocusGene = {
+      ...focusGene,
+      visibleTranscriptIds: visibleTranscriptIds
+    };
+    await focusObjectStorageService.updateFocusObject(
+      focusGeneId,
+      updatedFocusGene
+    );
+    return updatedFocusGene;
   }
 );
 
@@ -198,6 +238,15 @@ const focusObjectSlice = createSlice({
     builder.addCase(fetchFocusObject.fulfilled, (state, action) => {
       state = Object.assign(state, action.payload);
     });
+    builder.addCase(
+      updateFocusGeneTranscriptsVisibility.fulfilled,
+      (state, action) => {
+        const focusGene = action.payload;
+        if (focusGene) {
+          state[focusGene.object_id].data = focusGene;
+        }
+      }
+    );
   }
 });
 

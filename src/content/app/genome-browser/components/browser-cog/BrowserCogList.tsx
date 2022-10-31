@@ -14,99 +14,81 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
-
+import React, { useState, useEffect, memo } from 'react';
 import {
   IncomingActionType,
   type UpdateTrackSummaryAction,
-  type TrackSummaryList,
-  type TrackSummary
+  type TrackSummaryList
 } from '@ensembl/ensembl-genome-browser';
 
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
-
-import BrowserCog from './BrowserCog';
-
 import { useAppDispatch, useAppSelector } from 'src/store';
-import useBrowserCogList from './useBrowserCogList';
 
-import { getBrowserSelectedCog } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
-import {
-  type CogList,
-  updateSelectedCog
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import { setDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSlice';
+
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+
+import BrowserCog from './BrowserCog';
+
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
-  const selectedCog = useAppSelector(getBrowserSelectedCog);
+  const [selectedCog, setSelectedCog] = useState<string | null>(null);
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const objectId = useAppSelector(getBrowserActiveFocusObjectId);
-  const dispatch = useAppDispatch();
+  const focusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
 
   const { genomeBrowser } = useGenomeBrowser();
 
-  const { cogList: browserCogList, setCogList } = useBrowserCogList();
+  const displayedTracks = useAppSelector(getDisplayedTracks);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.TRACK_SUMMARY,
       (action: UpdateTrackSummaryAction) => {
-        updateTrackSummary(action.payload);
+        updateDisplayedTracks(action.payload);
       }
     );
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser, genomeId, objectId]);
+  }, [genomeBrowser, genomeId, focusObjectId]);
 
-  const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
-    if (!objectId) {
-      return;
-    }
+  const updateDisplayedTracks = (trackSummaryList: TrackSummaryList) => {
+    const payload = trackSummaryList.map((track) => ({
+      id: track['switch-id'],
+      height: track.height as unknown as number, // FIXME: fix genome browser types
+      offsetTop: track.offset as unknown as number // FIXME: fix genome browser types
+    }));
 
-    const cogList: CogList = {};
-
-    trackSummaryList.forEach((trackSummary: TrackSummary) => {
-      if (
-        trackSummary.offset &&
-        trackSummary['switch-id'] &&
-        !cogList[trackSummary['switch-id']]
-      ) {
-        const trackId = trackSummary['switch-id'];
-        cogList[trackId] = Number(trackSummary.offset);
-      }
-    });
-
-    setCogList(cogList);
+    dispatch(setDisplayedTracks(payload));
   };
 
   useEffect(() => {
     // make sure to close the floating track config panel if the user switches to a different species
-    dispatch(updateSelectedCog(null));
+    updateSelectedCog(null);
   }, [genomeId]);
 
-  const handleCogSelect = (trackId: string | null) => {
-    dispatch(updateSelectedCog(trackId));
+  const updateSelectedCog = (trackId: string | null) => {
+    setSelectedCog(trackId);
   };
 
-  const cogs =
-    browserCogList &&
-    Object.entries(browserCogList).map(([name, pos]) => {
-      const posStyle = { top: `${pos}px` };
+  const cogs = displayedTracks.map((track) => {
+    const posStyle = { top: `${track.offsetTop}px` };
 
-      return (
-        <div key={name} className={styles.browserCogOuter} style={posStyle}>
-          <BrowserCog
-            cogActivated={selectedCog === name}
-            trackId={name}
-            updateSelectedCog={handleCogSelect}
-          />
-        </div>
-      );
-    });
+    return (
+      <div key={track.id} className={styles.browserCogOuter} style={posStyle}>
+        <BrowserCog
+          cogActivated={selectedCog === track.id}
+          trackId={track.id}
+          updateSelectedCog={updateSelectedCog}
+        />
+      </div>
+    );
+  });
 
   return genomeBrowser ? (
     <div className={styles.browserTrackSettingsOuter}>

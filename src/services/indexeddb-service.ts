@@ -16,8 +16,11 @@
 
 import { openDB, IDBPDatabase } from 'idb';
 
+import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageConstants';
+import { GB_FOCUS_OBJECTS_STORE_NAME } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageConstants';
+
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
@@ -29,6 +32,23 @@ const getDbPromise = () => {
       if (!db.objectStoreNames.contains('blast-submissions')) {
         db.createObjectStore('blast-submissions');
       }
+      if (!db.objectStoreNames.contains(GB_TRACK_SETTINGS_STORE_NAME)) {
+        const trackSettingsObjectStore = db.createObjectStore(
+          GB_TRACK_SETTINGS_STORE_NAME,
+          { keyPath: ['genomeId', 'trackId'] }
+        );
+        trackSettingsObjectStore.createIndex('genomeId', 'genomeId', {
+          unique: false
+        });
+      }
+      if (!db.objectStoreNames.contains(GB_FOCUS_OBJECTS_STORE_NAME)) {
+        const trackSettingsObjectStore = db.createObjectStore(
+          GB_FOCUS_OBJECTS_STORE_NAME
+        );
+        trackSettingsObjectStore.createIndex('genomeId', 'genomeId', {
+          unique: false
+        });
+      }
     }
   });
 };
@@ -36,7 +56,7 @@ const getDbPromise = () => {
 class IndexedDB {
   static db: IDBPDatabase | null = null;
 
-  private static async getDB() {
+  static async getDB() {
     if (!this.db) {
       this.db = await getDbPromise();
     }

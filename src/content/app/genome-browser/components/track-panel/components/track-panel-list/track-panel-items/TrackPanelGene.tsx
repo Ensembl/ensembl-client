@@ -16,26 +16,25 @@
 
 import React, { useState } from 'react';
 
-import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { updateObjectTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import {
-  getBrowserActiveGenomeTrackStates,
-  getBrowserTrackState
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { getFocusGeneVisibleTranscripts } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import TrackPanelTranscript from './TrackPanelTranscript';
 import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
+import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
+import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItem.scss';
 
@@ -52,18 +51,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     genomeId,
     geneId
   });
-  const trackStatus = useAppSelector((state: RootState) =>
-    getBrowserTrackState(state, {
-      genomeId,
-      objectId: focusObjectId,
-      tracksGroup: 'objectTracks'
-    })
-  );
   const visibleTranscriptIds = useAppSelector((state) => {
-    const genomeTrackStates = getBrowserActiveGenomeTrackStates(state);
-    return (
-      genomeTrackStates?.objectTracks?.[focusObjectId]?.transcripts ?? null
-    );
+    return getFocusGeneVisibleTranscripts(state, focusObjectId);
   });
 
   const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
@@ -92,30 +81,31 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     : Status.PARTIALLY_SELECTED;
 
   const onGeneVisibilityChange = () => {
+    let visibleTranscriptIds: string[];
+    let nextStatus: Status;
+
     if (geneVisibilityStatus === Status.PARTIALLY_SELECTED) {
       // show all transcripts
-      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
-      updateFocusGeneTranscripts(visibleTranscriptIds);
-      trackFocusTrackVisibilityToggled(Status.SELECTED);
-      return;
-    }
-
-    const newStatus =
-      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-
-    if (newStatus === Status.SELECTED) {
+      visibleTranscriptIds = pluckStableIds(sortedTranscripts);
+      nextStatus = Status.SELECTED;
+    } else if (geneVisibilityStatus === Status.UNSELECTED) {
+      // also show all transcripts, but also tell genome browser to enable focus track
+      visibleTranscriptIds = pluckStableIds(sortedTranscripts);
       setFocusGene(focusObjectId);
-      const visibleTranscriptIds = pluckStableIds(sortedTranscripts);
-      updateFocusGeneTranscripts(visibleTranscriptIds);
+      nextStatus = Status.SELECTED;
     } else {
-      updateFocusGeneTranscripts([]);
+      // hide all transcripts and hide the track
+      visibleTranscriptIds = [];
+      nextStatus = Status.UNSELECTED;
     }
 
-    trackFocusTrackVisibilityToggled(newStatus);
+    updateFocusGeneTranscripts(visibleTranscriptIds);
+    trackFocusTrackVisibilityToggled(nextStatus);
 
     dispatch(
-      updateObjectTrackStates({
-        status: newStatus
+      updateFocusGeneTranscriptsVisibility({
+        focusGeneId: focusObjectId,
+        visibleTranscriptIds: visibleTranscriptIds
       })
     );
   };
@@ -162,25 +152,40 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     return 'Show all transcripts';
   };
 
+  const commonComponentProps = {
+    visibilityStatus: geneVisibilityStatus as TrackActivityStatus,
+    onChangeVisibility: onGeneVisibilityChange,
+    visibilityIconHelpText: getVisibilityIconHelpText(geneVisibilityStatus),
+    onShowMore: onShowMore
+  };
+
+  const trackPanelItemChildren = (
+    <div className={styles.label}>
+      <span className={styles.labelTextStrong}>
+        {gene.symbol ?? gene.stable_id}
+      </span>
+      <span className={styles.labelTextSecondary}>
+        {gene.metadata.biotype.label}
+      </span>
+    </div>
+  );
+
   return (
     <>
-      <GroupTrackPanelItemLayout
-        isCollapsed={isCollapsed}
-        visibilityStatus={geneVisibilityStatus}
-        onChangeVisibility={onGeneVisibilityChange}
-        visibilityIconHelpText={getVisibilityIconHelpText(geneVisibilityStatus)}
-        onShowMore={onShowMore}
-        toggleExpand={toggleExpand}
-      >
-        <div className={styles.label}>
-          <span className={styles.labelTextStrong}>
-            {gene.symbol ?? gene.stable_id}
-          </span>
-          <span className={styles.labelTextSecondary}>
-            {gene.metadata.biotype.label}
-          </span>
-        </div>
-      </GroupTrackPanelItemLayout>
+      {sortedTranscripts.length === 1 ? (
+        <SimpleTrackPanelItemLayout {...commonComponentProps}>
+          {trackPanelItemChildren}
+        </SimpleTrackPanelItemLayout>
+      ) : (
+        <GroupTrackPanelItemLayout
+          {...commonComponentProps}
+          isCollapsed={isCollapsed}
+          toggleExpand={toggleExpand}
+        >
+          {trackPanelItemChildren}
+        </GroupTrackPanelItemLayout>
+      )}
+
       {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
           transcript={transcript}

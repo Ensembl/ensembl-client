@@ -2,7 +2,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
+  grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
   column-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
@@ -13,6 +13,9 @@
 
 .submissionName {
   grid-column: submission-name;
+  min-width: 264px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .submissionDetails {
@@ -27,6 +30,7 @@
   margin-left: 15px;
 }
 
+.submissionNameLabel,
 .submissionIdLabel {
   font-weight: $light;
   margin-right: 1ch;

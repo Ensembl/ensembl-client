@@ -53,7 +53,6 @@ import MissingGenomeError from 'src/shared/components/error-screen/url-errors/Mi
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import type { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/ZmenuController';
-import type { CogList } from './state/track-settings/trackSettingsSlice';
 
 import styles from './Browser.scss';
 
@@ -168,8 +167,6 @@ type GenomeBrowserContextType = {
   setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
   zmenus: StateZmenu;
   setZmenus: (zmenus: StateZmenu) => void;
-  cogList: CogList | null;
-  setCogList: (cogList: CogList) => void;
 };
 
 export const GenomeBrowserContext = React.createContext<
@@ -181,7 +178,6 @@ const GenomeBrowserInitContainer = () => {
     useState<EnsemblGenomeBrowser | null>(null);
 
   const [zmenus, setZmenus] = useState<StateZmenu>({});
-  const [cogList, setCogList] = useState<CogList | null>(null);
 
   const browser = useMemo(() => {
     return <Browser />;
@@ -193,9 +189,7 @@ const GenomeBrowserInitContainer = () => {
         genomeBrowser,
         setGenomeBrowser,
         zmenus,
-        setZmenus,
-        cogList,
-        setCogList
+        setZmenus
       }}
     >
       {browser}

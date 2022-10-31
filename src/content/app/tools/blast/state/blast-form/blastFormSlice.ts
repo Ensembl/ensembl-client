@@ -28,7 +28,7 @@ import type {
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 type BlastFormSettings = {
-  jobName: string;
+  submissionName: string;
   sequenceType: SequenceType;
   sequenceSelectionMode: 'automatic' | 'manual';
   databaseSelectionMode: 'automatic' | 'manual';
@@ -54,7 +54,7 @@ export type BlastFormState = {
 };
 
 export const initialBlastFormSettings: BlastFormSettings = {
-  jobName: '',
+  submissionName: '',
   sequenceType: 'dna',
   sequenceSelectionMode: 'automatic',
   databaseSelectionMode: 'automatic',
@@ -310,8 +310,8 @@ const blastFormSlice = createSlice({
       const { parameterName, parameterValue } = action.payload;
       state.settings.parameters[parameterName] = parameterValue;
     },
-    setBlastJobName(state, action: PayloadAction<string>) {
-      state.settings.jobName = action.payload;
+    setBlastSubmissionName(state, action: PayloadAction<string>) {
+      state.settings.submissionName = action.payload;
     },
     // this action is for populating BLAST form with data from a previous BLAST submission
     fillBlastForm(
@@ -374,7 +374,7 @@ export const {
   setBlastProgram,
   changeSensitivityPresets,
   setBlastParameter,
-  setBlastJobName,
+  setBlastSubmissionName,
   fillBlastForm,
   setSequenceForGenome,
   clearBlastForm

@@ -1,6 +1,6 @@
 # CI/CD Pipeline
-# dev branch -> staging
-# master branch -> internal (Custom Downloads)
+# dev branch -> staging (runs exactly the same code as live; opportunity to inspect the site before pushing to production)
+# master branch -> internal (runs from the same master branch as live; but with flags enabled for seeing the latest UI changes that may not be ready for production)
 # master branch -> live
 
 # include template to setup review app
