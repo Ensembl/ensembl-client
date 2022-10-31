@@ -15,10 +15,10 @@
  */
 
 import {
-  Action,
   createAsyncThunk,
   createSlice,
-  ThunkAction
+  type Action,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 
 import isGeneFocusObject from './isGeneFocusObject';

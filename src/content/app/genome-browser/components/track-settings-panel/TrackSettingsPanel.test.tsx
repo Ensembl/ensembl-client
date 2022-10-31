@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 
+import createRootReducer from 'src/root/rootReducer';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import * as trackSettingsSlice from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
@@ -31,14 +32,18 @@ import TrackSettingsPanel from './TrackSettingsPanel';
 const genomeId = 'fake_genome_id_1';
 const selectedTrackId = 'focus';
 
-const renderComponent = () => {
-  const rootReducer = combineReducers({
-    browser: combineReducers({
-      browserGeneral: browserGeneralSlice.default,
-      trackSettings: trackSettingsSlice.default
-    })
-  });
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
+  () => () => ({
+    trackTrackNameToggle: jest.fn(),
+    trackFeatureLabelToggle: jest.fn(),
+    trackShowSeveralTranscriptsToggle: jest.fn(),
+    trackShowTranscriptsIdToggle: jest.fn(),
+    trackApplyToAllInTrackSettings: jest.fn()
+  })
+);
 
+const renderComponent = () => {
   const fragment = {
     [selectedTrackId]: {
       id: selectedTrackId,
@@ -59,6 +64,13 @@ const renderComponent = () => {
         ...browserGeneralSlice.defaultBrowserGeneralState,
         activeGenomeId: genomeId
       },
+      displayedTracks: [
+        {
+          id: selectedTrackId,
+          height: 100,
+          offsetTop: 0
+        }
+      ],
       trackSettings: {
         [genomeId]: {
           ...trackSettingsSlice.defaultTrackSettingsForGenome,
@@ -69,7 +81,7 @@ const renderComponent = () => {
   };
 
   const store = configureStore({
-    reducer: rootReducer,
+    reducer: createRootReducer(),
     preloadedState: initialState as any
   });
 
@@ -94,15 +106,6 @@ jest.mock(
     toggleFeatureLabels: jest.fn(),
     toggleTranscriptIds: jest.fn(),
     toggleSeveralTranscripts: jest.fn()
-  })
-);
-
-jest.mock(
-  'src/content/app/genome-browser/components/browser-cog/useBrowserCogList',
-  () => () => ({
-    cogList: {
-      [selectedTrackId]: 0
-    }
   })
 );
 

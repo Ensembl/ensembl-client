@@ -16,14 +16,15 @@
 
 import { useEffect, useRef } from 'react';
 
-import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
-import useBrowserCogList from '../browser-cog/useBrowserCogList';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getTrackSettingsForTrackId,
   getApplyToAllSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
+
 import {
   updateTrackName as updateTrackSettingsTrackName,
   updateFeatureLabelsVisibility as updateTrackSettingsFeatureLabelsVisibility,
@@ -45,9 +46,9 @@ type Params = {
 
 const useBrowserTrackSettings = (params: Params) => {
   const { selectedTrackId } = params;
-  const { cogList } = useBrowserCogList();
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const selectedTrackSettings = useAppSelector((state: RootState) =>
+  const displayedTracks = useAppSelector(getDisplayedTracks);
+  const selectedTrackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, selectedTrackId)
   );
   const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
@@ -78,16 +79,19 @@ const useBrowserTrackSettings = (params: Params) => {
       return;
     }
 
-    if (shouldApplyToAllRef.current && cogList) {
-      Object.keys(cogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current) {
+      displayedTracks.forEach((track) => {
         dispatch(
           updateTrackSettingsTrackName({
             genomeId: activeGenomeId,
-            trackId,
+            trackId: track.id,
             isTrackNameShown
           })
         );
-        toggleTrackName({ trackId, shouldShowTrackName: isTrackNameShown });
+        toggleTrackName({
+          trackId: track.id,
+          shouldShowTrackName: isTrackNameShown
+        });
       });
     } else {
       dispatch(
@@ -113,17 +117,17 @@ const useBrowserTrackSettings = (params: Params) => {
       return;
     }
 
-    if (shouldApplyToAllRef.current && cogList) {
-      Object.keys(cogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current) {
+      displayedTracks.forEach((track) => {
         dispatch(
           updateTrackSettingsFeatureLabelsVisibility({
             genomeId: activeGenomeId,
-            trackId,
+            trackId: track.id,
             areFeatureLabelsShown
           })
         );
         toggleFeatureLabels({
-          trackId,
+          trackId: track.id,
           shouldShowFeatureLabels: areFeatureLabelsShown
         });
       });
@@ -152,17 +156,17 @@ const useBrowserTrackSettings = (params: Params) => {
     if (!activeGenomeId) {
       return;
     }
-    if (shouldApplyToAllRef.current && cogList) {
-      Object.keys(cogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current) {
+      displayedTracks.forEach((track) => {
         dispatch(
           updateTrackSettingsShowSeveralTranscripts({
             genomeId: activeGenomeId,
-            trackId,
+            trackId: track.id,
             areSeveralTranscriptsShown
           })
         );
         toggleSeveralTranscripts({
-          trackId,
+          trackId: track.id,
           shouldShowSeveralTranscripts: areSeveralTranscriptsShown
         });
       });
@@ -192,17 +196,17 @@ const useBrowserTrackSettings = (params: Params) => {
     if (!activeGenomeId) {
       return;
     }
-    if (shouldApplyToAllRef.current && cogList) {
-      Object.keys(cogList).forEach((trackId) => {
+    if (shouldApplyToAllRef.current) {
+      displayedTracks.forEach((track) => {
         dispatch(
           updateTrackSettingsShowTranscriptIds({
             genomeId: activeGenomeId,
-            trackId,
+            trackId: track.id,
             shouldShowTranscriptIds
           })
         );
         toggleTranscriptIds({
-          trackId,
+          trackId: track.id,
           shouldShowTranscriptIds
         });
       });

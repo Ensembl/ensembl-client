@@ -15,33 +15,20 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import { render, act } from '@testing-library/react';
 import { IncomingActionType } from '@ensembl/ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { BrowserCogList } from './BrowserCogList';
 
-import { createMockBrowserState } from 'tests/fixtures/browser';
+import * as displayedTracksSlice from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSlice';
+
+import createRootReducer from 'src/root/rootReducer';
 
 const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
-
-jest.mock(
-  'src/content/app/genome-browser/state/api/genomeBrowserApiSlice',
-  () => ({
-    useGenomeTracksQuery: () => ({
-      data: null
-    })
-  })
-);
-
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => jest.fn()
-);
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
@@ -50,30 +37,38 @@ jest.mock(
   })
 );
 
-const mockSetCogList = jest.fn();
+jest.mock('./BrowserCog', () => () => <div className="browserCog" />);
 
-jest.mock(
-  'src/content/app/genome-browser/components/browser-cog/useBrowserCogList',
-  () => () => ({
-    setCogList: mockSetCogList,
-    cogList: {
-      'gene-focus': 0,
-      contig: 192,
-      gc: 384
+const displayedTracks = [
+  {
+    id: 'gene-focus',
+    height: 192,
+    offsetTop: 0
+  },
+  {
+    id: 'contig',
+    height: 100,
+    offsetTop: 192
+  },
+  {
+    id: 'gc',
+    height: 100,
+    offsetTop: 292
+  }
+];
+
+const renderComponent = () => {
+  const initialState = {
+    browser: {
+      displayedTracks
     }
-  })
-);
+  };
 
-jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: initialState as any
+  });
 
-const mockState = createMockBrowserState();
-
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
-
-const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
   return render(
     <Provider store={store}>
       <BrowserCogList />
@@ -87,41 +82,54 @@ describe('<BrowserCogList />', () => {
   });
 
   describe('rendering', () => {
-    it('contains <BrowserCog /> when browser is activated', () => {
+    it('renders correct number of cogs when genome browser is activated', () => {
       const { container } = renderComponent();
-      expect(container.querySelector('#browserCog')).toBeTruthy();
+      const renderedCogs = container.querySelectorAll('.browserCog');
+      expect(renderedCogs.length).toBe(displayedTracks.length);
     });
 
-    it('does not contain <BrowserCog /> when browser is not activated', () => {
+    it('does not render the cogs if genome browser is not activated', () => {
       mockGenomeBrowser.mockReturnValue(undefined);
 
       const { container } = renderComponent();
-      expect(container.querySelector('#browserCog')).toBeFalsy();
+      expect(container.querySelector('.browserCog')).toBeFalsy();
     });
 
-    it('calls updateCogList when genome browser sends track summary updates', () => {
+    it('updates displayed tracks in redux after receiving genome browser message', () => {
       mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
+      jest.spyOn(displayedTracksSlice, 'setDisplayedTracks');
 
       renderComponent();
 
-      mockGenomeBrowser().simulateBrowserMessage({
-        type: IncomingActionType.TRACK_SUMMARY,
-        payload: [
-          {
-            'switch-id': 'focus',
-            offset: 100
-          },
-          {
-            'switch-id': 'contig',
-            offset: 200
-          }
-        ]
+      const newTrackSummary = [
+        {
+          'switch-id': 'focus',
+          height: 200,
+          offset: 0
+        },
+        {
+          'switch-id': 'contig',
+          height: 192,
+          offset: 200
+        }
+      ];
+
+      act(() => {
+        mockGenomeBrowser().simulateBrowserMessage({
+          type: IncomingActionType.TRACK_SUMMARY,
+          payload: newTrackSummary
+        });
       });
 
-      expect(mockSetCogList).toBeCalledWith({
-        focus: 100,
-        contig: 200
-      });
+      const expectedPayload = newTrackSummary.map((track) => ({
+        id: track['switch-id'],
+        height: track.height,
+        offsetTop: track.offset
+      }));
+
+      expect(
+        (displayedTracksSlice.setDisplayedTracks as any).mock.calls[0][0]
+      ).toEqual(expectedPayload);
     });
   });
 });
