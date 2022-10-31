@@ -84,6 +84,10 @@ const RowVisibilityController = () => {
       type: 'set_hidden_row_ids',
       payload: new Set(hiddenRowIdsInDraft)
     });
+    dispatch({
+      type: 'set_selected_action',
+      payload: TableAction.DEFAULT
+    });
   };
 
   const hasSomeRowsHidden = hiddenRowIds.size > 0;
