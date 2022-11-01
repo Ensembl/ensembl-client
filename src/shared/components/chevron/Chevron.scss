@@ -1,14 +1,11 @@
 @import 'src/styles/common';
 
-.wrapper {
-  display: inline-block;
-  font-size: 0; // to prevent line-height's impact on the height of the element
-}
-
 .chevron {
   fill: var(--chevron-fill, $blue);
   height: var(--chevron-height, 8px);
   user-select: none;
+  display: inline-block;
+  font-size: 0; // to prevent line-height's impact on the height of the element
 }
 
 .chevron_animated {

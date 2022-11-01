@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
-import { Direction as ChevronDirection } from 'src/shared/components/chevron/Chevron';
+import { type Direction as ChevronDirection } from 'src/shared/components/chevron/Chevron';
 
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 

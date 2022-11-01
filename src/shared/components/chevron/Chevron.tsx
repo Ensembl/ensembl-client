@@ -31,23 +31,14 @@ export type Props = {
 
 const Chevron = (props: Props) => {
   const isNonDefaultDirection = props.direction !== 'down';
+
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate }
+    { [styles.chevron_animated]: props.animate },
+    props.className
   );
-
-  const wrapperClasses = classNames(styles.wrapper, props.className);
-
-  const wrapperProps = {
-    className: wrapperClasses
-  };
-
-  return (
-    <span {...wrapperProps}>
-      <ChevronDown className={chevronClasses} />
-    </span>
-  );
+  return <ChevronDown className={chevronClasses} />;
 };
 
 Chevron.defaultProps = {
