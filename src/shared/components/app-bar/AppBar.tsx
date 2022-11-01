@@ -17,7 +17,6 @@
 import React from 'react';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
-import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './AppBar.scss';
 
@@ -39,17 +38,5 @@ export const AppBar = (props: AppBarProps) => (
     </div>
   </section>
 );
-
-// this is a temporary component; will need update/refactoring once we have help resources
-export const HelpAndDocumentation = () => {
-  return (
-    <div className={styles.helpLink}>
-      <span>
-        Help &amp; documentation
-        <Chevron direction="right" className={styles.chevron} />
-      </span>
-    </div>
-  );
-};
 
 export default AppBar;
