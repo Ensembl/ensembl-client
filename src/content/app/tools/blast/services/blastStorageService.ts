@@ -16,12 +16,15 @@
 
 import IndexedDB from 'src/services/indexeddb-service';
 
+import {
+  BLAST_SUBMISSIONS_STORE_NAME as STORE_NAME,
+  BLAST_SUBMISSION_STORAGE_DURATION
+} from './blastStorageServiceConstants';
+
 import type {
   BlastSubmission,
   BlastJob
 } from '../state/blast-results/blastResultsSlice';
-
-const STORE_NAME = 'blast-submissions';
 
 export const saveBlastSubmission = async (
   submissionId: string,
@@ -33,14 +36,13 @@ export const saveBlastSubmission = async (
 export const getAllBlastSubmissions = async (): Promise<
   Record<string, BlastSubmission>
 > => {
-  const submissionIds = (await IndexedDB.keys(STORE_NAME)) as string[];
-  const submissions = await Promise.all(
-    submissionIds.map((id) => getBlastSubmission(id))
-  );
-  return submissionIds.reduce((obj, id, index) => {
+  const db = await IndexedDB.getDB();
+  const submissions = (await db.getAll(STORE_NAME)) as BlastSubmission[];
+
+  return submissions.reduce((obj, submission) => {
     return {
       ...obj,
-      [id]: submissions[index]
+      [submission.id]: submission
     };
   }, {} as Record<string, BlastSubmission>);
 };
@@ -86,4 +88,18 @@ export const updateSavedBlastJob = async (params: {
 
 export const deleteBlastSubmission = async (submissionId: string) => {
   await IndexedDB.delete(STORE_NAME, submissionId);
+};
+
+export const deleteExpiredBlastSubmissions = async () => {
+  const db = await IndexedDB.getDB();
+  // Delete all expired BLAST jobs in one transaction
+  const transaction = db.transaction(STORE_NAME, 'readwrite');
+  for await (const cursor of transaction.store) {
+    const submission: BlastSubmission = cursor.value;
+    const { submittedAt } = submission;
+    if (submittedAt < Date.now() - BLAST_SUBMISSION_STORAGE_DURATION) {
+      cursor.delete();
+    }
+  }
+  await transaction.done;
 };

@@ -2,7 +2,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
+  grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [controls-section] 20%;
   column-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
@@ -51,7 +51,7 @@
   margin-left: 1ch;
 }
 
-.controlButtons {
+.controlsSection {
   grid-column: control-buttons;
   display: flex;
   align-items: center;
@@ -61,6 +61,13 @@
 
 .controlButtons > * {
   flex-shrink: 0;
+}
+
+.unavailableResultsMessage {
+  display: flex;
+  align-items: center;
+  column-gap: 0.6rem;
+  color: red;
 }
 
 .deleteMessageContainer {

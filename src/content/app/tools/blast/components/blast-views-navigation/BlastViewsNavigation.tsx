@@ -34,6 +34,10 @@ const BlastViewsNavigation = () => {
           </ButtonLink>
         </div>
       </div>
+      <div className={styles.resultsAvailabilityNotice}>
+        Results are only available for 7 days from submission. Submissions can
+        be rerun for 28 days.
+      </div>
       <div className={styles.rightColumn}>
         <div className={styles.wrapperRight}>
           <BlastJobListsNavigation />

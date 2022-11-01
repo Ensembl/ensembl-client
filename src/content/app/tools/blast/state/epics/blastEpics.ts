@@ -78,7 +78,7 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
       return results.map((job) => ({ submissionId, job }));
     }),
     poll(),
-    tap(databaseUpdaterSubject),
+    tap(databaseUpdaterSubject()),
     map((pollingResult) => {
       const {
         submissionId,
@@ -112,7 +112,7 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
       );
     }),
     poll(),
-    tap(databaseUpdaterSubject),
+    tap(databaseUpdaterSubject()),
     map((pollingResult) => {
       const {
         submissionId,
@@ -170,18 +170,19 @@ const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
 };
 
 // save polling results to database
-const databaseUpdaterSubject = new Subject<{
-  submissionId: string;
-  job: BlastJob;
-}>().pipe(
-  // make sure to wait until the async job of saving to indexedDb has been completed before starting a new one
-  concatMap((pollingResult) => {
-    const {
-      submissionId,
-      job: { jobId, status }
-    } = pollingResult;
-    return from(
-      updateSavedBlastJob({ submissionId, jobId, fragment: { status } })
-    );
-  })
-);
+const databaseUpdaterSubject = () =>
+  new Subject<{
+    submissionId: string;
+    job: BlastJob;
+  }>().pipe(
+    // make sure to wait until the async job of saving to indexedDb has been completed before starting a new one
+    concatMap((pollingResult) => {
+      const {
+        submissionId,
+        job: { jobId, status }
+      } = pollingResult;
+      return from(
+        updateSavedBlastJob({ submissionId, jobId, fragment: { status } })
+      );
+    })
+  );

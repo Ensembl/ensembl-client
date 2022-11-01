@@ -23,6 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
+import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
 import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -39,6 +40,7 @@ import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGen
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
@@ -57,7 +59,7 @@ export type Props = {
 export const BlastSubmissionHeader = (props: Props) => {
   const { submission, sequenceCount } = props;
 
-  const [deletingJob, setDeletingJob] = useState(false);
+  const [isInDeleteMode, setIsInDeleteMode] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -140,30 +142,21 @@ export const BlastSubmissionHeader = (props: Props) => {
             />
           )}
         </div>
-        <div className={styles.controlButtons}>
-          <DeleteButton
-            onClick={() => setDeletingJob(true)}
-            disabled={props.isAnyJobRunning || deletingJob}
-          />
-          <DownloadButton
-            onClick={handleDownload}
-            disabled={props.isAnyJobRunning}
-          />
-          <ButtonLink
-            to={urlFor.blastSubmission(submissionId)}
-            isDisabled={props.isAnyJobRunning || deletingJob}
-          >
-            Results
-          </ButtonLink>
-        </div>
+        <ControlsSection
+          submission={submission}
+          isAnyJobRunning={Boolean(props.isAnyJobRunning)}
+          isInDeleteMode={isInDeleteMode}
+          onDelete={() => setIsInDeleteMode(true)}
+          onDownload={handleDownload}
+        />
       </div>
-      {deletingJob && (
+      {isInDeleteMode && (
         <DeletionConfirmation
           warningText="Delete this submission?"
           confirmText="Delete"
           cancelText="Do not delete"
           className={styles.deleteMessageContainer}
-          onCancel={() => setDeletingJob(false)}
+          onCancel={() => setIsInDeleteMode(false)}
           onConfirm={handleDeletion}
           alignContent="right"
         />
@@ -171,5 +164,55 @@ export const BlastSubmissionHeader = (props: Props) => {
     </>
   );
 };
+
+const ControlsSection = (props: {
+  submission: BlastSubmission;
+  isAnyJobRunning: boolean;
+  isInDeleteMode: boolean;
+  onDelete: () => void;
+  onDownload: () => unknown;
+}) => {
+  const { submission, isAnyJobRunning, isInDeleteMode, onDelete, onDownload } =
+    props;
+  const isExpiredSubmission = areSubmissionResultsAvailable(submission);
+
+  return !isExpiredSubmission ? (
+    <div className={styles.controlsSection}>
+      <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+      <DownloadButton
+        onClick={onDownload}
+        disabled={isAnyJobRunning || isInDeleteMode}
+      />
+      <ButtonLink
+        to={urlFor.blastSubmission(submission.id)}
+        isDisabled={isAnyJobRunning || isInDeleteMode}
+      >
+        Results
+      </ButtonLink>
+    </div>
+  ) : (
+    <div className={styles.controlsSection}>
+      <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+      <div className={styles.unavailableResultsMessage}>
+        <span>Results no longer available</span>
+        <QuestionButton helpText={<UnavailableResultsHelpText />} />
+      </div>
+    </div>
+  );
+};
+
+const UnavailableResultsHelpText = () => (
+  <>
+    <p>Results are stored for 7 days from submission</p>
+    <p>
+      Use 'Edit/rerun' to start a new job with the same configuration as the
+      original submission
+    </p>
+    <p>
+      Configurations are stored for 28 days after submission, then removed from
+      the jobs list
+    </p>
+  </>
+);
 
 export default BlastSubmissionHeader;
