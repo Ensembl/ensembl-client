@@ -25,11 +25,9 @@ describe('<Chevron />', () => {
       const { container, rerender } = render(
         <Chevron className="componentClass" direction="down" />
       );
-      const chevronWrapper = container.firstChild as HTMLElement;
       const chevronIcon = container.querySelector('svg') as SVGSVGElement;
 
-      expect(chevronWrapper.tagName.toLowerCase()).toBe('span');
-      expect(chevronWrapper.classList.contains('componentClass')).toBe(true);
+      expect(chevronIcon.classList.contains('componentClass')).toBe(true);
       expect(chevronIcon.classList.contains('chevron')).toBe(true);
 
       rerender(<Chevron direction="up" />);
