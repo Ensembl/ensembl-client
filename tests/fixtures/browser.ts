@@ -276,6 +276,15 @@ export const createMockBrowserState = () => {
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
+    },
+    speciesSelector: {
+      committedItems: [
+        {
+          genome_id: 'human',
+          common_name: 'human',
+          assembly_name: 'grch38'
+        }
+      ]
     }
   };
 };

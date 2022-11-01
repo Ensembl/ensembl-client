@@ -53,9 +53,46 @@ jest.mock(
 );
 
 jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
+  () => () => ({
+    isFetchingGenomeId: false,
+    isMissingGenomeId: false,
+    isMalformedFocusObjectId: false,
+    genomeId: 'homo_sapiens_GCA_000001405_28',
+    genomeIdInUrl: 'grch38',
+    genomeIdForUrl: 'grch38',
+    focusObjectId: 'a7335667-93e7-11ec-a39d-005056b38ce3:gene:ENSG00000188523',
+    activeGenomeId: 'a7335667-93e7-11ec-a39d-005056b38ce3',
+    activeFocusObjectId:
+      'a7335667-93e7-11ec-a39d-005056b38ce3:gene:ENSG00000188523',
+    focusObjectIdInUrl: 'gene:ENSG00000188523',
+    focusObjectIdForUrl: 'gene:ENSG00000188523',
+    parsedFocusObjectId: {
+      genomeId: 'a7335667-93e7-11ec-a39d-005056b38ce3',
+      type: 'gene',
+      objectId: 'ENSG00000188523'
+    }
+  })
+);
+
+jest.mock(
   'src/content/app/genome-browser/state/focus-object/focusObjectSlice',
   () => ({
     fetchFocusObject: jest.fn(() => ({ type: 'fetch-focus-object' }))
+  })
+);
+
+jest.mock(
+  'src/shared/components/instant-download/instant-download-fetch/fetchForTranscript',
+  () => ({
+    fetchForTranscript: jest.fn(() => ({ type: 'fetch-transcript' }))
+  })
+);
+
+jest.mock(
+  'src/shared/components/instant-download/instant-download-fetch/fetchForGene',
+  () => ({
+    fetchForGene: jest.fn(() => ({ type: 'fetch-gene' }))
   })
 );
 
