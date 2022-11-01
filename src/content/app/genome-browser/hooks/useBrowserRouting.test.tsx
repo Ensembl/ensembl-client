@@ -31,6 +31,8 @@ import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
+import { GenomeBrowserIdsContext, GenomeBrowserIdsProvider } from '../Browser';
+
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
 const mockChangeFocusObject = jest.fn();
@@ -49,29 +51,6 @@ jest.mock(
     genomeBrowser: mockGenomeBrowserObj,
     changeFocusObject: mockChangeFocusObject,
     changeBrowserLocation: mockChangeBrowserLocation
-  })
-);
-
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
-    isFetchingGenomeId: false,
-    isMissingGenomeId: false,
-    isMalformedFocusObjectId: false,
-    genomeId: 'homo_sapiens_GCA_000001405_28',
-    genomeIdInUrl: 'grch38',
-    genomeIdForUrl: 'grch38',
-    focusObjectId: 'a7335667-93e7-11ec-a39d-005056b38ce3:gene:ENSG00000188523',
-    activeGenomeId: 'a7335667-93e7-11ec-a39d-005056b38ce3',
-    activeFocusObjectId:
-      'a7335667-93e7-11ec-a39d-005056b38ce3:gene:ENSG00000188523',
-    focusObjectIdInUrl: 'gene:ENSG00000188523',
-    focusObjectIdForUrl: 'gene:ENSG00000188523',
-    parsedFocusObjectId: {
-      genomeId: 'a7335667-93e7-11ec-a39d-005056b38ce3',
-      type: 'gene',
-      objectId: 'ENSG00000188523'
-    }
   })
 );
 
@@ -142,23 +121,26 @@ const mockState = {
 };
 
 let routingHandle: ReturnType<typeof useBrowserRouting> | null = null;
-const emptyTestContext = {
+const emptyMockRouterContext = {
   url: '',
   pathname: '',
   search: ''
 };
-let testContext: typeof emptyTestContext;
+let mockRouterContext: typeof emptyMockRouterContext;
 
-const TestContext = createContext(emptyTestContext);
+const MockRouterContext = createContext(emptyMockRouterContext);
 
 const TestComponent = () => {
   const { pathname, search } = useLocation();
-  const context = useContext(TestContext);
+  const mockRouterContext = useContext(MockRouterContext);
+
+  useContext(GenomeBrowserIdsContext);
+
   routingHandle = useBrowserRouting();
 
-  context.url = `${pathname}${search}`;
-  context.pathname = pathname;
-  context.search = search;
+  mockRouterContext.url = `${pathname}${search}`;
+  mockRouterContext.pathname = pathname;
+  mockRouterContext.search = search;
 
   return <div>content doesn't matter</div>;
 };
@@ -170,7 +152,7 @@ const renderComponent = ({
   state?: typeof mockState;
   path: string;
 }) => {
-  testContext = { ...emptyTestContext };
+  mockRouterContext = { ...emptyMockRouterContext };
 
   const store = configureStore({
     reducer: createRootReducer(),
@@ -181,17 +163,19 @@ const renderComponent = ({
 
   const renderResult = render(
     <Provider store={store}>
-      <TestContext.Provider value={testContext}>
+      <MockRouterContext.Provider value={mockRouterContext}>
         <MemoryRouter initialEntries={[path]}>
-          <Routes>
-            <Route path="/genome-browser" element={<TestComponent />} />
-            <Route
-              path="/genome-browser/:genomeId"
-              element={<TestComponent />}
-            />
-          </Routes>
+          <GenomeBrowserIdsProvider>
+            <Routes>
+              <Route path="/genome-browser" element={<TestComponent />} />
+              <Route
+                path="/genome-browser/:genomeId"
+                element={<TestComponent />}
+              />
+            </Routes>
+          </GenomeBrowserIdsProvider>
         </MemoryRouter>
-      </TestContext.Provider>
+      </MockRouterContext.Provider>
     </Provider>
   );
 
@@ -255,7 +239,7 @@ describe('useBrowserRouting', () => {
       // this is useless, because this route will be handled by the interstitial;
       // yet this is how the code currently behaves
       await waitFor(() => {
-        expect(testContext.url).toBe(
+        expect(mockRouterContext.url).toBe(
           `/genome-browser/${wheatGenomeInfo.genome_tag}`
         );
       });
@@ -268,7 +252,7 @@ describe('useBrowserRouting', () => {
       // notice how the identifier "human:gene:ENSG00000139618" that was used in the mock redux state
       // is reformatted to gene:ENSG00000139618 in the url;
       // this can be tested by examining TestComponent after a switch to react-router v6
-      expect(testContext.url).toBe(
+      expect(mockRouterContext.url).toBe(
         `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618&location=13:100-200`
       );
     });
@@ -288,7 +272,7 @@ describe('useBrowserRouting', () => {
       renderComponent({ state: updatedState, path: '/genome-browser' });
 
       // this is useless behaviour; yet this is how the code currently behaves
-      expect(testContext.url).toBe(
+      expect(mockRouterContext.url).toBe(
         `/genome-browser/${committedWheat.genome_tag}`
       );
     });
@@ -314,7 +298,7 @@ describe('useBrowserRouting', () => {
       });
 
       await waitFor(() => {
-        expect(testContext.url).toBe(
+        expect(mockRouterContext.url).toBe(
           `/genome-browser/${humanGenomeInfo.genome_tag}?focus=gene:ENSG00000139618`
         );
       });
@@ -340,7 +324,7 @@ describe('useBrowserRouting', () => {
           ]
         ).toBe(`${wheatGenomeInfo.genome_id}:gene:${geneStableId}`);
         // no navigation actions expected
-        expect(testContext.url).toBe(url);
+        expect(mockRouterContext.url).toBe(url);
       });
     });
 
@@ -383,7 +367,7 @@ describe('useBrowserRouting', () => {
         ).toEqual(['3D', 100, 200]);
 
         // no navigation actions expected
-        expect(testContext.url).toBe(url);
+        expect(mockRouterContext.url).toBe(url);
       });
     });
 
@@ -413,7 +397,7 @@ describe('useBrowserRouting', () => {
           routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
-        expect(testContext.url).toBe(
+        expect(mockRouterContext.url).toBe(
           `/genome-browser/${wheatGenomeInfo.genome_tag}`
         );
       });
@@ -433,7 +417,7 @@ describe('useBrowserRouting', () => {
           routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
-        expect(testContext.url).toBe(
+        expect(mockRouterContext.url).toBe(
           `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:TraesCS3D02G273600`
         );
       });
@@ -458,7 +442,7 @@ describe('useBrowserRouting', () => {
           routingHandle?.changeGenomeId(wheatGenomeInfo.genome_id);
         });
 
-        expect(testContext.url).toBe(
+        expect(mockRouterContext.url).toBe(
           `/genome-browser/${wheatGenomeInfo.genome_tag}?focus=gene:TraesCS3D02G273600&location=3D:1000-1100`
         );
       });
