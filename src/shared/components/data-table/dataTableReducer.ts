@@ -25,11 +25,10 @@ export const defaultDataTableState: DataTableState = {
   selectedAction: TableAction.DEFAULT,
   sortedColumn: null,
   fixedHeader: false,
-  selectedRowIds: {},
-  expandedRowIds: {},
-  hiddenRowIds: {},
-  hiddenRowIdsInDraft: {},
-  hiddenColumnIds: {}
+  selectedRowIds: new Set(),
+  hiddenRowIds: new Set(),
+  hiddenRowIdsInDraft: new Set(),
+  hiddenColumnIds: new Set()
 };
 
 export const tableReducer = (
@@ -40,7 +39,7 @@ export const tableReducer = (
     case 'set_rows_per_page':
       return { ...state, rowsPerPage: action.payload, currentPageNumber: 1 };
     case 'set_search_text':
-      return { ...state, searchText: action.payload };
+      return { ...state, searchText: action.payload, currentPageNumber: 1 };
     case 'set_current_page_number':
       return { ...state, currentPageNumber: action.payload };
     case 'set_hidden_row_ids':
@@ -51,22 +50,22 @@ export const tableReducer = (
     case 'set_hidden_row_ids_in_draft':
       return {
         ...state,
-        hiddenRowIdsInDraft: { ...state.hiddenRowIdsInDraft, ...action.payload }
+        hiddenRowIdsInDraft: action.payload
       };
     case 'clear_hidden_row_ids_in_draft':
       return {
         ...state,
-        hiddenRowIdsInDraft: {}
+        hiddenRowIdsInDraft: new Set()
       };
     case 'set_hidden_column_ids':
       return {
         ...state,
-        hiddenColumnIds: { ...state.hiddenColumnIds, ...action.payload }
+        hiddenColumnIds: action.payload
       };
     case 'set_selected_row_ids':
       return {
         ...state,
-        selectedRowIds: { ...state.selectedRowIds, ...action.payload }
+        selectedRowIds: action.payload
       };
     case 'set_selected_action':
       return { ...state, selectedAction: action.payload };

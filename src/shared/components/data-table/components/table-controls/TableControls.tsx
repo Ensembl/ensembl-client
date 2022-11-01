@@ -26,12 +26,17 @@ import TableActions from './components/table-actions/TableActions';
 import styles from './TableControls.scss';
 
 const TableControls = () => {
-  const { setPageNumber, currentPageNumber, data, rowsPerPage, hiddenRowIds } =
-    useDataTable();
+  const {
+    setPageNumber,
+    currentPageNumber,
+    filteredRows,
+    rowsPerPage,
+    hiddenRowIds
+  } = useDataTable();
 
   const hiddenRowsCount = Object.keys(hiddenRowIds).length;
-  const visibleRowsCount = data.length - hiddenRowsCount;
-  const lastPageNumber = Math.ceil(visibleRowsCount / rowsPerPage) || 1;
+  const displayedRowsCount = filteredRows.length - hiddenRowsCount;
+  const lastPageNumber = Math.ceil(displayedRowsCount / rowsPerPage) || 1;
 
   return (
     <div className={styles.tableControls}>
