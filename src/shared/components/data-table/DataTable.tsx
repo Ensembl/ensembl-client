@@ -85,7 +85,7 @@ const DataTable = (props: TableProps) => {
     }
 
     /* 
-      Here we reset shouldResetStateRef to false so that the 
+      Here we reset shouldResetStateRef to the initial value (true), so that the 
       dispatch above gets executed when the state from the parent changes
     */
     shouldResetStateRef.current = true;
