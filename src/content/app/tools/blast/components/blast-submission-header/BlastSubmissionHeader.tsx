@@ -174,7 +174,7 @@ const ControlsSection = (props: {
 }) => {
   const { submission, isAnyJobRunning, isInDeleteMode, onDelete, onDownload } =
     props;
-  const isExpiredSubmission = areSubmissionResultsAvailable(submission);
+  const isExpiredSubmission = !areSubmissionResultsAvailable(submission);
 
   return !isExpiredSubmission ? (
     <div className={styles.controlsSection}>

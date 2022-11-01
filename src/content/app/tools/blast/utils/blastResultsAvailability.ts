@@ -26,5 +26,5 @@ import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-re
 
 export const areSubmissionResultsAvailable = (submission: BlastSubmission) => {
   const { submittedAt } = submission;
-  return submittedAt < Date.now() - BLAST_RESULTS_AVAILABILITY_DURATION;
+  return submittedAt > Date.now() - BLAST_RESULTS_AVAILABILITY_DURATION;
 };

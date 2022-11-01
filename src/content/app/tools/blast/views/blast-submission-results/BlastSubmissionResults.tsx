@@ -18,8 +18,12 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
-import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
+
+import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
+
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+
+import { useFetchAllBlastJobsQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import {
   markBlastSubmissionAsSeen,
   type BlastSubmission,
@@ -32,6 +36,7 @@ import BlastAppBar from 'src/content/app/tools/blast/components/blast-app-bar/Bl
 import BlastViewsNavigation from 'src/content/app/tools/blast/components/blast-views-navigation/BlastViewsNavigation';
 import BlastSubmissionHeader from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 import BlastResultsPerSequence from './components/blast-results-per-sequence/BlastResultsPerSequence';
+import MissingBlastSubmissionError from './components/missing-blast-submission-error/MissingBlastSubmissionError';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
@@ -81,7 +86,19 @@ const Main = () => {
   }, [blastSubmission?.id]);
 
   if (!blastSubmission) {
-    return null;
+    return (
+      <MissingBlastSubmissionError
+        submissionId={submissionId}
+        hasSubmissionParameters={false}
+      />
+    );
+  } else if (!areSubmissionResultsAvailable(blastSubmission)) {
+    return (
+      <MissingBlastSubmissionError
+        submissionId={submissionId}
+        hasSubmissionParameters={true}
+      />
+    );
   } else if (isLoading) {
     return <LoadingView submission={blastSubmission} />;
   } else if (error) {
