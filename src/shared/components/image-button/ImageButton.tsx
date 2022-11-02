@@ -79,7 +79,7 @@ export const ImageButton = (props: Props) => {
         disabled={status === Status.DISABLED}
       >
         {typeof props.image === 'string' ? (
-          <img src={props.image} alt={props.description} />
+          <img src={props.image} alt={description} />
         ) : (
           <Image />
         )}
