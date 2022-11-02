@@ -27,7 +27,33 @@ import blastFormReducer, {
 
 import BlastSpeciesSelector from './BlastSpeciesSelector';
 
-import speciesList from './speciesList';
+const speciesList = [
+  {
+    assembly_name: 'GRCh38.p13',
+    common_name: 'Human',
+    genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
+    scientific_name: 'Homo sapiens'
+  },
+  {
+    assembly_name: 'IWGSC',
+    common_name: null,
+    genome_id: 'a73357ab-93e7-11ec-a39d-005056b38ce3',
+    scientific_name: 'Triticum aestivum'
+  },
+  {
+    assembly_name: 'GRCh37.p13',
+    common_name: 'Human',
+    genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
+    scientific_name: 'Homo sapiens'
+  }
+];
+
+jest.mock(
+  'src/content/app/species-selector/state/speciesSelectorSelectors',
+  () => ({
+    getPopularSpecies: () => speciesList
+  })
+);
 
 const renderComponent = (
   {
@@ -65,12 +91,13 @@ const renderComponent = (
 
 describe('SpeciesSelector', () => {
   it('updates the selectedSpecies state', async () => {
-    const { container, store } = renderComponent();
+    const { container, store, debug } = renderComponent();
 
     const speciesCheckbox = container.querySelector(
       'tbody tr [data-test-id="checkbox"]'
     ) as HTMLElement;
 
+    debug(container);
     await userEvent.click(speciesCheckbox);
 
     const updatedState = store.getState();
