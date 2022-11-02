@@ -86,19 +86,9 @@ const Main = () => {
   }, [blastSubmission?.id]);
 
   if (!blastSubmission) {
-    return (
-      <MissingBlastSubmissionError
-        submissionId={submissionId}
-        hasSubmissionParameters={false}
-      />
-    );
-  } else if (!areSubmissionResultsAvailable(blastSubmission)) {
-    return (
-      <MissingBlastSubmissionError
-        submissionId={submissionId}
-        hasSubmissionParameters={true}
-      />
-    );
+    return <MissingBlastSubmissionError hasSubmissionParameters={false} />;
+  } else if (areSubmissionResultsAvailable(blastSubmission)) {
+    return <MissingBlastSubmissionError hasSubmissionParameters={true} />;
   } else if (isLoading) {
     return <LoadingView submission={blastSubmission} />;
   } else if (error) {

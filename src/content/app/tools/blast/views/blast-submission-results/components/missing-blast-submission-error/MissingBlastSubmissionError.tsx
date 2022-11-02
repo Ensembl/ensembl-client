@@ -19,7 +19,10 @@ import React from 'react';
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import {
+  getViewedBlastSubmissions,
+  getUnviewedBlastSubmissions
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -27,34 +30,53 @@ import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import styles from './MissingBlastSubmissionError.scss';
 
 type Props = {
-  submissionId: string;
   hasSubmissionParameters: boolean;
 };
 
 const MissingBlastSubmissionError = (props: Props) => {
-  const { submissionId, hasSubmissionParameters } = props;
+  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
   const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
   const hasUnviewedBlastSubmissions = unviewedBlastSubmissions.length > 0;
+  const hasViewedBlastSubmissions = viewedBlastSubmissions.length > 0;
 
-  const buttonLink = hasUnviewedBlastSubmissions
-    ? urlFor.blastUnviewedSubmissions()
-    : urlFor.blastSubmissionsList();
+  let buttonLink: string;
 
-  const errorText = hasSubmissionParameters
-    ? 'The results for this submission are no longer available'
-    : `There are no results for the BLAST submission with an id ${submissionId}`;
+  if (hasUnviewedBlastSubmissions) {
+    buttonLink = urlFor.blastUnviewedSubmissions();
+  } else if (hasViewedBlastSubmissions) {
+    buttonLink = urlFor.blastSubmissionsList();
+  } else {
+    buttonLink = urlFor.blastForm();
+  }
 
   return (
     <div className={styles.container}>
       <AlertButton />
       <div>
-        <p className={styles.errorText}>{errorText}</p>
-        {hasSubmissionParameters && (
-          <p>It may be possible to rerun this submission from your Jobs list</p>
-        )}
+        <ErrorMessage {...props} />
       </div>
       <ButtonLink to={buttonLink}>Continue</ButtonLink>
     </div>
+  );
+};
+
+const ErrorMessage = (props: { hasSubmissionParameters: boolean }) => {
+  return props.hasSubmissionParameters ? (
+    <>
+      <p className={styles.errorText}>
+        The results for this submission are no longer available
+      </p>
+      <p>It may be possible to rerun this submission from your Jobs list</p>
+    </>
+  ) : (
+    <>
+      <p className={styles.errorText}>
+        There are no results for this BLAST submission
+      </p>
+      <p>
+        Any valid submissions can be found in your Unviewed jobs and Jobs lists
+      </p>
+    </>
   );
 };
 
