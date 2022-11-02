@@ -87,7 +87,7 @@ const Main = () => {
 
   if (!blastSubmission) {
     return <MissingBlastSubmissionError hasSubmissionParameters={false} />;
-  } else if (areSubmissionResultsAvailable(blastSubmission)) {
+  } else if (!areSubmissionResultsAvailable(blastSubmission)) {
     return <MissingBlastSubmissionError hasSubmissionParameters={true} />;
   } else if (isLoading) {
     return <LoadingView submission={blastSubmission} />;
