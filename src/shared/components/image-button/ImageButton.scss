@@ -41,7 +41,7 @@
 }
 
 .unselected {
-  background-color: var(--image-button-unselected-bg-color, none);
+  background-color: var(--image-button-unselected-bg-color);
 
   svg {
     fill: var(--image-button-unselected-svg-color, #{$blue});
@@ -52,7 +52,7 @@
 }
 
 .disabled {
-  background-color: var(--image-button-disabled-bg-color, none);
+  background-color: var(--image-button-disabled-bg-color);
   cursor: default;
   svg {
     fill: var(--image-button-disabled-svg-color, #{$grey});

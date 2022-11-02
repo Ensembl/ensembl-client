@@ -38,7 +38,7 @@ export type ImageButtonStatus =
 
 type ChildlessButtonProps = Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
-  'children'
+  'children' | 'disabled' // removing the 'disabled' property, because whether the button is disabled will be controlled  via its status
 >;
 
 export type Props = ChildlessButtonProps & {
@@ -53,6 +53,7 @@ export const ImageButton = (props: Props) => {
     description,
     image: Image,
     className: classNameFromProps,
+    type: buttonTypeFromProps,
     ...otherProps
   } = props;
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
@@ -62,6 +63,7 @@ export const ImageButton = (props: Props) => {
     styles[status],
     classNameFromProps
   );
+  const buttonType = buttonTypeFromProps ?? 'button'; // by default, we want the html button element in ImageButton to be of type 'button'
 
   const shouldShowTooltip = Boolean(description) && isHovered;
 
@@ -72,6 +74,7 @@ export const ImageButton = (props: Props) => {
     <div ref={hoverRef} className={styles.wrapper}>
       <button
         className={imageButtonClasses}
+        type={buttonType}
         {...otherProps}
         disabled={status === Status.DISABLED}
       >
