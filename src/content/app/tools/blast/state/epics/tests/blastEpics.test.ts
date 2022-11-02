@@ -49,7 +49,8 @@ import {
 jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
   saveBlastSubmission: jest.fn().mockImplementation(() => Promise.resolve()),
   updateSavedBlastJob: jest.fn().mockImplementation(() => Promise.resolve()),
-  getAllBlastSubmissions: jest.fn()
+  getAllBlastSubmissions: jest.fn(),
+  deleteExpiredBlastSubmissions: jest.fn()
 }));
 jest.mock('config', () => ({
   toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
