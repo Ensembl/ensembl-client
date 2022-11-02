@@ -23,7 +23,7 @@
 }
 
 .default {
-  background-color: var(--image-button-default-bg-color, initial);
+  background-color: var(--image-button-default-bg-color);
   svg {
     fill: var(--image-button-default-svg-color, #{$blue});
   }
