@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from 'src/store';
 
 import {
   addSelectedSpecies,
   removeSelectedSpecies
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
-import speciesList from './speciesList';
 
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import styles from './BlastSpeciesSelector.scss';
 
 const BlastSpeciesSelector = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const popularSpeciesList = useSelector(getPopularSpecies);
   const selectedSpeciesList = useSelector(getSelectedSpeciesList);
   const selectedGenomeIds = selectedSpeciesList.map(
     ({ genome_id }) => genome_id
   );
+
+  useEffect(() => {
+    dispatch(fetchPopularSpecies());
+  }, []);
 
   const onSpeciesSelection = (isChecked: boolean, species: Species) => {
     if (isChecked) {
@@ -45,6 +51,10 @@ const BlastSpeciesSelector = () => {
       dispatch(removeSelectedSpecies(species.genome_id));
     }
   };
+
+  const availableSpeciesList = popularSpeciesList.filter(
+    (species) => species.scientific_name
+  );
 
   return (
     <div className={styles.speciesSelector}>
@@ -58,7 +68,7 @@ const BlastSpeciesSelector = () => {
           </tr>
         </thead>
         <tbody>
-          {speciesList.map((species, index) => {
+          {availableSpeciesList.map((species, index) => {
             return (
               <tr key={index}>
                 <td>{species.common_name ?? '-'}</td>
