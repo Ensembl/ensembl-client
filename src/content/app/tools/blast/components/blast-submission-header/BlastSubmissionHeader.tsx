@@ -48,6 +48,8 @@ import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettin
 
 import styles from './BlastSubmissionHeader.scss';
 
+export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
+
 export type Props = {
   submission: BlastSubmission;
   isAnyJobRunning?: boolean;
@@ -194,7 +196,7 @@ const ControlsSection = (props: {
     <div className={styles.controlsSection}>
       <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
       <div className={styles.unavailableResultsMessage}>
-        <span>Results no longer available</span>
+        <span>{UNAVAILABLE_RESULTS_WARNING}</span>
         <QuestionButton helpText={<UnavailableResultsHelpText />} />
       </div>
     </div>
