@@ -96,7 +96,7 @@ export const ImageButton = (props: Props) => {
       </button>
       {shouldShowTooltip && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
-          {props.description}
+          {description}
         </Tooltip>
       )}
     </div>
