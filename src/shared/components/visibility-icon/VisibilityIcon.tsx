@@ -41,15 +41,14 @@ type VisibilityIconProps = {
 
 export const VisibilityIcon = (props: VisibilityIconProps) => {
   const { status } = props;
-  const isPartiallySelected = props.status === Status.PARTIALLY_SELECTED;
+  const isPartiallySelected = status === Status.PARTIALLY_SELECTED;
   const imageButtonStatus = isPartiallySelected
     ? Status.DEFAULT
     : (status as ImageButtonStatus);
   const eyeIcon = isPartiallySelected ? EyePartial : Eye;
 
   const elementClasses = classNames(styles.visibilityIcon, {
-    [styles.visibilityIconPartiallySelected]:
-      status === Status.PARTIALLY_SELECTED
+    [styles.visibilityIconPartiallySelected]: isPartiallySelected
   });
 
   return (
