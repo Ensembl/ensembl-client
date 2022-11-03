@@ -31,7 +31,10 @@ import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import { GenomeBrowserIdsContext, GenomeBrowserIdsProvider } from '../Browser';
+import {
+  GenomeBrowserIdsContext,
+  GenomeBrowserIdsProvider
+} from '../contexts/BrowserIdsContext';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock

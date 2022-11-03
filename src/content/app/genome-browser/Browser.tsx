@@ -14,44 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, memo, useMemo } from 'react';
+import React, { useEffect, memo, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import {
-  buildFocusIdForUrl,
-  buildFocusObjectId,
-  parseFocusIdFromUrl
-} from 'src/shared/helpers/focusObjectHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
-import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { deleteBrowserActiveFocusObjectIdAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import {
-  isGenomeNotFoundError,
-  useGenomeInfoQuery
-} from 'src/shared/state/genome/genomeApiSlice';
 
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
-import {
-  getBrowserActiveFocusObjectId,
-  getBrowserActiveGenomeId
-} from './state/browser-general/browserGeneralSelectors';
+import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
 import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsBrowserSidebarModalOpened } from './state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
-import { getCommittedSpeciesById } from '../species-selector/state/speciesSelectorSelectors';
 
 import BrowserBar from './components/browser-bar/BrowserBar';
 import BrowserImage from './components/browser-image/BrowserImage';
@@ -67,7 +51,8 @@ import BrowserInterstitial from './components/interstitial/BrowserInterstitial';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
-import type { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/ZmenuController';
+import { GenomeBrowserProvider } from './contexts/BrowserContext';
+import { GenomeBrowserIdsProvider } from './contexts/BrowserIdsContext';
 
 import styles from './Browser.scss';
 
@@ -177,142 +162,15 @@ const SidebarContent = () => {
   return isBrowserSidebarModalOpened ? <BrowserSidebarModal /> : <TrackPanel />;
 };
 
-export type CogList = Record<string, number>;
-
-type GenomeBrowserContextType = {
-  genomeBrowser: EnsemblGenomeBrowser | null;
-  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
-  zmenus: StateZmenu;
-  setZmenus: (zmenus: StateZmenu) => void;
-  cogList: CogList | null;
-  setCogList: (cogList: CogList) => void;
-};
-
-type GenomeBrowserIdsContextType = {
-  genomeIdInUrl: string | undefined;
-  genomeIdForUrl: string | undefined;
-  focusObjectIdInUrl: string | null;
-  isFetchingGenomeId: boolean;
-  isMissingGenomeId: boolean | undefined;
-  genomeId: string | undefined;
-  focusObjectId: string | undefined;
-  focusObjectIdForUrl: string | undefined;
-  parsedFocusObjectId:
-    | {
-        type: string;
-        objectId: string;
-        genomeId: string;
-      }
-    | undefined;
-  isMalformedFocusObjectId: boolean;
-};
-
-export const GenomeBrowserContext = React.createContext<
-  GenomeBrowserContextType | undefined
->(undefined);
-
-export const GenomeBrowserIdsContext = React.createContext<
-  GenomeBrowserIdsContextType | undefined
->(undefined);
-
-export const GenomeBrowserIdsProvider = (props: {
-  children?: React.ReactNode;
-}) => {
-  const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
-  const { genomeId: genomeIdInUrl } = params;
-
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
-  const committedSpecies = useAppSelector((state) =>
-    getCommittedSpeciesById(state, activeGenomeId ?? '')
-  );
-  // TODO: check if the logic below is correct
-  const genomeIdForUrl =
-    genomeIdInUrl ??
-    committedSpecies?.genome_tag ??
-    committedSpecies?.genome_id;
-
-  const { search } = useLocation();
-  const urlSearchParams = new URLSearchParams(search);
-  const focusObjectIdInUrl = urlSearchParams.get('focus');
-
-  const {
-    currentData: genomeInfo,
-    isFetching,
-    isError,
-    error
-  } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
-    skip: !genomeIdInUrl
-  });
-  const genomeId = genomeInfo?.genomeId;
-  const isMissingGenomeId = isError && isGenomeNotFoundError(error);
-
-  let focusObjectId;
-  let focusObjectIdForUrl;
-  let parsedFocusObjectId;
-  let isMalformedFocusObjectId = false;
-
-  if (focusObjectIdInUrl) {
-    focusObjectIdForUrl = focusObjectIdInUrl;
-    if (genomeId) {
-      try {
-        parsedFocusObjectId = {
-          genomeId,
-          ...parseFocusIdFromUrl(focusObjectIdInUrl)
-        };
-        focusObjectId = buildFocusObjectId(parsedFocusObjectId);
-      } catch {
-        isMalformedFocusObjectId = true;
-      }
-    }
-  } else if (activeFocusObjectId) {
-    focusObjectIdForUrl = buildFocusIdForUrl(activeFocusObjectId);
-  }
-
-  return (
-    <GenomeBrowserIdsContext.Provider
-      value={{
-        genomeIdInUrl,
-        genomeIdForUrl,
-        focusObjectIdInUrl,
-        isFetchingGenomeId: isFetching,
-        isMissingGenomeId,
-        genomeId,
-        focusObjectId,
-        focusObjectIdForUrl,
-        parsedFocusObjectId,
-        isMalformedFocusObjectId
-      }}
-    >
-      {props.children}
-    </GenomeBrowserIdsContext.Provider>
-  );
-};
-
 const GenomeBrowserInitContainer = () => {
-  const [genomeBrowser, setGenomeBrowser] =
-    useState<EnsemblGenomeBrowser | null>(null);
-
-  const [zmenus, setZmenus] = useState<StateZmenu>({});
-  const [cogList, setCogList] = useState<CogList | null>(null);
-
   const browser = useMemo(() => {
     return <Browser />;
   }, []);
 
   return (
-    <GenomeBrowserContext.Provider
-      value={{
-        genomeBrowser,
-        setGenomeBrowser,
-        zmenus,
-        setZmenus,
-        cogList,
-        setCogList
-      }}
-    >
+    <GenomeBrowserProvider>
       <GenomeBrowserIdsProvider>{browser}</GenomeBrowserIdsProvider>
-    </GenomeBrowserContext.Provider>
+    </GenomeBrowserProvider>
   );
 };
 

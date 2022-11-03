@@ -35,9 +35,9 @@ import {
   getBrowserActiveGenomeId
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import type { CogList } from 'src/content/app/genome-browser/Browser';
-
 import styles from './BrowserCogList.scss';
+
+export type CogList = Record<string, number>;
 
 export const BrowserCogList = () => {
   const [selectedCog, setSelectedCog] = useState<string | null>(null);

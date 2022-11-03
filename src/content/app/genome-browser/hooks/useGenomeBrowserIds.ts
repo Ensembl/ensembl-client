@@ -16,7 +16,7 @@
 
 import { useContext } from 'react';
 
-import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/Browser';
+import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/BrowserIdsContext';
 
 import { useAppSelector } from 'src/store';
 

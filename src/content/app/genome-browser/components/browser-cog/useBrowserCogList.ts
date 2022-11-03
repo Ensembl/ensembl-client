@@ -16,7 +16,7 @@
 
 import { useContext } from 'react';
 
-import { GenomeBrowserContext } from '../../Browser';
+import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/BrowserContext';
 
 const useBrowserCogList = () => {
   const genomeBrowserContext = useContext(GenomeBrowserContext);

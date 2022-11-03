@@ -34,10 +34,9 @@ import {
   getDefaultRegularTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-import type { CogList } from 'src/content/app/genome-browser/Browser';
-
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+import type { CogList } from 'src/content/app/genome-browser/components/browser-cog/BrowserCogList';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
