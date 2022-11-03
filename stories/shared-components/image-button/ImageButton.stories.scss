@@ -5,9 +5,13 @@
   grid-template-columns: min-content 1fr;
   column-gap: 1.5rem;
   align-items: center;
-  --image-button-width: 32px;
-  --image-button-height: 32px;
   --image-button-svg-width: 80%;
+}
+
+.imageButton,
+.styledDefaultStoryButton {
+  width: 32px;
+  height: 32px;
 }
 
 .styledDefaultStoryButton {

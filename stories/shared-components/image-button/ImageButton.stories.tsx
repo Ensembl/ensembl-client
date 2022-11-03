@@ -40,6 +40,7 @@ export const ImageButtonStory = () => {
   return (
     <div className={styles.defaultStoryContainer}>
       <ImageButton
+        className={styles.imageButton}
         status={status as ImageButtonStatus}
         description={`This is image button in ${status} state`}
         image={DownloadIcon}
@@ -50,6 +51,7 @@ export const ImageButtonStory = () => {
         next status
       </p>
       <ImageButton
+        className={styles.imageButton}
         status={Status.DISABLED}
         description="I am a disabled button; but I will still show a tooltip when moused over"
         image={DownloadIcon}
@@ -59,10 +61,10 @@ export const ImageButtonStory = () => {
         I am a disabled button; but I will still show a tooltip when moused over
       </p>
       <ImageButton
-        status={Status.DEFAULT}
-        description="I am a disabled button; but I will still show a tooltip when moused over"
-        image={DownloadIcon}
         className={styles.styledDefaultStoryButton}
+        status={Status.DEFAULT}
+        description="I am a button with custom styling"
+        image={DownloadIcon}
         onClick={toggleImage}
       />
       <p>I am a button styled via a CSS class passed by the parent</p>

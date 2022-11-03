@@ -1,6 +1,8 @@
 @import 'src/styles/common';
 
-.wrapper {
+.imageButton {
+  // width: var(--image-button-width);
+  // height: var(--image-button-height);
   font-size: 0;
   line-height: 0;
   position: relative;
@@ -8,12 +10,12 @@
   vertical-align: middle;
 }
 
-.imageButton {
+.imageButton button {
   display: inline-flex;
+  width: 100%;
+  height: 100%;
   justify-content: center;
   align-items: center;
-  width: var(--image-button-width, auto);
-  height: var(--image-button-height, auto);
 
   & > svg {
     width: var(--image-button-svg-width, 100%);

@@ -67,13 +67,23 @@ export const ImageButton = (props: Props) => {
 
   const shouldShowTooltip = Boolean(description) && isHovered;
 
-  // NOTE: the only reason to wrap the button in a div element is so that we could react in a custon manner
-  // to a hover event over a disabled button (i.e. show the tooltip).
-  // If we were satisfied with just the `title` attribute, we wouldn't need this wrapper
+  /**
+   * ARCHITECTURE OF THE IMAGE BUTTON:
+   * - The top-level element returned from this component is a div. The reason is that we want to be able
+   *   to respond to mouseover events even when the image button is in a disabled status,
+   *   in order to show the tooltip when there is something to show.
+   *   HTML button elements do not fire any events when disabled; and there doesn't seem to be a clean way
+   *   to bypass this native browser behaviour. Hence the need for the top-level div.
+   * - Nonetheless, ImageButton also has an html button element. The reason is that we want to be as close to the native browser
+   *   behaviour as possible; and buttons are great at handling disabled state, focus, key presses, etc.
+   * - The className property passed from the parent will be applied to the top-level div element rather than
+   *   to the button element, so as to make this component behave correctly when modified from the parent
+   *   (e.g. when the parent applies a margin to ImageButton)
+   */
+
   return (
-    <div ref={hoverRef} className={styles.wrapper}>
+    <div ref={hoverRef} className={imageButtonClasses}>
       <button
-        className={imageButtonClasses}
         type={buttonType}
         {...otherProps}
         disabled={status === Status.DISABLED}
