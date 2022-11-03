@@ -109,7 +109,7 @@ describe('<ImageButton />', () => {
     it('calls the onClick prop when clicked', async () => {
       const { container } = renderImageButton({ onClick });
       const imageButton = container.querySelector(
-        '.imageButton'
+        'button'
       ) as HTMLButtonElement;
       await userEvent.click(imageButton);
 
