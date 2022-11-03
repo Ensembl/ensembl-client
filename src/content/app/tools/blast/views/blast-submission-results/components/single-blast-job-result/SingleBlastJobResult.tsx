@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode, useEffect, useState } from 'react';
+import classNames from 'classnames';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
@@ -22,7 +23,9 @@ import DataTable from 'src/shared/components/data-table/DataTable';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
+import { BlastGenomicHitsDiagram } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
   createCSVForGenomicBlast,
@@ -169,7 +172,10 @@ const hitsTableColumns: DataTableColumns = [
 
 const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const { species: speciesInfo, jobResult, diagramWidth, submission } = props;
+  const blastDatabase = submission.submittedData.parameters.database;
   const [isExpanded, setExpanded] = useState(false);
+
+  const shouldUseGenomicHitsDiagram = blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   const alignmentsCount = countAlignments(jobResult.data);
 
@@ -180,25 +186,71 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <span>{pluralise('hit', alignmentsCount)}</span>
       </div>
       <div className={styles.summaryPlot}>
-        <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
+        {shouldUseGenomicHitsDiagram ? (
+          <BlastGenomicHitsDiagram
+            genomeId={speciesInfo.genome_id}
+            job={jobResult.data}
+            width={diagramWidth}
+          />
+        ) : (
+          <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
+        )}
       </div>
-      <div className={styles.speciesInfo}>
-        {speciesInfo.common_name && <span>{speciesInfo.common_name}</span>}
-        <span>{speciesInfo.scientific_name}</span>
-        <span>
-          {speciesInfo.assembly_name}
-          <ShowHide
-            className={styles.showHide}
-            isExpanded={isExpanded}
-            onClick={() => setExpanded(!isExpanded)}
-          ></ShowHide>
-        </span>
-      </div>
-
+      <BlastSpecies
+        species={speciesInfo}
+        isExpanded={isExpanded}
+        toggleExpanded={setExpanded}
+        jobResult={jobResult}
+      />
       {isExpanded && (
         <HitsTable jobResult={jobResult} submission={submission} />
       )}
     </div>
+  );
+};
+
+const BlastSpecies = (props: {
+  species: Species;
+  isExpanded: boolean;
+  toggleExpanded: (isExpanded: boolean) => void;
+  jobResult: BlastJobWithResults;
+}) => {
+  const { species, isExpanded, toggleExpanded, jobResult } = props;
+  const hasHits = jobResult.data.hits.length > 0;
+
+  const onClick = () => {
+    if (hasHits) {
+      toggleExpanded(!isExpanded);
+    }
+  };
+
+  const elementClasses = classNames(styles.blastSpecies, {
+    [styles.blastSpeciesActive]: hasHits
+  });
+
+  const speciesName = (
+    <>
+      {species.common_name && <span>{species.common_name}</span>}
+      <span className={styles.speciesScientificName}>
+        {species.scientific_name}
+      </span>
+      <span className={styles.speciesAssemblyName}>
+        {species.assembly_name}
+        {hasHits && (
+          <Chevron
+            className={styles.blastSpeciesChevron}
+            direction={isExpanded ? 'up' : 'down'}
+            animate={true}
+          />
+        )}
+      </span>
+    </>
+  );
+
+  return (
+    <span className={elementClasses} onClick={onClick}>
+      {speciesName}
+    </span>
   );
 };
 
@@ -286,7 +338,7 @@ const HitsTable = (props: HitsTableProps) => {
     return null;
   }
 
-  const onExpanded = (isExpanded: boolean, rowId: string) => {
+  const onExpanded = (isExpanded: boolean, rowId: string | number) => {
     if (!isExpanded) {
       setExpandedContent(undefined);
       return;
@@ -377,8 +429,8 @@ const HitsTable = (props: HitsTableProps) => {
 
 const ShowHideColumn = (props: {
   isExpanded: boolean;
-  onExpanded: (isExpanded: boolean, rowId: string) => void;
-  rowId: string;
+  onExpanded: (isExpanded: boolean, rowId: string | number) => void;
+  rowId: string | number;
 }) => {
   const onExpanded = () => {
     props.onExpanded(!props.isExpanded, props.rowId);

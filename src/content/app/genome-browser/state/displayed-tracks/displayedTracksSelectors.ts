@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createSelector } from '@reduxjs/toolkit';
 
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import type { RootState } from 'src/store';
 
-import styles from './AppBar.scss';
+export const getDisplayedTracks = (state: RootState) =>
+  state.browser.displayedTracks;
 
-type AppBarProps = {
-  appName?: string;
-  mainContent: React.ReactNode;
-  aside?: React.ReactNode;
-};
-
-export const AppBar = (props: AppBarProps) => (
-  <section className={styles.appBar}>
-    <div className={styles.appBarTop}>{props.appName}</div>
-    <div className={styles.appBarMain}>{props.mainContent}</div>
-    <div className={styles.appBarAside}>
-      {props.aside}
-      <div className={styles.conversationIcon}>
-        <ConversationIcon />
-      </div>
-    </div>
-  </section>
+export const getDisplayedTrackIds = createSelector(
+  getDisplayedTracks,
+  (tracks) => tracks.map((track) => track.id)
 );
-
-export default AppBar;

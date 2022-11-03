@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
-
-import styles from './AppBar.scss';
-
-type AppBarProps = {
-  appName?: string;
-  mainContent: React.ReactNode;
-  aside?: React.ReactNode;
+type DisplayedTrack = {
+  id: string;
+  height: number;
+  offsetTop: number;
 };
 
-export const AppBar = (props: AppBarProps) => (
-  <section className={styles.appBar}>
-    <div className={styles.appBarTop}>{props.appName}</div>
-    <div className={styles.appBarMain}>{props.mainContent}</div>
-    <div className={styles.appBarAside}>
-      {props.aside}
-      <div className={styles.conversationIcon}>
-        <ConversationIcon />
-      </div>
-    </div>
-  </section>
-);
+type DisplayedTracksState = DisplayedTrack[];
 
-export default AppBar;
+const displayedTracksSlice = createSlice({
+  name: 'genome-browser-displayed-tracks',
+  initialState: [] as DisplayedTracksState,
+  reducers: {
+    setDisplayedTracks(state, action: PayloadAction<DisplayedTrack[]>) {
+      return action.payload;
+    }
+  }
+});
+
+export const { setDisplayedTracks } = displayedTracksSlice.actions;
+
+export default displayedTracksSlice.reducer;

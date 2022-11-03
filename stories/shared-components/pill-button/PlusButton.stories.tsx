@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
+import React from 'react';
+import noop from 'lodash/noop';
 
-import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/BrowserContext';
+import PillButton from 'src/shared/components/pill-button/PillButton';
 
-const useBrowserCogList = () => {
-  const genomeBrowserContext = useContext(GenomeBrowserContext);
-
-  if (!genomeBrowserContext) {
-    throw new Error(
-      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
-    );
-  }
-
-  const { cogList, setCogList } = genomeBrowserContext;
-
-  return {
-    cogList,
-    setCogList
-  };
+export default {
+  title: 'Components/Shared Components/Pill button'
 };
 
-export default useBrowserCogList;
+export const PlusButtonStory = () => (
+  <>
+    <div>
+      <PillButton onClick={noop}>+ 2</PillButton>
+    </div>
+    <div>
+      <PillButton onClick={noop}>+ 42</PillButton>
+    </div>
+    <div>
+      <PillButton onClick={noop}>+ 512</PillButton>
+    </div>
+    <div>
+      <PillButton onClick={noop}>+ 1234</PillButton>
+    </div>
+  </>
+);
+
+PlusButtonStory.storyName = 'default';

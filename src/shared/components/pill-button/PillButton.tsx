@@ -14,35 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, {
+  forwardRef,
+  type ComponentProps,
+  type ForwardedRef
+} from 'react';
 import classNames from 'classnames';
 
-import ChevronDown from 'static/icons/icon_chevron.svg';
+import styles from './PillButton.scss';
 
-import styles from './Chevron.scss';
+type Props = ComponentProps<'button'>;
 
-export type Direction = 'up' | 'down' | 'left' | 'right';
+const PillButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+  const { className, ...otherProps } = props;
 
-export type Props = {
-  direction: Direction;
-  animate: boolean;
-  className?: string;
+  const buttonClass = classNames(styles.pillButton, className);
+
+  return <button className={buttonClass} ref={ref} {...otherProps} />;
 };
 
-const Chevron = (props: Props) => {
-  const isNonDefaultDirection = props.direction !== 'down';
-
-  const chevronClasses = classNames(
-    styles.chevron,
-    { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate },
-    props.className
-  );
-  return <ChevronDown className={chevronClasses} />;
-};
-
-Chevron.defaultProps = {
-  animate: false
-};
-
-export default Chevron;
+export default forwardRef(PillButton);

@@ -22,9 +22,7 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 import styles from './FindInTable.scss';
 
 const FindInTable = () => {
-  const { dispatch, searchText } = useContext(TableContext) || {
-    isSelectable: true
-  };
+  const { dispatch, searchText } = useContext(TableContext) || {};
 
   if (!dispatch) {
     return null;

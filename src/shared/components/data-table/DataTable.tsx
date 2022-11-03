@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { type ReactNode, useEffect, useReducer } from 'react';
+import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
 import classNames from 'classnames';
 
 import Table from '../table/Table';
@@ -33,12 +33,12 @@ import {
 
 import styles from './DataTable.scss';
 
-type TableContextType = DataTableState & {
+export type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;
   columns: DataTableColumns;
-  theme: TableTheme;
-  selectableColumnIndex: number;
-  expandedContent: { [rowId: string]: ReactNode };
+  theme?: TableTheme;
+  selectableColumnIndex?: number;
+  expandedContent?: { [rowId: string]: ReactNode };
   disabledActions?: TableAction[];
   downloadFileName?: string;
   downloadHandler?: () => Promise<void>;
@@ -50,30 +50,59 @@ export const TableContext = React.createContext(
 );
 
 export type TableProps = {
-  state: Partial<DataTableState>;
+  state?: Partial<DataTableState>;
   columns: DataTableColumns;
-  theme: TableTheme;
-  selectableColumnIndex: number;
-  expandedContent: { [rowId: string]: ReactNode };
-  disabledActions?: TableAction[];
+  theme?: TableTheme;
+  selectableColumnIndex?: number;
   className?: string;
+  expandedContent?: { [rowId: string]: ReactNode };
+  disabledActions?: TableAction[];
   downloadFileName?: string;
   downloadHandler?: () => Promise<void>;
   onStateChange?: (newState: DataTableState) => void;
 };
 const DataTable = (props: TableProps) => {
-  const initialDataTableState = {
+  const initialState = {
     ...defaultDataTableState,
     ...(props.state || {})
   };
 
-  const [tableState, dispatch] = useReducer(
-    tableReducer,
-    initialDataTableState
-  );
+  const firstRenderRef = useRef(true);
+  const shouldResetStateRef = useRef(true);
+
+  const [tableState, dispatch] = useReducer(tableReducer, initialState);
+
+  /*
+    The useReducer used above does not update the tableState when the parent component updates the state.
+    To fix this, we need to check if state property has changed by the parent and reset it if necessary.
+  */
+  useEffect(() => {
+    if (shouldResetStateRef.current && !firstRenderRef.current) {
+      dispatch({
+        type: 'restore_defaults',
+        payload: initialState
+      });
+    }
+
+    /* 
+      Here we reset shouldResetStateRef to the initial value (true), so that the 
+      dispatch above gets executed when the state from the parent changes
+    */
+    shouldResetStateRef.current = true;
+  }, [props.state]);
 
   useEffect(() => {
-    props.onStateChange?.(tableState);
+    if (!firstRenderRef.current) {
+      props.onStateChange?.(tableState);
+
+      /*
+        The onStateChange call above will update a state in the parent component which will trigger a rerender.
+        At this point, we do not want to reset the tableState in the useEffect above
+        So to prevent it, we set shouldResetStateRef to false
+      */
+      shouldResetStateRef.current = false;
+    }
+    firstRenderRef.current = false;
   }, [tableState]);
 
   const wrapperClasses = classNames(

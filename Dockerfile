@@ -1,4 +1,4 @@
-FROM node:16.13.0 AS builder
+FROM node:18.12.0 AS builder
 
 ARG SOURCE_DIR="./"
 
@@ -15,7 +15,7 @@ RUN npm install --global npm@8.1.0 && \
 
 
 # PRODUCTION IMAGE
-FROM node:16.13.0-alpine AS runner
+FROM node:18.12.0-alpine AS runner
 
 WORKDIR /srv/ensembl-client/
 

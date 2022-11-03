@@ -14,36 +14,17 @@
  * limitations under the License.
  */
 import React, { ReactNode, useState } from 'react';
-import times from 'lodash/times';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import type {
-  DataTableColumns,
   TableCellRendererParams,
-  TableData,
   TableTheme
 } from 'src/shared/components/data-table/dataTableTypes';
 import DataTable from 'src/shared/components/data-table/DataTable';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import { createDataTableSampleData } from 'src/shared/components/data-table/DataTable.test';
 
 import styles from './DataTable.stories.scss';
-
-const createTableData = (
-  rows: number,
-  columns: number
-): { data: TableData; columns: DataTableColumns } => {
-  return {
-    data: times(rows, (row) =>
-      times(columns, (column) => `Cell ${row},${column}`)
-    ),
-    columns: times(columns, (column) => ({
-      columnId: `${column}`,
-      title: `Column ${column}`,
-      helpText: `Column ${column} help text`,
-      isSortable: true
-    }))
-  };
-};
 
 const tableThemeOptions = [
   { value: 'light', label: 'Light' },
@@ -51,7 +32,7 @@ const tableThemeOptions = [
 ];
 
 export const DataTableStory = () => {
-  const tableData = createTableData(150, 10);
+  const tableData = createDataTableSampleData(150, 10);
 
   const [tableState, setTableState] = useState({ data: tableData.data });
   const [tableTheme, setTableTheme] = useState<TableTheme>('light');
@@ -77,14 +58,14 @@ export const DataTableStory = () => {
 
 DataTableStory.storyName = 'default';
 
-const sampleTableDataForExpand = createTableData(5, 5);
+const sampleTableDataForExpand = createDataTableSampleData(5, 5);
 
 export const DataTableWithExpandStory = () => {
   const [expandedContent, setExpandedContent] = useState<{
     [rowId: string]: ReactNode;
   }>({});
 
-  const onExpanded = (isExpanded: boolean, rowId: string) => {
+  const onExpanded = (isExpanded: boolean, rowId: string | number) => {
     setExpandedContent({
       ...expandedContent,
       [rowId]: isExpanded ? (
@@ -121,8 +102,8 @@ export const DataTableWithExpandStory = () => {
 
 const ShowHideColumn = (props: {
   isExpanded: boolean;
-  onExpanded: (isExpanded: boolean, rowId: string) => void;
-  rowId: string;
+  onExpanded: (isExpanded: boolean, rowId: string | number) => void;
+  rowId: string | number;
 }) => {
   const onExpanded = () => {
     props.onExpanded(!props.isExpanded, props.rowId);

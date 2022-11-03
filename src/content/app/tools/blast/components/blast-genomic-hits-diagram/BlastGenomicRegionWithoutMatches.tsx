@@ -15,34 +15,33 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import ChevronDown from 'static/icons/icon_chevron.svg';
+import {
+  BACKBONE_HEIGHT,
+  BACKBONE_Y,
+  ELEMENT_HEIGHT
+} from './blastGenomicHitsDiagramConstants';
 
-import styles from './Chevron.scss';
+import styles from './BlastGenomicHitsDiagram.scss';
 
-export type Direction = 'up' | 'down' | 'left' | 'right';
-
-export type Props = {
-  direction: Direction;
-  animate: boolean;
-  className?: string;
+type Props = {
+  width: number;
 };
 
-const Chevron = (props: Props) => {
-  const isNonDefaultDirection = props.direction !== 'down';
+const RegionWithoutMatches = (props: Props) => {
+  const { width } = props;
 
-  const chevronClasses = classNames(
-    styles.chevron,
-    { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate },
-    props.className
+  return (
+    <svg viewBox={`0 0 ${width} ${ELEMENT_HEIGHT}`} width={width}>
+      <rect
+        x={0}
+        y={BACKBONE_Y}
+        className={styles.backbone}
+        width={width}
+        height={BACKBONE_HEIGHT}
+      />
+    </svg>
   );
-  return <ChevronDown className={chevronClasses} />;
 };
 
-Chevron.defaultProps = {
-  animate: false
-};
-
-export default Chevron;
+export default RegionWithoutMatches;

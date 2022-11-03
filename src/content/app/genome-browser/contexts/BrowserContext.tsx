@@ -17,7 +17,6 @@
 import React, { useState } from 'react';
 import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
-import type { CogList } from '../components/browser-cog/BrowserCogList';
 import type { StateZmenu } from '../components/zmenu/ZmenuController';
 
 type GenomeBrowserContextType = {
@@ -25,8 +24,6 @@ type GenomeBrowserContextType = {
   setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
   zmenus: StateZmenu;
   setZmenus: (zmenus: StateZmenu) => void;
-  cogList: CogList | null;
-  setCogList: (cogList: CogList) => void;
 };
 
 export const GenomeBrowserContext = React.createContext<
@@ -38,9 +35,7 @@ export const GenomeBrowserProvider = (props: {
 }) => {
   const [genomeBrowser, setGenomeBrowser] =
     useState<EnsemblGenomeBrowser | null>(null);
-
   const [zmenus, setZmenus] = useState<StateZmenu>({});
-  const [cogList, setCogList] = useState<CogList | null>(null);
 
   return (
     <GenomeBrowserContext.Provider
@@ -48,9 +43,7 @@ export const GenomeBrowserProvider = (props: {
         genomeBrowser,
         setGenomeBrowser,
         zmenus,
-        setZmenus,
-        cogList,
-        setCogList
+        setZmenus
       }}
     >
       {props.children}

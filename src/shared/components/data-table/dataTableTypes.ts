@@ -50,7 +50,7 @@ export type TableRows = {
 export type TableData = TableRowData[];
 
 export type TableCellRendererParams = {
-  rowId: string;
+  rowId: string | number;
   rowData: TableRowData;
   cellData: TableCellData;
 };
@@ -72,7 +72,7 @@ export type IndividualColumn = {
 
 export type DataTableColumns = IndividualColumn[];
 
-export type TableSelectedRowId = { [key: string]: boolean };
+export type TableSelectedRowIds = Set<string | number>;
 
 export type TableTheme = 'light' | 'dark';
 export type RowsPerPage = 10 | 20 | 50 | 100 | typeof Infinity;
@@ -86,11 +86,10 @@ export type DataTableState = {
   selectedAction: TableAction;
   sortedColumn: SortedColumn | null;
   fixedHeader: boolean;
-  selectedRowIds: TableSelectedRowId;
-  hiddenRowIds: TableSelectedRowId;
-  hiddenRowIdsInDraft: TableSelectedRowId;
-  hiddenColumnIds: TableSelectedRowId;
-  expandedRowIds: TableSelectedRowId;
+  selectedRowIds: TableSelectedRowIds;
+  hiddenRowIds: TableSelectedRowIds;
+  hiddenRowIdsInDraft: TableSelectedRowIds;
+  hiddenColumnIds: TableSelectedRowIds;
 };
 
 type SetRowsPerPageAction = {
@@ -120,11 +119,11 @@ type ClearSortedColumnAction = {
 
 type SetHiddenRowIdsAction = {
   type: 'set_hidden_row_ids';
-  payload: TableSelectedRowId;
+  payload: TableSelectedRowIds;
 };
 type SetHiddenRowIdsInDraftAction = {
   type: 'set_hidden_row_ids_in_draft';
-  payload: TableSelectedRowId;
+  payload: TableSelectedRowIds;
 };
 
 type ClearHiddenRowIdsInDraftAction = {
@@ -133,12 +132,12 @@ type ClearHiddenRowIdsInDraftAction = {
 
 type SetHiddenColumnIdsAction = {
   type: 'set_hidden_column_ids';
-  payload: TableSelectedRowId;
+  payload: TableSelectedRowIds;
 };
 
 type SetSelectedRowIdsAction = {
   type: 'set_selected_row_ids';
-  payload: TableSelectedRowId;
+  payload: TableSelectedRowIds;
 };
 
 type RestoreDefaultsAction = {

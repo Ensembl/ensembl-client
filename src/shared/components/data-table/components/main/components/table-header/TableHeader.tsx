@@ -19,7 +19,7 @@ import React, { useContext } from 'react';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
-import type { TableSelectedRowId } from 'src/shared/components/data-table/dataTableTypes';
+import type { TableSelectedRowIds } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './TableHeader.scss';
 
@@ -46,7 +46,7 @@ const TableHeader = () => {
       <tr>
         {columns.map((column, index) => {
           const currentColumn = columns[index];
-          if (hiddenColumnIds && hiddenColumnIds[currentColumn.columnId]) {
+          if (hiddenColumnIds && hiddenColumnIds.has(currentColumn.columnId)) {
             return null;
           }
 
@@ -72,7 +72,7 @@ const TableHeader = () => {
 
 const HeaderStats = (props: {
   totalRows: number;
-  hiddenRowIds: TableSelectedRowId;
+  hiddenRowIds: TableSelectedRowIds;
 }) => {
   const { totalRows, hiddenRowIds } = props;
 

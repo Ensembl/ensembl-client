@@ -2,10 +2,9 @@
 
 .resultsSummaryRow {
   display: grid;
-  grid-template-columns: [sequence-label] 11ch [hits-diagram] minmax(
-      48%,
-      1050px
-    ) [species] minmax(20%, 1fr);
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr);
 
   grid-template-areas:
     'sequence-label hits-diagram species'
@@ -13,8 +12,6 @@
 
   gap: 20px;
   padding-bottom: 20px;
-  padding-left: 24px;
-  padding-right: 24px;
 
   &:first-of-type {
     padding-top: 24px;
@@ -26,8 +23,8 @@
 
   .tableWrapper {
     grid-area: table;
-    margin-left: -43px;
-    margin-right: -43px;
+    margin-left: -20px;
+    margin-right: -20px;
   }
 }
 
@@ -40,11 +37,33 @@
   grid-column: hits-diagram;
 }
 
-.speciesInfo {
-  display: flex;
-  align-items: center;
+.blastSpecies {
+  display: inline-flex;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 20px;
+  justify-self: start;
+  align-self: start;
+  column-gap: 20px;
+  color: $dark-grey;
+}
+
+.blastSpeciesActive {
+  color: $blue;
+  cursor: pointer;
+}
+
+.speciesScientificName {
+  font-style: italic;
+}
+
+.speciesAssemblyName {
+  font-size: 11px;
+  white-space: nowrap; // this span contains a chevron which shouldn't get detached from the text and end up on a new line
+}
+
+.blastSpeciesChevron {
+  margin-left: 10px; // same as in ShowHide component
+  --chevron-height: 6px; // same as in ShowHide component
 }
 
 .hitsTable {
@@ -56,11 +75,6 @@
   + .resultsSummaryRow {
     padding-top: 24px;
   }
-}
-
-.showHide {
-  margin-left: 20px;
-  display: inline-block;
 }
 
 .sequenceAlignment {
