@@ -15,8 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   addSelectedSpecies,
@@ -34,8 +33,8 @@ import styles from './BlastSpeciesSelector.scss';
 
 const BlastSpeciesSelector = () => {
   const dispatch = useAppDispatch();
-  const popularSpeciesList = useSelector(getPopularSpecies);
-  const selectedSpeciesList = useSelector(getSelectedSpeciesList);
+  const popularSpeciesList = useAppSelector(getPopularSpecies);
+  const selectedSpeciesList = useAppSelector(getSelectedSpeciesList);
   const selectedGenomeIds = selectedSpeciesList.map(
     ({ genome_id }) => genome_id
   );
