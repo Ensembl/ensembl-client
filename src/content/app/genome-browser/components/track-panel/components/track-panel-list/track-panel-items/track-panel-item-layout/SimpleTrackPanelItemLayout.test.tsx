@@ -97,7 +97,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
       '.visibilitySwitch .imageButton'
     );
 
-    await userEvent.click(imageButton as HTMLButtonElement);
+    await userEvent.click(imageButton?.firstChild as HTMLButtonElement);
 
     expect(imageButton?.classList.contains('selected')).toBe(true);
     expect(onChangeVisibility).toHaveBeenCalledTimes(1);
