@@ -8,6 +8,9 @@
   vertical-align: middle;
 }
 
+/* stylelint-disable no-descending-specificity */
+/* "imageButton button svg" has a higher specificity than ".default svg", and linter doesn't like it */
+
 .imageButton button {
   display: inline-flex;
   width: 100%;
