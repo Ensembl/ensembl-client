@@ -16,21 +16,12 @@
 
 import { useContext } from 'react';
 
-import { useAppSelector } from 'src/store';
-
 import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserIdsContext';
-
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveFocusObjectId
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 // TODO: remember that there will also be a lookup into the browser storage
 // to determine whether the genome id in the url still matches the genome id
 // that the backend thinks it should be associated with
 const useGenomeBrowserIds = () => {
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
   const genomeBrowserIdsContext = useContext(GenomeBrowserIdsContext);
 
   if (!genomeBrowserIdsContext) {
@@ -39,11 +30,7 @@ const useGenomeBrowserIds = () => {
     );
   }
 
-  return {
-    ...genomeBrowserIdsContext,
-    activeGenomeId,
-    activeFocusObjectId
-  };
+  return genomeBrowserIdsContext;
 };
 
 export default useGenomeBrowserIds;

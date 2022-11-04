@@ -37,8 +37,6 @@ import BrowserCog from './BrowserCog';
 
 import styles from './BrowserCogList.scss';
 
-export type CogList = Record<string, number>;
-
 export const BrowserCogList = () => {
   const [selectedCog, setSelectedCog] = useState<string | null>(null);
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;

@@ -44,7 +44,9 @@ type GenomeBrowserIdsContextType = {
   isFetchingGenomeId: boolean;
   isMissingGenomeId: boolean | undefined;
   genomeId: string | undefined;
+  activeGenomeId: string | null;
   focusObjectId: string | undefined;
+  activeFocusObjectId: string | null;
   focusObjectIdForUrl: string | undefined;
   parsedFocusObjectId:
     | {
@@ -123,7 +125,9 @@ export const GenomeBrowserIdsProvider = (props: {
         isFetchingGenomeId: isFetching,
         isMissingGenomeId,
         genomeId,
+        activeGenomeId,
         focusObjectId,
+        activeFocusObjectId,
         focusObjectIdForUrl,
         parsedFocusObjectId,
         isMalformedFocusObjectId
