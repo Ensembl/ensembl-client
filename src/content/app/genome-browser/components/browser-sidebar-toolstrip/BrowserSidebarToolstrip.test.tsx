@@ -91,7 +91,7 @@ describe('<BrowserSidebarToolstrip />', () => {
   describe('rendering', () => {
     it('displays correct number of buttons', () => {
       const { container } = renderComponent();
-      expect(container.querySelectorAll('button').length).toBe(6);
+      expect(container.querySelectorAll('button').length).toBe(5);
     });
 
     it('passes correct data to callbacks when buttons are clicked', async () => {

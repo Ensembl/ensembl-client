@@ -34,30 +34,26 @@ const browserSidebarModals: Record<
   [BrowserSidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/SearchModal')
   ),
-  [BrowserSidebarModalView.TRACKS_MANAGER]: lazy(
-    () => import('./modal-views/TracksManagerModal')
-  ),
   [BrowserSidebarModalView.BOOKMARKS]: lazy(
     () => import('./modal-views/BookmarksModal')
-  ),
-  [BrowserSidebarModalView.PERSONAL_DATA]: lazy(
-    () => import('./modal-views/PersonalDataModal')
   ),
   [BrowserSidebarModalView.SHARE]: lazy(
     () => import('./modal-views/ShareModal')
   ),
   [BrowserSidebarModalView.DOWNLOADS]: lazy(
     () => import('./modal-views/DownloadsModal')
+  ),
+  [BrowserSidebarModalView.NAVIGATE]: lazy(
+    () => import('./modal-views/NavigateModal')
   )
 };
 
 export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.SEARCH]: 'Search',
-  [BrowserSidebarModalView.TRACKS_MANAGER]: 'Tracks manager',
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
-  [BrowserSidebarModalView.PERSONAL_DATA]: 'Personal data',
   [BrowserSidebarModalView.SHARE]: 'Share',
-  [BrowserSidebarModalView.DOWNLOADS]: 'Downloads'
+  [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
+  [BrowserSidebarModalView.NAVIGATE]: 'Navigate'
 };
 
 export const BrowserSidebarModal = () => {
