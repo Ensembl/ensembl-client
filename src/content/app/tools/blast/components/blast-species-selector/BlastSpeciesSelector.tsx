@@ -54,7 +54,7 @@ const BlastSpeciesSelector = () => {
   };
 
   const availableSpeciesList = popularSpeciesList.filter(
-    (species) => species.scientific_name
+    (species) => species.is_available
   );
 
   return (
