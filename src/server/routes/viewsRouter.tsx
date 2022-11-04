@@ -36,6 +36,8 @@ import Root from 'src/root/Root';
 const paths = getPaths();
 const statsFile = path.resolve(paths.buildStaticPath, 'loadable-stats.json');
 
+const configForClient = getConfigForClient();
+
 const viewRouter = async (req: Request, res: Response) => {
   // maintainers of the loadable component say that ChunkExtractor is stateful
   // and needs to be initialized at every request
@@ -100,13 +102,12 @@ const viewRouter = async (req: Request, res: Response) => {
       ${extractor.getStyleTags()}
       <script>
         window.__PRELOADED_STATE__ = ${JSON.stringify(reduxState)}
-        window.${CONFIG_FIELD_ON_WINDOW} = ${JSON.stringify(
-    getConfigForClient()
-  )}
+        window.${CONFIG_FIELD_ON_WINDOW} = ${JSON.stringify(configForClient)}
       </script>
       <script nomodule>
         window.location.replace("/unsupported-browser");
       </script>
+      ${hotjarTrackingScript}
     </head>
     <body>  
       <div id="ens-app" class="ens-app">${markup}</div>
@@ -125,5 +126,26 @@ const viewRouter = async (req: Request, res: Response) => {
 
   res.status(status).send(responseString);
 };
+
+// TODO: remove as soon as it is no longer needed
+const hotjarId = 2555715; // if we discover that this needs to be updated, we will extract it into an environment variable
+const hotjarTrackingScript = configForClient.environment.shouldReportAnalytics
+  ? `
+<script>
+  (function (h, o, t, j, a, r) {
+    h.hj =
+      h.hj ||
+      function () {
+        (h.hj.q = h.hj.q || []).push(arguments);
+      };
+    h._hjSettings = { hjid: ${hotjarId}, hjsv: 6 };
+    a = o.getElementsByTagName('head')[0];
+    r = o.createElement('script');
+    r.async = 1;
+    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+    a.appendChild(r);
+  })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+</script>`
+  : '';
 
 export default viewRouter;
