@@ -31,10 +31,7 @@ import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import {
-  GenomeBrowserIdsContext,
-  GenomeBrowserIdsProvider
-} from '../contexts/BrowserIdsContext';
+import { GenomeBrowserIdsProvider } from '../contexts/GenomeBrowserIdsContext';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
@@ -61,20 +58,6 @@ jest.mock(
   'src/content/app/genome-browser/state/focus-object/focusObjectSlice',
   () => ({
     fetchFocusObject: jest.fn(() => ({ type: 'fetch-focus-object' }))
-  })
-);
-
-jest.mock(
-  'src/shared/components/instant-download/instant-download-fetch/fetchForTranscript',
-  () => ({
-    fetchForTranscript: jest.fn(() => ({ type: 'fetch-transcript' }))
-  })
-);
-
-jest.mock(
-  'src/shared/components/instant-download/instant-download-fetch/fetchForGene',
-  () => ({
-    fetchForGene: jest.fn(() => ({ type: 'fetch-gene' }))
   })
 );
 
@@ -136,8 +119,6 @@ const MockRouterContext = createContext(emptyMockRouterContext);
 const TestComponent = () => {
   const { pathname, search } = useLocation();
   const mockRouterContext = useContext(MockRouterContext);
-
-  useContext(GenomeBrowserIdsContext);
 
   routingHandle = useBrowserRouting();
 

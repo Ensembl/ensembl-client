@@ -51,8 +51,8 @@ import BrowserInterstitial from './components/interstitial/BrowserInterstitial';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
-import { GenomeBrowserProvider } from './contexts/BrowserContext';
-import { GenomeBrowserIdsProvider } from './contexts/BrowserIdsContext';
+import { GenomeBrowserProvider } from './contexts/GenomeBrowserContext';
+import { GenomeBrowserIdsProvider } from './contexts/GenomeBrowserIdsContext';
 
 import styles from './Browser.scss';
 

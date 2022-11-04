@@ -16,9 +16,9 @@
 
 import { useContext } from 'react';
 
-import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/BrowserIdsContext';
-
 import { useAppSelector } from 'src/store';
+
+import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserIdsContext';
 
 import {
   getBrowserActiveGenomeId,
@@ -39,32 +39,10 @@ const useGenomeBrowserIds = () => {
     );
   }
 
-  const {
-    genomeIdInUrl,
-    genomeIdForUrl,
-    focusObjectIdInUrl,
-    isFetchingGenomeId,
-    isMissingGenomeId,
-    genomeId,
-    focusObjectId,
-    focusObjectIdForUrl,
-    parsedFocusObjectId,
-    isMalformedFocusObjectId
-  } = genomeBrowserIdsContext;
-
   return {
-    isFetchingGenomeId,
-    isMissingGenomeId,
-    genomeId,
-    genomeIdInUrl,
-    focusObjectId,
-    focusObjectIdInUrl,
+    ...genomeBrowserIdsContext,
     activeGenomeId,
-    activeFocusObjectId,
-    genomeIdForUrl,
-    focusObjectIdForUrl,
-    parsedFocusObjectId,
-    isMalformedFocusObjectId
+    activeFocusObjectId
   };
 };
 

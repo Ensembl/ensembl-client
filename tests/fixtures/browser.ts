@@ -207,9 +207,6 @@ export const createMockBrowserState = () => {
           zoom_in: false
         }
       },
-      trackSettings: {
-        selectedCog: 'gene-focus'
-      },
       trackPanel: {
         [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,
