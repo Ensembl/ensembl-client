@@ -41,7 +41,6 @@ For all sequences inserted in the BLAST input field we do a set of automatic for
 | Sequence id | Fetch sequence by its id and insert in the input field | No |
 
 ## Validation
-For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
 
 ### Sequence type detection 
 

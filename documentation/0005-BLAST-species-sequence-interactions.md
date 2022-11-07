@@ -11,7 +11,14 @@ This document summarises the interactions between the input sequences and select
 
 ## Decision
 
-The BLAST form allows adding 50 query sequences and users are able to select multiple species. During submission we submit each sequence against each species as individual jobs, for if a user chooses to submit 2 sequences to search against 3 species databases in a single submission, the final submission will contain 2 x 3 = 6 individual JDispatcher jobs.
+The Blast form allows adding more than one query sequences and species. However, during submission we submit each sequence against each species as individual jobs
+
+For example, if a user chooses to submit 2 sequences to search against 3 species databases in a single submission, the final submission will contain 2 x 3 = 6 individual jobs.
+
+To control overloading the system with bulk submission we limit the number of species and sequences to be submitted on a single submission as below.
+
+Max number of sequences: 50
+Max number of species: 25
 
 ### Reasons:
 

@@ -16,12 +16,11 @@ This document summarises the decisions made when choosing which database options
 BLAST databases are generated from FASTA files copied from the Ensembl and ensemblgenomes FTP sites
 
 #### Genomic sequence
-We support both unmmasked and softmasked (where repeats are lowercased) sequences, and exclude hardmasked (where repeats are replaced with Ns) sequences. Softmask is preferred for three reasons. First, lowercase residues are ignored by BLAST making it much faster as it looks at less of the genome. Second, softmasked sequence has all the nucleotides and so the coordinaterd reported are consistent. Third, an alignment seed can be found near a repeat and the alignment extended into the repeat, supporting the use case of looking for regions that are not wholly contained in repeats.
+Unmmasked and softmasked masked, excluding hardmasked. Softmasked sequence has all the sequence, and so the coords are consistent, it’s just that parts are lowercase and will be ignored by BLAST when it’s looking for regions to seed the alignments. An alignment seed can be found near a repeat and the alignment can then be extended into the repeat though. This is based on the idea that you’re probably not looking for things that are wholly contained in repeats. Plus it makes BLAST much faster as it looks at less of the genome.
+Hardmasked sequence has all the repeat regions removed, so it’s essentially like a very extreme version of softmasking that removes anything that looks like a repeat and also changes the coordinates as a result. As a result there will be no alignments to anything classed as a repeat, even through extension of the initial alignment. There are very few scenarios where this would be a good thing and potentially it’s very confusing and misleading.
 
-Since hardmasked sequence has all the repeat regions removed, it’s essentially like a very extreme version of softmasking that removes anything that looks like a repeat and also changes the coordinates as a result. As a result there will be no alignments to anything classed as a repeat, even through extension of the initial alignment. There are very few scenarios where this would be a good thing and potentially it’s very confusing and misleading.
-
-#### Transcripts and proteins
-cDNAs containing sequences of all transcripts, from both protein coding and non coding genes. Protein sequences for all protein coding transcripts.
+#### Transcripts
+cDNAs containing sequences of all transcripts, from both protein coding and non coding genes. Proteins for all protein coding transcripts.
 We chose not to support ab initio transcripts, an option available on the current website since predicting transcripts using these methods, for example by SNAP, is very much an outdated technology.
 
 ### File naming
