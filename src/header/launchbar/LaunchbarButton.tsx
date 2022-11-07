@@ -49,12 +49,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
 
   const imageButton = (
     <ImageButton
-      className={props.enabled ? '' : styles.launchbarButton}
-      statusClasses={{
-        [Status.UNSELECTED]: styles.launchbarButtonImage,
-        [Status.SELECTED]: styles.launchbarButtonSelectedImage,
-        [Status.DISABLED]: styles.launchbarButtonDisabledImage
-      }}
+      className={styles.launchbarButton}
       status={imageButtonStatus}
       description={props.description}
       image={props.icon}

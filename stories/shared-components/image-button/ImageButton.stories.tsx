@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
@@ -27,97 +26,49 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './ImageButton.stories.scss';
 
-const icon = {
-  image: DownloadIcon,
-  imageName: 'ImageButton',
-  imagePath: 'static/icons/download.svg',
-  imageClass: ''
-};
-
 export const ImageButtonStory = () => {
   const [status, setStatus] = useState(Status.DEFAULT);
 
   const toggleImage = () => {
-    switch (status) {
-      case Status.DEFAULT:
-        return setStatus(Status.UNSELECTED);
-      case Status.UNSELECTED:
-        return setStatus(Status.SELECTED);
-      default:
-        return setStatus(Status.DEFAULT);
-    }
+    const statusSequence = [Status.DEFAULT, Status.SELECTED, Status.UNSELECTED];
+    const currentStatusIndex = statusSequence.indexOf(status);
+    const nextStatusIndex = (currentStatusIndex + 1) % statusSequence.length;
+    const nextStatus = statusSequence[nextStatusIndex];
+    setStatus(nextStatus);
   };
+
   return (
-    <>
-      <div className={classNames(styles.containerStyles)}>
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={status as ImageButtonStatus}
-              description={'enable/disable'}
-              image={icon.image}
-              onClick={toggleImage}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>{status}</div>
-        </div>
-
-        <div className={classNames(styles.codeContent)}>
-          <h3>Usage:</h3>
-          {`import ImageButton, {ImageButtonStatus} from 'src/shared/image-button/ImageButton';`}
-          <br />
-          {`import { ReactComponent as ${icon.imageName} } from '${icon.imagePath}';`}
-          <br />
-          {`
-              <ImageButton status={ImageButtonStatus.${status.toUpperCase()}} 
-                description={'enable/disable'} 
-                image={${icon.imageName}}
-              />
-            `}
-        </div>
-      </div>
-      <div className={classNames(styles.containerStyles)}>
-        <div>Available styles:</div>
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.UNSELECTED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.UNSELECTED}
-          </div>
-        </div>
-
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.SELECTED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.SELECTED}
-          </div>
-        </div>
-
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              status={Status.DISABLED}
-              description={'enable/disable'}
-              image={icon.image}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.DISABLED}
-          </div>
-        </div>
-      </div>
-    </>
+    <div className={styles.defaultStoryContainer}>
+      <ImageButton
+        className={styles.imageButton}
+        status={status as ImageButtonStatus}
+        description={`This is image button in ${status} state`}
+        image={DownloadIcon}
+        onClick={toggleImage}
+      />
+      <p>
+        I am an image button, and my status is {status}. Click me to move to the
+        next status
+      </p>
+      <ImageButton
+        className={styles.imageButton}
+        status={Status.DISABLED}
+        description="I am a disabled button; but I will still show a tooltip when moused over"
+        image={DownloadIcon}
+        onClick={toggleImage}
+      />
+      <p>
+        I am a disabled button; but I will still show a tooltip when moused over
+      </p>
+      <ImageButton
+        className={styles.styledDefaultStoryButton}
+        status={Status.DEFAULT}
+        description="I am a button with custom styling"
+        image={DownloadIcon}
+        onClick={toggleImage}
+      />
+      <p>I am a button styled via a CSS class passed by the parent</p>
+    </div>
   );
 };
 

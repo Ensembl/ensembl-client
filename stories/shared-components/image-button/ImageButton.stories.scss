@@ -1,45 +1,20 @@
 @import 'src/styles/common';
 
-@import 'src/shared/components/image-button/ImageButton.scss';
-
-.imageCard {
-  float: left;
-  height: 200px;
-  display: block;
-  width: 150px;
-  margin: 10px 10px 10px 0px;
-  border-radius: 5px;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.3);
-  padding: 5px;
-
-  .imageHolder {
-    height: 150px;
-    width: 100%;
-
-    img {
-      top: 25%;
-      left: 25%;
-      height: 50%;
-      width: 50%;
-    }
-  }
-
-  .imageDescription {
-    text-align: center;
-  }
+.defaultStoryContainer {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  column-gap: 1.5rem;
+  align-items: center;
+  --image-button-svg-width: 80%;
 }
 
-.containerStyles {
-  float: left;
-  padding: 20px;
-  clear: both;
-  width: 100%;
+.imageButton,
+.styledDefaultStoryButton {
+  width: 32px;
+  height: 32px;
+}
 
-  .codeContent {
-    float: left;
-    background: $light-grey;
-    padding: 10px;
-    margin-top: 10px;
-    height: 200px;
-  }
+.styledDefaultStoryButton {
+  border: 1px solid black;
+  --image-button-default-svg-color: #{$green};
 }

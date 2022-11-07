@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import React, { memo, type FunctionComponent } from 'react';
+import React, {
+  memo,
+  type FunctionComponent,
+  type ButtonHTMLAttributes
+} from 'react';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 
@@ -24,7 +28,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { Status } from 'src/shared/types/status';
 
-import imageButtonStyles from './ImageButton.scss';
+import styles from './ImageButton.scss';
 
 export type ImageButtonStatus =
   | Status.DEFAULT
@@ -32,58 +36,71 @@ export type ImageButtonStatus =
   | Status.UNSELECTED
   | Status.DISABLED;
 
-export type Props = {
-  status: ImageButtonStatus;
-  description: string;
+type ChildlessButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'children' | 'disabled' // removing the 'disabled' property, because whether the button is disabled will be controlled  via its status
+>;
+
+export type Props = ChildlessButtonProps & {
+  status?: ImageButtonStatus;
+  description?: string;
   image: FunctionComponent | string;
-  className?: string;
-  statusClasses?: { [key in ImageButtonStatus]?: string };
-  onClick?: (event?: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export const ImageButton = (props: Props) => {
+  const {
+    status = Status.DEFAULT,
+    description,
+    image: Image,
+    className: classNameFromProps,
+    type: buttonTypeFromProps,
+    ...otherProps
+  } = props;
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    props.onClick && props.onClick(event);
-  };
-
-  const buttonProps =
-    props.status === Status.DISABLED ? {} : { onClick: handleClick };
-
-  const styles = props.statusClasses
-    ? { ...imageButtonStyles, ...props.statusClasses }
-    : imageButtonStyles;
-
   const imageButtonClasses = classNames(
-    imageButtonStyles.imageButton,
-    props.className,
-    styles[props.status]
+    styles.imageButton,
+    styles[status],
+    classNameFromProps
   );
+  const buttonType = buttonTypeFromProps ?? 'button'; // by default, we want the html button element in ImageButton to be of type 'button'
 
-  const shouldShowTooltip = Boolean(props.description) && isHovered;
+  const shouldShowTooltip = Boolean(description) && isHovered;
+
+  /**
+   * ARCHITECTURE OF THE IMAGE BUTTON:
+   * - The top-level element returned from this component is a div. The reason is that we want to be able
+   *   to respond to mouseover events even when the image button is in a disabled status,
+   *   in order to show the tooltip when there is something to show.
+   *   HTML button elements do not fire any events when disabled; and there doesn't seem to be a clean way
+   *   to bypass this native browser behaviour. Hence the need for the top-level div.
+   * - Nonetheless, ImageButton also has an html button element. The reason is that we want to be as close to the native browser
+   *   behaviour as possible; and buttons are great at handling disabled state, focus, key presses, etc.
+   * - The className property passed from the parent will be applied to the top-level div element rather than
+   *   to the button element, so as to make this component behave correctly when modified from the parent
+   *   (e.g. when the parent applies a margin to ImageButton)
+   */
 
   return (
-    <div ref={hoverRef} className={imageButtonClasses} {...buttonProps}>
-      <button>
+    <div ref={hoverRef} className={imageButtonClasses}>
+      <button
+        type={buttonType}
+        {...otherProps}
+        disabled={status === Status.DISABLED}
+      >
         {typeof props.image === 'string' ? (
-          <img src={props.image} alt={props.description} />
+          <img src={props.image} alt={description} />
         ) : (
-          <props.image />
+          <Image />
         )}
       </button>
       {shouldShowTooltip && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
-          {props.description}
+          {description}
         </Tooltip>
       )}
     </div>
   );
-};
-
-ImageButton.defaultProps = {
-  status: Status.DEFAULT,
-  description: ''
 };
 
 export default memo(ImageButton, isEqual);

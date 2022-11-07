@@ -1,14 +1,4 @@
-@import 'src/styles/common';
 .resetButton {
   height: 22px;
   width: 22px;
-}
-
-.imageButtonDisabled {
-  svg {
-    fill: $dark-grey;
-  }
-  button {
-    cursor: default;
-  }
 }

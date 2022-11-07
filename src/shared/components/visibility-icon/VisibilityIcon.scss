@@ -1,26 +1,14 @@
 @import 'src/styles/common';
 
-.selected {
-  svg {
-    fill: $blue;
-  }
-  &svg:hover {
-    opacity: 0.8;
-  }
+.visibilityIcon {
+  --image-button-unselected-svg-color: #{$grey};
+
+  --image-button-selected-bg-color: transparent;
+  --image-button-selected-svg-color: #{$blue};
 }
 
-.unselected {
+.visibilityIconPartiallySelected {
   svg {
-    fill: $grey;
-  }
-  &svg:hover {
-    opacity: 0.8;
-  }
-}
-
-.partiallySelected {
-  svg {
-    fill: $blue;
     [class*='leftHalf'] {
       fill: $grey;
     }

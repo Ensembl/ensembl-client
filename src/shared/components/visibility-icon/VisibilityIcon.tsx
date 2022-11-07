@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
@@ -39,29 +40,23 @@ type VisibilityIconProps = {
 };
 
 export const VisibilityIcon = (props: VisibilityIconProps) => {
-  const status = props.status;
-  let imageButtonStatus: ImageButtonStatus;
-  let eyeIcon = Eye;
-  let className = styles.default;
+  const { status } = props;
+  const isPartiallySelected = status === Status.PARTIALLY_SELECTED;
+  const imageButtonStatus = isPartiallySelected
+    ? Status.DEFAULT
+    : (status as ImageButtonStatus);
+  const eyeIcon = isPartiallySelected ? EyePartial : Eye;
 
-  if (status === Status.PARTIALLY_SELECTED) {
-    imageButtonStatus = Status.DEFAULT;
-    eyeIcon = EyePartial;
-    className = styles.partiallySelected;
-  } else {
-    imageButtonStatus = status;
-  }
+  const elementClasses = classNames(styles.visibilityIcon, {
+    [styles.visibilityIconPartiallySelected]: isPartiallySelected
+  });
 
   return (
     <ImageButton
       status={imageButtonStatus}
       image={eyeIcon}
       description={props.description}
-      statusClasses={{
-        [Status.DEFAULT]: className,
-        [Status.SELECTED]: styles.selected,
-        [Status.UNSELECTED]: styles.unselected
-      }}
+      className={elementClasses}
       onClick={props.onClick}
     />
   );
