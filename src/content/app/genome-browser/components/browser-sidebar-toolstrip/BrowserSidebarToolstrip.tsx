@@ -121,8 +121,8 @@ const BrowserSidebarToolstrip = () => {
       />
       <ImageButton
         className={classNames(
-          [layoutStyles.sidebarIcon],
-          [layoutStyles.navigateIcon]
+          layoutStyles.sidebarIcon,
+          layoutStyles.navigateIcon
         )}
         status={Status.DISABLED}
         description="Navigate browser image"
