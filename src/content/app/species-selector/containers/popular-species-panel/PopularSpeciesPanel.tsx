@@ -30,10 +30,10 @@ const PopularSpeciesPanel = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!popularSpecies) {
+    if (!popularSpecies.length) {
       dispatch(fetchPopularSpecies());
     }
-  }, [popularSpecies]);
+  }, [popularSpecies.length]);
 
   const renderedPopularSpecies = popularSpecies.map((species) => (
     <PopularSpeciesButton key={species.genome_id} species={species} />
