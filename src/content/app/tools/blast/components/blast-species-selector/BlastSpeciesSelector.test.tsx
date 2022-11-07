@@ -19,6 +19,7 @@ import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import times from 'lodash/times';
 
 import blastFormReducer, {
   initialState as initialBlastFormState,
@@ -27,31 +28,14 @@ import blastFormReducer, {
 
 import BlastSpeciesSelector from './BlastSpeciesSelector';
 
-const speciesList = [
-  {
-    assembly_name: 'GRCh38.p13',
-    common_name: 'Human',
-    genome_id: 'a7335667-93e7-11ec-a39d-005056b38ce3',
-    scientific_name: 'Homo sapiens'
-  },
-  {
-    assembly_name: 'IWGSC',
-    common_name: null,
-    genome_id: 'a73357ab-93e7-11ec-a39d-005056b38ce3',
-    scientific_name: 'Triticum aestivum'
-  },
-  {
-    assembly_name: 'GRCh37.p13',
-    common_name: 'Human',
-    genome_id: '3704ceb1-948d-11ec-a39d-005056b38ce3',
-    scientific_name: 'Homo sapiens'
-  }
-];
+import { createPopularSpecies } from 'tests/fixtures/popular-species';
+
+const mockSpeciesList = times(3, () => createPopularSpecies());
 
 jest.mock(
   'src/content/app/species-selector/state/speciesSelectorSelectors',
   () => ({
-    getPopularSpecies: () => speciesList
+    getPopularSpecies: () => mockSpeciesList
   })
 );
 
@@ -103,7 +87,7 @@ describe('SpeciesSelector', () => {
 
     expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
-      speciesList[0]
+      mockSpeciesList[0]
     );
   });
 });
