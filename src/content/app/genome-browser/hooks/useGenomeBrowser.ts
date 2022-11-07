@@ -26,7 +26,7 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/b
 
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
-import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
+import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserContext';
 
 import { useAppSelector } from 'src/store';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';

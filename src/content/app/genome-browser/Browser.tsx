@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, memo, useMemo } from 'react';
+import React, { useEffect, memo, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import EnsemblGenomeBrowser from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
@@ -52,7 +51,8 @@ import BrowserInterstitial from './components/interstitial/BrowserInterstitial';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
-import type { StateZmenu } from 'src/content/app/genome-browser/components/zmenu/ZmenuController';
+import { GenomeBrowserProvider } from './contexts/GenomeBrowserContext';
+import { GenomeBrowserIdsProvider } from './contexts/GenomeBrowserIdsContext';
 
 import styles from './Browser.scss';
 
@@ -162,38 +162,15 @@ const SidebarContent = () => {
   return isBrowserSidebarModalOpened ? <BrowserSidebarModal /> : <TrackPanel />;
 };
 
-type GenomeBrowserContextType = {
-  genomeBrowser: EnsemblGenomeBrowser | null;
-  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser | null) => void;
-  zmenus: StateZmenu;
-  setZmenus: (zmenus: StateZmenu) => void;
-};
-
-export const GenomeBrowserContext = React.createContext<
-  GenomeBrowserContextType | undefined
->(undefined);
-
 const GenomeBrowserInitContainer = () => {
-  const [genomeBrowser, setGenomeBrowser] =
-    useState<EnsemblGenomeBrowser | null>(null);
-
-  const [zmenus, setZmenus] = useState<StateZmenu>({});
-
   const browser = useMemo(() => {
     return <Browser />;
   }, []);
 
   return (
-    <GenomeBrowserContext.Provider
-      value={{
-        genomeBrowser,
-        setGenomeBrowser,
-        zmenus,
-        setZmenus
-      }}
-    >
-      {browser}
-    </GenomeBrowserContext.Provider>
+    <GenomeBrowserProvider>
+      <GenomeBrowserIdsProvider>{browser}</GenomeBrowserIdsProvider>
+    </GenomeBrowserProvider>
   );
 };
 

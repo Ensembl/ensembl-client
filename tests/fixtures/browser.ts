@@ -207,9 +207,6 @@ export const createMockBrowserState = () => {
           zoom_in: false
         }
       },
-      trackSettings: {
-        selectedCog: 'gene-focus'
-      },
       trackPanel: {
         [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,
@@ -268,6 +265,15 @@ export const createMockBrowserState = () => {
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
+    },
+    speciesSelector: {
+      committedItems: [
+        {
+          genome_id: 'human',
+          common_name: 'human',
+          assembly_name: 'grch38'
+        }
+      ]
     }
   };
 };
