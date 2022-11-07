@@ -10,22 +10,22 @@ Draft
 This document summarises different sequence formats supported by Ensembl BLAST
 
 ## Supported formats
-We support the most common sequence formats for any BLAST program - Fasta format or sequence as plain text
+We support the most common sequence formats for any BLAST program - FASTA format or sequence as plain text
 
 ## Decision
-Like other blast search providers we also support 2 ways of input - by pasting sequence in the input box or by uploading a file.
+Like other BLAST search providers we also support 2 ways of input - by pasting sequence in the input box or by uploading a file.
 
-- Input sequence to be accepted in either Fasta format characters or as plain text format (bare sequences). (Sequence IDs may be supported in the future)
-- Sequence should contain minimum 5 characters so that blast can process it properly.
-- No more than 30 sequences can be submitted at a time to prevent overloading JDispatcher.
+- Input sequence to be accepted in either FASTA format characters or as plain text format (bare sequences). (Sequence IDs may be supported in the future)
+- Sequence should contain minimum 5 characters so that BLAST can process it properly.
+- No more than 50 sequences can be submitted at a time to help prevent overloading JDispatcher. Note however that by selecting multiple species, many more than 50 JDispatcher jobs can be created in a single submission.
 - Sequence to be split into 60-character-long lines (Ensembl standard)
-- Will not implement example data for blast as we don't have it on the current site (and no complaints)
+- Will not implement example data for BLAST as we don't have it on the current site and have not had requests for it
 
 ## Automatic formatting and validation
 
-For all sequences inserted in the blast input field we do a set of automatic formatting and validation to capture any accidental errors and highlight them on screen.
+For all sequences inserted in the BLAST input field we do a set of automatic formatting and validation to capture any accidental errors and highlight them on screen.
 
-### Formattings:
+### Formatting:
 1. Transform all characters to upper-case letters if they aren’t upper-cased.
 2. Remove all spaces (or tabs) between characters
 3. Split the input into 60-character lines (Ensembl standard), except for the header line of FASTA-formatted sequences
@@ -40,12 +40,12 @@ For all sequences inserted in the blast input field we do a set of automatic for
 | A combination of bare sequences and FASTA sequences in one input. | An unlikely scenario, but, technically, can rely on both blank lines and FASTA headers as sequence separators. | Yes |
 | Sequence id | Fetch sequence by its id and insert in the input field | No |
 
-
 ## Validation
 For sequence validation we follow NCBI rules (https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
+
 ### Sequence type detection 
 
-Automatic detection of sequence type has been implemented which determines whether the input sequence is nucleotide or protein as soon as they are entered. Users can always override this selection and run a job. If the input sequence is detected as an amino acid sequence, we change the “Database” to Proteins and select “blastp” as the default Program
+Automatic detection of sequence type has been implemented which determines whether the input sequence is nucleotide or protein as soon as they are entered. Users can always override this selection and run a job. If the input sequence is detected as an amino acid sequence, we change the “Database” to Proteins and select “BLASTP” as the default Program
 
 ### Rules for sequence type detection:
 
@@ -83,7 +83,7 @@ Automatic detection of sequence type has been implemented which determines wheth
     M  methionine            *  translation stop
     N  asparagine            -  gap of indeterminate length
 
-  (For more info please refer NCBI Blast docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
+  (For more info please refer NCBI BLAST docs: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=BlastHelp)
 
 ## Known issues
 

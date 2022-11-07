@@ -11,11 +11,7 @@ This document summarises the interactions between the input sequences and select
 
 ## Decision
 
-To ensure fair usage we have applied a limit of 30 sequences to be submitted in a single submission. 
-
-The Blast form allows adding 30 query sequences and users are able to select multiple species. However, during submission we submit each sequence against each species as individual jobs
-
-For example, if a user chooses to submit 2 sequences to search against 3 species databases in a single submission, the final submission will contain 2 x 3 = 6 individual jobs.
+The BLAST form allows adding 50 query sequences and users are able to select multiple species. During submission we submit each sequence against each species as individual jobs, for if a user chooses to submit 2 sequences to search against 3 species databases in a single submission, the final submission will contain 2 x 3 = 6 individual JDispatcher jobs.
 
 ### Reasons:
 
