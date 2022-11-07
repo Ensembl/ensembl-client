@@ -2,7 +2,6 @@
   "parameters": {
     "database": {
       "label": "Database",
-      "description": "Database used for the BLAST search.",
       "type": "select",
       "options": [
         {
@@ -21,7 +20,6 @@
     },
     "program": {
       "label": "Program",
-      "description": "The BLAST program to be used for the Sequence Similarity Search.",
       "type": "select",
       "options": [
         {
@@ -48,7 +46,7 @@
     },
     "alignments": {
       "label": "Max. alignments",
-      "description": "Maximum number of match alignments reported in the result output.",
+      "description": "Maximum number of sequence match alignments to report in the result",
       "type": "select",
       "options": [
         {
@@ -99,7 +97,7 @@
     },
     "scores": {
       "label": "Max. scores",
-      "description": "Maximum number of match score summaries reported in the result output.",
+      "description": "Maximum number of match score summaries to report in the result",
       "type": "select",
       "options": [
         {
@@ -150,7 +148,7 @@
     },
     "hsps": {
       "label": "HSPs per hit",
-      "description": "Maximum number of HSPs (alignments) to keep for any single query-subject pair.",
+      "description": "Maximum number of High-scoring Sequence Pairs (alignments) to keep for any single query-subject pair",
       "type": "select",
       "options": [
         {
@@ -221,7 +219,6 @@
     },
     "filter": {
       "label": "Filter low complexity regions",
-      "description": "Filter regions of low sequence complexity. This can avoid issues with low complexity sequences where matches are found due to composition rather than meaningful sequence similarity. However in some cases filtering also masks regions of interest and so should be used with caution.",
       "type": "boolean",
       "options": {
         "true": "T",
@@ -230,7 +227,7 @@
     },
     "compstats": {
       "label": "Statistical accuracy",
-      "description": "Use composition-based statistics.",
+      "description": "Uses the composition of the sequences being aligned to generate more accurate E-values",
       "type": "select",
       "options": [
         {
@@ -257,7 +254,7 @@
     },
     "exp": {
       "label": "E-Threshold",
-      "description": "Limits the number of scores and alignments reported based on the expectation value. This is the maximum number of times the match is expected to occur by chance.",
+      "description": "Limits the number of scores and alignments reported based on the expectation value <br> This is the maximum number of times the match is expected to occur by chance",
       "type": "select",
       "options": [
         {
@@ -316,7 +313,7 @@
     },
     "match_scores": {
       "label": "Match/mismatch scores",
-      "description": "(Nucleotide searches) The match score is the bonus to the alignment score when matching the same base. The mismatch is the penalty when failing to match.",
+      "description": "The match score is the bonus to the alignment score when matching the same base <br> The mismatch is the penalty when failing to match",
       "type": "select",
       "options": [
         {
@@ -359,7 +356,7 @@
     },
     "wordsize": {
       "label": "Word size",
-      "description": "Word size for wordfinder algorithm",
+      "description": "Minimum number of characters required to seed a match between two sequences",
       "type": "select",
       "options": [
         {
@@ -394,7 +391,7 @@
     },
     "gapopen": {
       "label": "Gap opening",
-      "description": "Penalty taken away from the score when a gap is created in sequence. Increasing the gap openning penalty will decrease the number of gaps in the final alignment.",
+      "description": "Penalty taken away from the score when a gap is created in a sequence <br> Increasing the gap opening penalty will decrease the number of gaps in the final alignment",
       "type": "select",
       "options": [
         {
@@ -497,7 +494,7 @@
     },
     "gapext": {
       "label": "Gap extension",
-      "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favors short gaps in the final alignment, conversly decreasing the gap extension penalty favors long gaps in the final alignment.",
+      "description": "Penalty taken away from the score for each base or residue in the gap <br> Increasing the gap extension penalty favours short gaps in the final alignment",
       "type": "select",
       "options": [
         {
@@ -552,7 +549,7 @@
     },
     "matrix": {
       "label": "Matrix",
-      "description": "(Protein searches) The substitution matrix used for scoring alignments when searching the database.",
+      "description": "The substitution matrix used for scoring alignments when searching the database",
       "type": "select",
       "options": [
         {
