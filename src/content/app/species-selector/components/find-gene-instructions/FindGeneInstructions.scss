@@ -1,0 +1,47 @@
+@import 'src/styles/common';
+
+$columnWidth: 230px;
+$columnGap: 60px;
+$rowGap: 60px;
+$leftMargin: 25px;
+
+.instructionsPanel {
+  margin-top: 15px;
+}
+
+.instructionsWrapper {
+  margin-left: $leftMargin;
+  display: grid;
+  grid-template-columns: repeat(4, #{$columnWidth});
+  grid-column-gap: $columnGap;
+  grid-row-gap: $rowGap;
+  max-width: calc(4 * #{$columnWidth} + 3 * #{$columnGap});
+}
+
+.description {
+  display: flex;
+  align-items: center;
+  --app-icon-bg-color: #{$dark-grey};
+
+  .iconLabel {
+    margin-left: 12px;
+  }
+}
+
+.searchIcon {
+  width: 30px;
+  height: 30px;
+  fill: $dark-grey;
+}
+
+.speciesLozenge {
+  background-color: $dark-grey;
+  border-color: $dark-grey;
+  color: $white;
+}
+
+@media ($leftMargin + 4 * $columnWidth + 3 * $columnGap) {
+  .instructionsWrapper {
+    grid-template-columns: repeat(2, #{$columnWidth});
+  }
+}

@@ -2,6 +2,22 @@
 
 $rightCornerWidth: 40px;
 
+label,
+.showHide {
+  display: block;
+  font-size: 12px;
+  margin-left: 25px;
+}
+
+label {
+  color: $dark-grey;
+  margin-bottom: 10px;
+}
+
+.showHide {
+  margin-top: 10px;
+}
+
 .speciesSearchFieldWrapper {
   display: inline-flex;
   align-items: center;
@@ -15,12 +31,12 @@ $rightCornerWidth: 40px;
     background: $white;
     height: 36px;
     padding-left: 22px;
-  
+
     input {
       &::placeholder {
         color: $grey;
       }
-  
+
       &:focus {
         &::placeholder {
           color: white;

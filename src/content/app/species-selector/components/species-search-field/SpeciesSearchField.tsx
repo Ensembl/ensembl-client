@@ -38,6 +38,8 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import FindGeneInstructions from '../find-gene-instructions/FindGeneInstructions';
 
 import type {
   SearchMatch,
@@ -63,6 +65,8 @@ type RightCornerProps = {
 
 export const SpeciesSearchField = () => {
   const [isFocused, setIsFocused] = useState(false);
+  const [shouldShowFindGeneInstructions, showFindGeneInstructions] =
+    useState(false);
   const searchText = useAppSelector(getSearchText);
   const matches = useAppSelector(getSearchResults);
   const selectedItemText = useAppSelector(getSelectedItemText);
@@ -105,21 +109,33 @@ export const SpeciesSearchField = () => {
   const isNotFound = Boolean(matches && matches.length === 0);
 
   return (
-    <AutosuggestSearchField
-      search={selectedItemText || searchText}
-      placeholder="Common or scientific name..."
-      className={styles.speciesSearchFieldWrapper}
-      onChange={onSearchChange}
-      onSelect={onMatchSelected}
-      matchGroups={matchGroups}
-      searchFieldClassName={styles.speciesSearchField}
-      canShowSuggestions={canShowSuggesions}
-      notFound={isNotFound}
-      notFoundText={NOT_FOUND_TEXT}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
-    />
+    <>
+      <label>Find a species</label>
+      <AutosuggestSearchField
+        search={selectedItemText || searchText}
+        placeholder="Common or scientific name..."
+        className={styles.speciesSearchFieldWrapper}
+        onChange={onSearchChange}
+        onSelect={onMatchSelected}
+        matchGroups={matchGroups}
+        searchFieldClassName={styles.speciesSearchField}
+        canShowSuggestions={canShowSuggesions}
+        notFound={isNotFound}
+        notFoundText={NOT_FOUND_TEXT}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
+      />
+      <ShowHide
+        label="How to find genes"
+        isExpanded={shouldShowFindGeneInstructions}
+        onClick={() =>
+          showFindGeneInstructions(!shouldShowFindGeneInstructions)
+        }
+        className={styles.showHide}
+      />
+      {shouldShowFindGeneInstructions && <FindGeneInstructions />}
+    </>
   );
 };
 
