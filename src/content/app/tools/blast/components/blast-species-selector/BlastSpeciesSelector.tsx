@@ -40,10 +40,10 @@ const BlastSpeciesSelector = () => {
   );
 
   useEffect(() => {
-    if (!popularSpeciesList) {
+    if (!popularSpeciesList.length) {
       dispatch(fetchPopularSpecies());
     }
-  }, [popularSpeciesList]);
+  }, [popularSpeciesList.length]);
 
   const onSpeciesSelection = (isChecked: boolean, species: Species) => {
     if (isChecked) {
