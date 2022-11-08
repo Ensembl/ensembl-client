@@ -2,6 +2,7 @@
   "parameters": {
     "database": {
       "label": "Database",
+      "description": "Database used for the BLAST search",
       "type": "select",
       "options": [
         {
@@ -20,6 +21,7 @@
     },
     "program": {
       "label": "Program",
+      "description": "The BLAST program to be used for the Sequence Similarity Search",
       "type": "select",
       "options": [
         {

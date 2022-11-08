@@ -152,11 +152,12 @@ const BlastSettings = ({ config }: Props) => {
           <div className={styles.runJob}>Run a job</div>
           <div>
             <BlastSelect
-              options={config.parameters['database'].options as Option[]}
-              label={config.parameters['database'].label}
-              description={config.parameters['database'].description as string}
+              options={config.parameters.database.options as Option[]}
+              label={config.parameters.database.label}
+              description={config.parameters.database.description as string}
               selectedOption={blastParameters.database as string}
               onChange={onDatabaseChange}
+              showTooltip={false}
             />
           </div>
           <div>
@@ -166,6 +167,7 @@ const BlastSettings = ({ config }: Props) => {
               description={availableBlastPrograms.description as string}
               selectedOption={blastProgram}
               onChange={onBlastProgramChange}
+              showTooltip={false}
             />
           </div>
           <div>
@@ -194,9 +196,9 @@ const BlastSettings = ({ config }: Props) => {
         <div className={styles.bottomLevel}>
           <div className={styles.parametersColumn}>
             <BlastSelect
-              options={config.parameters['alignments'].options as Option[]}
-              label={config.parameters['alignments'].label}
-              description={config.parameters['alignments'].description}
+              options={config.parameters.alignments.options as Option[]}
+              label={config.parameters.alignments.label}
+              description={config.parameters.alignments.description}
               selectedOption={blastParameters.alignments as string}
               onChange={(value: string) =>
                 onBlastParameterChange('alignments', value)
@@ -204,9 +206,9 @@ const BlastSettings = ({ config }: Props) => {
             />
 
             <BlastSelect
-              options={config.parameters['scores'].options as Option[]}
-              label={config.parameters['scores'].label}
-              description={config.parameters['scores'].description}
+              options={config.parameters.scores.options as Option[]}
+              label={config.parameters.scores.label}
+              description={config.parameters.scores.description}
               selectedOption={blastParameters.scores as string}
               onChange={(value: string) =>
                 onBlastParameterChange('scores', value)
@@ -215,17 +217,17 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div className={styles.parametersColumn}>
             <BlastSelect
-              options={config.parameters['exp'].options as Option[]}
-              label={config.parameters['exp'].label}
-              description={config.parameters['exp'].description}
+              options={config.parameters.exp.options as Option[]}
+              label={config.parameters.exp.label}
+              description={config.parameters.exp.description}
               selectedOption={blastParameters.exp as string}
               onChange={(value: string) => onBlastParameterChange('exp', value)}
             />
 
             <BlastSelect
-              options={config.parameters['compstats'].options as Option[]}
-              label={config.parameters['compstats'].label}
-              description={config.parameters['compstats'].description}
+              options={config.parameters.compstats.options as Option[]}
+              label={config.parameters.compstats.label}
+              description={config.parameters.compstats.description}
               selectedOption={blastParameters.compstats as string}
               onChange={(value: string) =>
                 onBlastParameterChange('compstats', value)
@@ -234,9 +236,9 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div className={styles.parametersColumn}>
             <BlastSelect
-              options={config.parameters['hsps'].options as Option[]}
-              label={config.parameters['hsps'].label}
-              description={config.parameters['hsps'].description}
+              options={config.parameters.hsps.options as Option[]}
+              label={config.parameters.hsps.label}
+              description={config.parameters.hsps.description}
               selectedOption={blastParameters.hsps as string}
               onChange={(value: string) =>
                 onBlastParameterChange('hsps', value)
@@ -244,9 +246,9 @@ const BlastSettings = ({ config }: Props) => {
             />
 
             <BlastSelect
-              options={config.parameters['dropoff'].options as Option[]}
-              label={config.parameters['dropoff'].label}
-              description={config.parameters['dropoff'].description}
+              options={config.parameters.dropoff.options as Option[]}
+              label={config.parameters.dropoff.label}
+              description={config.parameters.dropoff.description}
               selectedOption={blastParameters.dropoff as string}
               onChange={(value: string) =>
                 onBlastParameterChange('dropoff', value)
@@ -255,9 +257,9 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div className={styles.parametersColumn}>
             <BlastSelect
-              options={config.parameters['gapopen'].options as Option[]}
-              label={config.parameters['gapopen'].label}
-              description={config.parameters['gapopen'].description}
+              options={config.parameters.gapopen.options as Option[]}
+              label={config.parameters.gapopen.label}
+              description={config.parameters.gapopen.description}
               selectedOption={blastParameters.gapopen as string}
               onChange={(value: string) =>
                 onBlastParameterChange('gapopen', value)
@@ -265,9 +267,9 @@ const BlastSettings = ({ config }: Props) => {
             />
 
             <BlastSelect
-              options={config.parameters['gapext'].options as Option[]}
-              label={config.parameters['gapext'].label}
-              description={config.parameters['gapext'].description}
+              options={config.parameters.gapext.options as Option[]}
+              label={config.parameters.gapext.label}
+              description={config.parameters.gapext.description}
               selectedOption={blastParameters.gapext as string}
               onChange={(value: string) =>
                 onBlastParameterChange('gapext', value)
@@ -292,7 +294,7 @@ const BlastSettings = ({ config }: Props) => {
             />
             {databaseSequenceType === 'dna' && (
               <BlastSelect
-                options={config.parameters['match_scores'].options as Option[]}
+                options={config.parameters.match_scores.options as Option[]}
                 label={config.parameters.match_scores.label}
                 description={config.parameters.match_scores.description}
                 selectedOption={blastParameters.match_scores as string}
@@ -304,7 +306,7 @@ const BlastSettings = ({ config }: Props) => {
             <div className={styles.matrixSetting}>
               {databaseSequenceType === 'protein' && (
                 <BlastSelect
-                  options={config.parameters['matrix'].options as Option[]}
+                  options={config.parameters.matrix.options as Option[]}
                   label={config.parameters.matrix.label}
                   description={config.parameters.matrix.description}
                   selectedOption={blastParameters.matrix as string}
@@ -323,13 +325,13 @@ const BlastSettings = ({ config }: Props) => {
             )}
           >
             {buildCheckbox({
-              ...(config.parameters['gapalign'] as BlastBooleanSetting),
+              ...(config.parameters.gapalign as BlastBooleanSetting),
               selectedOption: blastParameters.gapalign as string,
               onChange: (value: string) =>
                 onBlastParameterChange('gapalign', value)
             })}
             {buildCheckbox({
-              ...(config.parameters['filter'] as BlastBooleanSetting),
+              ...(config.parameters.filter as BlastBooleanSetting),
               selectedOption: blastParameters.filter as string,
               onChange: (value: string) =>
                 onBlastParameterChange('filter', value)
@@ -368,6 +370,7 @@ type BlastSelectProps = {
   options: Option[];
   label: string;
   description?: string;
+  showTooltip?: boolean;
   selectedOption: string;
   onChange: (value: string) => void;
 };
@@ -378,6 +381,8 @@ const BlastSelect = (setting: BlastSelectProps) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
   };
+
+  const showTooltip = setting.showTooltip ?? true;
 
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
@@ -391,7 +396,7 @@ const BlastSelect = (setting: BlastSelectProps) => {
           options={setting.options}
         />
       </label>
-      {isHovered && setting.description && (
+      {showTooltip && isHovered && setting.description && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
           {setting.description}
         </Tooltip>
