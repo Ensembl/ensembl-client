@@ -19,6 +19,7 @@ import { Provider } from 'react-redux';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import times from 'lodash/times';
 
 import blastFormReducer, {
   initialState as initialBlastFormState,
@@ -27,7 +28,16 @@ import blastFormReducer, {
 
 import BlastSpeciesSelector from './BlastSpeciesSelector';
 
-import speciesList from './speciesList';
+import { createPopularSpecies } from 'tests/fixtures/popular-species';
+
+const mockSpeciesList = times(3, () => createPopularSpecies());
+
+jest.mock(
+  'src/content/app/species-selector/state/speciesSelectorSelectors',
+  () => ({
+    getPopularSpecies: () => mockSpeciesList
+  })
+);
 
 const renderComponent = (
   {
@@ -77,7 +87,7 @@ describe('SpeciesSelector', () => {
 
     expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     expect(updatedState.blast.blastForm.selectedSpecies[0]).toEqual(
-      speciesList[0]
+      mockSpeciesList[0]
     );
   });
 });
