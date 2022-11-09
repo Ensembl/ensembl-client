@@ -27,7 +27,7 @@ dl {
 button {
   cursor: pointer;
 
-  &.disabled {
+  &[disabled] {
     cursor: default;
   }
 }
