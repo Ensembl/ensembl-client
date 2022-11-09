@@ -42,8 +42,20 @@ const FindGeneInstructions = () => {
                 )}
               >
                 <div className={speciesLozengeStyles.inner}>
-                  <span className={speciesLozengeStyles.name}>Species</span>
-                  <span className={speciesLozengeStyles.assembly}>
+                  <span
+                    className={classNames(
+                      speciesLozengeStyles.name,
+                      styles.speciesLozengeName
+                    )}
+                  >
+                    Species
+                  </span>
+                  <span
+                    className={classNames(
+                      speciesLozengeStyles.assembly,
+                      styles.speciesLozengeAssembly
+                    )}
+                  >
                     Assembly
                   </span>
                 </div>

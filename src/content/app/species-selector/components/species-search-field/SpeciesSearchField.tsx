@@ -38,8 +38,6 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import FindGeneInstructions from '../find-gene-instructions/FindGeneInstructions';
 
 import type {
   SearchMatch,
@@ -65,8 +63,6 @@ type RightCornerProps = {
 
 export const SpeciesSearchField = () => {
   const [isFocused, setIsFocused] = useState(false);
-  const [shouldShowFindGeneInstructions, showFindGeneInstructions] =
-    useState(false);
   const searchText = useAppSelector(getSearchText);
   const matches = useAppSelector(getSearchResults);
   const selectedItemText = useAppSelector(getSelectedItemText);
@@ -126,15 +122,6 @@ export const SpeciesSearchField = () => {
         onBlur={() => setIsFocused(false)}
         rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
       />
-      <ShowHide
-        label="How to find genes"
-        isExpanded={shouldShowFindGeneInstructions}
-        onClick={() =>
-          showFindGeneInstructions(!shouldShowFindGeneInstructions)
-        }
-        className={styles.showHide}
-      />
-      {shouldShowFindGeneInstructions && <FindGeneInstructions />}
     </>
   );
 };

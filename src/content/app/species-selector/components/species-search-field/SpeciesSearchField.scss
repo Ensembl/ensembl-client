@@ -2,20 +2,12 @@
 
 $rightCornerWidth: 40px;
 
-label,
-.showHide {
+label {
+  color: $dark-grey;
   display: block;
   font-size: 12px;
   margin-left: 25px;
-}
-
-label {
-  color: $dark-grey;
   margin-bottom: 10px;
-}
-
-.showHide {
-  margin-top: 10px;
 }
 
 .speciesSearchFieldWrapper {

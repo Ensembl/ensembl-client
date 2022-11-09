@@ -14,10 +14,17 @@
 }
 
 .selectedAssembly {
-  margin-left: 1em;
+  margin-left: 25px;
 }
 
 .selectedAssemblyLabel {
   color: $grey;
   margin-right: 0.5em;
+}
+
+.showHide {
+  display: block;
+  font-size: 12px;
+  margin-left: 25px;
+  margin-top: 15px;
 }

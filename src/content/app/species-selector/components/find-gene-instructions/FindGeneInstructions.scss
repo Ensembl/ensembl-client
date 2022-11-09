@@ -18,29 +18,39 @@ $leftMargin: 25px;
   max-width: calc(4 * #{$columnWidth} + 3 * #{$columnGap});
 }
 
-.description {
-  display: flex;
-  align-items: center;
-  --app-icon-bg-color: #{$dark-grey};
+.stepWrapper {
+  width: 170px;
 
-  .iconLabel {
-    margin-left: 12px;
+  .description {
+    display: flex;
+    align-items: center;
+    --app-icon-bg-color: #{$dark-grey};
+  }
+
+  .searchIcon {
+    fill: $dark-grey;
+    height: 20px;
+    width: 20px;
+  }
+
+  .speciesLozenge {
+    background-color: $dark-grey;
+    border-color: $dark-grey;
+    color: $white;
+    height: 20px;
+    padding: 0 12px;
+  }
+
+  .speciesLozengeName {
+    font-size: 11px;
+  }
+
+  .speciesLozengeAssembly {
+    font-size: 8px;
   }
 }
 
-.searchIcon {
-  width: 30px;
-  height: 30px;
-  fill: $dark-grey;
-}
-
-.speciesLozenge {
-  background-color: $dark-grey;
-  border-color: $dark-grey;
-  color: $white;
-}
-
-@media ($leftMargin + 4 * $columnWidth + 3 * $columnGap) {
+@media (max-width: 2 * $global-padding-left + $leftMargin + 4 * $columnWidth + 3 * $columnGap) {
   .instructionsWrapper {
     grid-template-columns: repeat(2, #{$columnWidth});
   }
