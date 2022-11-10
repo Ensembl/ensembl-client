@@ -256,7 +256,7 @@
     },
     "exp": {
       "label": "E-Threshold",
-      "description": "Limits the number of scores and alignments reported based on the expectation value <br> This is the maximum number of times the match is expected to occur by chance",
+      "description": "Limits the number of scores and alignments reported based on the expectation value. This is the maximum number of times the match is expected to occur by chance",
       "type": "select",
       "options": [
         {
@@ -315,7 +315,7 @@
     },
     "match_scores": {
       "label": "Match/mismatch scores",
-      "description": "The match score is the bonus to the alignment score when matching the same base <br> The mismatch is the penalty when failing to match",
+      "description": "The match score is the bonus to the alignment score when matching the same base. The mismatch is the penalty when failing to match",
       "type": "select",
       "options": [
         {
@@ -393,7 +393,7 @@
     },
     "gapopen": {
       "label": "Gap opening",
-      "description": "Penalty taken away from the score when a gap is created in a sequence <br> Increasing the gap opening penalty will decrease the number of gaps in the final alignment",
+      "description": "Penalty taken away from the score when a gap is created in a sequence. Increasing the gap opening penalty will decrease the number of gaps in the final alignment",
       "type": "select",
       "options": [
         {
@@ -496,7 +496,7 @@
     },
     "gapext": {
       "label": "Gap extension",
-      "description": "Penalty taken away from the score for each base or residue in the gap <br> Increasing the gap extension penalty favours short gaps in the final alignment",
+      "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favours short gaps in the final alignment",
       "type": "select",
       "options": [
         {
