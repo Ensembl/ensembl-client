@@ -18,7 +18,7 @@ import React from 'react';
 
 const NavigateModal = () => {
   return (
-    <section className="NavigateModal">
+    <section>
       <p>Navigate through the genome browser</p>
       <p>Not ready yet &hellip;</p>
     </section>
