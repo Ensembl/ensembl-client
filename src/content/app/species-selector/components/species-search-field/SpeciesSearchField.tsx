@@ -106,7 +106,7 @@ export const SpeciesSearchField = () => {
 
   return (
     <>
-      <label>Find a species</label>
+      <label className={styles.speciesSearchLabel}>Find a species</label>
       <AutosuggestSearchField
         search={selectedItemText || searchText}
         placeholder="Common or scientific name..."

@@ -2,7 +2,6 @@
 
 $columnWidth: 230px;
 $columnGap: 60px;
-$rowGap: 60px;
 $leftMargin: 25px;
 
 .instructionsPanel {
@@ -12,10 +11,8 @@ $leftMargin: 25px;
 .instructionsWrapper {
   margin-left: $leftMargin;
   display: grid;
-  grid-template-columns: repeat(4, #{$columnWidth});
+  grid-template-columns: repeat(3, #{$columnWidth});
   grid-column-gap: $columnGap;
-  grid-row-gap: $rowGap;
-  max-width: calc(4 * #{$columnWidth} + 3 * #{$columnGap});
 }
 
 .stepWrapper {
@@ -47,11 +44,5 @@ $leftMargin: 25px;
 
   .speciesLozengeAssembly {
     font-size: 8px;
-  }
-}
-
-@media (max-width: 2 * $global-padding-left + $leftMargin + 4 * $columnWidth + 3 * $columnGap) {
-  .instructionsWrapper {
-    grid-template-columns: repeat(2, #{$columnWidth});
   }
 }
