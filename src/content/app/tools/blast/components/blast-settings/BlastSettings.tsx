@@ -28,6 +28,7 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import {
   getSelectedSequenceType,
@@ -47,7 +48,6 @@ import type {
 } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSettings.scss';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 const getPresetsList = (config: BlastSettingsConfig) => {
   const { presets } = config;
@@ -154,20 +154,16 @@ const BlastSettings = ({ config }: Props) => {
             <BlastSelect
               options={config.parameters.database.options as Option[]}
               label={config.parameters.database.label}
-              description={config.parameters.database.description as string}
               selectedOption={blastParameters.database as string}
               onChange={onDatabaseChange}
-              showTooltip={false}
             />
           </div>
           <div>
             <BlastSelect
               options={availableBlastPrograms.options}
               label={availableBlastPrograms.label}
-              description={availableBlastPrograms.description as string}
               selectedOption={blastProgram}
               onChange={onBlastProgramChange}
-              showTooltip={false}
             />
           </div>
           <div>
@@ -370,19 +366,15 @@ type BlastSelectProps = {
   options: Option[];
   label: string;
   description?: string;
-  showTooltip?: boolean;
   selectedOption: string;
   onChange: (value: string) => void;
 };
 
-// to be replaced with a simple select component
 const BlastSelect = (setting: BlastSelectProps) => {
   const onChange = (e: FormEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
   };
-
-  const showTooltip = setting.showTooltip ?? true;
 
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
@@ -396,7 +388,7 @@ const BlastSelect = (setting: BlastSelectProps) => {
           options={setting.options}
         />
       </label>
-      {showTooltip && isHovered && setting.description && (
+      {isHovered && setting.description && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
           {setting.description}
         </Tooltip>
