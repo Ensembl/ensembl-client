@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -37,9 +38,8 @@ import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import SearchIcon from 'static/icons/icon_search.svg';
-import TracksManagerIcon from 'static/icons/icon_sliders.svg';
+import NavigateIcon from 'static/icons/icon_reset.svg';
 import BookmarkIcon from 'static/icons/icon_bookmark.svg';
-import PersonalDataIcon from 'static/icons/icon_plus_circle.svg';
 import ShareIcon from 'static/icons/icon_share.svg';
 import DownloadIcon from 'static/icons/icon_download.svg';
 
@@ -100,24 +100,10 @@ const BrowserSidebarToolstrip = () => {
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
-        status={Status.DISABLED}
-        description="Tracks manager"
-        onClick={() => toggleModalView(BrowserSidebarModalView.TRACKS_MANAGER)}
-        image={TracksManagerIcon}
-      />
-      <ImageButton
-        className={layoutStyles.sidebarIcon}
         status={getViewIconStatus(BrowserSidebarModalView.BOOKMARKS)}
         description="Previously viewed"
         onClick={() => toggleModalView(BrowserSidebarModalView.BOOKMARKS)}
         image={BookmarkIcon}
-      />
-      <ImageButton
-        className={layoutStyles.sidebarIcon}
-        status={Status.DISABLED}
-        description="Personal data"
-        onClick={() => toggleModalView(BrowserSidebarModalView.PERSONAL_DATA)}
-        image={PersonalDataIcon}
       />
       <ImageButton
         className={layoutStyles.sidebarIcon}
@@ -132,6 +118,16 @@ const BrowserSidebarToolstrip = () => {
         description="Downloads"
         onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOADS)}
         image={DownloadIcon}
+      />
+      <ImageButton
+        className={classNames(
+          layoutStyles.sidebarIcon,
+          layoutStyles.navigateIcon
+        )}
+        status={Status.DISABLED}
+        description="Navigate browser image"
+        onClick={() => toggleModalView(BrowserSidebarModalView.NAVIGATE)}
+        image={NavigateIcon}
       />
     </>
   );

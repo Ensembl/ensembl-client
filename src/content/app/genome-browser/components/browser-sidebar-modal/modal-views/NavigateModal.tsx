@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const TracksManagerModal = () => {
+const NavigateModal = () => {
   return (
-    <section className="tracksManagerModal">
-      <p>Save multiple browser configurations</p>
+    <section>
+      <p>Navigate through the genome browser</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default TracksManagerModal;
+export default NavigateModal;

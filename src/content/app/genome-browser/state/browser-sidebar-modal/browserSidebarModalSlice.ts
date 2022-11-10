@@ -27,11 +27,10 @@ import type { RootState } from 'src/store';
 
 export enum BrowserSidebarModalView {
   SEARCH = 'search',
-  TRACKS_MANAGER = 'Tracks manager',
   BOOKMARKS = 'Previously viewed',
-  PERSONAL_DATA = 'Personal data',
   SHARE = 'Share',
-  DOWNLOADS = 'Downloads'
+  DOWNLOADS = 'Downloads',
+  NAVIGATE = 'Navigate'
 }
 
 export type BrowserSidebarModalStateForGenome = Readonly<{
