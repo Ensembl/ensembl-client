@@ -76,6 +76,9 @@ export const updateSavedBlastJob = async (params: {
 }) => {
   const { submissionId, jobId, fragment } = params;
   const submission = await getBlastSubmission(submissionId);
+  if (!submission) {
+    return;
+  }
   const job = submission.results.find((job) => job.jobId === jobId);
 
   if (!job) {
