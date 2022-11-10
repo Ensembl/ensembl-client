@@ -23,7 +23,8 @@ import {
 import {
   getAllBlastSubmissions,
   updateBlastSubmission as updateBlastSubmissionInStorage,
-  deleteBlastSubmission as deleteBlastSubmissionFromStorage
+  deleteBlastSubmission as deleteBlastSubmissionFromStorage,
+  deleteExpiredBlastSubmissions as deleteExpiredBlastSubmissionsFromStorage
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
 import { submitBlast } from '../blast-api/blastApiSlice';
@@ -77,7 +78,7 @@ export type BlastSubmission = {
     parameters: BlastSubmissionParameters;
   };
   results: BlastJob[];
-  submittedAt: number; // timestamp
+  submittedAt: number; // timestamp, in milliseconds
   seen: boolean; // whether the user has viewed the results of this submission
 };
 
@@ -97,7 +98,10 @@ export type BlastResultsState = {
 
 export const restoreBlastSubmissions = createAsyncThunk(
   'blast-results/restore-blast-submissions',
-  () => getAllBlastSubmissions() || {}
+  async () => {
+    await deleteExpiredBlastSubmissionsFromStorage();
+    return (await getAllBlastSubmissions()) || {};
+  }
 );
 
 export const deleteBlastSubmission = createAsyncThunk(
@@ -142,6 +146,11 @@ const blastResultsSlice = createSlice({
     ) {
       const { submissionId, jobId, fragment } = action.payload;
       const submission = state.submissions[submissionId];
+      if (!submission) {
+        // imagine an edge case when a submission has been deleted,
+        // but we still have some rogue async client-side logic running which tries to update it
+        return;
+      }
       const job = submission.results.find((job) => job.jobId === jobId);
       if (job) {
         Object.assign(job, fragment);

@@ -1,6 +1,9 @@
+@import 'src/styles/common';
+
 .blastViewsNavigation {
   display: grid;
-  grid-template-columns: [left] auto [right] 1fr;
+  grid-template-columns: [left] auto [notice] 1fr [right] auto;
+  column-gap: 1.5rem;
   align-items: center;
   max-width: 1800px; // TODO: this is max width of the two-column blast form; set it to a constant
 }
@@ -19,6 +22,7 @@
 
 .wrapperRight {
   display: flex;
+  align-items: center;
   column-gap: 12px;
 }
 
@@ -29,4 +33,12 @@
 .rightColumn {
   grid-column: right;
   justify-self: end;
+}
+
+.resultsAvailabilityNotice {
+  grid-column: notice;
+  text-align: right;
+  line-height: 1;
+  color: $black;
+  font-weight: $light;
 }

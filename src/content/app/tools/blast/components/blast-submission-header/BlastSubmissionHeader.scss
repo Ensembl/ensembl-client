@@ -2,7 +2,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [control-buttons] 20%;
+  grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [controls-section] 20%;
   column-gap: 20px;
   align-items: center;
   padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
@@ -51,8 +51,8 @@
   margin-left: 1ch;
 }
 
-.controlButtons {
-  grid-column: control-buttons;
+.controlsSection {
+  grid-column: controls-section;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -61,6 +61,13 @@
 
 .controlButtons > * {
   flex-shrink: 0;
+}
+
+.unavailableResultsMessage {
+  display: flex;
+  align-items: center;
+  column-gap: 0.6rem;
+  color: red;
 }
 
 .deleteMessageContainer {
@@ -79,7 +86,7 @@
 // Leave media queries at the bottom of the file to make sure they override CSS rules defined above
 @media screen and (max-width: 1439px) {
   .grid {
-    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [control-buttons] auto;
+    grid-template-columns: auto [submission-name] auto [submission-details] 1fr [controls-section] auto;
   }
   .controlButtons {
     padding-left: 20px;
@@ -87,6 +94,10 @@
 }
 
 @media screen and (max-width: 1279px) {
+  .grid {
+    grid-template-columns: auto [submission-details] 1fr [controls-section] auto;
+  }
+
   .submissionName {
     display: none;
   }

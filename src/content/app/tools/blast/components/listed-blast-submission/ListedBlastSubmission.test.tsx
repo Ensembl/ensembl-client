@@ -22,6 +22,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
+import { BLAST_RESULTS_AVAILABILITY_DURATION } from 'src/content/app/tools/blast/services/blastStorageServiceConstants';
+import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
 
 import ListedBlastSubmission, {
   type Props as ListedBlastSubmissionProps
@@ -159,7 +161,7 @@ describe('BlastSubmissionHeader', () => {
         }
       });
 
-      it('shows disabled control buttons', () => {
+      it('disables control buttons, except for the delete button', () => {
         const { container } = renderComponent({
           props: { submission }
         });
@@ -170,7 +172,7 @@ describe('BlastSubmissionHeader', () => {
           '.downloadButton'
         ) as HTMLElement;
 
-        expect(deleteButton.hasAttribute('disabled')).toBe(true);
+        expect(deleteButton.hasAttribute('disabled')).toBe(false);
         expect(downloadButton.hasAttribute('disabled')).toBe(true);
       });
 
@@ -210,6 +212,27 @@ describe('BlastSubmissionHeader', () => {
         expect(buttonLink.getAttribute('href')).toBe(
           `/blast/submissions/${submission.id}`
         );
+      });
+    });
+
+    describe('when the submission is expected to no longer have accessible results', () => {
+      const submission = createBlastSubmission();
+      submission.submittedAt =
+        Date.now() - BLAST_RESULTS_AVAILABILITY_DURATION - 1000;
+
+      it('shows a warning text', () => {
+        const { container, getByText } = renderComponent({
+          props: { submission }
+        });
+        const deleteButton = container.querySelector('.deleteButton');
+        const downloadButton = container.querySelector('.downloadButton');
+        const buttonLink = container.querySelector('.buttonLink');
+
+        expect(buttonLink).toBeFalsy();
+        expect(downloadButton).toBeFalsy();
+        expect(deleteButton).toBeTruthy();
+
+        expect(getByText(UNAVAILABLE_RESULTS_WARNING)).toBeTruthy();
       });
     });
   });
