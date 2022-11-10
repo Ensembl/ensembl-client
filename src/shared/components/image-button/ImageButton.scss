@@ -56,7 +56,6 @@
 
 .disabled {
   background-color: var(--image-button-disabled-bg-color);
-  cursor: default;
   svg {
     fill: var(--image-button-disabled-svg-color, #{$grey});
     opacity: 1;
