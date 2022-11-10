@@ -146,6 +146,11 @@ const blastResultsSlice = createSlice({
     ) {
       const { submissionId, jobId, fragment } = action.payload;
       const submission = state.submissions[submissionId];
+      if (!submission) {
+        // imagine an edge case when a submission has been deleted,
+        // but we still have some rogue async client-side logic running which tries to update it
+        return;
+      }
       const job = submission.results.find((job) => job.jobId === jobId);
       if (job) {
         Object.assign(job, fragment);
