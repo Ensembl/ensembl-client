@@ -2,25 +2,28 @@
 
 .speciesSearchPanel {
   background-color: $light-grey;
-  height: 235px;
+  min-height: 235px;
   padding: 65px 40px;
   padding-left: $global-padding-left;
   box-shadow: 0 3px 5px $global-box-shadow;
 }
 
 .speciesSearchPanelRow {
-  display: flex;
-  align-items: center;
   margin-bottom: 0.5em;
-  margin-left: -22px;
   user-select: none;
 }
 
 .selectedAssembly {
-  margin-left: 1em;
+  margin-left: 25px;
 }
 
 .selectedAssemblyLabel {
   color: $grey;
   margin-right: 0.5em;
+}
+
+.showHide {
+  font-size: 12px;
+  margin-left: 25px;
+  margin-top: 15px;
 }

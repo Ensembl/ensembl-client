@@ -105,21 +105,24 @@ export const SpeciesSearchField = () => {
   const isNotFound = Boolean(matches && matches.length === 0);
 
   return (
-    <AutosuggestSearchField
-      search={selectedItemText || searchText}
-      placeholder="Common or scientific name..."
-      className={styles.speciesSearchFieldWrapper}
-      onChange={onSearchChange}
-      onSelect={onMatchSelected}
-      matchGroups={matchGroups}
-      searchFieldClassName={styles.speciesSearchField}
-      canShowSuggestions={canShowSuggesions}
-      notFound={isNotFound}
-      notFoundText={NOT_FOUND_TEXT}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
-    />
+    <>
+      <label className={styles.speciesSearchLabel}>Find a species</label>
+      <AutosuggestSearchField
+        search={selectedItemText || searchText}
+        placeholder="Common or scientific name..."
+        className={styles.speciesSearchFieldWrapper}
+        onChange={onSearchChange}
+        onSelect={onMatchSelected}
+        matchGroups={matchGroups}
+        searchFieldClassName={styles.speciesSearchField}
+        canShowSuggestions={canShowSuggesions}
+        notFound={isNotFound}
+        notFoundText={NOT_FOUND_TEXT}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
+      />
+    </>
   );
 };
 
