@@ -72,7 +72,7 @@ export type BlastSubmission = {
   id: string;
   submittedData: {
     species: Species[];
-    sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
+    sequences: { id: number; header?: string; value: string }[]; // TODO: consider whether to have strings or parsed sequences
     preset: string;
     submissionName: string;
     parameters: BlastSubmissionParameters;

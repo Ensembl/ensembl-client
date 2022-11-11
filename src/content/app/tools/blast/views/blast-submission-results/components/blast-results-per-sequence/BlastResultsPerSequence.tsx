@@ -24,8 +24,6 @@ import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-
 import type {
   BlastJobWithResults,
   BlastSubmission
@@ -37,6 +35,7 @@ import styles from './BlastResultsPerSequence.scss';
 type BlastResultsPerSequenceProps = {
   sequence: {
     id: number;
+    header?: string;
     value: string;
   };
   species: Species[];
@@ -53,8 +52,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
       submittedData: { parameters, preset }
     }
   } = props;
-  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
-  const { header: sequenceHeader, value: sequenceValue } = parsedBlastSequence;
+  const { header: sequenceHeader, value: sequenceValue } = sequence;
   const sequenceHeaderLabel =
     '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
 

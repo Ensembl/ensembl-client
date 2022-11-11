@@ -18,7 +18,6 @@ import { faker } from '@faker-js/faker';
 import merge from 'lodash/merge';
 
 import { initialState } from '../../state/blast-form/blastFormSlice';
-import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 import { createBlastSubmissionData } from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
 
 const sequences = [
@@ -83,7 +82,8 @@ const expectedPayload = {
   species: selectedSpecies,
   sequences: sequences.map((seq, index) => ({
     id: index + 1,
-    value: toFasta(seq)
+    header: seq.header,
+    value: seq.value
   })),
   preset: 'normal',
   submissionName,

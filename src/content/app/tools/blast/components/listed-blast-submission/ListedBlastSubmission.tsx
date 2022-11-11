@@ -22,7 +22,6 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import {
   type BlastSubmission,
@@ -119,14 +118,13 @@ const CollapsedSequencesBox = (props: Props) => {
 };
 
 type SequenceBoxProps = {
-  sequence: { id: number; value: string };
+  sequence: { id: number; header?: string; value: string };
   jobs: BlastJob[];
 };
 
 const SequenceBox = (props: SequenceBoxProps) => {
   const { sequence, jobs } = props;
-  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
-  const { header: sequenceHeader } = parsedBlastSequence;
+  const { header: sequenceHeader } = sequence;
   const sequenceHeaderLabel =
     '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
 
