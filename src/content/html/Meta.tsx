@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import React from 'react';
 
-export const getEntityViewerPageMeta = (state: RootState) =>
-  state.entityViewer.pageMeta;
+import { useAppSelector } from 'src/store';
+
+import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';
+
+import favicon16 from 'static/favicons/favicon-16x16.png';
+import favicon32 from 'static/favicons/favicon-32x32.png';
+
+const Meta = () => {
+  const pageMeta = useAppSelector(getPageMeta);
+
+  return (
+    <>
+      <title>{pageMeta.title}</title>
+      <meta name="description" content={pageMeta.description} />
+      <link rel="icon" type="image/png" sizes="32x32" href={favicon32} />
+      <link rel="icon" type="image/png" sizes="16x16" href={favicon16} />
+    </>
+  );
+};
+
+export default Meta;

@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
+import React, { useEffect } from 'react';
 
+import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableAbout = loadable(() => import('./About'));
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+const LazilyLoadedAbout = React.lazy(() => import('./About'));
+
+const pageTitle = 'Help and documentation — Ensembl';
+const pageDescription = 'Ensembl help and documentation';
 
 const AboutPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
-  return (
-    <>
-      <Helmet>
-        <title>About Ensembl</title>
-        <meta name="description" content="About Ensembl" />
-      </Helmet>
-      {hasMounted && <LoadableAbout />}
-    </>
-  );
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  });
+
+  return hasMounted ? <LazilyLoadedAbout /> : null;
 };
 
 export default AboutPage;

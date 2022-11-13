@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
 
+import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const BlastForm = loadable(() => import('./views/blast-form/BlastForm'));
-const BlastSubmissions = loadable(
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+const BlastForm = React.lazy(() => import('./views/blast-form/BlastForm'));
+const BlastSubmissions = React.lazy(
   () => import('./views/blast-submissions/BlastSubmissions')
 );
-const BlastSubmissionResults = loadable(
+const BlastSubmissionResults = React.lazy(
   () => import('./views/blast-submission-results/BlastSubmissionResults')
 );
 
+const pageTitle = 'BLAST search — Ensembl';
 const pageDescription = `
 BLAST stands for Basic Local Alignment Search Tool.
 The emphasis of this tool is to find regions of sequence similarity, which will yield functional and evolutionary clues about the structure and function of your sequence.
@@ -36,31 +38,30 @@ The emphasis of this tool is to find regions of sequence similarity, which will 
 
 const BrowserPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
-  return (
-    <>
-      <Helmet>
-        <title>BLAST search — Ensembl</title>
-        <meta name="description" content={pageDescription} />
-      </Helmet>
-      {hasMounted && (
-        <Routes>
-          <Route index element={<BlastForm />} />
-          <Route
-            path="unviewed-submissions"
-            element={<BlastSubmissions unviewed={true} />}
-          />
-          <Route path="submissions">
-            <Route
-              index={true}
-              element={<BlastSubmissions unviewed={false} />}
-            />
-            <Route path=":submissionId" element={<BlastSubmissionResults />} />
-          </Route>
-        </Routes>
-      )}
-    </>
-  );
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  });
+
+  return hasMounted ? (
+    <Routes>
+      <Route index element={<BlastForm />} />
+      <Route
+        path="unviewed-submissions"
+        element={<BlastSubmissions unviewed={true} />}
+      />
+      <Route path="submissions">
+        <Route index={true} element={<BlastSubmissions unviewed={false} />} />
+        <Route path=":submissionId" element={<BlastSubmissionResults />} />
+      </Route>
+    </Routes>
+  ) : null;
 };
 
 export default BrowserPage;

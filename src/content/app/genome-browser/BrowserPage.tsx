@@ -15,25 +15,24 @@
  */
 
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableBrowser = loadable(() => import('./Browser'));
+const LoadableBrowser = React.lazy(() => import('./Browser'));
 
 const BrowserPage = () => {
   const hasMounted = useHasMounted();
 
-  return (
-    <>
-      <Helmet>
-        <title>Genome browser — Ensembl</title>
-        <meta name="description" content="Ensembl genome browser" />
-      </Helmet>
-      {hasMounted && <LoadableBrowser />}
-    </>
-  );
+  return <>{hasMounted && <LoadableBrowser />}</>;
 };
 
 export default BrowserPage;
+
+/*
+
+  <Helmet>
+    <title>Genome browser — Ensembl</title>
+    <meta name="description" content="Ensembl genome browser" />
+  </Helmet>
+
+*/

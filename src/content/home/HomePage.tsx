@@ -15,25 +15,22 @@
  */
 
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableHome = loadable(() => import('./Home'));
+const LoadableHome = React.lazy(() => import('./Home'));
 
 const HomePage = () => {
   const hasMounted = useHasMounted();
 
-  return (
-    <>
+  return <>{hasMounted && <LoadableHome />}</>;
+};
+
+/*
       <Helmet>
         <title>Ensembl</title>
         <meta name="description" content="This is Ensembl home page" />
       </Helmet>
-      {hasMounted && <LoadableHome />}
-    </>
-  );
-};
+*/
 
 export default HomePage;

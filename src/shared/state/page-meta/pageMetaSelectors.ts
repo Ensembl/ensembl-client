@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import type { RootState } from 'src/store';
 
-import favicon16 from 'static/favicons/favicon-16x16.png';
-import favicon32 from 'static/favicons/favicon-32x32.png';
-
-const RootMeta = () => (
-  <Helmet defaultTitle="Ensembl">
-    <link rel="icon" type="image/png" sizes="32x32" href={favicon32} />
-    <link rel="icon" type="image/png" sizes="16x16" href={favicon16} />
-  </Helmet>
-);
-
-export default RootMeta;
+export const getPageMeta = (state: RootState) => state.pageMeta;

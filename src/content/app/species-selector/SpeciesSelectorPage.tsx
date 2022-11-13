@@ -15,25 +15,22 @@
  */
 
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableSpeciesSelector = loadable(() => import('./SpeciesSelector'));
+const LoadableSpeciesSelector = React.lazy(() => import('./SpeciesSelector'));
 
 const SpeciesSelectorPage = () => {
   const hasMounted = useHasMounted();
 
-  return (
-    <>
+  return <>{hasMounted && <LoadableSpeciesSelector />}</>;
+};
+
+export default SpeciesSelectorPage;
+
+/*
       <Helmet>
         <title>Species selector — Ensembl</title>
         <meta name="description" content="Species selector" />
       </Helmet>
-      {hasMounted && <LoadableSpeciesSelector />}
-    </>
-  );
-};
-
-export default SpeciesSelectorPage;
+*/

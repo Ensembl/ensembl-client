@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
+import React, { useEffect } from 'react';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 import { getGenomeByUrlId } from 'src/shared/state/genome/genomeSelectors';
+
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
@@ -35,32 +35,39 @@ import { getPathParameters, useUrlParams } from 'src/shared/hooks/useUrlParams';
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
-const LoadableSpeciesPageContent = loadable(
+const LazylyLoadedSpeciesPageContent = React.lazy(
   () => import('./SpeciesPageContent')
 );
+
+const defaultTitle = 'Species page — Ensembl';
+const defaultDescription = 'Species home page';
 
 const SpeciesPage = () => {
   const hasMounted = useHasMounted();
   const params = useUrlParams<'genomeId'>(['/species/:genomeId']);
+  const dispatch = useAppDispatch();
   const { genomeId: genomeIdInUrl } = params;
 
   const species = useAppSelector((state) =>
     getGenomeByUrlId(state, genomeIdInUrl as string)
   );
 
-  const title = species
-    ? `${getDisplayName(species)} — Ensembl`
-    : 'Species page — Ensembl';
+  const title = species ? `${getDisplayName(species)} — Ensembl` : defaultTitle;
 
-  return (
-    <>
-      <Helmet>
-        <title>{title}</title>
-        <meta name="description" content="Species home page" />
-      </Helmet>
-      {hasMounted && <LoadableSpeciesPageContent />}
-    </>
-  );
+  useEffect(() => {
+    if (!title) {
+      return;
+    }
+
+    dispatch(
+      updatePageMeta({
+        title,
+        description: defaultDescription
+      })
+    );
+  }, [title]);
+
+  return hasMounted ? <LazylyLoadedSpeciesPageContent /> : null;
 };
 
 export const serverFetch: ServerFetch = async (params) => {
@@ -74,12 +81,22 @@ export const serverFetch: ServerFetch = async (params) => {
   const genomeInfoResponsePromise = dispatch(
     fetchGenomeInfo.initiate(genomeIdFromUrl)
   );
-  const { error: genomeInfoError } = await genomeInfoResponsePromise;
+  const { data: genomeInfoData, error: genomeInfoError } =
+    await genomeInfoResponsePromise;
 
   if (isGenomeNotFoundError(genomeInfoError)) {
     return {
       status: 404
     };
+  } else {
+    const genomeInfo = genomeInfoData?.genomeInfo;
+    const title = genomeInfo ? getDisplayName(genomeInfo) : defaultTitle;
+    dispatch(
+      updatePageMeta({
+        title,
+        description: defaultDescription // TODO: eventually, decide what page description should be here
+      })
+    );
   }
 };
 

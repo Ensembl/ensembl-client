@@ -19,6 +19,7 @@ import { combineReducers } from 'redux';
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
 import genome from 'src/shared/state/genome/genomeSlice';
 import global from 'src/global/globalSlice';
+import pageMeta from 'src/shared/state/page-meta/pageMetaSlice';
 import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
@@ -33,6 +34,7 @@ const createRootReducer = () =>
   combineReducers({
     browser,
     communication,
+    pageMeta,
     inAppSearch,
     genome,
     global,
@@ -47,6 +49,7 @@ const createRootReducer = () =>
 export const createServerSideRootReducer = () =>
   combineReducers({
     global,
+    pageMeta,
     speciesSelector,
     entityViewer,
     genome,
