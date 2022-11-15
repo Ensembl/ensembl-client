@@ -26,7 +26,7 @@ export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
 
   const handleMouseEnter = () => {
     if (!isTouched) {
-      setIsHovering(true);
+      !isHovering && setIsHovering(true);
     }
     isTouched = false;
   };
@@ -40,24 +40,23 @@ export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
 
   useEffect(() => {
     const element = ref.current;
-    if (element) {
-      element.addEventListener('mouseenter', handleMouseEnter);
-      element.addEventListener('mouseleave', handleMouseLeave);
-      element.addEventListener('click', handleMouseLeave);
-      element.addEventListener('touchstart', handleTouch, { passive: true });
 
-      // cancel hover state if user switches to a different tab
-      document.addEventListener('visibilitychange', handleMouseLeave);
+    element?.addEventListener('mouseenter', handleMouseEnter);
+    element?.addEventListener('mouseleave', handleMouseLeave);
+    element?.addEventListener('click', handleMouseLeave);
+    element?.addEventListener('touchstart', handleTouch, { passive: true });
 
-      return () => {
-        element.removeEventListener('mouseenter', handleMouseEnter);
-        element.removeEventListener('mouseleave', handleMouseLeave);
-        element.removeEventListener('click', handleMouseLeave);
-        element.removeEventListener('touchstart', handleTouch);
+    // cancel hover state if user switches to a different tab
+    document.addEventListener('visibilitychange', handleMouseLeave);
 
-        document.removeEventListener('visibilitychange', handleMouseLeave);
-      };
-    }
+    return () => {
+      element?.removeEventListener('mouseenter', handleMouseEnter);
+      element?.removeEventListener('mouseleave', handleMouseLeave);
+      element?.removeEventListener('click', handleMouseLeave);
+      element?.removeEventListener('touchstart', handleTouch);
+
+      document.removeEventListener('visibilitychange', handleMouseLeave);
+    };
   }, [ref.current]);
 
   return [ref, isHovering];

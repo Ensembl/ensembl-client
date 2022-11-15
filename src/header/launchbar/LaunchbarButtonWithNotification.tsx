@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 
 import LaunchbarButton, { LaunchbarButtonProps } from './LaunchbarButton';
@@ -30,22 +30,24 @@ type LaunchbarButtonWithNotificationProps = LaunchbarButtonProps & {
 const LaunchbarButtonWithNotification = (
   props: LaunchbarButtonWithNotificationProps
 ) => {
-  const getNotificationClasses = () =>
-    classNames(styles.notification, {
-      [styles.notificationRed]: props.notification === 'red',
-      [styles.notificationGreen]: props.notification === 'green'
-    });
+  const notificationClasses = classNames(styles.notification, {
+    [styles.notificationRed]: props.notification === 'red',
+    [styles.notificationGreen]: props.notification === 'green'
+  });
 
-  const WrappedIcon = () => {
-    const { icon: Icon } = props;
+  const WrappedIcon = useMemo(
+    () => () => {
+      const { icon: Icon } = props;
 
-    return (
-      <div className={styles.toolsIconWrapper}>
-        <Icon />
-        {props.notification && <div className={getNotificationClasses()}></div>}
-      </div>
-    );
-  };
+      return (
+        <div className={styles.toolsIconWrapper}>
+          <Icon />
+          {props.notification && <div className={notificationClasses}></div>}
+        </div>
+      );
+    },
+    [notificationClasses]
+  );
 
   return <LaunchbarButton {...props} icon={WrappedIcon} />;
 };
