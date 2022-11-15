@@ -23,7 +23,7 @@ import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHea
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import type { submittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 import {
   type BlastSubmission,
   type BlastJob,
@@ -119,7 +119,7 @@ const CollapsedSequencesBox = (props: Props) => {
 };
 
 type SequenceBoxProps = {
-  sequence: submittedSequence;
+  sequence: SubmittedSequence;
   jobs: BlastJob[];
 };
 
