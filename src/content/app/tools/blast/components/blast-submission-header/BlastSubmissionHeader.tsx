@@ -80,7 +80,7 @@ export const BlastSubmissionHeader = (props: Props) => {
     const { program, stype, ...otherParameters } = parameters;
 
     const payload = {
-      sequences: sequences,
+      sequences,
       selectedSpecies: species,
       settings: {
         submissionName,

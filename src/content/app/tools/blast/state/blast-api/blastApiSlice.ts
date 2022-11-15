@@ -25,10 +25,11 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
+import type { submittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
 export type BlastSubmissionPayload = {
   species: Species[];
-  sequences: { id: number; header?: string; value: string }[];
+  sequences: submittedSequence[];
   preset: string;
   submissionName: string;
   parameters: Record<string, string>;
@@ -64,15 +65,15 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       BlastSubmissionPayload
     >({
       query(payload) {
-        // merge the sequence and header using tofasta
-        const submittedSequences = payload.sequences.map((item) => ({
+        // backend toolsAPI accepts sequences as FASTA strings
+        const querySequences = payload.sequences.map((item) => ({
           id: item.id,
           value: toFasta({ header: item.header, value: item.value })
         }));
 
         const body = {
           genome_ids: payload.species.map(({ genome_id }) => genome_id),
-          query_sequences: submittedSequences,
+          query_sequences: querySequences,
           parameters: payload.parameters
         };
         return {

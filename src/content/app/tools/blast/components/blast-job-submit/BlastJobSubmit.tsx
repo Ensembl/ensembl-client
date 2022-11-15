@@ -41,9 +41,11 @@ import type {
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
 
+import type { submittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+
 export type PayloadParams = {
   species: Species[];
-  sequences: { id: number; header?: string; value: string }[];
+  sequences: submittedSequence[];
   preset: string;
   submissionName: string;
   parameters: Partial<Record<BlastParameterName, string>> & {
