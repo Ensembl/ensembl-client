@@ -27,7 +27,11 @@ import {
   expand,
   take,
   tap,
-  toArray
+  toArray,
+  scan,
+  withLatestFrom,
+  startWith,
+  Observable
 } from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
 import type { Epic } from 'redux-observable';
@@ -45,6 +49,7 @@ import {
 import {
   updateJob,
   restoreBlastSubmissions,
+  deleteBlastSubmission,
   type JobStatus,
   type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -77,7 +82,7 @@ export const blastFormSubmissionEpic: Epic<Action, Action, RootState> = (
 
       return results.map((job) => ({ submissionId, job }));
     }),
-    poll(),
+    poll(action$),
     tap(databaseUpdaterSubject()),
     map((pollingResult) => {
       const {
@@ -111,7 +116,7 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
           }))
       );
     }),
-    poll(),
+    poll(action$),
     tap(databaseUpdaterSubject()),
     map((pollingResult) => {
       const {
@@ -130,17 +135,30 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
  * Here, as long as checkJobStatuses returns jobs whose status is RUNNING,
  * they will be fed back into the expand, and then back to checkJobStatuses
  */
-const poll = () =>
+const poll = (action$: Observable<Action<any>>) =>
   pipe(
     expand((input: { submissionId: string; job: BlastJob }[]) => {
       const runningJobsList = input.filter(
         ({ job }) => job.status === 'RUNNING'
       );
-      return runningJobsList.length
-        ? timer(POLLING_INTERVAL).pipe(
-            concatMap(() => checkJobStatuses(runningJobsList))
-          )
-        : EMPTY;
+
+      if (runningJobsList.length) {
+        return timer(POLLING_INTERVAL).pipe(
+          withLatestFrom(getDeletedSubmissionsStream(action$)),
+          concatMap(([, deletedSubmissions]) => {
+            const { submissionId } = runningJobsList[0];
+            // before issuing a network request, check whether,
+            // during the time of waiting, this submission has been deleted
+            if (deletedSubmissions.includes(submissionId)) {
+              return EMPTY;
+            } else {
+              return checkJobStatuses(runningJobsList);
+            }
+          })
+        );
+      } else {
+        return EMPTY;
+      }
     }),
     mergeMap((results) => from(results)), // transform the array of objects returned from the previous operator into individual objects
     filter((pollingResult) =>
@@ -185,4 +203,16 @@ const databaseUpdaterSubject = () =>
         updateSavedBlastJob({ submissionId, jobId, fragment: { status } })
       );
     })
+  );
+
+// Record ids of all submissions that have been deleted since the creation of this stream.
+// Used for bailing out of job status polling if the submission that jobs belong to has been deleted.
+const getDeletedSubmissionsStream = (action$: Observable<Action<any>>) =>
+  action$.pipe(
+    filter(isFulfilled(deleteBlastSubmission)),
+    map((action) => action.payload),
+    scan((acc: string[], submissionId: string) => {
+      return [...acc, submissionId];
+    }, [] as string[]),
+    startWith([] as string[])
   );

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { setTimeout } from 'timers/promises';
 import { configureStore } from '@reduxjs/toolkit';
 import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
@@ -29,7 +30,10 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { getBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
-import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import {
+  restoreBlastSubmissions,
+  deleteBlastSubmission
+} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { createCancellableTestEpic } from 'tests/reduxObservableHelpers';
 
@@ -50,7 +54,8 @@ jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
   saveBlastSubmission: jest.fn().mockImplementation(() => Promise.resolve()),
   updateSavedBlastJob: jest.fn().mockImplementation(() => Promise.resolve()),
   getAllBlastSubmissions: jest.fn(),
-  deleteExpiredBlastSubmissions: jest.fn()
+  deleteExpiredBlastSubmissions: jest.fn(),
+  deleteBlastSubmission: jest.fn()
 }));
 jest.mock('config', () => ({
   toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
@@ -235,6 +240,36 @@ describe('blast epics', () => {
           )
         ).toBe(true);
       });
+    });
+
+    it('stops polling if a submission gets deleted', async () => {
+      let pollCount = 0;
+
+      // always respond with a running job status
+      server.use(
+        rest.get(
+          'http://tools-api-url/blast/jobs/status/:jobId',
+          (_, res, ctx) => {
+            pollCount += 1;
+            return res(ctx.json(createRunningJobStatusResponse()));
+          }
+        )
+      );
+
+      store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
+
+      await waitFor(() => {
+        expect(pollCount).toBeGreaterThan(3);
+      });
+
+      await store.dispatch(
+        deleteBlastSubmission(successfulSubmission.submission_id)
+      );
+      const currentPollCount = pollCount; // we don't expect any more requests to be made
+
+      await setTimeout(5); // even this tiny period is plentyof time for a couple of more requests to be made if polling hasn't stopped
+
+      expect(currentPollCount).toBe(pollCount);
     });
   });
 
