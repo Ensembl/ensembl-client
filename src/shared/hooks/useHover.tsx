@@ -26,7 +26,7 @@ export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
 
   const handleMouseEnter = () => {
     if (!isTouched) {
-      !isHovering && setIsHovering(true);
+      setIsHovering(true);
     }
     isTouched = false;
   };
