@@ -56,6 +56,7 @@ type Props = {
  * - Only keep the relevant fields from the assets manifest before transferring it to client
  * - Remove all loadable-component code; use React.lazy instead
  * - Remove all React Helmet code
+ * - Make sure favicon works (especially in prod build)
  * - Remove packages:
  *    - @loadable/component
  *    - @loadable/server

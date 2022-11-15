@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -65,8 +65,10 @@ export const Root = () => {
   return (
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
-        <App />
-        {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        <Suspense>
+          <App />
+          {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        </Suspense>
       </ErrorBoundary>
     </div>
   );

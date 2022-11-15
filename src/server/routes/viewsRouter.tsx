@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { readFile } from 'fs/promises';
 import { Request, Response } from 'express';
 import React from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
@@ -24,8 +22,8 @@ import { StaticRouter } from 'react-router-dom/server';
 import { Provider } from 'react-redux';
 
 import routesConfig, { type RouteConfig } from 'src/routes/routesConfig';
-import { getPaths } from 'webpackDir/paths';
 import { getConfigForClient } from '../helpers/getConfigForClient';
+import readWebpackAssetsManifest from '../helpers/readWebpackManifest';
 
 import { getServerSideReduxStore } from '../serverSideReduxStore';
 
@@ -34,12 +32,10 @@ import Root from 'src/root/Root';
 
 import type JSONValue from 'src/shared/types/JSON';
 
-const paths = getPaths();
-
 const configForClient = getConfigForClient();
 
 const viewRouter = async (req: Request, res: Response) => {
-  const assetsManifest = await readManifest();
+  const assetsManifest = await readWebpackAssetsManifest();
 
   const reduxStore = getServerSideReduxStore();
 
@@ -80,11 +76,7 @@ const viewRouter = async (req: Request, res: Response) => {
   );
 
   const stream = renderToPipeableStream(ReactApp, {
-    bootstrapScripts: [
-      assetsManifest['client.js'],
-      assetsManifest['vendors.js'],
-      assetsManifest['runtime~client.js']
-    ].filter(Boolean), // FIXME: separate into a function?
+    bootstrapScripts: getBootstrapScripts(assetsManifest),
     onShellReady() {
       // If something errored before we started streaming, we set the error code appropriately.
       // res.statusCode = didError ? 500 : 200;
@@ -102,16 +94,14 @@ const viewRouter = async (req: Request, res: Response) => {
   // setTimeout(() => stream.abort(), ABORT_DELAY);
 };
 
-export default viewRouter;
-
-// FIXME: this should be memoized in production
-const readManifest = async () => {
-  const assetsManifestPath = path.resolve(
-    paths.buildStaticPath,
-    'manifest.json'
-  );
-  const manifestString = await readFile(assetsManifestPath, {
-    encoding: 'utf-8'
-  });
-  return JSON.parse(manifestString);
+const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
+  // In development environment, the only entry point is the client.js file
+  // In production, webpack will code-split and extract vendors.js and runtime-client.js chunks
+  return [
+    assetsManifest['client.js'],
+    assetsManifest['vendors.js'],
+    assetsManifest['runtime~client.js']
+  ].filter(Boolean);
 };
+
+export default viewRouter;

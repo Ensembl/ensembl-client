@@ -14,68 +14,47 @@
  * limitations under the License.
  */
 
-import path from 'path';
 import { Request, Response } from 'express';
 import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { ChunkExtractor } from '@loadable/server';
+import { renderToPipeableStream } from 'react-dom/server';
 
-import { getPaths } from 'webpackDir/paths';
+import { getConfigForClient } from '../helpers/getConfigForClient';
+import readWebpackAssetsManifest from '../helpers/readWebpackManifest';
 
+import UnsupportedBrowserHtml from 'src/content/unsupported-browser/UnsupportedBrowserHtml';
 import UnsupportedBrowser from 'src/content/unsupported-browser/UnsupportedBrowser';
 
-// const pathToHtml = path.resolve(__dirname, 'views/unsupported-browser.html'); // <-- notice that this will be the path in the dist directory
+const configForClient = getConfigForClient();
 
-const paths = getPaths();
-const statsFile = path.resolve(paths.buildStaticPath, 'loadable-stats.json');
+const unsupportedBrowserRouter = async (_: Request, res: Response) => {
+  const assetsManifest = await readWebpackAssetsManifest();
 
-const unsupportedBrowserRouter = (_: Request, res: Response) => {
-  const extractor = new ChunkExtractor({
-    statsFile,
-    entrypoints: ['unsupportedBrowser']
+  const ReactApp = (
+    <UnsupportedBrowserHtml
+      assets={assetsManifest}
+      serverSideConfig={configForClient}
+    >
+      <UnsupportedBrowser />
+    </UnsupportedBrowserHtml>
+  );
+
+  const stream = renderToPipeableStream(ReactApp, {
+    bootstrapScripts: getBootstrapScripts(assetsManifest),
+    onShellReady() {
+      res.statusCode = 200;
+      res.setHeader('Content-type', 'text/html');
+      stream.pipe(res);
+    },
+    onError(x) {
+      console.error(x); // FIXME: should use proper logger here
+    }
   });
-
-  const ReactApp = <UnsupportedBrowser />;
-
-  const jsx = extractor.collectChunks(ReactApp);
-  const markup = renderToString(jsx);
-
-  const responseString = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <base href="/">
-      <title>Unsupported browser</title>
-      <meta name="description" content="Your browser is not supported"></meta>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      ${getAnalyticsScript()}
-      ${extractor.getLinkTags()}
-      ${extractor.getStyleTags()}
-    </head>
-    <body>  
-      <div id="ens-app" class="ens-app">${markup}</div>
-    
-      ${extractor.getScriptTags()}
-    </body>
-    </html>
-  `;
-
-  res.send(responseString);
 };
 
-const getAnalyticsScript = () =>
-  process.env.REPORT_ANALYTICS?.toLowerCase() === 'true' &&
-  process.env.GOOGLE_ANALYTICS_KEY
-    ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_KEY}"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', '${process.env.GOOGLE_ANALYTICS_KEY}');
-      </script>
-    `
-    : '';
+const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
+  return configForClient.environment.buildEnvironment === 'production'
+    ? [] // no need for javascript in the production build
+    : [assetsManifest['unsupportedBrowser.js']];
+};
 
 export default unsupportedBrowserRouter;
