@@ -7,11 +7,7 @@ to show the scrollbar only when the element is being scrolled.
 Notice that this will work for webkit-based browsers, but will not work in Firefox.
 
 */
-
-body,
-div,
-ul,
-p {
+* {
   &::-webkit-scrollbar {
     -webkit-appearance: none;
   }
