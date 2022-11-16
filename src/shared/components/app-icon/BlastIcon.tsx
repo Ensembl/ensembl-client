@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import classNames from 'classnames';
 
 import SVGIcon from 'static/icons/icon_launchbar_blast.svg';
@@ -31,4 +31,4 @@ const BlastIcon = () => {
   );
 };
 
-export default BlastIcon;
+export default memo(BlastIcon);

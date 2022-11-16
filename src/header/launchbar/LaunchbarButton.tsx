@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
+import React, { useMemo, type FunctionComponent } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -47,13 +47,16 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
     isActive
   });
 
-  const imageButton = (
-    <ImageButton
-      className={styles.launchbarButton}
-      status={imageButtonStatus}
-      description={props.description}
-      image={props.icon}
-    />
+  const imageButton = useMemo(
+    () => (
+      <ImageButton
+        className={styles.launchbarButton}
+        status={imageButtonStatus}
+        description={props.description}
+        image={props.icon}
+      />
+    ),
+    [props.icon, props.description, imageButtonStatus]
   );
 
   const activeButtonClass = classNames(
