@@ -37,7 +37,7 @@ export default (): Configuration => {
           test: /.*\.(gif|png|jpe?g)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'images/[name].[hash][ext]'
+            filename: 'images/[name].[contenthash][ext]'
           },
           use: [
             // image loader should compress the images
@@ -49,7 +49,7 @@ export default (): Configuration => {
           test: /static\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'fonts/[name].[hash][ext]'
+            filename: 'fonts/[name].[contenthash][ext]'
           }
         }
       ]

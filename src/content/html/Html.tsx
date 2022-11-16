@@ -51,11 +51,12 @@ type Props = {
  * - Remove dependency on the loadable-component package, which hasn't been updated for React 18. This should remove some of the console warnings
  *
  * TODO:
- * - Wire up redux to use for title and metadata
- * - Do not forget third-party scripts
+ * - Wire up redux to use for title and metadata - DONE
+ * - Fix unsupported browser route - DONE
+ * - Do not forget third-party scripts  - DONE
  * - Only keep the relevant fields from the assets manifest before transferring it to client
- * - Remove all loadable-component code; use React.lazy instead
- * - Remove all React Helmet code
+ * - Remove all loadable-component code; use React.lazy instead - DONE
+ * - Remove all React Helmet code - DONE
  * - Make sure favicon works (especially in prod build)
  * - Remove packages:
  *    - @loadable/component
@@ -84,13 +85,17 @@ const Html = (props: Props) => {
     serverSideConfig
   )};`;
 
+  // NOTE: client.css file below will only be extracted by webpack in production.
+
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <base href="/" />
         <Meta />
-        <link rel="stylesheet" href={assets['client.css']} />
+        {assets['client.css'] && (
+          <link rel="stylesheet" href={assets['client.css']} />
+        )}
         <script
           noModule={true}
           dangerouslySetInnerHTML={{
