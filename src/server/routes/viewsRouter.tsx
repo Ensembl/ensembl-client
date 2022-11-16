@@ -20,6 +20,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { matchPath } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 import { Provider } from 'react-redux';
+import pick from 'lodash/pick';
 
 import routesConfig, { type RouteConfig } from 'src/routes/routesConfig';
 import { getConfigForClient } from '../helpers/getConfigForClient';
@@ -65,7 +66,7 @@ const viewRouter = async (req: Request, res: Response) => {
     <Provider store={reduxStore}>
       <StaticRouter location={req.url}>
         <Html
-          assets={assetsManifest}
+          assets={getTransferableAssetsManifest(assetsManifest)}
           serverSideReduxState={reduxStore.getState() as unknown as JSONValue}
           serverSideConfig={configForClient}
         >
@@ -102,6 +103,13 @@ const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
     assetsManifest['vendors.js'],
     assetsManifest['runtime~client.js']
   ].filter(Boolean);
+};
+
+// pick only relevant fields from the assets manifest to pass to the client
+const getTransferableAssetsManifest = (
+  assetsManifest: Record<string, string>
+) => {
+  return pick(assetsManifest, ['client.css']);
 };
 
 export default viewRouter;
