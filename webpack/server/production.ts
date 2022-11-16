@@ -34,7 +34,11 @@ export default (): Configuration => {
             filename: 'images/[name].[contenthash][ext]',
             publicPath: '/static/',
             emit: false
-          }
+          },
+          use: [
+            // image loader should compress the images — to get the same content hashes as on the client
+            'image-webpack-loader'
+          ]
         },
 
         // loader for fonts that copies the fonts into the dist folder
