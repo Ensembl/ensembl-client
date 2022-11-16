@@ -16,6 +16,7 @@
 
 import React, { type ReactNode } from 'react';
 
+import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 import type JSONValue from 'src/shared/types/JSON';
 
 type Props = {
@@ -26,10 +27,6 @@ type Props = {
 
 const Html = (props: Props) => {
   const { assets, serverSideConfig, children } = props;
-
-  const shouldReportAnalytics =
-    (serverSideConfig?.environment as JSONValue)?.shouldReportAnalytics ??
-    false;
 
   // NOTE: unsupportedBrowser.css below will only be extracted into own file by webpack in production.
 
@@ -44,7 +41,7 @@ const Html = (props: Props) => {
         {assets['unsupportedBrowser.css'] && (
           <link rel="stylesheet" href={assets['unsupportedBrowser.css']} />
         )}
-        {shouldReportAnalytics && (
+        {shouldReportAnalytics(serverSideConfig) && (
           <GoogleAnalyticsScript config={serverSideConfig} />
         )}
       </head>
@@ -61,12 +58,16 @@ const Html = (props: Props) => {
   );
 };
 
-const GoogleAnalyticsScript = (props: { config: JSONValue }) => {
-  const shouldReportAnalytics =
-    (props.config?.environment as JSONValue)?.shouldReportAnalytics ?? false;
-  const gaKey = (props.config?.keys as JSONValue)?.googleAnalyticsKey ?? '';
+const shouldReportAnalytics = (config: Partial<TransferredClientConfig>) =>
+  config?.environment?.shouldReportAnalytics ?? false;
 
-  if (shouldReportAnalytics && gaKey) {
+const getGoogleAnalyticsKey = (config: Partial<TransferredClientConfig>) =>
+  config?.keys?.googleAnalyticsKey ?? '';
+
+const GoogleAnalyticsScript = (props: { config: JSONValue }) => {
+  const gaKey = getGoogleAnalyticsKey(props.config);
+
+  if (shouldReportAnalytics(props.config) && gaKey) {
     const gaUrl = `https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_KEY}`;
     const initScript = `
       window.dataLayer = window.dataLayer || [];

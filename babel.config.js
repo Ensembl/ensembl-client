@@ -36,7 +36,7 @@ module.exports = (api) => {
       },
       development: {
         plugins: [
-          "@loadable/babel-plugin"
+          // "@loadable/babel-plugin"
         ]
       },
       production: {

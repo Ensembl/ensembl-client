@@ -31,6 +31,8 @@ import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
 
+import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
+
 import './styles/main';
 
 ensureBrowserSupport();
@@ -39,7 +41,8 @@ const store = configureStore();
 
 const assetManifest = (globalThis as any).assetManifest || {};
 const serverSideReduxState = (globalThis as any).__PRELOADED_STATE__ ?? {};
-const serverSideConfig = (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
+const serverSideConfig: Partial<TransferredClientConfig> =
+  (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
 
 hydrateRoot(
   document,
@@ -62,10 +65,9 @@ hydrateRoot(
   </StrictMode>
 );
 
-if (module.hot) {
-  // TODO: investigate react-refresh with react-refresh-webpack-plugin
-  // (see https://github.com/pmmmwh/react-refresh-webpack-plugin)
-  // module.hot.accept();
-} else {
+if (serverSideConfig.environment?.buildEnvironment === 'production') {
   registerSW();
 }
+
+// TODO: investigate react-refresh with react-refresh-webpack-plugin
+// (see https://github.com/pmmmwh/react-refresh-webpack-plugin)

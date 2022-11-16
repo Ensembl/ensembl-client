@@ -59,3 +59,5 @@ export const getConfigForClient = () => {
     keys: getKeys()
   };
 };
+
+export type TransferredClientConfig = ReturnType<typeof getConfigForClient>;
