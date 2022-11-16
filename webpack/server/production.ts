@@ -36,7 +36,7 @@ export default (): Configuration => {
             emit: false
           },
           use: [
-            // image loader should compress the images — to get the same content hashes as on the client
+            // use mage loader to compress the images — this will produce the same content hashes in the names of the images as the client's webpack
             'image-webpack-loader'
           ]
         },
