@@ -41,7 +41,7 @@ import type {
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
 
-import type { SubmittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export type PayloadParams = {
   species: Species[];

@@ -25,7 +25,7 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
-import type { SubmittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export type BlastSubmissionPayload = {
   species: Species[];

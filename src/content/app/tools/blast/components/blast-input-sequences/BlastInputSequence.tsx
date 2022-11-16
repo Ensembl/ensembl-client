@@ -39,7 +39,7 @@ import {
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastInputSequence.scss';

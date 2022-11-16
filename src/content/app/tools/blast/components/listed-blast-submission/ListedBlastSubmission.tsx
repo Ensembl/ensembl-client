@@ -23,7 +23,7 @@ import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHea
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import type { SubmittedSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 import {
   type BlastSubmission,
   type BlastJob,
