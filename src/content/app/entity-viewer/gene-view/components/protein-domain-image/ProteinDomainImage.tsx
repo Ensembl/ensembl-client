@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
+import { type FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -35,12 +35,17 @@ export type ProteinDomainImageProps = {
   };
 };
 
+type location = {
+  start: number;
+  end: number;
+};
+
 type ProteinDomainImageData = {
-  [resource_type: string]: {
-    [resource_description: string]: {
-      start: number;
-      end: number;
-    }[];
+  [resource_name: string]: {
+    [domain_name: string]: {
+      description: string;
+      locations: location[];
+    };
   };
 };
 
@@ -51,7 +56,7 @@ export const getDomainsByResourceGroups = (
 
   proteinDomains.forEach((domain) => {
     const {
-      sequence_family: { description: domainName },
+      sequence_family: { name: domainName, description: description },
       sequence_family: {
         source: { name: resource_name }
       },
@@ -61,17 +66,18 @@ export const getDomainsByResourceGroups = (
     if (!groupedDomains[resource_name]) {
       groupedDomains[resource_name] = {};
     }
-
     if (!groupedDomains[resource_name][domainName]) {
-      groupedDomains[resource_name][domainName] = [];
+      groupedDomains[resource_name][domainName] = {
+        description: description,
+        locations: []
+      };
     }
 
-    groupedDomains[resource_name][domainName].push({
+    groupedDomains[resource_name][domainName].locations.push({
       start,
       end
     });
   });
-
   return groupedDomains;
 };
 
@@ -98,7 +104,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
             <div className={styles.resourceImages}>
               {Object.keys(proteinDomainsResources[type])
                 .sort()
-                .map((description, key) => (
+                .map((domainName, key) => (
                   <div key={key} className={styles.resourceImage}>
                     <svg
                       className={styles.containerSvg}
@@ -107,20 +113,22 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
                     >
                       <g>
                         <Track {...props} />
-                        {proteinDomainsResources[type][description].map(
-                          (domain, index) => (
-                            <DomainBlock
-                              key={index}
-                              domain={domain}
-                              className={props.classNames?.domain}
-                              scale={scale}
-                            />
-                          )
-                        )}
+                        {proteinDomainsResources[type][
+                          domainName
+                        ].locations.map((domain, index) => (
+                          <DomainBlock
+                            key={index}
+                            domain={domain}
+                            className={props.classNames?.domain}
+                            scale={scale}
+                          />
+                        ))}
                       </g>
                     </svg>
+
                     <div className={styles.resourceDescription}>
-                      {description}
+                      {proteinDomainsResources[type][domainName].description ??
+                        '-'}
                     </div>
                   </div>
                 ))}
