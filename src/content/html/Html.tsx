@@ -54,7 +54,7 @@ type Props = {
  * - Wire up redux to use for title and metadata - DONE
  * - Fix unsupported browser route - DONE
  * - Do not forget third-party scripts  - DONE
- * - Only keep the relevant fields from the assets manifest before transferring it to client
+ * - Only keep the relevant fields from the assets manifest before transferring it to client - DONE
  * - Remove all loadable-component code; use React.lazy instead - DONE
  * - Remove all React Helmet code - DONE
  * - Make sure favicon works (especially in prod build) - DONE
