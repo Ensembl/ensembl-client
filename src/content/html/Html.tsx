@@ -30,49 +30,6 @@ type Props = {
   children: ReactNode;
 };
 
-// QUESTION: where does the metadata go?
-
-/**
-   <meta name="viewport" content="width=device-width, initial-scale=1" />
-   <link rel="shortcut icon" href="favicon.ico" />
- */
-
-/**
- * DONE:
- * - Updated viewRouter (server-side) to use the new React `renderToPipeableStream` api
- * - Created the HTML component to give React full control over the whole HTML document
- * (based on Dan Abramov's example sandbox: https://codesandbox.io/s/kind-sammet-j56ro)
- * - Added webpack-manifest-plugin to be able to read webpack manifest on the server, and inject it into the html
- * - Updated eslint-plugin-react to make it aware of the noModule attribute on the script tag
- *
- *
- * What we will have achieved in the result:
- * - Remove dependency on react-helmet-async
- * - Remove dependency on the loadable-component package, which hasn't been updated for React 18. This should remove some of the console warnings
- *
- * TODO:
- * - Wire up redux to use for title and metadata - DONE
- * - Fix unsupported browser route - DONE
- * - Do not forget third-party scripts  - DONE
- * - Only keep the relevant fields from the assets manifest before transferring it to client - DONE
- * - Remove all loadable-component code; use React.lazy instead - DONE
- * - Remove all React Helmet code - DONE
- * - Make sure favicon works (especially in prod build) - DONE
- * - Remove packages:
- *    - @loadable/component
- *    - @loadable/server
- *    - react-helmet-async
- *    - typesafe-actions
- *    - @loadable/babel-plugin
- *    - @loadable/webpack-plugin
- *    - @types/loadable__component
- *    - @types/loadable__server
- *    - @types/loadable__webpack-plugin
- *
- * Useful links:
- * - StackOverflow discussion of hot module replacement with React 18: https://stackoverflow.com/a/71914061/3925302
- */
-
 const Html = (props: Props) => {
   const { assets, serverSideReduxState, serverSideConfig, children } = props;
 
@@ -112,7 +69,7 @@ const Html = (props: Props) => {
       <body>
         <noscript
           dangerouslySetInnerHTML={{
-            __html: `<b>Enable JavaScript to run this app.</b>`
+            __html: `<b>Please enable javascript to view the Ensembl app</b>`
           }}
         />
 

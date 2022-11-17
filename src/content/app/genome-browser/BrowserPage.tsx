@@ -14,25 +14,44 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableBrowser = React.lazy(() => import('./Browser'));
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import type { ServerFetch } from 'src/routes/routesConfig';
+
+const LazilyLoadedBrowser = React.lazy(() => import('./Browser'));
+
+const pageTitle = 'Genome browser — Ensembl';
+const pageDescription = 'Ensembl genome browser';
 
 const BrowserPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
-  return <>{hasMounted && <LoadableBrowser />}</>;
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  }, []);
+
+  return hasMounted ? <LazilyLoadedBrowser /> : null;
 };
 
 export default BrowserPage;
 
-/*
-
-  <Helmet>
-    <title>Genome browser — Ensembl</title>
-    <meta name="description" content="Ensembl genome browser" />
-  </Helmet>
-
-*/
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

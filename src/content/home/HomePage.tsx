@@ -14,23 +14,45 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableHome = React.lazy(() => import('./Home'));
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import type { ServerFetch } from 'src/routes/routesConfig';
+
+const LazilyLoadedHome = React.lazy(() => import('./Home'));
+
+const pageTitle = 'Ensembl';
+const pageDescription = 'The new website of the Ensembl project';
 
 const HomePage = () => {
   const hasMounted = useHasMounted();
 
-  return <>{hasMounted && <LoadableHome />}</>;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  });
+
+  return <>{hasMounted && <LazilyLoadedHome />}</>;
 };
 
-/*
-      <Helmet>
-        <title>Ensembl</title>
-        <meta name="description" content="This is Ensembl home page" />
-      </Helmet>
-*/
-
 export default HomePage;
+
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

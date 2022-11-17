@@ -16,18 +16,30 @@
 
 import React, { type ReactNode } from 'react';
 
-import HomePage from 'src/content/home/HomePage';
-import SpeciesSelectorPage from 'src/content/app/species-selector/SpeciesSelectorPage';
+import HomePage, {
+  serverFetch as homePageServerFetch
+} from 'src/content/home/HomePage';
+import SpeciesSelectorPage, {
+  serverFetch as speciesSelectorServerFetch
+} from 'src/content/app/species-selector/SpeciesSelectorPage';
 import SpeciesPage, {
   serverFetch as speciesPageServerFetch
 } from 'src/content/app/species/SpeciesPage';
-import GenomeBrowserPage from 'src/content/app/genome-browser/BrowserPage';
+import GenomeBrowserPage, {
+  serverFetch as genomeBrowserPageServerFetch
+} from 'src/content/app/genome-browser/BrowserPage';
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
-import BlastPage from 'src/content/app/tools/blast/BlastPage';
-import AboutPage from 'src/content/app/about/AboutPage';
-import HelpPage from 'src/content/app/help/HelpPage';
+import BlastPage, {
+  serverFetch as blastServerFetch
+} from 'src/content/app/tools/blast/BlastPage';
+import AboutPage, {
+  serverFetch as aboutPageServerFetch
+} from 'src/content/app/about/AboutPage';
+import HelpPage, {
+  serverFetch as helpPageServerFetch
+} from 'src/content/app/help/HelpPage';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 type ServerFetchParams = {
@@ -45,15 +57,18 @@ export type RouteConfig = {
 const routes: RouteConfig[] = [
   {
     path: '/',
-    element: <HomePage />
+    element: <HomePage />,
+    serverFetch: homePageServerFetch
   },
   {
     path: '/genome-browser/*',
-    element: <GenomeBrowserPage />
+    element: <GenomeBrowserPage />,
+    serverFetch: genomeBrowserPageServerFetch
   },
   {
     path: '/species-selector',
-    element: <SpeciesSelectorPage />
+    element: <SpeciesSelectorPage />,
+    serverFetch: speciesSelectorServerFetch
   },
   {
     path: '/species/:genomeId',
@@ -67,15 +82,18 @@ const routes: RouteConfig[] = [
   },
   {
     path: '/blast/*',
-    element: <BlastPage />
+    element: <BlastPage />,
+    serverFetch: blastServerFetch
   },
   {
     path: '/about/*',
-    element: <AboutPage />
+    element: <AboutPage />,
+    serverFetch: aboutPageServerFetch
   },
   {
     path: '/help/*',
-    element: <HelpPage />
+    element: <HelpPage />,
+    serverFetch: helpPageServerFetch
   },
   {
     path: '*',

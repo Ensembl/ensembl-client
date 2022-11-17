@@ -21,10 +21,12 @@ import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
+import type { ServerFetch } from 'src/routes/routesConfig';
+
 const LazilyLoadedAbout = React.lazy(() => import('./About'));
 
-const pageTitle = 'Help and documentation — Ensembl';
-const pageDescription = 'Ensembl help and documentation';
+const pageTitle = 'About Ensembl';
+const pageDescription = 'About the Ensembl project';
 
 const AboutPage = () => {
   const hasMounted = useHasMounted();
@@ -43,3 +45,13 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
+
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

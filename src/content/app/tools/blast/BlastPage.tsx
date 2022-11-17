@@ -22,6 +22,8 @@ import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
+import type { ServerFetch } from 'src/routes/routesConfig';
+
 const BlastForm = React.lazy(() => import('./views/blast-form/BlastForm'));
 const BlastSubmissions = React.lazy(
   () => import('./views/blast-submissions/BlastSubmissions')
@@ -65,3 +67,13 @@ const BrowserPage = () => {
 };
 
 export default BrowserPage;
+
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

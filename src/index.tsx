@@ -70,4 +70,5 @@ if (serverSideConfig.environment?.buildEnvironment === 'production') {
 }
 
 // TODO: investigate react-refresh with react-refresh-webpack-plugin
-// (see https://github.com/pmmmwh/react-refresh-webpack-plugin)
+// (see https://github.com/pmmmwh/react-refresh-webpack-plugin
+// and this StackOverflow discussion: https://stackoverflow.com/a/71914061/3925302)
