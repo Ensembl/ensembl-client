@@ -50,7 +50,7 @@ const BlastSubmissions = (props: Props) => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.submissionsContainer}>
       <BlastAppBar />
       <ToolsTopBar>
         <BlastViewsNavigation />

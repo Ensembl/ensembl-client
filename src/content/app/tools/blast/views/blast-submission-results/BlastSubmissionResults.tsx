@@ -51,12 +51,14 @@ const BlastSubmissionResults = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.resultsContainer}>
       <BlastAppBar />
       <ToolsTopBar>
         <BlastViewsNavigation />
       </ToolsTopBar>
-      <Main />
+      <div className={styles.mainContainer}>
+        <Main />
+      </div>
     </div>
   );
 };

@@ -1,7 +1,15 @@
 @import 'src/styles/common';
 
+.submissionsContainer {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+}
+
 .container {
   padding: 0 30px $global-padding-bottom 60px; // TODO: these 30px, 60px and 90px should either become a reusable constant or be included in some sort of BlastMainContainer component
+  overflow: auto;
+  height: 100%;
 }
 
 .loaderContainer {
