@@ -16,12 +16,13 @@
 
 import path from 'path';
 import { readFile } from 'fs/promises';
+import memoize from 'lodash/memoize';
 
 import { getPaths } from 'webpackDir/paths';
+import { getConfigForClient } from 'src/server/helpers/getConfigForClient';
 
 const paths = getPaths();
 
-// FIXME: this should be memoized in production
 const readWebpackAssetsManifest = async () => {
   const assetsManifestPath = path.resolve(
     paths.buildStaticPath,
@@ -33,4 +34,9 @@ const readWebpackAssetsManifest = async () => {
   return JSON.parse(manifestString);
 };
 
-export default readWebpackAssetsManifest;
+const isProductionBuild =
+  getConfigForClient().environment.buildEnvironment === 'production';
+
+export default isProductionBuild
+  ? memoize(readWebpackAssetsManifest) // no need to read the manifest file at every render
+  : readWebpackAssetsManifest;

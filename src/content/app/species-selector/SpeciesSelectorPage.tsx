@@ -42,7 +42,7 @@ const SpeciesSelectorPage = () => {
     );
   }, []);
 
-  return <>{hasMounted && <LoadableSpeciesSelector />}</>;
+  return hasMounted ? <LoadableSpeciesSelector /> : null;
 };
 
 export default SpeciesSelectorPage;

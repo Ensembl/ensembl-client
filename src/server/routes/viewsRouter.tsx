@@ -45,6 +45,7 @@ const viewRouter = async (req: Request, res: Response) => {
   ) as RouteConfig;
 
   let statusCode = 200;
+  let didError = false;
 
   if (matchedPageConfig.serverFetch) {
     try {
@@ -80,13 +81,14 @@ const viewRouter = async (req: Request, res: Response) => {
     bootstrapScripts: getBootstrapScripts(assetsManifest),
     onShellReady() {
       // If something errored before we started streaming, we set the error code appropriately.
-      // res.statusCode = didError ? 500 : 200;
+      res.statusCode = didError ? 500 : statusCode;
       res.statusCode = statusCode;
       res.setHeader('Content-type', 'text/html');
       stream.pipe(res);
     },
     onError(x) {
-      console.error(x); // FIXME: should use proper logger here
+      didError = true;
+      console.error(x); // TODO: use a proper logger here
     }
   });
 

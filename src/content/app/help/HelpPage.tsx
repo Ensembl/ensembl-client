@@ -39,7 +39,7 @@ const HelpPage = () => {
         description: pageDescription
       })
     );
-  });
+  }, []);
 
   return hasMounted ? <LazilyLoadedHelp /> : null;
 };

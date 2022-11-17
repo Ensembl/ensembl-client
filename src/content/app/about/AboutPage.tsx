@@ -39,7 +39,7 @@ const AboutPage = () => {
         description: pageDescription
       })
     );
-  });
+  }, []);
 
   return hasMounted ? <LazilyLoadedAbout /> : null;
 };

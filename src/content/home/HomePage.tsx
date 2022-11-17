@@ -40,9 +40,9 @@ const HomePage = () => {
         description: pageDescription
       })
     );
-  });
+  }, []);
 
-  return <>{hasMounted && <LazilyLoadedHome />}</>;
+  return hasMounted ? <LazilyLoadedHome /> : null;
 };
 
 export default HomePage;

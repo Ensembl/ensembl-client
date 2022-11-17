@@ -70,7 +70,7 @@ const EntityViewerPage = () => {
     );
   }, [pageMeta]);
 
-  return <>{hasMounted && <LoadableEntityViewer />}</>;
+  return hasMounted ? <LoadableEntityViewer /> : null;
 };
 
 export const serverFetch: ServerFetch = async (params) => {

@@ -38,7 +38,7 @@ BLAST stands for Basic Local Alignment Search Tool.
 The emphasis of this tool is to find regions of sequence similarity, which will yield functional and evolutionary clues about the structure and function of your sequence.
 `;
 
-const BrowserPage = () => {
+const BlastPage = () => {
   const hasMounted = useHasMounted();
   const dispatch = useAppDispatch();
 
@@ -49,7 +49,7 @@ const BrowserPage = () => {
         description: pageDescription
       })
     );
-  });
+  }, []);
 
   return hasMounted ? (
     <Routes>
@@ -66,7 +66,7 @@ const BrowserPage = () => {
   ) : null;
 };
 
-export default BrowserPage;
+export default BlastPage;
 
 // not really fetching anything; just setting page meta
 export const serverFetch: ServerFetch = async (params) => {
