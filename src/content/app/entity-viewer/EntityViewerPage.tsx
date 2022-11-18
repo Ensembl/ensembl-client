@@ -37,7 +37,7 @@ import {
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
-const LoadableEntityViewer = React.lazy(() => import('./EntityViewer'));
+const LazilyLoadedEntityViewer = React.lazy(() => import('./EntityViewer'));
 
 const EntityViewerPage = () => {
   const hasMounted = useHasMounted();
@@ -70,7 +70,7 @@ const EntityViewerPage = () => {
     );
   }, [pageMeta]);
 
-  return hasMounted ? <LoadableEntityViewer /> : null;
+  return hasMounted ? <LazilyLoadedEntityViewer /> : null;
 };
 
 export const serverFetch: ServerFetch = async (params) => {

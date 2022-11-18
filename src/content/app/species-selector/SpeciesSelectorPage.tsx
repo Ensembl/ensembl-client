@@ -24,7 +24,9 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LoadableSpeciesSelector = React.lazy(() => import('./SpeciesSelector'));
+const LazilyLoadedSpeciesSelector = React.lazy(
+  () => import('./SpeciesSelector')
+);
 
 const pageTitle = 'Species selector — Ensembl';
 const pageDescription = 'Select one or more species to start using Ensembl';
@@ -42,7 +44,7 @@ const SpeciesSelectorPage = () => {
     );
   }, []);
 
-  return hasMounted ? <LoadableSpeciesSelector /> : null;
+  return hasMounted ? <LazilyLoadedSpeciesSelector /> : null;
 };
 
 export default SpeciesSelectorPage;

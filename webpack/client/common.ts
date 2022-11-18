@@ -121,10 +121,6 @@ export default (env: Record<string, unknown>): Configuration => {
       new WebpackManifestPlugin({
         writeToFileEmit: true
       })
-
-      // new LoadablePlugin({
-      //   writeToDisk: true
-      // }) as { apply(...args: any[]): void } // types workaround from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/50948#issuecomment-797664500
     ],
 
     // add aliases for more convenient imports
