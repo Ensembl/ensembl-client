@@ -29,15 +29,12 @@ import type {
   BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 import styles from './BlastResultsPerSequence.scss';
 
 type BlastResultsPerSequenceProps = {
-  sequence: {
-    id: number;
-    header?: string;
-    value: string;
-  };
+  sequence: SubmittedSequence;
   species: Species[];
   blastResults: BlastJobWithResults[];
   submission: BlastSubmission;

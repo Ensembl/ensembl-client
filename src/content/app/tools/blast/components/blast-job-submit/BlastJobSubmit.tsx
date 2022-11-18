@@ -92,13 +92,9 @@ export const createBlastSubmissionData = (
   // labelling sequences with completely artificial identifiers
   // so that job ids in the response can be matched to individual combinations of sequences and genome ids
   const sequences = blastFormData.sequences.map((sequence, index) => ({
-    id: index + 1,
-    header: sequence.header,
-    value: sequence.value
+    ...sequence,
+    id: index + 1
   }));
-  sequences.forEach((item) => {
-    if (!item.header) delete item.header;
-  });
 
   return {
     species: blastFormData.selectedSpecies,
