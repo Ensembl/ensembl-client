@@ -91,15 +91,11 @@ const viewRouter = async (req: Request, res: Response) => {
       console.error(x); // TODO: use a proper logger here
     }
   });
-
-  // Abandon and switch to client rendering if enough time passes.
-  // Try lowering this to see the client recover.
-  // setTimeout(() => stream.abort(), ABORT_DELAY);
 };
 
 const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
-  // In development environment, the only entry point is the client.js file
-  // In production, webpack will code-split and extract vendors.js and runtime-client.js chunks
+  // In development environment, the only entry point is the client.js file (it's huge and contains the runtime, third-party libs, and css)
+  // In production, webpack will code-split, and extract vendors.js and runtime-client.js chunks
   return [
     assetsManifest['client.js'],
     assetsManifest['vendors.js'],
