@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { type FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
+import type { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -35,7 +35,7 @@ export type ProteinDomainImageProps = {
   };
 };
 
-type location = {
+type ProteinDomainLocation = {
   start: number;
   end: number;
 };
@@ -44,7 +44,7 @@ type ProteinDomainImageData = {
   [resource_name: string]: {
     [domain_name: string]: {
       description: string;
-      locations: location[];
+      locations: ProteinDomainLocation[];
     };
   };
 };
@@ -78,6 +78,7 @@ export const getDomainsByResourceGroups = (
       end
     });
   });
+
   return groupedDomains;
 };
 
@@ -95,46 +96,40 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
 
   return (
     <div className={styles.container}>
-      {/* TODO: The sorting needs to be done based on the `score`? once it is available */}
-      {Object.keys(proteinDomainsResources)
-        .sort()
-        .map((type, key) => (
-          <div key={key} className={styles.resourceGroup}>
-            <div className={styles.resourceName}>{type}</div>
+      {getSortedProteinDomainsGroups(proteinDomainsResources).map(
+        ([resource, domainsGroup]) => (
+          <div key={resource} className={styles.resourceGroup}>
+            <div className={styles.resourceName}>{resource}</div>
             <div className={styles.resourceImages}>
-              {Object.keys(proteinDomainsResources[type])
-                .sort()
-                .map((domainName, key) => (
-                  <div key={key} className={styles.resourceImage}>
-                    <svg
-                      className={styles.containerSvg}
-                      width={props.width}
-                      height={BLOCK_HEIGHT}
-                    >
-                      <g>
-                        <Track {...props} />
-                        {proteinDomainsResources[type][
-                          domainName
-                        ].locations.map((domain, index) => (
-                          <DomainBlock
-                            key={index}
-                            domain={domain}
-                            className={props.classNames?.domain}
-                            scale={scale}
-                          />
-                        ))}
-                      </g>
-                    </svg>
+              {domainsGroup.map((trackData, index) => (
+                <div key={index} className={styles.resourceImage}>
+                  <svg
+                    className={styles.containerSvg}
+                    width={props.width}
+                    height={BLOCK_HEIGHT}
+                  >
+                    <g>
+                      <Track {...props} />
+                      {trackData.locations.map((domain, index) => (
+                        <DomainBlock
+                          key={index}
+                          domain={domain}
+                          className={props.classNames?.domain}
+                          scale={scale}
+                        />
+                      ))}
+                    </g>
+                  </svg>
 
-                    <div className={styles.resourceDescription}>
-                      {proteinDomainsResources[type][domainName].description ??
-                        '-'}
-                    </div>
+                  <div className={styles.resourceDescription}>
+                    {trackData.description ?? '-'}
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+        )
+      )}
     </div>
   );
 };
@@ -173,6 +168,45 @@ const DomainBlock = (props: DomainBlockProps) => {
       width={props.scale(props.domain.end - props.domain.start + 1)}
     />
   );
+};
+
+type TrackData = {
+  name: string;
+  description: string | null;
+  locations: ProteinDomainLocation[];
+};
+
+type SortedTracksForResource = [string, TrackData[]];
+
+const getSortedProteinDomainsGroups = (
+  proteinDomainsResources: ProteinDomainImageData
+): SortedTracksForResource[] => {
+  return Object.keys(proteinDomainsResources)
+    .sort()
+    .map((resource) => [
+      resource,
+      getSortedProteinDomains(proteinDomainsResources[resource])
+    ]);
+};
+
+const getSortedProteinDomains = (
+  domainsGroup: Record<string, Omit<TrackData, 'name'>>
+): TrackData[] => {
+  return Object.entries(domainsGroup)
+    .sort(([, a], [, b]) => {
+      if (!a.description && b.description) {
+        // if the first element doesn't have a description, but the second does, swap them
+        return 1;
+      } else if (!a.description || !b.description) {
+        return 0;
+      }
+      // by this point, all elements should have description; so we can compare it
+      return (
+        a.description.toLowerCase().charCodeAt(0) -
+        b.description.toLowerCase().charCodeAt(0)
+      );
+    })
+    .map(([name, domain]) => ({ ...domain, name }));
 };
 
 export default ProteinDomainImage;
