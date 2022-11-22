@@ -56,7 +56,7 @@ export const getDomainsByResourceGroups = (
 
   proteinDomains.forEach((domain) => {
     const {
-      sequence_family: { name: domainName, description: description },
+      sequence_family: { name: domainName, description },
       sequence_family: {
         source: { name: resource_name }
       },
