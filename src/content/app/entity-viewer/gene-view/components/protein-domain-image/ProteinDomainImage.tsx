@@ -68,7 +68,7 @@ export const getDomainsByResourceGroups = (
     }
     if (!groupedDomains[resource_name][domainName]) {
       groupedDomains[resource_name][domainName] = {
-        description: description,
+        description,
         locations: []
       };
     }
