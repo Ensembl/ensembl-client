@@ -36,6 +36,7 @@ import type {
 } from 'src/content/app/tools/blast/types/blastSettings';
 import type { BlastJobResult as BlastJobResultsFromAPI } from 'src/content/app/tools/blast/types/blastJob';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export type JobStatus =
   | 'RUNNING' // the job is currently being processed
@@ -72,7 +73,7 @@ export type BlastSubmission = {
   id: string;
   submittedData: {
     species: Species[];
-    sequences: { id: number; value: string }[]; // TODO: consider whether to have strings or parsed sequences
+    sequences: SubmittedSequence[];
     preset: string;
     submissionName: string;
     parameters: BlastSubmissionParameters;

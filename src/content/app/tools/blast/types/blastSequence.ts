@@ -18,3 +18,5 @@ export type ParsedInputSequence = {
   header?: string;
   value: string;
 };
+
+export type SubmittedSequence = ParsedInputSequence & { id: number };

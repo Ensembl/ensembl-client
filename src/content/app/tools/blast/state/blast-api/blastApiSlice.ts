@@ -19,14 +19,17 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { BlastSubmission } from '../blast-results/blastResultsSlice';
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export type BlastSubmissionPayload = {
   species: Species[];
-  sequences: { id: number; value: string }[];
+  sequences: SubmittedSequence[];
   preset: string;
   submissionName: string;
   parameters: Record<string, string>;
@@ -62,9 +65,15 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       BlastSubmissionPayload
     >({
       query(payload) {
+        // backend tools API accepts sequences as FASTA strings
+        const querySequences = payload.sequences.map((item) => ({
+          id: item.id,
+          value: toFasta({ header: item.header, value: item.value })
+        }));
+
         const body = {
           genome_ids: payload.species.map(({ genome_id }) => genome_id),
-          query_sequences: payload.sequences,
+          query_sequences: querySequences,
           parameters: payload.parameters
         };
         return {

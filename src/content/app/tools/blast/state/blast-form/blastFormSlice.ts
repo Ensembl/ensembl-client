@@ -19,7 +19,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';
 
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 import type {
   BlastParameterName,
   BlastSettingsConfig,

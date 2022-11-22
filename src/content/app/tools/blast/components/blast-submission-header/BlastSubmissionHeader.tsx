@@ -22,7 +22,6 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
 import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
@@ -78,13 +77,10 @@ export const BlastSubmissionHeader = (props: Props) => {
 
   const editSubmission = () => {
     const { sequences, species, preset, parameters } = submission.submittedData;
-    const parsedSequences = sequences.flatMap((sequence) =>
-      parseBlastInput(sequence.value)
-    );
     const { program, stype, ...otherParameters } = parameters;
 
     const payload = {
-      sequences: parsedSequences,
+      sequences,
       selectedSpecies: species,
       settings: {
         submissionName,

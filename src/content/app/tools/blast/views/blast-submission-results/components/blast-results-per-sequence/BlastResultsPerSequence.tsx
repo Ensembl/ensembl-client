@@ -24,21 +24,17 @@ import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 
-import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
-
 import type {
   BlastJobWithResults,
   BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 import styles from './BlastResultsPerSequence.scss';
 
 type BlastResultsPerSequenceProps = {
-  sequence: {
-    id: number;
-    value: string;
-  };
+  sequence: SubmittedSequence;
   species: Species[];
   blastResults: BlastJobWithResults[];
   submission: BlastSubmission;
@@ -53,8 +49,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
       submittedData: { parameters, preset }
     }
   } = props;
-  const parsedBlastSequence = parseBlastInput(sequence.value)[0];
-  const { header: sequenceHeader, value: sequenceValue } = parsedBlastSequence;
+  const { header: sequenceHeader, value: sequenceValue } = sequence;
   const sequenceHeaderLabel =
     '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
 

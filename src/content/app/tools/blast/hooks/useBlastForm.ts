@@ -44,7 +44,7 @@ import type {
   BlastProgram,
   BlastParameterName
 } from 'src/content/app/tools/blast/types/blastSettings';
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 /**
  * The purpose of this hook is to abstract away from React components

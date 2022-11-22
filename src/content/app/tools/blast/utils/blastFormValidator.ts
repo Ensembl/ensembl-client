@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export const MAX_BLAST_SPECIES_COUNT = 25;
 export const MAX_BLAST_SEQUENCE_COUNT = 50;

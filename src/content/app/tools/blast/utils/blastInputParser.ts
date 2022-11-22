@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 /**
  * Allowed inputs:

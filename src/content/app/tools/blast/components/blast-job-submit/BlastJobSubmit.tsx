@@ -30,8 +30,6 @@ import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-f
 
 import { clearBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
-
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type {
@@ -43,9 +41,11 @@ import type {
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
 
+import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
+
 export type PayloadParams = {
   species: Species[];
-  sequences: { id: number; value: string }[];
+  sequences: SubmittedSequence[];
   preset: string;
   submissionName: string;
   parameters: Partial<Record<BlastParameterName, string>> & {
@@ -89,12 +89,13 @@ const BlastJobSubmit = () => {
 export const createBlastSubmissionData = (
   blastFormData: BlastFormState
 ): PayloadParams => {
-  // labelling sequences with complely artificial identifiers
+  // labelling sequences with completely artificial identifiers
   // so that job ids in the response can be matched to individual combinations of sequences and genome ids
   const sequences = blastFormData.sequences.map((sequence, index) => ({
-    id: index + 1,
-    value: toFasta(sequence)
+    ...sequence,
+    id: index + 1
   }));
+
   return {
     species: blastFormData.selectedSpecies,
     sequences,
