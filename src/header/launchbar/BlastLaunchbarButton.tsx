@@ -19,6 +19,8 @@ import { useLocation } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
+import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+
 import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
@@ -40,8 +42,10 @@ const BlastLaunchbarButton = () => {
   const getNotification = () => {
     if (unviewedSubmissions.length > 0) {
       const isAnyJobRunning =
-        unviewedSubmissions.filter((submission) =>
-          submission.results.some((job) => job.status === 'RUNNING')
+        unviewedSubmissions.filter(
+          (submission) =>
+            isSuccessfulBlastSubmission(submission) &&
+            submission.results.some((job) => job.status === 'RUNNING')
         ).length > 0;
 
       return isAnyJobRunning ? 'red' : 'green';

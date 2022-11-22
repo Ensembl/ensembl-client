@@ -21,6 +21,8 @@ import {
   BLAST_SUBMISSION_STORAGE_DURATION
 } from './blastStorageServiceConstants';
 
+import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+
 import type {
   BlastSubmission,
   BlastJob
@@ -49,7 +51,7 @@ export const getAllBlastSubmissions = async (): Promise<
 
 export const getBlastSubmission = async (
   submissionId: string
-): Promise<BlastSubmission> => {
+): Promise<BlastSubmission | undefined> => {
   return await IndexedDB.get(STORE_NAME, submissionId);
 };
 
@@ -76,10 +78,10 @@ export const updateSavedBlastJob = async (params: {
 }) => {
   const { submissionId, jobId, fragment } = params;
   const submission = await getBlastSubmission(submissionId);
-  if (!submission) {
+  if (!isSuccessfulBlastSubmission(submission)) {
     return;
   }
-  const job = submission.results.find((job) => job.jobId === jobId);
+  const job = submission?.results?.find((job) => job.jobId === jobId);
 
   if (!job) {
     return;

@@ -27,6 +27,8 @@ import {
   deleteExpiredBlastSubmissions as deleteExpiredBlastSubmissionsFromStorage
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
+import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+
 import { submitBlast } from '../blast-api/blastApiSlice';
 
 import type {
@@ -69,19 +71,31 @@ export type BlastJobWithResults = Omit<BlastJob, 'data'> & {
   data: BlastJobResultsFromAPI;
 };
 
-export type BlastSubmission = {
+type SubmittedBlastData = {
+  species: Species[];
+  sequences: SubmittedSequence[];
+  preset: string;
+  submissionName: string;
+  parameters: BlastSubmissionParameters;
+};
+
+export type SuccessfulBlastSubmission = {
   id: string;
-  submittedData: {
-    species: Species[];
-    sequences: SubmittedSequence[];
-    preset: string;
-    submissionName: string;
-    parameters: BlastSubmissionParameters;
-  };
+  submittedData: SubmittedBlastData;
   results: BlastJob[];
   submittedAt: number; // timestamp, in milliseconds
   seen: boolean; // whether the user has viewed the results of this submission
 };
+
+export type FailedBlastSubmission = {
+  id: string;
+  hasServerGeneratedId: boolean; // indicates whether the id for this submission will exist on the server (will be false e.g. in case of a network error)
+  submittedData: SubmittedBlastData;
+  submittedAt: number;
+  error: string;
+};
+
+export type BlastSubmission = SuccessfulBlastSubmission | FailedBlastSubmission;
 
 export type BlastResultsUI = {
   unviewedJobsPage: {
@@ -147,7 +161,7 @@ const blastResultsSlice = createSlice({
     ) {
       const { submissionId, jobId, fragment } = action.payload;
       const submission = state.submissions[submissionId];
-      if (!submission) {
+      if (!isSuccessfulBlastSubmission(submission)) {
         // imagine an edge case when a submission has been deleted,
         // but we still have some rogue async client-side logic running which tries to update it
         return;
@@ -180,7 +194,7 @@ const blastResultsSlice = createSlice({
       (state, { payload }) => {
         const submissionId = payload;
         const submission = state.submissions[submissionId];
-        if (submission) {
+        if (isSuccessfulBlastSubmission(submission)) {
           submission.seen = true;
         }
       }
@@ -188,6 +202,16 @@ const blastResultsSlice = createSlice({
     builder.addMatcher(submitBlast.matchFulfilled, (state, { payload }) => {
       const { submissionId, submission } = payload;
       state.submissions[submissionId] = submission;
+    });
+    builder.addMatcher(submitBlast.matchRejected, (state, { payload }) => {
+      const payloadData = payload?.data;
+      if (payloadData) {
+        const { submissionId, submission } = payloadData as {
+          submissionId: string;
+          submission: FailedBlastSubmission;
+        };
+        state.submissions[submissionId] = submission;
+      }
     });
   }
 });

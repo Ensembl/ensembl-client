@@ -23,11 +23,13 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
+import { isFailedBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
   deleteBlastSubmission,
+  SuccessfulBlastSubmission,
   type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import {
@@ -48,6 +50,7 @@ import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettin
 import styles from './BlastSubmissionHeader.scss';
 
 export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
+export const FAILED_SUBMISSION_WARNING = 'Submission failed';
 
 export type Props = {
   submission: BlastSubmission;
@@ -109,7 +112,10 @@ export const BlastSubmissionHeader = (props: Props) => {
   };
 
   const handleDownload = async () => {
-    await downloadBlastSubmission(submission, dispatch);
+    await downloadBlastSubmission(
+      submission as SuccessfulBlastSubmission,
+      dispatch
+    );
   };
 
   return (
@@ -174,29 +180,43 @@ const ControlsSection = (props: {
     props;
   const isExpiredSubmission = !areSubmissionResultsAvailable(submission);
 
-  return !isExpiredSubmission ? (
-    <div className={styles.controlsSection}>
-      <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
-      <DownloadButton
-        onClick={onDownload}
-        disabled={isAnyJobRunning || isInDeleteMode}
-      />
-      <ButtonLink
-        to={urlFor.blastSubmission(submission.id)}
-        isDisabled={isAnyJobRunning || isInDeleteMode}
-      >
-        Results
-      </ButtonLink>
-    </div>
-  ) : (
-    <div className={styles.controlsSection}>
-      <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
-      <div className={styles.unavailableResultsMessage}>
-        <span>{UNAVAILABLE_RESULTS_WARNING}</span>
-        <QuestionButton helpText={<UnavailableResultsHelpText />} />
+  if (isFailedBlastSubmission(submission)) {
+    return (
+      <div className={styles.controlsSection}>
+        <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+        <div className={styles.unavailableResultsMessage}>
+          <span>{FAILED_SUBMISSION_WARNING}</span>
+          <QuestionButton helpText={<FailedSubmissionHelpText />} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else if (isExpiredSubmission) {
+    return (
+      <div className={styles.controlsSection}>
+        <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+        <div className={styles.unavailableResultsMessage}>
+          <span>{UNAVAILABLE_RESULTS_WARNING}</span>
+          <QuestionButton helpText={<UnavailableResultsHelpText />} />
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.controlsSection}>
+        <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+        <DownloadButton
+          onClick={onDownload}
+          disabled={isAnyJobRunning || isInDeleteMode}
+        />
+        <ButtonLink
+          to={urlFor.blastSubmission(submission.id)}
+          isDisabled={isAnyJobRunning || isInDeleteMode}
+        >
+          Results
+        </ButtonLink>
+      </div>
+    );
+  }
 };
 
 const UnavailableResultsHelpText = () => (
@@ -209,6 +229,15 @@ const UnavailableResultsHelpText = () => (
     <p>
       Configurations are stored for 28 days after submission, then removed from
       the jobs list
+    </p>
+  </>
+);
+
+const FailedSubmissionHelpText = () => (
+  <>
+    <p>Unable to run this submission</p>
+    <p>
+      Use 'Edit/rerun' to check the submission details, and try running again
     </p>
   </>
 );

@@ -29,7 +29,7 @@ import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type { AppDispatch } from 'src/store';
 import type {
-  BlastSubmission,
+  SuccessfulBlastSubmission,
   BlastJobWithResults
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -65,12 +65,12 @@ type EnrichedBlastJobWithResults = BlastJobWithResults & {
   raw: string;
 };
 
-type EnrichedBlastSubmission = BlastSubmission & {
+type EnrichedBlastSubmission = SuccessfulBlastSubmission & {
   results: EnrichedBlastJobWithResults[];
 };
 
 const downloadBlastSubmission = async (
-  submission: BlastSubmission,
+  submission: SuccessfulBlastSubmission,
   dispatch: AppDispatch
 ) => {
   const blastedAgainst = submission.submittedData.parameters.database; // 'cdna' | 'dna' | 'pep'
@@ -168,7 +168,7 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
   return zip;
 };
 
-const getNameForZipRoot = (submission: BlastSubmission) => {
+const getNameForZipRoot = (submission: SuccessfulBlastSubmission) => {
   const {
     id,
     submittedData: {

@@ -23,6 +23,7 @@ import {
   map,
   mergeMap,
   concatMap,
+  switchMap,
   filter,
   expand,
   take,
@@ -31,14 +32,18 @@ import {
   scan,
   withLatestFrom,
   startWith,
-  Observable
+  Observable,
+  NEVER
 } from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
 import type { Epic } from 'redux-observable';
 
 import config from 'config';
 
-import { submitBlast } from '../blast-api/blastApiSlice';
+import {
+  isSuccessfulBlastSubmission,
+  isFailedBlastSubmission
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import * as observableApiService from 'src/services/observable-api-service';
 import {
@@ -46,10 +51,13 @@ import {
   updateSavedBlastJob
 } from 'src/content/app/tools/blast/services/blastStorageService';
 
+import { submitBlast } from '../blast-api/blastApiSlice';
 import {
   updateJob,
   restoreBlastSubmissions,
   deleteBlastSubmission,
+  type SuccessfulBlastSubmission,
+  type FailedBlastSubmission,
   type JobStatus,
   type BlastJob
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -107,14 +115,16 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
     filter(isFulfilled(restoreBlastSubmissions)),
     take(1), // we expect this action to happen only once at app's bootstrapping; but due to double calls to useEffect in React StrictMode in dev, it is being called twice
     map(({ payload: submissions }) => {
-      return Object.entries(submissions).flatMap(([submissionId, submission]) =>
-        submission.results
-          .filter((job) => job.status === 'RUNNING')
-          .map((job) => ({
-            submissionId,
-            job
-          }))
-      );
+      return Object.entries(submissions)
+        .filter(([, submission]) => isSuccessfulBlastSubmission(submission))
+        .flatMap(([submissionId, submission]) =>
+          (submission as SuccessfulBlastSubmission).results
+            .filter((job) => job.status === 'RUNNING')
+            .map((job) => ({
+              submissionId,
+              job
+            }))
+        );
     }),
     poll(action$),
     tap(databaseUpdaterSubject()),
@@ -126,6 +136,25 @@ export const blastSubmissionsRestoreEpic: Epic<Action, Action, RootState> = (
       // finish by returning a redux action
       return updateJob({ submissionId, jobId, fragment: { status } });
     })
+  );
+
+/**
+ * Failed submissions still have useful data that we want to store in browser storage
+ */
+export const blastFailedSubmissionsEpic: Epic<Action, Action, RootState> = (
+  action$
+) =>
+  action$.pipe(
+    filter(submitBlast.matchRejected),
+    tap((action) => {
+      const payload =
+        (action?.payload?.data as { submission?: FailedBlastSubmission }) || {};
+      const { submission } = payload;
+      if (isFailedBlastSubmission(submission)) {
+        saveBlastSubmission(submission.id, submission);
+      }
+    }),
+    switchMap(() => NEVER) // we don't want this epic to dispatch any action
   );
 
 /**

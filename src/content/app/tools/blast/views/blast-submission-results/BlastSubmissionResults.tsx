@@ -20,6 +20,10 @@ import { useParams } from 'react-router';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
+import {
+  isSuccessfulBlastSubmission,
+  isFailedBlastSubmission
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import { getBlastSubmissionById } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
@@ -70,9 +74,11 @@ const Main = () => {
     getBlastSubmissionById(state, submissionId)
   );
   const dispatch = useAppDispatch();
+  const isSuccessfulSubmission = isSuccessfulBlastSubmission(blastSubmission);
 
-  const blastSubmissionJobIds =
-    blastSubmission?.results.map((job) => job.jobId) || [];
+  const blastSubmissionJobIds = isSuccessfulSubmission
+    ? blastSubmission.results.map((job) => job.jobId)
+    : [];
   const {
     currentData: allBlastJobResults,
     isLoading,
@@ -82,12 +88,12 @@ const Main = () => {
   });
 
   useEffect(() => {
-    if (blastSubmission && !blastSubmission.seen) {
+    if (blastSubmission && isSuccessfulSubmission && !blastSubmission.seen) {
       dispatch(markBlastSubmissionAsSeen(blastSubmission.id));
     }
   }, [blastSubmission?.id]);
 
-  if (!blastSubmission) {
+  if (!blastSubmission || isFailedBlastSubmission(blastSubmission)) {
     return <MissingBlastSubmissionError hasSubmissionParameters={false} />;
   } else if (!areSubmissionResultsAvailable(blastSubmission)) {
     return <MissingBlastSubmissionError hasSubmissionParameters={true} />;

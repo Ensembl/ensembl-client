@@ -23,6 +23,7 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import type {
   BlastSubmission,
+  SuccessfulBlastSubmission,
   BlastJob,
   JobStatus
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -33,7 +34,7 @@ export const createBlastSubmission = (params?: {
     sequencesCount?: number;
     speciesCount?: number;
   };
-}): BlastSubmission => {
+}): SuccessfulBlastSubmission => {
   const fragment = params?.fragment;
   const { sequencesCount = 2, speciesCount = 1 } = params?.options ?? {};
   const species = times(speciesCount, () => createSelectedSpecies());
@@ -75,7 +76,7 @@ export const createBlastJobs = ({
 }: {
   species: BlastSubmission['submittedData']['species'];
   sequences: BlastSubmission['submittedData']['sequences'];
-}): BlastSubmission['results'] => {
+}): SuccessfulBlastSubmission['results'] => {
   const jobs = [];
 
   for (const species of speciesList) {
