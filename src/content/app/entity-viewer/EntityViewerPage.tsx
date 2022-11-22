@@ -39,6 +39,8 @@ import type { AppDispatch } from 'src/store';
 
 const LazilyLoadedEntityViewer = React.lazy(() => import('./EntityViewer'));
 
+const defaultPageTitle = 'Entity viewer — Ensembl';
+
 const EntityViewerPage = () => {
   const hasMounted = useHasMounted();
   const dispatch = useAppDispatch();
@@ -64,7 +66,7 @@ const EntityViewerPage = () => {
 
     dispatch(
       updatePageMeta({
-        title: pageMeta?.title ?? '',
+        title: pageMeta?.title ?? defaultPageTitle,
         description: pageMeta?.title ?? '' // TODO: eventually, decide what page description should be
       })
     );
