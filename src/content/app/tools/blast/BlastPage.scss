@@ -1,0 +1,6 @@
+@import 'src/styles/common';
+
+.blastPageContainer {
+  --blast-page-standard-padding: 0 #{$standard-gutter} #{$global-padding-bottom}
+    #{$double-standard-gutter};
+}
