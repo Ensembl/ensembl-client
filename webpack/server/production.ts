@@ -31,10 +31,14 @@ export default (): Configuration => {
           test: /.*\.(gif|png|jpe?g)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'images/[name].[hash][ext]',
+            filename: 'images/[name].[contenthash][ext]',
             publicPath: '/static/',
             emit: false
-          }
+          },
+          use: [
+            // use mage loader to compress the images — this will produce the same content hashes in the names of the images as the client's webpack
+            'image-webpack-loader'
+          ]
         },
 
         // loader for fonts that copies the fonts into the dist folder
@@ -42,7 +46,7 @@ export default (): Configuration => {
           test: /static\/fonts\/.*\.(woff2?|eot|ttf|otf|svg)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'fonts/[name].[hash][ext]',
+            filename: 'fonts/[name].[contenthash][ext]',
             publicPath: '/static/',
             emit: false
           }

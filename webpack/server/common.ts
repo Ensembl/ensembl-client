@@ -19,7 +19,6 @@ import webpack, { Configuration } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 import { getPaths } from '../paths';
 
@@ -118,14 +117,6 @@ export default (): Configuration => {
       new ForkTsCheckerPlugin(),
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1
-      }),
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from: path.join(paths.rootPath, 'src/server/views'),
-            to: path.join(paths.buildServerDir, 'views')
-          }
-        ]
       })
     ],
 

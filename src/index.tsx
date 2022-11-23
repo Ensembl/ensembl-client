@@ -18,16 +18,20 @@ import React, { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
-import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 
 import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
 import configureStore from './store';
+
+import Html from 'src/content/html/Html';
 import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
+
+import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 
 import './styles/main';
 
@@ -35,16 +39,25 @@ ensureBrowserSupport();
 
 const store = configureStore();
 
+const assetManifest = (globalThis as any).assetManifest || {};
+const serverSideReduxState = (globalThis as any).__PRELOADED_STATE__ ?? {};
+const serverSideConfig: Partial<TransferredClientConfig> =
+  (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
+
 hydrateRoot(
-  document.getElementById('ens-app') as HTMLElement,
+  document,
   <StrictMode>
     <CookiesProvider>
       <IndexedDBProvider>
         <Provider store={store}>
           <BrowserRouter>
-            <HelmetProvider>
+            <Html
+              assets={assetManifest}
+              serverSideReduxState={serverSideReduxState}
+              serverSideConfig={serverSideConfig}
+            >
               <Root />
-            </HelmetProvider>
+            </Html>
           </BrowserRouter>
         </Provider>
       </IndexedDBProvider>
@@ -52,8 +65,10 @@ hydrateRoot(
   </StrictMode>
 );
 
-if (module.hot) {
-  module.hot.accept();
-} else {
+if (serverSideConfig.environment?.buildEnvironment === 'production') {
   registerSW();
 }
+
+// TODO: investigate react-refresh with react-refresh-webpack-plugin
+// (see https://github.com/pmmmwh/react-refresh-webpack-plugin
+// and this StackOverflow discussion: https://stackoverflow.com/a/71914061/3925302)

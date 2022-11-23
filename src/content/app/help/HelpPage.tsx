@@ -14,26 +14,44 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
+import React, { useEffect } from 'react';
 
+import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableHelp = loadable(() => import('./Help'));
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import type { ServerFetch } from 'src/routes/routesConfig';
+
+const LazilyLoadedHelp = React.lazy(() => import('./Help'));
+
+const pageTitle = 'Help and documentation — Ensembl';
+const pageDescription = 'Ensembl help and documentation';
 
 const HelpPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
-  return (
-    <>
-      <Helmet>
-        <title>Help and documentation — Ensembl</title>
-        <meta name="description" content="Ensembl help and documentation" />
-      </Helmet>
-      {hasMounted && <LoadableHelp />}
-    </>
-  );
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  }, []);
+
+  return hasMounted ? <LazilyLoadedHelp /> : null;
 };
 
 export default HelpPage;
+
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

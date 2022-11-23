@@ -28,9 +28,6 @@ import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
-jest.mock('react-helmet-async', () => ({
-  Helmet: jest.fn(() => <div id="helmet" />)
-}));
 jest.mock('../content/app/App', () => () => <div id="app" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>

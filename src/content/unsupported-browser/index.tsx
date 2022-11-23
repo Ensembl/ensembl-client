@@ -15,15 +15,27 @@
  */
 
 import React, { StrictMode } from 'react';
-import { hydrate } from 'react-dom';
+import { hydrateRoot } from 'react-dom/client';
 
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
+
+import UnsupportedBrowserHTML from './UnsupportedBrowserHtml';
 import UnsupportedBrowser from './UnsupportedBrowser';
 
+import './UnsupportedBrowser.scss';
 import 'src/styles/main';
 
-hydrate(
+const assetManifest = (globalThis as any).assetManifest || {};
+const serverSideConfig = (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
+
+hydrateRoot(
+  document,
   <StrictMode>
-    <UnsupportedBrowser />
-  </StrictMode>,
-  document.getElementById('ens-app')
+    <UnsupportedBrowserHTML
+      assets={assetManifest}
+      serverSideConfig={serverSideConfig}
+    >
+      <UnsupportedBrowser />
+    </UnsupportedBrowserHTML>
+  </StrictMode>
 );

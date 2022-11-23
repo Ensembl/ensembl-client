@@ -18,7 +18,7 @@ import path from 'path';
 import { ProgressPlugin, Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
-import LoadablePlugin from '@loadable/webpack-plugin';
+import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { getPaths } from '../paths';
 
@@ -118,9 +118,9 @@ export default (env: Record<string, unknown>): Configuration => {
 
       new ProgressPlugin(),
 
-      new LoadablePlugin({
-        writeToDisk: true
-      }) as { apply(...args: any[]): void } // types workaround from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/50948#issuecomment-797664500
+      new WebpackManifestPlugin({
+        writeToFileEmit: true
+      })
     ],
 
     // add aliases for more convenient imports

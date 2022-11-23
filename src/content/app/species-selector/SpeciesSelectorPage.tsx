@@ -14,26 +14,47 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
+import React, { useEffect } from 'react';
+
+import { useAppDispatch } from 'src/store';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-const LoadableSpeciesSelector = loadable(() => import('./SpeciesSelector'));
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import type { ServerFetch } from 'src/routes/routesConfig';
+
+const LazilyLoadedSpeciesSelector = React.lazy(
+  () => import('./SpeciesSelector')
+);
+
+const pageTitle = 'Species selector — Ensembl';
+const pageDescription = 'Select one or more species to start using Ensembl';
 
 const SpeciesSelectorPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
-  return (
-    <>
-      <Helmet>
-        <title>Species selector — Ensembl</title>
-        <meta name="description" content="Species selector" />
-      </Helmet>
-      {hasMounted && <LoadableSpeciesSelector />}
-    </>
-  );
+  useEffect(() => {
+    dispatch(
+      updatePageMeta({
+        title: pageTitle,
+        description: pageDescription
+      })
+    );
+  }, []);
+
+  return hasMounted ? <LazilyLoadedSpeciesSelector /> : null;
 };
 
 export default SpeciesSelectorPage;
+
+// not really fetching anything; just setting page meta
+export const serverFetch: ServerFetch = async (params) => {
+  params.store.dispatch(
+    updatePageMeta({
+      title: pageTitle,
+      description: pageDescription
+    })
+  );
+};

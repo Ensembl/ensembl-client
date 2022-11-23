@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import loadable from '@loadable/component';
+import React, { useEffect } from 'react';
+
+import { useAppDispatch } from 'src/store';
 
 import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
@@ -28,6 +28,7 @@ import {
   fetchGenomeInfo,
   isGenomeNotFoundError
 } from 'src/shared/state/genome/genomeApiSlice';
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 import {
   useGenePageMetaQuery,
   fetchGenePageMeta
@@ -36,10 +37,13 @@ import {
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
-const LoadableEntityViewer = loadable(() => import('./EntityViewer'));
+const LazilyLoadedEntityViewer = React.lazy(() => import('./EntityViewer'));
+
+const defaultPageTitle = 'Entity viewer — Ensembl';
 
 const EntityViewerPage = () => {
   const hasMounted = useHasMounted();
+  const dispatch = useAppDispatch();
 
   // TODO: eventually, EntityViewerPage should not use a hook that is explicitly about gene,
   // because we will have entities other than gene
@@ -55,15 +59,20 @@ const EntityViewerPage = () => {
     }
   );
 
-  return (
-    <>
-      <Helmet>
-        <title>{pageMeta?.title}</title>
-        <meta name="description" content="Entity viewer" />
-      </Helmet>
-      {hasMounted && <LoadableEntityViewer />}
-    </>
-  );
+  useEffect(() => {
+    if (!pageMeta) {
+      return;
+    }
+
+    dispatch(
+      updatePageMeta({
+        title: pageMeta?.title ?? defaultPageTitle,
+        description: pageMeta?.title ?? '' // TODO: eventually, decide what page description should be
+      })
+    );
+  }, [pageMeta]);
+
+  return hasMounted ? <LazilyLoadedEntityViewer /> : null;
 };
 
 export const serverFetch: ServerFetch = async (params) => {
@@ -122,6 +131,14 @@ export const serverFetch: ServerFetch = async (params) => {
     return {
       status: 404
     };
+  } else {
+    const title = pageMetaQueryResult.data?.title ?? '';
+    dispatch(
+      updatePageMeta({
+        title,
+        description: title // TODO: eventually, decide what page description should be here
+      })
+    );
   }
 };
 

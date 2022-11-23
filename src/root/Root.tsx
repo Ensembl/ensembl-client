@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -28,7 +28,6 @@ import useRestoredReduxState from './useRestoredReduxState';
 import useDisabledDocumentDragover from './useDisabledDocumentDragover';
 
 import App from '../content/app/App';
-import RootMeta from './RootMeta';
 import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
@@ -66,9 +65,10 @@ export const Root = () => {
   return (
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
-        <RootMeta />
-        <App />
-        {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        <Suspense>
+          <App />
+          {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+        </Suspense>
       </ErrorBoundary>
     </div>
   );

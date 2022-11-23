@@ -34,11 +34,6 @@ module.exports = (api) => {
           ]
         ]
       },
-      development: {
-        plugins: [
-          "@loadable/babel-plugin"
-        ]
-      },
       production: {
         plugins: [
           ['react-remove-properties', { 'properties': [ 'data-test-id' ] }]
