@@ -59,6 +59,6 @@ describe('<ProteinDomainImage />', () => {
 
     expect(
       container.querySelector('svg')?.querySelectorAll('.domain').length
-    ).toBe(firstDomainsGroup.length);
+    ).toBe(firstDomainsGroup.locations.length);
   });
 });

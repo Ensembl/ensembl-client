@@ -19,27 +19,6 @@ import { LocationWithinRegion } from './location';
 import { Sequence } from './sequence';
 import { Source } from './source';
 
-export type ProteinDomainsResources = {
-  [name_of_resource: string]: {
-    name: string;
-    domains: [
-      {
-        name: string;
-        source_uri: string;
-        source: {
-          name: string;
-          uri: string;
-        };
-        location: {
-          start: number;
-          end: number;
-        };
-        score: number;
-      }
-    ];
-  };
-};
-
 export enum ProductType {
   PROTEIN = 'Protein'
 }
