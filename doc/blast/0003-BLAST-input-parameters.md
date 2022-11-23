@@ -29,8 +29,8 @@ We have decided to keep the bare minimum parameters that is required to run a jo
 
 ## Known issues
 
-Job fails for certain combinations of gap open and extension penalties and mismatch score parameters. We need to implement rules for these for different blast programs.
+Job can fail for a number of reasons, for exampe certain combinations of gap open and extension penalties and mismatch score parameters are incompatible with BLAST itself. Until we have clarity on how these might be prevented and reported by other components of the system we have chosen to not prevent their submission and to show a generic error message when they are.
 
 ## Future developments
 
-Option to run REPEATMASKER may be added in the future.
+Option to run REPEATMASKER on input sequences may be added in the future.
