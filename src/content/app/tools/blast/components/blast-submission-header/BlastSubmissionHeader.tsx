@@ -129,8 +129,18 @@ export const BlastSubmissionHeader = (props: Props) => {
           </div>
         )}
         <div className={styles.submissionDetails}>
-          <span className={styles.submissionNameLabel}>Submission</span>
-          <span>{submissionId}</span>
+          {
+            /*  don't show submission id if it's entirely client-side-generated  */
+            !(
+              isFailedBlastSubmission(submission) &&
+              !submission.hasServerGeneratedId
+            ) && (
+              <>
+                <span className={styles.submissionNameLabel}>Submission</span>
+                <span>{submissionId}</span>
+              </>
+            )
+          }
           <span className={styles.editSubmission} onClick={editSubmission}>
             Edit/rerun
           </span>
@@ -184,7 +194,7 @@ const ControlsSection = (props: {
     return (
       <div className={styles.controlsSection}>
         <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
-        <div className={styles.unavailableResultsMessage}>
+        <div className={styles.errorMessage}>
           <span>{FAILED_SUBMISSION_WARNING}</span>
           <QuestionButton helpText={<FailedSubmissionHelpText />} />
         </div>
@@ -194,7 +204,7 @@ const ControlsSection = (props: {
     return (
       <div className={styles.controlsSection}>
         <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
-        <div className={styles.unavailableResultsMessage}>
+        <div className={styles.errorMessage}>
           <span>{UNAVAILABLE_RESULTS_WARNING}</span>
           <QuestionButton helpText={<UnavailableResultsHelpText />} />
         </div>
