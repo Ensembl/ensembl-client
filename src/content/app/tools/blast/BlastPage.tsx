@@ -54,7 +54,7 @@ const BlastPage = () => {
   }, []);
 
   return hasMounted ? (
-    <div className={styles.blastPageContainer}>
+    <div className={styles.blastPage}>
       <Routes>
         <Route index element={<BlastForm />} />
         <Route
