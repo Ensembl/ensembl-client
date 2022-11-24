@@ -55,6 +55,7 @@ const useGenomicTracks = () => {
     if (
       !genomeBrowser ||
       !trackSettingsForGenome ||
+      !genomeTrackCategories ||
       genomeIdInitialisedRef.current === activeGenomeId
     ) {
       return;
