@@ -1,4 +1,4 @@
-# 21. BLAST sequence formats
+# 4. BLAST sequence formats
 
 Date: 2022-10-17
 

@@ -1,4 +1,4 @@
-# 20. BLAST download formats
+# 2. BLAST download formats
 
 Date: 2022-09-19
 

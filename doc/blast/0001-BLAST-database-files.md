@@ -1,4 +1,4 @@
-# 19. BLAST database files
+# 1. BLAST database files
 
 Date: 2022-09-11
 
