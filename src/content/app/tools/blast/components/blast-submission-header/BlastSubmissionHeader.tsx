@@ -29,7 +29,7 @@ import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import {
   deleteBlastSubmission,
-  SuccessfulBlastSubmission,
+  type SuccessfulBlastSubmission,
   type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import {
