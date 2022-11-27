@@ -25,7 +25,8 @@ import styles from './ButtonLink.scss';
  * Using React-Router's Link component
  */
 
-type Props = Omit<NavLinkProps, 'children'> & {
+type Props = Omit<NavLinkProps, 'className' | 'children'> & {
+  className?: string;
   isDisabled?: boolean;
   matchDescendantPaths?: boolean; // see explanation below; this is something we are unlikely to want
   children: ReactNode;
