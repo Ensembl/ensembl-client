@@ -9,6 +9,7 @@
 .container {
   padding: var(--blast-page-standard-padding);
   overflow: auto;
+  scrollbar-gutter: stable;
   height: 100%;
 }
 

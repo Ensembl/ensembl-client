@@ -1,7 +1,6 @@
 @import 'src/styles/common';
 
 .blastPage {
-  --blast-page-standard-padding: 0 #{$standard-gutter} #{$global-padding-bottom}
-    #{$double-standard-gutter};
+  --blast-page-standard-padding: 0 20px #{$global-padding-bottom} #{$double-standard-gutter};
   height: 100%;
 }

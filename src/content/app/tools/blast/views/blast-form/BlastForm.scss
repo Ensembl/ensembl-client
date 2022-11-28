@@ -14,6 +14,7 @@
 .mainContainerSmall {
   overflow: auto;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
   padding: var(--blast-page-standard-padding);
 }
 
@@ -24,6 +25,7 @@
   padding: var(--blast-page-standard-padding);
   overflow: auto;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
   height: 100%;
 }
 

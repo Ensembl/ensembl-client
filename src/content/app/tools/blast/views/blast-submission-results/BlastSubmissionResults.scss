@@ -10,6 +10,7 @@ $container_max_width: 1860px;
 
 .mainContainer {
   overflow: auto;
+  scrollbar-gutter: stable;
   height: 100%;
 }
 
