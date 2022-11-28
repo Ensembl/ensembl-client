@@ -68,7 +68,6 @@ const useGenomicTracks = () => {
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
     genomeIdInitialisedRef.current = activeGenomeId as string;
 
-    // reset this ref on unmount to rerun this useEffect on mount for the last selected genome id
     return () => {
       genomeIdInitialisedRef.current = '';
     };
