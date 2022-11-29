@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
@@ -46,6 +47,7 @@ const EntityViewerLaunchbarButton = () => {
     getCommittedSpeciesById(state, entityViewerActiveGenomeId)
   );
   const geneView = useAppSelector(getCurrentGeneView) ?? null;
+  const location = useLocation();
 
   const parsedEntityId = entityViewerActiveEntityId
     ? parseFocusObjectId(entityViewerActiveEntityId)
@@ -53,7 +55,7 @@ const EntityViewerLaunchbarButton = () => {
   const entityType = parsedEntityId?.type;
 
   const genomeIdForUrl =
-    entityViewerActiveSpecies?.genome_id ?? entityViewerActiveGenomeId;
+    entityViewerActiveSpecies?.genome_tag ?? entityViewerActiveGenomeId;
   const entityIdForUrl = parsedEntityId
     ? buildFocusIdForUrl(parsedEntityId)
     : null;
@@ -70,6 +72,7 @@ const EntityViewerLaunchbarButton = () => {
       description="Entity Viewer"
       icon={EntityViewerIcon}
       enabled={true}
+      isActive={location.pathname.startsWith('/entity-viewer')}
     />
   );
 };

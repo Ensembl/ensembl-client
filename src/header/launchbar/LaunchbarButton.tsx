@@ -33,6 +33,7 @@ export type LaunchbarButtonProps = {
   description: string;
   icon: FunctionComponent<unknown> | string;
   enabled: boolean;
+  isActive?: boolean;
 };
 
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
@@ -41,7 +42,10 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   const location = useLocation();
 
   const { trackLaunchbarAppChange } = useHeaderAnalytics();
-  const isActive = new RegExp(`^${props.path}`).test(location.pathname);
+  const isActive =
+    'isActive' in props
+      ? (props.isActive as boolean)
+      : new RegExp(`^${props.path}`).test(location.pathname);
   const imageButtonStatus = getImageButtonStatus({
     isDisabled: !props.enabled,
     isActive
