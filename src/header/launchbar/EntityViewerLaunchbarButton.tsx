@@ -54,8 +54,8 @@ const EntityViewerLaunchbarButton = () => {
 
   const genomeIdForUrl =
     entityViewerActiveSpecies?.genome_id ?? entityViewerActiveGenomeId;
-  const entityIdForUrl = entityViewerActiveEntityId
-    ? buildFocusIdForUrl(parseFocusObjectId(entityViewerActiveEntityId))
+  const entityIdForUrl = parsedEntityId
+    ? buildFocusIdForUrl(parsedEntityId)
     : null;
 
   const entityViewerPath = urlFor.entityViewer({
