@@ -6,8 +6,8 @@
       "type": "select",
       "options": [
         {
-          "label": "Genomic sequence",
-          "value": "dna"
+          "label": "Genomic sequence (softmasked)",
+          "value": "dna_sm"
         },
         {
           "label": "cDNAs (transcripts/splice variants)",
