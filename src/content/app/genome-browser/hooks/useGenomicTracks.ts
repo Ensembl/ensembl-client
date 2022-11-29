@@ -55,6 +55,7 @@ const useGenomicTracks = () => {
     if (
       !genomeBrowser ||
       !trackSettingsForGenome ||
+      !genomeTrackCategories ||
       genomeIdInitialisedRef.current === activeGenomeId
     ) {
       return;
@@ -66,6 +67,10 @@ const useGenomicTracks = () => {
     );
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
     genomeIdInitialisedRef.current = activeGenomeId as string;
+
+    return () => {
+      genomeIdInitialisedRef.current = '';
+    };
   }, [
     activeGenomeId,
     genomeTrackCategories,
