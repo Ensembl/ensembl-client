@@ -15,7 +15,7 @@
  */
 
 import { nanoid } from '@reduxjs/toolkit';
-import { type FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 import config from 'config';
 import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
@@ -83,7 +83,6 @@ const blastApiSlice = restApiSlice.injectEndpoints({
         }));
 
         const body = {
-          // genome_ids: ['foo'],
           genome_ids: payload.species.map(({ genome_id }) => genome_id),
           query_sequences: querySequences,
           parameters: payload.parameters
