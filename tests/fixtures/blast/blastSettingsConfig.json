@@ -10,6 +10,10 @@
           "value": "dna_sm"
         },
         {
+          "label": "Genomic sequence",
+          "value": "dna"
+        },
+        {
           "label": "cDNAs (transcripts/splice variants)",
           "value": "cdna"
         },
