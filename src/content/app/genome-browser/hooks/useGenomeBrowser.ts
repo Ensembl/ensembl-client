@@ -72,12 +72,13 @@ const useGenomeBrowser = () => {
       return;
     }
 
-    const { genomeId, objectId } = parseFocusObjectId(focusObjectId);
+    const { genomeId, objectId, type } = parseFocusObjectId(focusObjectId);
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
-        focus: objectId,
+        focusId: objectId,
+        focusType: type,
         genomeId
       }
     };
@@ -86,12 +87,13 @@ const useGenomeBrowser = () => {
   };
 
   const changeFocusObject = (focusObjectId: string) => {
-    const { genomeId, objectId } = parseFocusObjectId(focusObjectId);
+    const { genomeId, type, objectId } = parseFocusObjectId(focusObjectId);
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
-        focus: objectId,
+        focusId: objectId,
+        focusType: type,
         genomeId,
         bringIntoView: true
       }

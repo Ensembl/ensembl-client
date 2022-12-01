@@ -15,4 +15,4 @@
  */
 
 export { default as GeneSummaryStrip } from './GeneSummaryStrip';
-export { default as RegionSummaryStrip } from './RegionSummaryStrip';
+export { default as LocationSummaryStrip } from './LocationSummaryStrip';

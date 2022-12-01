@@ -54,7 +54,9 @@ describe('<FeatureSummaryStrip />', () => {
 
     it('contains RegionSummaryStrip if focus object is region', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ focusObject: createFocusObject('region') })
+        renderFeatureSummaryStrip({
+          focusObject: createFocusObject('location')
+        })
       );
       expect(container.textContent).toBe('Region Summary Strip'); // text from the mocked module
     });

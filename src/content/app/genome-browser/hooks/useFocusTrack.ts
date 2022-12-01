@@ -34,10 +34,7 @@ import type {
   FocusGeneTrack,
   FocusGeneTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-import type {
-  FocusGene,
-  FocusObjectIdConstituents
-} from 'src/shared/types/focus-object/focusObjectTypes';
+import type { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 
 /**
  * The purposes of this hook are:
@@ -59,8 +56,7 @@ const useFocusTrack = () => {
     genomeBrowserMethods,
     focusGene:
       parsedFocusObjectId?.type === 'gene' ? (focusObject as FocusGene) : null,
-    focusObjectId,
-    parsedFocusObjectId
+    focusObjectId
   });
 
   /**
@@ -70,25 +66,19 @@ const useFocusTrack = () => {
 
 type Params = {
   focusGene: FocusGene | null;
-  parsedFocusObjectId: FocusObjectIdConstituents | null;
   focusObjectId: string;
   genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>;
 };
 
 const useFocusGene = (params: Params) => {
-  const {
-    focusGene,
-    genomeBrowserMethods,
-    parsedFocusObjectId,
-    focusObjectId
-  } = params;
+  const { focusGene, genomeBrowserMethods, focusObjectId } = params;
   const {
     genomeBrowser,
     updateFocusGeneTranscripts,
     setFocusGene,
     toggleTrack
   } = genomeBrowserMethods;
-  const geneStableId = parsedFocusObjectId?.objectId;
+  const geneStableId = focusGene?.stable_id;
   const focusObjectIdRef = useRef(focusObjectId);
   const geneIdRef = useRef(geneStableId);
   const visibleTranscriptIds = focusGene?.visibleTranscriptIds ?? null;
@@ -103,8 +93,8 @@ const useFocusGene = (params: Params) => {
 
   useEffect(() => {
     focusObjectIdRef.current = focusObjectId;
-    geneIdRef.current = parsedFocusObjectId?.objectId;
-  }, [focusObjectId, parsedFocusObjectId?.objectId]);
+    geneIdRef.current = focusGene?.stable_id;
+  }, [focusObjectId, focusGene?.stable_id]);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -121,7 +111,7 @@ const useFocusGene = (params: Params) => {
   }, [genomeBrowser]);
 
   useEffect(() => {
-    if (!focusObjectId) {
+    if (!focusGene?.stable_id) {
       return;
     }
 
@@ -135,7 +125,12 @@ const useFocusGene = (params: Params) => {
     } else {
       toggleTrack({ trackId: 'focus', isTurnedOn: false });
     }
-  }, [genomeBrowser, focusObjectId, stringifiedVisibleTranscriptIds]);
+  }, [
+    genomeBrowser,
+    focusObjectId,
+    stringifiedVisibleTranscriptIds,
+    focusGene?.stable_id
+  ]);
 
   useEffect(() => {
     // Even if the user has disabled all gene's transcripts, re-focusing on this gene should show at least one transcript
