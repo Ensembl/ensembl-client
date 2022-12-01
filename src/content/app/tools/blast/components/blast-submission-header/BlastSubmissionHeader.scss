@@ -64,11 +64,12 @@
   flex-shrink: 0;
 }
 
-.unavailableResultsMessage {
+.errorMessage {
   display: flex;
   align-items: center;
   column-gap: 0.6rem;
-  color: red;
+  color: $red;
+  margin-right: 16px;
 }
 
 .deleteMessageContainer {

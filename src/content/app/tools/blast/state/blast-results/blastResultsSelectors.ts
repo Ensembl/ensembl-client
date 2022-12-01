@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import {
+  isSuccessfulBlastSubmission,
+  isFailedBlastSubmission
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+
 import type { RootState } from 'src/store';
 import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
@@ -25,13 +30,13 @@ export const getBlastSubmissionsUi = (state: RootState) =>
 
 export const getUnviewedBlastSubmissions = (state: RootState) => {
   return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => !submission.seen
+    (submission) => isFailedBlastSubmission(submission) || !submission.seen
   );
 };
 
 export const getViewedBlastSubmissions = (state: RootState) => {
   return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => submission.seen
+    (submission) => isSuccessfulBlastSubmission(submission) && submission.seen
   );
 };
 

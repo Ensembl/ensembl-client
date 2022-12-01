@@ -19,6 +19,8 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
+import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
@@ -43,7 +45,7 @@ const ListedBlastSubmission = (props: Props) => {
   const uiState = useAppSelector(getBlastSubmissionsUi);
 
   const sequences = submission.submittedData.sequences;
-  const allJobs = submission.results;
+  const allJobs = getBlastJobsFromSubmission(submission);
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
   const { expandedSubmissionIds } = uiState.unviewedJobsPage;
 
@@ -62,7 +64,12 @@ const ListedBlastSubmission = (props: Props) => {
   let sequenceContent = null;
   if (isCurrentSubmissionExpanded || sequences.length === 1) {
     sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
-      <SequenceBox key={sequence.id} sequence={sequence} jobs={jobs} />
+      <SequenceBox
+        key={sequence.id}
+        submission={submission}
+        sequence={sequence}
+        jobs={jobs}
+      />
     ));
   } else {
     sequenceContent = <CollapsedSequencesBox submission={submission} />;
@@ -101,7 +108,7 @@ const ListedBlastSubmission = (props: Props) => {
 const CollapsedSequencesBox = (props: Props) => {
   const { submission } = props;
   const sequences = submission.submittedData.sequences;
-  const allJobs = submission.results;
+  const allJobs = getBlastJobsFromSubmission(submission);
 
   const sequenceCount = sequences.length;
   const totalSpecies = submission.submittedData.species.length;
@@ -119,23 +126,25 @@ const CollapsedSequencesBox = (props: Props) => {
 };
 
 type SequenceBoxProps = {
+  submission: BlastSubmission;
   sequence: SubmittedSequence;
   jobs: BlastJob[];
 };
 
 const SequenceBox = (props: SequenceBoxProps) => {
-  const { sequence, jobs } = props;
+  const { submission, sequence, jobs } = props;
   const { header: sequenceHeader } = sequence;
   const sequenceHeaderLabel =
     '>' + (sequenceHeader ?? `Sequence ${sequence.id}`);
+  const speciesCount = submission.submittedData.species.length;
 
   return (
     <div className={styles.sequenceBox}>
       <div>Sequence {sequence.id}</div>
       <div className={styles.sequenceHeader}>{sequenceHeaderLabel}</div>
       <div className={styles.speciesCount}>
-        <span className={styles.againstText}>Against</span> {jobs.length}{' '}
-        species
+        <span className={styles.againstText}>Against</span>
+        {speciesCount} species
       </div>
       <StatusElement jobs={jobs} />
     </div>
@@ -162,5 +171,8 @@ const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
     return null;
   }
 };
+
+const getBlastJobsFromSubmission = (submission: BlastSubmission) =>
+  isSuccessfulBlastSubmission(submission) ? submission.results : [];
 
 export default ListedBlastSubmission;

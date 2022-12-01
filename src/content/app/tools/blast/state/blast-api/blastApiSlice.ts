@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { nanoid } from '@reduxjs/toolkit';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+
 import config from 'config';
 import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 
@@ -23,7 +26,10 @@ import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
 
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
-import type { BlastSubmission } from '../blast-results/blastResultsSlice';
+import type {
+  SuccessfulBlastSubmission,
+  FailedBlastSubmission
+} from '../blast-results/blastResultsSlice';
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
@@ -38,6 +44,11 @@ export type BlastSubmissionPayload = {
 export type BlastSubmissionResponse = {
   submission_id: string;
   jobs: Array<SubmittedJob | RejectedJob>;
+};
+
+export type BlastSubmissionErrorResponse = {
+  submission_id?: string; // if the request has reached the backend, and if the backend hasn't errored while running code, there will be a submission id, even if the submission is rejected as invalid
+  error: string;
 };
 
 export type SubmittedJob = {
@@ -61,10 +72,10 @@ const blastApiSlice = restApiSlice.injectEndpoints({
       keepUnusedDataFor: 60 * 60 // one hour
     }),
     submitBlast: builder.mutation<
-      { submissionId: string; submission: BlastSubmission },
+      { submissionId: string; submission: SuccessfulBlastSubmission },
       BlastSubmissionPayload
     >({
-      query(payload) {
+      async queryFn(payload, queryApi, _, baseQuery) {
         // backend tools API accepts sequences as FASTA strings
         const querySequences = payload.sequences.map((item) => ({
           id: item.id,
@@ -76,41 +87,44 @@ const blastApiSlice = restApiSlice.injectEndpoints({
           query_sequences: querySequences,
           parameters: payload.parameters
         };
-        return {
-          url: `${config.toolsApiBaseUrl}/blast/job`,
-          method: 'POST',
-          body
-        };
-      },
-      transformResponse(response: BlastSubmissionResponse, _, payload) {
-        const { submission_id: submissionId, jobs } = response;
-        // TODO: decide what to do when a submission returns error jobs
-        const results = jobs
-          .filter((job): job is SubmittedJob => 'job_id' in job)
-          .map((job) => ({
-            jobId: job.job_id,
-            genomeId: job.genome_id,
-            sequenceId: job.sequence_id,
-            status: 'RUNNING',
-            data: null
-          }));
 
-        return {
-          submissionId,
-          submission: {
-            id: submissionId,
-            submittedData: {
-              species: payload.species,
-              sequences: payload.sequences,
-              preset: payload.preset,
-              submissionName: payload.submissionName,
-              parameters: payload.parameters
-            },
-            results,
-            submittedAt: Date.now(),
-            seen: false
-          } as BlastSubmission
-        };
+        try {
+          const { data: responseData, error: responseError } = await baseQuery({
+            url: `${config.toolsApiBaseUrl}/blast/job`,
+            method: 'POST',
+            body
+          });
+          if (!responseData) {
+            throw responseError ?? { error: 'Blast submission failed' };
+          } else if (
+            onlyContainsRejectedJobs(responseData as BlastSubmissionResponse)
+          ) {
+            return {
+              error: {
+                status: 422,
+                data: prepareFailedSubmissionPayload(
+                  payload,
+                  responseData as BlastSubmissionResponse
+                )
+              }
+            };
+          } else {
+            return {
+              data: prepareSuccessfulSubmissionPayload(
+                payload,
+                responseData as BlastSubmissionResponse
+              )
+            };
+          }
+        } catch (error: unknown) {
+          // if tools api rejects the submission with a validation error, the json payload of that error will be part of error.data
+          const errorData = (error as FetchBaseQueryError)?.data ?? {};
+          const failedSubmission = prepareFailedSubmissionPayload(
+            payload,
+            errorData as BlastSubmissionErrorResponse
+          );
+          return { error: { status: 422, data: failedSubmission } };
+        }
       }
     }),
     fetchAllBlastJobs: builder.query<BlastJobResultResponse[], string[]>({
@@ -182,6 +196,80 @@ const commonFetchAllBlastJobs = <BaseQuery extends BaseQueryFn>(
     );
 
   return Promise.all(requestPromises);
+};
+
+const onlyContainsRejectedJobs = (response: BlastSubmissionResponse) => {
+  return response.jobs.every((job) => 'error' in job);
+};
+
+const prepareSuccessfulSubmissionPayload = (
+  payload: BlastSubmissionPayload,
+  responseData: BlastSubmissionResponse
+) => {
+  const { submission_id: submissionId, jobs } = responseData;
+  const results = jobs.map((job) => {
+    return {
+      jobId: 'job_id' in job ? job.job_id : nanoid(),
+      genomeId: job.genome_id,
+      sequenceId: job.sequence_id,
+      status: 'error' in job ? 'FAILURE' : 'RUNNING',
+      data: null
+    };
+  });
+
+  return {
+    submissionId,
+    submission: {
+      id: submissionId,
+      submittedData: {
+        species: payload.species,
+        sequences: payload.sequences,
+        preset: payload.preset,
+        submissionName: payload.submissionName,
+        parameters: payload.parameters
+      },
+      results,
+      submittedAt: Date.now(),
+      seen: false
+    } as SuccessfulBlastSubmission
+  };
+};
+
+const prepareFailedSubmissionPayload = (
+  payload: BlastSubmissionPayload,
+  responseData: BlastSubmissionResponse | BlastSubmissionErrorResponse
+) => {
+  let submissionId: string;
+  let hasServerGeneratedId = false;
+  let errorMessage = 'Blast submission failed';
+
+  if ('submission_id' in responseData && responseData.submission_id) {
+    submissionId = responseData.submission_id;
+    hasServerGeneratedId = true;
+  } else {
+    submissionId = nanoid();
+  }
+
+  if ('error' in responseData) {
+    errorMessage = responseData.error;
+  }
+
+  return {
+    submissionId,
+    submission: {
+      id: submissionId,
+      hasServerGeneratedId,
+      submittedData: {
+        species: payload.species,
+        sequences: payload.sequences,
+        preset: payload.preset,
+        submissionName: payload.submissionName,
+        parameters: payload.parameters
+      },
+      submittedAt: Date.now(),
+      error: errorMessage
+    } as FailedBlastSubmission
+  };
 };
 
 export const {

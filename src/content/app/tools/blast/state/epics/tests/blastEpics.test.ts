@@ -32,7 +32,9 @@ import { getBlastSubmissions } from 'src/content/app/tools/blast/state/blast-res
 import { submitBlast } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import {
   restoreBlastSubmissions,
-  deleteBlastSubmission
+  deleteBlastSubmission,
+  type SuccessfulBlastSubmission,
+  type FailedBlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 import { createCancellableTestEpic } from 'tests/reduxObservableHelpers';
@@ -181,7 +183,7 @@ describe('blast epics', () => {
         const submissions = getBlastSubmissions(store.getState());
         const [, submission] = Object.entries(submissions)[0];
         expect(
-          submission.results.every((job) =>
+          (submission as SuccessfulBlastSubmission).results.every((job) =>
             ['FINISHED', 'FAILURE'].includes(job.status)
           )
         ).toBe(true);
@@ -235,7 +237,7 @@ describe('blast epics', () => {
         const submissions = getBlastSubmissions(store.getState());
         const [, submission] = Object.entries(submissions)[0];
         expect(
-          submission.results.every((job) =>
+          (submission as SuccessfulBlastSubmission).results.every((job) =>
             ['FINISHED', 'FAILURE'].includes(job.status)
           )
         ).toBe(true);
@@ -311,7 +313,7 @@ describe('blast epics', () => {
         const submissions = getBlastSubmissions(store.getState());
         const [, submission] = Object.entries(submissions)[0];
         expect(
-          submission.results.every((job) =>
+          (submission as SuccessfulBlastSubmission).results.every((job) =>
             ['FINISHED', 'FAILURE'].includes(job.status)
           )
         ).toBe(true);
@@ -325,6 +327,32 @@ describe('blast epics', () => {
         submissionId: successfulSubmission.submission_id,
         jobId: unfinishedJob.jobId,
         fragment: { status: 'FINISHED' }
+      });
+    });
+  });
+
+  describe('blastFailedSubmissionsEpic', () => {
+    it('saves the failed submission to indexed db', async () => {
+      // respond with a 404 error or a network error the first time the request is received
+      server.use(
+        rest.post('http://tools-api-url/blast/job', (_, res, ctx) => {
+          // one-time override, to respond with an error to a BLAST submission
+          return res.once(ctx.status(422), ctx.json({ error: 'oops' }));
+        })
+      );
+
+      store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
+
+      await waitFor(() => {
+        const submissions = getBlastSubmissions(store.getState());
+        const [, submission] = Object.entries(submissions)[0];
+
+        expect((submission as FailedBlastSubmission).error).toBeTruthy();
+
+        expect(blastStorageService.saveBlastSubmission).toHaveBeenCalledWith(
+          submission.id,
+          submission
+        );
       });
     });
   });
