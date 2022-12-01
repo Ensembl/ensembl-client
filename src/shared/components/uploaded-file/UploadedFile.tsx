@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -34,7 +34,7 @@ type Props = {
 
 const UploadedFile = (props: Props) => {
   const fileName = props.file.name;
-  const fileSize = filesize(props.file.size);
+  const fileSize = filesize(props.file.size) as string;
 
   const elementClasses = classNames(
     styles.uploadedFile,

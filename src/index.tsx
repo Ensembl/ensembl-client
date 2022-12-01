@@ -17,7 +17,6 @@
 import React, { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { CookiesProvider } from 'react-cookie';
 import { BrowserRouter } from 'react-router-dom';
 
 import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
@@ -47,21 +46,19 @@ const serverSideConfig: Partial<TransferredClientConfig> =
 hydrateRoot(
   document,
   <StrictMode>
-    <CookiesProvider>
-      <IndexedDBProvider>
-        <Provider store={store}>
-          <BrowserRouter>
-            <Html
-              assets={assetManifest}
-              serverSideReduxState={serverSideReduxState}
-              serverSideConfig={serverSideConfig}
-            >
-              <Root />
-            </Html>
-          </BrowserRouter>
-        </Provider>
-      </IndexedDBProvider>
-    </CookiesProvider>
+    <IndexedDBProvider>
+      <Provider store={store}>
+        <BrowserRouter>
+          <Html
+            assets={assetManifest}
+            serverSideReduxState={serverSideReduxState}
+            serverSideConfig={serverSideConfig}
+          >
+            <Root />
+          </Html>
+        </BrowserRouter>
+      </Provider>
+    </IndexedDBProvider>
   </StrictMode>
 );
 
