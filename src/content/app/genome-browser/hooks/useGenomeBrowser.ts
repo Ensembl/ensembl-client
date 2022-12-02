@@ -104,14 +104,17 @@ const useGenomeBrowser = () => {
 
   const changeBrowserLocation = (locationData: {
     genomeId: string;
-    focusId?: string;
+    focus?: {
+      id: string;
+      type: string;
+    };
     chrLocation: ChrLocation;
   }) => {
     if (!genomeBrowser) {
       return;
     }
 
-    const { genomeId, chrLocation, focusId = null } = locationData;
+    const { genomeId, chrLocation, focus = null } = locationData;
 
     const [chromosome, startBp, endBp] = chrLocation;
 
@@ -121,7 +124,7 @@ const useGenomeBrowser = () => {
         chromosome,
         startBp,
         endBp,
-        focus: focusId,
+        focus,
         genomeId
       }
     };
