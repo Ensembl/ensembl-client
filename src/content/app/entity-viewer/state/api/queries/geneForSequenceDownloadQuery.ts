@@ -21,7 +21,7 @@ import type { FullProductGeneratingContext } from 'src/shared/types/thoas/produc
 
 export const geneForSequenceDownloadQuery = gql`
   query GeneForSequenceDownload($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
       transcripts {
         product_generating_contexts {

@@ -26,7 +26,7 @@ import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 export const defaultGeneQuery = gql`
   query DefaultEntityViewerGene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
       symbol
       unversioned_stable_id

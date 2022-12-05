@@ -25,7 +25,7 @@ import type { ExternalReference } from 'src/shared/types/thoas/externalReference
 
 export const geneExternalReferencesQuery = gql`
   query GeneExternalReferences($geneId: String!, $genomeId: String!) {
-    gene(byId: { stable_id: $geneId, genome_id: $genomeId }) {
+    gene(by_id: { stable_id: $geneId, genome_id: $genomeId }) {
       stable_id
       symbol
       external_references {

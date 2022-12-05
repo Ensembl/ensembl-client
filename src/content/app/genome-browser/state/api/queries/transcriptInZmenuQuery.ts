@@ -22,7 +22,7 @@ import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGene
 
 export const transcriptZmenuQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+    transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       product_generating_contexts {
         product_type
       }

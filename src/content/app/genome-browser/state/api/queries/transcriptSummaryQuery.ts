@@ -25,7 +25,7 @@ import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 export const transcriptSummaryQuery = gql`
   query TranscriptSummary($genomeId: String!, $transcriptId: String!) {
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+    transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       stable_id
       unversioned_stable_id
       external_references {
