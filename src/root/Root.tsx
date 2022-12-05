@@ -55,6 +55,7 @@ export const Root = () => {
   useEffect(() => {
     setShowPrivacyBanner(privacyBannerService.shouldShowBanner());
     dispatch(restoreBlastSubmissions());
+    setScrollbarWidth();
   }, []);
 
   const closeBanner = () => {
@@ -72,6 +73,26 @@ export const Root = () => {
       </ErrorBoundary>
     </div>
   );
+};
+
+// creating dummy elements to simulate scrollbar
+// Find scrollbar width and set it to css variable so that it can be used to calculate the right padding
+// Removing dummy elements once css variable is set
+const setScrollbarWidth = () => {
+  // Creating invisible container and child to show scrollbar
+  const outer = document.createElement('div');
+  const inner = document.createElement('div');
+
+  outer.style.overflow = 'scroll';
+
+  outer.appendChild(inner);
+  document.body.appendChild(outer);
+  const scrollbarWidth = outer.offsetWidth - outer.scrollWidth;
+
+  const rootNode = document.querySelector(':root') as HTMLElement;
+  rootNode?.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+
+  outer.parentNode?.removeChild(outer);
 };
 
 export default Root;
