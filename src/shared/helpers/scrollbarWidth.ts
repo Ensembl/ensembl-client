@@ -20,7 +20,7 @@ export const setScrollbarWidth = () => {
   const element = document.createElement('div');
 
   element.style.position = 'absolute';
-  element.style.top = '1px';
+  element.style.top = '-100px';
   element.style.overflow = 'scroll';
 
   document.body.appendChild(element);
