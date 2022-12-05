@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-// creating dummy elements to simulate scrollbar
-// Find scrollbar width and set it to css variable so that it can be used to calculate the right padding
-// Removing dummy elements once css variable is set
+// Find scrollbar width and set it to css variable so that it can be used for style calculations
 export const setScrollbarWidth = () => {
-  // Creating invisible container and child to show scrollbar
-  const outer = document.createElement('div');
-  const inner = document.createElement('div');
+  // Create a dummy element for scrollbar measurement
+  const element = document.createElement('div');
 
-  outer.style.position = 'absolute';
-  outer.style.top = '0';
-  outer.style.overflow = 'scroll';
+  element.style.position = 'absolute';
+  element.style.top = '1px';
+  element.style.overflow = 'scroll';
 
-  outer.appendChild(inner);
-  document.body.appendChild(outer);
-  const scrollbarWidth = outer.offsetWidth - outer.scrollWidth;
+  document.body.appendChild(element);
+  const scrollbarWidth = element.offsetWidth - element.scrollWidth;
 
   const rootNode = document.querySelector(':root') as HTMLElement;
   rootNode?.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
 
-  document.body.removeChild(outer);
+  // Remove the dummy element once the css variable is set
+  document.body.removeChild(element);
 };
