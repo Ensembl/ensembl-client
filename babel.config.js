@@ -16,7 +16,7 @@ module.exports = (api) => {
         '@babel/env',
         {
           useBuiltIns: 'usage',
-          corejs: 3,
+          corejs: 3.26,
           modules: false,
           targets
         }
@@ -29,7 +29,7 @@ module.exports = (api) => {
             '@babel/env',
             {
               useBuiltIns: 'usage',
-              corejs: 3
+              corejs: 3.26
             }
           ]
         ]
