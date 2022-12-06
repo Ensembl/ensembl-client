@@ -57,7 +57,8 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
   const { width: plotwidth } = useResizeObserver({ ref: rulerContainer });
   const [shouldShowJobResult, showJobResult] = useState(true);
   const [shouldShowParamaters, showParamaters] = useState(false);
-  const shouldUseGenomicHitsDiagram = parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
+  const shouldUseGenomicHitsDiagram =
+    parameters.database === 'dna_sm' || parameters.database === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   const headerClasses = shouldUseGenomicHitsDiagram
     ? styles.headerWithLegend

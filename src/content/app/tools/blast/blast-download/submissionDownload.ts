@@ -73,7 +73,7 @@ const downloadBlastSubmission = async (
   submission: BlastSubmission,
   dispatch: AppDispatch
 ) => {
-  const blastedAgainst = submission.submittedData.parameters.database; // 'cdna' | 'dna' | 'pep'
+  const blastedAgainst = submission.submittedData.parameters.database; // 'dna_sm' | 'dna' | 'cdna' | 'pep'
   const jobIds = submission.results.map(({ jobId }) => jobId);
   const blastJobsQuery = dispatch(fetchAllBlastJobs.initiate(jobIds));
   const rawBlastResultsQuery = dispatch(
@@ -96,7 +96,7 @@ const downloadBlastSubmission = async (
 
   const allBlastJobsWithCSVs = allBlastJobs.map((job) => {
     let csv = '';
-    if (blastedAgainst === 'dna') {
+    if (blastedAgainst === 'dna' || blastedAgainst === 'dna_sm') {
       csv = createCSVForGenomicBlast(job.data);
     } else if (blastedAgainst === 'cdna') {
       csv = createCSVForTranscriptBlast(job.data);
