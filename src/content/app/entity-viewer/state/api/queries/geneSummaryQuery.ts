@@ -23,7 +23,7 @@ import type { FullGene } from 'src/shared/types/thoas/gene';
 // Useful for populating the top bar and example links in the interstitial.
 export const geneSummaryQuery = gql`
   query GeneSummary($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
       unversioned_stable_id
       symbol

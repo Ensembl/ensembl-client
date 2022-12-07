@@ -22,7 +22,7 @@ import type { FullGene } from 'src/shared/types/thoas/gene';
 // It looks very similar to geneSummaryQuery; but has a potential of becoming heavier
 export const geneOverviewQuery = gql`
   query GeneOverview($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       alternative_symbols
       name
       stable_id

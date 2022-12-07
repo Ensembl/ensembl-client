@@ -23,7 +23,7 @@ type Params = {
 
 const trackPanelGeneQuery = (params: Params) => gql`
   query TrackPanelGene {
-    gene(byId: { genome_id: "${params.genomeId}", stable_id: "${params.geneId}" }) {
+    gene(by_id: { genome_id: "${params.genomeId}", stable_id: "${params.geneId}" }) {
       stable_id
       unversioned_stable_id
       symbol

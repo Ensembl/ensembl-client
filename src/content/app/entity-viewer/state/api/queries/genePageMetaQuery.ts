@@ -18,7 +18,7 @@ import { gql } from 'graphql-request';
 
 export const genePageMetaQuery = gql`
   query GenePageMeta($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
       symbol
     }

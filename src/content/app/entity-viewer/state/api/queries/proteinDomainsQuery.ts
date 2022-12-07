@@ -21,7 +21,7 @@ import type { FamilyMatch } from 'src/shared/types/thoas/product';
 
 export const proteinDomainsQuery = gql`
   query ProteinDomains($genomeId: String!, $productId: String!) {
-    product(genome_id: $genomeId, stable_id: $productId) {
+    product(by_id: { genome_id: $genomeId, stable_id: $productId }) {
       length
       family_matches {
         relative_location {

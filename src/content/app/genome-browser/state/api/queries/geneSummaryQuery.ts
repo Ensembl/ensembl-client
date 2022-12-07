@@ -23,7 +23,7 @@ import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGene
 
 export const geneSummaryQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       alternative_symbols
       name
       stable_id
