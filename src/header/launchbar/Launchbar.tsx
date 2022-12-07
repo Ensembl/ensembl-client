@@ -21,10 +21,10 @@ import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
   GlobalSearchIcon,
-  EntityViewerIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
+import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
@@ -64,12 +64,7 @@ const Launchbar = () => {
             />
           </div>
           <div className={styles.category}>
-            <LaunchbarButton
-              path="/entity-viewer"
-              description="Entity Viewer"
-              icon={EntityViewerIcon}
-              enabled={true}
-            />
+            <EntityViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
             <BlastLaunchbarButton />
