@@ -24,6 +24,8 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
+import styles from './BlastPage.scss';
+
 const BlastForm = React.lazy(() => import('./views/blast-form/BlastForm'));
 const BlastSubmissions = React.lazy(
   () => import('./views/blast-submissions/BlastSubmissions')
@@ -52,17 +54,19 @@ const BlastPage = () => {
   }, []);
 
   return hasMounted ? (
-    <Routes>
-      <Route index element={<BlastForm />} />
-      <Route
-        path="unviewed-submissions"
-        element={<BlastSubmissions unviewed={true} />}
-      />
-      <Route path="submissions">
-        <Route index={true} element={<BlastSubmissions unviewed={false} />} />
-        <Route path=":submissionId" element={<BlastSubmissionResults />} />
-      </Route>
-    </Routes>
+    <div className={styles.blastPage}>
+      <Routes>
+        <Route index element={<BlastForm />} />
+        <Route
+          path="unviewed-submissions"
+          element={<BlastSubmissions unviewed={true} />}
+        />
+        <Route path="submissions">
+          <Route index={true} element={<BlastSubmissions unviewed={false} />} />
+          <Route path=":submissionId" element={<BlastSubmissionResults />} />
+        </Route>
+      </Routes>
+    </div>
   ) : null;
 };
 

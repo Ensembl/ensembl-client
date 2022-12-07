@@ -1,6 +1,5 @@
 @import 'src/styles/common';
 
-$double_standard_gutter: calc($standard-gutter * 2);
 $container_max_width: 1860px;
 
 .resultsContainer {
@@ -11,12 +10,13 @@ $container_max_width: 1860px;
 
 .mainContainer {
   overflow: auto;
+  scrollbar-gutter: stable;
   height: 100%;
 }
 
 .blastSubmissionResultsContainer {
   max-width: $container_max_width;
-  padding: 0 $standard-gutter $global-padding-bottom $double_standard_gutter;
+  padding: var(--blast-page-standard-padding);
 }
 
 .loaderContainer {

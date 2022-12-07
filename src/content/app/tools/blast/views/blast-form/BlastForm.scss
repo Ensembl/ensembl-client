@@ -9,22 +9,23 @@
 
 .mainContainer {
   height: 100%;
-  padding: 0 30px 0 65px;
 }
 
 .mainContainerSmall {
   overflow: auto;
   scroll-behavior: smooth;
-  padding-bottom: $global-padding-bottom;
+  scrollbar-gutter: stable;
+  padding: var(--blast-page-standard-padding);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, min-content);
   column-gap: 45px;
-  padding-bottom: $global-padding-bottom;
+  padding: var(--blast-page-standard-padding);
   overflow: auto;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
   height: 100%;
 }
 

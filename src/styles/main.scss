@@ -3,6 +3,10 @@
 @import 'fonts';
 @import 'scrollbars';
 
+:root {
+  --scrollbar-width: 0px; // this is a fallback value; it will be overwritten by javascript at startup
+}
+
 html,
 body,
 [class='ens-app'] {

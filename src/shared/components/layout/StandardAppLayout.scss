@@ -93,6 +93,7 @@ $drawerWindowWidth: 45px;
 
   & > div {
     padding-bottom: $global-padding-bottom;
+    max-width: calc($sidebarContentWidth - 25px);
   }
 }
 
