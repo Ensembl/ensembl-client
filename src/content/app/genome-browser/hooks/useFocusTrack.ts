@@ -93,8 +93,8 @@ const useFocusGene = (params: Params) => {
 
   useEffect(() => {
     focusObjectIdRef.current = focusObjectId;
-    geneIdRef.current = focusGene?.stable_id;
-  }, [focusObjectId, focusGene?.stable_id]);
+    geneIdRef.current = geneStableId;
+  }, [focusObjectId, geneStableId]);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -111,7 +111,7 @@ const useFocusGene = (params: Params) => {
   }, [genomeBrowser]);
 
   useEffect(() => {
-    if (!focusGene?.stable_id) {
+    if (!geneStableId) {
       return;
     }
 
@@ -129,7 +129,7 @@ const useFocusGene = (params: Params) => {
     genomeBrowser,
     focusObjectId,
     stringifiedVisibleTranscriptIds,
-    focusGene?.stable_id
+    geneStableId
   ]);
 
   useEffect(() => {
