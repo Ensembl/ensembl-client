@@ -5,7 +5,8 @@
 }
 
 .domain {
-  fill: $grey;
+  fill: $blue;
+  cursor: pointer;
 }
 
 .track {
@@ -42,11 +43,12 @@
 }
 
 .resourceImage {
+  position: relative;
   display: grid;
   grid-template-columns: [image] min-content [description] max-content;
   margin-bottom: 6px;
 
-  & svg {
+  & .containerSvg {
     grid-column: image;
   }
 
@@ -55,4 +57,18 @@
     padding-left: 27px;
     color: $black;
   }
+}
+
+.tooltipRow {
+  font-weight: $normal;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-items: start;
+  align-items: start;
+  column-gap: 1rem;
+  max-width: 280px;
+}
+
+.tooltipFieldLabel {
+  font-weight: $light;
 }
