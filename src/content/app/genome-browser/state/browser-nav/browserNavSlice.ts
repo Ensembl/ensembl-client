@@ -18,8 +18,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 export enum BrowserNavAction {
-  MOVE_UP = 'move_up',
-  MOVE_DOWN = 'move_down',
+  // MOVE_UP = 'move_up',
+  // MOVE_DOWN = 'move_down',
   MOVE_LEFT = 'move_left',
   MOVE_RIGHT = 'move_right',
   ZOOM_IN = 'zoom_in',
@@ -27,8 +27,8 @@ export enum BrowserNavAction {
 }
 
 export const browserNavIconActionMap = {
-  [BrowserNavAction.MOVE_UP]: OutgoingActionType.MOVE_UP,
-  [BrowserNavAction.MOVE_DOWN]: OutgoingActionType.MOVE_DOWN,
+  // [BrowserNavAction.MOVE_UP]: OutgoingActionType.MOVE_UP,
+  // [BrowserNavAction.MOVE_DOWN]: OutgoingActionType.MOVE_DOWN,
   [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
   [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
   [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
@@ -41,8 +41,8 @@ export type BrowserNavIconStates = {
 };
 
 export const defaultBrowserNavIconsState = {
-  [BrowserNavAction.MOVE_UP]: false,
-  [BrowserNavAction.MOVE_DOWN]: false,
+  // [BrowserNavAction.MOVE_UP]: false,
+  // [BrowserNavAction.MOVE_DOWN]: false,
   [BrowserNavAction.MOVE_LEFT]: false,
   [BrowserNavAction.MOVE_RIGHT]: false,
   [BrowserNavAction.ZOOM_OUT]: false,

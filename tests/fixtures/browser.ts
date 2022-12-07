@@ -199,9 +199,9 @@ export const createMockBrowserState = () => {
       browserNav: {
         browserNavOpenState: {},
         browserNavIconStates: {
-          move_up: false,
+          // move_up: false,
           move_right: false,
-          move_down: true,
+          // move_down: true,
           move_left: true,
           zoom_out: false,
           zoom_in: false

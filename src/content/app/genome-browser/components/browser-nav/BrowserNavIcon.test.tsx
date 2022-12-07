@@ -49,8 +49,8 @@ describe('<BrowserNavAction />', () => {
 
     expect(mockGenomeBrowser.send).toHaveBeenCalledTimes(1);
     expect(mockGenomeBrowser.send).toHaveBeenCalledWith({
-      payload: { move_up_px: 50 },
-      type: OutgoingActionType.MOVE_UP
+      payload: { move_left_px: 50 },
+      type: OutgoingActionType.MOVE_LEFT
     });
 
     (mockGenomeBrowser.send as any).mockRestore();
