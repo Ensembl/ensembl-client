@@ -601,19 +601,9 @@
   },
   "programs_configurator": [
     {
-      "sequence_type": "dna_sm",
-      "database_type": "dna",
-      "programs": ["blastn", "tblastx"]
-    },
-    {
       "sequence_type": "dna",
       "database_type": "dna",
       "programs": ["blastn", "tblastx"]
-    },
-    {
-      "sequence_type": "dna_sm",
-      "database_type": "protein",
-      "programs": ["blastx"]
     },
     {
       "sequence_type": "dna",
