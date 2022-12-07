@@ -10,7 +10,7 @@
   min-height: 300px;
   margin-right: 30px;
   padding-bottom: 100px;
-  z-index: 0; // so that a tooltip pointing at an element in the body does not get positioned in from of the header while scrolling
+  z-index: 0; // so that a tooltip brought up iside the body does not overlay the panel header when scrolling, but instead go behind the header
 }
 
 .header {

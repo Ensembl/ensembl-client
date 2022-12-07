@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
@@ -289,14 +289,9 @@ const ProteinDomainInfoTooltip = (props: {
   onHide: () => void;
 }) => {
   const { domainInfo, x, y, onHide } = props;
-  const anchorRef = useRef<HTMLDivElement | null>(null);
   const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
     null
   );
-
-  useEffect(() => {
-    setAnchorElement(anchorRef.current);
-  }, []);
 
   const anchorStyle = {
     position: 'absolute' as any, // FIXME: move to css file
@@ -306,7 +301,7 @@ const ProteinDomainInfoTooltip = (props: {
 
   return (
     <>
-      <div ref={anchorRef} style={anchorStyle} />
+      <div ref={setAnchorElement} style={anchorStyle} />
       {anchorElement && (
         <Toolbox
           anchor={anchorElement}
