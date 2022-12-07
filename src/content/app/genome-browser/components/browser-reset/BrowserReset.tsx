@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
+import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -31,7 +32,11 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './BrowserReset.scss';
 
-export const BrowserReset = () => {
+type Props = {
+  className?: string;
+};
+
+export const BrowserReset = (props: Props) => {
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const focusObjectId = useSelector(getBrowserActiveFocusObjectId);
   const isActive = !isDrawerOpened;
@@ -58,7 +63,7 @@ export const BrowserReset = () => {
       description={'Reset browser image'}
       image={ResetIcon}
       onClick={handleClick}
-      className={styles.resetButton}
+      className={classNames(styles.resetButton, props.className)}
     />
   );
 };

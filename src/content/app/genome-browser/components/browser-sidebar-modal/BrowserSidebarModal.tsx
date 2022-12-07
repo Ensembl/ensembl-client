@@ -44,7 +44,7 @@ const browserSidebarModals: Record<
     () => import('./modal-views/DownloadsModal')
   ),
   [BrowserSidebarModalView.NAVIGATE]: lazy(
-    () => import('./modal-views/NavigateModal')
+    () => import('./modal-views/navigate-modal/NavigateModal')
   )
 };
 
@@ -53,7 +53,7 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
   [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
-  [BrowserSidebarModalView.NAVIGATE]: 'Navigate'
+  [BrowserSidebarModalView.NAVIGATE]: 'Navigate this region'
 };
 
 export const BrowserSidebarModal = () => {

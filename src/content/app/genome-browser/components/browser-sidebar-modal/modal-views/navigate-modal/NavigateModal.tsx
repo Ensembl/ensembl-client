@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
-const NavigateModal = () => {
+import RegionForm from './RegionForm';
+import NewLocationForm from './NewLocationForm';
+
+import styles from './NavigateModal.scss';
+
+export enum NavigateModalContent {
+  REGION_FORM,
+  NEW_LOCATION_FORM
+}
+
+export const NavigateModal = () => {
+  const [view, changeView] = useState(NavigateModalContent.REGION_FORM);
+
   return (
-    <section>
-      <p>Navigate through the genome browser</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
+    <div className={styles.navigateModal}>
+      {view === NavigateModalContent.REGION_FORM ? (
+        <RegionForm changeView={changeView} />
+      ) : (
+        <NewLocationForm changeView={changeView} />
+      )}
+    </div>
   );
 };
 

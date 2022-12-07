@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -24,7 +24,6 @@ import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice'
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
 import styles from './BrowserLocationIndicator.scss';
 
@@ -40,8 +39,6 @@ export const BrowserLocationIndicator = (
 
   const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
 
-  const dispatch = useDispatch();
-
   const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
   if (!chrCode || !chrStart || !chrEnd || !activeGenomeId) {
     return null;
@@ -50,9 +47,6 @@ export const BrowserLocationIndicator = (
   const className = classNames(styles.browserLocationIndicator, {
     [styles.browserLocationIndicatorDisabled]: props.disabled
   });
-  const onClickProps = props.disabled
-    ? {}
-    : { onClick: () => dispatch(toggleBrowserNav({ activeGenomeId })) };
 
   const activeChromosome = genomeKaryotype?.find((karyotype) => {
     return karyotype.name === chrCode;
@@ -61,7 +55,7 @@ export const BrowserLocationIndicator = (
   return (
     <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
-      <div className={styles.chrLocationView} {...onClickProps}>
+      <div className={styles.chrLocationView}>
         {activeChromosome?.is_circular ? (
           <CircularChromosomeIndicator />
         ) : (
@@ -80,4 +74,5 @@ export const BrowserLocationIndicator = (
 const CircularChromosomeIndicator = () => {
   return <div className={styles.circularIndicator}></div>;
 };
+
 export default BrowserLocationIndicator;

@@ -16,8 +16,6 @@
 
 import ZoomInIcon from 'static/icons/icon_plus_circle.svg';
 import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
-import NavigateUpIcon from 'static/icons/navigate-up.svg';
-import NavigateDownIcon from 'static/icons/navigate-down.svg';
 import NavigateLeftIcon from 'static/icons/navigate-left.svg';
 import NavigateRightIcon from 'static/icons/navigate-right.svg';
 
@@ -34,20 +32,20 @@ export type BrowserNavItem = {
 
 export const browserNavConfig: BrowserNavItem[] = [
   {
-    description: 'navigate up',
+    description: 'navigate left',
     detail: {
-      move_up_px: 50
+      move_left_px: 50
     },
-    icon: NavigateUpIcon,
-    name: BrowserNavAction.MOVE_UP
+    icon: NavigateLeftIcon,
+    name: BrowserNavAction.MOVE_LEFT
   },
   {
-    description: 'navigate down',
+    description: 'navigate right',
     detail: {
-      move_down_px: 50
+      move_right_px: 50
     },
-    icon: NavigateDownIcon,
-    name: BrowserNavAction.MOVE_DOWN
+    icon: NavigateRightIcon,
+    name: BrowserNavAction.MOVE_RIGHT
   },
   {
     description: 'zoom out',
@@ -64,21 +62,5 @@ export const browserNavConfig: BrowserNavItem[] = [
     },
     icon: ZoomInIcon,
     name: BrowserNavAction.ZOOM_IN
-  },
-  {
-    description: 'navigate left',
-    detail: {
-      move_left_px: 50
-    },
-    icon: NavigateLeftIcon,
-    name: BrowserNavAction.MOVE_LEFT
-  },
-  {
-    description: 'navigate right',
-    detail: {
-      move_right_px: 50
-    },
-    icon: NavigateRightIcon,
-    name: BrowserNavAction.MOVE_RIGHT
   }
 ];

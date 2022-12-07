@@ -16,6 +16,7 @@
 
 import React, { memo } from 'react';
 import { OutgoingAction } from '@ensembl/ensembl-genome-browser';
+import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
@@ -31,6 +32,7 @@ import iconStyles from './BrowserNavIcon.scss';
 type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
   enabled: boolean;
+  className?: string;
 };
 
 export const BrowserNavIcon = (props: BrowserNavIconProps) => {
@@ -57,7 +59,7 @@ export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   const iconStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
-    <div className={iconStyles.browserNavIcon}>
+    <div className={classNames(iconStyles.browserNavIcon, props.className)}>
       <ImageButton
         status={iconStatus}
         description={browserNavItem.description}

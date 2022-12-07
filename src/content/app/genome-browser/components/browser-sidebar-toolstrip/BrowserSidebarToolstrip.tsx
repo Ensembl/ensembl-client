@@ -124,7 +124,7 @@ const BrowserSidebarToolstrip = () => {
           layoutStyles.sidebarIcon,
           layoutStyles.navigateIcon
         )}
-        status={Status.DISABLED}
+        status={getViewIconStatus(BrowserSidebarModalView.NAVIGATE)}
         description="Navigate browser image"
         onClick={() => toggleModalView(BrowserSidebarModalView.NAVIGATE)}
         image={NavigateIcon}
