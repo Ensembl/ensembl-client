@@ -116,7 +116,7 @@ describe('<TrackPanelList />', () => {
       const { container } = renderComponent(
         set(
           `browser.focusObjects.${activeFocusObjectId}.data`,
-          createFocusObject('region'),
+          createFocusObject('location'),
           mockState
         )
       );

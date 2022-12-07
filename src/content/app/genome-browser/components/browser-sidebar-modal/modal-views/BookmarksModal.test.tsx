@@ -97,9 +97,9 @@ describe('<BookmarksModal />', () => {
 
   it('renders previously viewed links', () => {
     const geneId = 'TraesCS3D02G273600';
-    const region = '3D:2585940-2634711';
+    const location = '3D:2585940-2634711';
     const geneObjectId = `${activeGenomeId}:gene:${geneId}`;
-    const regionObjectId = `${activeGenomeId}:region:${region}`;
+    const locationObjectId = `${activeGenomeId}:location:${location}`;
     const previouslyViewedObjects = [
       {
         genome_id: activeGenomeId,
@@ -109,9 +109,9 @@ describe('<BookmarksModal />', () => {
       },
       {
         genome_id: activeGenomeId,
-        object_id: regionObjectId,
-        type: 'region',
-        label: [region]
+        object_id: locationObjectId,
+        type: 'location',
+        label: [location]
       }
     ];
     const newMockState = merge(mockState, {
@@ -127,13 +127,13 @@ describe('<BookmarksModal />', () => {
     renderComponent(newMockState);
 
     const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
-    const regionLink = screen.getByText(region).closest('a') as HTMLElement;
+    const locationLink = screen.getByText(location).closest('a') as HTMLElement;
 
     const expectedGeneHref = `/genome-browser/${mockGenomeId}?focus=gene:${geneId}`;
-    const expectedRegionHref = `/genome-browser/${mockGenomeId}?focus=region:${region}`;
+    const expectedLocationHref = `/genome-browser/${mockGenomeId}?focus=location:${location}`;
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
-    expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
+    expect(locationLink.getAttribute('href')).toBe(expectedLocationHref);
   });
 
   it('shows link to view more only when there are more than 20 objects', () => {

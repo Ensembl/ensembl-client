@@ -19,7 +19,7 @@ import { faker } from '@faker-js/faker';
 import {
   FocusObject,
   FocusGene,
-  FocusRegion,
+  FocusLocation,
   FocusObjectType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/thoas/strand';
@@ -28,8 +28,8 @@ export const createFocusObject = (
   objectType?: FocusObjectType
 ): FocusObject => {
   switch (objectType) {
-    case 'region':
-      return createFocusRegion();
+    case 'location':
+      return createFocusLocation();
     default:
       return createFocusGene();
   }
@@ -47,13 +47,13 @@ const createFocusGene = (): FocusGene => {
   };
 };
 
-const createFocusRegion = (): FocusRegion => {
+const createFocusLocation = (): FocusLocation => {
   const genome_id = faker.lorem.word();
-  const object_id = `${genome_id}:gene:${faker.datatype.uuid()};`;
+  const object_id = `${genome_id}:location:${faker.datatype.uuid()};`;
 
   return {
     ...commonFocusObjectFields({ genome_id }),
-    type: 'region',
+    type: 'location',
     object_id
   };
 };

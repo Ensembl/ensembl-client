@@ -21,25 +21,25 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 
 import styles from './FeatureSummaryStrip.scss';
 
-import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
+import { FocusLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
 type Props = {
-  region: FocusObject;
+  location: FocusLocation;
   isGhosted?: boolean;
 };
 
-const RegionSummaryStrip = ({ region, isGhosted }: Props) => {
+const LocationSummaryStrip = ({ location, isGhosted }: Props) => {
   const stripClasses = classNames(styles.featureSummaryStrip, {
     [styles.featureSummaryStripGhosted]: isGhosted
   });
   return (
     <div className={stripClasses}>
-      <span className={styles.featureSummaryStripLabel}>Region:</span>
+      <span className={styles.featureSummaryStripLabel}>Location:</span>
       <span className={styles.featureDisplayName}>
-        {getFormattedLocation(region.location)}
+        {getFormattedLocation(location.location)}
       </span>
     </div>
   );
 };
 
-export default RegionSummaryStrip;
+export default LocationSummaryStrip;

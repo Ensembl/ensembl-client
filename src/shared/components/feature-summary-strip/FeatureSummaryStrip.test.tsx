@@ -26,7 +26,7 @@ import { createFocusObject } from 'tests/fixtures/focus-object';
 
 jest.mock('../feature-summary-strip', () => ({
   GeneSummaryStrip: () => <div>Gene Summary Strip</div>,
-  RegionSummaryStrip: () => <div>Region Summary Strip</div>
+  LocationSummaryStrip: () => <div>Location Summary Strip</div>
 }));
 
 describe('<FeatureSummaryStrip />', () => {
@@ -44,7 +44,7 @@ describe('<FeatureSummaryStrip />', () => {
     // will select an appropriate component for rendering
     // based on the type of the object that it receives
 
-    it('contains GeneSummaryStrip if focus object is gene', () => {
+    it('renders a GeneSummaryStrip if the focus object is a gene', () => {
       const { container } = render(
         renderFeatureSummaryStrip({ focusObject: createFocusObject('gene') })
       );
@@ -52,11 +52,13 @@ describe('<FeatureSummaryStrip />', () => {
       expect(container.textContent).toBe('Gene Summary Strip'); // text from the mocked module
     });
 
-    it('contains RegionSummaryStrip if focus object is region', () => {
+    it('renders a LocationSummaryStrip if the focus object is a location', () => {
       const { container } = render(
-        renderFeatureSummaryStrip({ focusObject: createFocusObject('region') })
+        renderFeatureSummaryStrip({
+          focusObject: createFocusObject('location')
+        })
       );
-      expect(container.textContent).toBe('Region Summary Strip'); // text from the mocked module
+      expect(container.textContent).toBe('Location Summary Strip'); // text from the mocked module
     });
   });
 });
