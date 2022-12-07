@@ -318,10 +318,7 @@ const ProteinDomainInfoTooltip = (props: {
               <span className={styles.tooltipFieldLabel}>
                 {domainInfo.resourceName}
               </span>
-              <ExternalLink
-                linkText={domainInfo.resourceName}
-                to={domainInfo.url}
-              />
+              <ExternalLink linkText={domainInfo.name} to={domainInfo.url} />
             </div>
           )}
           {domainInfo.closestDataProviderName &&

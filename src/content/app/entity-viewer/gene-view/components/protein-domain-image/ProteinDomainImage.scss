@@ -6,6 +6,7 @@
 
 .domain {
   fill: $blue;
+  opacity: 20%;
   cursor: pointer;
 }
 
@@ -67,6 +68,10 @@
   align-items: start;
   column-gap: 1rem;
   max-width: 280px;
+}
+
+.tooltipRow:not(:last-child) {
+  margin-bottom: 3px;
 }
 
 .tooltipFieldLabel {
