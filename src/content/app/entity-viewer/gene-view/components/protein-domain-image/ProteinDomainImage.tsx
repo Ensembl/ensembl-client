@@ -294,14 +294,17 @@ const ProteinDomainInfoTooltip = (props: {
   );
 
   const anchorStyle = {
-    position: 'absolute' as any, // FIXME: move to css file
     top: `${y}px`,
     left: `${x}px`
   };
 
   return (
     <>
-      <div ref={setAnchorElement} style={anchorStyle} />
+      <div
+        ref={setAnchorElement}
+        className={styles.tooltipAnchor}
+        style={anchorStyle}
+      />
       {anchorElement && (
         <Toolbox
           anchor={anchorElement}

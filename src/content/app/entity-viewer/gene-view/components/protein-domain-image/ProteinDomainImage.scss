@@ -60,6 +60,10 @@
   }
 }
 
+.tooltipAnchor {
+  position: absolute;
+}
+
 .tooltipRow {
   font-weight: $normal;
   display: grid;
