@@ -29,7 +29,6 @@ import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-
 
 import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import { Status } from 'src/shared/types/status';
 import type {
   FocusGeneTrack,
   FocusGeneTrackSettings
@@ -72,12 +71,8 @@ type Params = {
 
 const useFocusGene = (params: Params) => {
   const { focusGene, genomeBrowserMethods, focusObjectId } = params;
-  const {
-    genomeBrowser,
-    updateFocusGeneTranscripts,
-    setFocusGene,
-    toggleTrack
-  } = genomeBrowserMethods;
+  const { genomeBrowser, updateFocusGeneTranscripts, setFocusGene } =
+    genomeBrowserMethods;
   const geneStableId = focusGene?.stable_id;
   const focusObjectIdRef = useRef(focusObjectId);
   const geneIdRef = useRef(geneStableId);
@@ -115,16 +110,7 @@ const useFocusGene = (params: Params) => {
       return;
     }
 
-    const trackStatus =
-      Array.isArray(visibleTranscriptIds) && !visibleTranscriptIds.length
-        ? Status.UNSELECTED
-        : Status.SELECTED;
-
-    if (trackStatus === Status.SELECTED) {
-      setFocusGene(focusObjectId);
-    } else {
-      toggleTrack({ trackId: 'focus', isTurnedOn: false });
-    }
+    setFocusGene(focusObjectId);
   }, [
     genomeBrowser,
     focusObjectId,
@@ -133,11 +119,12 @@ const useFocusGene = (params: Params) => {
   ]);
 
   useEffect(() => {
+    if (!geneStableId) {
+      return;
+    }
     // Even if the user has disabled all gene's transcripts, re-focusing on this gene should show at least one transcript
     // (it's possible that this logic will change when no selected transcripts results in showing a ghosted transcript)
-    const transcriptsParam = visibleTranscriptIds?.length
-      ? visibleTranscriptIds
-      : null;
+    const transcriptsParam = visibleTranscriptIds ? visibleTranscriptIds : null;
     updateFocusGeneTranscripts(transcriptsParam);
   }, [
     genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
@@ -146,7 +133,7 @@ const useFocusGene = (params: Params) => {
   ]);
 
   useEffect(() => {
-    if (!trackSettingsForGenome) {
+    if (!geneStableId || !trackSettingsForGenome) {
       return;
     }
     sendFocusGeneTrackSettings(
