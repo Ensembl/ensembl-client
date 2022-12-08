@@ -30,7 +30,8 @@ export enum BrowserSidebarModalView {
   BOOKMARKS = 'Previously viewed',
   SHARE = 'Share',
   DOWNLOADS = 'Downloads',
-  NAVIGATE = 'Navigate'
+  NAVIGATE_REGION = 'Navigate region',
+  NAVIGATE_LOCATION = 'Navigate location'
 }
 
 export type BrowserSidebarModalStateForGenome = Readonly<{
@@ -44,31 +45,6 @@ export type BrowserSidebarModalState = Readonly<{
 export const defaultBrowserSidebarModalStateForGenome: BrowserSidebarModalStateForGenome =
   {
     browserSidebarModalView: null
-  };
-
-export const changeBrowserSidebarModalViewForGenome =
-  (
-    browserSidebarModalView: BrowserSidebarModalView
-  ): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(getState());
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...state.browser.browserSidebarModal[activeGenomeId],
-      browserSidebarModalView
-    };
-
-    dispatch(
-      updateBrowserSidebarModalForGenome({
-        activeGenomeId,
-        data
-      })
-    );
   };
 
 export const openBrowserSidebarModal =

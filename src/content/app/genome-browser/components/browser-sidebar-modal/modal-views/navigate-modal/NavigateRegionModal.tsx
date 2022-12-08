@@ -17,7 +17,7 @@
 import React, { FormEvent, useRef, useState } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
@@ -42,21 +42,22 @@ import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { NavigateModalContent } from './NavigateModal';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
+import {
+  BrowserSidebarModalView,
+  updateBrowserSidebarModalForGenome
+} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './NavigateModal.scss';
 
-type Props = {
-  changeView: (newView: NavigateModalContent) => void;
-};
-
-const RegionForm = (props: Props) => {
+const NavigateRegionModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const browserNavIconStates = useAppSelector(getBrowserNavIconStates);
   const chrLocation = useAppSelector(getChrLocation);
+
+  const dispatch = useAppDispatch();
 
   const { changeBrowserLocation } = useGenomeBrowser();
 
@@ -171,6 +172,21 @@ const RegionForm = (props: Props) => {
     });
   };
 
+  const switchToNavigateLocation = () => {
+    if (!activeGenomeId) {
+      return;
+    }
+
+    dispatch(
+      updateBrowserSidebarModalForGenome({
+        activeGenomeId,
+        data: {
+          browserSidebarModalView: BrowserSidebarModalView.NAVIGATE_LOCATION
+        }
+      })
+    );
+  };
+
   const getNavIconClassName = (iconName: string) => {
     switch (iconName) {
       case BrowserNavAction.MOVE_LEFT:
@@ -186,6 +202,9 @@ const RegionForm = (props: Props) => {
 
   return (
     <section className={styles.regionForm}>
+      <div className={styles.heading}>
+        <p>Navigate this region</p>
+      </div>
       <div className={styles.browserNavBarControls}>
         {browserNavConfig.map((item: BrowserNavItem) => (
           <BrowserNavIcon
@@ -287,17 +306,17 @@ const RegionForm = (props: Props) => {
         </PrimaryButton>
       </div>
       <div>
-        <span
-          className={classNames(styles.cancel, styles.clickableText)}
-          onClick={() =>
-            props.changeView(NavigateModalContent.NEW_LOCATION_FORM)
-          }
-        >
-          Go to new location
-        </span>
+        <p>
+          <span
+            className={classNames(styles.cancel, styles.clickableText)}
+            onClick={switchToNavigateLocation}
+          >
+            Go to new location
+          </span>
+        </p>
       </div>
     </section>
   );
 };
 
-export default RegionForm;
+export default NavigateRegionModal;

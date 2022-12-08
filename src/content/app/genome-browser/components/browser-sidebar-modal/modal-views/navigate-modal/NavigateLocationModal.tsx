@@ -17,7 +17,7 @@
 import React, { FormEvent, useRef, useState } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
@@ -34,18 +34,19 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Select from 'src/shared/components/select/Select';
 
-import { NavigateModalContent } from './NavigateModal';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
+import {
+  BrowserSidebarModalView,
+  updateBrowserSidebarModalForGenome
+} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './NavigateModal.scss';
 
-type Props = {
-  changeView: (newView: NavigateModalContent) => void;
-};
-
-const NewLocationForm = (props: Props) => {
+const NavigateLocationModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+
+  const dispatch = useAppDispatch();
 
   const { data: genomeKaryotype = [] } = useGenomeKaryotypeQuery(
     activeGenomeId as string
@@ -183,16 +184,33 @@ const NewLocationForm = (props: Props) => {
     });
   };
 
+  const switchToNavigateRegion = () => {
+    if (!activeGenomeId) {
+      return;
+    }
+
+    dispatch(
+      updateBrowserSidebarModalForGenome({
+        activeGenomeId,
+        data: {
+          browserSidebarModalView: BrowserSidebarModalView.NAVIGATE_REGION
+        }
+      })
+    );
+  };
+
   return (
     <section className={styles.newLocationForm}>
       <div className={styles.heading}>
-        <span
-          className={styles.clickableText}
-          onClick={() => props.changeView(NavigateModalContent.REGION_FORM)}
-        >
-          Navigate this region
-        </span>
-        <h4>Go to new location</h4>
+        <p>
+          <span
+            className={styles.clickableText}
+            onClick={switchToNavigateRegion}
+          >
+            Navigate this region
+          </span>
+        </p>
+        <p>Go to new location</p>
       </div>
       <div className={styles.coordInputs}>
         <div className={styles.inputGroup} ref={stickRef}>
@@ -296,4 +314,4 @@ const NewLocationForm = (props: Props) => {
   );
 };
 
-export default NewLocationForm;
+export default NavigateLocationModal;
