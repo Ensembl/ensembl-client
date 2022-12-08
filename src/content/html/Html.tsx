@@ -22,18 +22,20 @@ import Meta from './Meta';
 import { HotjarScript } from './ThirdParty';
 
 import type JSONValue from 'src/shared/types/JSON';
+import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 
 type Props = {
   assets: Record<string, string>;
   serverSideReduxState: JSONValue; // redux state that is generated on the server and is passed over to the client
-  serverSideConfig: JSONValue;
+  serverSideConfig: Partial<TransferredClientConfig>;
   children: ReactNode;
 };
 
 const Html = (props: Props) => {
   const { assets, serverSideReduxState, serverSideConfig, children } = props;
 
-  const { shouldReportAnalytics } = serverSideConfig;
+  const shouldReportAnalytics =
+    serverSideConfig.environment?.shouldReportAnalytics;
 
   const windowPreloadStateString = `window.__PRELOADED_STATE__ = ${JSON.stringify(
     serverSideReduxState
