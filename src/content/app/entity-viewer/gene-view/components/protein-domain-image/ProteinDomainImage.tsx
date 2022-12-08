@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
+
+import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import type { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
@@ -30,6 +33,7 @@ export type ProteinDomainImageProps = {
   trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
+    // FIXME: is this needed?
     track?: string;
     domain?: string;
   };
@@ -43,10 +47,25 @@ type ProteinDomainLocation = {
 type ProteinDomainImageData = {
   [resource_name: string]: {
     [domain_name: string]: {
-      description: string;
+      name: string;
+      description: string | null;
+      descriptionFromClosestDataProvider: string | null;
+      url: string | null;
+      urlForClosestDataProvider: string | null;
+      resourceName: string;
+      accessionIdInClosestDataProvider: string | null;
+      closestDataProviderName: string | null;
       locations: ProteinDomainLocation[];
     };
   };
+};
+
+export type SingleProteinDomainData = Omit<
+  ProteinDomainImageData[string][string],
+  'locations'
+> & {
+  start: number;
+  end: number;
 };
 
 export const getDomainsByResourceGroups = (
@@ -56,19 +75,34 @@ export const getDomainsByResourceGroups = (
 
   proteinDomains.forEach((domain) => {
     const {
-      sequence_family: { name: domainName, description },
       sequence_family: {
+        name: domainName,
+        description,
+        url,
         source: { name: resource_name }
       },
-      relative_location: { start, end }
+      relative_location: { start, end },
+      via: closestDataProvider
     } = domain;
+    const {
+      description: descriptionFromClosestDataProvider = null,
+      url: urlForClosestDataProvider = null
+    } = closestDataProvider ?? {};
 
     if (!groupedDomains[resource_name]) {
       groupedDomains[resource_name] = {};
     }
     if (!groupedDomains[resource_name][domainName]) {
       groupedDomains[resource_name][domainName] = {
+        name: domainName,
         description,
+        url,
+        descriptionFromClosestDataProvider,
+        urlForClosestDataProvider,
+        resourceName: resource_name,
+        accessionIdInClosestDataProvider:
+          closestDataProvider?.accession_id ?? null,
+        closestDataProviderName: closestDataProvider?.source.name ?? null,
         locations: []
       };
     }
@@ -102,34 +136,84 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
             <div className={styles.resourceName}>{resource}</div>
             <div className={styles.resourceImages}>
               {domainsGroup.map((trackData, index) => (
-                <div key={index} className={styles.resourceImage}>
-                  <svg
-                    className={styles.containerSvg}
-                    width={props.width}
-                    height={BLOCK_HEIGHT}
-                  >
-                    <g>
-                      <Track {...props} />
-                      {trackData.locations.map((domain, index) => (
-                        <DomainBlock
-                          key={index}
-                          domain={domain}
-                          className={props.classNames?.domain}
-                          scale={scale}
-                        />
-                      ))}
-                    </g>
-                  </svg>
-
-                  <div className={styles.resourceDescription}>
-                    {trackData.description ?? '-'}
-                  </div>
-                </div>
+                <TrackWithDomains
+                  key={index}
+                  trackWidth={props.width}
+                  scale={scale}
+                  trackData={trackData}
+                />
               ))}
             </div>
           </div>
         )
       )}
+    </div>
+  );
+};
+
+const TrackWithDomains = (props: {
+  trackWidth: number;
+  scale: ScaleLinear<number, number>;
+  trackData: TrackData;
+}) => {
+  const { trackWidth, scale, trackData } = props;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [proteinDomainTooltipData, setProteinDomainTooltipData] = useState<{
+    domainInfo: SingleProteinDomainData;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const onProteinDomainClick = (
+    domainInfo: SingleProteinDomainData,
+    clickCoords: { x: number; y: number }
+  ) => {
+    const containerRect =
+      containerRef.current?.getBoundingClientRect() as DOMRect;
+    const { x } = containerRect;
+    const tooltipData = {
+      domainInfo,
+      x: clickCoords.x - x,
+      y: 12 // making the tooltip point at the middle of a protein domain rectangle; strangely, it looks better when it's a bit over BLOCK_HEIGHT / 2
+    };
+    setProteinDomainTooltipData(tooltipData);
+  };
+
+  const onProteinDomainTooltipHide = () => {
+    setProteinDomainTooltipData(null);
+  };
+
+  return (
+    <div ref={containerRef} className={styles.resourceImage}>
+      <svg
+        className={styles.containerSvg}
+        width={trackWidth}
+        height={BLOCK_HEIGHT}
+      >
+        <g>
+          <Track width={trackWidth} />
+          {trackData.locations.map((domain, index) => (
+            <DomainBlock
+              key={index}
+              domain={domain}
+              trackData={trackData}
+              onClick={onProteinDomainClick}
+              scale={scale}
+            />
+          ))}
+        </g>
+      </svg>
+
+      {proteinDomainTooltipData && (
+        <ProteinDomainInfoTooltip
+          {...proteinDomainTooltipData}
+          onHide={onProteinDomainTooltipHide}
+        />
+      )}
+
+      <div className={styles.resourceDescription}>
+        {getProteinDomainsTrackDescription(trackData)}
+      </div>
     </div>
   );
 };
@@ -150,6 +234,11 @@ type DomainBlockProps = {
     start: number;
     end: number;
   };
+  trackData: TrackData;
+  onClick: (
+    domainData: SingleProteinDomainData,
+    clickCoords: { x: number; y: number }
+  ) => void;
   className?: string;
   scale: ScaleLinear<number, number>;
 };
@@ -158,23 +247,108 @@ const DomainBlock = (props: DomainBlockProps) => {
   const y = 3;
   const domainClasses = classNames(styles.domain, props.className);
 
+  const onClick = (event: React.TouchEvent | React.MouseEvent) => {
+    let clientX = 0;
+    let clientY = 0;
+    if ('touches' in event) {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+
+    const payload = {
+      ...props.trackData,
+      start: props.domain.start,
+      end: props.domain.end
+    };
+
+    props.onClick(payload, { x: clientX, y: clientY });
+  };
+
   return (
-    <rect
-      key={props.domain.start}
-      className={domainClasses}
-      y={y}
-      height={BLOCK_HEIGHT}
-      x={props.scale(props.domain.start)}
-      width={props.scale(props.domain.end - props.domain.start + 1)}
-    />
+    <>
+      <rect
+        key={props.domain.start}
+        className={domainClasses}
+        y={y}
+        height={BLOCK_HEIGHT}
+        x={props.scale(props.domain.start)}
+        width={props.scale(props.domain.end - props.domain.start + 1)}
+        onClick={onClick}
+      />
+    </>
   );
 };
 
-type TrackData = {
-  name: string;
-  description: string | null;
-  locations: ProteinDomainLocation[];
+const ProteinDomainInfoTooltip = (props: {
+  domainInfo: SingleProteinDomainData;
+  x: number;
+  y: number;
+  onHide: () => void;
+}) => {
+  const { domainInfo, x, y, onHide } = props;
+  const [anchorElement, setAnchorElement] = useState<HTMLDivElement | null>(
+    null
+  );
+
+  const anchorStyle = {
+    top: `${y}px`,
+    left: `${x}px`
+  };
+
+  return (
+    <>
+      <div
+        ref={setAnchorElement}
+        className={styles.tooltipAnchor}
+        style={anchorStyle}
+      />
+      {anchorElement && (
+        <Toolbox
+          anchor={anchorElement}
+          position={ToolboxPosition.RIGHT}
+          onOutsideClick={onHide}
+        >
+          {domainInfo.url && domainInfo.resourceName && (
+            <div className={styles.tooltipRow}>
+              <span className={styles.tooltipFieldLabel}>
+                {domainInfo.resourceName}
+              </span>
+              <ExternalLink linkText={domainInfo.name} to={domainInfo.url} />
+            </div>
+          )}
+          {domainInfo.closestDataProviderName &&
+            domainInfo.urlForClosestDataProvider &&
+            domainInfo.accessionIdInClosestDataProvider && (
+              <div className={styles.tooltipRow}>
+                <span className={styles.tooltipFieldLabel}>
+                  {domainInfo.closestDataProviderName}
+                </span>
+                <ExternalLink
+                  linkText={domainInfo.accessionIdInClosestDataProvider}
+                  to={domainInfo.urlForClosestDataProvider}
+                />
+              </div>
+            )}
+          <div className={styles.tooltipRow}>
+            <span className={styles.tooltipFieldLabel}>Description</span>
+            <span>{getProteinDomainsTrackDescription(domainInfo)}</span>
+          </div>
+          <div className={styles.tooltipRow}>
+            <span className={styles.tooltipFieldLabel}>Position</span>
+            <span>
+              {domainInfo.start}-{domainInfo.end} aa
+            </span>
+          </div>
+        </Toolbox>
+      )}
+    </>
+  );
 };
+
+type TrackData = ProteinDomainImageData['string']['string'];
 
 type SortedTracksForResource = [string, TrackData[]];
 
@@ -208,5 +382,13 @@ const getSortedProteinDomains = (
     })
     .map(([name, domain]) => ({ ...domain, name }));
 };
+
+const getProteinDomainsTrackDescription = (
+  trackData: Pick<
+    TrackData,
+    'descriptionFromClosestDataProvider' | 'description'
+  >
+) =>
+  trackData.descriptionFromClosestDataProvider || trackData.description || '-';
 
 export default ProteinDomainImage;
