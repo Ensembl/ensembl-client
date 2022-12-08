@@ -6,6 +6,10 @@
       "type": "select",
       "options": [
         {
+          "label": "Genomic sequence (softmasked)",
+          "value": "dna_sm"
+        },
+        {
           "label": "Genomic sequence",
           "value": "dna"
         },
@@ -590,6 +594,7 @@
     }
   },
   "database_sequence_types": {
+    "dna_sm": "dna",
     "dna": "dna",
     "cdna": "dna",
     "pep": "protein"
@@ -704,7 +709,7 @@
   },
   "defaults": {
     "program": "blastn",
-    "database": "dna"
+    "database": "dna_sm"
   },
   "presets": {
     "label": "Sensitivity",

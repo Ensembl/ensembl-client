@@ -79,7 +79,7 @@ describe('blastFormSlice', () => {
 
         const blastFormState = store.getState().blast.blastForm;
         expect(blastFormState.settings.sequenceType).toBe('dna');
-        expect(blastFormState.settings.parameters.database).toBe('dna');
+        expect(blastFormState.settings.parameters.database).toBe('dna_sm');
         expect(blastFormState.settings.program).toBe('blastn');
       });
 
@@ -172,7 +172,7 @@ describe('blastFormSlice', () => {
 
         const blastFormState = store.getState().blast.blastForm;
         expect(blastFormState.settings.sequenceType).toBe('dna');
-        expect(blastFormState.settings.parameters.database).toBe('dna');
+        expect(blastFormState.settings.parameters.database).toBe('dna_sm');
         expect(blastFormState.settings.sequenceSelectionMode).toBe('automatic');
         expect(blastFormState.settings.databaseSelectionMode).toBe('automatic');
         expect(blastFormState.settings.program).toBe('blastn');
@@ -278,7 +278,7 @@ describe('blastFormSlice', () => {
       expect(blastFormState.sequences).toEqual([{ value: sequence }]);
       expect(blastFormState.selectedSpecies).toEqual([species]);
       expect(blastFormState.settings.sequenceType).toBe('dna');
-      expect(blastFormState.settings.parameters.database).toBe('dna');
+      expect(blastFormState.settings.parameters.database).toBe('dna_sm');
       expect(blastFormState.settings.sequenceSelectionMode).toBe('manual');
       expect(blastFormState.settings.databaseSelectionMode).toBe('automatic');
       expect(blastFormState.settings.program).toBe('blastn');
