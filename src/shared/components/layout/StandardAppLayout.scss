@@ -86,14 +86,13 @@ $drawerWindowWidth: 45px;
   height: 100%;
   width: $sidebarContentWidth;
   border-left: 1px solid $grey;
-  padding: 21px 0 0 12px;
   background-color: white;
   overflow: auto;
   scrollbar-gutter: stable;
 
   & > div {
     padding-bottom: $global-padding-bottom;
-    max-width: calc($sidebarContentWidth - 25px);
+    max-width: calc($sidebarContentWidth - 13px);
   }
 }
 
