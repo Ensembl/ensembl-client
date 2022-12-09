@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import BrowserNavIcon from './BrowserNavIcon';
+import BrowserNavIcon from '../browser-sidebar-modal/modal-views/navigate-modal/browser-nav-icon/BrowserNavIcon';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import {
@@ -29,7 +29,7 @@ import { getBrowserNavIconStates } from 'src/content/app/genome-browser/state/br
 import {
   browserNavConfig,
   BrowserNavItem
-} from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
+} from 'src/content/app/genome-browser/components/browser-nav-icon/browserNavConfig';
 
 import styles from './BrowserNavBarControls.scss';
 

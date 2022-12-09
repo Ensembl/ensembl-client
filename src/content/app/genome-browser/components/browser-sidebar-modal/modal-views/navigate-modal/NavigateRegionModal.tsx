@@ -29,14 +29,14 @@ import { getBrowserNavIconStates } from 'src/content/app/genome-browser/state/br
 import {
   browserNavConfig,
   type BrowserNavItem
-} from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
+} from 'src/content/app/genome-browser/components/browser-nav-icon/browserNavConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   validateRegion,
   type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import BrowserNavIcon from 'src/content/app/genome-browser/components/browser-nav/BrowserNavIcon';
+import BrowserNavIcon from 'src/content/app/genome-browser/components/browser-nav-icon/BrowserNavIcon';
 import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';

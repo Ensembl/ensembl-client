@@ -26,7 +26,7 @@ import { createMockBrowserState } from 'tests/fixtures/browser';
 import { BrowserNavBarControls } from './BrowserNavBarControls';
 
 import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
+import { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav-icon/browserNavConfig';
 
 jest.mock(
   './BrowserNavIcon',
