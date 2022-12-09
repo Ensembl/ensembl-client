@@ -15,19 +15,8 @@
  */
 
 import { defaultBrowserNavIconsState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { RootState } from 'src/store';
-
-export const getBrowserNavOpenState = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  if (!activeGenomeId) {
-    return false;
-  }
-
-  return state.browser.browserNav.browserNavOpenState[activeGenomeId] || false;
-};
+import type { RootState } from 'src/store';
 
 export const getBrowserNavIconStates = (state: RootState) => {
   return (

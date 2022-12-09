@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
+import { useAppSelector } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
@@ -29,8 +28,8 @@ import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/stat
 import styles from './BrowserBar.scss';
 
 export const BrowserBar = () => {
-  const focusObject = useSelector(getBrowserActiveFocusObject);
-  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const focusObject = useAppSelector(getBrowserActiveFocusObject);
+  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
@@ -50,9 +49,7 @@ export const BrowserBar = () => {
         />
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
-        <BrowserLocationIndicator
-          disabled={isDrawerOpened || isEnvironment([Environment.PRODUCTION])}
-        />
+        <BrowserLocationIndicator />
       </div>
     </div>
   );

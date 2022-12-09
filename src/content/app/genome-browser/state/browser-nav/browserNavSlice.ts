@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 export enum BrowserNavAction {
@@ -49,12 +49,10 @@ export const defaultBrowserNavIconsState = {
   [BrowserNavAction.ZOOM_IN]: false
 };
 export type BrowserNavState = Readonly<{
-  browserNavOpenState: { [genomeId: string]: boolean };
   browserNavIconStates: BrowserNavIconStates;
 }>;
 
 export const defaultBrowserNavState = {
-  browserNavOpenState: {},
   browserNavIconStates: defaultBrowserNavIconsState
 };
 
@@ -62,17 +60,6 @@ const browserNavSlice = createSlice({
   name: 'genome-browser-nav',
   initialState: defaultBrowserNavState as BrowserNavState,
   reducers: {
-    toggleBrowserNav(
-      state,
-      action: PayloadAction<{
-        activeGenomeId: string;
-      }>
-    ) {
-      const { activeGenomeId } = action.payload;
-      state.browserNavOpenState[activeGenomeId] =
-        !state.browserNavOpenState[activeGenomeId];
-    },
-
     updateBrowserNavIconStates(
       state,
       action: PayloadAction<{
@@ -85,7 +72,6 @@ const browserNavSlice = createSlice({
   }
 });
 
-export const { toggleBrowserNav, updateBrowserNavIconStates } =
-  browserNavSlice.actions;
+export const { updateBrowserNavIconStates } = browserNavSlice.actions;
 
 export default browserNavSlice.reducer;

@@ -15,8 +15,6 @@
  */
 
 import React, { useState, useRef, useEffect, memo } from 'react';
-import { useSelector } from 'react-redux';
-import classNames from 'classnames';
 import {
   IncomingActionType,
   GenomeBrowserErrorType,
@@ -24,6 +22,7 @@ import {
   type GenomeBrowserError as GenomeBrowserErrorObj
 } from '@ensembl/ensembl-genome-browser';
 
+import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserPosition from 'src/content/app/genome-browser/hooks/useGenomeBrowserPosition';
 
@@ -39,7 +38,6 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import styles from './BrowserImage.scss';
 
@@ -54,9 +52,8 @@ export const BrowserImage = () => {
 
   useGenomeBrowserPosition();
 
-  const isNavbarOpen = useSelector(getBrowserNavOpenState);
-  const isRegionEditorActive = useSelector(getRegionEditorActive);
-  const isRegionFieldActive = useSelector(getRegionFieldActive);
+  const isRegionEditorActive = useAppSelector(getRegionEditorActive);
+  const isRegionFieldActive = useAppSelector(getRegionFieldActive);
   const isDisabled = isRegionEditorActive || isRegionFieldActive;
 
   useEffect(() => {
@@ -83,15 +80,11 @@ export const BrowserImage = () => {
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const browserContainerClassNames = classNames(styles.browserStage, {
-    [styles.shorter]: isNavbarOpen
-  });
-
   const browserImageContents = (
     <div className={styles.browserImageWrapper}>
       <div
         id={BROWSER_CONTAINER_ID}
-        className={browserContainerClassNames}
+        className={styles.browserStage}
         ref={browserRef}
       >
         <BrowserCogList />

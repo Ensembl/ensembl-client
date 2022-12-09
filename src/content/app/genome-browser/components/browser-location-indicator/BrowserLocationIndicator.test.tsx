@@ -21,20 +21,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import userEvent from '@testing-library/user-event';
 import merge from 'lodash/fp/merge';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import createRootReducer from 'src/root/rootReducer';
 
-import {
-  BrowserLocationIndicator,
-  type BrowserLocationIndicatorProps
-} from './BrowserLocationIndicator';
+import { BrowserLocationIndicator } from './BrowserLocationIndicator';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
@@ -53,13 +48,6 @@ const mockGenomeSearchApi = 'http://genome-search-api';
 jest.mock('config', () => ({
   genomeSearchBaseUrl: 'http://genome-search-api'
 }));
-
-jest.mock(
-  'src/content/app/genome-browser/state/browser-nav/browserNavSlice.ts',
-  () => ({
-    toggleBrowserNav: jest.fn(() => ({ type: 'toggle-browser-nav' }))
-  })
-);
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
@@ -95,10 +83,8 @@ const initialReduxState = {
 };
 
 const renderBrowserLocationIndicator = ({
-  props = {},
   state = {}
 }: {
-  props?: Partial<BrowserLocationIndicatorProps>;
   state?: Partial<typeof initialReduxState>;
 } = {}) => {
   const initialState = merge(initialReduxState, state);
@@ -112,7 +98,7 @@ const renderBrowserLocationIndicator = ({
 
   const renderResult = render(
     <Provider store={store}>
-      <BrowserLocationIndicator {...props} />
+      <BrowserLocationIndicator />
     </Provider>
   );
 
@@ -167,54 +153,6 @@ describe('BrowserLocationIndicator', () => {
             endPosition
           )}`
         );
-      });
-    });
-
-    it('adds disabled class when component is disabled', async () => {
-      const { container } = renderBrowserLocationIndicator();
-
-      await waitFor(() => {
-        const element = container.firstChild as HTMLDivElement;
-        expect(
-          element.classList.contains('browserLocationIndicatorDisabled')
-        ).toBe(false);
-      });
-
-      const { container: rerenderedContainer } = renderBrowserLocationIndicator(
-        { props: { disabled: true } }
-      );
-
-      await waitFor(() => {
-        const element = rerenderedContainer.firstChild as HTMLDivElement;
-        expect(
-          element.classList.contains('browserLocationIndicatorDisabled')
-        ).toBe(true);
-      });
-    });
-  });
-
-  describe('behaviour', () => {
-    it('calls toggleBrowserNav when clicked', async () => {
-      const { container } = renderBrowserLocationIndicator();
-
-      await waitFor(async () => {
-        const indicator = container.querySelector('.chrLocationView');
-
-        await userEvent.click(indicator as HTMLDivElement);
-        expect(toggleBrowserNav).toHaveBeenCalled();
-      });
-    });
-
-    it('does not call toggleBrowserNav if disabled', async () => {
-      const { container } = renderBrowserLocationIndicator({
-        props: { disabled: true }
-      });
-
-      await waitFor(async () => {
-        const indicator = container.querySelector('.chrLocationView');
-
-        await userEvent.click(indicator as HTMLDivElement);
-        expect(toggleBrowserNav).not.toHaveBeenCalled();
       });
     });
   });

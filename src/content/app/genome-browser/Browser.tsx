@@ -21,7 +21,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
-import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
 import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
 
@@ -29,7 +28,6 @@ import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-pan
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { deleteBrowserActiveFocusObjectIdAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
 import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsBrowserSidebarModalOpened } from './state/browser-sidebar-modal/browserSidebarModalSelectors';
@@ -39,7 +37,6 @@ import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
 
 import BrowserBar from './components/browser-bar/BrowserBar';
 import BrowserImage from './components/browser-image/BrowserImage';
-import BrowserNavBar from './components/browser-nav/BrowserNavBar';
 import BrowserSidebarToolstrip from './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip';
 import BrowserSidebarModal from './components/browser-sidebar-modal/BrowserSidebarModal';
 import TrackPanel from './components/track-panel/TrackPanel';
@@ -118,7 +115,7 @@ export const Browser = () => {
         />
       ) : activeGenomeId && focus ? (
         <StandardAppLayout
-          mainContent={<MainContent />}
+          mainContent={<BrowserImage />}
           sidebarContent={<SidebarContent />}
           sidebarNavigation={<TrackPanelTabs />}
           sidebarToolstripContent={<BrowserSidebarToolstrip />}
@@ -134,23 +131,6 @@ export const Browser = () => {
         <BrowserInterstitial />
       )}
     </div>
-  );
-};
-
-const MainContent = () => {
-  const browserNavOpenState = useAppSelector(getBrowserNavOpenState);
-  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
-  const { genomeBrowser } = useGenomeBrowser();
-
-  const shouldShowNavBar = Boolean(
-    genomeBrowser && browserNavOpenState && !isDrawerOpened
-  );
-
-  return (
-    <>
-      {shouldShowNavBar && <BrowserNavBar />}
-      <BrowserImage />
-    </>
   );
 };
 
