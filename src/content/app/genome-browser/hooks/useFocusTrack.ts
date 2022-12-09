@@ -124,7 +124,7 @@ const useFocusGene = (params: Params) => {
     }
     // Even if the user has disabled all gene's transcripts, re-focusing on this gene should show at least one transcript
     // (it's possible that this logic will change when no selected transcripts results in showing a ghosted transcript)
-    const transcriptsParam = visibleTranscriptIds ? visibleTranscriptIds : null;
+    const transcriptsParam = visibleTranscriptIds ?? null;
     updateFocusGeneTranscripts(transcriptsParam);
   }, [
     genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
