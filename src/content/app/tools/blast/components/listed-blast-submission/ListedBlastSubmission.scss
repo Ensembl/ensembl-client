@@ -24,7 +24,7 @@ and also that it can be of variable width
   border: 1px solid $grey;
   grid-template-columns:
     11ch minmax(48%, 1050px) [species-count] minmax(20%, 1fr)
-    10px;
+    100px;
   column-gap: 20px;
 }
 

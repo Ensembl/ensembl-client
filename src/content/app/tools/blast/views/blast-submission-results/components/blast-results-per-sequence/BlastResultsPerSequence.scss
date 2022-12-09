@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns:
     [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr) 10px;
+    [species] minmax(20%, 1fr) 100px;
   column-gap: 20px;
   padding-bottom: 20px;
 }
@@ -58,4 +58,9 @@
 
 .summaryPlot {
   grid-column: hits-diagram;
+}
+
+.failedJobStatus {
+  justify-self: end;
+  color: $red;
 }

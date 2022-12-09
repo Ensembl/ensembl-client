@@ -22,6 +22,7 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
@@ -38,6 +39,10 @@ import styles from './ListedBlastSubmission.scss';
 export type Props = {
   submission: BlastSubmission;
 };
+
+export const FailedSubmissionHelpText = () => (
+  <p>Unable to get results for this sequence</p>
+);
 
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
@@ -162,11 +167,12 @@ const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
   if (hasRunningJobs) {
     return <span className={elementClasses}>Running...</span>;
   } else if (hasFailedJobs) {
-    if (jobs.length === 1 || jobs.every((job) => job.status === 'FAILURE')) {
-      return <span className={elementClasses}>Failed</span>;
-    } else {
-      return <span className={elementClasses}>Some jobs failed</span>;
-    }
+    return (
+      <div>
+        <span className={elementClasses}> Job failed </span>
+        <QuestionButton helpText={<FailedSubmissionHelpText />} />
+      </div>
+    );
   } else {
     return null;
   }

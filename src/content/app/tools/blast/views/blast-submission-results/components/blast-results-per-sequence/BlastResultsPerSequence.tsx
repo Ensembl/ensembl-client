@@ -23,6 +23,8 @@ import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/Featu
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
+import { FailedSubmissionHelpText } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import type {
   BlastJobWithResults,
@@ -64,72 +66,97 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
     ? styles.headerWithLegend
     : undefined;
 
-  return (
-    <div className={styles.wrapper}>
-      <div className={styles.resultsSummaryRow}>
-        <div>Sequence {sequence.id}</div>
-        <div className={styles.sequenceHeader}>
-          <div className={headerClasses}>
-            <ShowHide
-              label={sequenceHeaderLabel}
-              isExpanded={shouldShowParamaters}
-              onClick={() => showParamaters(!shouldShowParamaters)}
-            ></ShowHide>
-            {shouldUseGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
-          </div>
-          {shouldShowParamaters && (
-            <JobParameters
-              sequenceValue={sequence.value}
-              parameters={parameters}
-              preset={preset}
-            />
-          )}
-        </div>
-
-        <div>
-          <span className={styles.againstText}>Against</span>{' '}
-          <span>{species.length} species</span>
-        </div>
-        <div className={styles.showHideWrapper}>
-          <ShowHide
-            isExpanded={shouldShowJobResult}
-            onClick={() => showJobResult(!shouldShowJobResult)}
-          ></ShowHide>
-        </div>
-      </div>
-
-      {shouldShowJobResult &&
-        blastResults.map((result) => {
-          // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
-          const speciesInfo = species.find(
-            (sp) => sp.genome_id === result.genomeId
-          ) as Species;
-
-          return (
-            <SingleBlastJobResult
-              key={result.jobId}
-              species={speciesInfo}
-              jobResult={result}
-              diagramWidth={plotwidth}
-              submission={props.submission}
-            />
-          );
-        })}
-      <div className={styles.rulerPlacementGrid}>
-        <div ref={rulerContainer} className={styles.rulerContainer}>
-          {shouldShowJobResult && !shouldUseGenomicHitsDiagram && (
-            <FeatureLengthRuler
-              rulerLabel="Length"
-              rulerLabelOffset={2.5}
-              width={plotwidth}
-              length={sequenceValue.length}
-              standalone={true}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+  const hasAllJobsFailed = blastResults.every(
+    (job) => job.status === 'FAILURE'
   );
+
+  if (hasAllJobsFailed) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.resultsSummaryRow}>
+          <div>Sequence {sequence.id}</div>
+          <div className={styles.sequenceHeader}>
+            <div className={headerClasses}>{sequenceHeaderLabel}</div>
+          </div>
+          <div>
+            <span className={styles.againstText}>Against</span>{' '}
+            <span>{species.length} species</span>
+          </div>
+          <div>
+            <span className={styles.failedJobStatus}> Job failed </span>
+            <QuestionButton helpText={<FailedSubmissionHelpText />} />
+          </div>
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.resultsSummaryRow}>
+          <div>Sequence {sequence.id}</div>
+          <div className={styles.sequenceHeader}>
+            <div className={headerClasses}>
+              <ShowHide
+                label={sequenceHeaderLabel}
+                isExpanded={shouldShowParamaters}
+                onClick={() => showParamaters(!shouldShowParamaters)}
+              ></ShowHide>
+              {shouldUseGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
+            </div>
+            {shouldShowParamaters && (
+              <JobParameters
+                sequenceValue={sequence.value}
+                parameters={parameters}
+                preset={preset}
+              />
+            )}
+          </div>
+
+          <div>
+            <span className={styles.againstText}>Against</span>{' '}
+            <span>{species.length} species</span>
+          </div>
+          <div className={styles.showHideWrapper}>
+            <ShowHide
+              isExpanded={shouldShowJobResult}
+              onClick={() => showJobResult(!shouldShowJobResult)}
+            ></ShowHide>
+          </div>
+        </div>
+
+        {shouldShowJobResult &&
+          blastResults.map((result) => {
+            // TODO: Do we need to show a message if there isn't any matching species? Or will this even ever happen?
+            const speciesInfo = species.find(
+              (sp) => sp.genome_id === result.genomeId
+            ) as Species;
+
+            return (
+              <SingleBlastJobResult
+                key={result.jobId}
+                species={speciesInfo}
+                jobResult={result}
+                diagramWidth={plotwidth}
+                submission={props.submission}
+              />
+            );
+          })}
+        <div className={styles.rulerPlacementGrid}>
+          <div ref={rulerContainer} className={styles.rulerContainer}>
+            {shouldShowJobResult && !shouldUseGenomicHitsDiagram && (
+              <FeatureLengthRuler
+                rulerLabel="Length"
+                rulerLabelOffset={2.5}
+                width={plotwidth}
+                length={sequenceValue.length}
+                standalone={true}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default BlastResultsPerSequence;
