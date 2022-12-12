@@ -23,7 +23,7 @@ export type SidebarProps = {
 };
 
 const Sidebar = (props: SidebarProps) => (
-  <div className={styles.wrapper}>{props.children}</div>
+  <div className={styles.sidebar}>{props.children}</div>
 );
 
 export default Sidebar;

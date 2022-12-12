@@ -1,5 +1,6 @@
 @import 'src/styles/common';
 
-.wrapper {
-  padding: 21px 0 0 12px;
+.sidebar {
+  padding: 21px 0 $global-padding-bottom 12px;
+  max-width: calc(var(--sidebar-content-width) - var(sidebarToolstripWidth));
 }
