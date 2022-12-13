@@ -30,7 +30,7 @@ export type SidebarModalProps = {
 
 const SidebarModal = (props: SidebarModalProps) => {
   const { title, className, onClose } = props;
-  const wrapperClasses = classNames(styles.wrapper, className);
+  const wrapperClasses = classNames(styles.sidebarModal, className);
 
   return (
     <div className={wrapperClasses}>

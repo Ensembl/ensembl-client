@@ -89,8 +89,6 @@
   width: var(--sidebar-content-width);
   border-left: 1px solid $grey;
   background-color: white;
-  overflow: auto;
-  scrollbar-gutter: stable;
 }
 
 .sidebarToolstrip {
