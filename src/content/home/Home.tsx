@@ -172,7 +172,7 @@ const Home = () => {
             <img src={twitterIconUrl} className={styles.mediaIcon} />
           </a>
           <a
-            href="https://elixir-europe.org/platforms/data/core-data-resources"
+            href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
             target="_blank"
             rel="noopener noreferrer"
           >
