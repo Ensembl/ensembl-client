@@ -29,14 +29,16 @@ import {
 } from './queries/transcriptSummaryQuery';
 import {
   transcriptZmenuQuery,
-  TranscriptZmenuQueryResult
+  type TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
+import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
+type RegionQueryParams = { genomeId: string; regionName: string };
 
 const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -70,6 +72,12 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
         body: transcriptZmenuQuery,
         variables: params
       })
+    }),
+    gbRegionQuery: builder.query<RegionQueryResult, RegionQueryParams>({
+      query: (params) => ({
+        body: regionQuery,
+        variables: params
+      })
     })
   })
 });
@@ -96,7 +104,8 @@ export const {
   useGetTrackPanelGeneQuery,
   useGbGeneSummaryQuery,
   useGbTranscriptSummaryQuery,
-  useGbTranscriptInZmenuQuery
+  useGbTranscriptInZmenuQuery,
+  useGbRegionQueryQuery
 } = genomeBrowserApiSlice;
 
 export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;

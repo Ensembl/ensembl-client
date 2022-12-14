@@ -18,13 +18,18 @@ import { Strand } from './strand';
 import { LocationWithinRegion } from './location';
 import { Sequence } from './sequence';
 
+export type Region = {
+  name: string;
+  length: number;
+  assembly: string; // TODO: update, according to the graphql schema
+  code: string; // chromosome, plasmid, scaffold; maybe something else
+  topology: 'linear' | 'circular';
+  sequence: Sequence;
+};
+
 export type Slice = {
   location: LocationWithinRegion;
-  region: {
-    name: string;
-    assembly: string;
-    sequence: Sequence;
-  };
+  region: Region;
   strand: {
     code: Strand;
     value?: 1 | -1; // adding this field for documentation purposes; we shouldn't need to use it
