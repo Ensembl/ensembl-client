@@ -17,16 +17,16 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
 import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-import { BrowserNavIcon } from './BrowserNavIcon';
+import { BrowserNavButton } from './BrowserNavButton';
 
-import { browserNavConfig } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
+import { browserNavConfig } from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
+
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
@@ -34,14 +34,14 @@ jest.mock(
   })
 );
 
-describe('<BrowserNavAction />', () => {
+describe('<BrowserNavButton />', () => {
   const browserNavItem = browserNavConfig[0];
 
   test('sends navigation message when clicked', async () => {
     jest.spyOn(mockGenomeBrowser, 'send');
 
     const { container } = render(
-      <BrowserNavIcon browserNavItem={browserNavItem} enabled={true} />
+      <BrowserNavButton browserNavItem={browserNavItem} enabled={true} />
     );
     const button = container.querySelector('button') as HTMLButtonElement;
 

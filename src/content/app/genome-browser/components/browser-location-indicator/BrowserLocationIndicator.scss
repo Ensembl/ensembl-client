@@ -9,20 +9,6 @@
   flex-wrap: nowrap;
   line-height: 1;
   font-size: 14px;
-
-  &Disabled {
-    .chrCode,
-    .chrRegion {
-      cursor: default;
-    }
-
-    .chrCode {
-      background: $dark-grey;
-    }
-    .chrRegion {
-      color: $dark-grey;
-    }
-  }
 }
 
 .circularIndicator {
@@ -45,13 +31,8 @@
   font-weight: $light;
 }
 
-.chrCode,
-.chrRegion {
-  cursor: pointer;
-}
-
 .chrCode {
-  background: $blue;
+  background: $dark-grey;
   color: $white;
   display: inline-block;
   font-weight: $bold;
@@ -65,6 +46,6 @@
 }
 
 .chrRegion {
-  color: $blue;
+  color: $dark-grey;
   display: inline-block;
 }
