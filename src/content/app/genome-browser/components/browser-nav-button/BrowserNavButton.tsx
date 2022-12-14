@@ -54,12 +54,12 @@ export const BrowserNavButton = (props: Props) => {
     }
   };
 
-  const iconStatus = enabled ? Status.DEFAULT : Status.DISABLED;
+  const buttonStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
     <div className={styles.browserNavButton}>
       <ImageButton
-        status={iconStatus}
+        status={buttonStatus}
         description={browserNavItem.description}
         onClick={navigateBrowser}
         image={icon}
