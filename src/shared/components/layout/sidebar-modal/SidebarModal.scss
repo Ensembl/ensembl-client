@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.wrapper {
+.sidebarModal {
   display: grid;
   grid-template-areas:
     'title close'
@@ -8,6 +8,9 @@
   grid-template-columns: 1fr 20px;
   grid-template-rows: 38px 1fr;
   height: 100%;
+  overflow: auto;
+  padding: 21px calc(12px - var(--scrollbar-width)) 90px 12px;
+  scrollbar-gutter: stable;
 }
 
 .title {

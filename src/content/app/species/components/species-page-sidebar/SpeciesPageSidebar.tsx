@@ -19,6 +19,7 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
@@ -72,7 +73,7 @@ const SpeciesPageSidebar = () => {
   ];
 
   return (
-    <div>
+    <Sidebar>
       <div className={styles.speciesDetails}>
         {sidebarPayload.common_name && (
           <span className={styles.commonName}>
@@ -162,7 +163,7 @@ const SpeciesPageSidebar = () => {
           </div>
         );
       })}
-    </div>
+    </Sidebar>
   );
 };
 

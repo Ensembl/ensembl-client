@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from 'src/store';
+
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
 
@@ -25,15 +27,15 @@ import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/sta
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 const GeneViewSidebar = () => {
-  const activeTabName = useSelector(getEntityViewerSidebarTabName);
+  const activeTabName = useAppSelector(getEntityViewerSidebarTabName);
 
   return (
-    <>
+    <Sidebar>
       {activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
       {activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
         <GeneExternalReferences />
       )}
-    </>
+    </Sidebar>
   );
 };
 
