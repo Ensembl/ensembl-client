@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -23,14 +24,16 @@ import styles from './SidebarModal.scss';
 export type SidebarModalProps = {
   title: string;
   children: ReactNode;
+  className?: string;
   onClose: () => void;
 };
 
 const SidebarModal = (props: SidebarModalProps) => {
-  const { title, onClose } = props;
+  const { title, className, onClose } = props;
+  const wrapperClasses = classNames(styles.sidebarModal, className);
 
   return (
-    <div className={styles.wrapper}>
+    <div className={wrapperClasses}>
       <CloseButton className={styles.closeButton} onClick={onClose} />
       <h3 className={styles.title}>{title}</h3>
       <div className={styles.content}>

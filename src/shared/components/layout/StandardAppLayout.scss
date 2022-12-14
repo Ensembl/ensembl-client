@@ -1,18 +1,18 @@
 @import 'src/styles/common';
 
-$sidebarContentWidth: 340px;
-$sidebarToolstripWidth: 50px;
-$topbarHeight: 38px;
-$drawerWindowWidth: 45px;
-
 .standardAppLayout {
   height: 100%;
   min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
+
+  --sidebar-content-width: 340px;
+  --sidebar-toolstrip-width: 50px;
+  --topbar-height: 38px;
+  --drawer-window-width: 45px;
 }
 
 .topbar {
-  height: $topbarHeight;
+  height: var(--topbar-height);
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   position: relative;
@@ -22,8 +22,8 @@ $drawerWindowWidth: 45px;
   &_withSidebarNavigation {
     display: grid;
     align-items: center;
-    grid-template-columns: 1fr $sidebarContentWidth;
-    grid-column-gap: $sidebarToolstripWidth;
+    grid-template-columns: 1fr var(--sidebar-content-width);
+    grid-column-gap: var(--sidebar-toolstrip-width);
   }
 
   &_withoutSidebarNavigation {
@@ -37,7 +37,7 @@ $drawerWindowWidth: 45px;
 }
 
 .mainWrapper {
-  height: calc(100% - #{$topbarHeight});
+  height: calc(100% - var(--topbar-height));
   position: relative;
 }
 
@@ -46,11 +46,13 @@ $drawerWindowWidth: 45px;
   overflow: auto;
 
   &Default {
-    margin-right: calc(#{$sidebarContentWidth} + #{$sidebarToolstripWidth});
+    margin-right: calc(
+      var(--sidebar-content-width) + var(--sidebar-toolstrip-width)
+    );
   }
 
   &FullWidth {
-    margin-right: $sidebarToolstripWidth;
+    margin-right: var(--sidebar-toolstrip-width);
   }
 }
 
@@ -58,18 +60,18 @@ $drawerWindowWidth: 45px;
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(100% - $sidebarToolstripWidth);
+  width: calc(100% - var(--sidebar-toolstrip-width));
   height: 100%;
   display: flex;
   z-index: 5;
   transition: transform 0.3s ease-in-out;
 
   &Open {
-    transform: translateX(calc(100% - #{$sidebarContentWidth}));
+    transform: translateX(calc(100% - var(--sidebar-content-width)));
   }
 
   &DrawerOpen {
-    transform: translateX(#{$drawerWindowWidth});
+    transform: translateX(var(--drawer-window-width));
   }
 
   &Closed {
@@ -84,16 +86,9 @@ $drawerWindowWidth: 45px;
 .sidebar {
   flex: 0 0 auto;
   height: 100%;
-  width: $sidebarContentWidth;
+  width: var(--sidebar-content-width);
   border-left: 1px solid $grey;
-  padding: 21px 0 0 12px;
   background-color: white;
-  overflow: auto;
-  scrollbar-gutter: stable;
-
-  & > div {
-    padding-bottom: $global-padding-bottom;
-  }
 }
 
 .sidebarToolstrip {
@@ -102,7 +97,7 @@ $drawerWindowWidth: 45px;
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
-  width: $sidebarToolstripWidth;
+  width: var(--sidebar-toolstrip-width);
   height: 100%;
   background: $light-grey;
   border-left: 1px solid $grey;
@@ -146,7 +141,8 @@ $drawerWindowWidth: 45px;
   border-left: solid $medium-light-grey 1px;
   background-color: white;
   width: calc(
-    100% - #{$drawerWindowWidth} - #{$sidebarToolstripWidth} - #{$sidebarContentWidth}
+    100% - var(--drawer-window-width) - var(--sidebar-toolstrip-width) -
+      var(--sidebar-content-width)
   );
 }
 
@@ -155,7 +151,7 @@ $drawerWindowWidth: 45px;
   top: 0;
   left: 0;
   transform: translate(-100%);
-  width: $drawerWindowWidth;
+  width: var(--drawer-window-width);
   height: 100%;
 }
 

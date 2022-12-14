@@ -26,11 +26,21 @@ export enum ProductType {
 type SequenceFamily = {
   name: string;
   description: string;
+  url: string | null;
   source: Source;
 };
+
+export type ClosestDataProvider = {
+  accession_id: string;
+  description: string | null;
+  url: string;
+  source: Source;
+};
+
 export type FamilyMatch = {
   relative_location: LocationWithinRegion;
   sequence_family: SequenceFamily;
+  via: ClosestDataProvider | null;
 };
 
 // TODO: have at least two types of products:

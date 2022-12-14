@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+import { useAppSelector } from 'src/store';
+
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import TrackPanelList from './components/track-panel-list/TrackPanelList';
 import { SidebarLoader } from 'src/shared/components/loader';
 
@@ -28,15 +30,19 @@ import {
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 export const TrackPanel = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeFocusObject = useSelector(getBrowserActiveFocusObject);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
 
   const { genomeBrowser } = useGenomeBrowser();
 
   const shouldRenderContent =
     activeGenomeId && genomeBrowser && activeFocusObject;
 
-  return shouldRenderContent ? <TrackPanelList /> : <SidebarLoader />;
+  return (
+    <Sidebar>
+      {shouldRenderContent ? <TrackPanelList /> : <SidebarLoader />}
+    </Sidebar>
+  );
 };
 
 export default TrackPanel;

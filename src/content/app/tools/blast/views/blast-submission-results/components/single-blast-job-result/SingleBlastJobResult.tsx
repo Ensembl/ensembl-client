@@ -175,7 +175,8 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const blastDatabase = submission.submittedData.parameters.database;
   const [isExpanded, setExpanded] = useState(false);
 
-  const shouldUseGenomicHitsDiagram = blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
+  const shouldUseGenomicHitsDiagram =
+    blastDatabase === 'dna_sm' || blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
 
   const alignmentsCount = countAlignments(jobResult.data);
 
@@ -396,7 +397,7 @@ const HitsTable = (props: HitsTableProps) => {
 
   const downloadHandler = async () => {
     let csv = '';
-    if (blastDatabase === 'dna') {
+    if (blastDatabase === 'dna_sm' || blastDatabase === 'dna') {
       csv = createCSVForGenomicBlast(jobResult.data);
     } else if (blastDatabase === 'cdna') {
       csv = createCSVForTranscriptBlast(jobResult.data);
@@ -454,7 +455,7 @@ type DynamicColumnContentProps = {
 const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
   const { hit, blastDatabase, hitHsp } = props;
 
-  if (blastDatabase !== 'dna') {
+  if (blastDatabase !== 'dna_sm' && blastDatabase !== 'dna') {
     return <span className={styles.nowrap}>{hit.hit_acc}</span>;
   }
 

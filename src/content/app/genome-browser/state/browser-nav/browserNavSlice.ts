@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 export enum BrowserNavAction {
-  // MOVE_UP = 'move_up',
-  // MOVE_DOWN = 'move_down',
   MOVE_LEFT = 'move_left',
   MOVE_RIGHT = 'move_right',
   ZOOM_IN = 'zoom_in',
   ZOOM_OUT = 'zoom_out'
 }
 
-export const browserNavIconActionMap = {
-  // [BrowserNavAction.MOVE_UP]: OutgoingActionType.MOVE_UP,
-  // [BrowserNavAction.MOVE_DOWN]: OutgoingActionType.MOVE_DOWN,
+export const browserNavButtonActionMap = {
   [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
   [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
   [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
@@ -36,56 +32,40 @@ export const browserNavIconActionMap = {
 };
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
-export type BrowserNavIconStates = {
+export type BrowserNavButtonStates = {
   [key in BrowserNavAction]: boolean;
 };
 
-export const defaultBrowserNavIconsState = {
-  // [BrowserNavAction.MOVE_UP]: false,
-  // [BrowserNavAction.MOVE_DOWN]: false,
+export const defaultBrowserNavButtonStates = {
   [BrowserNavAction.MOVE_LEFT]: false,
   [BrowserNavAction.MOVE_RIGHT]: false,
   [BrowserNavAction.ZOOM_OUT]: false,
   [BrowserNavAction.ZOOM_IN]: false
 };
 export type BrowserNavState = Readonly<{
-  browserNavOpenState: { [genomeId: string]: boolean };
-  browserNavIconStates: BrowserNavIconStates;
+  browserNavButtonStates: BrowserNavButtonStates;
 }>;
 
 export const defaultBrowserNavState = {
-  browserNavOpenState: {},
-  browserNavIconStates: defaultBrowserNavIconsState
+  browserNavButtonStates: defaultBrowserNavButtonStates
 };
 
 const browserNavSlice = createSlice({
   name: 'genome-browser-nav',
   initialState: defaultBrowserNavState as BrowserNavState,
   reducers: {
-    toggleBrowserNav(
+    updateBrowserNavButtonStates(
       state,
       action: PayloadAction<{
         activeGenomeId: string;
+        navStates: BrowserNavButtonStates;
       }>
     ) {
-      const { activeGenomeId } = action.payload;
-      state.browserNavOpenState[activeGenomeId] =
-        !state.browserNavOpenState[activeGenomeId];
-    },
-
-    updateBrowserNavIconStates(
-      state,
-      action: PayloadAction<{
-        activeGenomeId: string;
-        navStates: BrowserNavIconStates;
-      }>
-    ) {
-      state.browserNavIconStates = action.payload.navStates;
+      state.browserNavButtonStates = action.payload.navStates;
     }
   }
 });
 
-export const { toggleBrowserNav, updateBrowserNavIconStates } =
-  browserNavSlice.actions;
+export const { updateBrowserNavButtonStates } = browserNavSlice.actions;
 
 export default browserNavSlice.reducer;

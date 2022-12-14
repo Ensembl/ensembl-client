@@ -22,7 +22,7 @@ export type FocusObjectLocation = {
   start: number;
 };
 
-export type FocusObjectType = 'gene' | 'region';
+export type FocusObjectType = 'gene' | 'location';
 
 type BasicFocusObject = {
   object_id: string;
@@ -41,11 +41,11 @@ export type FocusGene = BasicFocusObject & {
   visibleTranscriptIds: string[] | null; // null means that chrome doesn't have an opinion on which transcripts should be visible in the genome browser
 };
 
-export type FocusRegion = BasicFocusObject & {
-  type: 'region';
+export type FocusLocation = BasicFocusObject & {
+  type: 'location';
 };
 
-export type FocusObject = FocusGene | FocusRegion;
+export type FocusObject = FocusGene | FocusLocation;
 
 export type FocusObjectResponse = FocusGene;
 

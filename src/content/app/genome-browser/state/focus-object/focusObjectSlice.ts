@@ -43,7 +43,7 @@ import type {
   FocusObject,
   FocusGene,
   FocusObjectIdConstituents,
-  FocusRegion
+  FocusLocation
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import type { RootState } from 'src/store';
 
@@ -61,7 +61,9 @@ type BuildGeneObjectParams = {
 };
 
 // FIXME: many fields here are unnecessary for an focusObject
-export const buildGeneObject = (params: BuildGeneObjectParams): FocusGene => {
+export const buildFocusGeneObject = (
+  params: BuildGeneObjectParams
+): FocusGene => {
   const {
     slice: {
       location: { start, end },
@@ -102,12 +104,14 @@ const buildLoadedObject = (payload: { id: string; data: FocusObject }) => ({
   }
 });
 
-const buildRegionObject = (payload: FocusObjectIdConstituents): FocusRegion => {
+const buildFocusLocationObject = (
+  payload: FocusObjectIdConstituents
+): FocusLocation => {
   const { genomeId, objectId: regionId } = payload;
   const [chromosome, start, end] = getChrLocationFromStr(regionId);
 
   return {
-    type: 'region',
+    type: 'location',
     genome_id: genomeId,
     object_id: buildFocusObjectId(payload),
     label: regionId,
@@ -160,11 +164,11 @@ export const fetchFocusObject = createAsyncThunk(
       return;
     }
 
-    if (payload.type === 'region') {
-      const regionObject = buildRegionObject(payload);
+    if (payload.type === 'location') {
+      const focusLocationObject = buildFocusLocationObject(payload);
       return buildLoadedObject({
         id: focusObjectId,
-        data: regionObject
+        data: focusLocationObject
       });
     }
 
@@ -181,7 +185,7 @@ export const fetchFocusObject = createAsyncThunk(
       const result = await dispatchedPromise;
       dispatchedPromise.unsubscribe();
 
-      const geneFocusObject = buildGeneObject({
+      const geneFocusObject = buildFocusGeneObject({
         objectId: focusObjectId,
         genomeId,
         gene: result.data?.gene as TrackPanelGene

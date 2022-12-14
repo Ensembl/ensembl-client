@@ -76,12 +76,14 @@ const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
       sequence_family: {
         name: faker.random.words(),
         description: faker.random.words(),
+        url: faker.internet.url(),
         source: {
           id: faker.datatype.uuid(),
           name: faker.random.word(),
           url: faker.internet.url()
         }
-      }
+      },
+      via: null
     };
   });
 };

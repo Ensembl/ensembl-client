@@ -15,15 +15,23 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
+import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
+import {
+  parseFocusObjectId,
+  buildFocusIdForUrl
+} from 'src/shared/helpers/focusObjectHelpers';
 
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import {
+  getEntityViewerActiveGenomeId,
+  getEntityViewerActiveEntityIds
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getAllGeneViews } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
@@ -36,14 +44,31 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/speci
 
 const EntityViewerAppBar = () => {
   const navigate = useNavigate();
-  const speciesList = useSelector(getEnabledCommittedSpecies);
-  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+  const speciesList = useAppSelector(getEnabledCommittedSpecies);
+  const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
+  const allActiveEntityIds = useAppSelector(getEntityViewerActiveEntityIds);
+  const allGeneViews = useAppSelector(getAllGeneViews) ?? {};
 
   const { trackSpeciesChange } = useEntityViewerAnalytics();
   const onSpeciesTabClick = (species: CommittedItem) => {
+    const genomeId = species.genome_id;
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
+    const activeEntityId = allActiveEntityIds[genomeId];
+    const parsedEntityId = activeEntityId
+      ? parseFocusObjectId(activeEntityId)
+      : null;
+    const entityType = parsedEntityId?.type;
+    const entityIdForUrl = parsedEntityId
+      ? buildFocusIdForUrl(parsedEntityId)
+      : null;
+    const geneView = activeEntityId
+      ? allGeneViews?.[genomeId]?.[activeEntityId]?.current ?? null
+      : null;
+
     const url = urlFor.entityViewer({
-      genomeId: genomeIdForUrl
+      genomeId: genomeIdForUrl,
+      entityId: entityIdForUrl,
+      view: entityType === 'gene' ? geneView : null
     });
     navigate(url);
   };

@@ -186,10 +186,10 @@ const geneAndTranscriptChecksumsQuery = gql`
     $geneId: String!
     $transcriptId: String!
   ) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       ...GeneDetails
     }
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+    transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       ...TranscriptDetails
     }
   }
@@ -199,7 +199,7 @@ const geneAndTranscriptChecksumsQuery = gql`
 
 const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
       ...GeneDetails
       transcripts {
         ...TranscriptDetails
@@ -212,7 +212,7 @@ const geneChecksumsQuery = gql`
 
 const transcriptChecksumsQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
-    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+    transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       ...TranscriptDetails
     }
   }

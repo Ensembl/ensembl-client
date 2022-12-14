@@ -61,6 +61,8 @@ const viewRouter = async (req: Request, res: Response) => {
       // TODO: this would be a good place to log out the error when we set up loggers
       statusCode = 500;
     }
+  } else if (matchedPageConfig.path === '*') {
+    statusCode = 404;
   }
 
   const ReactApp = (

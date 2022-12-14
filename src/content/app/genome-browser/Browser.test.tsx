@@ -41,9 +41,6 @@ jest.mock('./components/browser-bar/BrowserBar', () => () => (
 jest.mock('./components/browser-image/BrowserImage', () => () => (
   <div className="browserImage">BrowserImage</div>
 ));
-jest.mock('./components/browser-nav/BrowserNavBar', () => () => (
-  <div className="browserNavBar">BrowserNavBar</div>
-));
 jest.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
@@ -168,52 +165,6 @@ describe('<Browser />', () => {
 
       await waitFor(() => {
         expect(rerenderedContainer.querySelector('.sidebarModal')).toBeTruthy();
-      });
-    });
-
-    describe('<BrowserNavBar />', () => {
-      const stateWithBrowserNavOpen = set(
-        `browser.browserNav.browserNavOpenState.${activeGenomeId}`,
-        true,
-        mockState
-      );
-
-      it('is rendered when the nav bar is open', () => {
-        let { container } = renderComponent({
-          state: mockState,
-          url: '/genome-browser?focus=foo'
-        });
-
-        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
-
-        container = renderComponent({
-          state: stateWithBrowserNavOpen,
-          url: '/genome-browser?focus=foo'
-        }).container;
-
-        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
-      });
-
-      it('is not rendered if drawer is opened', () => {
-        let { container } = renderComponent({
-          state: stateWithBrowserNavOpen,
-          url: '/genome-browser?focus=foo'
-        });
-
-        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
-
-        const stateWithDrawerOpen = set(
-          `drawer.isDrawerOpened.${activeGenomeId}`,
-          true,
-          stateWithBrowserNavOpen
-        );
-
-        container = renderComponent({
-          state: stateWithDrawerOpen,
-          url: '/'
-        }).container;
-
-        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
       });
     });
   });

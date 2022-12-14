@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { default as GeneSummaryStrip } from './GeneSummaryStrip';
-export { default as LocationSummaryStrip } from './LocationSummaryStrip';
+import React, { ReactNode } from 'react';
+
+import styles from './Sidebar.scss';
+
+export type SidebarProps = {
+  children: ReactNode;
+};
+
+const Sidebar = (props: SidebarProps) => (
+  <div className={styles.sidebar}>{props.children}</div>
+);
+
+export default Sidebar;

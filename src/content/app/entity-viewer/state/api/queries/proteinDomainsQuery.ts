@@ -17,11 +17,14 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import type { FamilyMatch } from 'src/shared/types/thoas/product';
+import type {
+  FamilyMatch,
+  ClosestDataProvider
+} from 'src/shared/types/thoas/product';
 
 export const proteinDomainsQuery = gql`
   query ProteinDomains($genomeId: String!, $productId: String!) {
-    product(genome_id: $genomeId, stable_id: $productId) {
+    product(by_id: { genome_id: $genomeId, stable_id: $productId }) {
       length
       family_matches {
         relative_location {
@@ -31,6 +34,15 @@ export const proteinDomainsQuery = gql`
         sequence_family {
           name
           description
+          url
+          source {
+            name
+          }
+        }
+        via {
+          accession_id
+          description
+          url
           source {
             name
           }
@@ -45,8 +57,14 @@ export type FamilyMatchInProduct = Pick2<
   'relative_location',
   'start' | 'end'
 > &
-  Pick2<FamilyMatch, 'sequence_family', 'name' | 'description'> &
-  Pick3<FamilyMatch, 'sequence_family', 'source', 'name'>;
+  Pick2<FamilyMatch, 'sequence_family', 'name' | 'description' | 'url'> &
+  Pick3<FamilyMatch, 'sequence_family', 'source', 'name'> & {
+    via:
+      | (Pick<ClosestDataProvider, 'accession_id' | 'description' | 'url'> & {
+          source: Pick<ClosestDataProvider['source'], 'name'>;
+        })
+      | null;
+  };
 
 export type ProteinDomainsQueryResult = {
   product: {

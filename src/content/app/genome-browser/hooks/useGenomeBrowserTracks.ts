@@ -95,10 +95,13 @@ const useGenomeBrowserTracks = () => {
     if (!trackSettingsForGenome || !visibleTrackIds.length) {
       return;
     }
+    const nonFocusVisibleTracks = visibleTrackIds.filter(
+      (id) => id !== 'focus'
+    );
     const trackIdsForCurrentGenome = new Set(
       Object.keys(trackSettingsForGenome)
     );
-    const trackIdsToHide = visibleTrackIds.filter(
+    const trackIdsToHide = nonFocusVisibleTracks.filter(
       (id) => !trackIdsForCurrentGenome.has(id)
     );
 

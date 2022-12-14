@@ -24,19 +24,19 @@ import {
   getBrowserActiveGenomeId,
   getChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getBrowserNavIconStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
+import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import {
   browserNavConfig,
   type BrowserNavItem
-} from 'src/content/app/genome-browser/components/browser-nav-icon/browserNavConfig';
+} from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   validateRegion,
   type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import BrowserNavIcon from 'src/content/app/genome-browser/components/browser-nav-icon/BrowserNavIcon';
+import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
 import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -54,7 +54,7 @@ import styles from './NavigateModal.scss';
 
 const NavigateRegionModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const browserNavIconStates = useAppSelector(getBrowserNavIconStates);
+  const browserNavButtonStates = useAppSelector(getBrowserNavButtonStates);
   const chrLocation = useAppSelector(getChrLocation);
 
   const dispatch = useAppDispatch();
@@ -187,16 +187,16 @@ const NavigateRegionModal = () => {
     );
   };
 
-  const getNavIconClassName = (iconName: string) => {
-    switch (iconName) {
+  const getNavButtonClassName = (buttonName: string) => {
+    switch (buttonName) {
       case BrowserNavAction.MOVE_LEFT:
-        return styles.moveLeftIcon;
+        return styles.moveLeftButton;
       case BrowserNavAction.MOVE_RIGHT:
-        return styles.moveRightIcon;
+        return styles.moveRightButton;
       case BrowserNavAction.ZOOM_IN:
-        return styles.zoomInIcon;
+        return styles.zoomInButton;
       case BrowserNavAction.ZOOM_OUT:
-        return styles.zoomOutIcon;
+        return styles.zoomOutButton;
     }
   };
 
@@ -207,11 +207,11 @@ const NavigateRegionModal = () => {
       </div>
       <div className={styles.browserNavBarControls}>
         {browserNavConfig.map((item: BrowserNavItem) => (
-          <BrowserNavIcon
+          <BrowserNavButton
             key={item.name}
             browserNavItem={item}
-            enabled={browserNavIconStates[item.name]}
-            className={getNavIconClassName(item.name)}
+            enabled={browserNavButtonStates[item.name]}
+            className={getNavButtonClassName(item.name)}
           />
         ))}
         <BrowserReset className={styles.browserReset} />

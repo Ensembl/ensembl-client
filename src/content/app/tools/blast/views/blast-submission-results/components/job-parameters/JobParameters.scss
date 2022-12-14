@@ -24,6 +24,7 @@
     font-family: $font-family-monospace;
     color: $dark-grey;
     overflow-y: auto;
+    overflow-wrap: break-word;
   }
 
   .parameters {

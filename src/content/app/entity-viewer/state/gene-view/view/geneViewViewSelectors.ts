@@ -41,6 +41,9 @@ export const getCurrentView = (state: RootState) => {
   return getSliceForGene(state)?.current;
 };
 
+export const getAllGeneViews = (state: RootState) =>
+  state.entityViewer.geneView.view;
+
 export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
   const view = getCurrentView(state);
   return view

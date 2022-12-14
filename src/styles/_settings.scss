@@ -16,7 +16,8 @@ $global-radius: 0;
 $global-button-cursor: auto;
 
 $standard-gutter: 30px;
-$half-gutter: 15px;
+$half-gutter: calc($standard-gutter / 2);
+$double-standard-gutter: calc($standard-gutter * 2);
 $global-padding-left: 100px;
 $global-padding-bottom: 90px;
 

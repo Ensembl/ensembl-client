@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
-import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import { useAppSelector } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -27,33 +26,24 @@ import { getActualChrLocation } from 'src/content/app/genome-browser/state/brows
 
 import styles from './BrowserLocationIndicator.scss';
 
-export type BrowserLocationIndicatorProps = {
-  disabled?: boolean;
-};
-
-export const BrowserLocationIndicator = (
-  props: BrowserLocationIndicatorProps
-) => {
-  const actualChrLocation = useSelector(getActualChrLocation);
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId) as string;
+export const BrowserLocationIndicator = () => {
+  const actualChrLocation = useAppSelector(getActualChrLocation);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
 
   const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
 
   const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
+
   if (!chrCode || !chrStart || !chrEnd || !activeGenomeId) {
     return null;
   }
-
-  const className = classNames(styles.browserLocationIndicator, {
-    [styles.browserLocationIndicatorDisabled]: props.disabled
-  });
 
   const activeChromosome = genomeKaryotype?.find((karyotype) => {
     return karyotype.name === chrCode;
   });
 
   return (
-    <div className={className}>
+    <div className={styles.browserLocationIndicator}>
       <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView}>
         {activeChromosome?.is_circular ? (

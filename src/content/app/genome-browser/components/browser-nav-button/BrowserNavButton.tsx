@@ -22,20 +22,20 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { browserNavIconActionMap } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
+import { browserNavButtonActionMap } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
-import { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav-icon/browserNavConfig';
+import type { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
 import { Status } from 'src/shared/types/status';
 
-import iconStyles from './BrowserNavIcon.scss';
+import styles from './BrowserNavButton.scss';
 
-type BrowserNavIconProps = {
+type Props = {
   browserNavItem: BrowserNavItem;
   enabled: boolean;
   className?: string;
 };
 
-export const BrowserNavIcon = (props: BrowserNavIconProps) => {
+export const BrowserNavButton = (props: Props) => {
   const { genomeBrowser } = useGenomeBrowser();
 
   if (!genomeBrowser) {
@@ -46,7 +46,7 @@ export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   const { icon } = browserNavItem;
 
   const action = {
-    type: browserNavIconActionMap[browserNavItem.name],
+    type: browserNavButtonActionMap[browserNavItem.name],
     payload: browserNavItem.detail
   } as OutgoingAction;
 
@@ -56,12 +56,12 @@ export const BrowserNavIcon = (props: BrowserNavIconProps) => {
     }
   };
 
-  const iconStatus = enabled ? Status.DEFAULT : Status.DISABLED;
+  const buttonStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
-    <div className={classNames(iconStyles.browserNavIcon, props.className)}>
+    <div className={classNames(styles.browserNavButton, props.className)}>
       <ImageButton
-        status={iconStatus}
+        status={buttonStatus}
         description={browserNavItem.description}
         onClick={navigateBrowser}
         image={icon}
@@ -70,4 +70,4 @@ export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   );
 };
 
-export default memo(BrowserNavIcon);
+export default memo(BrowserNavButton);

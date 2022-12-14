@@ -120,7 +120,7 @@ export default (): Configuration => {
           commons: {
             test: /node_modules/,
             name: 'vendors',
-            chunks: 'all'
+            chunks: 'initial'
           }
         }
       },
