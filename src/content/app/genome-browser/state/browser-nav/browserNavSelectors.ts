@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { defaultBrowserNavIconsState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
+import { defaultBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
 import type { RootState } from 'src/store';
 
-export const getBrowserNavIconStates = (state: RootState) => {
+export const getBrowserNavButtonStates = (state: RootState) => {
   return (
-    state.browser.browserNav.browserNavIconStates || defaultBrowserNavIconsState
+    state.browser.browserNav.browserNavButtonStates ||
+    defaultBrowserNavButtonStates
   );
 };
