@@ -15,21 +15,13 @@
  */
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import noop from 'lodash/noop';
 
-import {
-  buildFocusIdForUrl,
-  buildFocusObjectId,
-  parseFocusIdFromUrl
-} from 'src/shared/helpers/focusObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 import { useAppSelector } from 'src/store';
-
-import {
-  isGenomeNotFoundError,
-  useGenomeInfoQuery
-} from 'src/shared/state/genome/genomeApiSlice';
+import useParsedGenomeBrowserUrl from 'src/content/app/genome-browser/contexts/genome-browser-ids-context/useParsedGenomeBrowserUrl';
+import useGenomeBrowserUrlValidator from 'src/content/app/genome-browser/contexts/genome-browser-ids-context/useGenomeBrowserUrlValidator';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -37,36 +29,82 @@ import {
   getBrowserActiveGenomeId
 } from '../state/browser-general/browserGeneralSelectors';
 
+import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
+
 type GenomeBrowserIdsContextType = {
   genomeIdInUrl: string | undefined;
   genomeIdForUrl: string | undefined;
   focusObjectIdInUrl: string | null;
   isFetchingGenomeId: boolean;
-  isMissingGenomeId: boolean | undefined;
+  isMissingGenomeId: boolean;
   genomeId: string | undefined;
   activeGenomeId: string | null;
   focusObjectId: string | undefined;
   activeFocusObjectId: string | null;
   focusObjectIdForUrl: string | undefined;
-  parsedFocusObjectId:
-    | {
-        type: string;
-        objectId: string;
-        genomeId: string;
-      }
-    | undefined;
+  parsedFocusObjectId: FocusObjectIdConstituents | undefined;
+  isValidating: boolean;
+  doneValidating: boolean;
+  isMissingFocusObject: boolean;
+  isInvalidLocation: boolean;
   isMalformedFocusObjectId: boolean;
+  isMalformedLocation: boolean;
+  runAfterValidation: (fn: () => void) => void;
+  resetValidator: () => void;
 };
 
-export const GenomeBrowserIdsContext = React.createContext<
-  GenomeBrowserIdsContextType | undefined
->(undefined);
+const defaultContext: GenomeBrowserIdsContextType = {
+  genomeIdInUrl: undefined,
+  genomeIdForUrl: undefined,
+  focusObjectIdInUrl: null,
+  isFetchingGenomeId: false,
+  isMissingGenomeId: false,
+  genomeId: undefined,
+  activeGenomeId: null,
+  focusObjectId: undefined,
+  activeFocusObjectId: null,
+  focusObjectIdForUrl: undefined,
+  parsedFocusObjectId: undefined,
+  isValidating: false,
+  doneValidating: false,
+  isMissingFocusObject: false,
+  isInvalidLocation: false,
+  isMalformedFocusObjectId: false,
+  isMalformedLocation: false,
+  runAfterValidation: noop,
+  resetValidator: noop
+};
+
+export const GenomeBrowserIdsContext =
+  React.createContext<GenomeBrowserIdsContextType>(defaultContext);
 
 export const GenomeBrowserIdsProvider = (props: {
   children?: React.ReactNode;
 }) => {
-  const params = useUrlParams<'genomeId'>('/genome-browser/:genomeId');
-  const { genomeId: genomeIdInUrl } = params;
+  const {
+    genomeIdInUrl,
+    focusObjectIdInUrl,
+    isFetchingGenomeId: isFetching,
+    isMissingGenomeId,
+    genomeId,
+    focusObjectId,
+    parsedFocusObjectId,
+    isMalformedFocusObjectId,
+    parsedLocation,
+    isMalformedLocation
+  } = useParsedGenomeBrowserUrl();
+  const {
+    isValidating,
+    doneValidating,
+    isMissingFocusObject,
+    isInvalidLocation,
+    runAfterValidation,
+    resetValidator
+  } = useGenomeBrowserUrlValidator({
+    genomeId,
+    parsedFocusObjectId,
+    parsedLocation
+  });
 
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const activeFocusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
@@ -79,39 +117,10 @@ export const GenomeBrowserIdsProvider = (props: {
     committedSpecies?.genome_tag ??
     committedSpecies?.genome_id;
 
-  const { search } = useLocation();
-  const urlSearchParams = new URLSearchParams(search);
-  const focusObjectIdInUrl = urlSearchParams.get('focus');
-
-  const {
-    currentData: genomeInfo,
-    isFetching,
-    isError,
-    error
-  } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
-    skip: !genomeIdInUrl
-  });
-  const genomeId = genomeInfo?.genomeId;
-  const isMissingGenomeId = isError && isGenomeNotFoundError(error);
-
-  let focusObjectId;
   let focusObjectIdForUrl;
-  let parsedFocusObjectId;
-  let isMalformedFocusObjectId = false;
 
   if (focusObjectIdInUrl) {
     focusObjectIdForUrl = focusObjectIdInUrl;
-    if (genomeId) {
-      try {
-        parsedFocusObjectId = {
-          genomeId,
-          ...parseFocusIdFromUrl(focusObjectIdInUrl)
-        };
-        focusObjectId = buildFocusObjectId(parsedFocusObjectId);
-      } catch {
-        isMalformedFocusObjectId = true;
-      }
-    }
   } else if (activeFocusObjectId) {
     focusObjectIdForUrl = buildFocusIdForUrl(activeFocusObjectId);
   }
@@ -130,7 +139,14 @@ export const GenomeBrowserIdsProvider = (props: {
         activeFocusObjectId,
         focusObjectIdForUrl,
         parsedFocusObjectId,
-        isMalformedFocusObjectId
+        isMalformedFocusObjectId,
+        isMalformedLocation,
+        isValidating,
+        doneValidating,
+        isMissingFocusObject,
+        isInvalidLocation,
+        runAfterValidation,
+        resetValidator
       }}
     >
       {props.children}

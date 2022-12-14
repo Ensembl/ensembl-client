@@ -71,7 +71,8 @@ const useBrowserRouting = () => {
     activeGenomeId,
     activeFocusObjectId,
     genomeIdForUrl,
-    isFetchingGenomeId
+    isFetchingGenomeId,
+    runAfterValidation
   } = useGenomeBrowserIds();
   const focusObject = useAppSelector((state: RootState) =>
     getFocusObjectById(state, activeFocusObjectId || '')
@@ -159,7 +160,10 @@ const useBrowserRouting = () => {
         }
       }
     }
-    dispatch(setDataFromUrlAndSave(payload));
+
+    runAfterValidation(() => {
+      dispatch(setDataFromUrlAndSave(payload));
+    });
   }, [
     genomeId,
     isFetchingGenomeId,

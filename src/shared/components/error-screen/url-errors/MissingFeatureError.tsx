@@ -46,7 +46,7 @@ const MissingFeatureError = (props: Props) => {
       <main className={styles.main}>
         <AlertButton className={styles.alertButton} />
         <div className={styles.errorMessage}>
-          We do not recognize "{featureId}" in {speciesDisplayName}
+          We do not recognise "{featureId}" in {speciesDisplayName}
         </div>
         <div className={styles.suggestion}>
           Find a gene or use the example links
