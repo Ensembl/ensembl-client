@@ -16,9 +16,8 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
@@ -41,19 +40,7 @@ const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
   const clickedMenuRef = useRef<number | null>(null);
 
-  // the two lines below are temporary, while we are hiding the meganav menu for the Help app
-  const location = useLocation();
-  const isHelpApp = location.pathname.startsWith('/help');
-
   const { trackTopLevelMenu } = useHelpAppAnalytics();
-
-  if (isEnvironment([Environment.PRODUCTION]) && isHelpApp) {
-    return (
-      <div className={styles.helpMenu}>
-        <div className={styles.menuBar}>Overview</div>
-      </div>
-    );
-  }
 
   const toggleMegaMenu = (
     items: MenuItem[],
