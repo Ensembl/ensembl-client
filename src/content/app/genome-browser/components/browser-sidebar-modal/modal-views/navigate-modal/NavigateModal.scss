@@ -2,19 +2,25 @@
 
 .browserNavBarControls {
   margin: 15px 0 0 40px;
+
+  .navButtonWrapper {
+    display: inline-block;
+    margin-right: 35px;
+  }
 }
 
 .inputGroup {
-  display: flex;
-  justify-content: right;
   margin-top: 10px;
   height: 30px;
   font-weight: $light;
 
-  span {
-    align-items: flex-end;
-    margin-right: 10px;
-    text-align: right;
+  label {
+    & > span {
+      display: inline-block;
+      margin-right: 10px;
+      text-align: right;
+      width: 32px;
+    }
   }
 
   input {
@@ -26,7 +32,6 @@
 
 .coordInputs {
   margin-top: 20px;
-  width: 180px;
 
   input {
     width: 140px;
@@ -35,7 +40,6 @@
 
 .regionInput {
   margin-top: 30px;
-  width: 271px;
 
   input {
     width: 230px;
@@ -56,9 +60,9 @@
 }
 
 .formButtons {
-  margin: 30px 0;
+  margin-top: 30px;
+  width: 272px; // TODO: find a better way to position the buttons rather than relying on the width
   text-align: right;
-  width: 271px;
 
   .cancel {
     margin-right: 20px;

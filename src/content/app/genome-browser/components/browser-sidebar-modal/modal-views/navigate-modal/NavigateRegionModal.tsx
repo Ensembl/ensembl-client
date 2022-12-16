@@ -95,16 +95,19 @@ const NavigateRegionModal = () => {
   const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationStartInput(value);
+    setLocationStartErrorMessage(null);
   };
 
   const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationEndInput(value);
+    setLocationEndErrorMessage(null);
   };
 
   const onRegionChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setRegionInput(value);
+    setRegionErrorMessage(null);
   };
 
   const handleSubmit = () => {
@@ -201,18 +204,17 @@ const NavigateRegionModal = () => {
   };
 
   return (
-    <section className={styles.regionForm}>
-      <div className={styles.heading}>
-        <p>Navigate this region</p>
-      </div>
+    <section>
+      <p>Navigate this region</p>
       <div className={styles.browserNavBarControls}>
         {browserNavConfig.map((item: BrowserNavItem) => (
-          <BrowserNavButton
-            key={item.name}
-            browserNavItem={item}
-            enabled={browserNavButtonStates[item.name]}
-            className={getNavButtonClassName(item.name)}
-          />
+          <div className={styles.navButtonWrapper} key={item.name}>
+            <BrowserNavButton
+              browserNavItem={item}
+              enabled={browserNavButtonStates[item.name]}
+              className={getNavButtonClassName(item.name)}
+            />
+          </div>
         ))}
         <BrowserReset className={styles.browserReset} />
       </div>
@@ -283,7 +285,7 @@ const NavigateRegionModal = () => {
                 container={regionRef.current}
                 position={Position.BOTTOM_LEFT}
               >
-                {locationEndErrorMessage}
+                {regionErrorMessage}
               </Tooltip>
             ) : null}
           </label>

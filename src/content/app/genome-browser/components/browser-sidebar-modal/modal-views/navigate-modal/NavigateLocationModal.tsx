@@ -89,16 +89,19 @@ const NavigateLocationModal = () => {
   const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationStartInput(value);
+    setLocationStartErrorMessage(null);
   };
 
   const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationEndInput(value);
+    setLocationEndErrorMessage(null);
   };
 
   const onRegionChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setRegionInput(value);
+    setRegionErrorMessage(null);
   };
 
   const handleSubmit = () => {
@@ -200,18 +203,13 @@ const NavigateLocationModal = () => {
   };
 
   return (
-    <section className={styles.newLocationForm}>
-      <div className={styles.heading}>
-        <p>
-          <span
-            className={styles.clickableText}
-            onClick={switchToNavigateRegion}
-          >
-            Navigate this region
-          </span>
-        </p>
-        <p>Go to new location</p>
-      </div>
+    <section>
+      <p>
+        <span className={styles.clickableText} onClick={switchToNavigateRegion}>
+          Navigate this region
+        </span>
+      </p>
+      <p>Go to new location</p>
       <div className={styles.coordInputs}>
         <div className={styles.inputGroup} ref={stickRef}>
           <label>
@@ -288,7 +286,7 @@ const NavigateLocationModal = () => {
                 container={regionRef.current}
                 position={Position.BOTTOM_LEFT}
               >
-                {locationEndErrorMessage}
+                {regionErrorMessage}
               </Tooltip>
             ) : null}
           </label>

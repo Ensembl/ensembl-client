@@ -36,9 +36,7 @@ const SidebarModal = (props: SidebarModalProps) => {
     <div className={wrapperClasses}>
       <CloseButton className={styles.closeButton} onClick={onClose} />
       <h3 className={styles.title}>{title}</h3>
-      <div className={styles.content}>
-        <div>{props.children}</div>
-      </div>
+      <div className={styles.content}>{props.children}</div>
     </div>
   );
 };
