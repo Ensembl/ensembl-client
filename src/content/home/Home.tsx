@@ -32,6 +32,7 @@ import Logotype from 'static/img/brand/logotype.svg';
 import speciesStripUrl from 'static/img/home/species-strip.svg?url';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg?url';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg?url';
+import gbcLogoUrl from 'static/img/home/gbc-logo.svg?url';
 import facebookIconUrl from 'static/icons/icon_facebook.svg?url';
 import twitterIconUrl from 'static/icons/icon_twitter.svg?url';
 import blogIconUrl from 'static/icons/icon_blog.svg?url';
@@ -141,7 +142,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className={styles.footerRightIcons}>
+        <div className={styles.footerRight}>
           <a
             href="https://www.ensembl.info"
             target="_blank"
@@ -154,21 +155,28 @@ const Home = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={blogIconUrl} className={styles.mediaIcons} />
+            <img src={blogIconUrl} className={styles.mediaIcon} />
           </a>
           <a
             href="https://www.facebook.com/Ensembl.org"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={facebookIconUrl} className={styles.mediaIcons} />
+            <img src={facebookIconUrl} className={styles.mediaIcon} />
           </a>
           <a
             href="https://twitter.com/ensembl"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={twitterIconUrl} className={styles.mediaIcons} />
+            <img src={twitterIconUrl} className={styles.mediaIcon} />
+          </a>
+          <a
+            href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={gbcLogoUrl} className={styles.gbcLogo} />
           </a>
           <a
             href="https://elixir-europe.org/platforms/data/core-data-resources"

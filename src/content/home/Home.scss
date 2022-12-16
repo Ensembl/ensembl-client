@@ -156,6 +156,7 @@
 footer {
   display: grid;
   grid-template-columns: auto auto;
+  column-gap: 1.5rem;
   padding-left: 60px;
   padding-right: 60px;
 }
@@ -186,7 +187,7 @@ footer {
   }
 }
 
-.footerRightIcons {
+.footerRight {
   grid-column: 2/2;
   display: flex;
   align-items: center;
@@ -195,18 +196,24 @@ footer {
   .link {
     margin-right: 12px;
     margin-bottom: 10px;
+    white-space: nowrap;
     color: $blue;
   }
 
-  .mediaIcons {
+  .mediaIcon {
     width: 24px;
     height: 24px;
     margin: 0 12px 10px 12px;
   }
 
+  .gbcLogo {
+    height: 40px;
+    margin-left: clamp(30px, 3vw, 90px);
+  }
+
   .elixirLogo {
     width: 71px;
     height: 52px;
-    margin-left: 90px;
+    margin-left: 40px;
   }
 }
