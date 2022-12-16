@@ -190,13 +190,13 @@ const useLocationCheck = (
 
     if (isStartOutOfBounds || isEndOutOfBounds || isStartGreaterThanEnd) {
       isInvalidLocation = true;
-    } else if (
-      isRegionQueryError &&
-      (regionQueryError as any).errors[0]?.extensions?.code ===
-        'REGION_NOT_FOUND'
-    ) {
-      isInvalidLocation = true;
     }
+  } else if (
+    isRegionQueryError &&
+    (regionQueryError as any)?.meta?.errors?.[0]?.extensions?.code ===
+      'REGION_NOT_FOUND'
+  ) {
+    isInvalidLocation = true;
   }
 
   return {
