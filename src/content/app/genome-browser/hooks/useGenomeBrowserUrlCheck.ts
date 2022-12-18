@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useLocation } from 'react-router-dom';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -27,6 +28,7 @@ import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/br
 
 const useGenomeBrowserUrlCheck = () => {
   const {
+    genomeId,
     genomeIdInUrl,
     isMissingGenomeId,
     isMalformedFocusObjectId,
@@ -58,6 +60,14 @@ const useGenomeBrowserUrlCheck = () => {
     }
   );
 
+  // this check is for the "location" url parameter (which is not the same as a focus location)
+  const { isInvalidLocation } = useUrlLocationCheck(
+    {
+      genomeId: genomeId ?? ''
+    },
+    { skip: !genomeId }
+  );
+
   if (isFocusGene) {
     isMissingFocusObject = focusGeneCheck.isMissingFocusObject;
   } else if (isFocusLocation) {
@@ -69,7 +79,8 @@ const useGenomeBrowserUrlCheck = () => {
     focusObjectIdInUrl,
     isMissingGenomeId,
     isMalformedFocusObjectId,
-    isMissingFocusObject
+    isMissingFocusObject,
+    isInvalidLocation
   };
 };
 
@@ -79,7 +90,7 @@ const useFocusGeneCheck = (
   },
   options: {
     skip?: boolean;
-  }
+  } = {}
 ) => {
   const { focusObject } = params;
   const { skip } = options;
@@ -114,7 +125,7 @@ const useFocusLocationCheck = (
   },
   options: {
     skip?: boolean;
-  }
+  } = {}
 ) => {
   const { focusObject } = params;
   const { skip } = options;
@@ -152,6 +163,45 @@ const useFocusLocationCheck = (
   };
 };
 
+const useUrlLocationCheck = (
+  params: {
+    genomeId: string;
+  },
+  options: {
+    skip?: boolean;
+  } = {}
+) => {
+  const { skip } = options;
+  const { search } = useLocation();
+  const urlSearchParams = new URLSearchParams(search);
+  const location = urlSearchParams.get('location') || null;
+
+  let isMalformedLocation = false;
+  let regionName: string | undefined;
+  let start: number | undefined;
+  let end: number | undefined;
+
+  try {
+    [regionName, start, end] = location ? getChrLocationFromStr(location) : [];
+  } catch {
+    isMalformedLocation = true;
+  }
+
+  const { isInvalidLocation } = useLocationCheck(
+    {
+      genomeId: params.genomeId,
+      regionName: regionName ?? '',
+      start: start ?? 1,
+      end: end ?? 1
+    },
+    { skip: skip || !location || isMalformedLocation }
+  );
+
+  return {
+    isInvalidLocation: isInvalidLocation || isMalformedLocation
+  };
+};
+
 const useLocationCheck = (
   params: {
     genomeId: string;
@@ -161,7 +211,7 @@ const useLocationCheck = (
   },
   options: {
     skip?: boolean;
-  }
+  } = {}
 ) => {
   const { genomeId, regionName, start, end } = params;
   const { skip } = options;

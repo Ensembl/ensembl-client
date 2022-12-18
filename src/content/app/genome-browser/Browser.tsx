@@ -68,6 +68,7 @@ export const Browser = () => {
   const { search } = useLocation(); // from document.location provided by the router
   const urlSearchParams = new URLSearchParams(search);
   const focus = urlSearchParams.get('focus') || null;
+  const location = urlSearchParams.get('location') || null;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -77,7 +78,8 @@ export const Browser = () => {
     focusObjectIdInUrl,
     isMissingGenomeId,
     isMalformedFocusObjectId,
-    isMissingFocusObject
+    isMissingFocusObject,
+    isInvalidLocation
   } = useGenomeBrowserUrlCheck();
 
   useGenomeBrowserTracks();
@@ -112,6 +114,13 @@ export const Browser = () => {
       ) : isMalformedFocusObjectId || isMissingFocusObject ? (
         <MissingFeatureError
           featureId={focusObjectIdInUrl as string}
+          genome={genome}
+          showTopBar={true}
+          onContinue={openGenomeBrowserInterstitial}
+        />
+      ) : location && isInvalidLocation ? (
+        <MissingFeatureError
+          featureId={location}
           genome={genome}
           showTopBar={true}
           onContinue={openGenomeBrowserInterstitial}
