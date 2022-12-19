@@ -29,8 +29,7 @@ import { getFocusGeneVisibleTranscripts } from 'src/content/app/genome-browser/s
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import TrackPanelTranscript from './TrackPanelTranscript';
-import TrackPanelItemsCount from './TrackPanelItemsCount';
-import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
+import TrackPanelItemsExpandLozenge from './TrackPanelItemsExpandLozenge';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
@@ -172,19 +171,9 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   return (
     <>
-      {sortedTranscripts.length === 1 ? (
-        <SimpleTrackPanelItemLayout {...commonComponentProps}>
-          {trackPanelItemChildren}
-        </SimpleTrackPanelItemLayout>
-      ) : (
-        <GroupTrackPanelItemLayout
-          {...commonComponentProps}
-          isCollapsed={isCollapsed}
-          toggleExpand={toggleExpand}
-        >
-          {trackPanelItemChildren}
-        </GroupTrackPanelItemLayout>
-      )}
+      <SimpleTrackPanelItemLayout {...commonComponentProps}>
+        {trackPanelItemChildren}
+      </SimpleTrackPanelItemLayout>
 
       {visibleSortedTranscripts.map((transcript) => (
         <TrackPanelTranscript
@@ -197,10 +186,12 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           key={transcript.stable_id}
         />
       ))}
-      {isCollapsed && gene.transcripts.length > 1 && (
-        <TrackPanelItemsCount
+      {gene.transcripts.length > 1 && (
+        <TrackPanelItemsExpandLozenge
           itemName="transcript"
           count={gene.transcripts.length - 1}
+          isExpanded={!isCollapsed}
+          toggleExpand={toggleExpand}
         />
       )}
     </>
