@@ -17,7 +17,7 @@ import { useLocation } from 'react-router-dom';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { useGbRegionQueryQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { useGbRegionQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
@@ -222,7 +222,7 @@ const useLocationCheck = (
     currentData: regionData,
     isError: isRegionQueryError,
     error: regionQueryError
-  } = useGbRegionQueryQuery(
+  } = useGbRegionQuery(
     {
       genomeId,
       regionName

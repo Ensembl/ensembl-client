@@ -73,7 +73,7 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
         variables: params
       })
     }),
-    gbRegionQuery: builder.query<RegionQueryResult, RegionQueryParams>({
+    gbRegion: builder.query<RegionQueryResult, RegionQueryParams>({
       query: (params) => ({
         body: regionQuery,
         variables: params
@@ -105,7 +105,7 @@ export const {
   useGbGeneSummaryQuery,
   useGbTranscriptSummaryQuery,
   useGbTranscriptInZmenuQuery,
-  useGbRegionQueryQuery
+  useGbRegionQuery
 } = genomeBrowserApiSlice;
 
 export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;
