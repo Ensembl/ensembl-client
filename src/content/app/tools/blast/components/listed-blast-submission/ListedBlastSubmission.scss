@@ -24,7 +24,7 @@ and also that it can be of variable width
   border: 1px solid $grey;
   grid-template-columns:
     11ch minmax(48%, 1050px) [species-count] minmax(20%, 1fr)
-    100px;
+    minmax(10px, auto);
   column-gap: 20px;
 }
 
@@ -84,4 +84,11 @@ and also that it can be of variable width
 
 .jobStatusProminent {
   color: $red;
+}
+
+.failedJobStatusWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 0.6rem;
+  color: #d90000;
 }

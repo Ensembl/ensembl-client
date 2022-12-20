@@ -122,8 +122,8 @@ const Main = () => {
     .filter((job) => !!job.data) as BlastJobWithResults[]; // only care about BLAST jobs that have the results from the server; they all should do if the apis behave properly
 
   // Add below line to force a failure
-  // allJobResultsWithData[0].status="FAILURE";
-  // allJobResultsWithData[1].status="FAILURE";
+  allJobResultsWithData[0].status = 'FAILURE';
+  allJobResultsWithData[1].status = 'FAILURE';
 
   const { submittedData } = blastSubmission;
   const resultsGroupedBySequence = submittedData.sequences.map((sequence) => {

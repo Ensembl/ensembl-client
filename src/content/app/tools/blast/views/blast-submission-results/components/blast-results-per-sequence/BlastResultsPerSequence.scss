@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns:
     [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr) 100px;
+    [species] minmax(20%, 1fr) minmax(10px, auto);
   column-gap: 20px;
   padding-bottom: 20px;
 }
@@ -29,7 +29,7 @@
 }
 
 .wrapper {
-  padding: 24px 20px 0px 20px;
+  padding: 24px 26px 0px 26px;
   border: 1px solid $grey;
 }
 
@@ -63,4 +63,11 @@
 .failedJobStatus {
   justify-self: end;
   color: $red;
+}
+
+.failedJobStatusWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 0.6rem;
+  color: #d90000;
 }

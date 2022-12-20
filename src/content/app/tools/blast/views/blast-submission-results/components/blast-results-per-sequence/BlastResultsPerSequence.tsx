@@ -82,8 +82,8 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <span className={styles.againstText}>Against</span>{' '}
             <span>{species.length} species</span>
           </div>
-          <div>
-            <span className={styles.failedJobStatus}> Job failed </span>
+          <div className={styles.failedJobStatusWrapper}>
+            <span className={styles.failedJobStatus}>Job failed</span>
             <QuestionButton helpText={<FailedSubmissionHelpText />} />
           </div>
         </div>
@@ -100,7 +100,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
                 label={sequenceHeaderLabel}
                 isExpanded={shouldShowParamaters}
                 onClick={() => showParamaters(!shouldShowParamaters)}
-              ></ShowHide>
+              />
               {shouldUseGenomicHitsDiagram && <BlastGenomicHitsDiagramLegend />}
             </div>
             {shouldShowParamaters && (

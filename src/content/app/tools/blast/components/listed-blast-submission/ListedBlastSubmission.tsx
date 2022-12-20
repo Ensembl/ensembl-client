@@ -148,8 +148,8 @@ const SequenceBox = (props: SequenceBoxProps) => {
       <div>Sequence {sequence.id}</div>
       <div className={styles.sequenceHeader}>{sequenceHeaderLabel}</div>
       <div className={styles.speciesCount}>
-        <span className={styles.againstText}>Against</span>
-        {speciesCount} species
+        <span className={styles.againstText}>Against</span> {speciesCount}{' '}
+        species
       </div>
       <StatusElement jobs={jobs} />
     </div>
@@ -168,8 +168,8 @@ const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
     return <span className={elementClasses}>Running...</span>;
   } else if (hasFailedJobs) {
     return (
-      <div>
-        <span className={elementClasses}> Job failed </span>
+      <div className={styles.failedJobStatusWrapper}>
+        <span className={elementClasses}>Job failed</span>
         <QuestionButton helpText={<FailedSubmissionHelpText />} />
       </div>
     );

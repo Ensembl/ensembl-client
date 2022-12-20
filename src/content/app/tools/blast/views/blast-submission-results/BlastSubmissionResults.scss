@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-$container_max_width: 1860px;
+$container_max_width: 1770px;
 
 .resultsContainer {
   display: grid;
@@ -11,12 +11,12 @@ $container_max_width: 1860px;
 .mainContainer {
   overflow: auto;
   scrollbar-gutter: stable;
+  padding: var(--blast-page-standard-padding);
   height: 100%;
 }
 
 .blastSubmissionResultsContainer {
   max-width: $container_max_width;
-  padding: var(--blast-page-standard-padding);
 }
 
 .loaderContainer {
