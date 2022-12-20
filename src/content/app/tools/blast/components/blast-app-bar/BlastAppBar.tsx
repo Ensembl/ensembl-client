@@ -35,6 +35,7 @@ import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGen
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { AppName } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -93,7 +94,13 @@ const BlastAppBar = () => {
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />
   );
 
-  return <AppBar appName={AppName.TOOLS} mainContent={wrappedSpecies} />;
+  return (
+    <AppBar
+      appName={AppName.TOOLS}
+      mainContent={wrappedSpecies}
+      aside={<HelpPopupButton slug="blast" />}
+    />
+  );
 };
 
 export default BlastAppBar;
