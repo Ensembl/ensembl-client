@@ -54,8 +54,13 @@ const BlastAppBar = () => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);
 
+  const appBarProps = {
+    appName: AppName.TOOLS,
+    aside: <HelpPopupButton slug="blast" />
+  };
+
   if (!speciesList.length) {
-    return <AppBar appName={AppName.TOOLS} mainContent={placeholderMessage} />;
+    return <AppBar mainContent={placeholderMessage} {...appBarProps} />;
   }
 
   const speciesLozengeClick = (species: CommittedItem) => {
@@ -94,13 +99,7 @@ const BlastAppBar = () => {
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />
   );
 
-  return (
-    <AppBar
-      appName={AppName.TOOLS}
-      mainContent={wrappedSpecies}
-      aside={<HelpPopupButton slug="blast" />}
-    />
-  );
+  return <AppBar mainContent={wrappedSpecies} {...appBarProps} />;
 };
 
 export default BlastAppBar;
