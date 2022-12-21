@@ -31,7 +31,8 @@ export const createBlastSubmissionPayload = (
     genome_id: 'human-genome-id',
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
-    assembly_name: 'grch38'
+    assembly_name: 'grch38',
+    genome_tag: 'grch38'
   };
 
   const submission = {
