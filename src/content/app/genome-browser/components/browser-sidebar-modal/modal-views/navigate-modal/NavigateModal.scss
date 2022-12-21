@@ -1,11 +1,39 @@
 @import 'src/styles/common';
 
+.modalWrapper {
+  background: $light-grey;
+}
+
+.navigateModal {
+  width: 272px;
+}
+
 .browserNavBarControls {
   margin: 15px 0 0 40px;
 
-  .navButtonWrapper {
+  .moveLeftButton,
+  .moveRightButton,
+  .zoomInButton,
+  .zoomOutButton {
     display: inline-block;
     margin-right: 35px;
+  }
+
+  .moveLeftButton,
+  .moveRightButton {
+    height: 22px;
+    width: 22px;
+  }
+
+  .zoomInButton,
+  .zoomOutButton {
+    height: 16px;
+    width: 16px;
+  }
+
+  .browserReset {
+    height: var(--browser-reset-button-dimension, 16px);
+    width: var(--browser-reset-button-dimension, 16px);
   }
 }
 
@@ -46,22 +74,8 @@
   }
 }
 
-.moveLeftButton,
-.moveRightButton {
-  height: 22px;
-  width: 22px;
-}
-
-.zoomInButton,
-.zoomOutButton,
-.browserReset {
-  height: 16px;
-  width: 16px;
-}
-
 .formButtons {
   margin-top: 30px;
-  width: 272px; // TODO: find a better way to position the buttons rather than relying on the width
   text-align: right;
 
   .cancel {
@@ -72,9 +86,4 @@
 .clickableText {
   color: $light-blue;
   cursor: pointer;
-}
-
-.browserReset {
-  height: 16px;
-  width: 16px;
 }

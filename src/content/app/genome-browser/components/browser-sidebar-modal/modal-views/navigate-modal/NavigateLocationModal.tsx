@@ -32,7 +32,7 @@ import {
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import Select from 'src/shared/components/select/Select';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 import {
@@ -53,7 +53,7 @@ const NavigateLocationModal = () => {
   );
   const { changeBrowserLocation } = useGenomeBrowser();
 
-  const [stickInput, setStickInput] = useState('');
+  const [chrInput, setChrInput] = useState('');
   const [locationStartInput, setLocationStartInput] = useState('');
   const [locationEndInput, setLocationEndInput] = useState('');
   const [regionInput, setRegionInput] = useState('');
@@ -71,7 +71,7 @@ const NavigateLocationModal = () => {
     null
   );
 
-  const stickRef = useRef<HTMLDivElement>(null);
+  const chrInputRef = useRef<HTMLDivElement>(null);
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
   const regionRef = useRef<HTMLDivElement>(null);
@@ -109,7 +109,7 @@ const NavigateLocationModal = () => {
       setRegionErrorMessage(null);
 
       const newLocation = coordInputsActive
-        ? `${stickInput}:${locationStartInput}-${locationEndInput}`
+        ? `${chrInput}:${locationStartInput}-${locationEndInput}`
         : regionInput;
 
       validateRegion({
@@ -125,10 +125,12 @@ const NavigateLocationModal = () => {
     genomeKaryotype.map(({ name }) => ({
       value: name,
       label: name,
-      isSelected: stickInput === name
+      isSelected: chrInput === name
     }));
 
-  const updateStickInput = (value: string) => {
+  const updateChrInput = (event: FormEvent<HTMLSelectElement>) => {
+    const value = event.currentTarget.value;
+
     setCoordInputsActive(true);
     setRegionInputActive(false);
 
@@ -137,7 +139,7 @@ const NavigateLocationModal = () => {
     );
 
     if (selectedKaryotypeItems[0]) {
-      setStickInput(value);
+      setChrInput(value);
     }
   };
 
@@ -161,7 +163,7 @@ const NavigateLocationModal = () => {
   };
 
   const resetForm = () => {
-    setStickInput('');
+    setChrInput('');
     setLocationStartInput('');
     setLocationEndInput('');
     setRegionInput('');
@@ -176,7 +178,7 @@ const NavigateLocationModal = () => {
     resetForm();
 
     const newChrLocation: ChrLocation = [
-      stickInput,
+      chrInput,
       getNumberWithoutCommas(locationStartInput),
       getNumberWithoutCommas(locationEndInput)
     ];
@@ -203,7 +205,7 @@ const NavigateLocationModal = () => {
   };
 
   return (
-    <section>
+    <section className={styles.navigateModal}>
       <p>
         <span className={styles.clickableText} onClick={switchToNavigateRegion}>
           Navigate this region
@@ -211,13 +213,13 @@ const NavigateLocationModal = () => {
       </p>
       <p>Go to new location</p>
       <div className={styles.coordInputs}>
-        <div className={styles.inputGroup} ref={stickRef}>
+        <div className={styles.inputGroup} ref={chrInputRef}>
           <label>
             <span>Chr</span>
-            <Select
-              onSelect={updateStickInput}
+            <SimpleSelect
+              onSelect={updateChrInput}
               options={getKaryotypeOptions()}
-            ></Select>
+            />
           </label>
         </div>
         <div className={styles.inputGroup} ref={locationStartRef}>
@@ -277,7 +279,7 @@ const NavigateLocationModal = () => {
               onChange={onRegionChange}
               disabled={coordInputsActive}
               value={regionInput}
-              placeholder="Location to co-ordinates..."
+              placeholder="Location co-ordinates..."
             />
             {regionErrorMessage ? (
               <Tooltip

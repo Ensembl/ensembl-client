@@ -1,4 +1,4 @@
 .resetButton {
-  height: 22px;
-  width: 22px;
+  height: var(--browser-reset-button-dimension, 22px);
+  width: var(--browser-reset-button-dimension, 22px);
 }

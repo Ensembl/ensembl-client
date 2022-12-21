@@ -23,7 +23,9 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { BrowserNavButton } from './BrowserNavButton';
 
-import { browserNavConfig } from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
+import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
+
+import NavigateLeftIcon from 'static/icons/navigate-left.svg';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 
@@ -35,13 +37,17 @@ jest.mock(
 );
 
 describe('<BrowserNavButton />', () => {
-  const browserNavItem = browserNavConfig[0];
-
   test('sends navigation message when clicked', async () => {
     jest.spyOn(mockGenomeBrowser, 'send');
 
     const { container } = render(
-      <BrowserNavButton browserNavItem={browserNavItem} enabled={true} />
+      <BrowserNavButton
+        name={BrowserNavAction.MOVE_LEFT}
+        description="navigate left"
+        detail={{ move_left_px: 50 }}
+        enabled={true}
+        icon={NavigateLeftIcon}
+      />
     );
     const button = container.querySelector('button') as HTMLButtonElement;
 

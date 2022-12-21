@@ -26,10 +26,6 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
-import {
-  browserNavConfig,
-  type BrowserNavItem
-} from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   validateRegion,
@@ -50,11 +46,15 @@ import {
 import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
+import NavigateLeftIcon from 'static/icons/navigate-left.svg';
+import NavigateRightIcon from 'static/icons/navigate-right.svg';
+import ZoomInIcon from 'static/icons/icon_plus_circle.svg';
+import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
+
 import styles from './NavigateModal.scss';
 
 const NavigateRegionModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const browserNavButtonStates = useAppSelector(getBrowserNavButtonStates);
   const chrLocation = useAppSelector(getChrLocation);
 
   const dispatch = useAppDispatch();
@@ -190,34 +190,10 @@ const NavigateRegionModal = () => {
     );
   };
 
-  const getNavButtonClassName = (buttonName: string) => {
-    switch (buttonName) {
-      case BrowserNavAction.MOVE_LEFT:
-        return styles.moveLeftButton;
-      case BrowserNavAction.MOVE_RIGHT:
-        return styles.moveRightButton;
-      case BrowserNavAction.ZOOM_IN:
-        return styles.zoomInButton;
-      case BrowserNavAction.ZOOM_OUT:
-        return styles.zoomOutButton;
-    }
-  };
-
   return (
-    <section>
+    <section className={styles.navigateModal}>
       <p>Navigate this region</p>
-      <div className={styles.browserNavBarControls}>
-        {browserNavConfig.map((item: BrowserNavItem) => (
-          <div className={styles.navButtonWrapper} key={item.name}>
-            <BrowserNavButton
-              browserNavItem={item}
-              enabled={browserNavButtonStates[item.name]}
-              className={getNavButtonClassName(item.name)}
-            />
-          </div>
-        ))}
-        <BrowserReset className={styles.browserReset} />
-      </div>
+      <BrowserNavBarControls />
       <div className={styles.coordInputs}>
         <div className={styles.inputGroup} ref={locationStartRef}>
           <label>
@@ -318,6 +294,48 @@ const NavigateRegionModal = () => {
         </p>
       </div>
     </section>
+  );
+};
+
+const BrowserNavBarControls = () => {
+  const browserNavButtonStates = useAppSelector(getBrowserNavButtonStates);
+
+  return (
+    <div className={styles.browserNavBarControls}>
+      <BrowserNavButton
+        name={BrowserNavAction.MOVE_LEFT}
+        description="navigate left"
+        detail={{ move_left_px: 50 }}
+        enabled={browserNavButtonStates[BrowserNavAction.MOVE_LEFT]}
+        icon={NavigateLeftIcon}
+        className={styles.moveLeftButton}
+      />
+      <BrowserNavButton
+        name={BrowserNavAction.MOVE_RIGHT}
+        description="navigate right"
+        detail={{ move_right_px: 50 }}
+        enabled={browserNavButtonStates[BrowserNavAction.MOVE_RIGHT]}
+        icon={NavigateRightIcon}
+        className={styles.moveRightButton}
+      />
+      <BrowserNavButton
+        name={BrowserNavAction.ZOOM_OUT}
+        description="zoom out"
+        detail={{ zoom_by: -0.3 }}
+        enabled={browserNavButtonStates[BrowserNavAction.ZOOM_OUT]}
+        icon={ZoomOutIcon}
+        className={styles.zoomOutButton}
+      />
+      <BrowserNavButton
+        name={BrowserNavAction.ZOOM_IN}
+        description="zoom in"
+        detail={{ zoom_by: 0.3 }}
+        enabled={browserNavButtonStates[BrowserNavAction.ZOOM_IN]}
+        icon={ZoomInIcon}
+        className={styles.zoomInButton}
+      />
+      <BrowserReset className={styles.browserReset} />
+    </div>
   );
 };
 
