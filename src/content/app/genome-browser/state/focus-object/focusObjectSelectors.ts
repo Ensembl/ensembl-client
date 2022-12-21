@@ -80,6 +80,12 @@ export const getExampleGenes = (state: RootState): FocusObject[] => {
   );
 };
 
+export const getExampleLocations = (state: RootState): FocusObject[] => {
+  return getExampleFocusObjects(state).filter(
+    (entity) => entity.type === 'location'
+  );
+};
+
 export const getFocusGene = (
   state: RootState,
   focusGeneId: string

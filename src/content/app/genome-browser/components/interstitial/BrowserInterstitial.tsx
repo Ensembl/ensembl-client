@@ -23,7 +23,10 @@ import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useG
 
 import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import { getExampleGenes } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
+import {
+  getExampleGenes,
+  getExampleLocations
+} from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 
 import {
   parseFocusObjectId,
@@ -72,8 +75,9 @@ const BrowserInterstitial = () => {
 const ExampleLinks = () => {
   const { genomeIdForUrl } = useGenomeBrowserIds();
   const focusObjects = useAppSelector(getExampleGenes);
+  const focusLocations = useAppSelector(getExampleLocations);
 
-  const links = focusObjects.map((exampleObject) => {
+  const geneLinks = focusObjects.map((exampleObject) => {
     const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
     const focusId = buildFocusIdForUrl(parsedFocusObjectId);
     const path = urlFor.browser({
@@ -90,7 +94,29 @@ const ExampleLinks = () => {
     );
   });
 
-  return <div className={styles.exampleLinks}>{links}</div>;
+  const locationLinks = focusLocations.map((exampleObject) => {
+    const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
+    const focusId = buildFocusIdForUrl(parsedFocusObjectId);
+    const path = urlFor.browser({
+      genomeId: genomeIdForUrl,
+      focus: focusId
+    });
+
+    return (
+      <div key={exampleObject.object_id}>
+        <Link to={path} replace>
+          Example {exampleObject.type}
+        </Link>
+      </div>
+    );
+  });
+
+  return (
+    <div className={styles.exampleLinks}>
+      {geneLinks}
+      {locationLinks}
+    </div>
+  );
 };
 
 export default BrowserInterstitial;

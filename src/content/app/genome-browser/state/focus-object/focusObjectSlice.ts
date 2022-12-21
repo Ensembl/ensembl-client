@@ -164,8 +164,12 @@ export const fetchFocusObject = createAsyncThunk(
       return;
     }
 
-    if (payload.type === 'location') {
-      const focusLocationObject = buildFocusLocationObject(payload);
+    // TODO: Remove checking for region and overriding the payload type when location is properly supported
+    if (payload.type === 'location' || payload.type === 'region') {
+      const focusLocationObject = buildFocusLocationObject({
+        ...payload,
+        type: 'location'
+      });
       return buildLoadedObject({
         id: focusObjectId,
         data: focusLocationObject
