@@ -15,8 +15,10 @@
  */
 
 import React, { ReactNode, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
@@ -204,7 +206,11 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         jobResult={jobResult}
       />
       {isExpanded && (
-        <HitsTable jobResult={jobResult} submission={submission} />
+        <HitsTable
+          species={speciesInfo}
+          jobResult={jobResult}
+          submission={submission}
+        />
       )}
     </div>
   );
@@ -256,11 +262,12 @@ const BlastSpecies = (props: {
 };
 
 type HitsTableProps = {
+  species: Species;
   jobResult: SingleBlastJobResultProps['jobResult'];
   submission: BlastSubmission;
 };
 const HitsTable = (props: HitsTableProps) => {
-  const { jobResult, submission } = props;
+  const { species, jobResult, submission } = props;
 
   const blastDatabase = submission.submittedData.parameters
     .database as DatabaseType;
@@ -295,7 +302,8 @@ const HitsTable = (props: HitsTableProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_bit_score,
-          getDynamicColumnContent({
+          getHitIdOrGenomicLocation({
+            species,
             hit,
             blastDatabase,
             hitHsp
@@ -446,26 +454,43 @@ const ShowHideColumn = (props: {
   );
 };
 
-type DynamicColumnContentProps = {
+const getHitIdOrGenomicLocation = (params: {
+  species: Species;
   hit: BlastHit;
   hitHsp: HSP;
   blastDatabase: DatabaseType;
-};
+}) => {
+  const { hit, blastDatabase } = params;
 
-const getDynamicColumnContent = (props: DynamicColumnContentProps) => {
-  const { hit, blastDatabase, hitHsp } = props;
+  let childNode: ReactNode;
 
-  if (blastDatabase !== 'dna_sm' && blastDatabase !== 'dna') {
-    return <span className={styles.nowrap}>{hit.hit_acc}</span>;
+  if (['dna', 'dna_sm'].includes(blastDatabase)) {
+    childNode = renderGenomicLocation(params);
+  } else {
+    childNode = hit.hit_acc;
   }
 
-  return (
-    <span className={styles.nowrap}>
-      {`${hit.hit_acc}:${[hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
-        .sort()
-        .join('-')}`}
-    </span>
-  );
+  return <span className={styles.nowrap}>{childNode}</span>;
+};
+
+const renderGenomicLocation = (params: {
+  species: Species;
+  hit: BlastHit;
+  hitHsp: HSP;
+}) => {
+  const { species, hit, hitHsp } = params;
+  const genomeIdForUrl = species.genome_tag ?? species.genome_id;
+  const startEndString = [hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
+    .sort((a, b) => a - b)
+    .join('-');
+  const locationString = `${hit.hit_acc}:${startEndString}`;
+  const focusLocationString = `location:${locationString}`;
+
+  const genomeBrowserLink = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: focusLocationString
+  });
+  return <Link to={genomeBrowserLink}>{locationString}</Link>;
 };
 
 const countAlignments = (blastJob: BlastJobResult) => {

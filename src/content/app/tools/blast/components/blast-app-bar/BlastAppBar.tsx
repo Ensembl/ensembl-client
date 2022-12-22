@@ -70,7 +70,8 @@ const BlastAppBar = () => {
           genome_id: species.genome_id,
           common_name: species.common_name,
           scientific_name: species.scientific_name,
-          assembly_name: species.assembly_name
+          assembly_name: species.assembly_name,
+          genome_tag: species.genome_tag
         })
       );
     }

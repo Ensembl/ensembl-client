@@ -42,6 +42,7 @@ export type Species = {
   common_name: string | null;
   scientific_name: string;
   assembly_name: string;
+  genome_tag: string | null;
 };
 
 export type BlastFormState = {
