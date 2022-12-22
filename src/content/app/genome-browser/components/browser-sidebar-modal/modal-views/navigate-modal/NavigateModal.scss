@@ -55,6 +55,19 @@
     border: 1px solid $light-grey;
     height: 30px;
     padding: 2px 6px;
+
+    &:disabled {
+      border: 1px solid $grey;
+    }
+  }
+}
+
+.rangeNameSelect {
+  select {
+    &:disabled {
+      background-color: $grey;
+      border: 1px solid $grey;
+    }
   }
 }
 
@@ -66,7 +79,7 @@
   }
 }
 
-.regionInput {
+.locationInput {
   margin-top: 30px;
 
   input {

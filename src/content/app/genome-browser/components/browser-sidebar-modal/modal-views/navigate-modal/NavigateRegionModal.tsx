@@ -28,6 +28,7 @@ import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/
 
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
+  getChrLocationFromStr,
   validateRegion,
   type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -63,10 +64,10 @@ const NavigateRegionModal = () => {
 
   const [locationStartInput, setLocationStartInput] = useState('');
   const [locationEndInput, setLocationEndInput] = useState('');
-  const [regionInput, setRegionInput] = useState('');
+  const [locationInput, setLocationInput] = useState('');
 
   const [coordInputsActive, setCoordInputsActive] = useState(false);
-  const [regionInputActive, setRegionInputActive] = useState(false);
+  const [locationInputActive, setLocationInputActive] = useState(false);
 
   const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
     string | null
@@ -74,22 +75,22 @@ const NavigateRegionModal = () => {
   const [locationEndErrorMessage, setLocationEndErrorMessage] = useState<
     string | null
   >(null);
-  const [regionErrorMessage, setRegionErrorMessage] = useState<string | null>(
-    null
-  );
+  const [locationErrorMessage, setLocationErrorMessage] = useState<
+    string | null
+  >(null);
 
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
-  const regionRef = useRef<HTMLDivElement>(null);
+  const locationRef = useRef<HTMLDivElement>(null);
 
   const onCoordInputsFocus = () => {
     setCoordInputsActive(true);
-    setRegionInputActive(false);
+    setLocationInputActive(false);
   };
 
-  const onRegionInputFocus = () => {
+  const onLocationInputFocus = () => {
     setCoordInputsActive(false);
-    setRegionInputActive(true);
+    setLocationInputActive(true);
   };
 
   const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
@@ -104,20 +105,20 @@ const NavigateRegionModal = () => {
     setLocationEndErrorMessage(null);
   };
 
-  const onRegionChange = (event: FormEvent<HTMLInputElement>) => {
+  const onLocationChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
-    setRegionInput(value);
-    setRegionErrorMessage(null);
+    setLocationInput(value);
+    setLocationErrorMessage(null);
   };
 
   const handleSubmit = () => {
     if (activeGenomeId) {
-      setRegionErrorMessage(null);
+      setLocationErrorMessage(null);
 
       const [stick] = chrLocation as ChrLocation;
       const coords = coordInputsActive
         ? `${locationStartInput}-${locationEndInput}`
-        : regionInput;
+        : locationInput;
       const newLocation = `${stick}:${coords}`;
 
       validateRegion({
@@ -132,11 +133,16 @@ const NavigateRegionModal = () => {
   const updateErrorMessages = (
     locationStartError: string | null,
     locationEndError: string | null,
-    regionError: string | null
+    locationError: string | null
   ) => {
-    setLocationStartErrorMessage(locationStartError);
-    setLocationEndErrorMessage(locationEndError);
-    setRegionErrorMessage(regionError);
+    if (coordInputsActive) {
+      setLocationStartErrorMessage(locationStartError);
+      setLocationEndErrorMessage(locationEndError);
+    } else {
+      setLocationErrorMessage(
+        locationStartError || locationEndError || locationError
+      );
+    }
   };
 
   const onValidationError = (errorMessages: RegionValidationErrors) => {
@@ -151,10 +157,10 @@ const NavigateRegionModal = () => {
   const resetForm = () => {
     setLocationStartInput('');
     setLocationEndInput('');
-    setRegionInput('');
+    setLocationInput('');
 
     setCoordInputsActive(false);
-    setRegionInputActive(false);
+    setLocationInputActive(false);
 
     updateErrorMessages(null, null, null);
   };
@@ -163,11 +169,17 @@ const NavigateRegionModal = () => {
     resetForm();
 
     const [stick] = chrLocation as ChrLocation;
-    const newChrLocation: ChrLocation = [
-      stick,
-      getNumberWithoutCommas(locationStartInput),
-      getNumberWithoutCommas(locationEndInput)
-    ];
+    let newChrLocation: ChrLocation;
+
+    if (coordInputsActive) {
+      newChrLocation = [
+        stick,
+        getNumberWithoutCommas(locationStartInput),
+        getNumberWithoutCommas(locationEndInput)
+      ];
+    } else {
+      newChrLocation = getChrLocationFromStr(`${stick}:${locationInput}`);
+    }
 
     changeBrowserLocation({
       genomeId: activeGenomeId as string,
@@ -202,7 +214,7 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationStartChange}
-              disabled={regionInputActive}
+              disabled={locationInputActive}
               value={locationStartInput}
               placeholder="Co-ordinate"
             />
@@ -225,7 +237,7 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationEndChange}
-              disabled={regionInputActive}
+              disabled={locationInputActive}
               value={locationEndInput}
               placeholder="Co-ordinate"
             ></Input>
@@ -242,43 +254,43 @@ const NavigateRegionModal = () => {
           ) : null}
         </div>
       </div>
-      <div className={styles.regionInput}>
-        <div className={styles.inputGroup} ref={regionRef}>
+      <div className={styles.locationInput}>
+        <div className={styles.inputGroup} ref={locationRef}>
           <label>
             <span>Go to</span>
             <Input
               type="text"
-              onFocus={onRegionInputFocus}
-              onChange={onRegionChange}
+              onFocus={onLocationInputFocus}
+              onChange={onLocationChange}
               disabled={coordInputsActive}
-              value={regionInput}
+              value={locationInput}
               placeholder="Region co-ordinates..."
             />
-            {regionErrorMessage ? (
+            {locationErrorMessage ? (
               <Tooltip
-                anchor={regionRef.current}
+                anchor={locationRef.current}
                 autoAdjust={true}
-                container={regionRef.current}
+                container={locationRef.current}
                 position={Position.BOTTOM_LEFT}
               >
-                {regionErrorMessage}
+                {locationErrorMessage}
               </Tooltip>
             ) : null}
           </label>
         </div>
       </div>
       <div className={styles.formButtons}>
-        {(coordInputsActive || regionInputActive) && (
+        {(coordInputsActive || locationInputActive) && (
           <span
             className={classNames(styles.cancel, styles.clickableText)}
             onClick={resetForm}
           >
-            cancel
+            Cancel
           </span>
         )}
         <PrimaryButton
           onClick={handleSubmit}
-          isDisabled={!coordInputsActive && !regionInputActive}
+          isDisabled={!coordInputsActive && !locationInputActive}
         >
           Go
         </PrimaryButton>
