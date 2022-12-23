@@ -15,17 +15,17 @@
  */
 
 import React, { FormEvent, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
-  getChrLocationFromStr,
   validateRegion,
   type RegionValidationErrors
 } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -41,22 +41,21 @@ import {
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
-import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './NavigateModal.scss';
 
 const NavigateLocationModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { data: genomeKaryotype = [] } = useGenomeKaryotypeQuery(
     activeGenomeId as string
   );
-  const { changeBrowserLocation } = useGenomeBrowser();
 
   const [regionNameInput, setRegionNameInput] = useState('');
-
   const [locationStartInput, setLocationStartInput] = useState('');
   const [locationEndInput, setLocationEndInput] = useState('');
   const [locationInput, setLocationInput] = useState('');
@@ -185,29 +184,20 @@ const NavigateLocationModal = () => {
   const onValidationSuccess = () => {
     resetForm();
 
-    let newChrLocation: ChrLocation;
-    let newChrLocationStr: string;
+    const locationString = coordInputsActive
+      ? `${regionNameInput}:${locationStartInput}-${locationEndInput}`
+      : locationInput;
+    const focusLocationString = `location:${locationString}`;
 
-    if (coordInputsActive) {
-      newChrLocation = [
-        regionNameInput,
-        getNumberWithoutCommas(locationStartInput),
-        getNumberWithoutCommas(locationEndInput)
-      ];
-      newChrLocationStr = `${regionNameInput}:${locationStartInput}-${locationEndInput}`;
-    } else {
-      newChrLocation = getChrLocationFromStr(locationInput);
-      newChrLocationStr = locationInput;
-    }
-
-    changeBrowserLocation({
-      genomeId: activeGenomeId as string,
-      chrLocation: newChrLocation,
-      focus: {
-        type: 'location',
-        id: `location:${newChrLocationStr}`
+    navigate(
+      urlFor.browser({
+        genomeId: genomeIdForUrl,
+        focus: focusLocationString
+      }),
+      {
+        replace: true
       }
-    });
+    );
   };
 
   const switchToNavigateRegion = () => {

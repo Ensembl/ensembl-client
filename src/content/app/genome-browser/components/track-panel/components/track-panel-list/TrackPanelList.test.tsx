@@ -35,6 +35,8 @@ import { createGenomeCategories } from 'tests/fixtures/genomes';
 
 import { TrackPanelList } from './TrackPanelList';
 
+import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+
 jest.mock('config', () => ({
   tracksApiBaseUrl: 'http://track-api'
 }));
@@ -133,17 +135,30 @@ describe('<TrackPanelList />', () => {
       });
     });
 
-    it('opens the search panel', async () => {
+    it('opens the relevant modal when modal link is clicked', async () => {
       const { container, store } = renderComponent();
 
-      const geneSearchLabel = container.querySelector(
-        '.findAGene span'
+      const geneSearchLink = container.querySelector(
+        '.modalLink:nth-child(1)'
       ) as HTMLElement;
 
-      await userEvent.click(geneSearchLabel);
+      await userEvent.click(geneSearchLink);
 
-      const state = store.getState();
-      expect(getBrowserSidebarModalView(state)).toBe('search');
+      let state = store.getState();
+      expect(getBrowserSidebarModalView(state)).toBe(
+        BrowserSidebarModalView.SEARCH
+      );
+
+      const navigateLocationLink = container.querySelector(
+        '.modalLink:nth-child(2)'
+      ) as HTMLElement;
+
+      await userEvent.click(navigateLocationLink);
+
+      state = store.getState();
+      expect(getBrowserSidebarModalView(state)).toBe(
+        BrowserSidebarModalView.NAVIGATE_REGION
+      );
     });
   });
 });
