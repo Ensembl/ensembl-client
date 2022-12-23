@@ -40,7 +40,8 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
       transformResponse: (response: { genome_info: GenomeInfo[] }) => {
         const genomeInfo = response.genome_info[0];
         const { genome_id, genome_tag } = genomeInfo;
-        const exampleObjects = genomeInfo.example_objects.map(
+        // TODO: Added this since tests were breaking. Remove optional chaining if example_objects will be returned every time.
+        const exampleObjects = genomeInfo.example_objects?.map(
           ({ id, type }) => ({
             id,
             type: type === 'region' ? 'location' : type

@@ -77,46 +77,26 @@ const ExampleLinks = () => {
   const focusObjects = useAppSelector(getExampleGenes);
   const focusLocations = useAppSelector(getExampleLocations);
 
-  const geneLinks = focusObjects.map((exampleObject) => {
-    const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
-    const focusId = buildFocusIdForUrl(parsedFocusObjectId);
-    const path = urlFor.browser({
-      genomeId: genomeIdForUrl,
-      focus: focusId
+  const exampleLinks = focusObjects
+    .concat(focusLocations)
+    .map((exampleObject) => {
+      const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
+      const focusId = buildFocusIdForUrl(parsedFocusObjectId);
+      const path = urlFor.browser({
+        genomeId: genomeIdForUrl,
+        focus: focusId
+      });
+
+      return (
+        <div key={exampleObject.object_id}>
+          <Link to={path} replace>
+            Example {exampleObject.type}
+          </Link>
+        </div>
+      );
     });
 
-    return (
-      <div key={exampleObject.object_id}>
-        <Link to={path} replace>
-          Example {exampleObject.type}
-        </Link>
-      </div>
-    );
-  });
-
-  const locationLinks = focusLocations.map((exampleObject) => {
-    const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
-    const focusId = buildFocusIdForUrl(parsedFocusObjectId);
-    const path = urlFor.browser({
-      genomeId: genomeIdForUrl,
-      focus: focusId
-    });
-
-    return (
-      <div key={exampleObject.object_id}>
-        <Link to={path} replace>
-          Example {exampleObject.type}
-        </Link>
-      </div>
-    );
-  });
-
-  return (
-    <div className={styles.exampleLinks}>
-      {geneLinks}
-      {locationLinks}
-    </div>
-  );
+  return <div className={styles.exampleLinks}>{exampleLinks}</div>;
 };
 
 export default BrowserInterstitial;
