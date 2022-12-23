@@ -290,7 +290,9 @@ const NavigateRegionModal = () => {
         )}
         <PrimaryButton
           onClick={handleSubmit}
-          isDisabled={!coordInputsActive && !locationInputActive}
+          isDisabled={
+            !(locationStartInput && locationEndInput) && !locationInput
+          }
         >
           Go
         </PrimaryButton>
@@ -320,7 +322,6 @@ const BrowserNavBarControls = () => {
         detail={{ move_left_px: 50 }}
         enabled={browserNavButtonStates[BrowserNavAction.MOVE_LEFT]}
         icon={NavigateLeftIcon}
-        className={styles.moveLeftButton}
       />
       <BrowserNavButton
         name={BrowserNavAction.MOVE_RIGHT}
@@ -328,7 +329,6 @@ const BrowserNavBarControls = () => {
         detail={{ move_right_px: 50 }}
         enabled={browserNavButtonStates[BrowserNavAction.MOVE_RIGHT]}
         icon={NavigateRightIcon}
-        className={styles.moveRightButton}
       />
       <BrowserNavButton
         name={BrowserNavAction.ZOOM_OUT}

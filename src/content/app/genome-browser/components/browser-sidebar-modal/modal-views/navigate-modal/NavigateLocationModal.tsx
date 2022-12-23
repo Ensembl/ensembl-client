@@ -35,11 +35,12 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
-import { Position } from 'src/shared/components/pointer-box/PointerBox';
 import {
   BrowserSidebarModalView,
   updateBrowserSidebarModalForGenome
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './NavigateModal.scss';
@@ -123,26 +124,15 @@ const NavigateLocationModal = () => {
     }
   };
 
-  const getKaryotypeOptions = () => {
-    const karyotypeOptions = genomeKaryotype.map(({ name }) => ({
+  const getKaryotypeOptions = () =>
+    genomeKaryotype.map(({ name }) => ({
       value: name,
       label: name,
       isSelected: regionNameInput === name
     }));
 
-    karyotypeOptions.unshift({
-      value: '',
-      label: '',
-      isSelected: !karyotypeOptions.find(({ isSelected }) => isSelected)
-    });
-
-    return karyotypeOptions;
-  };
-
-  const updateRegionNameInput = (
-    event: FormEvent<HTMLSelectElement> | string
-  ) => {
-    const value = typeof event === 'string' ? event : event.currentTarget.value;
+  const updateRegionNameInput = (event: FormEvent<HTMLSelectElement>) => {
+    const value = event.currentTarget.value;
 
     setCoordInputsActive(true);
     setLocationInputActive(false);
@@ -181,9 +171,7 @@ const NavigateLocationModal = () => {
   };
 
   const resetForm = () => {
-    // setRegionNameInput('');
-    updateRegionNameInput('');
-
+    setRegionNameInput('');
     setLocationStartInput('');
     setLocationEndInput('');
     setLocationInput('');
@@ -198,6 +186,7 @@ const NavigateLocationModal = () => {
     resetForm();
 
     let newChrLocation: ChrLocation;
+    let newChrLocationStr: string;
 
     if (coordInputsActive) {
       newChrLocation = [
@@ -205,13 +194,19 @@ const NavigateLocationModal = () => {
         getNumberWithoutCommas(locationStartInput),
         getNumberWithoutCommas(locationEndInput)
       ];
+      newChrLocationStr = `${regionNameInput}:${locationStartInput}-${locationEndInput}`;
     } else {
       newChrLocation = getChrLocationFromStr(locationInput);
+      newChrLocationStr = locationInput;
     }
 
     changeBrowserLocation({
       genomeId: activeGenomeId as string,
-      chrLocation: newChrLocation
+      chrLocation: newChrLocation,
+      focus: {
+        type: 'location',
+        id: `location:${newChrLocationStr}`
+      }
     });
   };
 
@@ -247,6 +242,7 @@ const NavigateLocationModal = () => {
               options={getKaryotypeOptions()}
               disabled={locationInputActive}
               className={styles.rangeNameSelect}
+              placeholder="Select"
             />
           </label>
         </div>
@@ -333,7 +329,10 @@ const NavigateLocationModal = () => {
         )}
         <PrimaryButton
           onClick={handleSubmit}
-          isDisabled={!coordInputsActive && !locationInputActive}
+          isDisabled={
+            !(regionNameInput && locationStartInput && locationEndInput) &&
+            !locationInput
+          }
         >
           Go
         </PrimaryButton>

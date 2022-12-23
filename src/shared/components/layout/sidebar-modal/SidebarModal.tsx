@@ -24,13 +24,15 @@ import styles from './SidebarModal.scss';
 export type SidebarModalProps = {
   title: string;
   children: ReactNode;
+  theme?: 'light' | 'dark';
   className?: string;
   onClose: () => void;
 };
 
 const SidebarModal = (props: SidebarModalProps) => {
-  const { title, className, onClose } = props;
-  const wrapperClasses = classNames(styles.sidebarModal, className);
+  const { title, theme, className, onClose } = props;
+  const themeClass = theme === 'dark' ? styles.darkTheme : styles.lightTheme;
+  const wrapperClasses = classNames(styles.sidebarModal, themeClass, className);
 
   return (
     <div className={wrapperClasses}>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, LazyExoticComponent } from 'react';
+import React, { lazy, Suspense, type LazyExoticComponent } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -73,6 +73,17 @@ export const BrowserSidebarModal = () => {
   const ModalView = browserSidebarModals[browserSidebarModalView];
   const modalViewTitle = browserSidebarModalTitles[browserSidebarModalView];
 
+  const getTheme = () => {
+    if (
+      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
+      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
+    ) {
+      return 'dark';
+    }
+
+    return 'light';
+  };
+
   const getModalClass = () => {
     if (
       browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
@@ -94,6 +105,7 @@ export const BrowserSidebarModal = () => {
       <SidebarModal
         title={modalViewTitle}
         onClose={onClose}
+        theme={getTheme()}
         className={getModalClass()}
       >
         {<ModalView />}

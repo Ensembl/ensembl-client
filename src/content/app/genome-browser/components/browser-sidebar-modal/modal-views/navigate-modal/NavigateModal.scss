@@ -1,39 +1,22 @@
 @import 'src/styles/common';
 
-.modalWrapper {
-  background: $light-grey;
-}
-
 .navigateModal {
   width: 272px;
 }
 
 .browserNavBarControls {
   margin: 15px 0 0 40px;
-
-  .moveLeftButton,
-  .moveRightButton,
-  .zoomInButton,
-  .zoomOutButton {
-    display: inline-block;
-    margin-right: 35px;
-  }
-
-  .moveLeftButton,
-  .moveRightButton {
-    height: 22px;
-    width: 22px;
-  }
+  display: flex;
+  column-gap: 35px;
+  align-items: center;
 
   .zoomInButton,
   .zoomOutButton {
-    height: 16px;
-    width: 16px;
+    --browser-nav-button-size: 16px;
   }
 
   .browserReset {
-    height: var(--browser-reset-button-dimension, 16px);
-    width: var(--browser-reset-button-dimension, 16px);
+    --browser-reset-button-size: 16px;
   }
 }
 

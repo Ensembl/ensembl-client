@@ -13,6 +13,14 @@
   scrollbar-gutter: stable;
 }
 
+.lightTheme {
+  background: $white;
+}
+
+.darkTheme {
+  background: $light-grey;
+}
+
 .title {
   grid-area: title;
   font-size: 14px;
