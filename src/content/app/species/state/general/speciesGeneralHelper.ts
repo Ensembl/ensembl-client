@@ -678,15 +678,14 @@ const getExampleLinks = (props: {
       };
     }
   } else if (section === SpeciesStatsSection.ASSEMBLY) {
-    // TODO: Change the type check to location when data type returned switches to location
-    const regionExample = exampleFocusObjects.find(
-      (object) => object.type === 'region'
+    const locationExample = exampleFocusObjects.find(
+      (object) => object.type === 'location'
     );
 
-    const focusId = regionExample?.id
+    const focusId = locationExample?.id
       ? buildFocusIdForUrl({
           type: 'location',
-          objectId: regionExample.id
+          objectId: locationExample.id
         })
       : undefined;
 
