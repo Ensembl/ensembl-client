@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import React, { type SelectHTMLAttributes } from 'react';
+import React, {
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+  type SelectHTMLAttributes,
+  type ForwardedRef,
+  type ReactNode
+} from 'react';
 import classNames from 'classnames';
+import pickBy from 'lodash/pickBy';
+
 import styles from './SimpleSelect.scss';
 
 type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
@@ -40,7 +49,6 @@ export type OptionGroup = {
 
 type OptionsSpecificProps = {
   options: Option[];
-  title?: string;
 };
 
 type OptionGroupsSpecificProps = {
@@ -58,54 +66,80 @@ export type SimpleSelectProps = HTMLSelectProps &
   (OptionsSelectProps | OptionGroupsSelectProps) &
   CommonProps;
 
-const SimpleSelect = (props: SimpleSelectProps) => {
-  const { className, placeholder, ...rest } = props;
+export type SimpleSelectMethods = {
+  clear: () => void;
+};
+
+const SimpleSelect = (
+  props: SimpleSelectProps,
+  ref: ForwardedRef<{ clear: () => void }>
+) => {
+  const { className, placeholder, ...otherProps } = props;
+  const selectRef = useRef<HTMLSelectElement | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    clear: () => {
+      if (selectRef.current) {
+        // Find the index of either the placeholder option or the default option
+        // If none exist, pick the index of the first option (i.e., zero)
+        const selectedIndex =
+          [...selectRef.current.querySelectorAll('option')].findIndex(
+            (el) =>
+              el.hasAttribute('data-placeholder') || el.hasAttribute('selected')
+          ) || 0;
+        selectRef.current.selectedIndex = selectedIndex; // this doesn't seem to produce a change event in the select element
+      }
+    }
+  }));
 
   const selectClassnames = classNames(styles.select, className);
+  const selectProps = pickBy(
+    otherProps,
+    (_, key) => !['options', 'optionGroups'].includes(key)
+  );
 
-  if ('optionGroups' in rest) {
-    const { optionGroups, ...selectProps } = rest;
-    return (
-      <div className={selectClassnames}>
-        <select className={styles.selectResetDefaults} {...selectProps}>
-          {placeholder && (
-            <option value="" hidden={true}>
-              {placeholder}
-            </option>
-          )}
-          {optionGroups.map((optionGroup, optionGroupKey) => {
-            return (
-              <optgroup label={optionGroup.title} key={optionGroupKey}>
-                {optionGroup.options.map((option, optionKey) => (
-                  <option key={optionKey} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </optgroup>
-            );
-          })}
-        </select>
-      </div>
+  let selectChildren: ReactNode;
+
+  if ('optionGroups' in otherProps) {
+    selectChildren = otherProps.optionGroups.map(
+      (optionGroup, optionGroupKey) => {
+        return (
+          <optgroup label={optionGroup.title} key={optionGroupKey}>
+            {optionGroup.options.map((option, optionKey) => (
+              <option key={optionKey} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </optgroup>
+        );
+      }
     );
+  } else {
+    selectChildren = otherProps.options.map((option, key) => (
+      <option key={key} value={option.value}>
+        {option.label}
+      </option>
+    ));
   }
 
-  const { options, ...selectProps } = rest;
   return (
     <div className={selectClassnames}>
-      <select className={styles.selectResetDefaults} {...selectProps}>
-        {placeholder && (
-          <option value="" hidden={true}>
-            {placeholder}
-          </option>
-        )}
-        {options.map((option, key) => (
-          <option key={key} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+      <select
+        ref={selectRef}
+        className={styles.selectResetDefaults}
+        {...selectProps}
+      >
+        {placeholder && renderPlaceholder(placeholder)}
+        {selectChildren}
       </select>
     </div>
   );
 };
 
-export default SimpleSelect;
+const renderPlaceholder = (text: string) => (
+  <option data-placeholder={true} value="" hidden={true}>
+    {text}
+  </option>
+);
+
+export default forwardRef(SimpleSelect);
