@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import storageService from 'src/services/storage-service';
+import IndexedDB from 'src/services/indexeddb-service';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -40,8 +41,9 @@ const GeneralErrorScreen = () => {
     window.location.reload();
   };
 
-  const resetPage = () => {
+  const resetSite = async () => {
     storageService.clearAll();
+    await IndexedDB.clearDatabase();
     window.location.replace(urlFor.home());
   };
 
@@ -85,7 +87,7 @@ const GeneralErrorScreen = () => {
                 All your species, configuration of views &amp; history will be
                 lost
               </div>
-              <PrimaryButton onClick={resetPage}>Reset the site</PrimaryButton>
+              <PrimaryButton onClick={resetSite}>Reset the site</PrimaryButton>
             </div>
           )}
         </div>
