@@ -88,6 +88,14 @@ class IndexedDB {
     const db = await this.getDB();
     return db.getAllKeys(store);
   }
+
+  static async clearDatabase() {
+    const db = await this.getDB();
+    const objectStoreNames = db.objectStoreNames;
+    for (const store of objectStoreNames) {
+      await db.clear(store);
+    }
+  }
 }
 
 export default IndexedDB;
