@@ -37,11 +37,17 @@ const options = [
 
 describe('SimpleSelect', () => {
   it('renders a list of options', () => {
-    const { container } = render(<SimpleSelect options={options} />);
+    const { container } = render(
+      <SimpleSelect options={options} className={'classFromParent'} />
+    );
     const simpleSelectElement = container.firstElementChild as HTMLElement;
 
     // SimpleSelect renders a div element (for styling purposes)
     expect(simpleSelectElement.tagName.toLowerCase()).toBe('div');
+    expect(simpleSelectElement.classList.contains('select')).toBe(true);
+    expect(simpleSelectElement.classList.contains('classFromParent')).toBe(
+      true
+    );
 
     // The div returned by SimpleSelect contains a native select element
     expect(simpleSelectElement.querySelector('select')).toBeTruthy();
