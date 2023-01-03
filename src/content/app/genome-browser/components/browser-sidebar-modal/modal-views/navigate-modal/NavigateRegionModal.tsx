@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, KeyboardEvent, useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -130,6 +130,12 @@ const NavigateRegionModal = () => {
     }
   };
 
+  const submitOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   const updateErrorMessages = (
     locationStartError: string | null,
     locationEndError: string | null,
@@ -214,9 +220,10 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationStartChange}
+              onKeyDown={submitOnEnter}
               disabled={locationInputActive}
               value={locationStartInput}
-              placeholder="Co-ordinate"
+              placeholder="Add co-ordinate"
             />
           </label>
           {locationStartErrorMessage ? (
@@ -237,9 +244,10 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationEndChange}
+              onKeyDown={submitOnEnter}
               disabled={locationInputActive}
               value={locationEndInput}
-              placeholder="Co-ordinate"
+              placeholder="Add co-ordinate"
             ></Input>
           </label>
           {!locationStartErrorMessage && locationEndErrorMessage ? (
@@ -262,9 +270,10 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onLocationInputFocus}
               onChange={onLocationChange}
+              onKeyDown={submitOnEnter}
               disabled={coordInputsActive}
               value={locationInput}
-              placeholder="Region co-ordinates..."
+              placeholder="Add region co-ordinates..."
             />
             {locationErrorMessage ? (
               <Tooltip
