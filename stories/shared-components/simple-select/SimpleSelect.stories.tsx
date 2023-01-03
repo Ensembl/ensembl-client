@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import times from 'lodash/times';
 
 import SimpleSelect, {
-  Option
+  type Option,
+  type SimpleSelectMethods
 } from 'src/shared/components/simple-select/SimpleSelect';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+
+import styles from './SimpleSelect.stories.scss';
 
 const createSimpleOption = (value: string): Option => ({
   value,
@@ -42,12 +46,7 @@ export const SimpleSelectDefaultValueStory = () => {
   const options = createSimpleOptions(15);
   const lastOption = options[options.length - 1];
 
-  return (
-    <SimpleSelect
-      options={options}
-      defaultValue={lastOption.value}
-    ></SimpleSelect>
-  );
+  return <SimpleSelect options={options} defaultValue={lastOption.value} />;
 };
 
 SimpleSelectDefaultValueStory.storyName = 'with default value';
@@ -55,15 +54,63 @@ SimpleSelectDefaultValueStory.storyName = 'with default value';
 export const SimpleSelectWithPlaceholderStory = () => {
   const options = createSimpleOptions(15);
 
-  return (
-    <SimpleSelect
-      options={options}
-      placeholder="Select an option"
-    ></SimpleSelect>
-  );
+  return <SimpleSelect options={options} placeholder="Select an option" />;
 };
 
 SimpleSelectWithPlaceholderStory.storyName = 'with placeholder';
+
+export const SimpleSelectWithResetStory = () => {
+  const options = createSimpleOptions(15);
+  const firstSelectRef = useRef<SimpleSelectMethods | null>(null);
+  const secondSelectRef = useRef<SimpleSelectMethods | null>(null);
+
+  const clearFirstSelect = () => {
+    firstSelectRef.current?.clear();
+  };
+
+  const clearSecondSelect = () => {
+    secondSelectRef.current?.clear();
+  };
+
+  return (
+    <>
+      <section>
+        <p>For a select element with a placeholder</p>
+        <SimpleSelect
+          ref={firstSelectRef}
+          options={options}
+          placeholder="Select an option"
+        />
+        <div>
+          <PrimaryButton
+            className={styles.resetButton}
+            onClick={clearFirstSelect}
+          >
+            Reset
+          </PrimaryButton>
+        </div>
+      </section>
+      <section>
+        <p>For a select element with an initial value</p>
+        <SimpleSelect
+          ref={secondSelectRef}
+          options={options}
+          defaultValue={options.at(-1)?.value}
+        />
+        <div>
+          <PrimaryButton
+            className={styles.resetButton}
+            onClick={clearSecondSelect}
+          >
+            Reset
+          </PrimaryButton>
+        </div>
+      </section>
+    </>
+  );
+};
+
+SimpleSelectWithResetStory.storyName = 'reset to initial';
 
 export const GroupedOptionsStory = () => {
   const options1 = createSimpleOptions(2);
