@@ -48,7 +48,7 @@ const TrackPanelItemsExpandLozenge = (props: Props) => {
 
   return (
     <div className={styles.itemsExpandLozenge}>
-      <PillButton onClick={toggleExpand}>+ {count}</PillButton>
+      <PillButton onClick={toggleExpand}>+{count}</PillButton>
       <span className={styles.labelTextSecondary}>
         {pluralise(itemName, count)}
       </span>
