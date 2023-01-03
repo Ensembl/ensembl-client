@@ -127,6 +127,7 @@ const SimpleSelect = (
       <select
         ref={selectRef}
         className={styles.selectResetDefaults}
+        defaultValue={placeholder ? '' : undefined}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}
@@ -137,7 +138,7 @@ const SimpleSelect = (
 };
 
 const renderPlaceholder = (text: string) => (
-  <option data-placeholder={true} value="" hidden={true}>
+  <option data-placeholder={true} value="" disabled={true}>
     {text}
   </option>
 );

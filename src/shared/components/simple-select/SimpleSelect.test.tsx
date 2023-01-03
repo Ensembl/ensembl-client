@@ -68,10 +68,9 @@ describe('SimpleSelect', () => {
 
     expect(placeholderOption.textContent).toBe(placeholderText);
     expect(placeholderOption.getAttribute('value')).toBe('');
-    expect(placeholderOption.hasAttribute('hidden')).toBe(true);
+    expect(placeholderOption.hasAttribute('disabled')).toBe(true);
   });
 
-  // to consider: https://nordhealth.design/components/select/
   it('exposes a method for resetting the select', async () => {
     let selectComponentRef = { clear: jest.fn() };
 
