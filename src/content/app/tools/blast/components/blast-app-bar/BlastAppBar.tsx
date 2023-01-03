@@ -35,6 +35,7 @@ import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGen
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { AppName } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -53,8 +54,13 @@ const BlastAppBar = () => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);
 
+  const appBarProps = {
+    appName: AppName.TOOLS,
+    aside: <HelpPopupButton slug="blast" />
+  };
+
   if (!speciesList.length) {
-    return <AppBar appName={AppName.TOOLS} mainContent={placeholderMessage} />;
+    return <AppBar mainContent={placeholderMessage} {...appBarProps} />;
   }
 
   const speciesLozengeClick = (species: CommittedItem) => {
@@ -64,7 +70,8 @@ const BlastAppBar = () => {
           genome_id: species.genome_id,
           common_name: species.common_name,
           scientific_name: species.scientific_name,
-          assembly_name: species.assembly_name
+          assembly_name: species.assembly_name,
+          genome_tag: species.genome_tag
         })
       );
     }
@@ -93,7 +100,7 @@ const BlastAppBar = () => {
     <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />
   );
 
-  return <AppBar appName={AppName.TOOLS} mainContent={wrappedSpecies} />;
+  return <AppBar mainContent={wrappedSpecies} {...appBarProps} />;
 };
 
 export default BlastAppBar;

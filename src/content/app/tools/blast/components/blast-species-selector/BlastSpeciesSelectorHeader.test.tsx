@@ -74,14 +74,16 @@ const selectedHuman = {
   genome_id: 'human-genome-id',
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
-  assembly_name: 'GRCh38'
+  assembly_name: 'GRCh38',
+  genome_tag: 'grch38'
 };
 
 const selectedMouse = {
   genome_id: 'mouse-genome-id',
   common_name: 'Mouse',
   scientific_name: 'Mus musculus',
-  assembly_name: 'GRCm39'
+  assembly_name: 'GRCm39',
+  genome_tag: 'grcm39'
 };
 
 describe('SpeciesSelectorHeader', () => {

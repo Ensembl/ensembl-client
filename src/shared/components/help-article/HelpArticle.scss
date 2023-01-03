@@ -17,13 +17,22 @@ $textColumnWidth: 450px;
     font-size: 15px;
     line-height: 18px;
     font-weight: $normal;
-    margin: 0 0 #{$heading-margin-bottom} -#{$heading-outdent};
+    margin: 0 0 $heading-margin-bottom -#{$heading-outdent};
+  }
+
+  h2,
+  h3 {
+    font-size: 13px;
+    margin-bottom: $line-height;
   }
 
   h2 {
-    font-size: 13px;
     margin-top: calc(2 * #{$line-height});
-    margin-bottom: $line-height;
+    margin-left: -#{$heading-outdent};
+  }
+
+  h3 {
+    margin-top: $line-height;
   }
 
   h1,
@@ -81,7 +90,7 @@ $textColumnWidth: 450px;
   }
 }
 
-@media (max-width: $pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
+@media (max-width: #{$pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap}) {
   .indexArticle {
     grid-template-columns: repeat(2, #{$indexItemWidth});
   }
