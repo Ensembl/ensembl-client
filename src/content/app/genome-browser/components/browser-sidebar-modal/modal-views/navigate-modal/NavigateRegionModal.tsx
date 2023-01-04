@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, KeyboardEvent, useRef, useState } from 'react';
+import React, { FormEvent, KeyboardEvent, useState } from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -37,9 +37,7 @@ import BrowserNavButton from 'src/content/app/genome-browser/components/browser-
 import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { Position } from 'src/shared/components/pointer-box/PointerBox';
 import {
   BrowserSidebarModalView,
   updateBrowserSidebarModalForGenome
@@ -54,6 +52,9 @@ import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
 
 import styles from './NavigateModal.scss';
 
+const ERROR_MESSAGE =
+  'Sorry, we do not recognise this location in this region.';
+
 const NavigateRegionModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const chrLocation = useAppSelector(getChrLocation);
@@ -66,57 +67,49 @@ const NavigateRegionModal = () => {
   const [locationEndInput, setLocationEndInput] = useState('');
   const [locationInput, setLocationInput] = useState('');
 
-  const [coordInputsActive, setCoordInputsActive] = useState(false);
-  const [locationInputActive, setLocationInputActive] = useState(false);
+  const [segmentedInputsActive, setSegmentedInputsActive] = useState(false);
+  const [singleInputActive, setSingleInputActive] = useState(false);
 
-  const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
-    string | null
-  >(null);
-  const [locationEndErrorMessage, setLocationEndErrorMessage] = useState<
-    string | null
-  >(null);
-  const [locationErrorMessage, setLocationErrorMessage] = useState<
-    string | null
-  >(null);
+  const [shouldShowErrorMessage, setShowErrorMessage] =
+    useState<boolean>(false);
 
-  const locationStartRef = useRef<HTMLDivElement>(null);
-  const locationEndRef = useRef<HTMLDivElement>(null);
-  const locationRef = useRef<HTMLDivElement>(null);
+  const shouldDisableSubmission =
+    !(locationStartInput && locationEndInput) && !locationInput;
 
-  const onCoordInputsFocus = () => {
-    setCoordInputsActive(true);
-    setLocationInputActive(false);
+  const onSegmentedInputsFocus = () => {
+    setSegmentedInputsActive(true);
+    setSingleInputActive(false);
   };
 
-  const onLocationInputFocus = () => {
-    setCoordInputsActive(false);
-    setLocationInputActive(true);
+  const onSingleInputFocus = () => {
+    setSegmentedInputsActive(false);
+    setSingleInputActive(true);
   };
 
   const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationStartInput(value);
-    setLocationStartErrorMessage(null);
+    setShowErrorMessage(false);
   };
 
   const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationEndInput(value);
-    setLocationEndErrorMessage(null);
+    setShowErrorMessage(false);
   };
 
   const onLocationChange = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationInput(value);
-    setLocationErrorMessage(null);
+    setShowErrorMessage(false);
   };
 
   const handleSubmit = () => {
     if (activeGenomeId) {
-      setLocationErrorMessage(null);
+      setShowErrorMessage(false);
 
       const [stick] = chrLocation as ChrLocation;
-      const coords = coordInputsActive
+      const coords = segmentedInputsActive
         ? `${locationStartInput}-${locationEndInput}`
         : locationInput;
       const newLocation = `${stick}:${coords}`;
@@ -136,24 +129,9 @@ const NavigateRegionModal = () => {
       resetForm();
     }
 
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !shouldDisableSubmission) {
       event.currentTarget.blur();
       handleSubmit();
-    }
-  };
-
-  const updateErrorMessages = (
-    locationStartError: string | null,
-    locationEndError: string | null,
-    locationError: string | null
-  ) => {
-    if (coordInputsActive) {
-      setLocationStartErrorMessage(locationStartError);
-      setLocationEndErrorMessage(locationEndError);
-    } else {
-      setLocationErrorMessage(
-        locationStartError || locationEndError || locationError
-      );
     }
   };
 
@@ -163,7 +141,9 @@ const NavigateRegionModal = () => {
       endError = null,
       regionError = null
     } = errorMessages;
-    updateErrorMessages(startError, endError, regionError);
+    if (startError || endError || regionError) {
+      setShowErrorMessage(true);
+    }
   };
 
   const resetForm = () => {
@@ -171,10 +151,10 @@ const NavigateRegionModal = () => {
     setLocationEndInput('');
     setLocationInput('');
 
-    setCoordInputsActive(false);
-    setLocationInputActive(false);
+    setSegmentedInputsActive(false);
+    setSingleInputActive(false);
 
-    updateErrorMessages(null, null, null);
+    setShowErrorMessage(false);
   };
 
   const onValidationSuccess = () => {
@@ -183,7 +163,7 @@ const NavigateRegionModal = () => {
     const [stick] = chrLocation as ChrLocation;
     let newChrLocation: ChrLocation;
 
-    if (coordInputsActive) {
+    if (segmentedInputsActive) {
       newChrLocation = [
         stick,
         getNumberWithoutCommas(locationStartInput),
@@ -218,84 +198,60 @@ const NavigateRegionModal = () => {
     <section className={styles.navigateModal}>
       <p>Navigate this region</p>
       <BrowserNavBarControls />
-      <div className={styles.coordInputs}>
-        <div className={styles.inputGroup} ref={locationStartRef}>
+      <div className={styles.segmentedInputs}>
+        <div className={styles.inputGroup}>
           <label>
             <span>Start</span>
             <Input
               type="text"
-              onFocus={onCoordInputsFocus}
+              onFocus={onSegmentedInputsFocus}
               onChange={onLocationStartChange}
               onKeyUp={handleKeyPress}
-              disabled={locationInputActive}
+              disabled={singleInputActive}
               value={locationStartInput}
               placeholder="Add co-ordinate"
             />
           </label>
-          {locationStartErrorMessage ? (
-            <Tooltip
-              anchor={locationStartRef.current}
-              autoAdjust={true}
-              container={locationStartRef.current}
-              position={Position.BOTTOM_LEFT}
-            >
-              {locationStartErrorMessage}
-            </Tooltip>
-          ) : null}
         </div>
-        <div className={styles.inputGroup} ref={locationEndRef}>
+        <div className={styles.inputGroup}>
           <label>
             <span>End</span>
             <Input
               type="text"
-              onFocus={onCoordInputsFocus}
+              onFocus={onSegmentedInputsFocus}
               onChange={onLocationEndChange}
               onKeyUp={handleKeyPress}
-              disabled={locationInputActive}
+              disabled={singleInputActive}
               value={locationEndInput}
               placeholder="Add co-ordinate"
             ></Input>
           </label>
-          {!locationStartErrorMessage && locationEndErrorMessage ? (
-            <Tooltip
-              anchor={locationEndRef.current}
-              autoAdjust={true}
-              container={locationEndRef.current}
-              position={Position.BOTTOM_LEFT}
-            >
-              {locationEndErrorMessage}
-            </Tooltip>
-          ) : null}
         </div>
+        {segmentedInputsActive && shouldShowErrorMessage && (
+          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+        )}
       </div>
-      <div className={styles.locationInput}>
-        <div className={styles.inputGroup} ref={locationRef}>
+      <div className={styles.singleInput}>
+        <div className={styles.inputGroup}>
           <label>
             <span>Go to</span>
             <Input
               type="text"
-              onFocus={onLocationInputFocus}
+              onFocus={onSingleInputFocus}
               onChange={onLocationChange}
               onKeyUp={handleKeyPress}
-              disabled={coordInputsActive}
+              disabled={segmentedInputsActive}
               value={locationInput}
               placeholder="Add region co-ordinates..."
             />
-            {locationErrorMessage ? (
-              <Tooltip
-                anchor={locationRef.current}
-                autoAdjust={true}
-                container={locationRef.current}
-                position={Position.BOTTOM_LEFT}
-              >
-                {locationErrorMessage}
-              </Tooltip>
-            ) : null}
           </label>
         </div>
+        {singleInputActive && shouldShowErrorMessage && (
+          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+        )}
       </div>
       <div className={styles.formButtons}>
-        {(coordInputsActive || locationInputActive) && (
+        {(segmentedInputsActive || singleInputActive) && (
           <span
             className={classNames(styles.cancel, styles.clickableText)}
             onClick={resetForm}
@@ -305,9 +261,7 @@ const NavigateRegionModal = () => {
         )}
         <PrimaryButton
           onClick={handleSubmit}
-          isDisabled={
-            !(locationStartInput && locationEndInput) && !locationInput
-          }
+          isDisabled={shouldDisableSubmission}
         >
           Go
         </PrimaryButton>

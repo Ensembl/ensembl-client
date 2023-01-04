@@ -54,7 +54,7 @@
   }
 }
 
-.coordInputs {
+.segmentedInputs {
   margin-top: 20px;
 
   input {
@@ -62,12 +62,17 @@
   }
 }
 
-.locationInput {
+.singleInput {
   margin-top: 30px;
 
   input {
     width: 230px;
   }
+}
+
+.errorMessage {
+  color: $red;
+  margin: 20px 0 0 42px;
 }
 
 .formButtons {
