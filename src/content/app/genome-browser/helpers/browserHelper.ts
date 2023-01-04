@@ -17,6 +17,8 @@
 import noop from 'lodash/noop';
 import apiService from 'src/services/api-service';
 
+import config from 'config';
+
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   parseFocusObjectId,
@@ -177,7 +179,7 @@ export const validateRegion = async (params: {
 
   if (genomeId) {
     try {
-      const url = `/api/genomesearch/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
+      const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
       const response: RegionValidationResponse = await apiService.fetch(url);
       const regionId = buildFocusObjectId({
         genomeId,
