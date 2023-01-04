@@ -130,8 +130,14 @@ const NavigateRegionModal = () => {
     }
   };
 
-  const submitOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      event.currentTarget.blur();
+      resetForm();
+    }
+
     if (event.key === 'Enter') {
+      event.currentTarget.blur();
       handleSubmit();
     }
   };
@@ -220,7 +226,7 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationStartChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={locationInputActive}
               value={locationStartInput}
               placeholder="Add co-ordinate"
@@ -244,7 +250,7 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationEndChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={locationInputActive}
               value={locationEndInput}
               placeholder="Add co-ordinate"
@@ -270,7 +276,7 @@ const NavigateRegionModal = () => {
               type="text"
               onFocus={onLocationInputFocus}
               onChange={onLocationChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={coordInputsActive}
               value={locationInput}
               placeholder="Add region co-ordinates..."

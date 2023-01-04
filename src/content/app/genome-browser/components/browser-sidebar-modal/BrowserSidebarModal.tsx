@@ -27,8 +27,6 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
-import navigateModalStyles from './modal-views/navigate-modal/NavigateModal.scss';
-
 const browserSidebarModals: Record<
   string,
   LazyExoticComponent<() => JSX.Element | null>
@@ -84,17 +82,6 @@ export const BrowserSidebarModal = () => {
     return 'light';
   };
 
-  const getModalClass = () => {
-    if (
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
-    ) {
-      return navigateModalStyles.modalWrapper;
-    }
-
-    return '';
-  };
-
   const onClose = () => {
     dispatch(closeDrawer());
     dispatch(closeBrowserSidebarModal());
@@ -102,12 +89,7 @@ export const BrowserSidebarModal = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SidebarModal
-        title={modalViewTitle}
-        onClose={onClose}
-        theme={getTheme()}
-        className={getModalClass()}
-      >
+      <SidebarModal title={modalViewTitle} onClose={onClose} theme={getTheme()}>
         {<ModalView />}
       </SidebarModal>
     </Suspense>

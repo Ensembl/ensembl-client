@@ -33,7 +33,9 @@ import {
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import SimpleSelect, {
+  type SimpleSelectMethods
+} from 'src/shared/components/simple-select/SimpleSelect';
 
 import {
   BrowserSidebarModalView,
@@ -47,6 +49,7 @@ import styles from './NavigateModal.scss';
 const NavigateLocationModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const { genomeIdForUrl } = useGenomeBrowserIds();
+  const selectRef = useRef<SimpleSelectMethods | null>(null);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -123,8 +126,14 @@ const NavigateLocationModal = () => {
     }
   };
 
-  const submitOnEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.currentTarget.blur();
+      resetForm();
+    }
+
     if (event.key === 'Enter') {
+      event.currentTarget.blur();
       handleSubmit();
     }
   };
@@ -176,6 +185,8 @@ const NavigateLocationModal = () => {
   };
 
   const resetForm = () => {
+    selectRef.current?.clear();
+
     setRegionNameInput('');
     setLocationStartInput('');
     setLocationEndInput('');
@@ -235,10 +246,12 @@ const NavigateLocationModal = () => {
             <span>Chr</span>
             <SimpleSelect
               onChange={updateRegionNameInput}
+              onKeyUp={handleKeyPress}
               options={getKaryotypeOptions()}
               disabled={locationInputActive}
               className={styles.rangeNameSelect}
               placeholder="Select"
+              ref={selectRef}
             />
           </label>
         </div>
@@ -249,7 +262,7 @@ const NavigateLocationModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationStartChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={locationInputActive}
               value={locationStartInput}
               placeholder="Add co-ordinate"
@@ -273,7 +286,7 @@ const NavigateLocationModal = () => {
               type="text"
               onFocus={onCoordInputsFocus}
               onChange={onLocationEndChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={locationInputActive}
               value={locationEndInput}
               placeholder="Add co-ordinate"
@@ -299,7 +312,7 @@ const NavigateLocationModal = () => {
               type="text"
               onFocus={onLocationInputFocus}
               onChange={onLocationInputChange}
-              onKeyDown={submitOnEnter}
+              onKeyUp={handleKeyPress}
               disabled={coordInputsActive}
               value={locationInput}
               placeholder="Add location co-ordinates..."
