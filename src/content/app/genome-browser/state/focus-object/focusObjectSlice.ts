@@ -165,7 +165,10 @@ export const fetchFocusObject = createAsyncThunk(
     }
 
     if (payload.type === 'location') {
-      const focusLocationObject = buildFocusLocationObject(payload);
+      const focusLocationObject = buildFocusLocationObject({
+        ...payload,
+        type: 'location'
+      });
       return buildLoadedObject({
         id: focusObjectId,
         data: focusLocationObject

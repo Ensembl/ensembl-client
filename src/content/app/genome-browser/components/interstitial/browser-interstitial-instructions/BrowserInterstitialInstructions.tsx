@@ -66,12 +66,12 @@ const BrowserInterstitialInstructions = () => {
         <div className={styles.stepWrapper}>
           <Step
             count={3}
-            label="Use Search or the example links to view a gene or region"
+            label="Use Search or the example links to view a gene or location"
           >
             <div className={styles.searchDescription}>
               <SearchIcon className={styles.searchIcon} />
               <div className={styles.exampleText}>Example gene</div>
-              <div className={styles.exampleText}>Example region</div>
+              <div className={styles.exampleText}>Example location</div>
             </div>
           </Step>
         </div>
