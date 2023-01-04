@@ -27,17 +27,3 @@
 .highlighted {
   background: $ice-blue;
 }
-
-.groupItemMain {
-  display: flex;
-}
-
-.groupItemContent {
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
-
-.chevron {
-  margin-left: 8px;
-  --chevron-height: 6px;
-}

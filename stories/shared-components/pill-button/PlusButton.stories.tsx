@@ -26,16 +26,16 @@ export default {
 export const PlusButtonStory = () => (
   <>
     <div>
-      <PillButton onClick={noop}>+ 2</PillButton>
+      <PillButton onClick={noop}>+2</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+ 42</PillButton>
+      <PillButton onClick={noop}>+42</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+ 512</PillButton>
+      <PillButton onClick={noop}>+512</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+ 1234</PillButton>
+      <PillButton onClick={noop}>+1234</PillButton>
     </div>
   </>
 );
