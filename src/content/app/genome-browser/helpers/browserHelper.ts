@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
 import apiService from 'src/services/api-service';
 
 import config from 'config';
@@ -25,7 +24,6 @@ import {
   buildFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import JSONValue from 'src/shared/types/JSON';
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 type GenomeBrowserFocusIdConstituents = {
@@ -155,59 +153,18 @@ export const getRegionValidationMessages = (
   };
 };
 
-const processValidationMessages = (
-  validationMessages: RegionValidationMessages,
-  onSuccess: (regionId: string) => void,
-  onError: (validationErrors: RegionValidationErrors) => void
-) => {
-  const { errorMessages, successMessages } = validationMessages;
-
-  if (Object.values(errorMessages).every((value) => !value)) {
-    onSuccess(successMessages.regionId as string);
-  } else {
-    onError(errorMessages);
-  }
-};
-
-export const validateRegion = async (params: {
+export const validateGenomicLocation = async (params: {
   regionInput: string;
-  genomeId: string | null;
-  onSuccess: (regionId: string) => void;
-  onError: (validationErrors: RegionValidationErrors) => void;
+  genomeId: string;
 }) => {
-  const { regionInput, genomeId, onSuccess = noop, onError = noop } = params;
+  const { regionInput, genomeId } = params;
+  const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
+  const response: RegionValidationResponse = await apiService.fetch(url);
 
-  if (genomeId) {
-    try {
-      const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
-      const response: RegionValidationResponse = await apiService.fetch(url);
-      const regionId = buildFocusObjectId({
-        genomeId,
-        type: 'region',
-        objectId: response.region_id as string
-      });
-      response.region_id = regionId;
-
-      processValidationMessages(
-        getRegionValidationMessages(response),
-        onSuccess,
-        onError
-      );
-    } catch (error) {
-      const processibleError =
-        error &&
-        typeof error === 'object' &&
-        'status' in error &&
-        (error as JSONValue).status === 400;
-      if (processibleError) {
-        processValidationMessages(
-          getRegionValidationMessages(error as RegionValidationResponse),
-          onSuccess,
-          onError
-        );
-      } else {
-        console.error(error);
-      }
-    }
+  if (response.region_id === null) {
+    // the backend service thinks that the submitted location is invalid
+    throw response;
   }
+
+  return response;
 };

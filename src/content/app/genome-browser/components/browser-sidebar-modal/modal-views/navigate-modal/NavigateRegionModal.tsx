@@ -26,11 +26,9 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
-import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
-  getChrLocationFromStr,
-  validateRegion,
-  type RegionValidationErrors
+  validateGenomicLocation,
+  type RegionValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
@@ -56,7 +54,7 @@ const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this region.';
 
 const NavigateRegionModal = () => {
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const chrLocation = useAppSelector(getChrLocation);
 
   const dispatch = useAppDispatch();
@@ -67,7 +65,7 @@ const NavigateRegionModal = () => {
   const [locationEndInput, setLocationEndInput] = useState('');
   const [locationInput, setLocationInput] = useState('');
 
-  const [segmentedInputsActive, setSegmentedInputsActive] = useState(false);
+  const [segmentedInputActive, setsegmentedInputActive] = useState(false);
   const [singleInputActive, setSingleInputActive] = useState(false);
 
   const [shouldShowErrorMessage, setShowErrorMessage] =
@@ -76,13 +74,13 @@ const NavigateRegionModal = () => {
   const shouldDisableSubmission =
     !(locationStartInput && locationEndInput) && !locationInput;
 
-  const onSegmentedInputsFocus = () => {
-    setSegmentedInputsActive(true);
+  const onsegmentedInputFocus = () => {
+    setsegmentedInputActive(true);
     setSingleInputActive(false);
   };
 
   const onSingleInputFocus = () => {
-    setSegmentedInputsActive(false);
+    setsegmentedInputActive(false);
     setSingleInputActive(true);
   };
 
@@ -104,22 +102,25 @@ const NavigateRegionModal = () => {
     setShowErrorMessage(false);
   };
 
-  const handleSubmit = () => {
-    if (activeGenomeId) {
-      setShowErrorMessage(false);
+  const handleSubmit = async () => {
+    setShowErrorMessage(false);
 
-      const [stick] = chrLocation as ChrLocation;
-      const coords = segmentedInputsActive
-        ? `${locationStartInput}-${locationEndInput}`
-        : locationInput;
-      const newLocation = `${stick}:${coords}`;
+    const [stick] = chrLocation as ChrLocation;
+    const coords = segmentedInputActive
+      ? `${locationStartInput}-${locationEndInput}`
+      : locationInput;
+    const newLocation = `${stick}:${coords}`;
 
-      validateRegion({
+    try {
+      const validatedLocation = await validateGenomicLocation({
         regionInput: newLocation,
-        genomeId: activeGenomeId,
-        onSuccess: onValidationSuccess,
-        onError: onValidationError
+        genomeId: activeGenomeId
       });
+      onValidationSuccess(validatedLocation);
+    } catch (error) {
+      if (error && typeof error === 'object' && 'region_id' in error) {
+        onValidationError();
+      }
     }
   };
 
@@ -135,15 +136,8 @@ const NavigateRegionModal = () => {
     }
   };
 
-  const onValidationError = (errorMessages: RegionValidationErrors) => {
-    const {
-      startError = null,
-      endError = null,
-      regionError = null
-    } = errorMessages;
-    if (startError || endError || regionError) {
-      setShowErrorMessage(true);
-    }
+  const onValidationError = () => {
+    setShowErrorMessage(true);
   };
 
   const resetForm = () => {
@@ -151,31 +145,21 @@ const NavigateRegionModal = () => {
     setLocationEndInput('');
     setLocationInput('');
 
-    setSegmentedInputsActive(false);
+    setsegmentedInputActive(false);
     setSingleInputActive(false);
 
     setShowErrorMessage(false);
   };
 
-  const onValidationSuccess = () => {
+  const onValidationSuccess = (validatedLocation: RegionValidationResponse) => {
     resetForm();
-
-    const [stick] = chrLocation as ChrLocation;
-    let newChrLocation: ChrLocation;
-
-    if (segmentedInputsActive) {
-      newChrLocation = [
-        stick,
-        getNumberWithoutCommas(locationStartInput),
-        getNumberWithoutCommas(locationEndInput)
-      ];
-    } else {
-      newChrLocation = getChrLocationFromStr(`${stick}:${locationInput}`);
-    }
+    const regionName = validatedLocation.region?.region_name as string;
+    const start = validatedLocation.start?.value as number;
+    const end = validatedLocation.end?.value as number;
 
     changeBrowserLocation({
       genomeId: activeGenomeId as string,
-      chrLocation: newChrLocation
+      chrLocation: [regionName, start, end]
     });
   };
 
@@ -198,13 +182,13 @@ const NavigateRegionModal = () => {
     <section className={styles.navigateModal}>
       <p>Navigate this region</p>
       <BrowserNavBarControls />
-      <div className={styles.segmentedInputs}>
-        <div className={styles.inputGroup}>
+      <div className={styles.segmentedInput}>
+        <div className={styles.inputField}>
           <label>
             <span>Start</span>
             <Input
               type="text"
-              onFocus={onSegmentedInputsFocus}
+              onFocus={onsegmentedInputFocus}
               onChange={onLocationStartChange}
               onKeyUp={handleKeyPress}
               disabled={singleInputActive}
@@ -213,12 +197,12 @@ const NavigateRegionModal = () => {
             />
           </label>
         </div>
-        <div className={styles.inputGroup}>
+        <div className={styles.inputField}>
           <label>
             <span>End</span>
             <Input
               type="text"
-              onFocus={onSegmentedInputsFocus}
+              onFocus={onsegmentedInputFocus}
               onChange={onLocationEndChange}
               onKeyUp={handleKeyPress}
               disabled={singleInputActive}
@@ -227,12 +211,12 @@ const NavigateRegionModal = () => {
             ></Input>
           </label>
         </div>
-        {segmentedInputsActive && shouldShowErrorMessage && (
+        {segmentedInputActive && shouldShowErrorMessage && (
           <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
         )}
       </div>
       <div className={styles.singleInput}>
-        <div className={styles.inputGroup}>
+        <div className={styles.inputField}>
           <label>
             <span>Go to</span>
             <Input
@@ -240,7 +224,7 @@ const NavigateRegionModal = () => {
               onFocus={onSingleInputFocus}
               onChange={onLocationChange}
               onKeyUp={handleKeyPress}
-              disabled={segmentedInputsActive}
+              disabled={segmentedInputActive}
               value={locationInput}
               placeholder="Add region co-ordinates..."
             />
@@ -251,7 +235,7 @@ const NavigateRegionModal = () => {
         )}
       </div>
       <div className={styles.formButtons}>
-        {(segmentedInputsActive || singleInputActive) && (
+        {(segmentedInputActive || singleInputActive) && (
           <span
             className={classNames(styles.cancel, styles.clickableText)}
             onClick={resetForm}

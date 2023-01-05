@@ -174,13 +174,15 @@ describe('NavigateLocationModal', () => {
       const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
       jest
-        .spyOn(browserHelperMethods, 'validateRegion')
+        .spyOn(browserHelperMethods, 'validateGenomicLocation')
         .mockImplementation(jest.fn());
 
       await userEvent.type(startCoordinateInput, '500{enter}');
 
-      expect(browserHelperMethods.validateRegion).not.toHaveBeenCalled();
-      (browserHelperMethods.validateRegion as any).mockRestore();
+      expect(
+        browserHelperMethods.validateGenomicLocation
+      ).not.toHaveBeenCalled();
+      (browserHelperMethods.validateGenomicLocation as any).mockRestore();
     });
 
     // check that we are sending request to location validation endpoint
