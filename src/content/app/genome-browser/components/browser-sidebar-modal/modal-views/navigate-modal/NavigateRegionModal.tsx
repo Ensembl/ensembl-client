@@ -253,7 +253,7 @@ const NavigateRegionModal = () => {
       <div>
         <p>
           <span
-            className={classNames(styles.cancel, styles.clickableText)}
+            className={classNames(styles.clickableText)}
             onClick={switchToNavigateLocation}
           >
             Go to new location

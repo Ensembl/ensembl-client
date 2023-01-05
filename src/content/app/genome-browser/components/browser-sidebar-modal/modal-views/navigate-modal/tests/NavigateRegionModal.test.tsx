@@ -29,14 +29,9 @@ import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state
 import createRootReducer from 'src/root/rootReducer';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-import NavigateLocationModal from '../NavigateLocationModal';
+import NavigateRegionModal from '../NavigateRegionModal';
 
-import {
-  getMockServer,
-  validLocationInput,
-  invalidLocationInput,
-  invalidLocationResponse
-} from './mockValidationServer';
+import { getMockServer, invalidLocationResponse } from './mockValidationServer';
 
 const generateKaryotype = () =>
   times(10, (n: number) => ({
@@ -47,6 +42,7 @@ const generateKaryotype = () =>
     type: 'chromosome'
   }));
 const mockKaryotype = generateKaryotype();
+const mockChangeBrowserLocation = jest.fn();
 
 jest.mock('config', () => ({
   genomeSearchBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
@@ -70,12 +66,24 @@ jest.mock(
     genomeIdForUrl: 'human'
   })
 );
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowser',
+  () => () => ({
+    changeBrowserLocation: mockChangeBrowserLocation
+  })
+);
 
 const renderComponent = () => {
   const initialState = {
     browser: {
       browserGeneral: {
-        activeGenomeId: 'human'
+        activeGenomeId: 'human',
+        activeFocusObjectIds: {
+          human: 'gene:brca2'
+        },
+        chrLocations: {
+          human: ['2', 2000, 3000]
+        }
       }
     }
   };
@@ -90,7 +98,7 @@ const renderComponent = () => {
   const renderResult = render(
     <MemoryRouter initialEntries={['/']}>
       <Provider store={store}>
-        <NavigateLocationModal />
+        <NavigateRegionModal />
         <Routes>
           <Route path="*" element={<RouteTester />} />
         </Routes>
@@ -102,6 +110,17 @@ const renderComponent = () => {
     ...renderResult,
     store
   };
+};
+
+const RouteTester = () => {
+  const { pathname, search } = useLocation();
+
+  return (
+    <div data-test-id="route-tester">
+      {pathname}
+      {search}
+    </div>
+  );
 };
 
 const server = getMockServer();
@@ -117,25 +136,20 @@ beforeAll(() =>
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const RouteTester = () => {
-  const { pathname, search } = useLocation();
-
-  return (
-    <div data-test-id="route-tester">
-      {pathname}
-      {search}
-    </div>
-  );
+// an object expected to be passed to the genome browser changeBrowserLocation method upon successful validation
+const newBrowserLocationParams = {
+  genomeId: 'human',
+  chrLocation: ['2', 100, 1000]
 };
 
-describe('NavigateLocationModal', () => {
+describe('NavigateRegionModal', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('has a switch to NavigateRegionModal', async () => {
+  it('has a switch to NavigateLocationModal', async () => {
     const { getByText, store } = renderComponent();
-    const switchElement = getByText('Navigate this region');
+    const switchElement = getByText('Go to new location');
 
     let reduxState = store.getState();
     let modalView = getBrowserSidebarModalView(reduxState);
@@ -148,15 +162,17 @@ describe('NavigateLocationModal', () => {
     reduxState = store.getState();
     modalView = getBrowserSidebarModalView(reduxState);
 
-    expect(modalView).toBe(BrowserSidebarModalView.NAVIGATE_REGION);
+    expect(modalView).toBe(BrowserSidebarModalView.NAVIGATE_LOCATION);
   });
 
   describe('segmented input', () => {
-    it('disables the single input when interacted with', () => {
+    it('disables the single input when interacted with', async () => {
       const { container, getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
       const singleInput = getByLabelText('Go to');
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.formButtons button'
+      ) as HTMLElement;
 
       expect(singleInput.hasAttribute('disabled')).toBe(false);
 
@@ -185,76 +201,58 @@ describe('NavigateLocationModal', () => {
 
     // check that we are sending request to location validation endpoint
     it('submits location when the "Go" button is clicked', async () => {
-      const { container, getByLabelText, getByTestId } = renderComponent();
-      const regionSelector = container.querySelector(
-        '.select select'
-      ) as HTMLSelectElement;
+      const { container, getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
       const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.formButtons button'
+      ) as HTMLElement;
 
       // parts of the validInput that the mock server knows how to respond to
-      await userEvent.selectOptions(regionSelector, '2');
       await userEvent.type(startCoordinateInput, '100');
       await userEvent.type(endCoordinateInput, '1000');
 
       await userEvent.click(submitButton);
 
-      const routeTesterElement = getByTestId('route-tester');
-
       await waitFor(() => {
-        const observedRoute = routeTesterElement.textContent;
-        expect(observedRoute).toBe(
-          '/genome-browser/human?focus=location:2:100-1000'
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith(
+          newBrowserLocationParams
         );
-      });
 
-      // the form should have been cleared upon successful submission
-      expect(startCoordinateInput.value).toBe('');
-      expect(endCoordinateInput.value).toBe('');
-      expect(regionSelector.value).toBe('');
+        // the form should have been cleared upon successful submission
+        expect(startCoordinateInput.value).toBe('');
+        expect(endCoordinateInput.value).toBe('');
+      });
     });
 
     // check that we are sending request to location validation endpoint
     it('submits location when "Enter" key is pressed', async () => {
-      const { container, getByLabelText, getByTestId } = renderComponent();
-      const regionSelector = container.querySelector(
-        '.select select'
-      ) as HTMLSelectElement;
+      const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
       const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
 
       // parts of the validInput that the mock server knows how to respond to
-      await userEvent.selectOptions(regionSelector, '2');
       await userEvent.type(startCoordinateInput, '100');
       await userEvent.type(endCoordinateInput, '1000{enter}');
 
-      const routeTesterElement = getByTestId('route-tester');
-
       await waitFor(() => {
-        const observedRoute = routeTesterElement.textContent;
-        expect(observedRoute).toBe(
-          '/genome-browser/human?focus=location:2:100-1000'
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith(
+          newBrowserLocationParams
         );
-      });
 
-      // the form should have been cleared upon successful submission
-      expect(startCoordinateInput.value).toBe('');
-      expect(endCoordinateInput.value).toBe('');
-      expect(regionSelector.value).toBe('');
+        // the form should have been cleared upon successful submission
+        expect(startCoordinateInput.value).toBe('');
+        expect(endCoordinateInput.value).toBe('');
+      });
     });
 
     it('resets the form when the "Cancel" element is clicked', async () => {
-      const { container, getByLabelText, getByText } = renderComponent();
-      const regionSelector = container.querySelector(
-        '.select select'
-      ) as HTMLSelectElement;
+      const { getByLabelText, getByText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
       const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
       const singleInput = getByLabelText('Go to');
 
       // prefill the fields with data; doesn't matter which
-      await userEvent.selectOptions(regionSelector, '1');
       await userEvent.type(startCoordinateInput, 'foo');
       await userEvent.type(endCoordinateInput, 'bar');
 
@@ -265,7 +263,6 @@ describe('NavigateLocationModal', () => {
       // the form should have been cleared
       expect(startCoordinateInput.value).toBe('');
       expect(endCoordinateInput.value).toBe('');
-      expect(regionSelector.value).toBe('');
       expect(singleInput.hasAttribute('disabled')).toBe(false);
     });
 
@@ -293,14 +290,10 @@ describe('NavigateLocationModal', () => {
       );
 
       const { container, getByLabelText } = renderComponent();
-      const regionSelector = container.querySelector(
-        '.select select'
-      ) as HTMLSelectElement;
       const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
       const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
 
       // parts of the validInput that the mock server knows how to respond to
-      await userEvent.selectOptions(regionSelector, '2');
       await userEvent.type(startCoordinateInput, '100');
       await userEvent.type(endCoordinateInput, '2000{enter}'); // making the location different from the valid location; the server responds with a valid response otherwise
 
@@ -314,22 +307,22 @@ describe('NavigateLocationModal', () => {
   describe('single input', () => {
     it('disables the segmented input when interacted with', async () => {
       const { container, getByLabelText } = renderComponent();
-      const regionSelector = container.querySelector(
-        '.select select'
-      ) as HTMLSelectElement;
       const startCoordinateInput = getByLabelText('Start');
+      const endCoordinateInput = getByLabelText('End');
       const singleInput = getByLabelText('Go to');
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.formButtons button'
+      ) as HTMLElement;
 
-      expect(regionSelector.hasAttribute('disabled')).toBe(false);
       expect(startCoordinateInput.hasAttribute('disabled')).toBe(false);
+      expect(endCoordinateInput.hasAttribute('disabled')).toBe(false);
 
       act(() => {
         singleInput.focus();
       });
 
-      expect(regionSelector.hasAttribute('disabled')).toBe(true);
       expect(startCoordinateInput.hasAttribute('disabled')).toBe(true);
+      expect(endCoordinateInput.hasAttribute('disabled')).toBe(true);
       expect(submitButton.hasAttribute('disabled')).toBe(true);
 
       // typing something in the single location input should enable the "Go" button
@@ -338,54 +331,55 @@ describe('NavigateLocationModal', () => {
       expect(submitButton.hasAttribute('disabled')).toBe(false);
     });
 
+    // QUESTION: are we going to test the rejection of the input referring to another region? Or is this too uncertain a requirement?
+
     // check that we are sending request to location validation endpoint
     it('submits location when the "Go" button is clicked', async () => {
-      const { container, getByLabelText, getByTestId } = renderComponent();
+      const { container, getByLabelText } = renderComponent();
       const singleInput = getByLabelText('Go to') as HTMLInputElement;
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.formButtons button'
+      ) as HTMLElement;
 
-      await userEvent.type(singleInput, validLocationInput);
+      await userEvent.type(singleInput, '100-1000'); // the input that the mock server knows how to handle
 
       await userEvent.click(submitButton);
 
-      const routeTesterElement = getByTestId('route-tester');
-
       await waitFor(() => {
-        const observedRoute = routeTesterElement.textContent;
-        expect(observedRoute).toBe(
-          '/genome-browser/human?focus=location:2:100-1000'
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith(
+          newBrowserLocationParams
         );
-      });
 
-      // the form should have been cleared upon successful submission
-      expect(singleInput.value).toBe('');
+        // the form should have been cleared upon successful submission
+        expect(singleInput.value).toBe('');
+      });
     });
 
     // check that we are sending request to location validation endpoint
     it('submits location when "Enter" key is pressed', async () => {
-      const { getByLabelText, getByTestId } = renderComponent();
+      const { getByLabelText } = renderComponent();
       const singleInput = getByLabelText('Go to') as HTMLInputElement;
 
-      await userEvent.type(singleInput, `${validLocationInput}{enter}`);
-
-      const routeTesterElement = getByTestId('route-tester');
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.type(singleInput, `100-1000{enter}`);
 
       await waitFor(() => {
-        const observedRoute = routeTesterElement.textContent;
-        expect(observedRoute).toBe(
-          '/genome-browser/human?focus=location:2:100-1000'
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith(
+          newBrowserLocationParams
         );
-      });
 
-      // the form should have been cleared upon successful submission
-      expect(singleInput.value).toBe('');
+        // the form should have been cleared upon successful submission
+        expect(singleInput.value).toBe('');
+      });
     });
 
     it('resets the form when "Escape" is pressed', async () => {
       const { container, getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
       const singleInput = getByLabelText('Go to') as HTMLInputElement;
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.formButtons button'
+      ) as HTMLElement;
 
       await userEvent.type(singleInput, `foo`);
 
@@ -398,27 +392,20 @@ describe('NavigateLocationModal', () => {
       expect(submitButton.hasAttribute('disabled')).toBe(true);
     });
 
-    it('resets the form when the "Cancel" element is clicked', async () => {
-      const { container, getByLabelText, getByText } = renderComponent();
-      const singleInput = getByLabelText('Go to') as HTMLInputElement;
-      const submitButton = container.querySelector('button') as HTMLElement;
-
-      await userEvent.type(singleInput, `foo`);
-
-      // notice that the Cancel element should only be present after the form starts getting filled
-      const cancelElement = getByText('Cancel');
-
-      await userEvent.click(cancelElement);
-
-      expect(singleInput.value).toBe('');
-      expect(submitButton.hasAttribute('disabled')).toBe(true);
-    });
-
     it('displays the wrong location error', async () => {
+      server.use(
+        rest.get(
+          'http://location-validation-api/genome/region/validate',
+          (_, res, ctx) => {
+            return res.once(ctx.json(invalidLocationResponse));
+          }
+        )
+      );
+
       const { container, getByLabelText } = renderComponent();
       const singleInput = getByLabelText('Go to') as HTMLInputElement;
 
-      await userEvent.type(singleInput, `${invalidLocationInput}{enter}`);
+      await userEvent.type(singleInput, `1000-1{enter}`);
 
       await waitFor(() => {
         const errorElement = container.querySelector('.errorMessage');
