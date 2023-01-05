@@ -17,19 +17,18 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-export const validRegionInput = '2:100-1000';
-export const invalidRegionInput = '30:100-1000';
+export const validLocationInput = '2:100-1000';
+export const invalidLocationInput = '30:100-1000';
 
 export const getMockServer = () =>
   setupServer(
     rest.get(
-      'http://location-validation-api/api/genomesearch/genome/region/validate',
+      'http://location-validation-api/genome/region/validate',
       (req, res, ctx) => {
         const region = req.url.searchParams.get('region');
-        // console.log('THATS A HIT!');
-        if (region === validRegionInput) {
+        if (region === validLocationInput) {
           return res(ctx.json(validResponse));
-        } else if (region === invalidRegionInput) {
+        } else if (region === invalidLocationInput) {
           return res(ctx.json(invalidResponse));
         }
       }

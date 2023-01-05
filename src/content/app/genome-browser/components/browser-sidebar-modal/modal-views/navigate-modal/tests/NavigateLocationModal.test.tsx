@@ -30,8 +30,10 @@ import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/br
 
 import NavigateLocationModal from '../NavigateLocationModal';
 
-// import { getMockServer, validRegionInput, invalidRegionInput } from './mockValidationServer';
-import { getMockServer } from './mockValidationServer';
+import {
+  getMockServer,
+  validLocationInput /* invalidLocationInput */
+} from './mockValidationServer';
 
 const generateKaryotype = () =>
   times(10, (n: number) => ({
@@ -87,7 +89,7 @@ const renderComponent = () => {
       <Provider store={store}>
         <NavigateLocationModal />
         <Routes>
-          <Route path="/" element={<RouteTester />} />
+          <Route path="*" element={<RouteTester />} />
         </Routes>
       </Provider>
     </MemoryRouter>
@@ -113,9 +115,14 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 const RouteTester = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
-  return <div data-test-id="route-tester">{pathname}</div>;
+  return (
+    <div data-test-id="route-tester">
+      {pathname}
+      {search}
+    </div>
+  );
 };
 
 describe('NavigateLocationModal', () => {
@@ -146,7 +153,7 @@ describe('NavigateLocationModal', () => {
   });
 
   describe('segmented input', () => {
-    it('disables the single input when interacted with', async () => {
+    it('disables the single input when interacted with', () => {
       const { container, getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
       const singleInput = getByLabelText('Go to');
@@ -158,10 +165,8 @@ describe('NavigateLocationModal', () => {
         startCoordinateInput.focus();
       });
 
-      await waitFor(() => {
-        expect(singleInput.hasAttribute('disabled')).toBe(true);
-        expect(submitButton.hasAttribute('disabled')).toBe(true);
-      });
+      expect(singleInput.hasAttribute('disabled')).toBe(true);
+      expect(submitButton.hasAttribute('disabled')).toBe(true);
     });
 
     // FIXME: this test fails
@@ -180,13 +185,12 @@ describe('NavigateLocationModal', () => {
 
     // check that we are sending request to location validation endpoint
     it('submits location when the "Go" button is clicked', async () => {
-      const { debug, container, getByLabelText, getByTestId } =
-        renderComponent();
+      const { container, getByLabelText, getByTestId } = renderComponent();
       const regionSelector = container.querySelector(
         '.select select'
       ) as HTMLSelectElement;
-      const startCoordinateInput = getByLabelText('Start');
-      const endCoordinateInput = getByLabelText('Start');
+      const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
+      const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
       const submitButton = container.querySelector('button') as HTMLElement;
 
       // parts of the validInput that the mock server knows how to respond to
@@ -194,57 +198,199 @@ describe('NavigateLocationModal', () => {
       await userEvent.type(startCoordinateInput, '100');
       await userEvent.type(endCoordinateInput, '1000');
 
-      debug();
-
       await userEvent.click(submitButton);
 
       const routeTesterElement = getByTestId('route-tester');
 
-      waitFor(() => {
-        // console.log('browserHelperMethods.validateRegion', browserHelperMethods.validateRegion);
-        // console.log('routeTesterElement', routeTesterElement.textContent);
-        expect(routeTesterElement.textContent).toBe(
-          '/human?focus=location:2:100-1000'
+      await waitFor(() => {
+        const observedRoute = routeTesterElement.textContent;
+        expect(observedRoute).toBe(
+          '/genome-browser/human?focus=location:2:100-1000'
         );
       });
+
+      // the form should have been cleared upon successful submission
+      expect(startCoordinateInput.value).toBe('');
+      expect(endCoordinateInput.value).toBe('');
+      expect(regionSelector.value).toBe('');
     });
 
     // check that we are sending request to location validation endpoint
-    it.todo('submits location when "Enter" key is pressed');
+    it('submits location when "Enter" key is pressed', async () => {
+      const { container, getByLabelText, getByTestId } = renderComponent();
+      const regionSelector = container.querySelector(
+        '.select select'
+      ) as HTMLSelectElement;
+      const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
+      const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
 
-    it.todo('changes the url if the location is valid');
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.selectOptions(regionSelector, '2');
+      await userEvent.type(startCoordinateInput, '100');
+      await userEvent.type(endCoordinateInput, '1000{enter}');
 
-    it.todo('submits location inputs have been filled in');
+      const routeTesterElement = getByTestId('route-tester');
 
-    it.todo('resets the input elements after submission');
+      await waitFor(() => {
+        const observedRoute = routeTesterElement.textContent;
+        expect(observedRoute).toBe(
+          '/genome-browser/human?focus=location:2:100-1000'
+        );
+      });
 
-    it.todo('resets the form when "Escape" is pressed');
+      // the form should have been cleared upon successful submission
+      expect(startCoordinateInput.value).toBe('');
+      expect(endCoordinateInput.value).toBe('');
+      expect(regionSelector.value).toBe('');
+    });
 
-    it.todo('resets the form when the "Cancel" element is clicked');
+    it('resets the form when the "Cancel" element is clicked', async () => {
+      const { container, getByLabelText, getByText } = renderComponent();
+      const regionSelector = container.querySelector(
+        '.select select'
+      ) as HTMLSelectElement;
+      const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
+      const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
+      const singleInput = getByLabelText('Go to');
+
+      // prefill the fields with data; doesn't matter which
+      await userEvent.selectOptions(regionSelector, '1');
+      await userEvent.type(startCoordinateInput, 'foo');
+      await userEvent.type(endCoordinateInput, 'bar');
+
+      // notice that the Cancel element should only be present after the form starts getting filled
+      const cancelElement = getByText('Cancel');
+      await userEvent.click(cancelElement);
+
+      // the form should have been cleared
+      expect(startCoordinateInput.value).toBe('');
+      expect(endCoordinateInput.value).toBe('');
+      expect(regionSelector.value).toBe('');
+      expect(singleInput.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('resets the form when "Escape" is pressed', async () => {
+      const { getByLabelText } = renderComponent();
+      const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
+      const singleInput = getByLabelText('Go to');
+
+      // start fillinf in the input; then escape
+      await userEvent.type(startCoordinateInput, 'foo{escape}');
+
+      // the form should have been cleared
+      expect(startCoordinateInput.value).toBe('');
+      expect(singleInput.hasAttribute('disabled')).toBe(false);
+    });
 
     it.todo('displays the wrong location error');
   });
 
   describe('single input', () => {
-    it.todo('disables the inputs by parts when interated with');
+    it('disables the segmented input when interacted with', async () => {
+      const { container, getByLabelText } = renderComponent();
+      const regionSelector = container.querySelector(
+        '.select select'
+      ) as HTMLSelectElement;
+      const startCoordinateInput = getByLabelText('Start');
+      const singleInput = getByLabelText('Go to');
+      const submitButton = container.querySelector('button') as HTMLElement;
+
+      expect(regionSelector.hasAttribute('disabled')).toBe(false);
+      expect(startCoordinateInput.hasAttribute('disabled')).toBe(false);
+
+      act(() => {
+        singleInput.focus();
+      });
+
+      expect(regionSelector.hasAttribute('disabled')).toBe(true);
+      expect(startCoordinateInput.hasAttribute('disabled')).toBe(true);
+      expect(submitButton.hasAttribute('disabled')).toBe(true);
+
+      // typing something in the single location input should enable the "Go" button
+      await userEvent.type(singleInput, 'foo');
+
+      expect(submitButton.hasAttribute('disabled')).toBe(false);
+    });
 
     // check that we are sending request to location validation endpoint
-    it.todo('submits location when the "Go" button is clicked');
+    it('submits location when the "Go" button is clicked', async () => {
+      const { container, getByLabelText, getByTestId } = renderComponent();
+      const singleInput = getByLabelText('Go to') as HTMLInputElement;
+      const submitButton = container.querySelector('button') as HTMLElement;
+
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.type(singleInput, validLocationInput);
+
+      await userEvent.click(submitButton);
+
+      const routeTesterElement = getByTestId('route-tester');
+
+      await waitFor(() => {
+        const observedRoute = routeTesterElement.textContent;
+        expect(observedRoute).toBe(
+          '/genome-browser/human?focus=location:2:100-1000'
+        );
+      });
+
+      // the form should have been cleared upon successful submission
+      expect(singleInput.value).toBe('');
+    });
 
     // check that we are sending request to location validation endpoint
-    it.todo('submits location when "Enter" key is pressed');
+    it('submits location when "Enter" key is pressed', async () => {
+      const { getByLabelText, getByTestId } = renderComponent();
+      const singleInput = getByLabelText('Go to') as HTMLInputElement;
 
-    it.todo(
-      'instructs the genome browser to change the location if it is valid'
-    );
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.type(singleInput, `${validLocationInput}{enter}`);
 
-    it.todo('submits location inputs have been filled in');
+      const routeTesterElement = getByTestId('route-tester');
 
-    it.todo('resets the form when "Escape" is pressed');
+      await waitFor(() => {
+        const observedRoute = routeTesterElement.textContent;
+        expect(observedRoute).toBe(
+          '/genome-browser/human?focus=location:2:100-1000'
+        );
+      });
 
-    it.todo('resets the form when the "Cancel" element is clicked');
+      // the form should have been cleared upon successful submission
+      expect(singleInput.value).toBe('');
+    });
 
-    it.todo('resets the input elements after submission');
+    it('resets the form when "Escape" is pressed', async () => {
+      const { container, getByLabelText } = renderComponent();
+      const startCoordinateInput = getByLabelText('Start');
+      const singleInput = getByLabelText('Go to') as HTMLInputElement;
+      const submitButton = container.querySelector('button') as HTMLElement;
+
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.type(singleInput, `foo`);
+
+      expect(startCoordinateInput.hasAttribute('disabled')).toBe(true);
+
+      await userEvent.type(singleInput, `{escape}`);
+
+      expect(singleInput.value).toBe('');
+      expect(startCoordinateInput.hasAttribute('disabled')).toBe(false);
+      expect(submitButton.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('resets the form when the "Cancel" element is clicked', async () => {
+      const { container, getByLabelText, getByText } = renderComponent();
+      const singleInput = getByLabelText('Go to') as HTMLInputElement;
+      const submitButton = container.querySelector('button') as HTMLElement;
+
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.type(singleInput, `foo`);
+
+      // notice that the Cancel element should only be present after the form starts getting filled
+      const cancelElement = getByText('Cancel');
+
+      await userEvent.click(cancelElement);
+
+      expect(singleInput.value).toBe('');
+      expect(submitButton.hasAttribute('disabled')).toBe(true);
+    });
 
     it.todo('displays the wrong location error');
   });
