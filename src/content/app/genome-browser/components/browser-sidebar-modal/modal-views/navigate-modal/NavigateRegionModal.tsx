@@ -104,22 +104,36 @@ const NavigateRegionModal = () => {
 
   const handleSubmit = async () => {
     setShowErrorMessage(false);
-
-    const [stick] = chrLocation as ChrLocation;
-    const coords = segmentedInputActive
-      ? `${locationStartInput}-${locationEndInput}`
-      : locationInput;
-    const newLocation = `${stick}:${coords}`;
+    const [regionName] = chrLocation as ChrLocation;
 
     try {
       const validatedLocation = await validateGenomicLocation({
-        regionInput: newLocation,
+        regionInput: getLocationForSubmission(),
         genomeId: activeGenomeId
       });
-      onValidationSuccess(validatedLocation);
+      if (regionName !== validatedLocation.region?.region_name) {
+        // asking to change a region is not allowed in this view
+        onValidationError();
+      } else {
+        onValidationSuccess(validatedLocation);
+      }
     } catch (error) {
       if (error && typeof error === 'object' && 'region_id' in error) {
         onValidationError();
+      }
+    }
+  };
+
+  const getLocationForSubmission = () => {
+    const [regionName] = chrLocation as ChrLocation;
+    if (segmentedInputActive) {
+      return `${regionName}:${locationStartInput}-${locationEndInput}`;
+    } else {
+      if (locationInput.includes(':')) {
+        // user entered location in a full format; send it for verification as is
+        return locationInput;
+      } else {
+        return `${regionName}:${locationInput}`;
       }
     }
   };
