@@ -203,6 +203,10 @@ const NavigateLocationModal = () => {
     );
   };
 
+  const segmentedInputClasses = classNames(styles.segmentedInput, {
+    [styles.segmentedInputDisabled]: singleInputActive
+  });
+
   return (
     <section className={styles.navigateModal}>
       <p>
@@ -211,7 +215,7 @@ const NavigateLocationModal = () => {
         </span>
       </p>
       <p>Go to new location</p>
-      <div className={styles.segmentedInput}>
+      <div className={segmentedInputClasses}>
         <div className={styles.inputField}>
           <label>
             <span>Chr</span>

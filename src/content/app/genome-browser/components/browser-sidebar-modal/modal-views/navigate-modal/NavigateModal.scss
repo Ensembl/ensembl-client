@@ -45,21 +45,18 @@
   }
 }
 
-.rangeNameSelect {
-  select {
-    &:disabled {
-      background-color: $grey;
-      border: 1px solid $grey;
-    }
-  }
-}
-
 .segmentedInput {
   margin-top: 20px;
 
   input {
     width: 140px;
   }
+}
+
+.segmentedInputDisabled {
+  --simple-select-border: 1px solid #{$grey};
+  --simple-select-arrowhead-color: #{$grey};
+  --select-background-color: #{$light-grey};
 }
 
 .singleInput {
