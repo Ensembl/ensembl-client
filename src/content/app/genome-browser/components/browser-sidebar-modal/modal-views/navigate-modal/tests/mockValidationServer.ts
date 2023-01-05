@@ -17,8 +17,13 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-export const validLocationInput = '2:100-1000';
-export const invalidLocationInput = '30:100-1000';
+const validRegionName = '2';
+const invalidRegionName = '30';
+const startCoordinate = 100;
+const endCoordinate = 1000;
+
+export const validLocationInput = `${validRegionName}:${startCoordinate}-${endCoordinate}`;
+export const invalidLocationInput = `${invalidRegionName}:${startCoordinate}-${endCoordinate}`;
 
 export const getMockServer = () =>
   setupServer(
@@ -40,7 +45,7 @@ const validResponse = {
     error_code: null,
     error_message: null,
     is_valid: true,
-    value: 1000
+    value: endCoordinate
   },
   genome_id: {
     error_code: null,
@@ -53,14 +58,14 @@ const validResponse = {
     error_message: null,
     is_valid: true,
     region_code: 'chromosome',
-    region_name: '13'
+    region_name: validRegionName
   },
-  region_id: '13:100-1000',
+  region_id: `${validRegionName}:${startCoordinate}-${endCoordinate}`,
   start: {
     error_code: null,
     error_message: null,
     is_valid: true,
-    value: 100
+    value: startCoordinate
   }
 };
 
@@ -69,7 +74,7 @@ const invalidResponse = {
     error_code: null,
     error_message: null,
     is_valid: false,
-    value: '1000'
+    value: endCoordinate
   },
   genome_id: {
     error_code: null,
@@ -89,6 +94,6 @@ const invalidResponse = {
     error_code: null,
     error_message: null,
     is_valid: false,
-    value: '100'
+    value: startCoordinate
   }
 };
