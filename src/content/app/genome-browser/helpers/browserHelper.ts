@@ -159,7 +159,24 @@ export const validateGenomicLocation = async (params: {
 }) => {
   const { regionInput, genomeId } = params;
   const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
-  const response: RegionValidationResponse = await apiService.fetch(url);
+
+  let response: RegionValidationResponse;
+
+  try {
+    response = await apiService.fetch(url);
+  } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'status' in error &&
+      error.status === 400
+    ) {
+      // the server failed to parse user's input
+      response = { region_id: null } as unknown as RegionValidationResponse; // lying to typescript
+    } else {
+      throw error;
+    }
+  }
 
   if (response.region_id === null) {
     // the backend service thinks that the submitted location is invalid

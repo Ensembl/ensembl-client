@@ -32,15 +32,15 @@ export const getMockServer = () =>
       (req, res, ctx) => {
         const region = req.url.searchParams.get('region');
         if (region === validLocationInput) {
-          return res(ctx.json(validResponse));
+          return res(ctx.json(validLocationResponse));
         } else if (region === invalidLocationInput) {
-          return res(ctx.json(invalidResponse));
+          return res(ctx.json(invalidLocationResponse));
         }
       }
     )
   );
 
-const validResponse = {
+const validLocationResponse = {
   end: {
     error_code: null,
     error_message: null,
@@ -69,7 +69,7 @@ const validResponse = {
   }
 };
 
-const invalidResponse = {
+export const invalidLocationResponse = {
   end: {
     error_code: null,
     error_message: null,

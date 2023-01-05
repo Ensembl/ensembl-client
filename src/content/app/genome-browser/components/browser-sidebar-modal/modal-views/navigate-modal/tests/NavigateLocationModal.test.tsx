@@ -20,6 +20,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { rest } from 'msw';
 import times from 'lodash/times';
 
 import * as browserHelperMethods from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -32,7 +33,9 @@ import NavigateLocationModal from '../NavigateLocationModal';
 
 import {
   getMockServer,
-  validLocationInput /* invalidLocationInput */
+  validLocationInput,
+  invalidLocationInput,
+  invalidLocationResponse
 } from './mockValidationServer';
 
 const generateKaryotype = () =>
@@ -169,7 +172,6 @@ describe('NavigateLocationModal', () => {
       expect(submitButton.hasAttribute('disabled')).toBe(true);
     });
 
-    // FIXME: this test fails
     it('does not submit location unless all inputs have been filled in', async () => {
       const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
@@ -284,7 +286,33 @@ describe('NavigateLocationModal', () => {
       expect(singleInput.hasAttribute('disabled')).toBe(false);
     });
 
-    it.todo('displays the wrong location error');
+    it('displays the wrong location error', async () => {
+      server.use(
+        rest.get(
+          'http://location-validation-api/genome/region/validate',
+          (req, res, ctx) => {
+            return res.once(ctx.json(invalidLocationResponse));
+          }
+        )
+      );
+
+      const { container, getByLabelText } = renderComponent();
+      const regionSelector = container.querySelector(
+        '.select select'
+      ) as HTMLSelectElement;
+      const startCoordinateInput = getByLabelText('Start') as HTMLInputElement;
+      const endCoordinateInput = getByLabelText('End') as HTMLInputElement;
+
+      // parts of the validInput that the mock server knows how to respond to
+      await userEvent.selectOptions(regionSelector, '2');
+      await userEvent.type(startCoordinateInput, '100');
+      await userEvent.type(endCoordinateInput, '2000{enter}'); // making the location different from the valid location; the server responds with a valid response otherwise
+
+      await waitFor(() => {
+        const errorElement = container.querySelector('.errorMessage');
+        expect(errorElement).toBeTruthy();
+      });
+    });
   });
 
   describe('single input', () => {
@@ -394,6 +422,16 @@ describe('NavigateLocationModal', () => {
       expect(submitButton.hasAttribute('disabled')).toBe(true);
     });
 
-    it.todo('displays the wrong location error');
+    it('displays the wrong location error', async () => {
+      const { container, getByLabelText } = renderComponent();
+      const singleInput = getByLabelText('Go to') as HTMLInputElement;
+
+      await userEvent.type(singleInput, `${invalidLocationInput}{enter}`);
+
+      await waitFor(() => {
+        const errorElement = container.querySelector('.errorMessage');
+        expect(errorElement).toBeTruthy();
+      });
+    });
   });
 });
