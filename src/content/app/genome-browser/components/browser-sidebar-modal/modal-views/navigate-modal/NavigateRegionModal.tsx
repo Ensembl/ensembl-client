@@ -28,7 +28,7 @@ import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/
 
 import {
   validateGenomicLocation,
-  type RegionValidationResponse
+  type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
@@ -165,7 +165,9 @@ const NavigateRegionModal = () => {
     setShowErrorMessage(false);
   };
 
-  const onValidationSuccess = (validatedLocation: RegionValidationResponse) => {
+  const onValidationSuccess = (
+    validatedLocation: LocationValidationResponse
+  ) => {
     resetForm();
     const regionName = validatedLocation.region?.region_name as string;
     const start = validatedLocation.start?.value as number;

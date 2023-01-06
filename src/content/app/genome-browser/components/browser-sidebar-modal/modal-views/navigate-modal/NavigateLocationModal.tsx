@@ -27,7 +27,7 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   validateGenomicLocation,
-  type RegionValidationResponse
+  type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import Input from 'src/shared/components/input/Input';
@@ -173,7 +173,9 @@ const NavigateLocationModal = () => {
     setShowErrorMessage(false);
   };
 
-  const onValidationSuccess = (validatedLocation: RegionValidationResponse) => {
+  const onValidationSuccess = (
+    validatedLocation: LocationValidationResponse
+  ) => {
     resetForm();
     const { region_id } = validatedLocation;
 

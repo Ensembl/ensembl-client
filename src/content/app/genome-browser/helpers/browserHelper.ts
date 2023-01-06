@@ -59,99 +59,28 @@ export const stringifyGenomeBrowserFocusId = (
 export const parseFeatureId = (id: string): GenomeBrowserFocusIdConstituents =>
   parseFocusObjectId(id);
 
-export type RegionValidationErrors = {
-  genomeIdError: string | null;
-  regionParamError: string | null;
-  parseError: string | null;
-  regionError: string | null;
-  startError: string | null;
-  endError: string | null;
-};
-
-export type RegionValidationMessages = {
-  errorMessages: RegionValidationErrors;
-  successMessages: {
-    regionId: string | null;
-  };
-};
-
-export type RegionValidationResult = {
+export type LocationValidationCommonFields = {
   error_code: string | null;
   error_message: string | null;
   is_valid: boolean;
 };
 
-export type RegionValidationValueResult = RegionValidationResult & {
+export type ValueValidationResult = LocationValidationCommonFields & {
   value: string | number;
 };
 
-export type RegionValidationStickResult = RegionValidationResult & {
+export type RegionValidationResult = LocationValidationCommonFields & {
   region_code: string;
   region_name: string;
 };
 
-export type RegionValidationGenericResult = Partial<{
-  error: string | undefined;
-  genome_id: string | undefined;
-  parse: string | undefined;
-  region: string | undefined;
+export type LocationValidationResponse = Partial<{
+  end: ValueValidationResult;
+  genome_id: ValueValidationResult;
+  region_id: string | null;
+  region: RegionValidationResult;
+  start: ValueValidationResult;
 }>;
-
-export type RegionValidationResponse = Partial<{
-  end: RegionValidationValueResult;
-  genome_id: RegionValidationValueResult;
-  region_id: string;
-  region: RegionValidationStickResult;
-  start: RegionValidationValueResult;
-  message: RegionValidationGenericResult;
-}>;
-
-export const getRegionValidationMessages = (
-  validationInfo: RegionValidationResponse | null
-): RegionValidationMessages => {
-  let genomeIdError = null;
-  let regionParamError = null;
-  let parseError = null;
-  let regionError = null;
-  let startError = null;
-  let endError = null;
-  let regionId = null;
-
-  if (validationInfo) {
-    if (validationInfo.message) {
-      genomeIdError = validationInfo.message.genome_id || null;
-      regionParamError = validationInfo.message.region || null;
-      parseError = validationInfo.message.parse || null;
-    } else {
-      if (validationInfo.region && !validationInfo.region.is_valid) {
-        regionError = validationInfo.region.error_message;
-      }
-      if (validationInfo.start && !validationInfo.start.is_valid) {
-        startError = validationInfo.start.error_message;
-      }
-      if (validationInfo.end && !validationInfo.end.is_valid) {
-        endError = validationInfo.end.error_message;
-      }
-      if (validationInfo.region_id) {
-        regionId = validationInfo.region_id;
-      }
-    }
-  }
-
-  return {
-    errorMessages: {
-      genomeIdError,
-      regionParamError,
-      parseError,
-      regionError,
-      startError,
-      endError
-    },
-    successMessages: {
-      regionId
-    }
-  };
-};
 
 export const validateGenomicLocation = async (params: {
   regionInput: string;
@@ -160,7 +89,7 @@ export const validateGenomicLocation = async (params: {
   const { regionInput, genomeId } = params;
   const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
 
-  let response: RegionValidationResponse;
+  let response: LocationValidationResponse;
 
   try {
     response = await apiService.fetch(url);
@@ -172,7 +101,7 @@ export const validateGenomicLocation = async (params: {
       error.status === 400
     ) {
       // the server failed to parse user's input
-      response = { region_id: null } as unknown as RegionValidationResponse; // lying to typescript
+      response = { region_id: null } as unknown as LocationValidationResponse; // lying to typescript
     } else {
       throw error;
     }

@@ -24,10 +24,7 @@ import {
   type ZmenuCreatePayload
 } from '@ensembl/ensembl-genome-browser';
 
-import {
-  getChrLocationStr,
-  type RegionValidationMessages
-} from 'src/content/app/genome-browser/helpers/browserHelper';
+import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import {
   getDefaultGeneTrackSettings,
@@ -35,7 +32,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+import type { LocationValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
@@ -121,7 +118,7 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
   };
 };
 
-export const createRegionValidationInfo = (): RegionValidationResponse => {
+export const createRegionValidationInfo = (): LocationValidationResponse => {
   const randomValue = faker.datatype.number();
 
   return {
@@ -153,20 +150,6 @@ export const createRegionValidationInfo = (): RegionValidationResponse => {
     }
   };
 };
-
-export const createRegionValidationMessages = (): RegionValidationMessages => ({
-  errorMessages: {
-    genomeIdError: null,
-    regionParamError: null,
-    parseError: null,
-    regionError: null,
-    startError: null,
-    endError: null
-  },
-  successMessages: {
-    regionId: null
-  }
-});
 
 export const createChrLocationValues = () => {
   const tupleValue: ChrLocation = [
