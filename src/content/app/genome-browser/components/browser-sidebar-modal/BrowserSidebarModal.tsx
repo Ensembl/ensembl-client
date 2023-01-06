@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, LazyExoticComponent } from 'react';
+import React, { lazy, Suspense, type LazyExoticComponent } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -43,8 +43,11 @@ const browserSidebarModals: Record<
   [BrowserSidebarModalView.DOWNLOADS]: lazy(
     () => import('./modal-views/DownloadsModal')
   ),
-  [BrowserSidebarModalView.NAVIGATE]: lazy(
-    () => import('./modal-views/NavigateModal')
+  [BrowserSidebarModalView.NAVIGATE_REGION]: lazy(
+    () => import('./modal-views/navigate-modal/NavigateRegionModal')
+  ),
+  [BrowserSidebarModalView.NAVIGATE_LOCATION]: lazy(
+    () => import('./modal-views/navigate-modal/NavigateLocationModal')
   )
 };
 
@@ -53,7 +56,8 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
   [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
-  [BrowserSidebarModalView.NAVIGATE]: 'Navigate'
+  [BrowserSidebarModalView.NAVIGATE_REGION]: 'Change location',
+  [BrowserSidebarModalView.NAVIGATE_LOCATION]: 'Change location'
 };
 
 export const BrowserSidebarModal = () => {
@@ -67,6 +71,17 @@ export const BrowserSidebarModal = () => {
   const ModalView = browserSidebarModals[browserSidebarModalView];
   const modalViewTitle = browserSidebarModalTitles[browserSidebarModalView];
 
+  const getTheme = () => {
+    if (
+      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
+      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
+    ) {
+      return 'dark';
+    }
+
+    return 'light';
+  };
+
   const onClose = () => {
     dispatch(closeDrawer());
     dispatch(closeBrowserSidebarModal());
@@ -74,7 +89,7 @@ export const BrowserSidebarModal = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SidebarModal title={modalViewTitle} onClose={onClose}>
+      <SidebarModal title={modalViewTitle} onClose={onClose} theme={getTheme()}>
         {<ModalView />}
       </SidebarModal>
     </Suspense>

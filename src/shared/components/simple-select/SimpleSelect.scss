@@ -22,8 +22,11 @@
   display: inline-block; // native select's display property is inline-block
   min-width: var(--select-min-width, 7ch);
   max-width: var(--select-max-width, 30ch);
-  background-color: var(--select-background-color, $white);
-  border: 1px solid $blue;
+  background-color: var(--select-background-color, #{$white});
+
+  select {
+    border: var(--simple-select-border, 1px solid #{$blue});
+  }
 }
 
 .select::after {
@@ -34,7 +37,7 @@
   transform: translateY(-25%);
   width: 0.8em;
   height: 0.5em;
-  background-color: $blue;
+  background-color: var(--simple-select-arrowhead-color, #{$blue});
   clip-path: polygon(
     100% 0%,
     0 0%,

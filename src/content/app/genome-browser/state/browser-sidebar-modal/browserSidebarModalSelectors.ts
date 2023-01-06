@@ -24,6 +24,7 @@ export const getIsBrowserSidebarModalOpened = (state: RootState) =>
 export const getBrowserSidebarModalView = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId
-    ? state.browser.browserSidebarModal[activeGenomeId]?.browserSidebarModalView
+    ? state.browser.browserSidebarModal[activeGenomeId]
+        ?.browserSidebarModalView ?? null
     : null;
 };

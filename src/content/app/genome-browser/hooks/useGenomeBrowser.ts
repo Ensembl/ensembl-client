@@ -15,7 +15,7 @@
  */
 import { useContext } from 'react';
 import EnsemblGenomeBrowser, {
-  OutgoingAction,
+  type OutgoingAction,
   OutgoingActionType
 } from '@ensembl/ensembl-genome-browser';
 

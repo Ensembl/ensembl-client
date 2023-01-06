@@ -33,6 +33,7 @@ export const BrowserLocationIndicator = () => {
   const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
 
   const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
+
   if (!chrCode || !chrStart || !chrEnd || !activeGenomeId) {
     return null;
   }
@@ -63,4 +64,5 @@ export const BrowserLocationIndicator = () => {
 const CircularChromosomeIndicator = () => {
   return <div className={styles.circularIndicator}></div>;
 };
+
 export default BrowserLocationIndicator;

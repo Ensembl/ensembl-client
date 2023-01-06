@@ -1,8 +1,7 @@
 @import 'src/styles/common';
 
 .browserNavButton {
-  display: inline-block;
-  margin: 0 13px 0 0;
-  height: 22px;
-  width: 22px;
+  --_button-size: var(--browser-nav-button-size, 22px);
+  height: var(--_button-size);
+  width: var(--_button-size);
 }

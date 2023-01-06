@@ -1,0 +1,87 @@
+@import 'src/styles/common';
+
+.navigateModal {
+  width: 272px;
+}
+
+.browserNavBarControls {
+  margin: 15px 0 0 40px;
+  display: flex;
+  column-gap: 35px;
+  align-items: center;
+
+  .zoomInButton,
+  .zoomOutButton {
+    --browser-nav-button-size: 16px;
+  }
+
+  .browserReset {
+    --browser-reset-button-size: 16px;
+  }
+}
+
+.inputField {
+  margin-top: 10px;
+  height: 30px;
+  font-weight: $light;
+
+  label {
+    & > span {
+      display: inline-block;
+      margin-right: 10px;
+      text-align: right;
+      width: 32px;
+    }
+  }
+
+  input {
+    border: 1px solid $light-grey;
+    height: 30px;
+    padding: 2px 6px;
+
+    &:disabled {
+      border: 1px solid $grey;
+    }
+  }
+}
+
+.segmentedInput {
+  margin-top: 20px;
+
+  input {
+    width: 140px;
+  }
+}
+
+.segmentedInputDisabled {
+  --simple-select-border: 1px solid #{$grey};
+  --simple-select-arrowhead-color: #{$grey};
+  --select-background-color: #{$light-grey};
+}
+
+.singleInput {
+  margin-top: 30px;
+
+  input {
+    width: 230px;
+  }
+}
+
+.errorMessage {
+  color: $red;
+  margin: 20px 0 0 42px;
+}
+
+.formButtons {
+  margin-top: 30px;
+  text-align: right;
+
+  .cancel {
+    margin-right: 20px;
+  }
+}
+
+.clickableText {
+  color: $light-blue;
+  cursor: pointer;
+}

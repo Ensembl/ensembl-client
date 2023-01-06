@@ -16,21 +16,30 @@
 
 import React, { memo } from 'react';
 import type { OutgoingAction } from '@ensembl/ensembl-genome-browser';
+import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { browserNavButtonActionMap } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
+import {
+  BrowserNavAction,
+  browserNavButtonActionMap
+} from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
-import type { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav-button/browserNavConfig';
 import { Status } from 'src/shared/types/status';
 
 import styles from './BrowserNavButton.scss';
 
 type Props = {
-  browserNavItem: BrowserNavItem;
+  name: BrowserNavAction;
+  description: string;
+  detail: {
+    [key: string]: number;
+  };
   enabled: boolean;
+  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  className?: string;
 };
 
 export const BrowserNavButton = (props: Props) => {
@@ -40,12 +49,11 @@ export const BrowserNavButton = (props: Props) => {
     return null;
   }
 
-  const { browserNavItem, enabled } = props;
-  const { icon } = browserNavItem;
+  const { name, description, icon, detail, enabled, className } = props;
 
   const action = {
-    type: browserNavButtonActionMap[browserNavItem.name],
-    payload: browserNavItem.detail
+    type: browserNavButtonActionMap[name],
+    payload: detail
   } as OutgoingAction;
 
   const navigateBrowser = () => {
@@ -57,14 +65,13 @@ export const BrowserNavButton = (props: Props) => {
   const buttonStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
-    <div className={styles.browserNavButton}>
-      <ImageButton
-        status={buttonStatus}
-        description={browserNavItem.description}
-        onClick={navigateBrowser}
-        image={icon}
-      />
-    </div>
+    <ImageButton
+      status={buttonStatus}
+      description={description}
+      className={classNames(styles.browserNavButton, className)}
+      onClick={navigateBrowser}
+      image={icon}
+    />
   );
 };
 
