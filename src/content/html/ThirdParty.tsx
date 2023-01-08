@@ -17,7 +17,8 @@
 import { useEffect } from 'react';
 
 const HOTJAR_ID = 2555715; // if we discover that this needs to be updated, we will extract it into an environment variable
-const scriptSrc = `https://static.hotjar.com/c/hotjar-${HOTJAR_ID}.js?sv=6`;
+const HOTJAR_SCRIPT_VERSION = 6;
+const scriptSrc = `https://static.hotjar.com/c/hotjar-${HOTJAR_ID}.js?sv=${HOTJAR_SCRIPT_VERSION}`;
 
 // TODO: remove as soon as it is no longer needed
 export const HotjarScript = () => {
@@ -25,7 +26,10 @@ export const HotjarScript = () => {
     if (!('hj' in window)) {
       (window as any).hj = hotjarQueue;
     }
-    (window as any)._hjSettings = { hjid: HOTJAR_ID, hjsv: 6 };
+    (window as any)._hjSettings = {
+      hjid: HOTJAR_ID,
+      hjsv: HOTJAR_SCRIPT_VERSION
+    };
 
     // FIXME: make sure this only runs once
     const script = document.createElement('script');
