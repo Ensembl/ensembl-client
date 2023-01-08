@@ -31,10 +31,13 @@ export const HotjarScript = () => {
       hjsv: HOTJAR_SCRIPT_VERSION
     };
 
-    // FIXME: make sure this only runs once
     const script = document.createElement('script');
     script.src = scriptSrc;
-    document.body.appendChild(script);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
   }, []);
 
   return null;
