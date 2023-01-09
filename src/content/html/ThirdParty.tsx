@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 
 const HOTJAR_ID = 2555715; // if we discover that this needs to be updated, we will extract it into an environment variable
+const HOTJAR_SCRIPT_VERSION = 6;
+const scriptSrc = `https://static.hotjar.com/c/hotjar-${HOTJAR_ID}.js?sv=${HOTJAR_SCRIPT_VERSION}`;
 
 // TODO: remove as soon as it is no longer needed
 export const HotjarScript = () => {
-  const stringifiedScript = `
-    (function (h, o, t, j, a, r) {
-      h.hj =
-        h.hj ||
-        function () {
-          (h.hj.q = h.hj.q || []).push(arguments);
-        };
-      h._hjSettings = { hjid: ${HOTJAR_ID}, hjsv: 6 };
-      a = o.getElementsByTagName('head')[0];
-      r = o.createElement('script');
-      r.async = 1;
-      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-      a.appendChild(r);
-    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
-  `;
+  useEffect(() => {
+    if (!('hj' in window)) {
+      (window as any).hj = hotjarQueue;
+    }
+    (window as any)._hjSettings = {
+      hjid: HOTJAR_ID,
+      hjsv: HOTJAR_SCRIPT_VERSION
+    };
 
-  return <script dangerouslySetInnerHTML={{ __html: stringifiedScript }} />;
+    const script = document.createElement('script');
+    script.src = scriptSrc;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  return null;
 };
+
+function hotjarQueue() {
+  (window as any).hj.q = (window as any).hj.q || [];
+  (window as any).hj.q.push(arguments); // eslint-disable-line prefer-rest-params
+}
