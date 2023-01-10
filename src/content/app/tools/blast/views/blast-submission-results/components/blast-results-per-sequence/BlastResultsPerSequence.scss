@@ -60,14 +60,8 @@
   grid-column: hits-diagram;
 }
 
-.failedJobStatus {
+.collapsedJobStatus {
   justify-self: end;
   color: $red;
-}
-
-.failedJobStatusWrapper {
-  display: flex;
-  align-items: center;
-  column-gap: 0.6rem;
-  color: #d90000;
+  padding-right: 20px;
 }

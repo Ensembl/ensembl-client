@@ -35,15 +35,15 @@
   text-align: right;
 }
 
-.parametersColumn .matrixSetting .select label {
-  grid-template-columns: 140px 110px;
-}
-
 .blastSubmissionName label span,
 .select label span {
   font-weight: $light;
   line-height: 27px;
   justify-self: end;
+}
+
+.parametersColumn .matrixSetting .select label {
+  grid-template-columns: 140px 110px;
 }
 
 .bottomLevel {

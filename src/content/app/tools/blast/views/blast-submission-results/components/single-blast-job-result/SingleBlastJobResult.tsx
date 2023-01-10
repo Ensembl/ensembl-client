@@ -182,38 +182,52 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
   const alignmentsCount = countAlignments(jobResult.data);
 
-  return (
-    <div className={styles.resultsSummaryRow}>
-      <div className={styles.hitLabel}>
-        <span>{alignmentsCount} </span>
-        <span>{pluralise('hit', alignmentsCount)}</span>
+  if (jobResult.status === 'FAILURE') {
+    return (
+      <div className={styles.failedJobSummaryRow}>
+        <div className={styles.failedJobStatus}>Job failed</div>
+        <BlastSpecies
+          species={speciesInfo}
+          isExpanded={false}
+          toggleExpanded={setExpanded}
+          jobResult={jobResult}
+        />
       </div>
-      <div className={styles.summaryPlot}>
-        {shouldUseGenomicHitsDiagram ? (
-          <BlastGenomicHitsDiagram
-            genomeId={speciesInfo.genome_id}
-            job={jobResult.data}
-            width={diagramWidth}
+    );
+  } else {
+    return (
+      <div className={styles.resultsSummaryRow}>
+        <div className={styles.hitLabel}>
+          <span>{alignmentsCount} </span>
+          <span>{pluralise('hit', alignmentsCount)}</span>
+        </div>
+        <div className={styles.summaryPlot}>
+          {shouldUseGenomicHitsDiagram ? (
+            <BlastGenomicHitsDiagram
+              genomeId={speciesInfo.genome_id}
+              job={jobResult.data}
+              width={diagramWidth}
+            />
+          ) : (
+            <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
+          )}
+        </div>
+        <BlastSpecies
+          species={speciesInfo}
+          isExpanded={isExpanded}
+          toggleExpanded={setExpanded}
+          jobResult={jobResult}
+        />
+        {isExpanded && (
+          <HitsTable
+            species={speciesInfo}
+            jobResult={jobResult}
+            submission={submission}
           />
-        ) : (
-          <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
         )}
       </div>
-      <BlastSpecies
-        species={speciesInfo}
-        isExpanded={isExpanded}
-        toggleExpanded={setExpanded}
-        jobResult={jobResult}
-      />
-      {isExpanded && (
-        <HitsTable
-          species={speciesInfo}
-          jobResult={jobResult}
-          submission={submission}
-        />
-      )}
-    </div>
-  );
+    );
+  }
 };
 
 const BlastSpecies = (props: {

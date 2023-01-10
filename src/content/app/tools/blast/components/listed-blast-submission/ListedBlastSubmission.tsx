@@ -19,10 +19,12 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+import {
+  isFailedBlastSubmission,
+  isSuccessfulBlastSubmission
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
@@ -39,10 +41,6 @@ import styles from './ListedBlastSubmission.scss';
 export type Props = {
   submission: BlastSubmission;
 };
-
-export const FailedSubmissionHelpText = () => (
-  <p>Unable to get results for this sequence</p>
-);
 
 const ListedBlastSubmission = (props: Props) => {
   const { submission } = props;
@@ -125,7 +123,7 @@ const CollapsedSequencesBox = (props: Props) => {
         <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
         species
       </div>
-      <StatusElement jobs={allJobs} />
+      {allJobs.length ? <StatusElement jobs={allJobs} /> : null}
     </div>
   );
 };
@@ -151,28 +149,49 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <span className={styles.againstText}>Against</span> {speciesCount}{' '}
         species
       </div>
-      <StatusElement jobs={jobs} />
+      {jobs.length ? (
+        <StatusElement sequenceId={sequence.id} jobs={jobs} />
+      ) : null}
     </div>
   );
 };
 
-const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
-  const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
-  const hasFailedJobs = jobs.some((job) => job.status === 'FAILURE');
+type StatusElementProps = {
+  sequenceId?: number;
+  jobs: BlastJob[];
+};
+
+export const StatusElement = (props: StatusElementProps) => {
+  const { sequenceId, jobs } = props;
+
+  isFailedBlastSubmission();
+
+  const hasRunningJobs = jobs.some(
+    (job) =>
+      job.status === 'RUNNING' &&
+      (sequenceId ? sequenceId === job.sequenceId : true)
+  );
+  const hasAllFailedJobs = jobs.every(
+    (job) =>
+      job.status === 'FAILURE' &&
+      (sequenceId ? sequenceId === job.sequenceId : true)
+  );
+  const hasPartFailedJobs = jobs.some(
+    (job) =>
+      job.status === 'FAILURE' &&
+      (sequenceId ? sequenceId === job.sequenceId : true)
+  );
 
   const elementClasses = classNames(styles.jobStatus, {
-    [styles.jobStatusProminent]: hasRunningJobs || hasFailedJobs
+    [styles.jobStatusProminent]: hasRunningJobs || hasPartFailedJobs
   });
 
   if (hasRunningJobs) {
     return <span className={elementClasses}>Running...</span>;
-  } else if (hasFailedJobs) {
-    return (
-      <div className={styles.failedJobStatusWrapper}>
-        <span className={elementClasses}>Job failed</span>
-        <QuestionButton helpText={<FailedSubmissionHelpText />} />
-      </div>
-    );
+  } else if (hasAllFailedJobs) {
+    return <span className={elementClasses}>Job failed</span>;
+  } else if (hasPartFailedJobs) {
+    return <span className={elementClasses}>Part failed</span>;
   } else {
     return null;
   }

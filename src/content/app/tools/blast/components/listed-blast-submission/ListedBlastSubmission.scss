@@ -85,10 +85,3 @@ and also that it can be of variable width
 .jobStatusProminent {
   color: $red;
 }
-
-.failedJobStatusWrapper {
-  display: flex;
-  align-items: center;
-  column-gap: 0.6rem;
-  color: #d90000;
-}

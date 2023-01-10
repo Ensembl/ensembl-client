@@ -23,8 +23,6 @@ import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/Featu
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
-import { FailedSubmissionHelpText } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import type {
   BlastJobWithResults,
@@ -34,6 +32,7 @@ import type { Species } from 'src/content/app/tools/blast/state/blast-form/blast
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 import styles from './BlastResultsPerSequence.scss';
+import { StatusElement } from '../../../../components/listed-blast-submission/ListedBlastSubmission';
 
 type BlastResultsPerSequenceProps = {
   sequence: SubmittedSequence;
@@ -82,10 +81,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <span className={styles.againstText}>Against</span>{' '}
             <span>{species.length} species</span>
           </div>
-          <div className={styles.failedJobStatusWrapper}>
-            <span className={styles.failedJobStatus}>Job failed</span>
-            <QuestionButton helpText={<FailedSubmissionHelpText />} />
-          </div>
+          <span className={styles.failedJobStatus}>Job failed</span>
         </div>
       </div>
     );
@@ -117,6 +113,11 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <span>{species.length} species</span>
           </div>
           <div className={styles.showHideWrapper}>
+            {!shouldShowJobResult && (
+              <span className={styles.collapsedJobStatus}>
+                <StatusElement jobs={blastResults} />
+              </span>
+            )}
             <ShowHide
               isExpanded={shouldShowJobResult}
               onClick={() => showJobResult(!shouldShowJobResult)}
