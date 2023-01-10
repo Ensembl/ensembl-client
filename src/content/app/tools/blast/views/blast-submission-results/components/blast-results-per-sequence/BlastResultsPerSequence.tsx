@@ -23,6 +23,7 @@ import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/Featu
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
+import { StatusElement } from '../../../../components/listed-blast-submission/ListedBlastSubmission';
 
 import type {
   BlastJobWithResults,
@@ -32,7 +33,6 @@ import type { Species } from 'src/content/app/tools/blast/state/blast-form/blast
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 import styles from './BlastResultsPerSequence.scss';
-import { StatusElement } from '../../../../components/listed-blast-submission/ListedBlastSubmission';
 
 type BlastResultsPerSequenceProps = {
   sequence: SubmittedSequence;
