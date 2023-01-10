@@ -38,6 +38,7 @@ import {
   setActiveGenomeId,
   setDataFromUrlAndSave
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { checkGenomeBrowserUrl } from 'src/content/app/genome-browser/state/browser-url-validation/browserUrlValidationSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -159,7 +160,14 @@ const useBrowserRouting = () => {
         }
       }
     }
-    dispatch(setDataFromUrlAndSave(payload));
+    dispatch(
+      checkGenomeBrowserUrl({
+        genomeId,
+        focusObject: focusObjectIdInUrl,
+        location,
+        onCheckSuccess: () => dispatch(setDataFromUrlAndSave(payload))
+      })
+    );
   }, [
     genomeId,
     isFetchingGenomeId,

@@ -34,6 +34,8 @@ import {
   getDefaultRegularTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
+import { initialState as initialBrowserUrlValidationState } from 'src/content/app/genome-browser/state/browser-url-validation/browserUrlValidationSlice';
+
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
@@ -196,6 +198,7 @@ export const createMockBrowserState = () => {
         regionEditorActive: false,
         regionFieldActive: false
       },
+      browserUrlValidation: initialBrowserUrlValidationState,
       browserNav: {
         browserNavOpenState: {},
         browserNavIconStates: {

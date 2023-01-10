@@ -61,6 +61,17 @@ jest.mock(
   })
 );
 
+jest.mock(
+  'src/content/app/genome-browser/state/browser-url-validation/browserUrlValidationSlice',
+  () => {
+    return {
+      checkGenomeBrowserUrl: (params: { onCheckSuccess: () => void }) => () => {
+        params.onCheckSuccess();
+      }
+    };
+  }
+);
+
 const humanGenomeInfo = {
   assembly_name: 'GRCh38.p13',
   common_name: 'Human',

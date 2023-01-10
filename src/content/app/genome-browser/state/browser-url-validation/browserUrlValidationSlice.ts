@@ -36,7 +36,7 @@ type State = {
   isInvalidLocation: boolean;
 };
 
-const initialState: State = {
+export const initialState: State = {
   genomeIdInUrl: null,
   focusObjectIdInUrl: null,
   locationInUrl: null,
@@ -49,10 +49,39 @@ const initialState: State = {
 type ThunkApi = Parameters<Parameters<typeof createAsyncThunk>[1]>[1];
 
 type BrowserUrlElements = {
-  genomeId: string;
+  genomeId?: string;
   focusObject?: string | null;
   location?: string | null;
 };
+
+export const checkGenomeBrowserUrl = createAsyncThunk(
+  'genome-browser/check-genome-browser-url',
+  async (
+    payload: BrowserUrlElements & {
+      onCheckSuccess: () => void;
+    },
+    thunkApi
+  ) => {
+    const { dispatch } = thunkApi;
+    const checkResult = await dispatch(checkGenomeBrowserUrlElements(payload));
+
+    const {
+      isMissingGenomeId,
+      isMalformedFocusObjectId,
+      isMissingFocusObject,
+      isInvalidLocation
+    } = checkResult.payload as any; // FIXME
+
+    if (
+      !isMissingGenomeId &&
+      !isMalformedFocusObjectId &&
+      !isMissingFocusObject &&
+      !isInvalidLocation
+    ) {
+      payload.onCheckSuccess();
+    }
+  }
+);
 
 export const checkGenomeBrowserUrlElements = createAsyncThunk(
   'genome-browser/check-url-elements',
@@ -62,11 +91,17 @@ export const checkGenomeBrowserUrlElements = createAsyncThunk(
       focusObject: focusObjectFromUrl,
       location: locationFromUrl
     } = payload;
+
+    if (!genomeId) {
+      // not much to do
+      return initialState;
+    }
+
     const newState = { ...initialState };
 
     // checking focus object
     if (!focusObjectFromUrl) {
-      return; // nothing to check
+      return initialState; // nothing to check
     }
     try {
       // focus object can be parsed
@@ -198,4 +233,4 @@ const browserUrlValidationSlice = createSlice({
   }
 });
 
-export default browserUrlValidationSlice;
+export default browserUrlValidationSlice.reducer;

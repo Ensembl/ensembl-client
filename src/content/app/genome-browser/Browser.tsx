@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowser from './hooks/useGenomeBrowser';
 import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
-import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -36,6 +36,7 @@ import { getIsBrowserSidebarModalOpened } from './state/browser-sidebar-modal/br
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
+import { getBrowserUrlValidityChecks } from 'src/content/app/genome-browser/state/browser-url-validation/browserUrlValidationSelectors';
 
 import BrowserBar from './components/browser-bar/BrowserBar';
 import BrowserImage from './components/browser-image/BrowserImage';
@@ -64,6 +65,7 @@ export const Browser = () => {
   const genome = useAppSelector((state) =>
     getGenomeById(state, activeGenomeId ?? '')
   );
+  const urlValidityChecks = useAppSelector(getBrowserUrlValidityChecks);
 
   const { search } = useLocation(); // from document.location provided by the router
   const urlSearchParams = new URLSearchParams(search);
@@ -73,14 +75,14 @@ export const Browser = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { changeGenomeId } = useBrowserRouting();
+  const { genomeIdInUrl, focusObjectIdInUrl } = useGenomeBrowserIds();
+
   const {
-    genomeIdInUrl,
-    focusObjectIdInUrl,
     isMissingGenomeId,
     isMalformedFocusObjectId,
     isMissingFocusObject,
     isInvalidLocation
-  } = useGenomeBrowserUrlCheck();
+  } = urlValidityChecks;
 
   useGenomeBrowserTracks();
 
