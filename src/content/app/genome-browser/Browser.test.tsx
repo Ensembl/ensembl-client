@@ -69,16 +69,6 @@ jest.mock(
 jest.mock('./components/drawer/Drawer', () => () => (
   <div className="drawer">Drawer</div>
 ));
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck',
-  () => () => ({
-    genomeIdInUrl: 'foo',
-    focusObjectIdInUrl: 'bar',
-    isMissingGenomeId: false,
-    isMalformedFocusObjectId: false,
-    isMissingFocusObject: false
-  })
-);
 
 const mockState = createMockBrowserState();
 const mockStore = configureMockStore([thunk]);
