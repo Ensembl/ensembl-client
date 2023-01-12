@@ -16,7 +16,7 @@
 
 import { useContext } from 'react';
 
-import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserIdsContext';
+import { GenomeBrowserIdsContext } from 'src/content/app/genome-browser/contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
 
 // TODO: remember that there will also be a lookup into the browser storage
 // to determine whether the genome id in the url still matches the genome id

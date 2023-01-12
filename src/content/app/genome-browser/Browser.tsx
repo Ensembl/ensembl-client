@@ -49,7 +49,7 @@ import MissingGenomeError from 'src/shared/components/error-screen/url-errors/Mi
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import { GenomeBrowserProvider } from './contexts/GenomeBrowserContext';
-import { GenomeBrowserIdsProvider } from './contexts/GenomeBrowserIdsContext';
+import { GenomeBrowserIdsProvider } from './contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
 
 import styles from './Browser.scss';
 

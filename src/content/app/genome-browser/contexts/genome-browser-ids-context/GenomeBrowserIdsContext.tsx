@@ -27,7 +27,7 @@ import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
-} from '../state/browser-general/browserGeneralSelectors';
+} from '../../state/browser-general/browserGeneralSelectors';
 
 import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
 
