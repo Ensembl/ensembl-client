@@ -18,7 +18,6 @@ import apiService from 'src/services/api-service';
 
 import config from 'config';
 
-import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   parseFocusObjectId,
   buildFocusObjectId
@@ -36,11 +35,17 @@ export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
   const [startBp, endBp] = chrRegion.split('-');
 
-  return [
-    chrCode,
-    getNumberWithoutCommas(startBp),
-    getNumberWithoutCommas(endBp)
-  ] as ChrLocation;
+  // We should only allow digits in start and end coordinates of location strings
+  // Anything else (commas, white spaces, whatever) will be validated by the backend
+  const coordinateTestRegex = /[^\d]/;
+
+  if (startBp.match(coordinateTestRegex) || endBp.match(coordinateTestRegex)) {
+    throw new Error(
+      'Start and end coordinates of a region must consist of digits only'
+    );
+  }
+
+  return [chrCode, parseInt(startBp, 10), parseInt(endBp, 10)] as ChrLocation;
 }
 
 export function getChrLocationStr(

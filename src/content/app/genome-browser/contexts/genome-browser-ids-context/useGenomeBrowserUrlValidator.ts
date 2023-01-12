@@ -32,6 +32,7 @@ type Params = {
   genomeId: string | undefined;
   parsedFocusObjectId: FocusObjectIdConstituents | undefined;
   parsedLocation: ChrLocation | undefined;
+  hasMalformedLocation: boolean;
 };
 
 const initialState = {
@@ -43,7 +44,12 @@ const initialState = {
 
 const useGenomeBrowserUrlValidator = (params: Params) => {
   const [state, setState] = useState(initialState);
-  const { genomeId, parsedFocusObjectId, parsedLocation } = params;
+  const {
+    genomeId,
+    parsedFocusObjectId,
+    parsedLocation,
+    hasMalformedLocation
+  } = params;
   const dispatch = useAppDispatch();
 
   const stateRef = useRef(state);
@@ -69,7 +75,9 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
       ReturnType<typeof checkFocusObject | typeof checkLocationFromUrl>
     >;
 
-    if (parsedLocation) {
+    if (hasMalformedLocation) {
+      checkPromises.push(Promise.resolve({ isInvalidLocation: true }));
+    } else if (parsedLocation) {
       const [regionName, start, end] = parsedLocation;
       const locationCheckPromise = checkLocationFromUrl({
         genomeId,
@@ -88,7 +96,7 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
         isValidating: false,
         doneValidating: true,
         isMissingFocusObject: false,
-        isInvalidLocation: false
+        isInvalidLocation: hasMalformedLocation || false
       };
       for (const result of checkResults) {
         if ('isMissingFocusObject' in result) {

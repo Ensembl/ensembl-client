@@ -92,7 +92,7 @@ const useBrowserRouting = () => {
     getBrowserActiveFocusObjectIds
   );
 
-  const chrLocation = location ? getChrLocationFromStr(location) : null;
+  const chrLocation = location ? getParsedChromosomeLocation(location) : null;
 
   useEffect(() => {
     if (!genomeIdInUrl) {
@@ -218,6 +218,16 @@ const useBrowserRouting = () => {
   return {
     changeGenomeId
   };
+};
+
+const getParsedChromosomeLocation = (locationStr: string | null) => {
+  try {
+    if (locationStr) {
+      return getChrLocationFromStr(locationStr);
+    }
+  } catch {
+    return null;
+  }
 };
 
 export default useBrowserRouting;

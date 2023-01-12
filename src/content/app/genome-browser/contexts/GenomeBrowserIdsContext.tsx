@@ -103,7 +103,8 @@ export const GenomeBrowserIdsProvider = (props: {
   } = useGenomeBrowserUrlValidator({
     genomeId,
     parsedFocusObjectId,
-    parsedLocation
+    parsedLocation,
+    hasMalformedLocation: isMalformedLocation
   });
 
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
