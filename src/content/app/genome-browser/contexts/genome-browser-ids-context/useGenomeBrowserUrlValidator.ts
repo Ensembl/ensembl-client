@@ -56,10 +56,8 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
   const postValidationQueueRef = useRef<Array<() => unknown>>([]);
 
   useEffect(() => {
-    stateRef.current = state;
-  });
+    setState(initialState);
 
-  useEffect(() => {
     if (!genomeId || !parsedFocusObjectId) {
       onValidationComplete(initialState); // nothing to validate
       return;
@@ -109,6 +107,10 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
       onValidationComplete(newState);
     });
   }, [genomeId]);
+
+  useEffect(() => {
+    stateRef.current = state;
+  });
 
   const runAfterValidation = (fn: () => unknown) => {
     if (
