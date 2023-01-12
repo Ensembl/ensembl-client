@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-$container_max_width: 1770px;
+$blast_container_max_width: calc($tools_container_max_width - $standard-gutter);
 
 .resultsContainer {
   display: grid;
@@ -16,12 +16,12 @@ $container_max_width: 1770px;
 }
 
 .blastSubmissionResultsContainer {
-  max-width: $container_max_width;
+  max-width: $blast_container_max_width;
 }
 
 .loaderContainer {
   display: flex;
   justify-content: center;
-  max-width: $container_max_width;
+  max-width: $blast_container_max_width;
   padding: 1rem 0 2rem;
 }

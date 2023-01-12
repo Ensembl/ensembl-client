@@ -123,7 +123,7 @@ const CollapsedSequencesBox = (props: Props) => {
         <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
         species
       </div>
-      {allJobs.length ? <StatusElement jobs={allJobs} /> : null}
+      {allJobs.length ? <JobStatus jobs={allJobs} /> : null}
     </div>
   );
 };
@@ -149,19 +149,17 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <span className={styles.againstText}>Against</span> {speciesCount}{' '}
         species
       </div>
-      {jobs.length ? (
-        <StatusElement sequenceId={sequence.id} jobs={jobs} />
-      ) : null}
+      {jobs.length ? <JobStatus sequenceId={sequence.id} jobs={jobs} /> : null}
     </div>
   );
 };
 
-type StatusElementProps = {
+type JobStatusProps = {
   sequenceId?: number;
   jobs: BlastJob[];
 };
 
-export const StatusElement = (props: StatusElementProps) => {
+export const JobStatus = (props: JobStatusProps) => {
   const { sequenceId, jobs } = props;
 
   isFailedBlastSubmission();

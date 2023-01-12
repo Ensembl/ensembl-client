@@ -23,7 +23,7 @@ import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/Featu
 import JobParameters from '../job-parameters/JobParameters';
 import SingleBlastJobResult from '../single-blast-job-result/SingleBlastJobResult';
 import { BlastGenomicHitsDiagramLegend } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
-import { StatusElement } from '../../../../components/listed-blast-submission/ListedBlastSubmission';
+import { JobStatus } from 'src/content/app/tools/blast/components/listed-blast-submission/ListedBlastSubmission';
 
 import type {
   BlastJobWithResults,
@@ -81,7 +81,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
             <span className={styles.againstText}>Against</span>{' '}
             <span>{species.length} species</span>
           </div>
-          <span className={styles.failedJobStatus}>Job failed</span>
+          <span className={styles.failedJob}>Job failed</span>
         </div>
       </div>
     );
@@ -115,7 +115,7 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
           <div className={styles.showHideWrapper}>
             {!shouldShowJobResult && (
               <span className={styles.collapsedJobStatus}>
-                <StatusElement jobs={blastResults} />
+                <JobStatus jobs={blastResults} />
               </span>
             )}
             <ShowHide
