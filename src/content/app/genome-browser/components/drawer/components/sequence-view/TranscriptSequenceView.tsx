@@ -82,6 +82,7 @@ const TranscriptSequenceView = (props: Props) => {
   return (
     <DrawerSequenceView
       genomeId={genomeId}
+      featureId={transcript.stable_id}
       isExpanded={isExpanded}
       isError={isError}
       isLoading={isFetching}
