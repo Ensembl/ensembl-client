@@ -184,7 +184,12 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
 
   if (jobResult.status === 'FAILURE') {
     return (
-      <div className={styles.failedJobSummaryRow}>
+      <div
+        className={classNames(
+          styles.resultsSummaryRow,
+          styles.failedJobSummaryRow
+        )}
+      >
         <div className={styles.failedJobStatus}>Job failed</div>
         <BlastSpecies
           species={speciesInfo}

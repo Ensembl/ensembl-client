@@ -149,46 +149,33 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <span className={styles.againstText}>Against</span> {speciesCount}{' '}
         species
       </div>
-      {jobs.length ? <JobStatus sequenceId={sequence.id} jobs={jobs} /> : null}
+      {jobs.length ? <JobStatus jobs={jobs} /> : null}
     </div>
   );
 };
 
 type JobStatusProps = {
-  sequenceId?: number;
   jobs: BlastJob[];
 };
 
 export const JobStatus = (props: JobStatusProps) => {
-  const { sequenceId, jobs } = props;
+  const { jobs } = props;
 
   isFailedBlastSubmission();
 
-  const hasRunningJobs = jobs.some(
-    (job) =>
-      job.status === 'RUNNING' &&
-      (sequenceId ? sequenceId === job.sequenceId : true)
-  );
-  const hasAllFailedJobs = jobs.every(
-    (job) =>
-      job.status === 'FAILURE' &&
-      (sequenceId ? sequenceId === job.sequenceId : true)
-  );
-  const hasPartFailedJobs = jobs.some(
-    (job) =>
-      job.status === 'FAILURE' &&
-      (sequenceId ? sequenceId === job.sequenceId : true)
-  );
+  const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
+  const hasAllFailedJobs = jobs.every((job) => job.status === 'FAILURE');
+  const hasSomeFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
   const elementClasses = classNames(styles.jobStatus, {
-    [styles.jobStatusProminent]: hasRunningJobs || hasPartFailedJobs
+    [styles.jobStatusProminent]: hasRunningJobs || hasSomeFailedJobs
   });
 
   if (hasRunningJobs) {
     return <span className={elementClasses}>Running...</span>;
   } else if (hasAllFailedJobs) {
     return <span className={elementClasses}>Job failed</span>;
-  } else if (hasPartFailedJobs) {
+  } else if (hasSomeFailedJobs) {
     return <span className={elementClasses}>Part failed</span>;
   } else {
     return null;

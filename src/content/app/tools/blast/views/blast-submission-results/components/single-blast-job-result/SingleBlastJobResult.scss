@@ -29,23 +29,13 @@
 }
 
 .failedJobSummaryRow {
-  display: grid;
   grid-template-columns:
     [empty] 11ch [failed-status] minmax(48%, 1050px)
     [species] minmax(20%, 1fr);
 
   grid-template-areas: 'empty failed-status species';
 
-  gap: 20px;
   padding-bottom: 40px;
-
-  &:first-of-type {
-    padding-top: 24px;
-  }
-
-  &:last-of-type {
-    padding-bottom: 46px;
-  }
 
   .blastSpecies {
     color: $dark-grey;

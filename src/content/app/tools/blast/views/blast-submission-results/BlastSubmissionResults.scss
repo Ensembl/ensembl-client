@@ -1,6 +1,8 @@
 @import 'src/styles/common';
 
-$blast_container_max_width: calc($tools_container_max_width - $standard-gutter);
+$blast_container_max_width: calc(
+  var(--blast-container-max-width) - $standard-gutter
+);
 
 .resultsContainer {
   display: grid;
