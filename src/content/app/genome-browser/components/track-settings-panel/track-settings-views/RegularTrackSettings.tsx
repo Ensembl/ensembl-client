@@ -20,14 +20,12 @@ import { useAppSelector } from 'src/store';
 import useTrackSettings from '../useTrackSettings';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
 
-import {
-  getApplyToAllSettings,
-  getTrackSettingsForTrackId
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import type { RegularTrackSettings as RegularTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+
+import MoveTrackIcon from 'static/icons/icon_move_tracks.svg';
 
 import styles from '../TrackSettingsPanel.scss';
 
@@ -40,8 +38,8 @@ export const RegularTrackSettings = (props: Props) => {
   const trackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, trackId)
   )?.settings as RegularTrackSettingsType;
-  const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
-  const { toggleApplyToAll, updateTrackName } = useTrackSettings({
+
+  const { updateTrackName } = useTrackSettings({
     selectedTrackId: trackId
   });
 
@@ -50,13 +48,7 @@ export const RegularTrackSettings = (props: Props) => {
   return (
     <div className={styles.trackSettingsPanel}>
       <div className={styles.section}>
-        <GlobalTrackSwitch
-          onChange={toggleApplyToAll}
-          selectedOption={shouldApplyToAll ? 'all_tracks' : 'this_track'}
-        />
-      </div>
-      <div className={styles.section}>
-        <div className={styles.subLabel}>Show</div>
+        <div className={styles.subLabel}>All tracks</div>
         <div>
           <div className={styles.toggleWrapper}>
             <label>Track name</label>
@@ -66,6 +58,11 @@ export const RegularTrackSettings = (props: Props) => {
               className={styles.slideToggle}
             />
           </div>
+        </div>
+      </div>
+      <div className={styles.section}>
+        <div className={styles.moveTracksIcon}>
+          <MoveTrackIcon />
         </div>
       </div>
     </div>
