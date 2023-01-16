@@ -71,7 +71,8 @@ const useBrowserRouting = () => {
     activeGenomeId,
     activeFocusObjectId,
     genomeIdForUrl,
-    isFetchingGenomeId
+    isFetchingGenomeId,
+    runAfterValidation
   } = useGenomeBrowserIds();
   const focusObject = useAppSelector((state: RootState) =>
     getFocusObjectById(state, activeFocusObjectId || '')
@@ -91,7 +92,7 @@ const useBrowserRouting = () => {
     getBrowserActiveFocusObjectIds
   );
 
-  const chrLocation = location ? getChrLocationFromStr(location) : null;
+  const chrLocation = location ? getParsedChromosomeLocation(location) : null;
 
   useEffect(() => {
     if (!genomeIdInUrl) {
@@ -159,7 +160,10 @@ const useBrowserRouting = () => {
         }
       }
     }
-    dispatch(setDataFromUrlAndSave(payload));
+
+    runAfterValidation(() => {
+      dispatch(setDataFromUrlAndSave(payload));
+    });
   }, [
     genomeId,
     isFetchingGenomeId,
@@ -214,6 +218,16 @@ const useBrowserRouting = () => {
   return {
     changeGenomeId
   };
+};
+
+const getParsedChromosomeLocation = (locationStr: string | null) => {
+  try {
+    if (locationStr) {
+      return getChrLocationFromStr(locationStr);
+    }
+  } catch {
+    return null;
+  }
 };
 
 export default useBrowserRouting;

@@ -18,7 +18,7 @@ import React, { createContext, useContext } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { rest } from 'msw';
+import { rest, graphql } from 'msw';
 import { setupServer } from 'msw/node';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import set from 'lodash/fp/set';
@@ -26,12 +26,13 @@ import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import thoasSlice from 'src/shared/state/api-slices/thoasSlice';
 
 import useBrowserRouting from './useBrowserRouting';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import { GenomeBrowserIdsProvider } from '../contexts/GenomeBrowserIdsContext';
+import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
@@ -42,7 +43,8 @@ const mockGenomeSearchApiBaseUrl = 'http://genome-search-api';
 const mockGenomeBrowserObj = {};
 
 jest.mock('config', () => ({
-  genomeSearchBaseUrl: 'http://genome-search-api'
+  genomeSearchBaseUrl: 'http://genome-search-api',
+  thoasBaseUrl: 'http://graphql-api'
 }));
 
 jest.mock(
@@ -141,7 +143,10 @@ const renderComponent = ({
   const store = configureStore({
     reducer: createRootReducer(),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([restApiSlice.middleware]),
+      getDefaultMiddleware().concat([
+        restApiSlice.middleware,
+        thoasSlice.middleware
+      ]),
     preloadedState: state as any
   });
 
@@ -192,6 +197,20 @@ const server = setupServer(
         })
       );
     }
+  }),
+  graphql.query('TrackPanelGene', (req, res, ctx) => {
+    return res(
+      ctx.data({
+        gene: true // doesn't matter, as long it's a truthy value
+      })
+    );
+  }),
+  graphql.query('Region', (req, res, ctx) => {
+    return res(
+      ctx.data({
+        region: true // doesn't matter, as long it's a truthy value
+      })
+    );
   })
 );
 

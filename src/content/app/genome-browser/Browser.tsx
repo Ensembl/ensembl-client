@@ -22,7 +22,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useBrowserRouting from './hooks/useBrowserRouting';
 import useGenomeBrowserTracks from './hooks/useGenomeBrowserTracks';
-import useGenomeBrowserUrlCheck from 'src/content/app/genome-browser/hooks/useGenomeBrowserUrlCheck';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -49,7 +49,7 @@ import MissingGenomeError from 'src/shared/components/error-screen/url-errors/Mi
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 import { GenomeBrowserProvider } from './contexts/GenomeBrowserContext';
-import { GenomeBrowserIdsProvider } from './contexts/GenomeBrowserIdsContext';
+import { GenomeBrowserIdsProvider } from './contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
 
 import styles from './Browser.scss';
 
@@ -65,6 +65,7 @@ export const Browser = () => {
   const { search } = useLocation(); // from document.location provided by the router
   const urlSearchParams = new URLSearchParams(search);
   const focus = urlSearchParams.get('focus') || null;
+  const location = urlSearchParams.get('location') || null;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -74,8 +75,10 @@ export const Browser = () => {
     focusObjectIdInUrl,
     isMissingGenomeId,
     isMalformedFocusObjectId,
-    isMissingFocusObject
-  } = useGenomeBrowserUrlCheck();
+    isMissingFocusObject,
+    isInvalidLocation,
+    resetValidator
+  } = useGenomeBrowserIds();
 
   useGenomeBrowserTracks();
 
@@ -97,6 +100,7 @@ export const Browser = () => {
     const interstitialUrl = urlFor.browser({
       genomeId: genomeIdInUrl
     });
+    resetValidator();
     dispatch(deleteBrowserActiveFocusObjectIdAndSave());
     navigate(interstitialUrl);
   };
@@ -109,6 +113,13 @@ export const Browser = () => {
       ) : isMalformedFocusObjectId || isMissingFocusObject ? (
         <MissingFeatureError
           featureId={focusObjectIdInUrl as string}
+          genome={genome}
+          showTopBar={true}
+          onContinue={openGenomeBrowserInterstitial}
+        />
+      ) : location && isInvalidLocation ? (
+        <MissingFeatureError
+          featureId={location}
           genome={genome}
           showTopBar={true}
           onContinue={openGenomeBrowserInterstitial}

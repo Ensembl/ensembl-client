@@ -36,6 +36,9 @@ export const createSlice = (): Slice => {
     },
     region: {
       name: faker.lorem.word(),
+      length: length * 100,
+      topology: 'linear',
+      code: 'chromosome',
       assembly: faker.datatype.uuid(),
       sequence: {
         checksum: faker.datatype.uuid()

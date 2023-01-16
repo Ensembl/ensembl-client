@@ -18,7 +18,6 @@ import apiService from 'src/services/api-service';
 
 import config from 'config';
 
-import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   parseFocusObjectId,
   buildFocusObjectId
@@ -32,14 +31,36 @@ type GenomeBrowserFocusIdConstituents = {
   objectId: string;
 };
 
+// A valid location string has a format of "regionName:start-end"
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
-  const [chrCode, chrRegion] = chrLocationStr.split(':');
-  const [startBp, endBp] = chrRegion.split('-');
+  const [regionName, coordinates] = chrLocationStr.split(':');
+  const splitCoordinates = coordinates.split('-');
+
+  if (splitCoordinates.length !== 2) {
+    throw new Error(
+      'There can only be a start and an end coordinate in a location string'
+    );
+  }
+
+  const [startBp, endBp] = coordinates.split('-');
+
+  // We should only allow digits in start and end coordinates of location strings
+  // Anything else (commas, white spaces, whatever) will be validated by the backend
+  const invalidCoordinateRegex = /[^\d]/;
+
+  if (
+    startBp.match(invalidCoordinateRegex) ||
+    endBp.match(invalidCoordinateRegex)
+  ) {
+    throw new Error(
+      'Start and end coordinates of a region must consist of digits only'
+    );
+  }
 
   return [
-    chrCode,
-    getNumberWithoutCommas(startBp),
-    getNumberWithoutCommas(endBp)
+    regionName,
+    parseInt(startBp, 10),
+    parseInt(endBp, 10)
   ] as ChrLocation;
 }
 
