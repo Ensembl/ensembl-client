@@ -73,9 +73,22 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
     return (
       <div className={styles.wrapper}>
         <div className={styles.resultsSummaryRow}>
-          <div>Sequence {sequence.id}</div>
+          <div>Sequencess {sequence.id}</div>
           <div className={styles.sequenceHeader}>
-            <div className={headerClasses}>{sequenceHeaderLabel}</div>
+            <div className={headerClasses}>
+              <ShowHide
+                label={sequenceHeaderLabel}
+                isExpanded={shouldShowParamaters}
+                onClick={() => showParamaters(!shouldShowParamaters)}
+              />
+            </div>
+            {shouldShowParamaters && (
+              <JobParameters
+                sequenceValue={sequence.value}
+                parameters={parameters}
+                preset={preset}
+              />
+            )}
           </div>
           <div>
             <span className={styles.againstText}>Against</span>{' '}
