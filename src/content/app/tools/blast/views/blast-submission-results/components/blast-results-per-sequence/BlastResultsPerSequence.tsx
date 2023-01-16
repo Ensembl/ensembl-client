@@ -65,11 +65,11 @@ const BlastResultsPerSequence = (props: BlastResultsPerSequenceProps) => {
     ? styles.headerWithLegend
     : undefined;
 
-  const hasAllJobsFailed = blastResults.every(
+  const haveAllJobsFailed = blastResults.every(
     (job) => job.status === 'FAILURE'
   );
 
-  if (hasAllJobsFailed) {
+  if (haveAllJobsFailed) {
     return (
       <div className={styles.wrapper}>
         <div className={styles.resultsSummaryRow}>
