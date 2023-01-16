@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { useContext, useEffect, useState, type ReactNode } from 'react';
 import sortBy from 'lodash/sortBy';
-import { useContext, useEffect, useState } from 'react';
+
+import { getReactNodeText } from 'src/shared/helpers/reactHelpers';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import { SortingDirection } from '../dataTableTypes';
@@ -82,8 +84,12 @@ const useDataTable = () => {
 
       rows =
         sortedColumn.sortedDirection === SortingDirection.ASC
-          ? sortBy(rows, (row) => row.cells[sortedColumnIndex])
-          : sortBy(rows, (row) => row.cells[sortedColumnIndex]).reverse();
+          ? sortBy(rows, (row) =>
+              getSortableContent(row.cells[sortedColumnIndex])
+            )
+          : sortBy(rows, (row) =>
+              getSortableContent(row.cells[sortedColumnIndex])
+            ).reverse();
     }
 
     return totalRows > rowsPerPage
@@ -110,6 +116,15 @@ const useDataTable = () => {
     filteredRows,
     ...dataTableContext
   };
+};
+
+const getSortableContent = (item: ReactNode) => {
+  if (item && typeof item === 'object') {
+    // expect this to be a React element
+    return getReactNodeText(item);
+  } else {
+    return item;
+  }
 };
 
 export default useDataTable;

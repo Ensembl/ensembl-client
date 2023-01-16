@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import memoize from 'lodash/memoize';
+import React, { useEffect, useRef, useState } from 'react';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
+import { getReactNodeText } from 'src/shared/helpers/reactHelpers';
 
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
@@ -26,22 +25,6 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './DownloadData.scss';
-
-const getReactRenderer = memoize(() => {
-  const element = document.createElement('div');
-  const root = ReactDOM.createRoot(element);
-
-  return {
-    element,
-    renderer: root
-  };
-});
-
-const getReactNodeText = (node: ReactNode): string => {
-  const { element, renderer } = getReactRenderer();
-  renderer.render(node);
-  return element.innerText;
-};
 
 const DownloadData = () => {
   const {
