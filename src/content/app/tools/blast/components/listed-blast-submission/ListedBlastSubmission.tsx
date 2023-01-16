@@ -19,10 +19,7 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import {
-  isFailedBlastSubmission,
-  isSuccessfulBlastSubmission
-} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHeader';
 
@@ -123,7 +120,7 @@ const CollapsedSequencesBox = (props: Props) => {
         <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
         species
       </div>
-      {allJobs.length ? <JobStatus jobs={allJobs} /> : null}
+      {<JobStatus jobs={allJobs} />}
     </div>
   );
 };
@@ -149,7 +146,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <span className={styles.againstText}>Against</span> {speciesCount}{' '}
         species
       </div>
-      {jobs.length ? <JobStatus jobs={jobs} /> : null}
+      {<JobStatus jobs={jobs} />}
     </div>
   );
 };
@@ -160,8 +157,6 @@ type JobStatusProps = {
 
 export const JobStatus = (props: JobStatusProps) => {
   const { jobs } = props;
-
-  isFailedBlastSubmission();
 
   const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
   const hasAllFailedJobs = jobs.every((job) => job.status === 'FAILURE');
