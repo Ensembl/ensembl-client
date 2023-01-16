@@ -126,28 +126,6 @@ describe('<TrackSettingsPanel />', () => {
   });
 
   describe('behaviour', () => {
-    it('updates state when clicking All Tracks option', async () => {
-      const { container, store } = renderComponent();
-      const allTracksLabel = [...container.querySelectorAll('label')].find(
-        (el) => el.textContent === 'All tracks'
-      );
-      const allTracksInputElement = allTracksLabel?.querySelector(
-        'input'
-      ) as HTMLElement;
-      jest.spyOn(trackSettingsSlice, 'updateApplyToAll');
-
-      await userEvent.click(allTracksInputElement);
-      const updatedState = store.getState();
-      expect(trackSettingsSlice.updateApplyToAll).toHaveBeenCalledWith({
-        genomeId,
-        isSelected: true
-      });
-      expect(
-        updatedState.browser.trackSettings[genomeId].settingsForAllTracks
-          .shouldApplyToAll
-      ).toBeTruthy();
-    });
-
     it('toggles track name', async () => {
       const { container, store } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]

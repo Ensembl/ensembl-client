@@ -80,14 +80,13 @@ const useBrowserTrackSettings = (params: Params) => {
     }
 
     displayedTracks.forEach((track) => {
-      selectedTrackSettings.settings.showTrackName &&
-        dispatch(
-          updateTrackSettingsTrackName({
-            genomeId: activeGenomeId,
-            trackId: track.id,
-            isTrackNameShown
-          })
-        );
+      dispatch(
+        updateTrackSettingsTrackName({
+          genomeId: activeGenomeId,
+          trackId: track.id,
+          isTrackNameShown
+        })
+      );
       toggleTrackName({
         trackId: track.id,
         shouldShowTrackName: isTrackNameShown
@@ -131,14 +130,13 @@ const useBrowserTrackSettings = (params: Params) => {
     }
 
     displayedTracks.forEach((track) => {
-      checkGeneTrack(selectedTrackSettings) &&
-        dispatch(
-          updateTrackSettingsShowSeveralTranscripts({
-            genomeId: activeGenomeId,
-            trackId: track.id,
-            areSeveralTranscriptsShown
-          })
-        );
+      dispatch(
+        updateTrackSettingsShowSeveralTranscripts({
+          genomeId: activeGenomeId,
+          trackId: track.id,
+          areSeveralTranscriptsShown
+        })
+      );
       toggleSeveralTranscripts({
         trackId: track.id,
         shouldShowSeveralTranscripts: areSeveralTranscriptsShown
@@ -159,14 +157,13 @@ const useBrowserTrackSettings = (params: Params) => {
     }
 
     displayedTracks.forEach((track) => {
-      checkGeneTrack(selectedTrackSettings) &&
-        dispatch(
-          updateTrackSettingsShowTranscriptIds({
-            genomeId: activeGenomeId,
-            trackId: track.id,
-            shouldShowTranscriptIds
-          })
-        );
+      dispatch(
+        updateTrackSettingsShowTranscriptIds({
+          genomeId: activeGenomeId,
+          trackId: track.id,
+          shouldShowTranscriptIds
+        })
+      );
       toggleTranscriptIds({
         trackId: track.id,
         shouldShowTranscriptIds
