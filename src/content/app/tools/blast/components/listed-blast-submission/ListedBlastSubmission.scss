@@ -7,7 +7,9 @@
       and subtract from it the extra left padding that the main container has over the top bar (60px - 30px)
     Thus, 1800 - 60 + 30 = 1770px
   */
-  max-width: calc(1800px - ($standard-gutter * 2) + $standard-gutter);
+  max-width: calc(
+    var(--blast-container-max-width) - ($standard-gutter * 2) + $standard-gutter
+  );
 }
 
 .listedBlastSubmission:not(:last-child) {
