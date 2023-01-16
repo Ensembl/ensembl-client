@@ -130,7 +130,11 @@ const DrawerSequenceView = (props: Props) => {
             <BlastSequenceButton
               className={styles.blastSequenceButton}
               sequence={sequence}
-              header={featureId}
+              header={getBlastHeader({
+                featureId,
+                sequenceType: selectedSequenceType,
+                isReverseComplement
+              })}
               species={species}
               sequenceType={sequenceTypeForBlast}
             />
@@ -220,6 +224,21 @@ const Loading = () => {
       <CircleLoader size="small" />
     </div>
   );
+};
+
+const getBlastHeader = (params: {
+  featureId: string;
+  sequenceType: SequenceType;
+  isReverseComplement: boolean;
+}) => {
+  const { featureId, sequenceType, isReverseComplement } = params;
+  const sequenceTypeLabel = sequenceLabelsMap[sequenceType];
+
+  const blasttHeader = `${featureId} ${sequenceTypeLabel}`;
+
+  return isReverseComplement
+    ? `${blasttHeader} Reverse complement`
+    : blasttHeader;
 };
 
 export default DrawerSequenceView;
