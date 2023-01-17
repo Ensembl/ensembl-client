@@ -31,11 +31,11 @@ import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettin
 
 import styles from './BlastSequenceButton.scss';
 
-// TODO: think about the possible header for the sequence
 type Props = {
   label?: string;
   species: Species;
   sequence?: string; // if the sequence isn't provided, the button will be disabled
+  header?: string;
   sequenceType: SequenceType;
   className?: string;
 };
@@ -45,6 +45,7 @@ const BlastSequenceButton = (props: Props) => {
   const {
     label = defaultLabel,
     species,
+    header,
     sequence,
     sequenceType,
     className
@@ -59,7 +60,7 @@ const BlastSequenceButton = (props: Props) => {
     }
 
     setSequenceForGenome({
-      sequence: { value: sequence },
+      sequence: { header, value: sequence },
       species,
       sequenceType
     });

@@ -46,6 +46,7 @@ const sequenceLabelsMap: Record<SequenceType, string> = {
 // TODO: we probably also want to pass a sequence header in order to be able to blast it
 type Props = {
   genomeId: string;
+  featureId: string;
   isExpanded: boolean;
   toggleSequenceVisibility: () => void;
   sequence?: string;
@@ -62,6 +63,7 @@ type Props = {
 const DrawerSequenceView = (props: Props) => {
   const {
     genomeId,
+    featureId,
     isExpanded,
     isError,
     isLoading,
@@ -128,6 +130,11 @@ const DrawerSequenceView = (props: Props) => {
             <BlastSequenceButton
               className={styles.blastSequenceButton}
               sequence={sequence}
+              header={getBlastHeader({
+                featureId,
+                sequenceType: selectedSequenceType,
+                isReverseComplement
+              })}
               species={species}
               sequenceType={sequenceTypeForBlast}
             />
@@ -217,6 +224,21 @@ const Loading = () => {
       <CircleLoader size="small" />
     </div>
   );
+};
+
+const getBlastHeader = (params: {
+  featureId: string;
+  sequenceType: SequenceType;
+  isReverseComplement: boolean;
+}) => {
+  const { featureId, sequenceType, isReverseComplement } = params;
+  const sequenceTypeLabel = sequenceLabelsMap[sequenceType];
+
+  const blasttHeader = `${featureId} ${sequenceTypeLabel}`;
+
+  return isReverseComplement
+    ? `${blasttHeader} Reverse complement`
+    : blasttHeader;
 };
 
 export default DrawerSequenceView;
