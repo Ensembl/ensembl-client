@@ -84,11 +84,13 @@ const useDataTable = () => {
 
       rows =
         sortedColumn.sortedDirection === SortingDirection.ASC
-          ? sortBy(rows, (row) =>
-              getSortableContent(row.cells[sortedColumnIndex])
+          ? sortBy(rows, (row) => {
+            console.log('row', row.cells[sortedColumnIndex]);
+            return row.cells[sortedColumnIndex];
+          }
             )
           : sortBy(rows, (row) =>
-              getSortableContent(row.cells[sortedColumnIndex])
+              row.cells[sortedColumnIndex]
             ).reverse();
     }
 
