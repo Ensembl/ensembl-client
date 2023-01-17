@@ -2,12 +2,14 @@
 
 .trackSettingsPanel {
   display: grid;
-  grid-template-columns: max-content max-content 1fr;
+  grid-template-columns: repeat(4, max-content);
+  // width: max-content;
   background: #f1f2f4;
   box-shadow: 1px 1px 10px #6f8190;
   position: absolute;
   right: 25px;
   top: -12px;
+  min-height: 72px;
 
   .section {
     display: flex;
@@ -27,11 +29,6 @@
 
     &:not(:last-child) {
       border-right: 1px solid $grey;
-    }
-
-    &:last-child {
-      padding: 0 25px;
-      min-height: 62px;
     }
   }
 
@@ -58,10 +55,10 @@
   }
 }
 
-.moveTracksIcon {
+.reorderTrack {
+  margin: 0 4px;
   display: flex;
   justify-content: center;
   width: 30px;
-  height: auto;
   fill: $grey;
 }

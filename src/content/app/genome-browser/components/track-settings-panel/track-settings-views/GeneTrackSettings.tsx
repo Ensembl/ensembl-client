@@ -25,7 +25,7 @@ import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state
 
 import { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
-import MoveTrackIcon from 'static/icons/icon_move_tracks.svg';
+import ReorderTrack from 'static/icons/icon_move_tracks.svg';
 
 import styles from '../TrackSettingsPanel.scss';
 
@@ -117,8 +117,8 @@ export const GeneTrackSettings = (props: Props) => {
         </div>
       </div>
       <div className={styles.section}>
-        <div className={styles.moveTracksIcon}>
-          <MoveTrackIcon />
+        <div className={styles.reorderTrack}>
+          <ReorderTrack />
         </div>
       </div>
     </div>
