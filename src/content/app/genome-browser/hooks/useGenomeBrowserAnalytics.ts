@@ -150,17 +150,6 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackApplyToAllInTrackSettings = (
-    selectedCog: string,
-    shouldApplyToAll: boolean
-  ) => {
-    sendTrackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'apply_to_all - ' + (shouldApplyToAll ? 'unselected' : 'selected')
-    });
-  };
-
   const reportTrackPanelTabChange = (selectedTrackPanelTab: TrackSet) => {
     sendTrackEvent({
       category: 'track_panel_tab',
@@ -309,7 +298,6 @@ const useGenomeBrowserAnalytics = () => {
     trackFeatureLabelToggle,
     trackShowSeveralTranscriptsToggle,
     trackShowTranscriptsIdToggle,
-    trackApplyToAllInTrackSettings,
     reportTrackPanelTabChange,
     reportTrackPanelSectionToggled,
     trackTrackNameToggle,
