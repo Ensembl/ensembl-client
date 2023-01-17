@@ -20,14 +20,12 @@ import { useAppSelector } from 'src/store';
 import useTrackSettings from '../useTrackSettings';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import GlobalTrackSwitch from './components/global-track-switch/GlobalTrackSwitch';
 
-import {
-  getApplyToAllSettings,
-  getTrackSettingsForTrackId
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
-import type { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+
+import ReorderTrack from 'static/icons/icon_move_tracks.svg';
 
 import styles from '../TrackSettingsPanel.scss';
 
@@ -45,11 +43,8 @@ export const GeneTrackSettings = (props: Props) => {
     updateTrackName,
     updateFeatureLabelsVisibility,
     updateShowSeveralTranscripts,
-    updateShowTranscriptIds,
-    toggleApplyToAll
+    updateShowTranscriptIds
   } = useTrackSettings({ selectedTrackId: trackId });
-
-  const shouldApplyToAll = useAppSelector(getApplyToAllSettings);
 
   if (!selectedTrackSettings) {
     return null;
@@ -80,13 +75,7 @@ export const GeneTrackSettings = (props: Props) => {
   return (
     <div className={styles.trackSettingsPanel}>
       <div className={styles.section}>
-        <GlobalTrackSwitch
-          onChange={toggleApplyToAll}
-          selectedOption={shouldApplyToAll ? 'all_tracks' : 'this_track'}
-        />
-      </div>
-      <div className={styles.section}>
-        <div className={styles.subLabel}>Show</div>
+        <div className={styles.subLabel}>All genes</div>
         <div>
           <div className={styles.toggleWrapper}>
             <label>First 5 transcripts</label>
@@ -104,14 +93,11 @@ export const GeneTrackSettings = (props: Props) => {
               className={styles.slideToggle}
             />
           </div>
-          <div className={styles.toggleWrapper}>
-            <label>Track name</label>
-            <SlideToggle
-              isOn={shouldShowTrackName}
-              onChange={handleTrackNameToggle}
-              className={styles.slideToggle}
-            />
-          </div>
+        </div>
+      </div>
+      <div className={styles.section}>
+        <div className={styles.subLabel}>All tracks</div>
+        <div>
           <div className={styles.toggleWrapper}>
             <label>Feature labels</label>
             <SlideToggle
@@ -120,6 +106,19 @@ export const GeneTrackSettings = (props: Props) => {
               className={styles.slideToggle}
             />
           </div>
+          <div className={styles.toggleWrapper}>
+            <label>Track name</label>
+            <SlideToggle
+              isOn={shouldShowTrackName}
+              onChange={handleTrackNameToggle}
+              className={styles.slideToggle}
+            />
+          </div>
+        </div>
+      </div>
+      <div className={styles.section}>
+        <div className={styles.reorderTrack}>
+          <ReorderTrack />
         </div>
       </div>
     </div>

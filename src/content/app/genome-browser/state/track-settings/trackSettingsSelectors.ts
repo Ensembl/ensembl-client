@@ -56,10 +56,3 @@ export const getAllTrackSettingsForGenome = (
 ): TrackSettingsForGenome | null => {
   return state.browser.trackSettings[genomeId] ?? null;
 };
-
-export const getApplyToAllSettings = (state: RootState) => {
-  const allTrackSettingsForGenome = getAllTrackSettings(state);
-  return (
-    allTrackSettingsForGenome?.settingsForAllTracks.shouldApplyToAll ?? false
-  );
-};

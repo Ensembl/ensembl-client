@@ -67,7 +67,7 @@ export const buildDefaultFocusGeneTrack = (
 export const buildDefaultRegularTrack = (trackId: string): RegularTrack => ({
   id: trackId,
   trackType: TrackType.REGULAR,
-  settings: getDefaultGeneTrackSettings()
+  settings: getDefaultRegularTrackSettings()
 });
 
 export const isGeneTrack = (

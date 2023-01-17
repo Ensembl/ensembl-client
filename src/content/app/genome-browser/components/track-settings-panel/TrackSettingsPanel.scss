@@ -1,17 +1,18 @@
 @import 'src/styles/common';
 
 .trackSettingsPanel {
-  display: grid;
-  grid-template-columns: 140px 250px 1fr;
+  display: flex;
+  width: max-content;
   background: #f1f2f4;
   box-shadow: 1px 1px 10px #6f8190;
   position: absolute;
   right: 25px;
   top: -12px;
+  min-height: 72px;
 
   .section {
     display: flex;
-    margin: 8px 0px;
+    margin: 5px 0px;
     padding: 0px 18px;
 
     &:first-child {
@@ -22,7 +23,7 @@
       line-height: 30px;
       font-size: 12px;
       font-weight: 300;
-      padding-right: 4px;
+      padding-right: 10px;
     }
 
     &:not(:last-child) {
@@ -51,4 +52,12 @@
     display: inline-block;
     vertical-align: middle;
   }
+}
+
+.reorderTrack {
+  margin: 0 4px;
+  display: flex;
+  justify-content: center;
+  width: 30px;
+  fill: $grey;
 }

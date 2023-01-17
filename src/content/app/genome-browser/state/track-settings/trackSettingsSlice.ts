@@ -68,9 +68,6 @@ export type TrackSettingsPerTrack = {
 };
 
 export type TrackSettingsForGenome = Readonly<{
-  settingsForAllTracks: {
-    shouldApplyToAll: boolean;
-  };
   settingsForIndividualTracks: TrackSettingsPerTrack;
 }>;
 
@@ -83,9 +80,6 @@ type TrackSettingsState = {
 };
 
 export const defaultTrackSettingsForGenome: TrackSettingsForGenome = {
-  settingsForAllTracks: {
-    shouldApplyToAll: false
-  },
   settingsForIndividualTracks: {}
 };
 
@@ -183,16 +177,6 @@ const trackSettingsSlice = createSlice({
         }
       };
     },
-    updateApplyToAll(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        isSelected: boolean;
-      }>
-    ) {
-      const { genomeId, isSelected } = action.payload;
-      state[genomeId].settingsForAllTracks.shouldApplyToAll = isSelected;
-    },
     updateTrackName(
       state,
       action: PayloadAction<{
@@ -287,7 +271,6 @@ const trackSettingsSlice = createSlice({
 
 export const {
   setInitialTrackSettingsForGenome,
-  updateApplyToAll,
   updateTrackName,
   updateFeatureLabelsVisibility,
   updateShowSeveralTranscripts,
