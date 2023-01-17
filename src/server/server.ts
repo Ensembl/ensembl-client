@@ -20,21 +20,27 @@ import proxyMiddleware from './middleware/proxyMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
 import redirectMiddleware from './middleware/redirectMiddleware';
 
+import getConfigForServer from './helpers/getConfigForServer';
+
 import viewsRouter from './routes/viewsRouter';
 import unsupportedBrowserRouter from './routes/unsupportedBrowserRouter';
 
 const app = express();
+const serverConfig = getConfigForServer();
 
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
 
-app.use(proxyMiddleware);
-app.use(redirectMiddleware);
+if (!serverConfig.isEnsemblDeployment) {
+  app.use(proxyMiddleware);
 
-if (process.env.NODE_ENV === 'production') {
-  // should be able to handle requests for the contents of /static directory by itself
-  // (even though in real production deployment, requests for /static will be routed to an nginx container)
-  app.use('/static', staticMiddleware);
+  if (serverConfig.isProductionBuild) {
+    // The most likely scenario of this configuration is testing of the production build locally.
+    // The development server won't be running; therefore we should handle requests for static assets here
+    app.use('/static', staticMiddleware);
+  }
 }
+
+app.use(redirectMiddleware);
 
 app.get('/unsupported-browser', unsupportedBrowserRouter);
 // All GET requests not covered by the middleware above will be handled by the viewsRouter

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { Router } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-
-const genomeBrowserRouter = Router();
 
 /**
  * Below are the rules to proxying requests to api endpoints.
@@ -65,10 +62,7 @@ const apiProxyMiddleware = createProxyMiddleware('/api', {
 let proxyMiddleware = [apiProxyMiddleware];
 
 if (process.env.NODE_ENV === 'development') {
-  proxyMiddleware = proxyMiddleware.concat([
-    genomeBrowserRouter, // NOTE: this middleware should have priority over staticAssetsMiddleware
-    staticAssetsMiddleware
-  ]);
+  proxyMiddleware = proxyMiddleware.concat([staticAssetsMiddleware]);
 }
 
 export default proxyMiddleware;
