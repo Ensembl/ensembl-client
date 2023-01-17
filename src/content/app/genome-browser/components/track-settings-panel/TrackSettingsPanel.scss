@@ -1,9 +1,8 @@
 @import 'src/styles/common';
 
 .trackSettingsPanel {
-  display: grid;
-  grid-template-columns: repeat(4, max-content);
-  // width: max-content;
+  display: flex;
+  width: max-content;
   background: #f1f2f4;
   box-shadow: 1px 1px 10px #6f8190;
   position: absolute;
