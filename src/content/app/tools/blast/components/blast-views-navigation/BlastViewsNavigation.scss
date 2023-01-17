@@ -5,7 +5,7 @@
   grid-template-columns: [left] auto [notice] 1fr [right] auto;
   column-gap: 1.5rem;
   align-items: center;
-  max-width: 1800px; // TODO: this is max width of the two-column blast form; set it to a constant
+  max-width: var(--blast-container-max-width);
 }
 
 .title {

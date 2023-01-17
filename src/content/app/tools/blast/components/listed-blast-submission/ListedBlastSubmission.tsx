@@ -120,7 +120,7 @@ const CollapsedSequencesBox = (props: Props) => {
         <span className={styles.againstText}>Against</span> {totalSpecies}{' '}
         species
       </div>
-      <StatusElement jobs={allJobs} />
+      {<JobStatus jobs={allJobs} />}
     </div>
   );
 };
@@ -143,30 +143,35 @@ const SequenceBox = (props: SequenceBoxProps) => {
       <div>Sequence {sequence.id}</div>
       <div className={styles.sequenceHeader}>{sequenceHeaderLabel}</div>
       <div className={styles.speciesCount}>
-        <span className={styles.againstText}>Against</span>
-        {speciesCount} species
+        <span className={styles.againstText}>Against</span> {speciesCount}{' '}
+        species
       </div>
-      <StatusElement jobs={jobs} />
+      {<JobStatus jobs={jobs} />}
     </div>
   );
 };
 
-const StatusElement = ({ jobs }: { jobs: BlastJob[] }) => {
+type JobStatusProps = {
+  jobs: BlastJob[];
+};
+
+export const JobStatus = (props: JobStatusProps) => {
+  const { jobs } = props;
+
   const hasRunningJobs = jobs.some((job) => job.status === 'RUNNING');
-  const hasFailedJobs = jobs.some((job) => job.status === 'FAILURE');
+  const hasAllFailedJobs = jobs.every((job) => job.status === 'FAILURE');
+  const hasSomeFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
   const elementClasses = classNames(styles.jobStatus, {
-    [styles.jobStatusProminent]: hasRunningJobs || hasFailedJobs
+    [styles.jobStatusProminent]: hasRunningJobs || hasSomeFailedJobs
   });
 
   if (hasRunningJobs) {
     return <span className={elementClasses}>Running...</span>;
-  } else if (hasFailedJobs) {
-    if (jobs.length === 1 || jobs.every((job) => job.status === 'FAILURE')) {
-      return <span className={elementClasses}>Failed</span>;
-    } else {
-      return <span className={elementClasses}>Some jobs failed</span>;
-    }
+  } else if (hasAllFailedJobs) {
+    return <span className={elementClasses}>Job failed</span>;
+  } else if (hasSomeFailedJobs) {
+    return <span className={elementClasses}>Part failed</span>;
   } else {
     return null;
   }

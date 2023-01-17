@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   column-gap: 20px;
-  max-width: 1800px;
+  max-width: var(--blast-container-max-width);
 }
 
 .topLevel {
@@ -35,15 +35,15 @@
   text-align: right;
 }
 
-.parametersColumn .matrixSetting .select label {
-  grid-template-columns: 140px 110px;
-}
-
 .blastSubmissionName label span,
 .select label span {
   font-weight: $light;
   line-height: 27px;
   justify-self: end;
+}
+
+.parametersColumn .matrixSetting .select label {
+  grid-template-columns: 140px 110px;
 }
 
 .bottomLevel {
