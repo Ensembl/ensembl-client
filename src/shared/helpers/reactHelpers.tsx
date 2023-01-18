@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { MemoryRouter } from 'react-router';
 import memoize from 'lodash/memoize';
 
 const getReactRenderer = memoize(() => {
@@ -30,6 +31,6 @@ const getReactRenderer = memoize(() => {
 
 export const getReactNodeText = (node: ReactNode): string => {
   const { element, renderer } = getReactRenderer();
-  renderer.render(node);
+  renderer.render(<MemoryRouter>{node}</MemoryRouter>);
   return element.innerText;
 };
