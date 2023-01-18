@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware as createHttpProxyMiddleware } from 'http-proxy-middleware';
+
+import getConfigForServer from '../helpers/getConfigForServer';
+
+const serverConfig = getConfigForServer();
 
 /**
  * Below are the rules to proxying requests to api endpoints.
@@ -48,21 +52,34 @@ const proxyMiddleware = [apiProxyMiddleware, docsProxyMiddleware];
 
 */
 
-// proxy all requests for static assets to the server that runs webpack dev middleware
-const staticAssetsMiddleware = createProxyMiddleware('/static', {
-  target: 'http://localhost:8081'
-});
+const createApiProxyMiddleware = () => {
+  const apiProxyMiddleware = createHttpProxyMiddleware('/api', {
+    target: 'https://staging-2020.ensembl.org',
+    changeOrigin: true,
+    secure: false
+  });
 
-const apiProxyMiddleware = createProxyMiddleware('/api', {
-  target: 'https://staging-2020.ensembl.org',
-  changeOrigin: true,
-  secure: false
-});
+  // returning an array so that the specific proxies can be easily modified in local development
+  // (see example in the comment block above)
+  return [apiProxyMiddleware];
+};
 
-let proxyMiddleware = [apiProxyMiddleware];
+const createStaticAssetsMiddleware = () => {
+  // proxy all requests for static assets to the server that runs webpack dev middleware
+  return createHttpProxyMiddleware('/static', {
+    target: 'http://localhost:8081'
+  });
+};
 
-if (process.env.NODE_ENV === 'development') {
-  proxyMiddleware = proxyMiddleware.concat([staticAssetsMiddleware]);
-}
+const createProxyMiddleware = () => {
+  let proxyMiddleware = createApiProxyMiddleware();
 
-export default proxyMiddleware;
+  if (!serverConfig.isProductionBuild) {
+    const staticAssetsMiddleware = createStaticAssetsMiddleware();
+    proxyMiddleware = proxyMiddleware.concat([staticAssetsMiddleware]);
+  }
+
+  return proxyMiddleware;
+};
+
+export default createProxyMiddleware;

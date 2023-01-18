@@ -16,7 +16,7 @@
 
 import express from 'express';
 
-import proxyMiddleware from './middleware/proxyMiddleware';
+import createProxyMiddleware from './middleware/proxyMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
 import redirectMiddleware from './middleware/redirectMiddleware';
 
@@ -31,6 +31,7 @@ const serverConfig = getConfigForServer();
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
 
 if (!serverConfig.isEnsemblDeployment) {
+  const proxyMiddleware = createProxyMiddleware();
   app.use(proxyMiddleware);
 
   if (serverConfig.isProductionBuild) {
