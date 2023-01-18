@@ -22,6 +22,8 @@ import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
+
 import type { ServerFetch } from 'src/routes/routesConfig';
 
 import styles from './BlastPage.scss';
@@ -65,6 +67,7 @@ const BlastPage = () => {
           <Route index={true} element={<BlastSubmissions unviewed={false} />} />
           <Route path=":submissionId" element={<BlastSubmissionResults />} />
         </Route>
+        <Route path="*" element={<NotFoundErrorScreen />} />
       </Routes>
     </div>
   ) : null;
