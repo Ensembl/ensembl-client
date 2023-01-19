@@ -131,13 +131,4 @@ const plainSorter: TableRowsSortingFunction = (
   return orderBy(tableRows, [iteratee], [orderDirection]);
 };
 
-// const getSortableContent = (item: TableCellData) => {
-//   if (item && typeof item === 'object' && !('data' in item)) {
-//     // expect this to be a React element
-//     return getReactNodeText(item);
-//   } else {
-//     return item;
-//   }
-// };
-
 export default useDataTable;
