@@ -44,10 +44,12 @@ export type TableCellData = ReactNode | TableCellStructuredData;
 
 export type TableRowData = TableCellData[];
 
-export type TableRows = {
+export type TableRow = {
   cells: TableCellData[];
   rowId: string | number;
-}[];
+};
+
+export type TableRows = TableRow[];
 
 export type TableData = TableRowData[];
 

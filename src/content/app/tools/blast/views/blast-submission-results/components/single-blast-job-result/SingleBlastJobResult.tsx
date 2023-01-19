@@ -21,6 +21,7 @@ import orderBy from 'lodash/orderBy';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getStructuredContentFromCellInRow } from 'src/shared/components/data-table/dataTableHelpers';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
@@ -53,6 +54,7 @@ import {
   type DataTableColumns,
   type DataTableState,
   type TableData,
+  type TableRow,
   type TableCellRendererParams,
   type TableRowsSortingFunction,
   type TableCellStructuredData,
@@ -81,7 +83,9 @@ const sortByGenomicLocation: TableRowsSortingFunction = (
   columnIndex,
   direction
 ) => {
-  const iteratee = (data: any) => data.cells[columnIndex].data.hit.hit_acc;
+  const iteratee = (data: TableRow) =>
+    getStructuredContentFromCellInRow<{ hit: BlastHit }>(data, columnIndex).hit
+      .hit_acc;
   const orderDirection = direction === SortingDirection.DESC ? 'desc' : 'asc';
   return orderBy(rows, [iteratee], [orderDirection]);
 };
