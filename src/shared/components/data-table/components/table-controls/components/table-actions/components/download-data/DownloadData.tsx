@@ -17,7 +17,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
-import { getReactNodeText } from 'src/shared/helpers/reactHelpers';
 
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
@@ -92,24 +91,18 @@ const DownloadData = () => {
     rowsToDownload.forEach((row, rowIndex) => {
       dataForExport[rowIndex + 1] = [];
       row.cells.forEach((cell, cellIndex) => {
-        const { renderer, isExportable } = columns[cellIndex];
+        const { downloadRenderer, isExportable } = columns[cellIndex];
 
         if (isExportable !== false) {
-          const cellExportData = renderer
-            ? renderer({
+          const cellExportData = downloadRenderer
+            ? downloadRenderer({
                 rowData: row.cells,
                 rowId: String(row.rowId),
                 cellData: cell
               })
-            : cell;
+            : (cell as string | number);
 
-          if (typeof cellExportData === 'string') {
-            dataForExport[rowIndex + 1].push(cellExportData);
-          } else if (typeof cellExportData === 'number') {
-            dataForExport[rowIndex + 1].push(String(cellExportData));
-          } else {
-            dataForExport[rowIndex + 1].push(getReactNodeText(cellExportData));
-          }
+          dataForExport[rowIndex + 1].push(`${cellExportData}`);
         }
       });
     });

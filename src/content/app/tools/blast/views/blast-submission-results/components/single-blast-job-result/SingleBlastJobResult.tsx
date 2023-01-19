@@ -17,6 +17,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+import orderBy from 'lodash/orderBy';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
@@ -53,6 +54,8 @@ import {
   type DataTableState,
   type TableData,
   type TableCellRendererParams,
+  type TableRowsSortingFunction,
+  type TableCellStructuredData,
   SortingDirection,
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
@@ -64,6 +67,23 @@ type SingleBlastJobResultProps = {
   species: Species;
   diagramWidth: number;
   submission: BlastSubmission;
+};
+
+type GenomicLocationCellData = {
+  species: Species;
+  blastDatabase: DatabaseType;
+  hit: BlastHit;
+  hitHsp: HSP;
+};
+
+const sortByGenomicLocation: TableRowsSortingFunction = (
+  rows,
+  columnIndex,
+  direction
+) => {
+  const iteratee = (data: any) => data.cells[columnIndex].data.hit.hit_acc;
+  const orderDirection = direction === SortingDirection.DESC ? 'desc' : 'asc';
+  return orderBy(rows, [iteratee], [orderDirection]);
 };
 
 const hitsTableColumns: DataTableColumns = [
@@ -113,7 +133,18 @@ const hitsTableColumns: DataTableColumns = [
     columnId: 'genomic_location',
     title: 'Genomic location',
     helpText: <span>Location of the hit in this species</span>,
-    isSortable: true
+    isSortable: true,
+    renderer: (params) => {
+      const cellData = params.cellData as TableCellStructuredData;
+      const data = cellData.data as GenomicLocationCellData;
+      return getHitIdOrGenomicLocation(data, { exportable: false });
+    },
+    downloadRenderer: (params) => {
+      const cellData = params.cellData as TableCellStructuredData;
+      const data = cellData.data as GenomicLocationCellData;
+      return getHitIdOrGenomicLocation(data, { exportable: true }) as string;
+    },
+    sortFn: sortByGenomicLocation
   },
   {
     width: '100px',
@@ -123,7 +154,11 @@ const hitsTableColumns: DataTableColumns = [
     helpText: (
       <span>The orientation of the hit against the query sequence</span>
     ),
-    bodyCellClassName: styles.strandColumn
+    bodyCellClassName: styles.strandColumn,
+    renderer: (params) => {
+      const hitOrientation = params.cellData as string;
+      return <span className={styles.hitOrientation}>{hitOrientation}</span>;
+    }
   },
   {
     width: '130px',
@@ -303,15 +338,16 @@ const HitsTable = (props: HitsTableProps) => {
           '', // view_alignment
           hitHsp.hsp_identity,
           hitHsp.hsp_bit_score,
-          getHitIdOrGenomicLocation({
-            species,
-            hit,
-            blastDatabase,
-            hitHsp
-          }),
-          <span key={counter} className={styles.hitOrientation}>
-            {hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse'}
-          </span>,
+          {
+            // data for genomic location
+            data: {
+              species,
+              hit,
+              blastDatabase,
+              hitHsp
+            }
+          },
+          hitHsp.hsp_hit_frame === '1' ? 'Forward' : 'Reverse',
           hitHsp.hsp_hit_from,
           hitHsp.hsp_hit_to,
           hitHsp.hsp_query_from,
@@ -455,36 +491,57 @@ const ShowHideColumn = (props: {
   );
 };
 
-const getHitIdOrGenomicLocation = (params: {
-  species: Species;
-  hit: BlastHit;
-  hitHsp: HSP;
-  blastDatabase: DatabaseType;
-}) => {
+const getHitIdOrGenomicLocation = (
+  params: {
+    species: Species;
+    hit: BlastHit;
+    hitHsp: HSP;
+    blastDatabase: DatabaseType;
+  },
+  options: {
+    exportable: boolean;
+  }
+) => {
   const { hit, blastDatabase } = params;
+  const { exportable } = options;
 
   let childNode: ReactNode;
 
   if (['dna', 'dna_sm'].includes(blastDatabase)) {
-    childNode = renderGenomicLocation(params);
+    childNode = renderGenomicLocation(params, options);
   } else {
     childNode = hit.hit_acc;
   }
 
-  return <span className={styles.nowrap}>{childNode}</span>;
+  return exportable ? (
+    childNode
+  ) : (
+    <span className={styles.nowrap}>{childNode}</span>
+  );
 };
 
-const renderGenomicLocation = (params: {
-  species: Species;
-  hit: BlastHit;
-  hitHsp: HSP;
-}) => {
+const renderGenomicLocation = (
+  params: {
+    species: Species;
+    hit: BlastHit;
+    hitHsp: HSP;
+  },
+  options: {
+    exportable: boolean;
+  }
+) => {
   const { species, hit, hitHsp } = params;
+  const { exportable } = options;
   const genomeIdForUrl = species.genome_tag ?? species.genome_id;
   const startEndString = [hitHsp.hsp_hit_from, hitHsp.hsp_hit_to]
     .sort((a, b) => a - b)
     .join('-');
   const locationString = `${hit.hit_acc}:${startEndString}`;
+
+  if (exportable) {
+    return locationString;
+  }
+
   const focusLocationString = `location:${locationString}`;
 
   const genomeBrowserLink = urlFor.browser({
