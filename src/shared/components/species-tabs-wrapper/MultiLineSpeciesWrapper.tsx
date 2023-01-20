@@ -23,7 +23,6 @@ import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-sp
 import styles from './MultiLineSpeciesWrapper.scss';
 
 export type Props = {
-  isWrappable: true;
   speciesTabs: ReactElement<SelectedSpeciesProps>[];
   link?: React.ReactNode;
 };

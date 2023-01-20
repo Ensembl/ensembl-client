@@ -17,7 +17,12 @@
 import { Position } from './pointer-box-types';
 import { PointerBoxProps, InlineStylesState } from './PointerBox';
 
-type Params = PointerBoxProps;
+type Params = Required<
+  Pick<
+    PointerBoxProps,
+    'position' | 'pointerWidth' | 'pointerHeight' | 'pointerOffset' | 'anchor'
+  >
+>;
 
 /*
   Functions for calculating inline styles of the pointer box

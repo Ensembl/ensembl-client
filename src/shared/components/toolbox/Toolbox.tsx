@@ -28,15 +28,16 @@ export enum ToolboxPosition {
 }
 
 type ToolboxProps = {
-  position: ToolboxPosition;
+  position?: ToolboxPosition;
   anchor: HTMLElement;
   onOutsideClick?: () => void;
   children: ReactNode;
 };
 
 const Toolbox = (props: ToolboxProps) => {
+  const { position: positionFromProps = ToolboxPosition.RIGHT } = props;
   const pointerBoxPosition =
-    props.position === ToolboxPosition.LEFT
+    positionFromProps === ToolboxPosition.LEFT
       ? Position.LEFT_BOTTOM
       : Position.RIGHT_BOTTOM;
 
@@ -52,9 +53,5 @@ const Toolbox = (props: ToolboxProps) => {
     </PointerBox>
   );
 };
-
-Toolbox.defaultProps = {
-  position: ToolboxPosition.RIGHT
-} as Partial<ToolboxProps>;
 
 export default Toolbox;

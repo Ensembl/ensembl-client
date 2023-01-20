@@ -27,14 +27,15 @@ export enum RoundButtonStatus {
 
 type Props = {
   onClick: () => void;
-  status: RoundButtonStatus;
+  status?: RoundButtonStatus;
   classNames?: { [key in RoundButtonStatus]?: string };
   children: ReactNode;
 };
 
 const RoundButton = (props: Props) => {
+  const { status: buttonStatus = RoundButtonStatus.INACTIVE } = props;
   const handleClick = () => {
-    if (props.status !== RoundButtonStatus.DISABLED) {
+    if (buttonStatus !== RoundButtonStatus.DISABLED) {
       props.onClick();
     }
   };
@@ -43,17 +44,13 @@ const RoundButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const className = classNames(defaultStyles.default, styles[props.status]);
+  const className = classNames(defaultStyles.default, styles[buttonStatus]);
 
   return (
     <button className={className} onClick={handleClick}>
       {props.children}
     </button>
   );
-};
-
-RoundButton.defaultProps = {
-  status: RoundButtonStatus.INACTIVE
 };
 
 export default RoundButton;

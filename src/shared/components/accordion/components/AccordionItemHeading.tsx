@@ -55,10 +55,6 @@ export const AccordionItemHeading = (props: Props) => {
   );
 };
 
-AccordionItemHeading.defaultProps = {
-  'aria-level': 3
-};
-
 type WrapperProps = Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedHeadingAttributes>

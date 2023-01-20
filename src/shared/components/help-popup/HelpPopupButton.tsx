@@ -26,11 +26,12 @@ import styles from './HelpPopupButton.scss';
 
 type Props = {
   labelClass?: string;
-  label: string;
+  label?: string;
   slug: string;
 };
 
 const HelpPopupButton = (props: Props) => {
+  const { label: labelText = 'Help', slug } = props;
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const elementRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,22 +62,18 @@ const HelpPopupButton = (props: Props) => {
   return (
     <>
       <div className={styles.wrapper} onClick={openModal} ref={elementRef}>
-        <span className={labelClasses}>{props.label}</span>
+        <span className={labelClasses}>{labelText}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
       </div>
       {shouldShowModal && (
         <Modal classNames={{ body: styles.helpPopup }} onClose={closeModal}>
-          <HelpPopupBody slug={props.slug} />
+          <HelpPopupBody slug={slug} />
         </Modal>
       )}
     </>
   );
-};
-
-HelpPopupButton.defaultProps = {
-  label: 'Help'
 };
 
 export default HelpPopupButton;

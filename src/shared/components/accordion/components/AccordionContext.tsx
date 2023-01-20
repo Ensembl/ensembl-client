@@ -23,7 +23,7 @@ import AccordionStore, {
 import { UUID } from './ItemContext';
 
 export interface ProviderProps {
-  preExpanded: UUID[];
+  preExpanded?: UUID[];
   allowMultipleExpanded?: boolean;
   allowZeroExpanded?: boolean;
   children?: React.ReactNode;
@@ -31,8 +31,8 @@ export interface ProviderProps {
 }
 
 export interface AccordionContext {
-  allowMultipleExpanded: boolean;
-  allowZeroExpanded: boolean;
+  allowMultipleExpanded?: boolean;
+  allowZeroExpanded?: boolean;
   toggleExpanded(uuid: UUID): void;
   isItemDisabled(uuid: UUID): boolean;
   isItemExpanded(uuid: UUID): boolean;
@@ -44,11 +44,12 @@ export interface AccordionContext {
 const Context = React.createContext(null as AccordionContext | null);
 
 export const Provider = (props: ProviderProps) => {
+  const { preExpanded = [] } = props;
   const [store, setStore] = useState(
     new AccordionStore({
-      allowMultipleExpanded: props.allowMultipleExpanded,
-      allowZeroExpanded: props.allowZeroExpanded,
-      expanded: props.preExpanded
+      allowMultipleExpanded: props.allowMultipleExpanded ?? false,
+      allowZeroExpanded: props.allowZeroExpanded ?? false,
+      expanded: preExpanded
     })
   );
 
@@ -60,13 +61,13 @@ export const Provider = (props: ProviderProps) => {
 
   useEffect(() => {
     const differences = store.expanded.filter(
-      (uuid) => !props.preExpanded.includes(uuid)
+      (uuid) => !preExpanded.includes(uuid)
     ).length;
 
-    if (store.expanded.length !== props.preExpanded.length || differences) {
-      setStore(store.setExpanded(props.preExpanded));
+    if (store.expanded.length !== preExpanded.length || differences) {
+      setStore(store.setExpanded(preExpanded));
     }
-  }, [props.preExpanded]);
+  }, [preExpanded]);
 
   const toggleExpanded = (key: UUID): void => {
     setStore(store.toggleExpanded(key));
@@ -112,11 +113,6 @@ export const Provider = (props: ProviderProps) => {
   );
 };
 
-Provider.defaultProps = {
-  allowMultipleExpanded: false,
-  allowZeroExpanded: false,
-  preExpanded: []
-};
 export class Consumer extends React.PureComponent<{
   children(container: AccordionContext): React.ReactNode;
 }> {

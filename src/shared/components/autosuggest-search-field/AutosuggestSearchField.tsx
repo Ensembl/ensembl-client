@@ -25,12 +25,14 @@ import AutosuggestionPanel, {
 
 import styles from './AutosuggestSearchField.scss';
 
+export const defaultNotFoundText = 'No results found';
+
 type CommonProps = {
   search: string;
   onChange: (value: string) => void;
   onSelect: (match: any) => void;
-  matchGroups: GroupOfMatchesType[];
-  canShowSuggestions: boolean;
+  matchGroups?: GroupOfMatchesType[];
+  canShowSuggestions?: boolean;
   placeholder?: string;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -38,7 +40,7 @@ type CommonProps = {
   className?: string;
   searchFieldClassName?: string;
   notFound?: boolean;
-  notFoundText: string;
+  notFoundText?: string;
 };
 
 // with this set of props user can submit raw content of the search field
@@ -51,7 +53,7 @@ type PropsAllowingRawDataSubmission = {
 // with this set of props user can submit only one of suggested matches
 // (notice no onSubmit prop; typescript is smart enough to know it won't be available)
 type PropsDisallowingRawDataSubmission = {
-  allowRawInputSubmission: false;
+  allowRawInputSubmission?: false;
 };
 
 type Props =
@@ -62,7 +64,7 @@ function getNextItemIndex(
   props: Props,
   currentItemIndex: MatchIndex | null
 ): MatchIndex {
-  const { matchGroups, allowRawInputSubmission } = props;
+  const { matchGroups = [], allowRawInputSubmission = false } = props;
   const [groupIndex, itemIndex] = currentItemIndex || [null, null];
   const currentGroup =
     typeof groupIndex === 'number' ? matchGroups[groupIndex] : null;
@@ -90,7 +92,7 @@ function getPreviousItemIndex(
   props: Props,
   currentItemIndex: MatchIndex | null
 ): MatchIndex {
-  const { matchGroups, allowRawInputSubmission } = props;
+  const { matchGroups = [], allowRawInputSubmission } = props;
   const [groupIndex, itemIndex] = currentItemIndex || [null, null];
   const lastGroupIndex = matchGroups.length - 1;
   const lastGroupItemIndex = matchGroups[lastGroupIndex].matches.length - 1;
@@ -116,7 +118,14 @@ function getPreviousItemIndex(
 }
 
 const AutosuggestSearchField = (props: Props) => {
-  const initialHighlightedItemIndex: MatchIndex = props.allowRawInputSubmission
+  const {
+    matchGroups = [],
+    allowRawInputSubmission = false,
+    notFoundText = defaultNotFoundText
+  } = props;
+  const preventSuggestionsProp = props.canShowSuggestions === false;
+
+  const initialHighlightedItemIndex: MatchIndex = allowRawInputSubmission
     ? null
     : [0, 0];
   const [highlightedItemIndex, setHighlightedItemIndex] = useState(
@@ -191,7 +200,7 @@ const AutosuggestSearchField = (props: Props) => {
       props.onSubmit(value);
     } else if (highlightedItemIndex) {
       const [groupIndex, itemIndex] = highlightedItemIndex;
-      const match = props.matchGroups[groupIndex]?.matches[itemIndex];
+      const match = matchGroups[groupIndex]?.matches[itemIndex];
 
       if (!match) {
         return;
@@ -207,10 +216,10 @@ const AutosuggestSearchField = (props: Props) => {
   const shouldShowSuggestions =
     props.search &&
     !props.notFound &&
-    props.matchGroups.length > 0 &&
+    matchGroups.length > 0 &&
     canShowSuggesions &&
     !isSelected &&
-    props.canShowSuggestions;
+    !preventSuggestionsProp;
 
   const className = classNames(
     styles.autosuggestionSearchField,
@@ -237,24 +246,17 @@ const AutosuggestSearchField = (props: Props) => {
       {shouldShowSuggestions && (
         <AutosuggestionPanel
           highlightedItemIndex={highlightedItemIndex}
-          matchGroups={props.matchGroups}
+          matchGroups={matchGroups}
           onSelect={handleSelect}
-          allowRawInputSubmission={props.allowRawInputSubmission}
+          allowRawInputSubmission={allowRawInputSubmission}
           onItemHover={handleItemHover}
         />
       )}
       {props.notFound && (
-        <div className={styles.autosuggestionPlate}>{props.notFoundText}</div>
+        <div className={styles.autosuggestionPlate}>{notFoundText}</div>
       )}
     </div>
   );
-};
-
-AutosuggestSearchField.defaultProps = {
-  matchGroups: [],
-  canShowSuggestions: true,
-  allowRawInputSubmission: false,
-  notFoundText: 'No results found'
 };
 
 export default AutosuggestSearchField;

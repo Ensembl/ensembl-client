@@ -25,6 +25,8 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 
 import styles from './InstantDownload.stories.scss';
 
+const genomeId = 'a7335667-93e7-11ec-a39d-005056b38ce3';
+
 const buildProteinCodingGene = () => {
   const transcript = createProteinCodingTranscript({
     unversioned_stable_id: 'ENST00000496384'
@@ -75,6 +77,7 @@ export const InstantDownloadTranscriptStory = () => {
     <div className={styles.transcriptStoryContainer}>
       <div {...containerProps}>
         <InstantDownloadTranscript
+          genomeId={genomeId}
           layout={layout}
           gene={{ id: gene.unversioned_stable_id }}
           transcript={{

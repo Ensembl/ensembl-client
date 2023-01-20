@@ -21,7 +21,9 @@ import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 import random from 'lodash/random';
 
-import AutosuggestSearchField from './AutosuggestSearchField';
+import AutosuggestSearchField, {
+  defaultNotFoundText
+} from './AutosuggestSearchField';
 import { GroupOfMatchesType } from './AutosuggestionPanel';
 
 const generateMatch = () => {
@@ -257,7 +259,7 @@ describe('<AutosuggestSearchField />', () => {
         const { container } = render(<AutosuggestSearchField {...props} />);
 
         const panel = container.querySelector('.autosuggestionPlate');
-        const defaultMessage = AutosuggestSearchField.defaultProps.notFoundText;
+        const defaultMessage = defaultNotFoundText;
 
         expect(panel?.textContent).toBe(defaultMessage);
       });

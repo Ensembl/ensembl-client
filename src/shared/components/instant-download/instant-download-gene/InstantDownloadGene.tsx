@@ -39,7 +39,7 @@ export type InstantDownloadGeneEntityProps = {
 };
 
 type Props = InstantDownloadGeneEntityProps & {
-  theme: Theme;
+  theme?: Theme;
   onDownloadSuccess?: (params: OnDownloadPayload) => void;
   onDownloadFailure?: (params: OnDownloadPayload) => void;
 };
@@ -95,7 +95,8 @@ export const getCheckboxTheme = (theme: Theme) =>
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
-    gene: { id: geneId, isProteinCoding }
+    gene: { id: geneId, isProteinCoding },
+    theme = 'light'
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(isProteinCoding)
@@ -141,8 +142,7 @@ const InstantDownloadGene = (props: Props) => {
     }
   };
 
-  const themeClass =
-    props.theme === 'dark' ? styles.themeDark : styles.themeLight;
+  const themeClass = theme === 'dark' ? styles.themeDark : styles.themeLight;
 
   const containerClasses = classNames(styles.container, themeClass);
 
@@ -156,18 +156,18 @@ const InstantDownloadGene = (props: Props) => {
       <GeneSection
         gene={props.gene}
         isGenomicSequenceSelected={isGeneSequenceSelected}
-        theme={props.theme}
+        theme={theme}
         onChange={onGeneOptionChange}
       />
       <TranscriptSection
         options={transcriptOptions}
-        theme={props.theme}
+        theme={theme}
         onChange={onTranscriptOptionChange}
       />
       <InstantDownloadButton
         isDisabled={isButtonDisabled}
         onClick={onSubmit}
-        theme={props.theme}
+        theme={theme}
         classNames={{
           wrapper: styles.downloadButtonWrapper
         }}
@@ -175,10 +175,6 @@ const InstantDownloadGene = (props: Props) => {
     </div>
   );
 };
-
-InstantDownloadGene.defaultProps = {
-  theme: 'light'
-} as Props;
 
 const GeneSection = (props: GeneSectionProps) => (
   <div className={styles.geneSection}>

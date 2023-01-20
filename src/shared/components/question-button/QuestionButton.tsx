@@ -33,18 +33,19 @@ export enum QuestionButtonOption {
 
 type Props = {
   helpText: React.ReactNode;
-  styleOption: QuestionButtonOption;
+  styleOption?: QuestionButtonOption;
   className?: { [key in QuestionButtonOption]?: string };
 };
 
 const QuestionButton = (props: Props) => {
+  const { helpText, styleOption = QuestionButtonOption.INLINE } = props;
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
     useShowTooltip();
 
   const className = classNames(
     defaultStyles.questionButton,
     {
-      [defaultStyles[props.styleOption as string]]: props.styleOption
+      [defaultStyles[styleOption]]: styleOption
     },
     props.className?.inline,
     props.className?.['in-input-field']
@@ -60,15 +61,11 @@ const QuestionButton = (props: Props) => {
           onClose={onTooltipCloseSignal}
           delay={0}
         >
-          {props.helpText}
+          {helpText}
         </Tooltip>
       )}
     </div>
   );
-};
-
-QuestionButton.defaultProps = {
-  styleOption: QuestionButtonOption.INLINE
 };
 
 export default QuestionButton;

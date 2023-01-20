@@ -26,19 +26,19 @@ type AccordionProps = Pick<
   Exclude<keyof DivAttributes, 'onChange'>
 > & {
   preExpanded?: UUID[];
-  allowMultipleExpanded: boolean;
-  allowZeroExpanded: boolean;
-  extendDefaultStyles: boolean;
+  allowMultipleExpanded?: boolean;
+  allowZeroExpanded?: boolean;
+  extendDefaultStyles?: boolean;
   onChange?(args: UUID[]): void;
 };
 
 const Accordion = (props: AccordionProps) => {
   const {
     preExpanded,
-    allowMultipleExpanded,
-    allowZeroExpanded,
+    allowMultipleExpanded = false,
+    allowZeroExpanded = true,
     className,
-    extendDefaultStyles,
+    extendDefaultStyles = true,
     onChange,
     ...rest
   } = props;
@@ -65,12 +65,6 @@ const Accordion = (props: AccordionProps) => {
       <Consumer>{renderAccordion}</Consumer>
     </Provider>
   );
-};
-
-Accordion.defaultProps = {
-  allowMultipleExpanded: false,
-  allowZeroExpanded: true,
-  extendDefaultStyles: true
 };
 
 export default Accordion;

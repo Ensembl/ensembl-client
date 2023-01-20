@@ -25,7 +25,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export type Props = {
   direction: Direction;
-  animate: boolean;
+  animate?: boolean;
   className?: string;
 };
 
@@ -39,10 +39,6 @@ const Chevron = (props: Props) => {
     props.className
   );
   return <ChevronDown className={chevronClasses} />;
-};
-
-Chevron.defaultProps = {
-  animate: false
 };
 
 export default Chevron;

@@ -45,7 +45,7 @@ export type UnsplicedTranscriptProps = {
     backbone?: string;
     exon?: string;
   };
-  standalone: boolean;
+  standalone?: boolean;
 };
 
 /*
@@ -102,10 +102,6 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   ) : (
     renderedTranscript
   );
-};
-
-UnsplicedTranscript.defaultProps = {
-  standalone: false
 };
 
 type BackboneProps = {

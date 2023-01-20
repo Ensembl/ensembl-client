@@ -27,11 +27,11 @@ import styles from './ViewInAppPopup.scss';
 export type ViewInAppPopupProps = {
   links: LinksConfig;
   children: ReactNode;
-  position: Position;
+  position?: Position;
 };
 
 const ViewInAppPopup = (props: ViewInAppPopupProps) => {
-  const { links, children } = props;
+  const { links, position = Position.BOTTOM_RIGHT, children } = props;
   const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
 
@@ -47,7 +47,7 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
           anchor={anchorRef.current}
           renderInsideAnchor={true}
           onOutsideClick={() => setShowPointerBox(false)}
-          position={props.position}
+          position={position}
           autoAdjust={true}
           classNames={{
             box: styles.pointerBox,
@@ -59,10 +59,6 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
       )}
     </span>
   );
-};
-
-ViewInAppPopup.defaultProps = {
-  position: Position.BOTTOM_RIGHT
 };
 
 export default ViewInAppPopup;
