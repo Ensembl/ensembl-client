@@ -32,6 +32,7 @@ type Props = {
   container?: HTMLElement | null;
   autoAdjust?: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
   delay?: number;
+  renderInsideAnchor?: boolean;
   children: ReactNode;
   onClose?: () => void;
 };
@@ -67,6 +68,7 @@ const TooltipWithAnchor = (props: Props) => {
       anchor={props.anchor}
       container={props.container}
       autoAdjust={props.autoAdjust}
+      renderInsideAnchor={props.renderInsideAnchor}
       onClose={props.onClose}
       classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
       onOutsideClick={props.onClose}

@@ -53,15 +53,25 @@ const proxyMiddleware = [apiProxyMiddleware, docsProxyMiddleware];
 */
 
 const createApiProxyMiddleware = () => {
-  const apiProxyMiddleware = createHttpProxyMiddleware('/api', {
-    target: 'https://staging-2020.ensembl.org',
+  const apiProxyMiddleware = createHttpProxyMiddleware(
+    ['/api/**', '!/api/browser/**'],
+    {
+      target: 'https://staging-2020.ensembl.org',
+      changeOrigin: true,
+      secure: false
+    }
+  );
+
+  const browserProxyMiddleware = createHttpProxyMiddleware('/api/browser/**', {
+    target: 'http://52.56.215.72:3333',
+    pathRewrite: {
+      '^/api/browser': '/api' // rewrite path
+    },
     changeOrigin: true,
     secure: false
   });
 
-  // returning an array so that the specific proxies can be easily modified in local development
-  // (see example in the comment block above)
-  return [apiProxyMiddleware];
+  return [apiProxyMiddleware, browserProxyMiddleware];
 };
 
 const createStaticAssetsMiddleware = () => {

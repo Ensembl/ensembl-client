@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import {
   IncomingActionType,
+  type HotspotAction,
+  type HotspotPayload,
+  type TranscriptsLozengePayload,
+  type TranscriptsLozengeContent,
   type ReportVisibleTranscriptsAction
 } from '@ensembl/ensembl-genome-browser';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import usePrevious from 'src/shared/hooks/usePrevious';
+
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
@@ -77,8 +85,27 @@ const useFocusGene = (params: Params) => {
   const focusObjectIdRef = useRef(focusObjectId);
   const geneIdRef = useRef(geneStableId);
   const visibleTranscriptIds = focusGene?.visibleTranscriptIds ?? null;
-  const trackSettingsForGenome = useAppSelector(getAllTrackSettings)
+  const focusGeneTrackSettings = useAppSelector(getAllTrackSettings)
     ?.settingsForIndividualTracks.focus as FocusGeneTrack | undefined;
+
+  const allSortedFocusGeneTranscriptsRef = useRef<string[]>([]);
+  const visibleTranscriptIdsRef = useRef(visibleTranscriptIds);
+  const showSeveralTranscriptsRef = useRef(
+    focusGeneTrackSettings?.settings.showSeveralTranscripts
+  );
+  const previousSeveralTranscriptsSetting = usePrevious(
+    focusGeneTrackSettings?.settings.showSeveralTranscripts
+  );
+
+  const { currentData: fetchedFocusGeneData } = useGetTrackPanelGeneQuery(
+    {
+      genomeId: focusGene?.genome_id ?? '',
+      geneId: geneStableId ?? ''
+    },
+    {
+      skip: !focusGene
+    }
+  );
 
   const stringifiedVisibleTranscriptIds = visibleTranscriptIds
     ? String([...visibleTranscriptIds].sort())
@@ -86,13 +113,30 @@ const useFocusGene = (params: Params) => {
 
   const dispatch = useAppDispatch();
 
+  // update all the refs
   useEffect(() => {
     focusObjectIdRef.current = focusObjectId;
     geneIdRef.current = geneStableId;
-  }, [focusObjectId, geneStableId]);
+    allSortedFocusGeneTranscriptsRef.current = fetchedFocusGeneData
+      ? defaultSort(fetchedFocusGeneData.gene.transcripts).map(
+          (transcript) => transcript.stable_id
+        )
+      : [];
+    visibleTranscriptIdsRef.current = visibleTranscriptIds;
+    showSeveralTranscriptsRef.current =
+      focusGeneTrackSettings?.settings.showSeveralTranscripts;
+  }, [
+    focusObjectId,
+    geneStableId,
+    fetchedFocusGeneData,
+    stringifiedVisibleTranscriptIds
+  ]);
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
+    if (!genomeBrowser) {
+      return;
+    }
+    const visibleTranscriptsSubscription = genomeBrowser.subscribe(
       IncomingActionType.VISIBLE_TRANSCRIPTS,
       (action: ReportVisibleTranscriptsAction) => {
         const { gene_id, transcript_ids } = action.payload;
@@ -102,7 +146,23 @@ const useFocusGene = (params: Params) => {
       }
     );
 
-    return () => subscription?.unsubscribe();
+    const lozengeClicksSubscription = genomeBrowser.subscribe(
+      IncomingActionType.HOTSPOT,
+      (action: HotspotAction) => {
+        if (isLozengeClickMessage(action.payload)) {
+          onLozengeClick();
+        }
+      }
+    );
+
+    const subscriptions = [
+      visibleTranscriptsSubscription,
+      lozengeClicksSubscription
+    ];
+
+    return () => {
+      subscriptions.forEach((subscription) => subscription.unsubscribe());
+    };
   }, [genomeBrowser]);
 
   useEffect(() => {
@@ -111,36 +171,60 @@ const useFocusGene = (params: Params) => {
     }
 
     setFocusGene(focusObjectId);
-  }, [
-    genomeBrowser,
-    focusObjectId,
-    stringifiedVisibleTranscriptIds,
-    geneStableId
-  ]);
+  }, [genomeBrowser, focusObjectId]);
 
+  /**
+   * In the below hook, we are making a choice about how many transcript ids to send to the genome browser.
+   * Specifically, we are trying to establish:
+   * 1) whether the gene has been previously viewed and the number of its visible transcripts saved in browser storage
+   * 2) if not, then what is the value of the 1/5 transcripts toggle in track settings panel
+   */
   useEffect(() => {
-    if (!geneStableId) {
+    if (!geneStableId || !fetchedFocusGeneData) {
       return;
     }
-    // Even if the user has disabled all gene's transcripts, re-focusing on this gene should show at least one transcript
-    // (it's possible that this logic will change when no selected transcripts results in showing a ghosted transcript)
-    const transcriptsParam = visibleTranscriptIds ?? null;
-    updateFocusGeneTranscripts(transcriptsParam);
+    let transcriptIds: string[];
+
+    if (
+      !visibleTranscriptIds || // hopefully, there won't be any race conditions
+      (typeof previousSeveralTranscriptsSetting === 'boolean' &&
+        typeof focusGeneTrackSettings?.settings.showSeveralTranscripts ===
+          'boolean' &&
+        previousSeveralTranscriptsSetting !==
+          focusGeneTrackSettings?.settings.showSeveralTranscripts) // the toggle has been switched
+    ) {
+      const shouldShowSeveralTranscripts =
+        focusGeneTrackSettings?.settings.showSeveralTranscripts;
+      const numberOfTranscriptsToShow = shouldShowSeveralTranscripts ? 5 : 1;
+
+      transcriptIds = allSortedFocusGeneTranscriptsRef.current.slice(
+        0,
+        numberOfTranscriptsToShow
+      );
+    } else {
+      transcriptIds = visibleTranscriptIds;
+    }
+
+    updateFocusGeneTranscripts(transcriptIds);
   }, [
     genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
     geneStableId,
-    stringifiedVisibleTranscriptIds
+    stringifiedVisibleTranscriptIds,
+    focusGeneTrackSettings?.settings.showSeveralTranscripts,
+    allSortedFocusGeneTranscriptsRef.current.length
   ]);
 
+  // apply track settings other than several transcripts
   useEffect(() => {
-    if (!geneStableId || !trackSettingsForGenome) {
+    if (!geneStableId || !focusGeneTrackSettings) {
       return;
     }
+
     sendFocusGeneTrackSettings(
-      trackSettingsForGenome.settings,
+      focusGeneTrackSettings.settings,
       genomeBrowserMethods
     );
-  }, [trackSettingsForGenome]);
+  }, [focusGeneTrackSettings]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(
@@ -150,6 +234,25 @@ const useFocusGene = (params: Params) => {
       })
     );
   };
+
+  const onLozengeClick = useCallback(() => {
+    const allTranscriptIds = allSortedFocusGeneTranscriptsRef.current;
+    let transcriptIds: string[];
+    if (visibleTranscriptIdsRef.current?.length === allTranscriptIds.length) {
+      // all transcripts shown; should collapse transcripts to one or several
+      transcriptIds = showSeveralTranscriptsRef.current
+        ? allTranscriptIds.slice(0, 5)
+        : allTranscriptIds.slice(0, 1);
+    } else {
+      transcriptIds = allTranscriptIds;
+    }
+
+    updateFocusGeneTranscripts(transcriptIds);
+  }, [
+    stringifiedVisibleTranscriptIds,
+    updateFocusGeneTranscripts,
+    focusGeneTrackSettings
+  ]);
 };
 
 const sendFocusGeneTrackSettings = (
@@ -184,6 +287,17 @@ const sendFocusGeneTrackSettings = (
         break;
     }
   });
+};
+
+const isLozengeClickMessage = (
+  payload: HotspotPayload
+): payload is TranscriptsLozengePayload => {
+  const isLozengeClickPayload = payload.variety[0].type === 'lozenge';
+
+  return (
+    isLozengeClickPayload &&
+    (payload.content[0] as TranscriptsLozengeContent).focus
+  );
 };
 
 export default useFocusTrack;

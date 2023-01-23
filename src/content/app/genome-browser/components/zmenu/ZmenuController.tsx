@@ -15,19 +15,19 @@
  */
 
 import React, { useEffect, memo } from 'react';
+import {
+  type HotspotAction,
+  type HotspotPayload,
+  type ZmenuCreatePayload,
+  IncomingActionType
+} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
-
-import {
-  ZmenuCreateAction,
-  IncomingActionType,
-  ZmenuCreatePayload
-} from '@ensembl/ensembl-genome-browser';
 
 import Zmenu from './Zmenu';
 
 type Props = {
-  browserRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement>;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -42,19 +42,18 @@ const ZmenuController = (props: Props) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.ZMENU_CREATE,
-      handleZmenuCreate
+      IncomingActionType.HOTSPOT,
+      handleZmenuCreation
     );
 
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const handleZmenuCreate = (action: ZmenuCreateAction) => {
-    const payload = action.payload;
-
-    if (!payload.variety.length) {
+  const handleZmenuCreation = (action: HotspotAction) => {
+    if (!isZmenuPayload(action.payload)) {
       return;
     }
+    const payload = action.payload;
     const zmenuId = Object.keys(zmenus).length + 1;
 
     setZmenus &&
@@ -71,12 +70,20 @@ const ZmenuController = (props: Props) => {
     <Zmenu
       key={id}
       zmenuId={id}
-      browserRef={props.browserRef}
+      containerRef={props.containerRef}
       payload={zmenus[id]}
     />
   ));
 
   return <>{zmenuElements}</>;
+};
+
+const isZmenuPayload = (
+  payload: HotspotPayload
+): payload is ZmenuCreatePayload => {
+  // NOTE: check for payload.variety.length should be unnecessary;
+  // but as of now, genome browser can't separate track's left corner hotspot from transcript zmenu hotspot
+  return payload.variety.length === 1 && payload.variety[0].type === 'zmenu';
 };
 
 export default memo(ZmenuController);

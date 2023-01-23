@@ -112,7 +112,8 @@ export const createZmenuPayload = (): ZmenuCreatePayload => {
     content: [...createZmenuContentPayload().features],
     variety: [
       {
-        type: ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT
+        type: 'zmenu',
+        'zmenu-type': ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT
       }
     ]
   };

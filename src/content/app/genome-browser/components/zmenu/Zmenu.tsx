@@ -52,7 +52,7 @@ enum Direction {
 export type ZmenuProps = {
   zmenuId: string;
   payload: ZmenuCreatePayload;
-  browserRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement>;
 };
 
 const Zmenu = (props: ZmenuProps) => {
@@ -91,7 +91,7 @@ const Zmenu = (props: ZmenuProps) => {
 
   const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
     Boolean(variety.type)
-  )?.type;
+  )?.['zmenu-type'];
 
   if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
     transcript = content.find(
@@ -163,7 +163,7 @@ const getAnchorInlineStyles = (params: ZmenuProps) => {
 
 // choose how to position zmenu relative to its anchor point
 const chooseDirection = (params: ZmenuProps) => {
-  const browserElement = params.browserRef.current as HTMLDivElement;
+  const browserElement = params.containerRef.current as HTMLDivElement;
   const { width } = browserElement.getBoundingClientRect();
   const { x } = params.payload;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;

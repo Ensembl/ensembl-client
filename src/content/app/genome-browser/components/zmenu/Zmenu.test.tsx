@@ -101,7 +101,7 @@ const renderComponent = (state: typeof initialState = initialState) => {
 };
 
 const defaultProps: ZmenuProps = {
-  browserRef: {
+  containerRef: {
     current: document.createElement('div')
   },
   zmenuId: '1',

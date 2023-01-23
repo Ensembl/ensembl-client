@@ -15,6 +15,7 @@
  */
 
 import { useEffect } from 'react';
+import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -30,6 +31,7 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import { getDisplayedTrackIds } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
+import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 
 import {
   setInitialTrackSettingsForGenome,
@@ -65,7 +67,8 @@ const useGenomeBrowserTracks = () => {
   const trackSettingsForGenome =
     useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
   const visibleTrackIds = useAppSelector(getDisplayedTrackIds); // get list of ids of tracks currently rendered in genome browser
-  const { toggleTrack } = useGenomeBrowser();
+  const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useAppDispatch();
 
@@ -109,6 +112,21 @@ const useGenomeBrowserTracks = () => {
       toggleTrack({ trackId, isTurnedOn: false });
     });
   }, [trackSettingsForGenome, visibleTrackIds]);
+
+  // mark the tracks that reflect the content of the current tab inside the track panel
+  useEffect(() => {
+    if (!genomeBrowser) {
+      return;
+    }
+
+    // take the first letter of the track panel tab name, and chuck it over to the genome browser
+    const trackGroup = selectedTrackPanelTab[0].toUpperCase();
+
+    genomeBrowser.send({
+      type: OutgoingActionType.MARK_TRACK_GROUP,
+      payload: { track_group: trackGroup }
+    });
+  }, [genomeBrowser, selectedTrackPanelTab]);
 
   // run hooks responsible for communicating to genome browser the enabled tracks and their settings
   useFocusTrack();

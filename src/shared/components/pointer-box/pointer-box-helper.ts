@@ -130,22 +130,22 @@ const getTooltipOutOfBoundsArea = (
   } else if (position === Position.LEFT_TOP) {
     predictedLeft = anchorLeft - pointerHeight - width;
     predictedRight = anchorLeft;
-    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.LEFT_BOTTOM) {
     predictedLeft = anchorLeft - pointerHeight - width;
     predictedRight = anchorLeft;
-    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
+    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_TOP) {
     predictedLeft = anchorRight;
     predictedRight = anchorRight + pointerHeight + width;
-    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_BOTTOM) {
     predictedLeft = anchorRight;
     predictedRight = anchorRight + pointerHeight + width;
-    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
+    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
     predictedBottom = predictedTop + height;
   }
 

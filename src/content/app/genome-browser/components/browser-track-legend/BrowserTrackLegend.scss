@@ -1,0 +1,29 @@
+.anchor {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.message {
+  max-width: 250px;
+}
+
+.message ul {
+  padding-left: 2rem;
+}
+
+.message li {
+  padding-left: 1rem;
+}
+
+.message li:nth-child(1) {
+  list-style-type: 'G';
+}
+
+.message li:nth-child(2) {
+  list-style-type: 'V';
+}
+
+.message li:nth-child(3) {
+  list-style-type: 'R';
+}
