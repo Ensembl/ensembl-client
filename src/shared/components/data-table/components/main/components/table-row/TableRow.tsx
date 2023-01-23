@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import type { TableRowData } from 'src/shared/components/data-table/dataTableTypes';
 
@@ -98,7 +98,7 @@ const TableRow = (props: { rowData: TableRowData; rowId: string | number }) => {
                       rowId: props.rowId,
                       cellData
                     })
-                  : cellData}
+                  : (cellData as ReactNode)}
               </td>
             </>
           );

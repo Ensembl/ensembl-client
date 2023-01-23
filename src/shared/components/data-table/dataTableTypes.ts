@@ -38,14 +38,18 @@ export enum TableAction {
   RESTORE_DEFAULTS = 'restore_defaults'
 }
 
-export type TableCellData = ReactNode;
+export type TableCellStructuredData = { data: unknown };
+
+export type TableCellData = ReactNode | TableCellStructuredData;
 
 export type TableRowData = TableCellData[];
 
-export type TableRows = {
+export type TableRow = {
   cells: TableCellData[];
   rowId: string | number;
-}[];
+};
+
+export type TableRows = TableRow[];
 
 export type TableData = TableRowData[];
 
@@ -54,6 +58,12 @@ export type TableCellRendererParams = {
   rowData: TableRowData;
   cellData: TableCellData;
 };
+
+export type TableRowsSortingFunction = (
+  rows: TableRows,
+  columnIndex: number,
+  direction?: SortingDirection
+) => TableRows;
 
 export type IndividualColumn = {
   columnId: string;
@@ -67,7 +77,9 @@ export type IndividualColumn = {
   bodyCellClassName?: string;
   helpText?: ReactNode;
   width?: string;
+  sortFn?: TableRowsSortingFunction;
   renderer?: (params: TableCellRendererParams) => ReactNode;
+  downloadRenderer?: (params: TableCellRendererParams) => string | number;
 };
 
 export type DataTableColumns = IndividualColumn[];

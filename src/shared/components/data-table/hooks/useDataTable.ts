@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import sortBy from 'lodash/sortBy';
 import { useContext, useEffect, useState } from 'react';
+import orderBy from 'lodash/orderBy';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
-import { SortingDirection } from '../dataTableTypes';
+
+import {
+  SortingDirection,
+  type TableRowsSortingFunction
+} from '../dataTableTypes';
 
 const useDataTable = () => {
   const dataTableContext = useContext(TableContext);
@@ -80,10 +84,13 @@ const useDataTable = () => {
         (column) => column.columnId === sortedColumn.columnId
       );
 
-      rows =
-        sortedColumn.sortedDirection === SortingDirection.ASC
-          ? sortBy(rows, (row) => row.cells[sortedColumnIndex])
-          : sortBy(rows, (row) => row.cells[sortedColumnIndex]).reverse();
+      const sortFunction = columns[sortedColumnIndex].sortFn ?? plainSorter;
+
+      rows = sortFunction(
+        rows,
+        sortedColumnIndex,
+        sortedColumn.sortedDirection
+      );
     }
 
     return totalRows > rowsPerPage
@@ -110,6 +117,18 @@ const useDataTable = () => {
     filteredRows,
     ...dataTableContext
   };
+};
+
+// useful for sorting strings and numbers in ascending or descending order
+const plainSorter: TableRowsSortingFunction = (
+  tableRows,
+  columnIndex,
+  direction
+) => {
+  const iteratee = (data: any) => data.cells[columnIndex] as string | number;
+  // translate our magic words to Lodash's magic words
+  const orderDirection = direction === SortingDirection.DESC ? 'desc' : 'asc';
+  return orderBy(tableRows, [iteratee], [orderDirection]);
 };
 
 export default useDataTable;
