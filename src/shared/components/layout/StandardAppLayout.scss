@@ -140,10 +140,7 @@
   padding: 15px 30px;
   border-left: solid $medium-light-grey 1px;
   background-color: white;
-  width: calc(
-    100% - var(--drawer-window-width) - var(--sidebar-toolstrip-width) -
-      var(--sidebar-content-width)
-  );
+  width: calc(100% - var(--drawer-window-width) - var(--sidebar-toolstrip-width) - var(--sidebar-content-width));
 }
 
 .drawerWindow {
