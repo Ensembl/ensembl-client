@@ -67,7 +67,7 @@ export const Provider = (props: ProviderProps) => {
     if (store.expanded.length !== preExpanded.length || differences) {
       setStore(store.setExpanded(preExpanded));
     }
-  }, [preExpanded]);
+  }, [props.preExpanded]);
 
   const toggleExpanded = (key: UUID): void => {
     setStore(store.toggleExpanded(key));
