@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -28,39 +28,42 @@ import CogIcon from 'static/icons/icon_settings.svg';
 import styles from './BrowserCogList.scss';
 
 export type BrowserCogProps = {
-  cogActivated: boolean;
   trackId: string;
-  updateSelectedCog: (trackId: string | null) => void;
 };
 
 const BrowserCog = (props: BrowserCogProps) => {
-  const { cogActivated, updateSelectedCog, trackId } = props;
+  const { trackId } = props;
   const { reportTrackSettingsOpened } = useGenomeBrowserAnalytics();
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const toggleCog = useCallback(() => {
-    if (!cogActivated) {
-      updateSelectedCog(trackId);
+  const toggleCog = () => {
+    if (!isPanelOpen) {
+      setIsPanelOpen(true);
       reportTrackSettingsOpened(trackId);
     } else {
-      updateSelectedCog(null);
+      setIsPanelOpen(false);
     }
-  }, [cogActivated]);
+  };
 
   const cogIconConfig = {
     description: 'Configure Track',
     icon: CogIcon
   };
 
-  const transition = useTransition(cogActivated, {
+  const transition = useTransition(isPanelOpen, {
     config: { duration: 100 },
     enter: { opacity: 1 },
     from: { opacity: 0 },
     leave: { opacity: 0 }
   });
 
+  const closeTrackSettingsPanel = () => {
+    setIsPanelOpen(false);
+  };
+
   return (
     <>
-      {cogActivated ? (
+      {isPanelOpen ? (
         <CloseButton onClick={toggleCog} />
       ) : (
         <ImageButton
@@ -74,7 +77,10 @@ const BrowserCog = (props: BrowserCogProps) => {
         return (
           item && (
             <animated.div key="trackSettingsPanel" style={style}>
-              <TrackSettingsPanel trackId={trackId} />
+              <TrackSettingsPanel
+                trackId={trackId}
+                onClose={closeTrackSettingsPanel}
+              />
             </animated.div>
           )
         );
