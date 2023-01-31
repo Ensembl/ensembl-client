@@ -39,6 +39,7 @@ import {
   initializeSidebar
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
+import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contexts/entity-viewer-ids-context/EntityViewerIdsContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
 import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
@@ -89,21 +90,23 @@ const EntityViewer = () => {
   );
 
   return (
-    <div className={styles.entityViewer}>
-      <EntityViewerAppBar />
-      {isMissingGenomeId ? (
-        <MissingGenomeError genomeId={genomeIdInUrl as string} />
-      ) : isMalformedEntityId ? (
-        <MissingFeatureError
-          featureId={entityIdInUrl as string}
-          genome={genome}
-          showTopBar={true}
-          onContinue={openEntityViewerInterstitial}
-        />
-      ) : (
-        renderEntityViewerRoutes()
-      )}
-    </div>
+    <EntityViewerIdsContextProvider>
+      <div className={styles.entityViewer}>
+        <EntityViewerAppBar />
+        {isMissingGenomeId ? (
+          <MissingGenomeError genomeId={genomeIdInUrl as string} />
+        ) : isMalformedEntityId ? (
+          <MissingFeatureError
+            featureId={entityIdInUrl as string}
+            genome={genome}
+            showTopBar={true}
+            onContinue={openEntityViewerInterstitial}
+          />
+        ) : (
+          renderEntityViewerRoutes()
+        )}
+      </div>
+    </EntityViewerIdsContextProvider>
   );
 };
 
