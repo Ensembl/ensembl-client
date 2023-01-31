@@ -19,11 +19,11 @@ import { Link } from 'react-router-dom';
 
 import {
   GenomeBrowserIcon,
-  SpeciesSelectorIcon,
   GlobalSearchIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
+import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 
@@ -48,12 +48,7 @@ const Launchbar = () => {
               icon={GlobalSearchIcon}
               enabled={false}
             />
-            <LaunchbarButton
-              path="/species-selector"
-              description="Species selector"
-              icon={SpeciesSelectorIcon}
-              enabled={true}
-            />
+            <SpeciesSelectorLaunchbarButton />
           </div>
           <div className={styles.category}>
             <LaunchbarButton

@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useMemo, type FunctionComponent } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { type FunctionComponent } from 'react';
+import { NavLink, useMatch } from 'react-router-dom';
 import classNames from 'classnames';
 
+import useHover from 'src/shared/hooks/useHover';
 import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
-
-import { Status } from 'src/shared/types/status';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './Launchbar.scss';
 
 export type LaunchbarButtonProps = {
   path: string;
   description: string;
-  icon: FunctionComponent<unknown> | string;
+  icon: FunctionComponent<unknown>;
   enabled?: boolean;
   isActive?: boolean;
 };
@@ -39,65 +36,58 @@ export type LaunchbarButtonProps = {
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
-  const location = useLocation();
+  const routeMatch = useMatch({ path: props.path, end: false });
+  const isRouteMatched = Boolean(routeMatch);
   const isButtonEnabled = props.enabled ?? true;
 
   const { trackLaunchbarAppChange } = useHeaderAnalytics();
   const isActive =
-    'isActive' in props
-      ? (props.isActive as boolean)
-      : new RegExp(`^${props.path}`).test(location.pathname);
-  const imageButtonStatus = getImageButtonStatus({
-    isDisabled: !isButtonEnabled,
-    isActive
-  });
+    'isActive' in props ? (props.isActive as boolean) : isRouteMatched;
 
-  const imageButton = useMemo(
-    () => (
-      <ImageButton
-        className={styles.launchbarButton}
-        status={imageButtonStatus}
-        description={props.description}
-        image={props.icon}
-      />
-    ),
-    [props.icon, props.description, imageButtonStatus]
+  const launchbarButtonContent = (
+    <LaunchbarButtonContent
+      {...props}
+      enabled={isButtonEnabled}
+      isActive={isActive}
+    />
   );
 
-  const activeButtonClass = classNames(
-    styles.launchbarButton,
-    styles.launchbarButtonSelected
-  );
-
-  return isButtonEnabled ? (
+  return isButtonEnabled && !isActive ? (
     <NavLink
-      className={({ isActive }) =>
-        isActive ? activeButtonClass : styles.launchbarButton
-      }
+      className={styles.launchbarButtonWrapperLink}
       to={props.path}
       onClick={() => trackLaunchbarAppChange(props.description)}
     >
-      {imageButton}
+      {launchbarButtonContent}
     </NavLink>
   ) : (
-    imageButton
+    launchbarButtonContent
   );
 };
 
-const getImageButtonStatus = ({
-  isDisabled,
-  isActive
-}: {
-  isDisabled: boolean;
-  isActive: boolean;
-}): ImageButtonStatus => {
-  if (isDisabled) {
-    return Status.DISABLED;
-  } else if (isActive) {
-    return Status.SELECTED;
-  } else {
-    return Status.UNSELECTED;
+const LaunchbarButtonContent = React.memo(
+  (props: Required<Omit<LaunchbarButtonProps, 'path'>>) => {
+    const [hoverRef, isHovered] = useHover<HTMLDivElement>();
+    const elementClasses = classNames(styles.launchbarButton, {
+      [styles.launchbarButtonSelected]: props.isActive,
+      [styles.launchbarButtonDisabled]: !props.enabled
+    });
+
+    const Icon = props.icon;
+
+    return (
+      <>
+        <div ref={hoverRef} className={elementClasses}>
+          <Icon />
+        </div>
+        {props.description && isHovered && (
+          <Tooltip anchor={hoverRef.current} autoAdjust={true}>
+            {props.description}
+          </Tooltip>
+        )}
+      </>
+    );
   }
-};
+);
 
 export default LaunchbarButton;
