@@ -213,13 +213,14 @@ const AutosuggestSearchField = (props: Props) => {
     setIsSelected(true);
   };
 
-  const shouldShowSuggestions =
+  const shouldShowSuggestions = Boolean(
     props.search &&
-    !props.notFound &&
-    matchGroups.length > 0 &&
-    canShowSuggesions &&
-    !isSelected &&
-    !preventSuggestionsProp;
+      !props.notFound &&
+      matchGroups.length > 0 &&
+      canShowSuggesions &&
+      !isSelected &&
+      !preventSuggestionsProp
+  );
 
   const className = classNames(
     styles.autosuggestionSearchField,
