@@ -87,7 +87,7 @@ const renderComponent = () => {
 
   const renderResult = render(
     <Provider store={store}>
-      <TrackSettingsPanel trackId={selectedTrackId} />
+      <TrackSettingsPanel trackId={selectedTrackId} onClose={jest.fn()} />
     </Provider>
   );
   return {
