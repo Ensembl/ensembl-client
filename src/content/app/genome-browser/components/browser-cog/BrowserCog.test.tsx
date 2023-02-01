@@ -38,26 +38,24 @@ describe('<BrowserCog />', () => {
   });
 
   const defaultProps: BrowserCogProps = {
-    cogActivated: true,
-    trackId: faker.lorem.words(),
-    updateSelectedCog: jest.fn()
+    trackId: faker.lorem.words()
   };
 
   describe('rendering', () => {
-    test('renders browser track config', () => {
+    test('renders browser track config', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
       expect(container.querySelector('#trackSettingsPanel')).toBeTruthy();
     });
-  });
 
-  describe('behaviour', () => {
     test('renders close button when track config is open', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
-      const cogButton = container.querySelector('.closeButton');
-
-      await userEvent.click(cogButton as HTMLButtonElement);
-
-      expect(defaultProps.updateSelectedCog).toHaveBeenCalledTimes(1);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
+      expect(container.querySelector('.closeButton')).toBeTruthy();
     });
   });
 });
