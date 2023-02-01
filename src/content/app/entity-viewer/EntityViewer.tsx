@@ -90,23 +90,21 @@ const EntityViewer = () => {
   );
 
   return (
-    <EntityViewerIdsContextProvider>
-      <div className={styles.entityViewer}>
-        <EntityViewerAppBar />
-        {isMissingGenomeId ? (
-          <MissingGenomeError genomeId={genomeIdInUrl as string} />
-        ) : isMalformedEntityId ? (
-          <MissingFeatureError
-            featureId={entityIdInUrl as string}
-            genome={genome}
-            showTopBar={true}
-            onContinue={openEntityViewerInterstitial}
-          />
-        ) : (
-          renderEntityViewerRoutes()
-        )}
-      </div>
-    </EntityViewerIdsContextProvider>
+    <div className={styles.entityViewer}>
+      <EntityViewerAppBar />
+      {isMissingGenomeId ? (
+        <MissingGenomeError genomeId={genomeIdInUrl as string} />
+      ) : isMalformedEntityId ? (
+        <MissingFeatureError
+          featureId={entityIdInUrl as string}
+          genome={genome}
+          showTopBar={true}
+          onContinue={openEntityViewerInterstitial}
+        />
+      ) : (
+        renderEntityViewerRoutes()
+      )}
+    </div>
   );
 };
 
@@ -224,4 +222,12 @@ const useEntityViewerRouting = () => {
   ]);
 };
 
-export default EntityViewer;
+const WrappedEntityViewer = () => {
+  return (
+    <EntityViewerIdsContextProvider>
+      <EntityViewer />
+    </EntityViewerIdsContextProvider>
+  );
+};
+
+export default WrappedEntityViewer;
