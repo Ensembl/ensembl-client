@@ -52,28 +52,47 @@ type PointerProps = {
 };
 
 export type PointerBoxProps = {
-  position: Position;
+  position?: Position;
   anchor: HTMLElement;
   container?: HTMLElement | null; // area within which the box should try to position itself; defaults to window if null
-  autoAdjust: boolean; // whether to adjust pointer box position so as not to extend beyond screen bounds
-  renderInsideAnchor: boolean; // whether to render PointerBox inside the anchor (which should have position: relative to display it properly); renders to body if false
-  pointerWidth: number;
-  pointerHeight: number;
-  pointerOffset: number;
+  autoAdjust?: boolean; // whether to adjust pointer box position so as not to extend beyond screen bounds
+  renderInsideAnchor?: boolean; // whether to render PointerBox inside the anchor (which should have position: relative to display it properly); renders to body if false
+  pointerWidth?: number;
+  pointerHeight?: number;
+  pointerOffset?: number;
   classNames?: {
     box?: string;
     pointer?: string;
   };
   children: ReactNode;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  onOutsideClick: () => void;
-  onClose: () => void;
+  onOutsideClick?: () => void;
+  onClose?: () => void;
+};
+
+const defaultProps = {
+  position: Position.BOTTOM_RIGHT,
+  renderInsideAnchor: false,
+  autoAdjust: false,
+  pointerWidth: POINTER_WIDTH,
+  pointerHeight: POINTER_HEIGHT,
+  pointerOffset: POINTER_OFFSET,
+  onOutsideClick: noop,
+  onClose: noop
 };
 
 const PointerBox = (props: PointerBoxProps) => {
-  const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
-  const positionRef = useRef<Position | null>(props.position);
+  const {
+    position: positionFromProps = defaultProps.position,
+    renderInsideAnchor = defaultProps.renderInsideAnchor,
+    autoAdjust = defaultProps.autoAdjust,
+    pointerWidth: pointerWidthFromProps = defaultProps.pointerWidth,
+    pointerHeight: pointerHeightFromProps = defaultProps.pointerHeight,
+    pointerOffset: pointerOffsetFromProps = defaultProps.pointerOffset,
+    onOutsideClick = defaultProps.onOutsideClick,
+    onClose = defaultProps.onClose
+  } = props;
+  const [isPositioning, setIsPositioning] = useState(autoAdjust);
+  const positionRef = useRef<Position | null>(positionFromProps);
   const anchorRectRef = useRef<DOMRect | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     boxStyles: {},
@@ -81,7 +100,7 @@ const PointerBox = (props: PointerBoxProps) => {
   });
   const pointerBoxRef = useRef<HTMLDivElement>(null);
 
-  useOutsideClick(pointerBoxRef, props.onOutsideClick);
+  useOutsideClick(pointerBoxRef, onOutsideClick);
 
   useEffect(() => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
@@ -89,27 +108,28 @@ const PointerBox = (props: PointerBoxProps) => {
     setInlineStyles(getInlineStyles(props));
     anchorRectRef.current = props.anchor.getBoundingClientRect();
 
-    if (props.autoAdjust) {
+    if (autoAdjust) {
       adjustPosition(pointerBoxElement, props.anchor);
     }
   }, []);
 
-  const closeOnScroll = once(props.onClose);
+  const closeOnScroll = once(onClose);
 
   // from Stack Overflow: https://stackoverflow.com/questions/59792071/how-to-observe-dom-element-position-changes
   // (listen to all scroll events in the event capturing phase on the body and re-evaluate anchor position)
   useEffect(() => {
-    if (!props.renderInsideAnchor) {
+    if (!renderInsideAnchor) {
       document.addEventListener('scroll', closeOnScroll, true);
       return () => document.removeEventListener('scroll', closeOnScroll, true);
     }
   }, []);
 
   const getInlineStyles = (props: PointerBoxProps) => {
-    if (props.renderInsideAnchor) {
-      return getStylesForRenderingIntoAnchor(props);
+    const params = { ...defaultProps, ...props };
+    if (renderInsideAnchor) {
+      return getStylesForRenderingIntoAnchor(params);
     } else {
-      return getStylesForRenderingIntoBody(props);
+      return getStylesForRenderingIntoBody(params);
     }
   };
 
@@ -124,10 +144,10 @@ const PointerBox = (props: PointerBoxProps) => {
       pointerBoxBoundingRect,
       anchorBoundingRect,
       rootBoundingRect,
-      position: positionRef.current || props.position,
-      pointerWidth: props.pointerWidth,
-      pointerHeight: props.pointerHeight,
-      pointerOffset: props.pointerOffset
+      position: positionRef.current || positionFromProps,
+      pointerWidth: pointerWidthFromProps,
+      pointerHeight: pointerHeightFromProps,
+      pointerOffset: pointerOffsetFromProps
     });
 
     if (optimalPosition !== positionRef.current) {
@@ -147,7 +167,7 @@ const PointerBox = (props: PointerBoxProps) => {
   const bodyClasses = classNames(
     styles.pointerBox,
     props.classNames?.box,
-    props.position,
+    positionFromProps,
     { [styles.invisible]: isPositioning || !hasInlineStyles() }
   );
 
@@ -159,29 +179,16 @@ const PointerBox = (props: PointerBoxProps) => {
     >
       <Pointer
         className={props.classNames?.pointer}
-        width={props.pointerWidth}
-        height={props.pointerWidth}
+        width={pointerWidthFromProps}
+        height={pointerHeightFromProps}
         style={inlineStyles.pointerStyles}
       />
       {props.children}
     </div>
   );
-  const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;
+  const renderTarget = renderInsideAnchor ? props.anchor : document.body;
 
   return ReactDOM.createPortal(renderedPointerBox, renderTarget);
-};
-
-PointerBox.defaultProps = {
-  position: Position.BOTTOM_RIGHT,
-  renderInsideAnchor: false,
-  autoAdjust: false,
-  pointerWidth: POINTER_WIDTH,
-  pointerHeight: POINTER_HEIGHT,
-  pointerOffset: POINTER_OFFSET,
-  onMouseEnter: noop,
-  onMouseLeave: noop,
-  onOutsideClick: noop,
-  onClose: noop
 };
 
 const Pointer = (props: PointerProps) => {

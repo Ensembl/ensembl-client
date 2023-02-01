@@ -21,11 +21,11 @@ import defaultStyles from '../css/Accordion.scss';
 import classNames from 'classnames';
 
 type Props = DivAttributes & {
-  extendDefaultStyles: boolean;
+  extendDefaultStyles?: boolean;
 };
 
 const AccordionItemPanel = (props: Props) => {
-  const { className, extendDefaultStyles, ...rest } = props;
+  const { className, extendDefaultStyles = true, ...rest } = props;
 
   let styles = className;
 
@@ -47,10 +47,6 @@ const AccordionItemPanel = (props: Props) => {
       }}
     </ItemConsumer>
   );
-};
-
-AccordionItemPanel.defaultProps = {
-  extendDefaultStyles: true
 };
 
 export default AccordionItemPanel;

@@ -28,7 +28,7 @@ import { DivAttributes } from '../helpers/types';
 import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
-  extendDefaultStyles: boolean;
+  extendDefaultStyles?: boolean;
   toggleExpanded: () => void;
   disabled?: boolean;
   onToggle?: (isExpanded: boolean) => void;
@@ -37,7 +37,7 @@ type Props = DivAttributes & {
 export const AccordionItemButton = (props: Props) => {
   const {
     className,
-    extendDefaultStyles,
+    extendDefaultStyles = true,
     toggleExpanded,
     disabled,
     children,
@@ -79,10 +79,6 @@ export const AccordionItemButton = (props: Props) => {
       )}
     </div>
   );
-};
-
-AccordionItemButton.defaultProps = {
-  extendDefaultStyles: true
 };
 
 type WrapperProps = {

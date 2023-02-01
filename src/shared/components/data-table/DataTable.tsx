@@ -127,8 +127,8 @@ const DataTable = (props: TableProps) => {
           cells: row
         })),
         theme: props.theme,
-        selectableColumnIndex: props.selectableColumnIndex,
-        expandedContent: props.expandedContent,
+        selectableColumnIndex: props.selectableColumnIndex ?? 0,
+        expandedContent: props.expandedContent ?? {},
         disabledActions: props.disabledActions,
         downloadFileName: props.downloadFileName,
         downloadHandler: props.downloadHandler
@@ -145,12 +145,6 @@ const DataTable = (props: TableProps) => {
       </div>
     </TableContext.Provider>
   );
-};
-
-DataTable.defaultProps = {
-  theme: 'light',
-  selectableColumnIndex: 0,
-  expandedContent: {}
 };
 
 export default DataTable;

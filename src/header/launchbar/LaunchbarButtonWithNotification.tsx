@@ -52,8 +52,4 @@ const LaunchbarButtonWithNotification = (
   return <LaunchbarButton {...props} icon={WrappedIcon} />;
 };
 
-LaunchbarButtonWithNotification.defaultProps = {
-  enabled: true
-};
-
 export default LaunchbarButtonWithNotification;

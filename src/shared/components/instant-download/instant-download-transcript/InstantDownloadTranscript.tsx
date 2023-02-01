@@ -57,8 +57,8 @@ export type InstantDownloadTranscriptEntityProps = {
 };
 
 type Props = InstantDownloadTranscriptEntityProps & {
-  layout: Layout;
-  theme: Theme;
+  layout?: Layout;
+  theme?: Theme;
 };
 
 type TranscriptSectionProps = {
@@ -120,7 +120,9 @@ const InstantDownloadTranscript = (props: Props) => {
   const {
     genomeId,
     gene: { id: geneId },
-    transcript: { id: transcriptId, isProteinCoding }
+    transcript: { id: transcriptId, isProteinCoding },
+    layout = 'horizontal',
+    theme = 'dark'
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(isProteinCoding)
@@ -168,10 +170,10 @@ const InstantDownloadTranscript = (props: Props) => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
   };
 
-  const wrapperClasses =
-    props.layout === 'horizontal'
-      ? classNames(styles.layout, styles.layoutHorizontal)
-      : classNames(styles.layout, styles.layoutVertical);
+  const wrapperClasses = classNames(styles.layout, {
+    [styles.layoutHorizontal]: layout === 'horizontal',
+    [styles.layoutVertical]: layout === 'vertical'
+  });
 
   const isButtonDisabled = !hasSelectedOptions({
     ...transcriptOptions,
@@ -183,19 +185,19 @@ const InstantDownloadTranscript = (props: Props) => {
       <TranscriptSection
         transcript={props.transcript}
         options={transcriptOptions}
-        theme={props.theme}
+        theme={theme}
         onChange={onTranscriptOptionChange}
       />
       <GeneSection
         gene={props.gene}
         isGenomicSequenceSelected={isGeneSequenceSelected}
-        theme={props.theme}
+        theme={theme}
         onChange={onGeneOptionChange}
       />
       <InstantDownloadButton
         isDisabled={isButtonDisabled}
         onClick={onSubmit}
-        theme={props.theme}
+        theme={theme}
         classNames={{
           wrapper: styles.downloadButtonWrapper
         }}
@@ -203,11 +205,6 @@ const InstantDownloadTranscript = (props: Props) => {
     </div>
   );
 };
-
-InstantDownloadTranscript.defaultProps = {
-  layout: 'horizontal',
-  theme: 'dark'
-} as Props;
 
 const TranscriptSection = (props: TranscriptSectionProps) => {
   const { transcript, options } = props;

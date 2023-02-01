@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
@@ -24,7 +24,7 @@ import styles from './ExpandableSection.scss';
 export type ExpandableSectionProps = {
   collapsedContent: ReactNode;
   expandedContent: ReactNode;
-  isExpanded: boolean;
+  isExpanded?: boolean;
   classNames?: {
     wrapper?: string;
     expanded?: string;
@@ -34,13 +34,14 @@ export type ExpandableSectionProps = {
 };
 
 const ExpandableSection = (props: ExpandableSectionProps) => {
-  const [isExpanded, setIsExpanded] = useState(props.isExpanded);
+  const { isExpanded: isExpandedProp = false } = props;
+  const [isExpanded, setIsExpanded] = useState(isExpandedProp);
 
   useEffect(() => {
-    if (isExpanded !== props.isExpanded) {
-      setIsExpanded(props.isExpanded);
+    if (isExpanded !== isExpandedProp) {
+      setIsExpanded(isExpandedProp);
     }
-  }, [props.isExpanded]);
+  }, [isExpandedProp]);
 
   const wrapperClassNames = classNames(
     styles.expandableSection,
@@ -83,10 +84,6 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
       )}
     </div>
   );
-};
-
-ExpandableSection.defaultProps = {
-  isExpanded: false
 };
 
 export default ExpandableSection;

@@ -67,7 +67,7 @@ type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
 
 type SelectAdapterProps = OptionsSelectProps | OptionGroupsSelectProps;
 
-type SelectProps = OptionGroupsSelectProps & { placeholder: string };
+type SelectProps = OptionGroupsSelectProps & { placeholder?: string };
 
 const SelectControl = (props: SelectControlProps) => {
   const className = props.isOpen
@@ -82,6 +82,7 @@ const SelectControl = (props: SelectControlProps) => {
 };
 
 const Select = (props: SelectProps) => {
+  const { placeholder = defaultPlaceholderText } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, optionGroups] = splitFromSelected(props.optionGroups);
 
@@ -132,7 +133,7 @@ const Select = (props: SelectProps) => {
     closePanel();
   };
 
-  const headerText = selectedOption ? selectedOption.label : props.placeholder;
+  const headerText = selectedOption ? selectedOption.label : placeholder;
   const className = classNames(styles.select, { [styles.selectOpen]: isOpen });
 
   return (
@@ -146,7 +147,7 @@ const Select = (props: SelectProps) => {
         isOpen={isOpen}
         selectedOption={selectedOption}
         onClick={openPanel}
-        placeholder={props.placeholder}
+        placeholder={placeholder}
       />
       {isOpen && (
         <SelectOptionsPanel
@@ -160,9 +161,7 @@ const Select = (props: SelectProps) => {
   );
 };
 
-Select.defaultProps = {
-  placeholder: 'Select'
-};
+const defaultPlaceholderText = 'Select';
 
 // the purpose of the adapter is to unify props
 // to be consumed by the Select component

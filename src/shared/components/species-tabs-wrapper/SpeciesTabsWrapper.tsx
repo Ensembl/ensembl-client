@@ -23,18 +23,18 @@ import MultiLineSpeciesWrapper, {
   Props as MultiLineSpeciesWrapperProps
 } from './MultiLineSpeciesWrapper';
 
-type Props = SingleLineSpeciesWrapperProps | MultiLineSpeciesWrapperProps;
+type Props = (SingleLineSpeciesWrapperProps | MultiLineSpeciesWrapperProps) & {
+  isWrappable?: boolean;
+};
 
 const SpeciesTabsWrapper = (props: Props) => {
-  return props.isWrappable ? (
+  const { isWrappable = true } = props;
+
+  return isWrappable ? (
     <MultiLineSpeciesWrapper {...props} />
   ) : (
     <SingleLineSpeciesWrapper {...props} />
   );
-};
-
-SpeciesTabsWrapper.defaultProps = {
-  isWrappable: true
 };
 
 export default SpeciesTabsWrapper;

@@ -15,16 +15,17 @@
  */
 
 import React from 'react';
-import { DivAttributes } from '../helpers/types';
 
 import { Provider as ItemProvider, UUID } from './ItemContext';
 import classNames from 'classnames';
 import { generateId } from 'src/shared/helpers/generateId';
 
+import type { DivAttributes } from '../helpers/types';
+
 import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
-  extendDefaultStyles: boolean;
+  extendDefaultStyles?: boolean;
   uuid?: UUID;
 };
 
@@ -33,7 +34,7 @@ const AccordionItem = (props: Props) => {
 
   const {
     uuid = instanceUuid,
-    extendDefaultStyles,
+    extendDefaultStyles = true,
     className,
     ...rest
   } = props;
@@ -53,10 +54,6 @@ const AccordionItem = (props: Props) => {
       />
     </ItemProvider>
   );
-};
-
-AccordionItem.defaultProps = {
-  extendDefaultStyles: true
 };
 
 export default AccordionItem;

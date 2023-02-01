@@ -37,18 +37,21 @@ x = totalWidth / 7
 */
 
 export type Props = {
-  isGenomicSequenceEnabled: boolean;
-  isCDNAEnabled: boolean;
-  isCDSEnabled: boolean;
-  isProteinSequenceEnabled: boolean;
-  width: number;
-  theme: 'light' | 'dark';
+  isGenomicSequenceEnabled?: boolean;
+  isCDNAEnabled?: boolean;
+  isCDSEnabled?: boolean;
+  isProteinSequenceEnabled?: boolean;
+  width?: number;
+  theme?: 'light' | 'dark';
 };
 
+const defaultImageWidth = 210;
+
 const InstantDownloadTranscriptVisualisation = (props: Props) => {
+  const fullWidth = props.width ?? defaultImageWidth;
   const exonsCount = 5;
   const exonHeight = 5;
-  const exonWidth = Math.floor(props.width / 7);
+  const exonWidth = Math.floor(fullWidth / 7);
   const proteinHeight = 4;
   const proteinBlockWidth = proteinHeight;
   const proteinBlockSpacing = 1;
@@ -174,7 +177,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
   return (
     <svg
       style={{ overflow: 'visible' }}
-      width={props.width}
+      width={fullWidth}
       height={totalHeight}
       className={themeClass}
     >
@@ -185,14 +188,5 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     </svg>
   );
 };
-
-InstantDownloadTranscriptVisualisation.defaultProps = {
-  isGenomicSequenceEnabled: false,
-  isCDNAEnabled: false,
-  isCDSEnabled: false,
-  isProteinSequenceEnabled: false,
-  width: 210,
-  theme: 'dark'
-} as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;

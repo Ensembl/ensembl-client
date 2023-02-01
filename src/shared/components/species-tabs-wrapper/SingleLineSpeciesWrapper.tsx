@@ -25,7 +25,6 @@ import styles from './SingleLineSpeciesWrapper.scss';
 import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
 
 export type Props = {
-  isWrappable: false;
   speciesTabs: ReactElement<SelectedSpeciesProps>[];
   link?: React.ReactNode | null;
 };

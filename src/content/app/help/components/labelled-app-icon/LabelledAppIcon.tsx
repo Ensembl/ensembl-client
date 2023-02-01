@@ -32,7 +32,7 @@ type Size = 'regular' | 'small';
 
 type Props = {
   app: AppName;
-  size: Size;
+  size?: Size;
 };
 
 const appNameToIcon: Record<AppName, React.FunctionComponent> = {
@@ -48,7 +48,7 @@ const appNameToLabel: Record<AppName, string> = {
 };
 
 const LabelledAppIcon = (props: Props) => {
-  const { app, size } = props;
+  const { app, size = 'regular' } = props;
 
   const IconComponent = appNameToIcon[app];
   const label = appNameToLabel[app];
@@ -71,10 +71,6 @@ const LabelledAppIcon = (props: Props) => {
       <div className={labelStyles}>{label}</div>
     </div>
   );
-};
-
-LabelledAppIcon.defaultProps = {
-  size: 'regular'
 };
 
 export default LabelledAppIcon;

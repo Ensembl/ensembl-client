@@ -32,7 +32,7 @@ export type LaunchbarButtonProps = {
   path: string;
   description: string;
   icon: FunctionComponent<unknown> | string;
-  enabled: boolean;
+  enabled?: boolean;
   isActive?: boolean;
 };
 
@@ -40,6 +40,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
   const location = useLocation();
+  const isButtonEnabled = props.enabled ?? true;
 
   const { trackLaunchbarAppChange } = useHeaderAnalytics();
   const isActive =
@@ -47,7 +48,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       ? (props.isActive as boolean)
       : new RegExp(`^${props.path}`).test(location.pathname);
   const imageButtonStatus = getImageButtonStatus({
-    isDisabled: !props.enabled,
+    isDisabled: !isButtonEnabled,
     isActive
   });
 
@@ -68,7 +69,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
     styles.launchbarButtonSelected
   );
 
-  return props.enabled ? (
+  return isButtonEnabled ? (
     <NavLink
       className={({ isActive }) =>
         isActive ? activeButtonClass : styles.launchbarButton

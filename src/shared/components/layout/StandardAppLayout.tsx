@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef, useCallback } from 'react';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import usePrevious from 'src/shared/hooks/usePrevious';
 
@@ -45,13 +44,14 @@ type StandardAppLayoutProps = {
   topbarContent: ReactNode;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
-  isDrawerOpen: boolean;
+  isDrawerOpen?: boolean;
   drawerContent?: ReactNode;
-  onDrawerClose: () => void;
+  onDrawerClose?: () => void;
   viewportWidth: BreakpointWidth;
 };
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
+  const { isDrawerOpen = false } = props;
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   // TODO: is there any way to run this smarter?
@@ -79,14 +79,18 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
   const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
   const handleClick = () => {
-    if (props.isDrawerOpen) {
-      props.onDrawerClose();
+    if (isDrawerOpen) {
+      props?.onDrawerClose?.();
       return;
     }
 
     trackSidebarToggle();
     props.onSidebarToggle();
   };
+
+  const handleDrawerClose = useCallback(() => {
+    props?.onDrawerClose?.();
+  }, [props.onDrawerClose]);
 
   // dispatches an event that the sidebar has been opened or closed; used for analytics purposes
   const trackSidebarToggle = () => {
@@ -110,7 +114,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       <div className={styles.mainWrapper}>
         <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
-          {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
+          {isDrawerOpen && <DrawerWindow onClick={handleDrawerClose} />}
           <div className={styles.sidebarToolstrip}>
             <SidebarModeToggle
               onClick={handleClick}
@@ -128,7 +132,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
           <div className={styles.drawer}>
             <CloseButton
               className={styles.drawerClose}
-              onClick={props.onDrawerClose}
+              onClick={handleDrawerClose}
             />
             {props.drawerContent || null}
           </div>
@@ -136,11 +140,6 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       </div>
     </div>
   );
-};
-
-StandardAppLayout.defaultProps = {
-  isDrawerOpen: false,
-  onDrawerClose: noop
 };
 
 const SidebarModeToggle = (props: SidebarModeToggleProps) => {
@@ -174,7 +173,7 @@ const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
     { [styles.sidebarWrapperOpen]: props.isSidebarOpen },
     { [styles.sidebarWrapperClosed]: !props.isSidebarOpen },
     {
-      [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen ?? false
+      [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen
     },
     { [styles.instantaneous]: isInstantaneous }
   );

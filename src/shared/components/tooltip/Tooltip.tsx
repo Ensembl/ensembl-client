@@ -27,11 +27,11 @@ import { TooltipPosition } from './tooltip-types';
 import styles from './Tooltip.scss';
 
 type Props = {
-  position: TooltipPosition;
   anchor: HTMLElement;
+  position?: TooltipPosition;
   container?: HTMLElement | null;
   autoAdjust?: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
-  delay: number;
+  delay?: number;
   children: ReactNode;
   onClose?: () => void;
 };
@@ -46,12 +46,13 @@ const Tooltip = (props: PropsWithNullableAnchor) => {
 
 const TooltipWithAnchor = (props: Props) => {
   const [isWaiting, setIsWaiting] = useState(true);
+  const { delay = TOOLTIP_TIMEOUT } = props;
   let timeoutId: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     timeoutId = setTimeout(() => {
       setIsWaiting(false);
-    }, props.delay);
+    }, delay);
 
     return () => clearTimeout(timeoutId);
   }, []);
@@ -62,7 +63,7 @@ const TooltipWithAnchor = (props: Props) => {
 
   return (
     <PointerBox
-      position={props.position}
+      position={props.position ?? Position.BOTTOM_RIGHT}
       anchor={props.anchor}
       container={props.container}
       autoAdjust={props.autoAdjust}
@@ -73,11 +74,6 @@ const TooltipWithAnchor = (props: Props) => {
       {props.children}
     </PointerBox>
   );
-};
-
-Tooltip.defaultProps = {
-  delay: TOOLTIP_TIMEOUT,
-  position: Position.BOTTOM_RIGHT
 };
 
 export { TOOLTIP_TIMEOUT };
