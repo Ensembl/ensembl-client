@@ -33,14 +33,19 @@ const graphqlBaseQuery =
       return { data: result };
     } catch (error) {
       if (error instanceof ClientError) {
+        const { name, message, stack, request, response } = error;
         return {
           error: {
             status: error.response.status,
             meta: {
               data: error.response.data ?? null,
               errors: error.response.errors
-            }
-          }
+            },
+            name,
+            message,
+            stack
+          },
+          meta: { request, response }
         };
       }
       return {
