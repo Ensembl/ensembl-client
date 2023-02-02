@@ -19,5 +19,9 @@ import { Position } from 'src/shared/components/pointer-box/PointerBox';
 export type TooltipPosition =
   | Position.TOP_LEFT
   | Position.TOP_RIGHT
+  | Position.RIGHT_TOP
+  | Position.RIGHT_BOTTOM
+  | Position.LEFT_TOP
+  | Position.LEFT_BOTTOM
   | Position.BOTTOM_LEFT
   | Position.BOTTOM_RIGHT;

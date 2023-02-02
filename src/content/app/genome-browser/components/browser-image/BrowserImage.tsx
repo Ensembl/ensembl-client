@@ -31,6 +31,7 @@ import { ZmenuController } from 'src/content/app/genome-browser/components/zmenu
 import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 import GenomeBrowserError from 'src/content/app/genome-browser/components/genome-browser-error/GenomeBrowserError';
+import BrowserTrackLegend from 'src/content/app/genome-browser/components/browser-track-legend/BrowserTrackLegend';
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
 
@@ -42,7 +43,8 @@ import {
 import styles from './BrowserImage.scss';
 
 export const BrowserImage = () => {
-  const browserRef = useRef<HTMLDivElement>(null);
+  const browserViewportRef = useRef<HTMLDivElement>(null);
+  const browserContainerRef = useRef<HTMLDivElement>(null);
   const browserActivatedRef = useRef(false);
   const [genomeBrowserError, setGenomeBrowserError] =
     useState<GenomeBrowserErrorObj | null>(null);
@@ -81,14 +83,15 @@ export const BrowserImage = () => {
   }, [genomeBrowser]);
 
   const browserImageContents = (
-    <div className={styles.browserImageWrapper}>
+    <div ref={browserViewportRef} className={styles.browserImageWrapper}>
       <div
         id={BROWSER_CONTAINER_ID}
         className={styles.browserStage}
-        ref={browserRef}
+        ref={browserContainerRef}
       >
         <BrowserCogList />
-        <ZmenuController browserRef={browserRef} />
+        <ZmenuController containerRef={browserContainerRef} />
+        <BrowserTrackLegend containerRef={browserViewportRef} />
       </div>
       {isDisabled ? <Overlay /> : null}
     </div>

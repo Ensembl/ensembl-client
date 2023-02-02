@@ -1,0 +1,124 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+  IncomingActionType,
+  type HotspotAction,
+  type HotspotPayload,
+  type TrackLegendHotspotPayload
+} from '@ensembl/ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
+import { Position as TooltipPosition } from 'src/shared/components/pointer-box/PointerBox';
+
+import styles from './BrowserTrackLegend.scss';
+
+type Props = {
+  containerRef: React.RefObject<HTMLDivElement>;
+};
+
+type Position = {
+  x: number;
+  y: number;
+};
+
+const BrowserTrackLegend = (props: Props) => {
+  const [position, setPosition] = useState<Position | null>(null);
+  const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLDivElement>(null);
+  const { genomeBrowser } = useGenomeBrowser();
+
+  useEffect(() => {
+    const subscription = genomeBrowser?.subscribe(
+      IncomingActionType.HOTSPOT,
+      handleHotspot
+    );
+
+    return () => subscription?.unsubscribe();
+  }, [genomeBrowser]);
+
+  const handleHotspot = (action: HotspotAction) => {
+    const { payload } = action;
+    if (!isTrackLegendHotspot(payload)) {
+      return;
+    }
+    if (payload.start) {
+      setPosition({ x: payload.x, y: payload.y });
+    } else {
+      setPosition(null);
+    }
+  };
+
+  return position ? (
+    <>
+      <div
+        ref={setAnchorRef}
+        className={styles.anchor}
+        style={{ top: position.y, left: position.x }}
+      />
+      {anchorRef.current && (
+        <Tooltip
+          container={props.containerRef.current}
+          position={TooltipPosition.RIGHT_BOTTOM}
+          autoAdjust={true}
+          renderInsideAnchor={true}
+          delay={300}
+          anchor={anchorRef.current}
+        >
+          <Message />
+        </Tooltip>
+      )}
+    </>
+  ) : null;
+};
+
+const isTrackLegendHotspot = (
+  payload: HotspotPayload
+): payload is TrackLegendHotspotPayload => {
+  return !!payload.variety.find(
+    (variety: any) => variety.type === 'track-hover'
+  );
+};
+
+const Message = () => (
+  <div className={styles.message}>
+    <p>
+      Indicates the tab at the top of the panel on the right where this track is
+      listed
+    </p>
+    <ul>
+      <li>
+        <span>Genomic</span>
+      </li>
+      <li>
+        <span>Variation</span>
+      </li>
+      <li>
+        <span>Regulation</span>
+      </li>
+    </ul>
+    <p>
+      Where relevant, an arrow also indicates the orientation of features on a
+      track
+    </p>
+  </div>
+);
+
+export default BrowserTrackLegend;
