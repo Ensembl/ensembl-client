@@ -36,15 +36,6 @@ const BrowserCog = (props: BrowserCogProps) => {
   const { reportTrackSettingsOpened } = useGenomeBrowserAnalytics();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const toggleCog = () => {
-    if (!isPanelOpen) {
-      setIsPanelOpen(true);
-      reportTrackSettingsOpened(trackId);
-    } else {
-      setIsPanelOpen(false);
-    }
-  };
-
   const cogIconConfig = {
     description: 'Configure Track',
     icon: CogIcon
@@ -57,19 +48,26 @@ const BrowserCog = (props: BrowserCogProps) => {
     leave: { opacity: 0 }
   });
 
+  const openTrackSettingsPanel = () => {
+    if (!isPanelOpen) {
+      setIsPanelOpen(true);
+      reportTrackSettingsOpened(trackId);
+    }
+  };
+
   const closeTrackSettingsPanel = () => {
-    setIsPanelOpen(false);
+    isPanelOpen && setIsPanelOpen(false);
   };
 
   return (
     <>
       {isPanelOpen ? (
-        <CloseButton onClick={toggleCog} />
+        <CloseButton onClick={closeTrackSettingsPanel} />
       ) : (
         <ImageButton
           className={styles.browserCog}
           description={cogIconConfig.description}
-          onClick={toggleCog}
+          onClick={openTrackSettingsPanel}
           image={cogIconConfig.icon}
         />
       )}
@@ -79,7 +77,7 @@ const BrowserCog = (props: BrowserCogProps) => {
             <animated.div key="trackSettingsPanel" style={style}>
               <TrackSettingsPanel
                 trackId={trackId}
-                onClose={closeTrackSettingsPanel}
+                onOutsideClick={closeTrackSettingsPanel}
               />
             </animated.div>
           )

@@ -42,7 +42,7 @@ describe('<BrowserCog />', () => {
   };
 
   describe('rendering', () => {
-    test('renders browser track config', async () => {
+    it('renders browser track settings panel', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
       await userEvent.click(
         container.querySelector('button') as HTMLButtonElement
@@ -50,12 +50,25 @@ describe('<BrowserCog />', () => {
       expect(container.querySelector('#trackSettingsPanel')).toBeTruthy();
     });
 
-    test('renders close button when track config is open', async () => {
+    it('renders close button when track settings panel is open', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
       await userEvent.click(
         container.querySelector('button') as HTMLButtonElement
       );
       expect(container.querySelector('.closeButton')).toBeTruthy();
+    });
+  });
+
+  describe('behaviour', () => {
+    it('renders cog on clicking close button', async () => {
+      const { container } = render(<BrowserCog {...defaultProps} />);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
+      await userEvent.click(
+        container.querySelector('.closeButton') as HTMLButtonElement
+      );
+      expect(container.querySelector('.browserCog')).toBeTruthy();
     });
   });
 });

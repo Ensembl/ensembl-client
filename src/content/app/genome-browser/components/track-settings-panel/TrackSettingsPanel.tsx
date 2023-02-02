@@ -26,7 +26,7 @@ import { TrackType } from 'src/content/app/genome-browser/state/track-settings/t
 
 type Props = {
   trackId: string;
-  onClose: () => void;
+  onOutsideClick: () => void;
 };
 
 const getTrackSettingsPanelComponent = (trackType: TrackType) => {
@@ -45,7 +45,7 @@ export const TrackSettingsPanel = (props: Props) => {
 
   const trackSettingsRef = useRef<HTMLDivElement | null>(null);
 
-  useOutsideClick(trackSettingsRef, props.onClose);
+  useOutsideClick(trackSettingsRef, props.onOutsideClick);
 
   if (!trackType) {
     return null;
