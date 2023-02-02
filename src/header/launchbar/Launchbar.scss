@@ -28,21 +28,24 @@
   flex: 0 0 auto;
 }
 
+.launchbarButtonWrapperLink {
+  font-size: 0;
+}
+
 .launchbarButton {
   display: inline-block;
   height: 32px;
   width: 32px;
-  --image-button-width: 32px;
-  --image-button-height: 32px;
+  background-color: $blue;
+  fill: $white;
+}
 
-  --image-button-unselected-bg-color: #{$blue};
-  --image-button-unselected-svg-color: #{$white};
+.launchbarButtonSelected {
+  background-color: $black;
+}
 
-  --image-button-selected-bg-color: #{$black};
-  --image-button-selected-svg-color: #{$white};
-
-  --image-button-disabled-bg-color: #{$grey};
-  --image-button-disabled-svg-color: #{$white};
+.launchbarButtonDisabled {
+  background-color: $grey;
 }
 
 .category {
