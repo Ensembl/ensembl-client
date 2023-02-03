@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, type ForwardedRef } from 'react';
 
 import { useAppSelector } from 'src/store';
 import useTrackSettings from '../useTrackSettings';
@@ -33,7 +33,10 @@ type Props = {
   trackId: string;
 };
 
-export const GeneTrackSettings = (props: Props) => {
+export const GeneTrackSettings = (
+  props: Props,
+  ref: ForwardedRef<HTMLDivElement>
+) => {
   const { trackId } = props;
   const selectedTrackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, trackId)
@@ -73,7 +76,7 @@ export const GeneTrackSettings = (props: Props) => {
   };
 
   return (
-    <div className={styles.trackSettingsPanel}>
+    <div className={styles.trackSettingsPanel} ref={ref}>
       <div className={styles.section}>
         <div className={styles.subLabel}>All genes</div>
         <div>
@@ -125,4 +128,4 @@ export const GeneTrackSettings = (props: Props) => {
   );
 };
 
-export default GeneTrackSettings;
+export default forwardRef(GeneTrackSettings);

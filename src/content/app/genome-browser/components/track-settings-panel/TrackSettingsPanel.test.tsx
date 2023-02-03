@@ -87,7 +87,10 @@ const renderComponent = () => {
 
   const renderResult = render(
     <Provider store={store}>
-      <TrackSettingsPanel trackId={selectedTrackId} />
+      <TrackSettingsPanel
+        trackId={selectedTrackId}
+        onOutsideClick={jest.fn()}
+      />
     </Provider>
   );
   return {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useEffect, memo } from 'react';
 import {
   IncomingActionType,
   type UpdateTrackSummaryAction,
@@ -38,7 +38,6 @@ import BrowserCog from './BrowserCog';
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
-  const [selectedCog, setSelectedCog] = useState<string | null>(null);
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const focusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
 
@@ -67,25 +66,12 @@ export const BrowserCogList = () => {
     dispatch(setDisplayedTracks(payload));
   };
 
-  useEffect(() => {
-    // make sure to close the floating track config panel if the user switches to a different species
-    updateSelectedCog(null);
-  }, [genomeId]);
-
-  const updateSelectedCog = (trackId: string | null) => {
-    setSelectedCog(trackId);
-  };
-
   const cogs = displayedTracks.map((track) => {
     const posStyle = { top: `${track.offsetTop}px` };
 
     return (
       <div key={track.id} className={styles.browserCogOuter} style={posStyle}>
-        <BrowserCog
-          cogActivated={selectedCog === track.id}
-          trackId={track.id}
-          updateSelectedCog={updateSelectedCog}
-        />
+        <BrowserCog trackId={track.id} />
       </div>
     );
   });

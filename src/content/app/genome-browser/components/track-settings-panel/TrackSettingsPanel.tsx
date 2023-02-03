@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
+
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import GeneTrackSettings from './track-settings-views/GeneTrackSettings';
 import RegularTrackSettings from './track-settings-views/RegularTrackSettings';
@@ -24,6 +26,7 @@ import { TrackType } from 'src/content/app/genome-browser/state/track-settings/t
 
 type Props = {
   trackId: string;
+  onOutsideClick: () => void;
 };
 
 const getTrackSettingsPanelComponent = (trackType: TrackType) => {
@@ -40,13 +43,17 @@ export const TrackSettingsPanel = (props: Props) => {
   const { trackId } = props;
   const trackType = getTrackType(trackId); // FIXME: probably should use a redux selector to get the type of the track given genome id and track id
 
+  const trackSettingsRef = useRef<HTMLDivElement | null>(null);
+
+  useOutsideClick(trackSettingsRef, props.onOutsideClick);
+
   if (!trackType) {
     return null;
   }
 
   const Track = getTrackSettingsPanelComponent(trackType);
 
-  return <Track trackId={trackId} />;
+  return <Track trackId={trackId} ref={trackSettingsRef} />;
 };
 
 export default TrackSettingsPanel;

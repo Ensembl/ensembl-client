@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTransition, animated } from '@react-spring/web';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -28,45 +28,46 @@ import CogIcon from 'static/icons/icon_settings.svg';
 import styles from './BrowserCogList.scss';
 
 export type BrowserCogProps = {
-  cogActivated: boolean;
   trackId: string;
-  updateSelectedCog: (trackId: string | null) => void;
 };
 
 const BrowserCog = (props: BrowserCogProps) => {
-  const { cogActivated, updateSelectedCog, trackId } = props;
+  const { trackId } = props;
   const { reportTrackSettingsOpened } = useGenomeBrowserAnalytics();
-
-  const toggleCog = useCallback(() => {
-    if (!cogActivated) {
-      updateSelectedCog(trackId);
-      reportTrackSettingsOpened(trackId);
-    } else {
-      updateSelectedCog(null);
-    }
-  }, [cogActivated]);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const cogIconConfig = {
     description: 'Configure Track',
     icon: CogIcon
   };
 
-  const transition = useTransition(cogActivated, {
+  const transition = useTransition(isPanelOpen, {
     config: { duration: 100 },
     enter: { opacity: 1 },
     from: { opacity: 0 },
     leave: { opacity: 0 }
   });
 
+  const openTrackSettingsPanel = () => {
+    if (!isPanelOpen) {
+      setIsPanelOpen(true);
+      reportTrackSettingsOpened(trackId);
+    }
+  };
+
+  const closeTrackSettingsPanel = () => {
+    isPanelOpen && setIsPanelOpen(false);
+  };
+
   return (
     <>
-      {cogActivated ? (
-        <CloseButton onClick={toggleCog} />
+      {isPanelOpen ? (
+        <CloseButton onClick={closeTrackSettingsPanel} />
       ) : (
         <ImageButton
           className={styles.browserCog}
           description={cogIconConfig.description}
-          onClick={toggleCog}
+          onClick={openTrackSettingsPanel}
           image={cogIconConfig.icon}
         />
       )}
@@ -74,7 +75,10 @@ const BrowserCog = (props: BrowserCogProps) => {
         return (
           item && (
             <animated.div key="trackSettingsPanel" style={style}>
-              <TrackSettingsPanel trackId={trackId} />
+              <TrackSettingsPanel
+                trackId={trackId}
+                onOutsideClick={closeTrackSettingsPanel}
+              />
             </animated.div>
           )
         );

@@ -38,26 +38,37 @@ describe('<BrowserCog />', () => {
   });
 
   const defaultProps: BrowserCogProps = {
-    cogActivated: true,
-    trackId: faker.lorem.words(),
-    updateSelectedCog: jest.fn()
+    trackId: faker.lorem.words()
   };
 
   describe('rendering', () => {
-    test('renders browser track config', () => {
+    it('renders browser track settings panel', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
       expect(container.querySelector('#trackSettingsPanel')).toBeTruthy();
+    });
+
+    it('renders close button when track settings panel is open', async () => {
+      const { container } = render(<BrowserCog {...defaultProps} />);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
+      expect(container.querySelector('.closeButton')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('renders close button when track config is open', async () => {
+    it('renders cog on clicking close button', async () => {
       const { container } = render(<BrowserCog {...defaultProps} />);
-      const cogButton = container.querySelector('.closeButton');
-
-      await userEvent.click(cogButton as HTMLButtonElement);
-
-      expect(defaultProps.updateSelectedCog).toHaveBeenCalledTimes(1);
+      await userEvent.click(
+        container.querySelector('button') as HTMLButtonElement
+      );
+      await userEvent.click(
+        container.querySelector('.closeButton') as HTMLButtonElement
+      );
+      expect(container.querySelector('.browserCog')).toBeTruthy();
     });
   });
 });
