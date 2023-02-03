@@ -18,6 +18,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import { useGbRegionQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import {
   getBrowserActiveGenomeId,
@@ -32,6 +33,7 @@ import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-g
 import styles from './GenomeBrowserNavigationButtons.scss';
 
 type BrowserLocation = {
+  regionLength: number;
   regionName: string;
   start: number;
   end: number;
@@ -48,31 +50,43 @@ const GenomeBrowserNavigationButtons = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const browserLocation = useAppSelector(getChrLocation) as ChrLocation;
   const { changeBrowserLocation } = useGenomeBrowser();
+  const userInputInProgressRef = useRef(false);
+  const userInputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   // Chromosome locations in redux are updated by messages from the genome browser.
   // These may come too slow for a user who is hammering away at a navigation button.
   // Therefore, for a more consistent user experience, we are creating a local copy of browser location just for this component
   const browserLocationRef = useRef<BrowserLocation>({
+    regionLength: Infinity,
     regionName: browserLocation ? browserLocation[0] : '', // just being extra cautious when accessing parts of the browser location
     start: browserLocation ? browserLocation[1] : 1,
     end: browserLocation ? browserLocation[2] : 100
   });
 
+  const { currentData: regionData } = useGbRegionQuery({
+    genomeId: activeGenomeId,
+    regionName: browserLocation[0] ?? ''
+  });
+
   useEffect(() => {
     if (
-      browserLocation &&
-      browserLocation[0] !== browserLocationRef.current.regionName
+      (browserLocation &&
+        browserLocation[0] !== browserLocationRef.current.regionName) ||
+      !userInputInProgressRef.current
     ) {
       const [regionName, start, end] = browserLocation;
       browserLocationRef.current = {
+        regionLength: regionData?.region.length ?? Infinity,
         regionName,
         start,
         end
       };
     }
-  }, [activeGenomeId, browserLocation]);
+  }, [activeGenomeId, browserLocation, regionData?.region.length]);
 
-  // TODO: add query for the region so as tonever exceed the region length
+  // TODO: add query for the region so as to never exceed the region length
 
   const moveLeft = () => {
     move('left');
@@ -83,7 +97,8 @@ const GenomeBrowserNavigationButtons = () => {
   };
 
   const move = (direction: 'left' | 'right') => {
-    const { regionName, start, end } = browserLocationRef.current;
+    onUserInput();
+    const { regionName, start, end, regionLength } = browserLocationRef.current;
     const regionInViewportLength = end - start; // NOTE: this may not work with circular chromosomes; but cirtular chromosomes are far away
     const moveDistance = Math.round(regionInViewportLength * 0.1);
     let newStart: number, newEnd: number;
@@ -92,8 +107,8 @@ const GenomeBrowserNavigationButtons = () => {
       newEnd = Math.max(end - moveDistance, 1 + regionInViewportLength);
     } else {
       // TODO: make sure to account for max chromosome length
-      newStart = start + moveDistance;
-      newEnd = end + moveDistance;
+      newStart = Math.min(start + moveDistance, regionLength);
+      newEnd = Math.min(end + moveDistance, regionLength);
     }
     changeBrowserLocation({
       genomeId: activeGenomeId,
@@ -115,7 +130,8 @@ const GenomeBrowserNavigationButtons = () => {
   };
 
   const zoom = (direction: 'in' | 'out') => {
-    const { regionName, start, end } = browserLocationRef.current;
+    onUserInput();
+    const { regionName, start, end, regionLength } = browserLocationRef.current;
     const regionInViewportLength = end - start; // NOTE: this may not work with circular chromosomes; but cirtular chromosomes are far away
     const zoomDistance = Math.round(regionInViewportLength * 0.3);
     let newStart: number, newEnd: number;
@@ -125,7 +141,7 @@ const GenomeBrowserNavigationButtons = () => {
     } else {
       // TODO: make sure to account for max chromosome length
       newStart = Math.max(Math.round(start - zoomDistance / 2), 1);
-      newEnd = Math.round(end + zoomDistance / 2);
+      newEnd = Math.min(Math.round(end + zoomDistance / 2), regionLength);
     }
     changeBrowserLocation({
       genomeId: activeGenomeId,
@@ -136,6 +152,20 @@ const GenomeBrowserNavigationButtons = () => {
       start: newStart,
       end: newEnd
     };
+  };
+
+  const onUserInput = () => {
+    clearUserInputTimeout;
+    userInputInProgressRef.current = true;
+    userInputTimeoutRef.current = setTimeout(() => {
+      userInputInProgressRef.current = false;
+    }, 1000);
+  };
+
+  const clearUserInputTimeout = () => {
+    if (userInputTimeoutRef.current) {
+      clearTimeout(userInputTimeoutRef.current);
+    }
   };
 
   return (
