@@ -81,9 +81,7 @@ const ZmenuController = (props: Props) => {
 const isZmenuPayload = (
   payload: HotspotPayload
 ): payload is ZmenuCreatePayload => {
-  // NOTE: check for payload.variety.length should be unnecessary;
-  // but as of now, genome browser can't separate track's left corner hotspot from transcript zmenu hotspot
-  return payload.variety.length === 1 && payload.variety[0].type === 'zmenu';
+  return payload.variety[0].type === 'zmenu';
 };
 
 export default memo(ZmenuController);

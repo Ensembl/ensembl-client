@@ -92,9 +92,7 @@ const BrowserTrackLegend = (props: Props) => {
 const isTrackLegendHotspot = (
   payload: HotspotPayload
 ): payload is TrackLegendHotspotPayload => {
-  return !!payload.variety.find(
-    (variety: any) => variety.type === 'track-hover'
-  );
+  return payload.variety[0].type === 'track-hover';
 };
 
 const Message = () => (
