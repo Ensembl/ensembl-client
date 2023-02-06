@@ -22,7 +22,7 @@ import { useGbRegionQuery } from 'src/content/app/genome-browser/state/api/genom
 
 import {
   getBrowserActiveGenomeId,
-  getChrLocation
+  getActualChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
@@ -41,14 +41,13 @@ type BrowserLocation = {
 
 /**
  * General considerations:
- * - left/right buttons move the genome browser 10% of the viewport width
- *   either to the left or to the right
+ * - left/right buttons move the genome browser 10% of the viewport width left or right
  * - zoom in / zoom out buttons zoom in or out by 30% of the visible sequence length
  */
 
 const GenomeBrowserNavigationButtons = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
-  const browserLocation = useAppSelector(getChrLocation) as ChrLocation;
+  const browserLocation = useAppSelector(getActualChrLocation) as ChrLocation;
   const { changeBrowserLocation } = useGenomeBrowser();
   const userInputInProgressRef = useRef(false);
   const userInputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -104,11 +103,10 @@ const GenomeBrowserNavigationButtons = () => {
     let newStart: number, newEnd: number;
     if (direction === 'left') {
       newStart = Math.max(start - moveDistance, 1);
-      newEnd = Math.max(end - moveDistance, 1 + regionInViewportLength);
+      newEnd = newStart + regionInViewportLength;
     } else {
-      // TODO: make sure to account for max chromosome length
-      newStart = Math.min(start + moveDistance, regionLength);
       newEnd = Math.min(end + moveDistance, regionLength);
+      newStart = newEnd - regionInViewportLength;
     }
     changeBrowserLocation({
       genomeId: activeGenomeId,
@@ -159,7 +157,8 @@ const GenomeBrowserNavigationButtons = () => {
     userInputInProgressRef.current = true;
     userInputTimeoutRef.current = setTimeout(() => {
       userInputInProgressRef.current = false;
-    }, 1000);
+      userInputTimeoutRef.current = null;
+    }, 500);
   };
 
   const clearUserInputTimeout = () => {
