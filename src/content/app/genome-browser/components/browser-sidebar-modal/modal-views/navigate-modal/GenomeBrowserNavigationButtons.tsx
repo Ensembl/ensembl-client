@@ -85,8 +85,6 @@ const GenomeBrowserNavigationButtons = () => {
     }
   }, [activeGenomeId, browserLocation, regionData?.region.length]);
 
-  // TODO: add query for the region so as to never exceed the region length
-
   const moveLeft = () => {
     move('left');
   };
@@ -137,7 +135,6 @@ const GenomeBrowserNavigationButtons = () => {
       newStart = Math.round(start + zoomDistance / 2);
       newEnd = Math.max(Math.round(end - zoomDistance / 2), newStart + 1);
     } else {
-      // TODO: make sure to account for max chromosome length
       newStart = Math.max(Math.round(start - zoomDistance / 2), 1);
       newEnd = Math.min(Math.round(end + zoomDistance / 2), regionLength);
     }
