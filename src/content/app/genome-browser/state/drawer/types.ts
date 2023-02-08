@@ -33,8 +33,14 @@ export type GenericTrackView = {
   trackId: string;
 };
 
+export type VariantLegendView = {
+  name: 'variant_group_legend';
+  group: string;
+};
+
 export type DrawerView =
   | BookmarksDrawerView
   | GeneDrawerView
   | TranscriptDrawerView
-  | GenericTrackView;
+  | GenericTrackView
+  | VariantLegendView;

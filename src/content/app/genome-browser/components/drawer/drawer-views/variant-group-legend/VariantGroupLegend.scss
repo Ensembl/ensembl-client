@@ -1,0 +1,53 @@
+@import 'src/styles/common';
+
+.container {
+  margin: 10px 0 0 80px;
+  
+  max-width: 950px;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: $bold;
+  margin-left: 10px;
+}
+
+.legendTable {
+  padding-top: 50px;
+  
+  table {
+    width: 100%;
+  }
+  thead {
+    text-align: left;
+  }
+  thead th, tbody td {
+    --table-data-padding: 8px 20px;
+  }
+}
+
+.variantTypeLabel {
+  width: 350px;
+}
+
+.variantColour1 {
+  background-color: $variantColour1;
+}
+.variantColour2 {
+  background-color: $variantColour2;
+}
+.variantColour3 {
+  background-color: $variantColour3;
+}
+.variantColour4 {
+  background-color: $variantColour4;
+}
+.variantColour5 {
+  background-color: $variantColour5;
+}
+
+.colourMarker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}

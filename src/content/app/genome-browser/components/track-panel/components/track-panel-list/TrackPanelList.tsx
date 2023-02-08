@@ -30,6 +30,7 @@ import {
   BrowserSidebarModalView,
   openBrowserSidebarModal
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelVariant from './track-panel-items/TrackPanelVariant';
@@ -41,6 +42,10 @@ import {
   AccordionItemButton,
   AccordionItemPanel
 } from 'src/shared/components/accordion';
+
+import variantGroups from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
+import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 import ResetIcon from 'static/icons/icon_reset.svg';
@@ -59,7 +64,8 @@ export const TrackPanelList = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
-  const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
+  const { trackDrawerOpened, reportTrackPanelSectionToggled } =
+    useGenomeBrowserAnalytics();
 
   const dispatch = useAppDispatch();
 
@@ -78,9 +84,23 @@ export const TrackPanelList = () => {
       category.types.includes(selectedTrackPanelTab)
   );
 
-  const trackCategoryIds = currentTrackCategories
-    ?.filter((category: GenomeTrackCategory) => category.track_list.length)
-    .map((category: GenomeTrackCategory) => category.track_category_id);
+  const trackCategoryIds =
+    currentTrackCategories
+      ?.filter((category: GenomeTrackCategory) => category.track_list.length)
+      .map((category: GenomeTrackCategory) => category.track_category_id) ?? [];
+
+  const onShowMore = (group: string) => {
+    trackDrawerOpened('variant_group_legend');
+    dispatch(
+      changeDrawerViewForGenome({
+        genomeId: activeGenomeId,
+        drawerView: {
+          name: 'variant_group_legend',
+          group
+        }
+      })
+    );
+  };
 
   return (
     <div className={styles.trackPanelList}>
@@ -100,8 +120,15 @@ export const TrackPanelList = () => {
         <Accordion
           className={styles.trackPanelAccordion}
           allowMultipleExpanded={true}
-          preExpanded={trackCategoryIds}
+          preExpanded={[...trackCategoryIds, 'variant_legend']}
         >
+          {selectedTrackPanelTab === TrackSet.VARIATION && (
+            <TrackPanelVariantGroupLegend
+              groups={variantGroups}
+              onShowMore={onShowMore}
+            />
+          )}
+
           {currentTrackCategories?.map((category: GenomeTrackCategory) => {
             const accordionButtonClassNames = classNames(
               styles.trackPanelAccordionButton,
