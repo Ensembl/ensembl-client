@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import React, { memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -32,6 +32,7 @@ import {
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
+import TrackPanelVariant from './track-panel-items/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
 import {
   Accordion,
@@ -41,10 +42,15 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 
-import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
-
 import SearchIcon from 'static/icons/icon_search.svg';
 import ResetIcon from 'static/icons/icon_reset.svg';
+
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
+import type {
+  FocusObject as FocusObjectType,
+  FocusGene as FocusGeneType,
+  FocusVariant as FocusVariantType
+} from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './TrackPanelList.scss';
 
@@ -78,18 +84,7 @@ export const TrackPanelList = () => {
 
   return (
     <div className={styles.trackPanelList}>
-      {activeFocusObject?.type === 'gene' &&
-      activeGenomeId &&
-      activeFocusObject.stable_id ? (
-        <section className={`${styles.mainTrackItem}`}>
-          <TrackPanelGene
-            focusObjectId={activeFocusObject.object_id}
-            genomeId={activeGenomeId}
-            geneId={activeFocusObject.stable_id}
-          />
-        </section>
-      ) : null}
-
+      <FocusObject focusObject={activeFocusObject} />
       <div className={styles.modalLinksWrapper}>
         <div className={styles.modalLink} onClick={openSearch}>
           <span>Find a gene</span>
@@ -156,6 +151,39 @@ export const TrackPanelList = () => {
       </div>
     </div>
   );
+};
+
+const FocusObject = (props: { focusObject: FocusObjectType | null }) => {
+  const { focusObject } = props;
+  let content: ReactNode;
+
+  if (focusObject?.type === 'gene') {
+    content = <FocusGene focusGene={focusObject} />;
+  } else if (focusObject?.type === 'variant') {
+    content = <FocusVariant focusVariant={focusObject} />;
+  }
+
+  if (content) {
+    return <section className={`${styles.mainTrackItem}`}>{content}</section>;
+  } else {
+    return null;
+  }
+};
+
+const FocusGene = (props: { focusGene: FocusGeneType }) => {
+  const { genome_id, object_id, stable_id } = props.focusGene;
+
+  return (
+    <TrackPanelGene
+      focusObjectId={object_id}
+      genomeId={genome_id}
+      geneId={stable_id}
+    />
+  );
+};
+
+const FocusVariant = (props: { focusVariant: FocusVariantType }) => {
+  return <TrackPanelVariant focusVariant={props.focusVariant} />;
 };
 
 export default memo(TrackPanelList);

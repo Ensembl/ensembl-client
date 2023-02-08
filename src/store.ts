@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { configureStore, type Action } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  createAsyncThunk,
+  type Action
+} from '@reduxjs/toolkit';
 import {
   useDispatch,
   useSelector,
@@ -61,3 +65,9 @@ export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = AppStore['dispatch'];
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const createAppAsyncThunk = createAsyncThunk.withTypes<{
+  state: RootState;
+  dispatch: AppDispatch;
+  rejectValue: string;
+}>();
+export type ThunkApi = Parameters<Parameters<typeof createAppAsyncThunk>[1]>[1];

@@ -43,9 +43,10 @@ import type {
   FocusObject,
   FocusGene,
   FocusObjectIdConstituents,
-  FocusLocation
+  FocusLocation,
+  FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import type { RootState } from 'src/store';
+import type { RootState, ThunkApi } from 'src/store';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -123,6 +124,26 @@ const buildFocusLocationObject = (
   };
 };
 
+const buildFocusVariantObject = (payload: {
+  genomeId: string;
+  objectId: string;
+  variantId: string;
+}): FocusVariant => {
+  const { genomeId, objectId, variantId } = payload;
+  return {
+    type: 'variant',
+    genome_id: genomeId,
+    object_id: objectId,
+    label: variantId,
+    location: {
+      // just some arbitrary hardcoded location; this will change to proper data in the future
+      chromosome: '13',
+      start: 1_000_000,
+      end: 1_000_001
+    }
+  };
+};
+
 export const fetchExampleFocusObjects =
   (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
   async (dispatch) => {
@@ -149,7 +170,6 @@ export const fetchFocusObject = createAsyncThunk(
   'genome-browser/fetch-focus-object',
   async (payload: string | FocusObjectIdConstituents, thunkAPI) => {
     const state = thunkAPI.getState() as RootState;
-    const dispatch = thunkAPI.dispatch;
 
     if (typeof payload === 'string') {
       payload = parseFocusObjectId(payload);
@@ -176,39 +196,77 @@ export const fetchFocusObject = createAsyncThunk(
     }
 
     try {
-      const dispatchedPromise = dispatch(
-        getTrackPanelGene.initiate({
-          genomeId,
-          geneId: objectId
-        })
-      );
-
       thunkAPI.fulfillWithValue(buildLoadingObject(focusObjectId));
 
-      const result = await dispatchedPromise;
-      dispatchedPromise.unsubscribe();
-
-      const geneFocusObject = buildFocusGeneObject({
-        objectId: focusObjectId,
-        genomeId,
-        gene: result.data?.gene as TrackPanelGene
-      });
-
-      const storedFocusGeneData = await getFocusObjectFromStorage(
-        focusObjectId
-      );
-      geneFocusObject.visibleTranscriptIds =
-        storedFocusGeneData?.visibleTranscriptIds ?? null;
-
-      return buildLoadedObject({
-        id: focusObjectId,
-        data: geneFocusObject
-      });
+      if (payload.type === 'gene') {
+        return await fetchFocusGene(
+          {
+            genomeId,
+            geneId: objectId,
+            objectId: focusObjectId
+          },
+          thunkAPI
+        );
+      } else if (payload.type === 'variant') {
+        return await fetchFocusVariant({
+          genomeId,
+          variantId: objectId,
+          objectId: focusObjectId
+        });
+      }
     } catch (error) {
       thunkAPI.rejectWithValue(error as Error);
     }
   }
 );
+
+const fetchFocusGene = async (
+  payload: {
+    genomeId: string;
+    geneId: string;
+    objectId: string; // is in format genomeId:type:stableId
+  },
+  thunkApi: ThunkApi
+) => {
+  const { genomeId, geneId, objectId } = payload;
+  const { dispatch } = thunkApi;
+  const dispatchedPromise = dispatch(
+    getTrackPanelGene.initiate({
+      genomeId,
+      geneId
+    })
+  );
+
+  const result = await dispatchedPromise;
+  dispatchedPromise.unsubscribe();
+
+  const geneFocusObject = buildFocusGeneObject({
+    objectId,
+    genomeId,
+    gene: result.data?.gene as TrackPanelGene
+  });
+
+  const storedFocusGeneData = await getFocusObjectFromStorage(objectId);
+  geneFocusObject.visibleTranscriptIds =
+    storedFocusGeneData?.visibleTranscriptIds ?? null;
+
+  return buildLoadedObject({
+    id: objectId,
+    data: geneFocusObject
+  });
+};
+
+const fetchFocusVariant = async (payload: {
+  genomeId: string;
+  variantId: string;
+  objectId: string; // is in format genomeId:type:stableId
+}) => {
+  // TODO: will fetch variant data from an api when it is ready
+  return buildLoadedObject({
+    id: payload.objectId,
+    data: buildFocusVariantObject(payload)
+  });
+};
 
 export const updateFocusGeneTranscriptsVisibility = createAsyncThunk(
   'genome-browser/udpate-focus-gene-transcripts-visibility',

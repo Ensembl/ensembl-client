@@ -41,7 +41,10 @@ import type {
   FocusGeneTrack,
   FocusGeneTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-import type { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
+import type {
+  FocusGene,
+  FocusVariant
+} from 'src/shared/types/focus-object/focusObjectTypes';
 
 /**
  * The purposes of this hook are:
@@ -66,18 +69,27 @@ const useFocusTrack = () => {
     focusObjectId
   });
 
+  useFocusVariant({
+    genomeBrowserMethods,
+    focusVariant:
+      parsedFocusObjectId?.type === 'variant'
+        ? (focusObject as FocusVariant)
+        : null,
+    focusObjectId
+  });
+
   /**
    * TODO: move the code for saving previous focus object here
    */
 };
 
-type Params = {
+type UseFocusGeneParams = {
   focusGene: FocusGene | null;
   focusObjectId: string;
   genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>;
 };
 
-const useFocusGene = (params: Params) => {
+const useFocusGene = (params: UseFocusGeneParams) => {
   const { focusGene, genomeBrowserMethods, focusObjectId } = params;
   const { genomeBrowser, updateFocusGeneTranscripts, setFocusGene } =
     genomeBrowserMethods;
@@ -287,6 +299,26 @@ const sendFocusGeneTrackSettings = (
         break;
     }
   });
+};
+
+type UseFocusVariantParams = {
+  focusVariant: FocusVariant | null;
+  focusObjectId: string;
+  genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>;
+};
+
+const useFocusVariant = (params: UseFocusVariantParams) => {
+  const { focusVariant, genomeBrowserMethods } = params;
+  const { setFocusGene, genomeBrowser } = genomeBrowserMethods;
+
+  useEffect(() => {
+    if (!focusVariant || !genomeBrowser) {
+      return;
+    }
+
+    // FIXME: rename setFocusGene method!
+    setFocusGene(focusVariant.object_id);
+  }, [genomeBrowser, focusVariant?.object_id]);
 };
 
 const isLozengeClickMessage = (
