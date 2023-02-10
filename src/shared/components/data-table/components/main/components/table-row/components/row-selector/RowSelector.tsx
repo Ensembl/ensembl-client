@@ -68,7 +68,9 @@ const RowSelector = (props: RowSelectorProps) => {
           onChange={(checked: boolean) =>
             props.onChange({ checked, rowId: props.rowId })
           }
-          disabled={true}
+          disabled={
+            true /* at the moment, there is no use case for working checkboxes */
+          }
           checked={isCurrentRowSelected}
         />
       )}
