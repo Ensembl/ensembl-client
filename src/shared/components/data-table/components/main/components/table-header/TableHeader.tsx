@@ -16,6 +16,8 @@
 
 import React, { useContext } from 'react';
 
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
@@ -76,20 +78,24 @@ const HeaderStats = (props: {
 }) => {
   const { totalRows, hiddenRowIds } = props;
 
-  /*
-    To calculate the width in `ch`, we calculate the total number of characters that are possible in the stats
-    and multiply it by 3 and add 5 for the extra ` to ` & `/`
-  */
-  const totalCharacters = String(totalRows).length * 3 + 5;
-
-  const totalHiddenRows = Object.keys(hiddenRowIds).length;
+  const hiddenRowsCount = Object.keys(hiddenRowIds).length;
+  const visibleRowsCount = totalRows - hiddenRowsCount;
 
   return (
-    <th style={{ width: `${totalCharacters}ch`, minWidth: '75px' }}>
-      <span className={styles.totalVisibleRows}>
-        {totalRows - totalHiddenRows}
-      </span>
-      /{totalRows}
+    <th style={{ minWidth: '75px' }}>
+      <div className={styles.rowsCount}>
+        <span>
+          <span className={styles.rowsCountText}>Showing </span>
+          <span className={styles.rowsCountNumberProminent}>
+            {getCommaSeparatedNumber(visibleRowsCount)}
+          </span>
+          <span className={styles.rowsCountText}> of</span>
+        </span>
+        <span>
+          <span>{getCommaSeparatedNumber(totalRows)}</span>
+          <span className={styles.rowsCountText}> rows</span>
+        </span>
+      </div>
     </th>
   );
 };
