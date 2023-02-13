@@ -1,0 +1,15 @@
+.container {
+  margin: 15px 0 0 40px;
+  display: flex;
+  column-gap: 35px;
+  align-items: center;
+
+  .zoomInButton,
+  .zoomOutButton {
+    --browser-nav-button-size: 16px;
+  }
+
+  .browserReset {
+    --browser-reset-button-size: 16px;
+  }
+}

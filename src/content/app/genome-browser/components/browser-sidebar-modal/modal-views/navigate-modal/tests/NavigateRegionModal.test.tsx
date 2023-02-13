@@ -61,6 +61,10 @@ jest.mock('src/shared/state/genome/genomeApiSlice', () => {
   };
 });
 jest.mock(
+  'src/content/app/genome-browser/components/browser-sidebar-modal/modal-views/navigate-modal/GenomeBrowserNavigationButtons',
+  () => () => <div data-test-id="navigation-buttons" />
+);
+jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
     genomeIdForUrl: 'human'

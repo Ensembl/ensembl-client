@@ -24,15 +24,13 @@ import {
   getBrowserActiveGenomeId,
   getChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
 
 import {
   validateGenomicLocation,
   type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
-import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
+import GenomeBrowserNavigationButtons from './GenomeBrowserNavigationButtons';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
@@ -40,13 +38,7 @@ import {
   BrowserSidebarModalView,
   updateBrowserSidebarModalForGenome
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
-import { BrowserNavAction } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-
-import NavigateLeftIcon from 'static/icons/navigate-left.svg';
-import NavigateRightIcon from 'static/icons/navigate-right.svg';
-import ZoomInIcon from 'static/icons/icon_plus_circle.svg';
-import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
 
 import styles from './NavigateModal.scss';
 
@@ -197,7 +189,7 @@ const NavigateRegionModal = () => {
   return (
     <section className={styles.navigateModal}>
       <p>Navigate this region</p>
-      <BrowserNavBarControls />
+      <GenomeBrowserNavigationButtons />
       <div className={styles.segmentedInput}>
         <div className={styles.inputField}>
           <label>
@@ -277,46 +269,6 @@ const NavigateRegionModal = () => {
         </p>
       </div>
     </section>
-  );
-};
-
-const BrowserNavBarControls = () => {
-  const browserNavButtonStates = useAppSelector(getBrowserNavButtonStates);
-
-  return (
-    <div className={styles.browserNavBarControls}>
-      <BrowserNavButton
-        name={BrowserNavAction.MOVE_LEFT}
-        description="navigate left"
-        detail={{ move_left_px: 50 }}
-        enabled={browserNavButtonStates[BrowserNavAction.MOVE_LEFT]}
-        icon={NavigateLeftIcon}
-      />
-      <BrowserNavButton
-        name={BrowserNavAction.MOVE_RIGHT}
-        description="navigate right"
-        detail={{ move_right_px: 50 }}
-        enabled={browserNavButtonStates[BrowserNavAction.MOVE_RIGHT]}
-        icon={NavigateRightIcon}
-      />
-      <BrowserNavButton
-        name={BrowserNavAction.ZOOM_OUT}
-        description="zoom out"
-        detail={{ zoom_by: -0.3 }}
-        enabled={browserNavButtonStates[BrowserNavAction.ZOOM_OUT]}
-        icon={ZoomOutIcon}
-        className={styles.zoomOutButton}
-      />
-      <BrowserNavButton
-        name={BrowserNavAction.ZOOM_IN}
-        description="zoom in"
-        detail={{ zoom_by: 0.3 }}
-        enabled={browserNavButtonStates[BrowserNavAction.ZOOM_IN]}
-        icon={ZoomInIcon}
-        className={styles.zoomInButton}
-      />
-      <BrowserReset className={styles.browserReset} />
-    </div>
   );
 };
 
