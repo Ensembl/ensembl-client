@@ -34,10 +34,6 @@ import GenomeBrowserNavigationButtons from './GenomeBrowserNavigationButtons';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import {
-  BrowserSidebarModalView,
-  updateBrowserSidebarModalForGenome
-} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './NavigateModal.scss';

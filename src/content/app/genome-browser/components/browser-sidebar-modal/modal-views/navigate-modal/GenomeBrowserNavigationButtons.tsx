@@ -26,7 +26,6 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
-import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
@@ -188,7 +187,6 @@ const GenomeBrowserNavigationButtons = () => {
         className={styles.zoomInButton}
         onClick={zoomIn}
       />
-      <BrowserReset className={styles.browserReset} />
     </div>
   );
 };

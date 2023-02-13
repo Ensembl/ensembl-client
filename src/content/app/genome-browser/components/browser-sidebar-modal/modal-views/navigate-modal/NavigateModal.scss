@@ -29,21 +29,6 @@
   background-color: $light-grey;
   padding: 14px;
 }
-.browserNavBarControls {
-  margin: 15px 0 30px 25px;
-  display: flex;
-  column-gap: 35px;
-  align-items: center;
-
-  .zoomInButton,
-  .zoomOutButton {
-    --browser-nav-button-size: 16px;
-  }
-
-  .browserReset {
-    --browser-reset-button-size: 16px;
-  }
-}
 
 .inputField {
   margin-top: 10px;
