@@ -85,6 +85,23 @@ const BlastSettings = ({ config }: Props) => {
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
 
+  const shouldShowMatchMismatch =
+    config.valid_parameters_for_program[blastProgram].includes('match_scores');
+  const shouldShowMatrix =
+    config.valid_parameters_for_program[blastProgram].includes('matrix');
+  const shouldShowGapPenalties =
+    config.valid_parameters_for_program[blastProgram].includes('gapopen');
+
+  /**
+   * - change select element for gap open and gap extend
+   * - update blastFormSlice
+   *  - when updating the program, need to make sure match/mismatch or matrix
+   *    get updated accordingly (and gap open/gap extend too)
+   *  - need to introduce a function for updating match/mismatch and matrix
+   *    (maybe they be part of the function for updating a single parameter)
+   * - update CSS of the parameters section
+   */
+
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -115,6 +132,18 @@ const BlastSettings = ({ config }: Props) => {
 
   const onSearchSensitivityChange = (presetName: string) => {
     updateSensitivityPresets(presetName);
+  };
+
+  const onGapPenaltiesChange = (newValue: string) => {
+    const [gapOpen, gapExtend] = newValue.split(',');
+    setBlastParameter({
+      parameterName: 'gapopen' as BlastParameterName,
+      parameterValue: gapOpen
+    });
+    setBlastParameter({
+      parameterName: 'gapext' as BlastParameterName,
+      parameterValue: gapExtend
+    });
   };
 
   const onBlastParameterChange = (
@@ -252,7 +281,7 @@ const BlastSettings = ({ config }: Props) => {
             />
           </div>
           <div className={styles.parametersColumn}>
-            <BlastSelect
+            {/* <BlastSelect
               options={config.parameters.gapopen.options as Option[]}
               label={config.parameters.gapopen.label}
               description={config.parameters.gapopen.description}
@@ -270,7 +299,15 @@ const BlastSettings = ({ config }: Props) => {
               onChange={(value: string) =>
                 onBlastParameterChange('gapext', value)
               }
-            />
+            /> */}
+            {shouldShowGapPenalties && (
+              <BlastGapPenalties
+                config={config}
+                program={blastProgram}
+                blastParameters={blastParameters}
+                onChange={onGapPenaltiesChange}
+              />
+            )}
           </div>
 
           <div className={styles.parametersColumn}>
@@ -288,7 +325,7 @@ const BlastSettings = ({ config }: Props) => {
                 onBlastParameterChange('wordsize', value)
               }
             />
-            {databaseSequenceType === 'dna' && (
+            {shouldShowMatchMismatch && (
               <BlastSelect
                 options={config.parameters.match_scores.options as Option[]}
                 label={config.parameters.match_scores.label}
@@ -300,7 +337,7 @@ const BlastSettings = ({ config }: Props) => {
               />
             )}
             <div className={styles.matrixSetting}>
-              {databaseSequenceType === 'protein' && (
+              {shouldShowMatrix && (
                 <BlastSelect
                   options={config.parameters.matrix.options as Option[]}
                   label={config.parameters.matrix.label}
@@ -359,6 +396,47 @@ const BlastSubmissionName = () => {
         />
       </label>
     </div>
+  );
+};
+
+const BlastGapPenalties = (props: {
+  program: BlastProgram;
+  blastParameters: ReturnType<typeof getBlastSearchParameters>;
+  config: BlastSettingsConfig;
+  onChange: (value: string) => void;
+}) => {
+  const { program, config, blastParameters, onChange } = props;
+  const {
+    matrix,
+    match_scores: matchScores,
+    gapopen: gapOpen,
+    gapext: gapExtend
+  } = blastParameters;
+
+  let gapPenalties: [string, string][] = [];
+  const shouldUseMatrix =
+    config.valid_parameters_for_program[
+      program as keyof BlastSettingsConfig['valid_parameters_for_program']
+    ].includes('matrix');
+
+  if (shouldUseMatrix && matrix) {
+    gapPenalties = config.gap_penalties.options.matrix[matrix];
+  } else if (matchScores) {
+    gapPenalties = config.gap_penalties.options.match_scores[matchScores];
+  }
+
+  const options = gapPenalties.map(([gapOpen, gapExtend]) => ({
+    label: `${gapOpen}, ${gapExtend}`,
+    value: `${gapOpen},${gapExtend}`
+  }));
+  return (
+    <BlastSelect
+      options={options as Option[]}
+      label="Gap penalties"
+      description="Some description to come"
+      selectedOption={`${gapOpen},${gapExtend}`}
+      onChange={onChange}
+    />
   );
 };
 

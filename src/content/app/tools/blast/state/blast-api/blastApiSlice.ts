@@ -23,6 +23,7 @@ import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
+import mockConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
 
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -66,9 +67,14 @@ export type RejectedJob = {
 const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     blastConfig: builder.query<BlastSettingsConfig, void>({
-      query: () => ({
-        url: `${config.toolsApiBaseUrl}/blast/config`
-      }),
+      queryFn: () => {
+        return Promise.resolve({
+          data: mockConfig as unknown as BlastSettingsConfig
+        });
+      },
+      // query: () => ({
+      //   url: `${config.toolsApiBaseUrl}/blast/config`
+      // }),
       keepUnusedDataFor: 60 * 60 // one hour
     }),
     submitBlast: builder.mutation<

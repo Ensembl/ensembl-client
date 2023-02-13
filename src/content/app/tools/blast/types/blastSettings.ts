@@ -21,15 +21,15 @@ export type MandatoryBlastParameterName =
   | 'scores'
   | 'hsps'
   | 'dropoff'
-  | 'gapalign'
-  | 'gapopen'
-  | 'gapext'
   | 'filter'
   | 'compstats'
   | 'exp'
   | 'wordsize';
 
 export type OptionalBlastParameterName =
+  | 'gapalign'
+  | 'gapopen'
+  | 'gapext'
   | 'match_scores' // only for searches against nucleotide databases
   | 'matrix'; // only for searches against protein databases
 
@@ -96,6 +96,17 @@ type ProgramParametersOverride = {
   };
 };
 
+type GapPenalties = {
+  options: {
+    match_scores: Record<string, [string, string][]>;
+    matrix: Record<string, [string, string][]>;
+  };
+  defaults: {
+    match_scores: Record<string, [string, string]>;
+    matrix: Record<string, [string, string]>;
+  };
+};
+
 type Defaults = {
   database: string;
 };
@@ -107,4 +118,6 @@ export type BlastSettingsConfig = {
   database_sequence_types: Record<string, SequenceType>;
   defaults: Defaults;
   presets: Presets;
+  valid_parameters_for_program: Record<BlastProgram, string[]>;
+  gap_penalties: GapPenalties;
 };
