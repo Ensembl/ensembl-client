@@ -17,7 +17,7 @@
 import React, { FormEvent, KeyboardEvent, useState } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
@@ -48,8 +48,6 @@ const ERROR_MESSAGE =
 const NavigateRegionModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const chrLocation = useAppSelector(getChrLocation);
-
-  const dispatch = useAppDispatch();
 
   const { changeBrowserLocation } = useGenomeBrowser();
 
@@ -171,102 +169,81 @@ const NavigateRegionModal = () => {
     });
   };
 
-  const switchToNavigateLocation = () => {
-    if (!activeGenomeId) {
-      return;
-    }
-
-    dispatch(
-      updateBrowserSidebarModalForGenome({
-        activeGenomeId,
-        data: {
-          browserSidebarModalView: BrowserSidebarModalView.NAVIGATE_LOCATION
-        }
-      })
-    );
-  };
-
   return (
     <section className={styles.navigateModal}>
-      <p>Navigate this region</p>
-      <GenomeBrowserNavigationButtons />
-      <div className={styles.segmentedInput}>
-        <div className={styles.inputField}>
-          <label>
-            <span>Start</span>
-            <Input
-              type="text"
-              onFocus={onsegmentedInputFocus}
-              onChange={onLocationStartChange}
-              onKeyUp={handleKeyPress}
-              disabled={singleInputActive}
-              value={locationStartInput}
-              placeholder="Add co-ordinate"
-            />
-          </label>
-        </div>
-        <div className={styles.inputField}>
-          <label>
-            <span>End</span>
-            <Input
-              type="text"
-              onFocus={onsegmentedInputFocus}
-              onChange={onLocationEndChange}
-              onKeyUp={handleKeyPress}
-              disabled={singleInputActive}
-              value={locationEndInput}
-              placeholder="Add co-ordinate"
-            ></Input>
-          </label>
-        </div>
-        {segmentedInputActive && shouldShowErrorMessage && (
-          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
-        )}
+      <div className={styles.helpText}>
+        Pan and zoom, or go to a new location in this chromosome or region only
       </div>
-      <div className={styles.singleInput}>
-        <div className={styles.inputField}>
-          <label>
-            <span>Go to</span>
-            <Input
-              type="text"
-              onFocus={onSingleInputFocus}
-              onChange={onLocationChange}
-              onKeyUp={handleKeyPress}
-              disabled={segmentedInputActive}
-              value={locationInput}
-              placeholder="Add region co-ordinates..."
-            />
-          </label>
+      <div className={styles.navigateSection}>
+        <GenomeBrowserNavigationButtons />
+        <div className={styles.segmentedInput}>
+          <div className={styles.inputField}>
+            <label>
+              <span>Start</span>
+              <Input
+                type="text"
+                onFocus={onsegmentedInputFocus}
+                onChange={onLocationStartChange}
+                onKeyUp={handleKeyPress}
+                disabled={singleInputActive}
+                value={locationStartInput}
+                placeholder="Add co-ordinate"
+              />
+            </label>
+          </div>
+          <div className={styles.inputField}>
+            <label>
+              <span>End</span>
+              <Input
+                type="text"
+                onFocus={onsegmentedInputFocus}
+                onChange={onLocationEndChange}
+                onKeyUp={handleKeyPress}
+                disabled={singleInputActive}
+                value={locationEndInput}
+                placeholder="Add co-ordinate"
+              ></Input>
+            </label>
+          </div>
+          {segmentedInputActive && shouldShowErrorMessage && (
+            <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+          )}
         </div>
-        {singleInputActive && shouldShowErrorMessage && (
-          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
-        )}
-      </div>
-      <div className={styles.formButtons}>
-        {(segmentedInputActive || singleInputActive) && (
-          <span
-            className={classNames(styles.cancel, styles.clickableText)}
-            onClick={resetForm}
+        <div className={styles.singleInput}>
+          <div className={styles.inputField}>
+            <label>
+              <span>Go to</span>
+              <Input
+                type="text"
+                onFocus={onSingleInputFocus}
+                onChange={onLocationChange}
+                onKeyUp={handleKeyPress}
+                disabled={segmentedInputActive}
+                value={locationInput}
+                placeholder="Add region co-ordinates..."
+              />
+            </label>
+          </div>
+          {singleInputActive && shouldShowErrorMessage && (
+            <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+          )}
+        </div>
+        <div className={styles.formButtons}>
+          {(segmentedInputActive || singleInputActive) && (
+            <span
+              className={classNames(styles.cancel, styles.clickableText)}
+              onClick={resetForm}
+            >
+              Cancel
+            </span>
+          )}
+          <PrimaryButton
+            onClick={handleSubmit}
+            isDisabled={shouldDisableSubmission}
           >
-            Cancel
-          </span>
-        )}
-        <PrimaryButton
-          onClick={handleSubmit}
-          isDisabled={shouldDisableSubmission}
-        >
-          Go
-        </PrimaryButton>
-      </div>
-      <div>
-        <p>
-          <span
-            className={classNames(styles.clickableText)}
-            onClick={switchToNavigateLocation}
-          >
-            Go to new location
-          </span>
-        </p>
+            Go
+          </PrimaryButton>
+        </div>
       </div>
     </section>
   );
