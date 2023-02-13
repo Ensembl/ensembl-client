@@ -83,34 +83,11 @@ const BrowserSidebarToolstrip = () => {
     }
   };
 
-  // const toggleNavigateModalView = () => {
-  //   if (
-  //     browserSidebarModalView === BrowserSidebarModalView.NAVIGATE ||
-  //     browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
-  //   ) {
-  //     toggleModalView(browserSidebarModalView);
-  //   } else {
-  //     toggleModalView(BrowserSidebarModalView.NAVIGATE_REGION);
-  //   }
-  // };
-
   const getViewIconStatus = (view: BrowserSidebarModalView) => {
     return view === browserSidebarModalView && isTrackPanelOpened
       ? Status.SELECTED
       : Status.UNSELECTED;
   };
-
-  // const getNavigateIconStatus = () => {
-  //   if (
-  //     isTrackPanelOpened &&
-  //     (browserSidebarModalView === BrowserSidebarModalView.NAVIGATE ||
-  //       browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION)
-  //   ) {
-  //     return Status.SELECTED;
-  //   }
-
-  //   return Status.UNSELECTED;
-  // };
 
   return (
     <>

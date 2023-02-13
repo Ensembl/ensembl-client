@@ -46,9 +46,6 @@ const browserSidebarModals: Record<
   [BrowserSidebarModalView.NAVIGATE]: lazy(
     () => import('./modal-views/NavigateModal')
   )
-  // [BrowserSidebarModalView.NAVIGATE_LOCATION]: lazy(
-  //   () => import('./modal-views/navigate-modal/NavigateLocationModal')
-  // )
 };
 
 export const browserSidebarModalTitles: { [key: string]: string } = {
@@ -57,7 +54,6 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.SHARE]: 'Share',
   [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
   [BrowserSidebarModalView.NAVIGATE]: 'Change location'
-  // [BrowserSidebarModalView.NAVIGATE_LOCATION]: 'Change location'
 };
 
 export const BrowserSidebarModal = () => {
