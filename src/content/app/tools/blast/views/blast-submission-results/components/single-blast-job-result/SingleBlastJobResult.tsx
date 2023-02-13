@@ -437,6 +437,11 @@ const HitsTable = (props: HitsTableProps) => {
     tableColumns[genomicLocationColumnIndex] = {
       columnId: 'protein_id',
       title: 'Protein ID',
+      isSortable: true,
+      renderer: tableColumns[genomicLocationColumnIndex].renderer,
+      downloadRenderer:
+        tableColumns[genomicLocationColumnIndex].downloadRenderer,
+      sortFn: tableColumns[genomicLocationColumnIndex].sortFn,
       helpText: (
         <span>Proteins in this species that contain sequence similarity</span>
       )
@@ -445,6 +450,11 @@ const HitsTable = (props: HitsTableProps) => {
     tableColumns[genomicLocationColumnIndex] = {
       columnId: 'transcript_id',
       title: 'Transcript ID',
+      isSortable: true,
+      renderer: tableColumns[genomicLocationColumnIndex].renderer,
+      downloadRenderer:
+        tableColumns[genomicLocationColumnIndex].downloadRenderer,
+      sortFn: tableColumns[genomicLocationColumnIndex].sortFn,
       helpText: (
         <span>
           Transcripts in this species that contain sequence similarity
