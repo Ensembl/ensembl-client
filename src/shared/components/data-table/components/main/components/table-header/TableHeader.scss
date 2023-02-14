@@ -35,6 +35,24 @@
   }
 }
 
+.rowsCount {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.rowsCount > span {
+  white-space: nowrap;
+}
+
+.rowsCountText {
+  font-size: 10px;
+}
+
+.rowsCountNumberProminent {
+  font-weight: $normal;
+}
+
 .questionButton {
   margin-left: 15px;
   height: 14px;

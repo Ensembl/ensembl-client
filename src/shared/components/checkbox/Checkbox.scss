@@ -7,6 +7,7 @@
 .grid {
   display: inline-grid;
   grid-template-columns: auto 1fr;
+  font-size: 0;
 }
 
 .checkboxDefault {
@@ -33,6 +34,7 @@
 }
 
 .checkboxDisabled {
+  border-color: var(--checkbox-disabled-border-color, #{$medium-light-grey});
   background-color: var(--checkbox-disabled-background-color, #{$light-grey});
   cursor: default;
   pointer-events: none;
