@@ -37,7 +37,7 @@ import untypedMockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsCo
 import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 
 const mockBlastSettingsConfig =
-  untypedMockBlastSettingsConfig as BlastSettingsConfig;
+  untypedMockBlastSettingsConfig as unknown as BlastSettingsConfig;
 
 const createReduxStore = (stateFragment: Partial<BlastFormState> = {}) => {
   const blastReducer = combineReducers({
