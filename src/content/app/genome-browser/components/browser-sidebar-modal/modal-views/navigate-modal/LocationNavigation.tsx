@@ -41,7 +41,7 @@ import styles from './NavigateModal.scss';
 const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this species.';
 
-const NavigateLocationModal = () => {
+const LocationNavigation = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const { genomeIdForUrl } = useGenomeBrowserIds();
   const selectRef = useRef<SimpleSelectMethods | null>(null);
@@ -282,4 +282,4 @@ const NavigateLocationModal = () => {
   );
 };
 
-export default NavigateLocationModal;
+export default LocationNavigation;

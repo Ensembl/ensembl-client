@@ -23,8 +23,8 @@ import {
   AccordionItemHeading,
   AccordionItemPanel
 } from 'src/shared/components/accordion';
-import NavigateRegionModal from './navigate-modal/NavigateRegionModal';
-import NavigateLocationModal from './navigate-modal/NavigateLocationModal';
+import NavigateRegionModal from './navigate-modal/RegionNavigation';
+import NavigateLocationModal from './navigate-modal/LocationNavigation';
 
 import styles from './navigate-modal/NavigateModal.scss';
 

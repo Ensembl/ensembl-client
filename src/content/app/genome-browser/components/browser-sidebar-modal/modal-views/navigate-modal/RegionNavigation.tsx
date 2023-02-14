@@ -30,7 +30,7 @@ import {
   type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import GenomeBrowserNavigationButtons from './GenomeBrowserNavigationButtons';
+import GenomeBrowserNavigationButtons from './NavigationButtons';
 import Input from 'src/shared/components/input/Input';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
@@ -41,7 +41,7 @@ import styles from './NavigateModal.scss';
 const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this region.';
 
-const NavigateRegionModal = () => {
+const RegionNavigation = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const chrLocation = useAppSelector(getChrLocation);
 
@@ -245,4 +245,4 @@ const NavigateRegionModal = () => {
   );
 };
 
-export default NavigateRegionModal;
+export default RegionNavigation;
