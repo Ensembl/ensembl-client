@@ -57,4 +57,4 @@ const NavigateModal = () => {
   );
 };
 
-export default NavigateModal;
+export default React.memo(NavigateModal);
