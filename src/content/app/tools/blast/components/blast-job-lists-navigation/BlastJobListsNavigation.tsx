@@ -50,4 +50,4 @@ const BlastJobListsNavigation = () => {
   );
 };
 
-export default BlastJobListsNavigation;
+export default React.memo(BlastJobListsNavigation);

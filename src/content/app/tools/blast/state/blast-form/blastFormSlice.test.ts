@@ -32,12 +32,7 @@ import {
 } from 'tests/fixtures/blast/blastSubmission';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import untypedMockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
-
-import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
-
-const mockBlastSettingsConfig =
-  untypedMockBlastSettingsConfig as unknown as BlastSettingsConfig;
+import mockBlastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig';
 
 const createReduxStore = (stateFragment: Partial<BlastFormState> = {}) => {
   const blastReducer = combineReducers({

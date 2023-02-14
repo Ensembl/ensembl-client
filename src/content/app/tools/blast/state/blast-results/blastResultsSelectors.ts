@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
 import {
   isSuccessfulBlastSubmission,
   isFailedBlastSubmission
@@ -28,17 +29,21 @@ export const getBlastSubmissions = (state: RootState) =>
 export const getBlastSubmissionsUi = (state: RootState) =>
   state.blast.blastResults.ui;
 
-export const getUnviewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => isFailedBlastSubmission(submission) || !submission.seen
-  );
-};
+export const getUnviewedBlastSubmissions = createSelector(
+  (state: RootState) => getBlastSubmissions(state),
+  (submissions) =>
+    Object.values(submissions).filter(
+      (submission) => isFailedBlastSubmission(submission) || !submission.seen
+    )
+);
 
-export const getViewedBlastSubmissions = (state: RootState) => {
-  return Object.values(getBlastSubmissions(state)).filter(
-    (submission) => isSuccessfulBlastSubmission(submission) && submission.seen
-  );
-};
+export const getViewedBlastSubmissions = createSelector(
+  (state: RootState) => getBlastSubmissions(state),
+  (submissions) =>
+    Object.values(submissions).filter(
+      (submission) => isSuccessfulBlastSubmission(submission) && submission.seen
+    )
+);
 
 export const getBlastSubmissionById = (
   state: RootState,
