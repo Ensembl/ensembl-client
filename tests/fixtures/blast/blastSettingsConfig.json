@@ -745,7 +745,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "11",
           "match_scores": "1,-3"
@@ -759,7 +759,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "15",
           "match_scores": "1,-3"
@@ -773,7 +773,7 @@
           "filter": "F",
           "compstats": "F",
           "exp": "1000",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "7",
           "match_scores": "1,-3"
@@ -787,7 +787,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "2",
+          "gapopen": "3",
           "gapext": "2",
           "wordsize": "9",
           "match_scores": "1,-1"
@@ -805,7 +805,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -817,9 +817,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
+          "gapopen": "10",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -831,9 +831,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
-          "gapext": "1",
-          "wordsize": "6",
+          "gapopen": "14",
+          "gapext": "2",
+          "wordsize": "3",
           "matrix": "BLOSUM45"
         }
       },
@@ -849,7 +849,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -861,7 +861,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
+          "gapopen": "10",
           "gapext": "1",
           "wordsize": "6",
           "matrix": "BLOSUM90"
@@ -875,9 +875,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
-          "gapext": "1",
-          "wordsize": "6",
+          "gapopen": "14",
+          "gapext": "2",
+          "wordsize": "3",
           "matrix": "BLOSUM45"
         }
       },
@@ -891,10 +891,8 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM62"
         },
         "near_match": {
           "alignments": "100",
@@ -905,10 +903,8 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM90"
         },
         "distant_homologies": {
           "alignments": "100",
@@ -919,10 +915,8 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM45"
         }
       },
       "tblastn": {
@@ -935,10 +929,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "3",
+          "matrix": "BLOSUM62"
         },
         "near_match": {
           "alignments": "100",
@@ -949,10 +943,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "gapopen": "10",
+          "gapext": "1",
+          "wordsize": "3",
+          "matrix": "BLOSUM90"
         },
         "distant_homologies": {
           "alignments": "100",
@@ -963,10 +957,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
+          "gapopen": "14",
           "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM45"
         }
       }
     }

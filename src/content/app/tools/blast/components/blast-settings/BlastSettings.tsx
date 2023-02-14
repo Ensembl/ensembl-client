@@ -91,17 +91,6 @@ const BlastSettings = ({ config }: Props) => {
     config.valid_parameters_for_program[blastProgram].includes('matrix');
   const shouldShowGapPenalties =
     config.valid_parameters_for_program[blastProgram].includes('gapopen');
-
-  /**
-   * - change select element for gap open and gap extend
-   * - update blastFormSlice
-   *  - when updating the program, need to make sure match/mismatch or matrix
-   *    get updated accordingly (and gap open/gap extend too)
-   *  - need to introduce a function for updating match/mismatch and matrix
-   *    (maybe they be part of the function for updating a single parameter)
-   * - update CSS of the parameters section
-   */
-
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -281,36 +270,6 @@ const BlastSettings = ({ config }: Props) => {
             />
           </div>
           <div className={styles.parametersColumn}>
-            {/* <BlastSelect
-              options={config.parameters.gapopen.options as Option[]}
-              label={config.parameters.gapopen.label}
-              description={config.parameters.gapopen.description}
-              selectedOption={blastParameters.gapopen as string}
-              onChange={(value: string) =>
-                onBlastParameterChange('gapopen', value)
-              }
-            />
-
-            <BlastSelect
-              options={config.parameters.gapext.options as Option[]}
-              label={config.parameters.gapext.label}
-              description={config.parameters.gapext.description}
-              selectedOption={blastParameters.gapext as string}
-              onChange={(value: string) =>
-                onBlastParameterChange('gapext', value)
-              }
-            /> */}
-            {shouldShowGapPenalties && (
-              <BlastGapPenalties
-                config={config}
-                program={blastProgram}
-                blastParameters={blastParameters}
-                onChange={onGapPenaltiesChange}
-              />
-            )}
-          </div>
-
-          <div className={styles.parametersColumn}>
             <BlastSelect
               options={
                 config.programs_parameters_override.wordsize[blastProgram]
@@ -349,6 +308,17 @@ const BlastSettings = ({ config }: Props) => {
                 />
               )}
             </div>
+          </div>
+
+          <div className={styles.parametersColumn}>
+            {shouldShowGapPenalties && (
+              <BlastGapPenalties
+                config={config}
+                program={blastProgram}
+                blastParameters={blastParameters}
+                onChange={onGapPenaltiesChange}
+              />
+            )}
           </div>
 
           <div
