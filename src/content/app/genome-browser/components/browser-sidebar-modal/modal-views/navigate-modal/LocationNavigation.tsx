@@ -67,7 +67,7 @@ const LocationNavigation = () => {
     !(regionNameInput && locationStartInput && locationEndInput) &&
     !locationInput;
 
-  const onsegmentedInputFocus = () => {
+  const onSegmentedInputFocus = () => {
     setsegmentedInputActive(true);
     setSingleInputActive(false);
   };
@@ -215,7 +215,7 @@ const LocationNavigation = () => {
               <span>Start</span>
               <Input
                 type="text"
-                onFocus={onsegmentedInputFocus}
+                onFocus={onSegmentedInputFocus}
                 onChange={onLocationStartChange}
                 onKeyUp={handleKeyPress}
                 disabled={singleInputActive}
@@ -229,7 +229,7 @@ const LocationNavigation = () => {
               <span>End</span>
               <Input
                 type="text"
-                onFocus={onsegmentedInputFocus}
+                onFocus={onSegmentedInputFocus}
                 onChange={onLocationEndChange}
                 onKeyUp={handleKeyPress}
                 disabled={singleInputActive}
