@@ -332,7 +332,7 @@ const BlastSettings = ({ config }: Props) => {
           >
             {buildCheckbox({
               ...(config.parameters.gapalign as BlastBooleanSetting),
-              selectedOption: blastParameters.gapalign as string,
+              selectedOption: blastParameters.gapalign ?? '',
               disabled: !gapAlignEnabled,
               onChange: (value: string) =>
                 onBlastParameterChange('gapalign', value)
