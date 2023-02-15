@@ -54,9 +54,7 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
 };
 
 export const BrowserSidebarModal = () => {
-  const browserSidebarModalView = useAppSelector(
-    getBrowserSidebarModalView
-  ) as string;
+  const browserSidebarModalView = useAppSelector(getBrowserSidebarModalView);
   const dispatch = useAppDispatch();
 
   if (!browserSidebarModalView) {
