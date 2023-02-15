@@ -24,7 +24,7 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
  * A: Because the json file is something we update and then hand over to the backend
  *    to update in the tools api. It is thus convenient to have a valid json file on the FE side as well.
  *
- * Q: Why doesn't we just rely on typescript to infer the type of the json object automatically?
+ * Q: Why don't we just rely on typescript to infer the type of the json object automatically?
  *    Why do we need to manually assign a type to it?
  * A: Typescript indeed correctly infers types of most fields of the json object the types of the json object correctly; but
  *    it decides that types of certain fields in this config is string[][],
