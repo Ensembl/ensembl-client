@@ -395,164 +395,6 @@
         }
       ]
     },
-    "gapopen": {
-      "label": "Gap opening",
-      "description": "Penalty taken away from the score when a gap is created in a sequence. Increasing the gap opening penalty will decrease the number of gaps in the final alignment",
-      "type": "select",
-      "options": [
-        {
-          "label": "-1",
-          "value": "-1"
-        },
-        {
-          "label": "0",
-          "value": "0"
-        },
-        {
-          "label": "1",
-          "value": "1"
-        },
-        {
-          "label": "2",
-          "value": "2"
-        },
-        {
-          "label": "3",
-          "value": "3"
-        },
-        {
-          "label": "4",
-          "value": "4"
-        },
-        {
-          "label": "5",
-          "value": "5"
-        },
-        {
-          "label": "6",
-          "value": "6"
-        },
-        {
-          "label": "7",
-          "value": "7"
-        },
-        {
-          "label": "8",
-          "value": "8"
-        },
-        {
-          "label": "9",
-          "value": "9"
-        },
-        {
-          "label": "10",
-          "value": "10"
-        },
-        {
-          "label": "11",
-          "value": "11"
-        },
-        {
-          "label": "12",
-          "value": "12"
-        },
-        {
-          "label": "13",
-          "value": "13"
-        },
-        {
-          "label": "14",
-          "value": "14"
-        },
-        {
-          "label": "15",
-          "value": "15"
-        },
-        {
-          "label": "16",
-          "value": "16"
-        },
-        {
-          "label": "17",
-          "value": "17"
-        },
-        {
-          "label": "18",
-          "value": "18"
-        },
-        {
-          "label": "19",
-          "value": "19"
-        },
-        {
-          "label": "20",
-          "value": "20"
-        },
-        {
-          "label": "21",
-          "value": "21"
-        },
-        {
-          "label": "25",
-          "value": "25"
-        }
-      ]
-    },
-    "gapext": {
-      "label": "Gap extension",
-      "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favours short gaps in the final alignment",
-      "type": "select",
-      "options": [
-        {
-          "label": "-1",
-          "value": "-1"
-        },
-        {
-          "label": "0",
-          "value": "0"
-        },
-        {
-          "label": "1",
-          "value": "1"
-        },
-        {
-          "label": "2",
-          "value": "2"
-        },
-        {
-          "label": "3",
-          "value": "3"
-        },
-        {
-          "label": "4",
-          "value": "4"
-        },
-        {
-          "label": "5",
-          "value": "5"
-        },
-        {
-          "label": "6",
-          "value": "6"
-        },
-        {
-          "label": "7",
-          "value": "7"
-        },
-        {
-          "label": "8",
-          "value": "8"
-        },
-        {
-          "label": "9",
-          "value": "9"
-        },
-        {
-          "label": "10",
-          "value": "10"
-        }
-      ]
-    },
     "matrix": {
       "label": "Matrix",
       "description": "The substitution matrix used for scoring alignments when searching the database",
@@ -966,13 +808,15 @@
     }
   },
   "valid_parameters_for_program": {
-    "blastn": ["gapopen", "gapext", "match_scores", "gapalign"],
-    "tblastx": ["matrix", "gapalign"],
-    "blastx": ["matrix", "gapopen", "gapext"],
+    "blastn": ["match_scores", "gapopen", "gapext", "gapalign"],
+    "tblastx": ["matrix"],
+    "blastx": ["matrix", "gapopen", "gapext", "gapalign"],
     "tblastn": ["matrix", "gapopen", "gapext", "gapalign"],
     "blastp": ["matrix", "gapopen", "gapext", "gapalign"]
   },
   "gap_penalties": {
+    "label": "Gap penalties",
+    "description": "A combination of gap openings and gap extensions are used to adjust alignment scores based on the number and length of gaps between sequences",
     "options": {
       "match_scores": {
         "1,-4": [
@@ -1247,8 +1091,7 @@
           ["16", "-1"],
           ["15", "-1"],
           ["13", "-1"]
-        ],
-        "NONE": [["-1", "-1"]]
+        ]
       }
     },
     "defaults": {

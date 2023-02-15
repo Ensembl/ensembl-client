@@ -222,10 +222,13 @@ describe('BlastSettings', () => {
       scoringMatrixSelector = queryByLabelText('Matrix');
       expect(scoringMatrixSelector).toBeTruthy();
 
-      // FIXME: the expectation below fails because the config contains a NONE option missing in the select
-      // expect(getAllSelectableValues((scoringMatrixSelector as HTMLSelectElement)).sort()).toEqual(
-      //   Object.keys(blastSettingsConfig.gap_penalties.options.matrix).sort()
-      // );
+      expect(
+        getAllSelectableValues(
+          scoringMatrixSelector as HTMLSelectElement
+        ).sort()
+      ).toEqual(
+        Object.keys(blastSettingsConfig.gap_penalties.options.matrix).sort()
+      );
 
       // switch to blastx
       await act(() => {

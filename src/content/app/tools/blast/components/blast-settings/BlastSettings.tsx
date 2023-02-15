@@ -91,6 +91,9 @@ const BlastSettings = ({ config }: Props) => {
     config.valid_parameters_for_program[blastProgram].includes('matrix');
   const shouldShowGapPenalties =
     config.valid_parameters_for_program[blastProgram].includes('gapopen');
+  const gapAlignEnabled =
+    config.valid_parameters_for_program[blastProgram].includes('gapalign');
+
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -330,6 +333,7 @@ const BlastSettings = ({ config }: Props) => {
             {buildCheckbox({
               ...(config.parameters.gapalign as BlastBooleanSetting),
               selectedOption: blastParameters.gapalign as string,
+              disabled: !gapAlignEnabled,
               onChange: (value: string) =>
                 onBlastParameterChange('gapalign', value)
             })}
@@ -377,33 +381,37 @@ const BlastGapPenalties = (props: {
 }) => {
   const { program, config, blastParameters, onChange } = props;
   const {
+    gap_penalties: gapPenaltiesConfig,
+    valid_parameters_for_program: validParamsForProgram
+  } = config;
+  const {
     matrix,
     match_scores: matchScores,
     gapopen: gapOpen,
     gapext: gapExtend
   } = blastParameters;
 
-  let gapPenalties: [string, string][] = [];
+  let gapPenaltiesOptions: [string, string][] = [];
   const shouldUseMatrix =
-    config.valid_parameters_for_program[
+    validParamsForProgram[
       program as keyof BlastSettingsConfig['valid_parameters_for_program']
     ].includes('matrix');
 
   if (shouldUseMatrix && matrix) {
-    gapPenalties = config.gap_penalties.options.matrix[matrix];
+    gapPenaltiesOptions = gapPenaltiesConfig.options.matrix[matrix];
   } else if (matchScores) {
-    gapPenalties = config.gap_penalties.options.match_scores[matchScores];
+    gapPenaltiesOptions = gapPenaltiesConfig.options.match_scores[matchScores];
   }
 
-  const options = gapPenalties.map(([gapOpen, gapExtend]) => ({
+  const options = gapPenaltiesOptions.map(([gapOpen, gapExtend]) => ({
     label: `${gapOpen}, ${gapExtend}`,
     value: `${gapOpen},${gapExtend}`
   }));
   return (
     <BlastSelect
       options={options as Option[]}
-      label="Gap penalties"
-      description="Some description to come"
+      label={gapPenaltiesConfig.label}
+      description={gapPenaltiesConfig.description}
       selectedOption={`${gapOpen},${gapExtend}`}
       onChange={onChange}
     />
@@ -452,9 +460,10 @@ const buildCheckbox = (params: {
     false: string;
   };
   selectedOption: string;
+  disabled?: boolean;
   onChange: (value: string) => void;
 }) => {
-  const { label, options, selectedOption, onChange } = params;
+  const { label, options, selectedOption, disabled = false, onChange } = params;
   const isSelected = options.true === selectedOption;
 
   const onCheckboxChange = (isChecked: boolean) => {
@@ -462,7 +471,12 @@ const buildCheckbox = (params: {
   };
 
   return (
-    <Checkbox label={label} checked={isSelected} onChange={onCheckboxChange} />
+    <Checkbox
+      label={label}
+      checked={isSelected}
+      onChange={onCheckboxChange}
+      disabled={disabled}
+    />
   );
 };
 

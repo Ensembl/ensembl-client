@@ -97,6 +97,8 @@ type ProgramParametersOverride = {
 };
 
 type GapPenalties = {
+  label: string;
+  description: string;
   options: {
     match_scores: Record<string, [string, string][]>;
     matrix: Record<string, [string, string][]>;
