@@ -21,11 +21,12 @@ import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blas
 /**
  * The purpose of this file is to export the mock blast settings config with a type assigned to it.
  * Q: Why don't we just define the blast settings config here rather than in the json?
- * A: Because we hand the json over to the backend.
+ * A: Because the json file is something we update and then hand over to the backend
+ *    to update in the tools api. It is thus convenient to have a valid json file on the FE side as well.
  *
- * Q: Why doesn't typescript infer the type of the config automatically?
- *    Why do we need to manually assign it?
- * A: Typescript indeed infers the types of the json object correctly; but
+ * Q: Why doesn't we just rely on typescript to infer the type of the json object automatically?
+ *    Why do we need to manually assign a type to it?
+ * A: Typescript indeed correctly infers types of most fields of the json object the types of the json object correctly; but
  *    it decides that types of certain fields in this config is string[][],
  *    whereas in BlastSettingsConfig they are typed more precisely as [string, string][].
  *    For typescript, string[][] is incompatible with [string, string][].
