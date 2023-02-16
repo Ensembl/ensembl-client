@@ -42,7 +42,8 @@
   justify-self: end;
 }
 
-.parametersColumn .matrixSetting .select label {
+.parametersColumn .matrixSetting .select label,
+.parametersColumn .gapPenalties .select label {
   grid-template-columns: 140px 110px;
 }
 

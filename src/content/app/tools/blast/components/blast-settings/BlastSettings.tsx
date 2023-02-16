@@ -412,6 +412,7 @@ const BlastGapPenalties = (props: {
       options={options as Option[]}
       label={gapPenaltiesConfig.label}
       description={gapPenaltiesConfig.description}
+      className={styles.gapPenalties}
       selectedOption={`${gapOpen},${gapExtend}`}
       onChange={onChange}
     />
@@ -422,6 +423,7 @@ type BlastSelectProps = {
   options: Option[];
   label: string;
   description?: string;
+  className?: string;
   selectedOption: string;
   onChange: (value: string) => void;
 };
@@ -435,7 +437,7 @@ const BlastSelect = (setting: BlastSelectProps) => {
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
   return (
-    <div className={styles.select}>
+    <div className={classNames(styles.select, setting.className)}>
       <label>
         <span ref={hoverRef}>{setting.label}</span>
         <SimpleSelect
