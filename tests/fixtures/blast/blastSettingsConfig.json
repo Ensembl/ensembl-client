@@ -353,11 +353,11 @@
         {
           "label": "4,-5",
           "value": "4,-5"
-        },        
+        },
         {
           "label": "5,-4",
           "value": "5,-4"
-        }        
+        }
       ]
     },
     "wordsize": {
@@ -392,164 +392,6 @@
         {
           "label": "8",
           "value": "8"
-        }
-      ]
-    },
-    "gapopen": {
-      "label": "Gap opening",
-      "description": "Penalty taken away from the score when a gap is created in a sequence. Increasing the gap opening penalty will decrease the number of gaps in the final alignment",
-      "type": "select",
-      "options": [
-        {
-          "label": "-1",
-          "value": "-1"
-        },
-        {
-          "label": "0",
-          "value": "0"
-        },
-        {
-          "label": "1",
-          "value": "1"
-        },
-        {
-          "label": "2",
-          "value": "2"
-        },
-        {
-          "label": "3",
-          "value": "3"
-        },
-        {
-          "label": "4",
-          "value": "4"
-        },
-        {
-          "label": "5",
-          "value": "5"
-        },
-        {
-          "label": "6",
-          "value": "6"
-        },
-        {
-          "label": "7",
-          "value": "7"
-        },
-        {
-          "label": "8",
-          "value": "8"
-        },
-        {
-          "label": "9",
-          "value": "9"
-        },
-        {
-          "label": "10",
-          "value": "10"
-        },
-        {
-          "label": "11",
-          "value": "11"
-        },
-        {
-          "label": "12",
-          "value": "12"
-        },
-        {
-          "label": "13",
-          "value": "13"
-        },
-        {
-          "label": "14",
-          "value": "14"
-        },
-        {
-          "label": "15",
-          "value": "15"
-        },
-        {
-          "label": "16",
-          "value": "16"
-        },
-        {
-          "label": "17",
-          "value": "17"
-        },
-        {
-          "label": "18",
-          "value": "18"
-        },
-        {
-          "label": "19",
-          "value": "19"
-        },
-        {
-          "label": "20",
-          "value": "20"
-        },
-        {
-          "label": "21",
-          "value": "21"
-        },
-        {
-          "label": "25",
-          "value": "25"
-        }
-      ]
-    },
-    "gapext": {
-      "label": "Gap extension",
-      "description": "Penalty taken away from the score for each base or residue in the gap. Increasing the gap extension penalty favours short gaps in the final alignment",
-      "type": "select",
-      "options": [
-        {
-          "label": "-1",
-          "value": "-1"
-        },
-        {
-          "label": "0",
-          "value": "0"
-        },
-        {
-          "label": "1",
-          "value": "1"
-        },
-        {
-          "label": "2",
-          "value": "2"
-        },
-        {
-          "label": "3",
-          "value": "3"
-        },
-        {
-          "label": "4",
-          "value": "4"
-        },
-        {
-          "label": "5",
-          "value": "5"
-        },
-        {
-          "label": "6",
-          "value": "6"
-        },
-        {
-          "label": "7",
-          "value": "7"
-        },        
-        {
-          "label": "8",
-          "value": "8"
-        },
-        {
-          "label": "9",
-          "value": "9"
-        },        
-        {
-          "label": "10",
-          "value": "10"
         }
       ]
     },
@@ -623,7 +465,7 @@
   ],
   "programs_parameters_override": {
     "wordsize": {
-      "blastn" : {
+      "blastn": {
         "options": [
           {
             "label": "2",
@@ -668,10 +510,12 @@
           {
             "label": "12",
             "value": "12"
-          },        {
+          },
+          {
             "label": "13",
             "value": "13"
-          },        {
+          },
+          {
             "label": "14",
             "value": "14"
           },
@@ -743,7 +587,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "11",
           "match_scores": "1,-3"
@@ -757,7 +601,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "15",
           "match_scores": "1,-3"
@@ -771,7 +615,7 @@
           "filter": "F",
           "compstats": "F",
           "exp": "1000",
-          "gapopen": "5",
+          "gapopen": "2",
           "gapext": "2",
           "wordsize": "7",
           "match_scores": "1,-3"
@@ -785,7 +629,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "2",
+          "gapopen": "3",
           "gapext": "2",
           "wordsize": "9",
           "match_scores": "1,-1"
@@ -803,7 +647,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -815,9 +659,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
+          "gapopen": "10",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM90"
         },
         "distant_homologies": {
@@ -829,9 +673,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
-          "gapext": "1",
-          "wordsize": "6",
+          "gapopen": "14",
+          "gapext": "2",
+          "wordsize": "3",
           "matrix": "BLOSUM45"
         }
       },
@@ -847,7 +691,7 @@
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "6",
+          "wordsize": "3",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -859,7 +703,7 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
+          "gapopen": "10",
           "gapext": "1",
           "wordsize": "6",
           "matrix": "BLOSUM90"
@@ -873,9 +717,9 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "11",
-          "gapext": "1",
-          "wordsize": "6",
+          "gapopen": "14",
+          "gapext": "2",
+          "wordsize": "3",
           "matrix": "BLOSUM45"
         }
       },
@@ -885,42 +729,33 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM62"
         },
         "near_match": {
           "alignments": "100",
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM90"
         },
         "distant_homologies": {
           "alignments": "100",
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM45"
         }
       },
       "tblastn": {
@@ -933,10 +768,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "gapopen": "11",
+          "gapext": "1",
+          "wordsize": "3",
+          "matrix": "BLOSUM62"
         },
         "near_match": {
           "alignments": "100",
@@ -947,10 +782,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
-          "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "gapopen": "10",
+          "gapext": "1",
+          "wordsize": "3",
+          "matrix": "BLOSUM90"
         },
         "distant_homologies": {
           "alignments": "100",
@@ -961,11 +796,309 @@
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
-          "gapopen": "2",
+          "gapopen": "14",
           "gapext": "2",
-          "wordsize": "6",
-          "match_scores": "1,-1"
+          "wordsize": "3",
+          "matrix": "BLOSUM45"
         }
+      }
+    }
+  },
+  "valid_parameters_for_program": {
+    "blastn": ["match_scores", "gapopen", "gapext", "gapalign"],
+    "tblastx": ["matrix"],
+    "blastx": ["matrix", "gapopen", "gapext", "gapalign"],
+    "tblastn": ["matrix", "gapopen", "gapext", "gapalign"],
+    "blastp": ["matrix", "gapopen", "gapext", "gapalign"]
+  },
+  "gap_penalties": {
+    "label": "Gap penalties",
+    "description": "A combination of gap openings and gap extensions are used to adjust alignment scores based on the number and length of gaps between sequences",
+    "options": {
+      "match_scores": {
+        "1,-4": [
+          ["5", "2"],
+          ["1", "2"],
+          ["0", "2"],
+          ["2", "1"],
+          ["1", "1"],
+          ["0", "0"]
+        ],
+        "2,-7": [
+          ["4", "4"],
+          ["2", "4"],
+          ["0", "4"],
+          ["4", "2"],
+          ["2", "2"],
+          ["-1", "-1"],
+          ["-1", "4"],
+          ["4", "-1"],
+          ["-1", "2"],
+          ["2", "-1"],
+          ["0", "-1"]
+        ],
+        "1,-3": [
+          ["5", "2"],
+          ["1", "2"],
+          ["0", "2"],
+          ["2", "1"],
+          ["1", "1"],
+          ["2", "2"],
+          ["0", "0"],
+          ["-1", "-1"],
+          ["5", "-1"],
+          ["-1", "2"],
+          ["1", "-1"],
+          ["0", "-1"],
+          ["2", "-1"]
+        ],
+        "2,-5": [
+          ["4", "4"],
+          ["2", "4"],
+          ["0", "4"],
+          ["4", "2"],
+          ["2", "2"],
+          ["4", "-1"],
+          ["-1", "4"],
+          ["-1", "-1"],
+          ["-1", "2"],
+          ["2", "-1"],
+          ["0", "-1"]
+        ],
+        "1,-2": [
+          ["5", "2"],
+          ["1", "2"],
+          ["0", "2"],
+          ["3", "1"],
+          ["2", "1"],
+          ["1", "1"],
+          ["2", "2"],
+          ["0", "0"],
+          ["-1", "-1"],
+          ["5", "-1"],
+          ["-1", "2"],
+          ["1", "-1"],
+          ["0", "-1"],
+          ["3", "-1"],
+          ["2", "-1"]
+        ],
+
+        "2,-3": [
+          ["5", "5"],
+          ["4", "4"],
+          ["2", "4"],
+          ["0", "4"],
+          ["3", "3"],
+          ["6", "2"],
+          ["5", "2"],
+          ["4", "2"],
+          ["2", "2"],
+          ["6", "4"],
+          ["0", "0"],
+          ["-1", "-1"],
+          ["5", "-1"],
+          ["-1", "5"],
+          ["-1", "2"]
+        ],
+
+        "1,-1": [
+          ["5", "2"],
+          ["3", "2"],
+          ["2", "2"],
+          ["1", "2"],
+          ["0", "2"],
+          ["4", "1"],
+          ["3", "1"],
+          ["2", "1"],
+          ["4", "2"],
+          ["5", "-1"],
+          ["-1", "-1"],
+          ["-1", "2"],
+          ["3", "-1"],
+          ["2", "-1"],
+          ["1", "-1"],
+          ["0", "-1"]
+        ],
+
+        "5,-4": [
+          ["25", "10"],
+          ["10", "6"],
+          ["8", "6"],
+          ["-1", "-1"],
+          ["25", "-1"],
+          ["-1", "10"]
+        ],
+
+        "4,-5": [
+          ["12", "8"],
+          ["6", "5"],
+          ["5", "5"],
+          ["4", "5"],
+          ["3", "5"],
+          ["0", "0"],
+          ["-1", "-1"],
+          ["12", "-1"],
+          ["-1", "8"]
+        ]
+      },
+      "matrix": {
+        "BLOSUM45": [
+          ["14", "2"],
+          ["13", "3"],
+          ["12", "3"],
+          ["11", "3"],
+          ["10", "3"],
+          ["16", "2"],
+          ["15", "2"],
+          ["13", "2"],
+          ["12", "2"],
+          ["19", "1"],
+          ["18", "1"],
+          ["17", "1"],
+          ["16", "1"],
+          ["-1", "-1"],
+          ["-1", "2"],
+          ["14", "-1"],
+          ["16", "-1"],
+          ["15", "-1"],
+          ["13", "-1"],
+          ["12", "-1"]
+        ],
+        "BLOSUM50": [
+          ["13", "2"],
+          ["13", "3"],
+          ["12", "3"],
+          ["11", "3"],
+          ["10", "3"],
+          ["9", "3"],
+          ["16", "2"],
+          ["15", "2"],
+          ["14", "2"],
+          ["12", "2"],
+          ["19", "1"],
+          ["18", "1"],
+          ["17", "1"],
+          ["16", "1"],
+          ["15", "1"],
+          ["-1", "-1"],
+          ["-1", "2"],
+          ["-1", "3"],
+          ["16", "-1"],
+          ["15", "-1"],
+          ["14", "-1"],
+          ["12", "-1"]
+        ],
+        "BLOSUM62": [
+          ["11", "1"],
+          ["10", "2"],
+          ["9", "2"],
+          ["8", "2"],
+          ["7", "2"],
+          ["6", "2"],
+          ["16", "2"],
+          ["15", "2"],
+          ["13", "2"],
+          ["12", "2"],
+          ["13", "1"],
+          ["12", "1"],
+          ["10", "1"],
+          ["19", "1"],
+          ["-1", "-1"],
+          ["-1", "1"],
+          ["13", "-1"],
+          ["12", "-1"],
+          ["10", "-1"],
+          ["19", "-1"]
+        ],
+        "BLOSUM80": [
+          ["10", "1"],
+          ["25", "2"],
+          ["13", "2"],
+          ["9", "2"],
+          ["2", "2"],
+          ["7", "2"],
+          ["6", "2"],
+          ["11", "1"],
+          ["9", "1"],
+          ["-1", "-1"],
+          ["-1", "1"],
+          ["10", "-1"],
+          ["11", "-1"],
+          ["9", "-1"]
+        ],
+        "BLOSUM90": [
+          ["10", "1"],
+          ["7", "2"],
+          ["6", "2"],
+          ["5", "2"],
+          ["9", "1"],
+          ["8", "1"],
+          ["-1", "-1"],
+          ["-1", "1"],
+          ["10", "-1"],
+          ["9", "-1"],
+          ["8", "-1"]
+        ],
+        "PAM30": [
+          ["9", "1"],
+          ["7", "2"],
+          ["6", "2"],
+          ["5", "2"],
+          ["10", "1"],
+          ["8", "1"],
+          ["-1", "-1"],
+          ["-1", "1"],
+          ["9", "-1"],
+          ["10", "-1"],
+          ["8", "-1"]
+        ],
+        "PAM70": [
+          ["10", "1"],
+          ["8", "2"],
+          ["7", "2"],
+          ["6", "2"],
+          ["11", "1"],
+          ["9", "1"],
+          ["-1", "-1"],
+          ["10", "-1"],
+          ["-1", "1"],
+          ["9", "-1"]
+        ],
+        "PAM250": [
+          ["14", "2"],
+          ["15", "3"],
+          ["14", "3"],
+          ["13", "3"],
+          ["12", "3"],
+          ["11", "3"],
+          ["17", "2"],
+          ["16", "2"],
+          ["15", "2"],
+          ["13", "2"],
+          ["21", "1"],
+          ["20", "1"],
+          ["19", "1"],
+          ["18", "1"],
+          ["17", "1"],
+          ["-1", "-1"],
+          ["14", "-1"],
+          ["-1", "2"],
+          ["-1", "3"],
+          ["17", "-1"],
+          ["16", "-1"],
+          ["15", "-1"],
+          ["13", "-1"]
+        ]
+      }
+    },
+    "defaults": {
+      "match_scores": {
+        "2,-3": ["5", "2"],
+        "3,-4": ["5", "2"]
+      },
+      "matrix": {
+        "BLOSUM80": ["11", "1"],
+        "PAM70": ["11", "1"]
       }
     }
   }

@@ -85,6 +85,15 @@ const BlastSettings = ({ config }: Props) => {
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
 
+  const shouldShowMatchMismatch =
+    config.valid_parameters_for_program[blastProgram].includes('match_scores');
+  const shouldShowMatrix =
+    config.valid_parameters_for_program[blastProgram].includes('matrix');
+  const shouldShowGapPenalties =
+    config.valid_parameters_for_program[blastProgram].includes('gapopen');
+  const gapAlignEnabled =
+    config.valid_parameters_for_program[blastProgram].includes('gapalign');
+
   const {
     updateBlastDatabase,
     updateBlastProgram,
@@ -115,6 +124,18 @@ const BlastSettings = ({ config }: Props) => {
 
   const onSearchSensitivityChange = (presetName: string) => {
     updateSensitivityPresets(presetName);
+  };
+
+  const onGapPenaltiesChange = (newValue: string) => {
+    const [gapOpen, gapExtend] = newValue.split(',');
+    setBlastParameter({
+      parameterName: 'gapopen' as BlastParameterName,
+      parameterValue: gapOpen
+    });
+    setBlastParameter({
+      parameterName: 'gapext' as BlastParameterName,
+      parameterValue: gapExtend
+    });
   };
 
   const onBlastParameterChange = (
@@ -253,28 +274,6 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div className={styles.parametersColumn}>
             <BlastSelect
-              options={config.parameters.gapopen.options as Option[]}
-              label={config.parameters.gapopen.label}
-              description={config.parameters.gapopen.description}
-              selectedOption={blastParameters.gapopen as string}
-              onChange={(value: string) =>
-                onBlastParameterChange('gapopen', value)
-              }
-            />
-
-            <BlastSelect
-              options={config.parameters.gapext.options as Option[]}
-              label={config.parameters.gapext.label}
-              description={config.parameters.gapext.description}
-              selectedOption={blastParameters.gapext as string}
-              onChange={(value: string) =>
-                onBlastParameterChange('gapext', value)
-              }
-            />
-          </div>
-
-          <div className={styles.parametersColumn}>
-            <BlastSelect
               options={
                 config.programs_parameters_override.wordsize[blastProgram]
                   ? config.programs_parameters_override.wordsize[blastProgram]
@@ -288,7 +287,7 @@ const BlastSettings = ({ config }: Props) => {
                 onBlastParameterChange('wordsize', value)
               }
             />
-            {databaseSequenceType === 'dna' && (
+            {shouldShowMatchMismatch && (
               <BlastSelect
                 options={config.parameters.match_scores.options as Option[]}
                 label={config.parameters.match_scores.label}
@@ -300,7 +299,7 @@ const BlastSettings = ({ config }: Props) => {
               />
             )}
             <div className={styles.matrixSetting}>
-              {databaseSequenceType === 'protein' && (
+              {shouldShowMatrix && (
                 <BlastSelect
                   options={config.parameters.matrix.options as Option[]}
                   label={config.parameters.matrix.label}
@@ -314,6 +313,17 @@ const BlastSettings = ({ config }: Props) => {
             </div>
           </div>
 
+          <div className={styles.parametersColumn}>
+            {shouldShowGapPenalties && (
+              <BlastGapPenalties
+                config={config}
+                program={blastProgram}
+                blastParameters={blastParameters}
+                onChange={onGapPenaltiesChange}
+              />
+            )}
+          </div>
+
           <div
             className={classNames(
               styles.parametersColumn,
@@ -322,7 +332,8 @@ const BlastSettings = ({ config }: Props) => {
           >
             {buildCheckbox({
               ...(config.parameters.gapalign as BlastBooleanSetting),
-              selectedOption: blastParameters.gapalign as string,
+              selectedOption: blastParameters.gapalign ?? '',
+              disabled: !gapAlignEnabled,
               onChange: (value: string) =>
                 onBlastParameterChange('gapalign', value)
             })}
@@ -362,10 +373,57 @@ const BlastSubmissionName = () => {
   );
 };
 
+const BlastGapPenalties = (props: {
+  program: BlastProgram;
+  blastParameters: ReturnType<typeof getBlastSearchParameters>;
+  config: BlastSettingsConfig;
+  onChange: (value: string) => void;
+}) => {
+  const { program, config, blastParameters, onChange } = props;
+  const {
+    gap_penalties: gapPenaltiesConfig,
+    valid_parameters_for_program: validParamsForProgram
+  } = config;
+  const {
+    matrix,
+    match_scores: matchScores,
+    gapopen: gapOpen,
+    gapext: gapExtend
+  } = blastParameters;
+
+  let gapPenaltiesOptions: [string, string][] = [];
+  const shouldUseMatrix =
+    validParamsForProgram[
+      program as keyof BlastSettingsConfig['valid_parameters_for_program']
+    ].includes('matrix');
+
+  if (shouldUseMatrix && matrix) {
+    gapPenaltiesOptions = gapPenaltiesConfig.options.matrix[matrix];
+  } else if (matchScores) {
+    gapPenaltiesOptions = gapPenaltiesConfig.options.match_scores[matchScores];
+  }
+
+  const options = gapPenaltiesOptions.map(([gapOpen, gapExtend]) => ({
+    label: `${gapOpen}, ${gapExtend}`,
+    value: `${gapOpen},${gapExtend}`
+  }));
+  return (
+    <BlastSelect
+      options={options as Option[]}
+      label={gapPenaltiesConfig.label}
+      description={gapPenaltiesConfig.description}
+      className={styles.gapPenalties}
+      selectedOption={`${gapOpen},${gapExtend}`}
+      onChange={onChange}
+    />
+  );
+};
+
 type BlastSelectProps = {
   options: Option[];
   label: string;
   description?: string;
+  className?: string;
   selectedOption: string;
   onChange: (value: string) => void;
 };
@@ -379,7 +437,7 @@ const BlastSelect = (setting: BlastSelectProps) => {
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
   return (
-    <div className={styles.select}>
+    <div className={classNames(styles.select, setting.className)}>
       <label>
         <span ref={hoverRef}>{setting.label}</span>
         <SimpleSelect
@@ -404,9 +462,10 @@ const buildCheckbox = (params: {
     false: string;
   };
   selectedOption: string;
+  disabled?: boolean;
   onChange: (value: string) => void;
 }) => {
-  const { label, options, selectedOption, onChange } = params;
+  const { label, options, selectedOption, disabled = false, onChange } = params;
   const isSelected = options.true === selectedOption;
 
   const onCheckboxChange = (isChecked: boolean) => {
@@ -414,7 +473,12 @@ const buildCheckbox = (params: {
   };
 
   return (
-    <Checkbox label={label} checked={isSelected} onChange={onCheckboxChange} />
+    <Checkbox
+      label={label}
+      checked={isSelected}
+      onChange={onCheckboxChange}
+      disabled={disabled}
+    />
   );
 };
 
