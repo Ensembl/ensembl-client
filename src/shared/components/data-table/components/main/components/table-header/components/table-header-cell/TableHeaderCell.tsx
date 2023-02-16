@@ -21,7 +21,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import {
   type IndividualColumn,
-  SortingDirection
+  SortingOrder
 } from 'src/shared/components/data-table/dataTableTypes';
 
 import SortIcon from 'static/icons/icon_arrow.svg';
@@ -32,29 +32,26 @@ const TableHeaderCell = (props: IndividualColumn) => {
   const { title, helpText, isSortable, columnId, width, headerCellClassName } =
     props;
 
-  const { dispatch, sortedColumn } = useContext(TableContext) || {};
+  const { dispatch, sortingOptions } = useContext(TableContext) || {};
 
-  const { columnId: sortedColumnId, sortedDirection } = sortedColumn || {};
+  const { columnId: sortedColumnId, sortingOrder } = sortingOptions || {};
 
   if (!dispatch) {
     return null;
   }
 
-  let currentColumnSortingDirection = SortingDirection.NONE;
-  if (columnId === sortedColumnId && sortedDirection === SortingDirection.ASC) {
-    currentColumnSortingDirection = SortingDirection.ASC;
+  let currentColumnSortingDirection = SortingOrder.NONE;
+  if (columnId === sortedColumnId && sortingOrder === SortingOrder.ASC) {
+    currentColumnSortingDirection = SortingOrder.ASC;
   }
 
   const onSort = () => {
-    let directionToSet = SortingDirection.NONE;
-    if (
-      columnId !== sortedColumnId ||
-      sortedDirection === SortingDirection.NONE
-    ) {
-      directionToSet = SortingDirection.DESC;
-    } else if (sortedDirection === SortingDirection.DESC) {
-      directionToSet = SortingDirection.ASC;
-    } else if (sortedDirection === SortingDirection.ASC) {
+    let directionToSet = SortingOrder.NONE;
+    if (columnId !== sortedColumnId || sortingOrder === SortingOrder.NONE) {
+      directionToSet = SortingOrder.DESC;
+    } else if (sortingOrder === SortingOrder.DESC) {
+      directionToSet = SortingOrder.ASC;
+    } else if (sortingOrder === SortingOrder.ASC) {
       dispatch({
         type: 'clear_sorted_column'
       });
@@ -65,14 +62,14 @@ const TableHeaderCell = (props: IndividualColumn) => {
       type: 'set_sorted_column',
       payload: {
         columnId,
-        sortedDirection: directionToSet
+        sortingOrder: directionToSet
       }
     });
   };
 
   const sortArrowClassNames = classNames(styles.sortArrow, {
     [styles.sortArrowActive]: columnId === sortedColumnId,
-    [styles.sortArrowUp]: currentColumnSortingDirection === SortingDirection.ASC
+    [styles.sortArrowUp]: currentColumnSortingDirection === SortingOrder.ASC
   });
 
   const headerCellClassNames = classNames(styles.headerCell, {

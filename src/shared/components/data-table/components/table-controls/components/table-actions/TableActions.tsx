@@ -70,7 +70,7 @@ const TableActions = () => {
     disabledActions,
     rowsPerPage,
     currentPageNumber,
-    sortedColumn,
+    sortingOptions,
     searchText,
     selectedRowIds,
     hiddenRowIds,
@@ -88,7 +88,7 @@ const TableActions = () => {
     setRestorableTableState({
       currentPageNumber,
       rowsPerPage,
-      sortedColumn,
+      sortingOptions,
       searchText,
       selectedRowIds,
       hiddenRowIds,

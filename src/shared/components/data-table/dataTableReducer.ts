@@ -23,7 +23,7 @@ export const defaultDataTableState: DataTableState = {
   searchText: '',
   isSelectable: true,
   selectedAction: TableAction.DEFAULT,
-  sortedColumn: null,
+  sortingOptions: null,
   fixedHeader: false,
   selectedRowIds: new Set(),
   hiddenRowIds: new Set(),
@@ -70,9 +70,9 @@ export const tableReducer = (
     case 'set_selected_action':
       return { ...state, selectedAction: action.payload };
     case 'set_sorted_column':
-      return { ...state, sortedColumn: action.payload };
+      return { ...state, sortingOptions: action.payload };
     case 'clear_sorted_column':
-      return { ...state, sortedColumn: null };
+      return { ...state, sortingOptions: null };
     case 'restore_defaults':
       return {
         ...state,

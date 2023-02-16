@@ -58,7 +58,7 @@ import {
   type TableCellRendererParams,
   type TableRowsSortingFunction,
   type TableCellStructuredData,
-  SortingDirection,
+  SortingOrder,
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
@@ -86,7 +86,7 @@ const sortByGenomicLocation: TableRowsSortingFunction = (
   const iteratee = (data: TableRow) =>
     getStructuredContentFromCellInRow<{ hit: BlastHit }>(data, columnIndex).hit
       .hit_acc;
-  const orderDirection = direction === SortingDirection.DESC ? 'desc' : 'asc';
+  const orderDirection = direction === SortingOrder.DESC ? 'desc' : 'asc';
   return orderBy(rows, [iteratee], [orderDirection]);
 };
 
@@ -333,9 +333,13 @@ const HitsTable = (props: HitsTableProps) => {
 
   const [tableState, setTableState] = useState<Partial<DataTableState>>({
     rowsPerPage: 100,
-    sortedColumn: {
+    sortingOptions: {
       columnId: 'e_value',
-      sortedDirection: SortingDirection.ASC
+      sortingOrder: SortingOrder.ASC
+    },
+    defaultSortingOptionsForDownload: {
+      columnId: 'e_value',
+      sortingOrder: SortingOrder.ASC
     }
   });
 
