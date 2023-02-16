@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, LazyExoticComponent } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -28,10 +28,7 @@ import {
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
-const speciesSidebarModals: Record<
-  string,
-  LazyExoticComponent<() => JSX.Element | null>
-> = {
+const speciesSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   [SpeciesSidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/SpeciesSidebarSearch')
   )

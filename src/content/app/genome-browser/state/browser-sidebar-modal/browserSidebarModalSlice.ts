@@ -30,8 +30,7 @@ export enum BrowserSidebarModalView {
   BOOKMARKS = 'Previously viewed',
   SHARE = 'Share',
   DOWNLOADS = 'Downloads',
-  NAVIGATE_REGION = 'Navigate region',
-  NAVIGATE_LOCATION = 'Navigate location'
+  NAVIGATE = 'Navigate'
 }
 
 export type BrowserSidebarModalStateForGenome = Readonly<{

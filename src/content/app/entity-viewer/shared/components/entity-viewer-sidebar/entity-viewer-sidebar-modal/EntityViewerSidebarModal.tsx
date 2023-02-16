@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, LazyExoticComponent } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -27,7 +27,7 @@ import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModa
 
 const entityViewerSidebarModals: Record<
   SidebarModalView,
-  LazyExoticComponent<() => JSX.Element | null>
+  ReturnType<typeof lazy>
 > = {
   [SidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/EntityViewerSearch')

@@ -83,33 +83,10 @@ const BrowserSidebarToolstrip = () => {
     }
   };
 
-  const toggleNavigateModalView = () => {
-    if (
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
-    ) {
-      toggleModalView(browserSidebarModalView);
-    } else {
-      toggleModalView(BrowserSidebarModalView.NAVIGATE_REGION);
-    }
-  };
-
   const getViewIconStatus = (view: BrowserSidebarModalView) => {
     return view === browserSidebarModalView && isTrackPanelOpened
       ? Status.SELECTED
       : Status.UNSELECTED;
-  };
-
-  const getNavigateIconStatus = () => {
-    if (
-      isTrackPanelOpened &&
-      (browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
-        browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION)
-    ) {
-      return Status.SELECTED;
-    }
-
-    return Status.UNSELECTED;
   };
 
   return (
@@ -147,9 +124,9 @@ const BrowserSidebarToolstrip = () => {
           layoutStyles.sidebarIcon,
           layoutStyles.navigateIcon
         )}
-        status={getNavigateIconStatus()}
+        status={getViewIconStatus(BrowserSidebarModalView.NAVIGATE)}
         description="Navigate browser image"
-        onClick={toggleNavigateModalView}
+        onClick={() => toggleModalView(BrowserSidebarModalView.NAVIGATE)}
         image={NavigateIcon}
       />
     </>

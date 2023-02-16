@@ -157,7 +157,7 @@ describe('<TrackPanelList />', () => {
 
       state = store.getState();
       expect(getBrowserSidebarModalView(state)).toBe(
-        BrowserSidebarModalView.NAVIGATE_REGION
+        BrowserSidebarModalView.NAVIGATE
       );
     });
   });

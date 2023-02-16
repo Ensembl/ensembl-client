@@ -24,12 +24,10 @@ import { rest } from 'msw';
 import times from 'lodash/times';
 
 import * as browserHelperMethods from 'src/content/app/genome-browser/helpers/browserHelper';
-import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 
 import createRootReducer from 'src/root/rootReducer';
-import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-import NavigateLocationModal from '../NavigateLocationModal';
+import NavigateLocationModal from '../LocationNavigation';
 
 import {
   getMockServer,
@@ -128,27 +126,9 @@ const RouteTester = () => {
   );
 };
 
-describe('NavigateLocationModal', () => {
+describe('<LocationNavigation />', () => {
   afterEach(() => {
     jest.resetAllMocks();
-  });
-
-  it('has a switch to NavigateRegionModal', async () => {
-    const { getByText, store } = renderComponent();
-    const switchElement = getByText('Navigate this region');
-
-    let reduxState = store.getState();
-    let modalView = getBrowserSidebarModalView(reduxState);
-
-    // initial redux state; the value doesn't really matter; what matters is that it will be updated
-    expect(modalView).toBe(null);
-
-    await userEvent.click(switchElement);
-
-    reduxState = store.getState();
-    modalView = getBrowserSidebarModalView(reduxState);
-
-    expect(modalView).toBe(BrowserSidebarModalView.NAVIGATE_REGION);
   });
 
   describe('segmented input', () => {

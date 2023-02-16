@@ -26,11 +26,10 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import BrowserNavButton from 'src/content/app/genome-browser/components/browser-nav-button/BrowserNavButton';
-import BrowserReset from 'src/content/app/genome-browser/components/browser-reset/BrowserReset';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import styles from './GenomeBrowserNavigationButtons.scss';
+import styles from './NavigationButtons.scss';
 
 type BrowserLocation = {
   regionLength: number;
@@ -45,7 +44,7 @@ type BrowserLocation = {
  * - zoom in / zoom out buttons zoom in or out by 30% of the visible sequence length
  */
 
-const GenomeBrowserNavigationButtons = () => {
+const NavigationButtons = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const browserLocation = useAppSelector(getActualChrLocation) as ChrLocation;
   const { changeBrowserLocation } = useGenomeBrowser();
@@ -188,9 +187,8 @@ const GenomeBrowserNavigationButtons = () => {
         className={styles.zoomInButton}
         onClick={zoomIn}
       />
-      <BrowserReset className={styles.browserReset} />
     </div>
   );
 };
 
-export default GenomeBrowserNavigationButtons;
+export default NavigationButtons;

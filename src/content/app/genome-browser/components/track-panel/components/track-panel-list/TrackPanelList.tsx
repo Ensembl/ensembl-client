@@ -64,7 +64,7 @@ export const TrackPanelList = () => {
   };
 
   const openNavigateModal = () => {
-    dispatch(openBrowserSidebarModal(BrowserSidebarModalView.NAVIGATE_REGION));
+    dispatch(openBrowserSidebarModal(BrowserSidebarModalView.NAVIGATE));
   };
 
   const currentTrackCategories = genomeTrackCategories?.filter(

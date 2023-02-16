@@ -18,7 +18,7 @@ import React, { FormEvent, KeyboardEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -36,22 +36,16 @@ import SimpleSelect, {
   type SimpleSelectMethods
 } from 'src/shared/components/simple-select/SimpleSelect';
 
-import {
-  BrowserSidebarModalView,
-  updateBrowserSidebarModalForGenome
-} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
-
 import styles from './NavigateModal.scss';
 
 const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this species.';
 
-const NavigateLocationModal = () => {
+const LocationNavigation = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const { genomeIdForUrl } = useGenomeBrowserIds();
   const selectRef = useRef<SimpleSelectMethods | null>(null);
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const { data: genomeKaryotype = [] } = useGenomeKaryotypeQuery(
@@ -73,7 +67,7 @@ const NavigateLocationModal = () => {
     !(regionNameInput && locationStartInput && locationEndInput) &&
     !locationInput;
 
-  const onsegmentedInputFocus = () => {
+  const onSegmentedInputFocus = () => {
     setsegmentedInputActive(true);
     setSingleInputActive(false);
   };
@@ -190,117 +184,102 @@ const NavigateLocationModal = () => {
     );
   };
 
-  const switchToNavigateRegion = () => {
-    if (!activeGenomeId) {
-      return;
-    }
-
-    dispatch(
-      updateBrowserSidebarModalForGenome({
-        activeGenomeId,
-        data: {
-          browserSidebarModalView: BrowserSidebarModalView.NAVIGATE_REGION
-        }
-      })
-    );
-  };
-
   const segmentedInputClasses = classNames(styles.segmentedInput, {
     [styles.segmentedInputDisabled]: singleInputActive
   });
 
   return (
     <section className={styles.navigateModal}>
-      <p>
-        <span className={styles.clickableText} onClick={switchToNavigateRegion}>
-          Navigate this region
-        </span>
-      </p>
-      <p>Go to new location</p>
-      <div className={segmentedInputClasses}>
-        <div className={styles.inputField}>
-          <label>
-            <span>Chr</span>
-            <SimpleSelect
-              onChange={updateRegionNameInput}
-              onKeyUp={handleKeyPress}
-              options={getKaryotypeOptions()}
-              disabled={singleInputActive}
-              className={styles.rangeNameSelect}
-              placeholder="Select"
-              ref={selectRef}
-            />
-          </label>
-        </div>
-        <div className={styles.inputField}>
-          <label>
-            <span>Start</span>
-            <Input
-              type="text"
-              onFocus={onsegmentedInputFocus}
-              onChange={onLocationStartChange}
-              onKeyUp={handleKeyPress}
-              disabled={singleInputActive}
-              value={locationStartInput}
-              placeholder="Add co-ordinate"
-            />
-          </label>
-        </div>
-        <div className={styles.inputField}>
-          <label>
-            <span>End</span>
-            <Input
-              type="text"
-              onFocus={onsegmentedInputFocus}
-              onChange={onLocationEndChange}
-              onKeyUp={handleKeyPress}
-              disabled={singleInputActive}
-              value={locationEndInput}
-              placeholder="Add co-ordinate"
-            />
-          </label>
-        </div>
-        {segmentedInputActive && shouldShowErrorMessage && (
-          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
-        )}
+      <div className={styles.helpText}>
+        View a different location in this species by choosing a new chromosome
+        or region
       </div>
-      <div className={styles.singleInput}>
-        <div className={styles.inputField}>
-          <label>
-            <span>Go to</span>
-            <Input
-              type="text"
-              onFocus={onSingleInputFocus}
-              onChange={onLocationInputChange}
-              onKeyUp={handleKeyPress}
-              disabled={segmentedInputActive}
-              value={locationInput}
-              placeholder="Add location co-ordinates..."
-            />
-          </label>
+      <div className={styles.navigateSection}>
+        <div className={segmentedInputClasses}>
+          <div className={styles.inputField}>
+            <label>
+              <span>Chr</span>
+              <SimpleSelect
+                onChange={updateRegionNameInput}
+                onKeyUp={handleKeyPress}
+                options={getKaryotypeOptions()}
+                disabled={singleInputActive}
+                className={styles.rangeNameSelect}
+                placeholder="Select"
+                ref={selectRef}
+              />
+            </label>
+          </div>
+          <div className={styles.inputField}>
+            <label>
+              <span>Start</span>
+              <Input
+                type="text"
+                onFocus={onSegmentedInputFocus}
+                onChange={onLocationStartChange}
+                onKeyUp={handleKeyPress}
+                disabled={singleInputActive}
+                value={locationStartInput}
+                placeholder="Add co-ordinate"
+              />
+            </label>
+          </div>
+          <div className={styles.inputField}>
+            <label>
+              <span>End</span>
+              <Input
+                type="text"
+                onFocus={onSegmentedInputFocus}
+                onChange={onLocationEndChange}
+                onKeyUp={handleKeyPress}
+                disabled={singleInputActive}
+                value={locationEndInput}
+                placeholder="Add co-ordinate"
+              />
+            </label>
+          </div>
+          {segmentedInputActive && shouldShowErrorMessage && (
+            <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+          )}
         </div>
-        {singleInputActive && shouldShowErrorMessage && (
-          <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
-        )}
-      </div>
-      <div className={styles.formButtons}>
-        {(segmentedInputActive || singleInputActive) && (
-          <span
-            className={classNames(styles.cancel, styles.clickableText)}
-            onClick={resetForm}
+        <div className={styles.singleInput}>
+          <div className={styles.inputField}>
+            <label>
+              <span>Go to</span>
+              <Input
+                type="text"
+                onFocus={onSingleInputFocus}
+                onChange={onLocationInputChange}
+                onKeyUp={handleKeyPress}
+                disabled={segmentedInputActive}
+                value={locationInput}
+                placeholder="Add location co-ordinates..."
+              />
+            </label>
+          </div>
+          {singleInputActive && shouldShowErrorMessage && (
+            <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
+          )}
+        </div>
+        <div className={styles.formButtons}>
+          {(segmentedInputActive || singleInputActive) && (
+            <span
+              className={classNames(styles.cancel, styles.clickableText)}
+              onClick={resetForm}
+            >
+              Cancel
+            </span>
+          )}
+          <PrimaryButton
+            onClick={handleSubmit}
+            isDisabled={shouldDisableSubmission}
           >
-            Cancel
-          </span>
-        )}
-        <PrimaryButton
-          onClick={handleSubmit}
-          isDisabled={shouldDisableSubmission}
-        >
-          Go
-        </PrimaryButton>
+            Go
+          </PrimaryButton>
+        </div>
       </div>
     </section>
   );
 };
 
-export default NavigateLocationModal;
+export default LocationNavigation;

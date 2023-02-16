@@ -1,7 +1,33 @@
 @import 'src/styles/common';
 
-.navigateModal {
-  width: 272px;
+.navigateAccordion {
+  border: none;
+  
+}
+.expandableSection + .expandableSection {
+  border-top: none;
+}
+
+.helpText {
+  font-weight: $light;
+  background-color: $white;
+  padding: 0 14px 14px 14px;
+}
+.navigateAccordionItem {
+  border: 1px solid $medium-light-grey;
+}
+.navigateAccordionItem + .navigateAccordionItem {
+  border-top: none;
+}
+
+.navigateAccordionItemButton {
+  padding: 14px;
+  color: $blue;
+}
+
+.navigateSection {
+  background-color: $light-grey;
+  padding: 14px;
 }
 
 .inputField {
@@ -47,7 +73,7 @@
   margin-top: 30px;
 
   input {
-    width: 230px;
+    width: 216px;
   }
 }
 

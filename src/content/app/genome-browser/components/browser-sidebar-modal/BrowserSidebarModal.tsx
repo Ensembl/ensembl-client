@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, type LazyExoticComponent } from 'react';
+import React, { lazy, Suspense } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -27,10 +27,7 @@ import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerS
 
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
-const browserSidebarModals: Record<
-  string,
-  LazyExoticComponent<() => JSX.Element | null>
-> = {
+const browserSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   [BrowserSidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/SearchModal')
   ),
@@ -43,11 +40,8 @@ const browserSidebarModals: Record<
   [BrowserSidebarModalView.DOWNLOADS]: lazy(
     () => import('./modal-views/DownloadsModal')
   ),
-  [BrowserSidebarModalView.NAVIGATE_REGION]: lazy(
-    () => import('./modal-views/navigate-modal/NavigateRegionModal')
-  ),
-  [BrowserSidebarModalView.NAVIGATE_LOCATION]: lazy(
-    () => import('./modal-views/navigate-modal/NavigateLocationModal')
+  [BrowserSidebarModalView.NAVIGATE]: lazy(
+    () => import('./modal-views/NavigateModal')
   )
 };
 
@@ -56,8 +50,7 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
   [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
-  [BrowserSidebarModalView.NAVIGATE_REGION]: 'Change location',
-  [BrowserSidebarModalView.NAVIGATE_LOCATION]: 'Change location'
+  [BrowserSidebarModalView.NAVIGATE]: 'Change location'
 };
 
 export const BrowserSidebarModal = () => {
@@ -71,17 +64,6 @@ export const BrowserSidebarModal = () => {
   const ModalView = browserSidebarModals[browserSidebarModalView];
   const modalViewTitle = browserSidebarModalTitles[browserSidebarModalView];
 
-  const getTheme = () => {
-    if (
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_REGION ||
-      browserSidebarModalView === BrowserSidebarModalView.NAVIGATE_LOCATION
-    ) {
-      return 'dark';
-    }
-
-    return 'light';
-  };
-
   const onClose = () => {
     dispatch(closeDrawer());
     dispatch(closeBrowserSidebarModal());
@@ -89,7 +71,7 @@ export const BrowserSidebarModal = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SidebarModal title={modalViewTitle} onClose={onClose} theme={getTheme()}>
+      <SidebarModal title={modalViewTitle} onClose={onClose}>
         {<ModalView />}
       </SidebarModal>
     </Suspense>
