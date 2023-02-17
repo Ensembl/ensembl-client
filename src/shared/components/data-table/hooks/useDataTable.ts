@@ -15,14 +15,12 @@
  */
 
 import { useContext, useEffect, useState } from 'react';
-import orderBy from 'lodash/orderBy';
+
+import { sortDataTableRows } from '../helpers/sortDataTableRows';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
-import {
-  SortingDirection,
-  type TableRowsSortingFunction
-} from '../dataTableTypes';
+import { SortingOrder } from '../dataTableTypes';
 
 const useDataTable = () => {
   const dataTableContext = useContext(TableContext);
@@ -37,7 +35,7 @@ const useDataTable = () => {
     rowsPerPage,
     columns,
     hiddenRowIds,
-    sortedColumn,
+    sortingOptions,
     dispatch,
     searchText
   } = dataTableContext;
@@ -76,21 +74,12 @@ const useDataTable = () => {
     const rowIndexLowerBound = (currentPageNumber - 1) * rowsPerPage;
     const rowIndexUpperBound = rowIndexLowerBound + rowsPerPage;
 
-    if (
-      sortedColumn &&
-      sortedColumn.sortedDirection !== SortingDirection.NONE
-    ) {
-      const sortedColumnIndex = columns.findIndex(
-        (column) => column.columnId === sortedColumn.columnId
-      );
-
-      const sortFunction = columns[sortedColumnIndex].sortFn ?? plainSorter;
-
-      rows = sortFunction(
+    if (sortingOptions && sortingOptions.sortingOrder !== SortingOrder.NONE) {
+      rows = sortDataTableRows({
         rows,
-        sortedColumnIndex,
-        sortedColumn.sortedDirection
-      );
+        columns,
+        sortingOptions
+      });
     }
 
     return totalRows > rowsPerPage
@@ -117,18 +106,6 @@ const useDataTable = () => {
     filteredRows,
     ...dataTableContext
   };
-};
-
-// useful for sorting strings and numbers in ascending or descending order
-const plainSorter: TableRowsSortingFunction = (
-  tableRows,
-  columnIndex,
-  direction
-) => {
-  const iteratee = (data: any) => data.cells[columnIndex] as string | number;
-  // translate our magic words to Lodash's magic words
-  const orderDirection = direction === SortingDirection.DESC ? 'desc' : 'asc';
-  return orderBy(tableRows, [iteratee], [orderDirection]);
 };
 
 export default useDataTable;

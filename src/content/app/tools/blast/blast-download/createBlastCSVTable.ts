@@ -66,6 +66,8 @@ export const createCSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
     }
   }
 
+  sortTableRows(rows);
+
   return formatCSV(rows);
 };
 
@@ -114,6 +116,8 @@ export const createCSVForTranscriptBlast = (blastJobResult: BlastJobResult) => {
       rows.push(newRow);
     }
   }
+
+  sortTableRows(rows);
 
   return formatCSV(rows);
 };
@@ -164,6 +168,8 @@ export const createCSVForProteinBlast = (blastJobResult: BlastJobResult) => {
     }
   }
 
+  sortTableRows(rows);
+
   return formatCSV(rows);
 };
 
@@ -185,4 +191,18 @@ const getCommonFields = ({
 
 const formatCSV = (table: (string | number)[][]) => {
   return table.map((row) => row.join(',')).join('\n');
+};
+
+// by default, downloaded tables of BLAST results should be sorted according to the e-value
+const sortTableRows = (rows: Array<string | number>[]) => {
+  rows.sort((row1, row2) => {
+    const [evalue1] = row1;
+    const [evalue2] = row2;
+
+    if (typeof evalue1 === 'string' || typeof evalue2 === 'string') {
+      return 0;
+    } else {
+      return evalue1 - evalue2;
+    }
+  });
 };

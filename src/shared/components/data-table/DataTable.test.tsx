@@ -29,7 +29,7 @@ import {
   type TableData,
   type TableCellStructuredData,
   type DataTableColumns,
-  SortingDirection
+  SortingOrder
 } from './dataTableTypes';
 
 export const createDataTableSampleData = (
@@ -191,7 +191,7 @@ describe('<DataTable />', () => {
           const data = cellData.data as { text: string };
           return <span className="part1">{data.text}</span>;
         },
-        sortFn: (rows, columnIndex, direction) => {
+        sortFn: (rows, columnIndex, order) => {
           return [...rows].sort((rowA, rowB) => {
             const { rank: rank1 } = getStructuredContentFromCellInRow<{
               rank: number;
@@ -199,9 +199,7 @@ describe('<DataTable />', () => {
             const { rank: rank2 } = getStructuredContentFromCellInRow<{
               rank: number;
             }>(rowB, columnIndex);
-            return direction === SortingDirection.ASC
-              ? rank1 - rank2
-              : rank2 - rank1;
+            return order === SortingOrder.ASC ? rank1 - rank2 : rank2 - rank1;
           });
         }
       }

@@ -16,15 +16,15 @@
 
 import type { ReactNode } from 'react';
 
-export enum SortingDirection {
+export enum SortingOrder {
   ASC = 'ascending',
   DESC = 'descending',
   NONE = 'none'
 }
 
-export type SortedColumn = {
+export type SortingOptions = {
   columnId: string;
-  sortedDirection: SortingDirection;
+  sortingOrder: SortingOrder;
 };
 
 export enum TableAction {
@@ -62,7 +62,7 @@ export type TableCellRendererParams = {
 export type TableRowsSortingFunction = (
   rows: TableRows,
   columnIndex: number,
-  direction?: SortingDirection
+  order?: SortingOrder
 ) => TableRows;
 
 export type IndividualColumn = {
@@ -96,7 +96,8 @@ export type DataTableState = {
   searchText: string;
   isSelectable: boolean;
   selectedAction: TableAction;
-  sortedColumn: SortedColumn | null;
+  sortingOptions: SortingOptions | null;
+  defaultSortingOptionsForDownload?: SortingOptions | null;
   fixedHeader: boolean;
   selectedRowIds: TableSelectedRowIds;
   hiddenRowIds: TableSelectedRowIds;
@@ -122,7 +123,7 @@ type SetSelectedActionAction = {
 };
 type SetSortedColumnAction = {
   type: 'set_sorted_column';
-  payload: SortedColumn;
+  payload: SortingOptions;
 };
 
 type ClearSortedColumnAction = {

@@ -17,6 +17,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
+import { sortDataTableRows } from 'src/shared/components/data-table/helpers/sortDataTableRows';
 
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
@@ -31,6 +32,7 @@ const DownloadData = () => {
     rows,
     downloadFileName,
     columns,
+    defaultSortingOptionsForDownload,
     selectedAction,
     hiddenRowIds,
     downloadHandler
@@ -88,7 +90,15 @@ const DownloadData = () => {
         ? rows
         : rows.filter((row) => !hiddenRowIds.has(row.rowId));
 
-    rowsToDownload.forEach((row, rowIndex) => {
+    const sortedRowsToDownload = defaultSortingOptionsForDownload
+      ? sortDataTableRows({
+          rows: rowsToDownload,
+          columns,
+          sortingOptions: defaultSortingOptionsForDownload
+        })
+      : rowsToDownload;
+
+    sortedRowsToDownload.forEach((row, rowIndex) => {
       dataForExport[rowIndex + 1] = [];
       row.cells.forEach((cell, cellIndex) => {
         const { downloadRenderer, isExportable } = columns[cellIndex];
