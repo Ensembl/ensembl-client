@@ -336,10 +336,6 @@ const HitsTable = (props: HitsTableProps) => {
     sortingOptions: {
       columnId: 'e_value',
       sortingOrder: SortingOrder.ASC
-    },
-    defaultSortingOptionsForDownload: {
-      columnId: 'e_value',
-      sortingOrder: SortingOrder.ASC
     }
   });
 
