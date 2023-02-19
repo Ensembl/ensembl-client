@@ -103,10 +103,10 @@ const prepareTrackIdsList = (
     .map(({ track_id }) => {
       const track = trackSettings[track_id];
       const isVisibleTrack =
-        'isVisible' in track?.settings && track.settings.isVisible;
+        (track?.settings as { isVisible?: boolean })?.isVisible ?? true;
       return {
         trackId: track_id,
-        isTurnedOn: isVisibleTrack ?? true
+        isTurnedOn: isVisibleTrack
       };
     });
   return trackIdsList;
