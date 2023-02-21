@@ -47,9 +47,9 @@ const ListedBlastSubmission = (props: Props) => {
   const sequences = submission.submittedData.sequences;
   const allJobs = getBlastJobsFromSubmission(submission);
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
-  const { expandedSubmissionIds } = uiState.unviewedJobsPage;
+  const { collapsedSubmissionIds } = uiState.unviewedJobsPage;
 
-  const isCurrentSubmissionExpanded = expandedSubmissionIds.includes(
+  const isCurrentSubmissionCollapsed = collapsedSubmissionIds.includes(
     submission.id
   );
 
@@ -62,7 +62,7 @@ const ListedBlastSubmission = (props: Props) => {
   });
 
   let sequenceContent = null;
-  if (isCurrentSubmissionExpanded || sequences.length === 1) {
+  if (!isCurrentSubmissionCollapsed || sequences.length === 1) {
     sequenceContent = jobsGroupedBySequence.map(({ sequence, jobs }) => (
       <SequenceBox
         key={sequence.id}
@@ -75,16 +75,16 @@ const ListedBlastSubmission = (props: Props) => {
     sequenceContent = <CollapsedSequencesBox submission={submission} />;
   }
 
-  const toggleExpanded = (status: boolean) => {
-    const newExpandedSubmissionIds = status
-      ? [...expandedSubmissionIds, submission.id]
-      : expandedSubmissionIds.filter((id) => id !== submission.id);
+  const toggleCollapsed = (status: boolean) => {
+    const newCollapsedSubmissionIds = status
+      ? [...collapsedSubmissionIds, submission.id]
+      : collapsedSubmissionIds.filter((id) => id !== submission.id);
 
     dispatch(
       updateSubmissionUi({
         fragment: {
           unviewedJobsPage: {
-            expandedSubmissionIds: newExpandedSubmissionIds
+            collapsedSubmissionIds: newCollapsedSubmissionIds
           }
         }
       })
@@ -96,8 +96,8 @@ const ListedBlastSubmission = (props: Props) => {
       <BlastSubmissionHeader
         {...props}
         isAnyJobRunning={isAnyJobRunning}
-        toggleExpanded={toggleExpanded}
-        isExpanded={isCurrentSubmissionExpanded}
+        toggleCollapsed={toggleCollapsed}
+        isCollapsed={isCurrentSubmissionCollapsed}
         sequenceCount={sequences.length}
       />
       {sequenceContent}

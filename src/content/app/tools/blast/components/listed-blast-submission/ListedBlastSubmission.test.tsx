@@ -118,7 +118,7 @@ describe('BlastSubmissionHeader', () => {
         state: {
           ui: {
             unviewedJobsPage: {
-              expandedSubmissionIds: [submission.id]
+              collapsedSubmissionIds: [submission.id]
             }
           } as BlastResultsUI
         }
