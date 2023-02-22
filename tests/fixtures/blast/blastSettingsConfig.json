@@ -14,7 +14,7 @@
           "value": "dna"
         },
         {
-          "label": "cDNAs (transcripts/splice variants)",
+          "label": "Transcripts",
           "value": "cdna"
         },
         {
