@@ -234,6 +234,19 @@ const useGenomeBrowser = () => {
     }
   };
 
+  const toggleFocusVariantTrackSetting = (params: {
+    settingName: string;
+    isOn: boolean;
+  }) => {
+    genomeBrowser?.send({
+      type: OutgoingActionType.TOGGLE_FOCUS_VARIANT_TRACK_SETTING,
+      payload: {
+        setting_name: params.settingName,
+        is_on: params.isOn
+      }
+    });
+  };
+
   const updateFocusGeneTranscripts = (
     visibleTranscriptIds: string[] | null
   ) => {
@@ -259,6 +272,7 @@ const useGenomeBrowser = () => {
     toggleFeatureLabels,
     toggleSeveralTranscripts,
     toggleTranscriptIds,
+    toggleFocusVariantTrackSetting,
     genomeBrowser,
     zmenus
   };
