@@ -60,8 +60,8 @@ export const BrowserCogList = () => {
   const updateDisplayedTracks = (trackSummaryList: TrackSummaryList) => {
     const payload = trackSummaryList.map((track) => ({
       id: getTrackId(track),
-      height: track.height as unknown as number, // FIXME: fix genome browser types
-      offsetTop: track.offset as unknown as number // FIXME: fix genome browser types
+      height: track.height,
+      offsetTop: track.offset
     }));
 
     dispatch(setDisplayedTracks(payload));
