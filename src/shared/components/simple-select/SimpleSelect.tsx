@@ -26,6 +26,7 @@ import classNames from 'classnames';
 import pickBy from 'lodash/pickBy';
 
 import styles from './SimpleSelect.scss';
+import { noop } from 'lodash';
 
 type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 
@@ -40,6 +41,7 @@ type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 export type Option = {
   value: string;
   label: string;
+  isSelected?: boolean;
 };
 
 export type OptionGroup = {
@@ -74,7 +76,7 @@ const SimpleSelect = (
   props: SimpleSelectProps,
   ref: ForwardedRef<{ clear: () => void }>
 ) => {
-  const { className, placeholder, ...otherProps } = props;
+  const { className, placeholder, value, ...otherProps } = props;
   const selectRef = useRef<HTMLSelectElement | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -100,19 +102,44 @@ const SimpleSelect = (
 
   let selectChildren: ReactNode;
 
+  const getSelectValue = () => {
+    // no point going through all these options if value is already available
+    if (value) {
+      return value;
+    }
+
+    let selectValue = placeholder ? '' : undefined;
+
+    if ('optionGroups' in otherProps) {
+      otherProps.optionGroups.forEach((optionGroup) => {
+        optionGroup.options.forEach((option) => {
+          if (option.isSelected) {
+            selectValue = option.value;
+          }
+        });
+      });
+    } else {
+      otherProps.options.forEach((option) => {
+        if (option.isSelected) {
+          selectValue = option.value;
+        }
+      });
+    }
+
+    return selectValue;
+  };
+
   if ('optionGroups' in otherProps) {
     selectChildren = otherProps.optionGroups.map(
-      (optionGroup, optionGroupKey) => {
-        return (
-          <optgroup label={optionGroup.title} key={optionGroupKey}>
-            {optionGroup.options.map((option, optionKey) => (
-              <option key={optionKey} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </optgroup>
-        );
-      }
+      (optionGroup, optionGroupKey) => (
+        <optgroup label={optionGroup.title} key={optionGroupKey}>
+          {optionGroup.options.map((option, optionKey) => (
+            <option key={optionKey} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </optgroup>
+      )
     );
   } else {
     selectChildren = otherProps.options.map((option, key) => (
@@ -127,7 +154,8 @@ const SimpleSelect = (
       <select
         ref={selectRef}
         className={styles.selectResetDefaults}
-        defaultValue={placeholder ? '' : undefined}
+        value={getSelectValue()}
+        onChange={selectProps.onChange ?? noop}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}
