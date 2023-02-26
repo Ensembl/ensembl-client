@@ -26,7 +26,6 @@ import classNames from 'classnames';
 import pickBy from 'lodash/pickBy';
 
 import styles from './SimpleSelect.scss';
-import { noop } from 'lodash';
 
 type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 
@@ -41,7 +40,6 @@ type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 export type Option = {
   value: string;
   label: string;
-  isSelected?: boolean;
 };
 
 export type OptionGroup = {
@@ -103,30 +101,11 @@ const SimpleSelect = (
   let selectChildren: ReactNode;
 
   const getSelectValue = () => {
-    // no point going through all these options if value is already available
     if (value) {
       return value;
     }
 
-    let selectValue = placeholder ? '' : undefined;
-
-    if ('optionGroups' in otherProps) {
-      otherProps.optionGroups.forEach((optionGroup) => {
-        optionGroup.options.forEach((option) => {
-          if (option.isSelected) {
-            selectValue = option.value;
-          }
-        });
-      });
-    } else {
-      otherProps.options.forEach((option) => {
-        if (option.isSelected) {
-          selectValue = option.value;
-        }
-      });
-    }
-
-    return selectValue;
+    return placeholder ? '' : undefined;
   };
 
   if ('optionGroups' in otherProps) {
@@ -155,7 +134,6 @@ const SimpleSelect = (
         ref={selectRef}
         className={styles.selectResetDefaults}
         value={getSelectValue()}
-        onChange={selectProps.onChange ?? noop}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}

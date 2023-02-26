@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, ChangeEvent } from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -58,10 +58,70 @@ describe('SimpleSelect', () => {
     );
   });
 
+  it('has the first option selected by default', async () => {
+    const onChange = jest.fn();
+    const { container } = render(
+      <SimpleSelect options={options} onChange={onChange} />
+    );
+
+    const selectElement = container.querySelector(
+      'select'
+    ) as HTMLSelectElement;
+
+    expect(selectElement.value).toBe(options[0].value);
+
+    const secondOption = selectElement.querySelector(
+      'option:nth-child(2)'
+    ) as HTMLOptionElement;
+
+    await userEvent.selectOptions(selectElement, secondOption);
+
+    expect(onChange.mock.calls[0][0].target.value).toBe('2');
+  });
+
+  it('selects correct option based on value property', async () => {
+    const TestComponent = () => {
+      const [selectValue, setSelectValue] = useState(options[1].value);
+
+      const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSelectValue(event.target.value);
+      };
+
+      return (
+        <SimpleSelect
+          options={options}
+          value={selectValue}
+          onChange={onChange}
+        />
+      );
+    };
+
+    const { container } = render(<TestComponent />);
+
+    const selectElement = container.querySelector(
+      'select'
+    ) as HTMLSelectElement;
+
+    // check if default value is selected
+    expect(selectElement.value).toBe(options[1].value);
+
+    const firstOption = selectElement.querySelector(
+      'option'
+    ) as HTMLOptionElement;
+
+    await userEvent.selectOptions(selectElement, firstOption);
+
+    expect(selectElement.value).toBe(options[0].value);
+  });
+
   it('renders an empty placeholder option', () => {
     const placeholderText = 'I am placeholder!';
     const { container } = render(
-      <SimpleSelect options={options} placeholder={placeholderText} />
+      <SimpleSelect
+        options={options}
+        placeholder={placeholderText}
+        onChange={jest.fn()}
+      />
     );
     const optionElements = container.querySelectorAll('option');
     const placeholderOption = optionElements[0];
