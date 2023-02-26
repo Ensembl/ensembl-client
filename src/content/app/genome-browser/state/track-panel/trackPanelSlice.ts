@@ -16,12 +16,14 @@
 
 import {
   createSlice,
+  createAsyncThunk,
   type PayloadAction,
   type ThunkAction,
   type Action
 } from '@reduxjs/toolkit';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
+import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
@@ -72,7 +74,10 @@ export const toggleTrackPanel =
 
 export const selectTrackPanelTab =
   (
-    selectedTrackPanelTab: TrackSet
+    selectedTrackPanelTab: TrackSet,
+    options: {
+      shouldCloseSidebarModal: boolean;
+    } = { shouldCloseSidebarModal: true }
   ): ThunkAction<void, any, void, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
@@ -81,7 +86,9 @@ export const selectTrackPanelTab =
       return;
     }
 
-    dispatch(closeBrowserSidebarModal());
+    if (options.shouldCloseSidebarModal) {
+      dispatch(closeBrowserSidebarModal());
+    }
 
     const data = {
       ...getActiveTrackPanel(getState()),
@@ -95,6 +102,25 @@ export const selectTrackPanelTab =
       })
     );
   };
+
+export const updateTrackPanelTabForNewFocusObject = createAsyncThunk(
+  'track-panel-slice/updateTrackPanelTabWhenFocusObjectChanges',
+  (params: { genomeId: string; focusObjectId: string }) => {
+    const { genomeId, focusObjectId } = params;
+    const { type } = parseFocusObjectId(focusObjectId);
+    let trackPanelTab;
+    if (type === 'variant') {
+      trackPanelTab = TrackSet.VARIATION;
+    } else {
+      trackPanelTab = TrackSet.GENOMIC;
+    }
+
+    return {
+      genomeId,
+      trackPanelTab: trackPanelTab
+    };
+  }
+);
 
 export const changeHighlightedTrackId =
   (highlightedTrackId: string): ThunkAction<void, any, void, Action<string>> =>
@@ -166,6 +192,20 @@ const trackPanelSlice = createSlice({
     deleteGenomeTrackPanelData(state, action: PayloadAction<string>) {
       delete state[action.payload];
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(
+      updateTrackPanelTabForNewFocusObject.fulfilled,
+      (state, action) => {
+        const { genomeId, trackPanelTab } = action.payload;
+        if (!state[genomeId]) {
+          state[genomeId] = structuredClone(defaultTrackPanelStateForGenome);
+        }
+        if (state[genomeId].selectedTrackPanelTab !== trackPanelTab) {
+          state[genomeId].selectedTrackPanelTab = trackPanelTab;
+        }
+      }
+    );
   }
 });
 

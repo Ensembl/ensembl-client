@@ -30,10 +30,10 @@ import { deleteTrackSettingsForGenome as deleteStoredTrackSettingsForGenome } fr
 import { deleteAllFocusObjectsForGenome as deleteStoredFocusObjectsForGenome } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
-
 import {
   deleteGenomeTrackPanelData,
-  setInitialTrackPanelDataForGenome
+  setInitialTrackPanelDataForGenome,
+  updateTrackPanelTabForNewFocusObject
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { deleteTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
@@ -90,6 +90,17 @@ export const setDataFromUrlAndSave: ActionCreator<
       activeFocusObjectId !== currentActiveFocusObjectId
     ) {
       dispatch(updatePreviouslyViewedObjectsAndSave());
+    }
+    if (
+      activeFocusObjectId &&
+      activeFocusObjectId !== currentActiveFocusObjectId
+    ) {
+      dispatch(
+        updateTrackPanelTabForNewFocusObject({
+          genomeId: activeGenomeId,
+          focusObjectId: activeFocusObjectId
+        })
+      );
     }
 
     dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
@@ -214,6 +225,16 @@ export const loadBrowserGeneralState = (): ThunkAction<
     const activeFocusObjectIds =
       browserStorageService.getActiveFocusObjectIds();
     const chrLocations = browserStorageService.getChrLocation();
+
+    const activeFocusObjectId = activeFocusObjectIds[activeGenomeId ?? ''];
+    if (activeGenomeId && activeFocusObjectId) {
+      dispatch(
+        updateTrackPanelTabForNewFocusObject({
+          genomeId: activeGenomeId,
+          focusObjectId: activeFocusObjectId
+        })
+      );
+    }
 
     dispatch(
       browserGeneralSlice.actions.setInitialState({
