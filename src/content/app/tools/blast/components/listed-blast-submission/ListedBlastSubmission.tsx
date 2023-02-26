@@ -146,7 +146,7 @@ const SequenceBox = (props: SequenceBoxProps) => {
         <span className={styles.againstText}>Against</span> {speciesCount}{' '}
         species
       </div>
-      {<JobStatus jobs={jobs} />}
+      <div className={styles.jobStatus}>{<JobStatus jobs={jobs} />}</div>
     </div>
   );
 };
@@ -162,7 +162,7 @@ export const JobStatus = (props: JobStatusProps) => {
   const hasAllFailedJobs = jobs.every((job) => job.status === 'FAILURE');
   const hasSomeFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
-  const elementClasses = classNames(styles.jobStatus, {
+  const elementClasses = classNames({
     [styles.jobStatusProminent]: hasRunningJobs || hasSomeFailedJobs
   });
 
