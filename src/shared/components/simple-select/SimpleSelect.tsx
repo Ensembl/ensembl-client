@@ -74,7 +74,7 @@ const SimpleSelect = (
   props: SimpleSelectProps,
   ref: ForwardedRef<{ clear: () => void }>
 ) => {
-  const { className, placeholder, value, ...otherProps } = props;
+  const { className, placeholder, ...otherProps } = props;
   const selectRef = useRef<HTMLSelectElement | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -99,14 +99,6 @@ const SimpleSelect = (
   );
 
   let selectChildren: ReactNode;
-
-  const getSelectValue = () => {
-    if (value) {
-      return value;
-    }
-
-    return placeholder ? '' : undefined;
-  };
 
   if ('optionGroups' in otherProps) {
     selectChildren = otherProps.optionGroups.map(
@@ -133,7 +125,6 @@ const SimpleSelect = (
       <select
         ref={selectRef}
         className={styles.selectResetDefaults}
-        value={getSelectValue()}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}

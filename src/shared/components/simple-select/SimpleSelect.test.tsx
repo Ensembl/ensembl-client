@@ -117,11 +117,7 @@ describe('SimpleSelect', () => {
   it('renders an empty placeholder option', () => {
     const placeholderText = 'I am placeholder!';
     const { container } = render(
-      <SimpleSelect
-        options={options}
-        placeholder={placeholderText}
-        onChange={jest.fn()}
-      />
+      <SimpleSelect options={options} placeholder={placeholderText} />
     );
     const optionElements = container.querySelectorAll('option');
     const placeholderOption = optionElements[0];
