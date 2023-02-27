@@ -117,16 +117,16 @@ const DownloadData = () => {
       });
     });
 
-    const csv = formatCSV(dataForExport);
+    const tsv = formatTSV(dataForExport);
 
-    downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
+    downloadTextAsFile(tsv, downloadFileName ?? 'Table export.tsv');
     setDownloadState(LoadingState.SUCCESS);
     setTimeout(restoreDefaults, 1000);
   };
 
   return (
     <div className={styles.downloadData}>
-      <span>{downloadFileName ?? 'table.csv'}</span>
+      <span>{downloadFileName ?? 'table.tsv'}</span>
       <ControlledLoadingButton status={downloadState} onClick={handleDownload}>
         Download
       </ControlledLoadingButton>
@@ -137,7 +137,7 @@ const DownloadData = () => {
   );
 };
 
-const formatCSV = (table: (string | number)[][]) => {
+const formatTSV = (table: (string | number)[][]) => {
   return table.map((row) => row.join(',')).join('\n');
 };
 
