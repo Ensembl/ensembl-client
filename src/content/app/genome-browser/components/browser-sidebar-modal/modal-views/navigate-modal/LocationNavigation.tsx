@@ -130,8 +130,7 @@ const LocationNavigation = () => {
   const getKaryotypeOptions = () =>
     genomeKaryotype.map(({ name }) => ({
       value: name,
-      label: name,
-      isSelected: regionNameInput === name
+      label: name
     }));
 
   const updateRegionNameInput = (event: FormEvent<HTMLSelectElement>) => {
@@ -203,6 +202,7 @@ const LocationNavigation = () => {
                 onChange={updateRegionNameInput}
                 onKeyUp={handleKeyPress}
                 options={getKaryotypeOptions()}
+                value={regionNameInput}
                 disabled={singleInputActive}
                 className={styles.rangeNameSelect}
                 placeholder="Select"

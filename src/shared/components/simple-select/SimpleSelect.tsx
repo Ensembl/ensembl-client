@@ -102,17 +102,15 @@ const SimpleSelect = (
 
   if ('optionGroups' in otherProps) {
     selectChildren = otherProps.optionGroups.map(
-      (optionGroup, optionGroupKey) => {
-        return (
-          <optgroup label={optionGroup.title} key={optionGroupKey}>
-            {optionGroup.options.map((option, optionKey) => (
-              <option key={optionKey} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </optgroup>
-        );
-      }
+      (optionGroup, optionGroupKey) => (
+        <optgroup label={optionGroup.title} key={optionGroupKey}>
+          {optionGroup.options.map((option, optionKey) => (
+            <option key={optionKey} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </optgroup>
+      )
     );
   } else {
     selectChildren = otherProps.options.map((option, key) => (
@@ -127,7 +125,6 @@ const SimpleSelect = (
       <select
         ref={selectRef}
         className={styles.selectResetDefaults}
-        defaultValue={placeholder ? '' : undefined}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}
