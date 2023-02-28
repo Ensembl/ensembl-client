@@ -55,8 +55,8 @@ export const FAILED_SUBMISSION_WARNING = 'Submission failed';
 export type Props = {
   submission: BlastSubmission;
   isAnyJobRunning?: boolean;
-  isExpanded?: boolean;
-  toggleExpanded?: (isExpanded: boolean) => void;
+  isCollapsed?: boolean;
+  toggleCollapsed?: (isCollapsed: boolean) => void;
   sequenceCount?: number;
 };
 
@@ -151,8 +151,8 @@ export const BlastSubmissionHeader = (props: Props) => {
           {sequenceCount && sequenceCount > 1 && (
             <ShowHide
               className={styles.showHide}
-              isExpanded={props.isExpanded || false}
-              onClick={() => props.toggleExpanded?.(!props.isExpanded)}
+              isExpanded={!props.isCollapsed}
+              onClick={() => props.toggleCollapsed?.(!props.isCollapsed)}
             />
           )}
         </div>

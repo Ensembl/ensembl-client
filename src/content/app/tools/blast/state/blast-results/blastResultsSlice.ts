@@ -99,10 +99,10 @@ export type BlastSubmission = SuccessfulBlastSubmission | FailedBlastSubmission;
 
 export type BlastResultsUI = {
   unviewedJobsPage: {
-    expandedSubmissionIds: string[];
+    collapsedSubmissionIds: string[];
   };
   viewedJobsPage: {
-    expandedSubmissionIds: string[];
+    collapsedSubmissionIds: string[];
   };
 };
 
@@ -140,10 +140,10 @@ export const initialBlastResultsState: BlastResultsState = {
   submissions: {},
   ui: {
     unviewedJobsPage: {
-      expandedSubmissionIds: []
+      collapsedSubmissionIds: []
     },
     viewedJobsPage: {
-      expandedSubmissionIds: []
+      collapsedSubmissionIds: []
     }
   }
 };

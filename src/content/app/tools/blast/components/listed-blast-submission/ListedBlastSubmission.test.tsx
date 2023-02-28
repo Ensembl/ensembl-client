@@ -32,7 +32,6 @@ import ListedBlastSubmission, {
 import blastFormReducer from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 import blastResultsReducer, {
-  BlastResultsUI,
   initialBlastResultsState,
   type BlastResultsState
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
@@ -114,14 +113,7 @@ describe('BlastSubmissionHeader', () => {
       });
 
       const { container } = renderComponent({
-        props: { submission },
-        state: {
-          ui: {
-            unviewedJobsPage: {
-              expandedSubmissionIds: [submission.id]
-            }
-          } as BlastResultsUI
-        }
+        props: { submission }
       });
 
       expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
@@ -239,7 +231,7 @@ describe('BlastSubmissionHeader', () => {
 
   describe('behaviour', () => {
     // define this behaviour better
-    it('folds jobs of a submission into a single box by default', () => {
+    it('expands jobs of a submission by default', () => {
       const submission = createBlastSubmission({
         options: { sequencesCount: 5 }
       });
@@ -248,11 +240,7 @@ describe('BlastSubmissionHeader', () => {
         props: { submission }
       });
 
-      expect(container.querySelectorAll('.sequenceBox').length).toBe(1);
-
-      expect(
-        container.querySelector('.sequenceBox')?.firstElementChild?.textContent
-      ).toBe('5 sequences');
+      expect(container.querySelectorAll('.sequenceBox').length).toBe(5);
     });
 
     // TODO: make sure that deleting a sequence stops polling for this sequence
