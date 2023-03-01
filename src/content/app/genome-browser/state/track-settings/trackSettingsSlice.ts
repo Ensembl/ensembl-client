@@ -151,6 +151,8 @@ export const getTrackType = (trackId: string) => {
 
   if (trackId.startsWith('gene') || trackId === 'focus') {
     return TrackType.GENE;
+  } else if (trackId === 'focus-variant') {
+    return TrackType.FOCUS_VARIANT;
   } else {
     return TrackType.REGULAR;
   }
