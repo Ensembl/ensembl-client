@@ -50,7 +50,7 @@ import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettin
 import styles from './BlastSubmissionHeader.scss';
 
 export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
-export const FAILED_SUBMISSION_WARNING = 'Submission failed';
+export const FAILED_SUBMISSION_WARNING = 'All jobs failed';
 
 export type Props = {
   submission: BlastSubmission;
