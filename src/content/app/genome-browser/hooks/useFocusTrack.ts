@@ -315,8 +315,12 @@ type UseFocusVariantParams = {
 
 const useFocusVariant = (params: UseFocusVariantParams) => {
   const { focusVariant, genomeBrowserMethods } = params;
-  const { setFocusGene, toggleFocusVariantTrackSetting, genomeBrowser } =
-    genomeBrowserMethods;
+  const {
+    setFocusGene,
+    toggleFocusVariantTrackSetting,
+    toggleTrackName,
+    genomeBrowser
+  } = genomeBrowserMethods;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -324,16 +328,13 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
       return;
     }
 
-    // - read track settings from IndexedDB — this should only be done once after focus track has switched on
-    // - pass these track settings to redux
-    // - send these track settings to the genome browser
-    // Remember — run this after the focus track has been enabled by the genome browser!
     restoreTrackSettings(focusVariant.genome_id);
 
     // FIXME: rename setFocusGene method!
     setFocusGene(focusVariant.object_id);
   }, [genomeBrowser, focusVariant?.object_id]);
 
+  // NOTE: ideally, this should be run once per genome id change or once per focus object type change
   const restoreTrackSettings = async (genomeId: string) => {
     const savedTrackSettings = await getTrackSettingsFromStorage(
       genomeId,
@@ -365,10 +366,17 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
 
   const applyGenomeBrowserSettings = (trackSettings: TrackSettings) => {
     for (const [key, value] of Object.entries(trackSettings.settings)) {
-      toggleFocusVariantTrackSetting({
-        settingName: key,
-        isOn: value
-      });
+      if (key === 'name') {
+        toggleTrackName({
+          trackId: 'focus',
+          shouldShowTrackName: value
+        });
+      } else {
+        toggleFocusVariantTrackSetting({
+          settingName: key,
+          isOn: value
+        });
+      }
     }
   };
 };
