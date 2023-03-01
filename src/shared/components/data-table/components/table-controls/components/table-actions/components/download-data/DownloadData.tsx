@@ -16,8 +16,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { sortDataTableRows } from 'src/shared/components/data-table/helpers/sortDataTableRows';
+import { formatTSV } from 'src/shared/helpers/formatters/tabularFileFormatter';
 
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
@@ -117,16 +119,16 @@ const DownloadData = () => {
       });
     });
 
-    const csv = formatCSV(dataForExport);
+    const tsv = formatTSV(dataForExport);
 
-    downloadTextAsFile(csv, downloadFileName ?? 'Table export.csv');
+    downloadTextAsFile(tsv, downloadFileName ?? 'Table export.tsv');
     setDownloadState(LoadingState.SUCCESS);
     setTimeout(restoreDefaults, 1000);
   };
 
   return (
     <div className={styles.downloadData}>
-      <span>{downloadFileName ?? 'table.csv'}</span>
+      <span>{downloadFileName ?? 'table.tsv'}</span>
       <ControlledLoadingButton status={downloadState} onClick={handleDownload}>
         Download
       </ControlledLoadingButton>
@@ -135,10 +137,6 @@ const DownloadData = () => {
       </span>
     </div>
   );
-};
-
-const formatCSV = (table: (string | number)[][]) => {
-  return table.map((row) => row.join(',')).join('\n');
 };
 
 export default DownloadData;

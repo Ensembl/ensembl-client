@@ -21,10 +21,10 @@ import {
 import { getFormattedDate } from 'src/shared/helpers/formatters/dateFormatter';
 
 import {
-  createCSVForGenomicBlast,
-  createCSVForTranscriptBlast,
-  createCSVForProteinBlast
-} from './createBlastCSVTable';
+  createTSVForGenomicBlast,
+  createTSVForTranscriptBlast,
+  createTSVForProteinBlast
+} from './createBlastTSVTable';
 import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type { AppDispatch } from 'src/store';
@@ -45,23 +45,23 @@ import type {
     submission/
     ├─ species 1/
     │  ├─ sequence 1/
-    │  │  ├─ table.csv
+    │  │  ├─ table.tsv
     │  │  ├─ alignments.txt
     │  ├─ sequence 2/
-    │  │  ├─ table.csv
+    │  │  ├─ table.tsv
     │  │  ├─ alignments.txt
     ├─ species 2/
     │  ├─ sequence 1/
-    │  │  ├─ table.csv
+    │  │  ├─ table.tsv
     │  │  ├─ alignments.txt
     │  ├─ sequence 2/
-    │  │  ├─ table.csv
+    │  │  ├─ table.tsv
     │  │  ├─ alignments.txt
 
  */
 
 type EnrichedBlastJobWithResults = BlastJobWithResults & {
-  csv: string;
+  tsv: string;
   raw: string;
 };
 
@@ -94,24 +94,24 @@ const downloadBlastSubmission = async (
     data: fetchedJobResults[index].result
   }));
 
-  const allBlastJobsWithCSVs = allBlastJobs.map((job) => {
-    let csv = '';
+  const allBlastJobsWithTSVs = allBlastJobs.map((job) => {
+    let tsv = '';
     if (blastedAgainst === 'dna' || blastedAgainst === 'dna_sm') {
-      csv = createCSVForGenomicBlast(job.data);
+      tsv = createTSVForGenomicBlast(job.data);
     } else if (blastedAgainst === 'cdna') {
-      csv = createCSVForTranscriptBlast(job.data);
+      tsv = createTSVForTranscriptBlast(job.data);
     } else if (blastedAgainst === 'pep') {
-      csv = createCSVForProteinBlast(job.data);
+      tsv = createTSVForProteinBlast(job.data);
     }
 
     return {
       ...job,
-      csv
+      tsv
     };
   });
 
   const allBlastJobsWithRawData = fetchedRawJobResults.map((job, index) => {
-    const jobWithoutRawData = allBlastJobsWithCSVs[index];
+    const jobWithoutRawData = allBlastJobsWithTSVs[index];
     return {
       ...jobWithoutRawData,
       raw: job.result
@@ -146,8 +146,8 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
   const rootFolder = zip.folder(getNameForZipRoot(submission));
 
   for (const blastResult of results) {
-    const { genomeId, sequenceId, csv, raw } = blastResult;
-    const csvFileName = 'table'; // NOTE: this will probably change
+    const { genomeId, sequenceId, tsv, raw } = blastResult;
+    const tsvFileName = 'table'; // NOTE: this will probably change
     const rawFileName = 'output'; // NOTE: this will probably change
     const speciesFolderName = speciesFolderNamesMap.get(genomeId);
     const sequenceFolderName = `Query sequence ${sequenceId}`; // NOTE: this name will probably change as well
@@ -156,8 +156,8 @@ const createZipArchive = async (submission: EnrichedBlastSubmission) => {
       continue;
     }
     rootFolder?.file(
-      `${speciesFolderName}/${sequenceFolderName}/${csvFileName}.csv`,
-      csv
+      `${speciesFolderName}/${sequenceFolderName}/${tsvFileName}.tsv`,
+      tsv
     );
     rootFolder?.file(
       `${speciesFolderName}/${sequenceFolderName}/${rawFileName}.txt`,

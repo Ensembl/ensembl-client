@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { formatTSV } from 'src/shared/helpers/formatters/tabularFileFormatter';
+
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
-export const createCSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
+export const createTSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -68,10 +70,10 @@ export const createCSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
 
   sortTableRows(rows);
 
-  return formatCSV(rows);
+  return formatTSV(rows);
 };
 
-export const createCSVForTranscriptBlast = (blastJobResult: BlastJobResult) => {
+export const createTSVForTranscriptBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -119,10 +121,10 @@ export const createCSVForTranscriptBlast = (blastJobResult: BlastJobResult) => {
 
   sortTableRows(rows);
 
-  return formatCSV(rows);
+  return formatTSV(rows);
 };
 
-export const createCSVForProteinBlast = (blastJobResult: BlastJobResult) => {
+export const createTSVForProteinBlast = (blastJobResult: BlastJobResult) => {
   const columnNames = [
     'E-value',
     'Hit length',
@@ -170,7 +172,7 @@ export const createCSVForProteinBlast = (blastJobResult: BlastJobResult) => {
 
   sortTableRows(rows);
 
-  return formatCSV(rows);
+  return formatTSV(rows);
 };
 
 const getCommonFields = ({
@@ -188,10 +190,6 @@ const getCommonFields = ({
   queryStart: blastHsp.hsp_query_from,
   queryEnd: blastHsp.hsp_query_to
 });
-
-const formatCSV = (table: (string | number)[][]) => {
-  return table.map((row) => row.join(',')).join('\n');
-};
 
 // by default, downloaded tables of BLAST results should be sorted according to the e-value
 const sortTableRows = (rows: Array<string | number>[]) => {
