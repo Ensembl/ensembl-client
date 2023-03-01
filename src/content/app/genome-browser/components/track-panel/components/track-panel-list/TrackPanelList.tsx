@@ -164,7 +164,7 @@ const FocusObject = (props: { focusObject: FocusObjectType | null }) => {
   }
 
   if (content) {
-    return <section className={`${styles.mainTrackItem}`}>{content}</section>;
+    return <section className={styles.mainTrackItem}>{content}</section>;
   } else {
     return null;
   }
