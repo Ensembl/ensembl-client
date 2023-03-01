@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { formatTSV } from 'src/shared/helpers/formatters/fileFormatter';
+
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
 export const createTSVForGenomicBlast = (blastJobResult: BlastJobResult) => {
@@ -188,10 +190,6 @@ const getCommonFields = ({
   queryStart: blastHsp.hsp_query_from,
   queryEnd: blastHsp.hsp_query_to
 });
-
-const formatTSV = (table: (string | number)[][]) => {
-  return table.map((row) => row.join('\t')).join('\n');
-};
 
 // by default, downloaded tables of BLAST results should be sorted according to the e-value
 const sortTableRows = (rows: Array<string | number>[]) => {
