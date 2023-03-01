@@ -26,7 +26,7 @@ import type {
 
 export enum TrackType {
   GENE = 'gene',
-  FOCUS_GENE = 'gene-focus',
+  FOCUS_GENE = 'focus-gene',
   FOCUS_VARIANT = 'focus-variant',
   REGULAR = 'regular'
 }
