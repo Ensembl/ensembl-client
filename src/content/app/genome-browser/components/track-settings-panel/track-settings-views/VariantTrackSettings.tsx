@@ -37,8 +37,10 @@ const VariantTrackSettings = (
   const [shouldShowOtherVariantAlleles, setShouldShowOtherVariantAlleles] =
     useState(false);
   const [shouldShowVariantExtent, setShouldShowVariantExtent] = useState(false);
+  const [shouldShowTrackName, setShouldShowTrackName] = useState(false);
 
-  const { toggleFocusVariantTrackSetting } = useGenomeBrowser();
+  const { toggleFocusVariantTrackSetting, toggleTrackName } =
+    useGenomeBrowser();
 
   const onSnvIdsToggle = () => {
     toggleFocusVariantTrackSetting({
@@ -81,7 +83,12 @@ const VariantTrackSettings = (
   };
 
   const onTrackNameToggle = () => {
-    console.log('later'); // eslint-disable-line no-console
+    toggleTrackName({
+      trackId: 'focus',
+      shouldShowTrackName: !shouldShowTrackName
+    });
+
+    setShouldShowTrackName(!shouldShowTrackName);
   };
 
   return (
