@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export default [
+const variantGroups = [
   {
-    id: 1,
+    id: 5,
     label: 'Protein altering variants',
     variant_types: [
       {
@@ -62,7 +62,7 @@ export default [
     ]
   },
   {
-    id: 2,
+    id: 4,
     label: 'Splicing variants',
     variant_types: [
       {
@@ -164,7 +164,7 @@ export default [
     ]
   },
   {
-    id: 4,
+    id: 2,
     label: 'Regulatory region variants',
     variant_types: [
       {
@@ -180,7 +180,7 @@ export default [
     ]
   },
   {
-    id: 5,
+    id: 1,
     label: 'Intergenic variants',
     variant_types: [
       {
@@ -201,3 +201,6 @@ export default [
     ]
   }
 ];
+
+export type VariantGroups = typeof variantGroups;
+export default variantGroups;

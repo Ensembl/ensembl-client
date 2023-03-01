@@ -27,23 +27,11 @@ import {
 } from 'src/shared/components/accordion';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
+import { type VariantGroups } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
+
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
 import variantStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/VariantGroupLegend.scss';
-
-type VariantGroups = VariantGroup[];
-
-type VariantGroup = {
-  id: number; // same as the numbers used in genome browser data files to categorise variants
-  label: string;
-  variant_types: VariantType[];
-};
-
-type VariantType = {
-  label: string;
-  so_accession_id: string;
-  url: string;
-};
 
 const TrackPanelVariantGroupLegend = (props: {
   groups: VariantGroups;
