@@ -19,7 +19,7 @@ import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { sortDataTableRows } from 'src/shared/components/data-table/helpers/sortDataTableRows';
-import { formatTSV } from 'src/shared/helpers/formatters/fileFormatter';
+import { formatTSV } from 'src/shared/helpers/formatters/tabularFileFormatter';
 
 import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 

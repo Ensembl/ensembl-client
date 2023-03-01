@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatTSV } from 'src/shared/helpers/formatters/fileFormatter';
+import { formatTSV } from 'src/shared/helpers/formatters/tabularFileFormatter';
 
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
