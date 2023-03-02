@@ -19,8 +19,6 @@ import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
 import {
-  ZmenuContentTranscript,
-  ZmenuContentGene,
   ZmenuPayloadVariety,
   ZmenuPayloadVarietyType,
   ZmenuCreatePayload
@@ -34,13 +32,9 @@ import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/t
 
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import {
-  Toolbox,
-  ToolboxPosition,
-  ToolboxExpandableContent
-} from 'src/shared/components/toolbox';
-import ZmenuContent from './ZmenuContent';
-import ZmenuInstantDownload from './ZmenuInstantDownload';
+import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
+import GeneAndOneTranscriptZmenu from './zmenus/GeneAndOneTranscriptZmenu';
+import VariantZmenu from './zmenus/VariantZmenu';
 
 import styles from './Zmenu.scss';
 
@@ -81,57 +75,31 @@ const Zmenu = (props: ZmenuProps) => {
   const toolboxPosition =
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
-  const { content, variety } = props.payload;
-  const features: (ZmenuContentTranscript | ZmenuContentGene)[] = [];
+  const { variety } = props.payload;
 
-  let featureId = '',
-    transcriptId = '',
-    transcript: ZmenuContentTranscript | undefined,
-    gene: ZmenuContentGene | undefined;
+  let zmenuContent: React.ReactNode = null;
 
   const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
     Boolean(variety.type)
   )?.['zmenu-type'];
 
   if (zmenuType === ZmenuPayloadVarietyType.GENE_AND_ONE_TRANSCRIPT) {
-    transcript = content.find(
-      (feature: ZmenuContentTranscript | ZmenuContentGene) =>
-        feature.metadata.type === 'transcript'
-    ) as ZmenuContentTranscript;
-
-    if (transcript) {
-      features.push(transcript);
-
-      gene = content.find(
-        (feature: ZmenuContentTranscript | ZmenuContentGene) =>
-          feature.metadata.type === 'gene' &&
-          feature.metadata.versioned_id === transcript?.metadata.gene_id
-      ) as ZmenuContentGene;
-
-      if (gene) {
-        features.push(gene);
-      }
-
-      transcriptId = transcript.metadata.versioned_id;
-      featureId = `gene:${gene.metadata.unversioned_id}`;
-    }
+    zmenuContent = (
+      <GeneAndOneTranscriptZmenu
+        payload={props.payload}
+        onDestroy={destroyZmenu}
+      />
+    );
+  } else if (zmenuType === 'variant') {
+    zmenuContent = (
+      <VariantZmenu payload={props.payload} onDestroy={destroyZmenu} />
+    );
   }
 
-  useEffect(() => {
-    gene && dispatch(changeHighlightedTrackId(gene.metadata.track));
-  }, []);
-
-  if (!transcript || !gene) {
+  if (!zmenuContent) {
     return null;
   }
 
-  const mainContent = (
-    <ZmenuContent
-      features={features}
-      featureId={featureId}
-      destroyZmenu={destroyZmenu}
-    />
-  );
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
@@ -142,11 +110,7 @@ const Zmenu = (props: ZmenuProps) => {
           anchor={anchorRef.current}
           position={toolboxPosition}
         >
-          <ToolboxExpandableContent
-            mainContent={mainContent}
-            footerContent={getToolboxFooterContent(transcriptId)}
-            className={styles.toolBox}
-          />
+          {zmenuContent}
         </Toolbox>
       )}
     </div>
@@ -168,11 +132,5 @@ const chooseDirection = (params: ZmenuProps) => {
   const { x } = params.payload;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
 };
-
-const getToolboxFooterContent = (id: string) => (
-  <div className={styles.zmenuFooterContent}>
-    <ZmenuInstantDownload id={id} />
-  </div>
-);
 
 export default Zmenu;

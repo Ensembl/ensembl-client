@@ -28,13 +28,14 @@ import {
   ZmenuContentItem as ZmenuContentItemType,
   Markup,
   ZmenuContentTranscript,
-  ZmenuContentGene
+  ZmenuContentGene,
+  ZmenuContentVariant
 } from '@ensembl/ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
-  features: (ZmenuContentTranscript | ZmenuContentGene)[];
+  features: (ZmenuContentTranscript | ZmenuContentGene | ZmenuContentVariant)[];
   featureId: string;
   destroyZmenu: () => void;
 };
