@@ -24,23 +24,29 @@ import {
   type ReportVisibleTranscriptsAction
 } from '@ensembl/ensembl-genome-browser';
 
+import { getTrackSettings as getTrackSettingsFromStorage } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
+
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
+import { buildDefaultFocusVariantTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
-
-import type {
-  FocusGeneTrack,
-  FocusGeneTrackSettings
+import {
+  addSettingsForTrack,
+  type TrackSettings,
+  type FocusGeneTrack,
+  type FocusGeneTrackSettings,
+  type FocusVariantTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+
 import type {
   FocusGene,
   FocusVariant
@@ -309,16 +315,70 @@ type UseFocusVariantParams = {
 
 const useFocusVariant = (params: UseFocusVariantParams) => {
   const { focusVariant, genomeBrowserMethods } = params;
-  const { setFocusGene, genomeBrowser } = genomeBrowserMethods;
+  const {
+    setFocusGene,
+    toggleFocusVariantTrackSetting,
+    toggleTrackName,
+    genomeBrowser
+  } = genomeBrowserMethods;
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!focusVariant || !genomeBrowser) {
       return;
     }
 
+    restoreTrackSettings(focusVariant.genome_id);
+
     // FIXME: rename setFocusGene method!
     setFocusGene(focusVariant.object_id);
   }, [genomeBrowser, focusVariant?.object_id]);
+
+  // NOTE: ideally, this should be run once per genome id change or once per focus object type change
+  const restoreTrackSettings = async (genomeId: string) => {
+    const savedTrackSettings = await getTrackSettingsFromStorage(
+      genomeId,
+      'focus-variant'
+    );
+
+    let trackSettings;
+
+    if (savedTrackSettings) {
+      trackSettings = {
+        id: savedTrackSettings.trackId,
+        trackType: savedTrackSettings.trackType,
+        settings: savedTrackSettings.settings as FocusVariantTrackSettings
+      } as TrackSettings;
+    } else {
+      trackSettings = buildDefaultFocusVariantTrack();
+    }
+
+    applyGenomeBrowserSettings(trackSettings);
+
+    dispatch(
+      addSettingsForTrack({
+        genomeId,
+        trackId: 'focus-variant',
+        trackSettings
+      })
+    );
+  };
+
+  const applyGenomeBrowserSettings = (trackSettings: TrackSettings) => {
+    for (const [key, value] of Object.entries(trackSettings.settings)) {
+      if (key === 'name') {
+        toggleTrackName({
+          trackId: 'focus',
+          shouldShowTrackName: value
+        });
+      } else {
+        toggleFocusVariantTrackSetting({
+          settingName: key,
+          isOn: value
+        });
+      }
+    }
+  };
 };
 
 const isLozengeClickMessage = (

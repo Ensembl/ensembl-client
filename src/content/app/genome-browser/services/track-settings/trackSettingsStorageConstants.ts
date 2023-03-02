@@ -17,6 +17,7 @@
 import {
   getDefaultGeneTrackSettings,
   getDefaultFocusGeneTrackSettings,
+  getDefaultFocusVariantTrackSettings,
   getDefaultRegularTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
@@ -37,4 +38,8 @@ trackSettingFieldsMap.set(
 trackSettingFieldsMap.set(
   TrackType.REGULAR,
   new Set(Object.keys(getDefaultRegularTrackSettings()))
+);
+trackSettingFieldsMap.set(
+  TrackType.FOCUS_VARIANT,
+  new Set(Object.keys(getDefaultFocusVariantTrackSettings()))
 );
