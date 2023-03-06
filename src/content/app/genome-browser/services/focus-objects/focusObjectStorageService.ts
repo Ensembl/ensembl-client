@@ -35,17 +35,25 @@ export type StoredFocusGene = {
 
 export const saveFocusObject = async (focusObject: StorableFocusObject) => {
   const storableData = buildFocusObjectDataForStorage(focusObject);
-  await IndexedDB.set(
-    GB_FOCUS_OBJECTS_STORE_NAME,
-    focusObject.object_id,
-    storableData
-  );
+  try {
+    await IndexedDB.set(
+      GB_FOCUS_OBJECTS_STORE_NAME,
+      focusObject.object_id,
+      storableData
+    );
+  } catch {
+    // exit without error
+  }
 };
 
 export const getFocusObject = async (
   focusObjectId: string
 ): Promise<StoredFocusObject | undefined> => {
-  return await IndexedDB.get(GB_FOCUS_OBJECTS_STORE_NAME, focusObjectId);
+  try {
+    return await IndexedDB.get(GB_FOCUS_OBJECTS_STORE_NAME, focusObjectId);
+  } catch {
+    return undefined;
+  }
 };
 
 export const updateFocusObject = async (
@@ -70,21 +78,29 @@ export const updateFocusObject = async (
 };
 
 export const deleteFocusObject = async (focusObjectId: string) => {
-  await IndexedDB.delete(GB_FOCUS_OBJECTS_STORE_NAME, focusObjectId);
+  try {
+    await IndexedDB.delete(GB_FOCUS_OBJECTS_STORE_NAME, focusObjectId);
+  } catch {
+    // doesn't matter; exit without error
+  }
 };
 
 // useful for cleanup after a species is removed
 export const deleteAllFocusObjectsForGenome = async (genomeId: string) => {
-  const database = await IndexedDB.getDB();
-  const focusObjectsForGenome: Awaited<StoredFocusObject[]> =
-    await database.getAllFromIndex(
-      GB_FOCUS_OBJECTS_STORE_NAME,
-      'genomeId',
-      genomeId
-    );
+  try {
+    const database = await IndexedDB.getDB();
+    const focusObjectsForGenome: Awaited<StoredFocusObject[]> =
+      await database.getAllFromIndex(
+        GB_FOCUS_OBJECTS_STORE_NAME,
+        'genomeId',
+        genomeId
+      );
 
-  for (const focusObject of focusObjectsForGenome) {
-    await IndexedDB.delete(GB_FOCUS_OBJECTS_STORE_NAME, focusObject.id);
+    for (const focusObject of focusObjectsForGenome) {
+      await IndexedDB.delete(GB_FOCUS_OBJECTS_STORE_NAME, focusObject.id);
+    }
+  } catch {
+    // doesn't matter; exit without error
   }
 };
 

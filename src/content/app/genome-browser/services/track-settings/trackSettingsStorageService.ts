@@ -41,17 +41,22 @@ export const saveTrackSettingsForGenome = async (
   const storageData = trackSettings.map((track) =>
     buildTrackForStorage(genomeId, track)
   );
-  const database = await IndexedDB.getDB();
 
-  const transaction = database.transaction(
-    GB_TRACK_SETTINGS_STORE_NAME,
-    'readwrite'
-  );
-  const databaseWritePromises = storageData.map((track) => {
-    return transaction.store.add(track);
-  });
-  await Promise.all(databaseWritePromises);
-  await transaction.done;
+  try {
+    const database = await IndexedDB.getDB();
+
+    const transaction = database.transaction(
+      GB_TRACK_SETTINGS_STORE_NAME,
+      'readwrite'
+    );
+    const databaseWritePromises = storageData.map((track) => {
+      return transaction.store.add(track);
+    });
+    await Promise.all(databaseWritePromises);
+    await transaction.done;
+  } catch {
+    // exit quietly
+  }
 };
 
 // accepts settings for a single track
@@ -59,33 +64,45 @@ export const saveTrackSettings = async (
   genomeId: string,
   trackSettings: TrackSettings
 ) => {
-  const preparedTrackData = buildTrackForStorage(genomeId, trackSettings);
-  const database = await IndexedDB.getDB();
+  try {
+    const preparedTrackData = buildTrackForStorage(genomeId, trackSettings);
+    const database = await IndexedDB.getDB();
 
-  await database.put(GB_TRACK_SETTINGS_STORE_NAME, preparedTrackData);
+    await database.put(GB_TRACK_SETTINGS_STORE_NAME, preparedTrackData);
+  } catch {
+    // exit quietly
+  }
 };
 
 export const getTrackSettingsForGenome = async (genomeId: string) => {
-  const database = await IndexedDB.getDB();
-  const retrievedTracks = await database.getAllFromIndex(
-    GB_TRACK_SETTINGS_STORE_NAME,
-    'genomeId',
-    genomeId
-  );
-  return retrievedTracks.map(cleanUpStoredTrack);
+  try {
+    const database = await IndexedDB.getDB();
+    const retrievedTracks = await database.getAllFromIndex(
+      GB_TRACK_SETTINGS_STORE_NAME,
+      'genomeId',
+      genomeId
+    );
+    return retrievedTracks.map(cleanUpStoredTrack);
+  } catch {
+    return [];
+  }
 };
 
 // retrieve a single track whose genome id and track id is known
 export const getTrackSettings = async (genomeId: string, trackId: string) => {
-  const database = await IndexedDB.getDB();
-  const retrievedTrack: Awaited<StoredTrack | undefined> = await database.get(
-    GB_TRACK_SETTINGS_STORE_NAME,
-    [genomeId, trackId]
-  );
-  if (!retrievedTrack) {
+  try {
+    const database = await IndexedDB.getDB();
+    const retrievedTrack: Awaited<StoredTrack | undefined> = await database.get(
+      GB_TRACK_SETTINGS_STORE_NAME,
+      [genomeId, trackId]
+    );
+    if (!retrievedTrack) {
+      return null;
+    }
+    return cleanUpStoredTrack(retrievedTrack);
+  } catch {
     return null;
   }
-  return cleanUpStoredTrack(retrievedTrack);
 };
 
 // update settings for a single track
@@ -93,18 +110,22 @@ export const updateTrackSettings = async (
   genomeId: string,
   trackSettings: TrackSettings
 ) => {
-  const { id: trackId } = trackSettings;
-  const retrievedTrack = await getTrackSettings(genomeId, trackId);
+  try {
+    const { id: trackId } = trackSettings;
+    const retrievedTrack = await getTrackSettings(genomeId, trackId);
 
-  if (retrievedTrack) {
-    retrievedTrack.settings = {
-      ...retrievedTrack.settings,
-      ...trackSettings.settings
-    };
-    retrievedTrack.updatedAt = Date.now();
-    await saveStoredTracksSettings([retrievedTrack]);
-  } else {
-    await saveTrackSettings(genomeId, trackSettings);
+    if (retrievedTrack) {
+      retrievedTrack.settings = {
+        ...retrievedTrack.settings,
+        ...trackSettings.settings
+      };
+      retrievedTrack.updatedAt = Date.now();
+      await saveStoredTracksSettings([retrievedTrack]);
+    } else {
+      await saveTrackSettings(genomeId, trackSettings);
+    }
+  } catch {
+    // exit quietly
   }
 };
 
@@ -113,31 +134,35 @@ export const updateTrackSettingsForGenome = async (
   genomeId: string,
   trackSettings: TrackSettings[]
 ) => {
-  const retrievedTrackSettingsForGenome = await getTrackSettingsForGenome(
-    genomeId
-  );
-
-  const updatedStoredTracks: StoredTrack[] = [];
-  const newTrackSettings: TrackSettings[] = [];
-
-  for (const track of trackSettings) {
-    const storedTrack = retrievedTrackSettingsForGenome.find(
-      ({ trackId }) => trackId === track.id
+  try {
+    const retrievedTrackSettingsForGenome = await getTrackSettingsForGenome(
+      genomeId
     );
-    if (storedTrack) {
-      storedTrack.settings = track.settings;
-      storedTrack.updatedAt = Date.now();
-      updatedStoredTracks.push(storedTrack);
-    } else {
-      newTrackSettings.push(track);
-    }
-  }
 
-  if (updatedStoredTracks.length) {
-    await saveStoredTracksSettings(updatedStoredTracks);
-  }
-  if (newTrackSettings.length) {
-    await saveTrackSettingsForGenome(genomeId, newTrackSettings);
+    const updatedStoredTracks: StoredTrack[] = [];
+    const newTrackSettings: TrackSettings[] = [];
+
+    for (const track of trackSettings) {
+      const storedTrack = retrievedTrackSettingsForGenome.find(
+        ({ trackId }) => trackId === track.id
+      );
+      if (storedTrack) {
+        storedTrack.settings = track.settings;
+        storedTrack.updatedAt = Date.now();
+        updatedStoredTracks.push(storedTrack);
+      } else {
+        newTrackSettings.push(track);
+      }
+    }
+
+    if (updatedStoredTracks.length) {
+      await saveStoredTracksSettings(updatedStoredTracks);
+    }
+    if (newTrackSettings.length) {
+      await saveTrackSettingsForGenome(genomeId, newTrackSettings);
+    }
+  } catch {
+    // exit quietly
   }
 };
 
@@ -146,31 +171,43 @@ export const deleteTrackSettings = async (
   genomeId: string,
   trackId: string
 ) => {
-  const database = await IndexedDB.getDB();
-  await database.delete(GB_TRACK_SETTINGS_STORE_NAME, [genomeId, trackId]);
+  try {
+    const database = await IndexedDB.getDB();
+    await database.delete(GB_TRACK_SETTINGS_STORE_NAME, [genomeId, trackId]);
+  } catch {
+    // exit quietly
+  }
 };
 
 // delete settings of all tracks of a genome (useful when a species gets deleted)
 export const deleteTrackSettingsForGenome = async (genomeId: string) => {
-  const storedTracks = await getTrackSettingsForGenome(genomeId);
+  try {
+    const storedTracks = await getTrackSettingsForGenome(genomeId);
 
-  for (const track of storedTracks) {
-    await deleteTrackSettings(genomeId, track.trackId);
+    for (const track of storedTracks) {
+      await deleteTrackSettings(genomeId, track.trackId);
+    }
+  } catch {
+    // exit quietly
   }
 };
 
 const saveStoredTracksSettings = async (storedTracks: StoredTrack[]) => {
-  const database = await IndexedDB.getDB();
+  try {
+    const database = await IndexedDB.getDB();
 
-  const transaction = database.transaction(
-    GB_TRACK_SETTINGS_STORE_NAME,
-    'readwrite'
-  );
-  const databaseWritePromises = storedTracks.map((track) => {
-    return transaction.store.put(track);
-  });
-  await Promise.all(databaseWritePromises);
-  await transaction.done;
+    const transaction = database.transaction(
+      GB_TRACK_SETTINGS_STORE_NAME,
+      'readwrite'
+    );
+    const databaseWritePromises = storedTracks.map((track) => {
+      return transaction.store.put(track);
+    });
+    await Promise.all(databaseWritePromises);
+    await transaction.done;
+  } catch {
+    // exit quietly
+  }
 };
 
 const buildTrackForStorage = (
