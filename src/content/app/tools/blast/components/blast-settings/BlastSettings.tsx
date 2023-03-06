@@ -91,7 +91,7 @@ const BlastSettings = ({ config }: Props) => {
     config.valid_parameters_for_program[blastProgram].includes('matrix');
   const shouldShowGapPenalties =
     config.valid_parameters_for_program[blastProgram].includes('gapopen');
-  const gapAlignEnabled =
+  const shouldShowGapAlign =
     config.valid_parameters_for_program[blastProgram].includes('gapalign');
 
   const {
@@ -330,13 +330,13 @@ const BlastSettings = ({ config }: Props) => {
               styles.checkboxesColumn
             )}
           >
-            {buildCheckbox({
-              ...(config.parameters.gapalign as BlastBooleanSetting),
-              selectedOption: blastParameters.gapalign ?? '',
-              disabled: !gapAlignEnabled,
-              onChange: (value: string) =>
-                onBlastParameterChange('gapalign', value)
-            })}
+            {shouldShowGapAlign &&
+              buildCheckbox({
+                ...(config.parameters.gapalign as BlastBooleanSetting),
+                selectedOption: blastParameters.gapalign ?? '',
+                onChange: (value: string) =>
+                  onBlastParameterChange('gapalign', value)
+              })}
             {buildCheckbox({
               ...(config.parameters.filter as BlastBooleanSetting),
               selectedOption: blastParameters.filter as string,

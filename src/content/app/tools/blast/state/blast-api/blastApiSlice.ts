@@ -33,6 +33,8 @@ import type {
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
+import mockConfig from 'tests/fixtures/blast/blastSettingsConfig.json';
+
 export type BlastSubmissionPayload = {
   species: Species[];
   sequences: SubmittedSequence[];
@@ -66,9 +68,14 @@ export type RejectedJob = {
 const blastApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     blastConfig: builder.query<BlastSettingsConfig, void>({
-      query: () => ({
-        url: `${config.toolsApiBaseUrl}/blast/config`
-      }),
+      queryFn: () => {
+        return Promise.resolve({
+          data: mockConfig as unknown as BlastSettingsConfig
+        });
+      },
+      // query: () => ({
+      //   url: `${config.toolsApiBaseUrl}/blast/config`
+      // }),
       keepUnusedDataFor: 60 * 60 // one hour
     }),
     submitBlast: builder.mutation<
