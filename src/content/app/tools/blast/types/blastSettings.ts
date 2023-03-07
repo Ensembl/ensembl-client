@@ -121,5 +121,6 @@ export type BlastSettingsConfig = {
   defaults: Defaults;
   presets: Presets;
   valid_parameters_for_program: Record<BlastProgram, string[]>;
+  valid_sensitivities_for_program: Record<BlastProgram, string[]>;
   gap_penalties: GapPenalties;
 };

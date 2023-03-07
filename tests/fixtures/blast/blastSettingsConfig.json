@@ -802,6 +802,13 @@
     "tblastn": ["matrix", "gapopen", "gapext"],
     "blastp": ["matrix", "gapopen", "gapext"]
   },
+  "valid_sensitivities_for_program": {
+    "blastn": ["near_match", "short_sequences", "normal", "distant_homologies"],
+    "tblastx": ["near_match", "normal", "distant_homologies"],
+    "blastx": ["near_match", "normal", "distant_homologies"],
+    "tblastn": ["near_match", "normal", "distant_homologies"],
+    "blastp": ["near_match", "normal", "distant_homologies"]
+  },
   "gap_penalties": {
     "label": "Gap penalties",
     "description": "A combination of gap openings and gap extensions are used to adjust alignment scores based on the number and length of gaps between sequences",

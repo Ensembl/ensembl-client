@@ -49,10 +49,15 @@ import type {
 
 import styles from './BlastSettings.scss';
 
-const getPresetsList = (config: BlastSettingsConfig) => {
-  const { presets } = config;
-  const { label, options } = presets;
-  return { label, options };
+const getPresetsList = (config: BlastSettingsConfig, program: BlastProgram) => {
+  const {
+    presets: { label, options },
+    valid_sensitivities_for_program
+  } = config;
+  const optionsForSelectedProgram = options.filter((option) =>
+    valid_sensitivities_for_program[program].includes(option.value)
+  );
+  return { label, options: optionsForSelectedProgram };
 };
 
 const getAvailableBlastPrograms = (
@@ -189,8 +194,8 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div>
             <BlastSelect
-              options={getPresetsList(config).options}
-              label={getPresetsList(config).label}
+              options={getPresetsList(config, blastProgram).options}
+              label={getPresetsList(config, blastProgram).label}
               selectedOption={searchSensitivity}
               onChange={onSearchSensitivityChange}
             />
