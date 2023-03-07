@@ -23,17 +23,18 @@ import styles from './ShowHideColumns.scss';
 
 const ShowHideColumns = () => {
   const { hiddenColumnIds, dispatch, columns } = useDataTable();
+  const updatedHiddenColumnIds = new Set(hiddenColumnIds);
 
   const onChange = (columnId: string, checked: boolean) => {
     if (!checked) {
-      hiddenColumnIds.add(columnId);
+      updatedHiddenColumnIds.add(columnId);
     } else {
-      hiddenColumnIds.delete(columnId);
+      updatedHiddenColumnIds.delete(columnId);
     }
 
     dispatch({
       type: 'set_hidden_column_ids',
-      payload: hiddenColumnIds
+      payload: updatedHiddenColumnIds
     });
   };
 
@@ -46,7 +47,7 @@ const ShowHideColumns = () => {
             <Checkbox
               key={key}
               label={column.title}
-              checked={!hiddenColumnIds.has(column.columnId)}
+              checked={!updatedHiddenColumnIds.has(column.columnId)}
               onChange={(checked) => onChange(column.columnId, checked)}
               className={styles.checkbox}
             />
