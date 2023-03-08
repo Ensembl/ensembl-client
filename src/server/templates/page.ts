@@ -52,9 +52,8 @@ const renderTemplate = (params: {
   assets: Record<string, string>;
   state: ServerSideState;
   config: TransferredClientConfig;
-  scripts: string[];
 }) => {
-  const { assets, state, config, scripts } = params;
+  const { assets, state, config } = params;
   let template = getHtmlTemplate();
 
   template = injectTitle({
@@ -73,7 +72,7 @@ const renderTemplate = (params: {
   template = injectBodyScripts({
     state,
     config,
-    scripts,
+    assets,
     template
   });
 
@@ -140,10 +139,11 @@ const injectCSS = (params: {
 const injectBodyScripts = (params: {
   state: ServerSideState;
   config: TransferredClientConfig;
-  scripts: string[];
+  assets: Record<string, string>;
   template: string;
 }) => {
-  const { state, config, scripts: scriptUrls, template } = params;
+  const { state, config, assets, template } = params;
+  const scriptUrls = getBootstrapScripts(assets);
 
   const dataScript = `<script>
     window.__PRELOADED_STATE__ = ${JSON.stringify(state)};
@@ -159,6 +159,16 @@ const injectBodyScripts = (params: {
   const scripts = `${dataScript}${appScripts}`;
 
   return template.replace(templatePlaceholders.scripts, scripts);
+};
+
+const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
+  // In the development environment, the only entry point is the client.js file (it's huge and contains the runtime, third-party libs, and css)
+  // In production, webpack will code-split, and extract vendors.js and runtime-client.js chunks
+  return [
+    assetsManifest['client.js'],
+    assetsManifest['vendors.js'],
+    assetsManifest['runtime~client.js']
+  ].filter(Boolean);
 };
 
 export default renderTemplate;

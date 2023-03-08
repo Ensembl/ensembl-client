@@ -80,16 +80,12 @@ const viewRouter = async (req: Request, res: Response) => {
       const template = renderTemplate({
         assets: assetsManifest,
         state: reduxStore.getState(),
-        config: configForClient,
-        scripts: getBootstrapScripts(assetsManifest)
+        config: configForClient
       });
 
       const [beforeReactApp, afterReactApp] = template.split(
         '<!-- Inject app -->'
       );
-
-      // const writeableStream = new Duplex();
-      // writeableStream.write(beforeReactApp);
 
       res.write(beforeReactApp);
       stream.pipe(res);
@@ -101,16 +97,6 @@ const viewRouter = async (req: Request, res: Response) => {
       console.error(x); // TODO: use a proper logger here
     }
   });
-};
-
-const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
-  // In development environment, the only entry point is the client.js file (it's huge and contains the runtime, third-party libs, and css)
-  // In production, webpack will code-split, and extract vendors.js and runtime-client.js chunks
-  return [
-    assetsManifest['client.js'],
-    assetsManifest['vendors.js'],
-    assetsManifest['runtime~client.js']
-  ].filter(Boolean);
 };
 
 export default viewRouter;
