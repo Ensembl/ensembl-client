@@ -50,12 +50,9 @@ import type {
 import styles from './BlastSettings.scss';
 
 const getPresetsList = (config: BlastSettingsConfig, program: BlastProgram) => {
-  const {
-    presets: { label, options },
-    valid_sensitivities_for_program
-  } = config;
+  const { label, options, settings } = config.presets;
   const optionsForSelectedProgram = options.filter((option) =>
-    valid_sensitivities_for_program[program].includes(option.value)
+    Object.keys(settings[program]).includes(option.value)
   );
   return { label, options: optionsForSelectedProgram };
 };
@@ -90,14 +87,14 @@ const BlastSettings = ({ config }: Props) => {
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
 
+  const availableParamsForProgram = Object.keys(
+    config.presets.settings[blastProgram].normal
+  );
   const shouldShowMatchMismatch =
-    config.valid_parameters_for_program[blastProgram].includes('match_scores');
-  const shouldShowMatrix =
-    config.valid_parameters_for_program[blastProgram].includes('matrix');
-  const shouldShowGapPenalties =
-    config.valid_parameters_for_program[blastProgram].includes('gapopen');
-  const shouldShowGapAlign =
-    config.valid_parameters_for_program[blastProgram].includes('gapalign');
+    availableParamsForProgram.includes('match_scores');
+  const shouldShowMatrix = availableParamsForProgram.includes('matrix');
+  const shouldShowGapPenalties = availableParamsForProgram.includes('gapopen');
+  const shouldShowGapAlign = availableParamsForProgram.includes('gapalign');
 
   const {
     updateBlastDatabase,
