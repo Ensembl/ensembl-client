@@ -25,7 +25,6 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
 import configureStore from './store';
 
-import Html from 'src/content/html/Html';
 import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
@@ -38,24 +37,18 @@ ensureBrowserSupport();
 
 const store = configureStore();
 
-const assetManifest = (globalThis as any).assetManifest || {};
-const serverSideReduxState = (globalThis as any).__PRELOADED_STATE__ ?? {};
 const serverSideConfig: Partial<TransferredClientConfig> =
   (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
 
+const rootElement = document.querySelector('#ensembl-app') as HTMLElement;
+
 hydrateRoot(
-  document,
+  rootElement,
   <StrictMode>
     <IndexedDBProvider>
       <Provider store={store}>
         <BrowserRouter>
-          <Html
-            assets={assetManifest}
-            serverSideReduxState={serverSideReduxState}
-            serverSideConfig={serverSideConfig}
-          >
-            <Root />
-          </Html>
+          <Root />
         </BrowserRouter>
       </Provider>
     </IndexedDBProvider>

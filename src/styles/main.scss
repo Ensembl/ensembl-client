@@ -9,7 +9,7 @@
 
 html,
 body,
-[class='ens-app'] {
+[id^="ensembl-app"] {
   height: 100%;
   width: 100%;
   min-width: 980px; // when mobile phones in portrait mode scale the page down to fill the screen, they usually go to 980px

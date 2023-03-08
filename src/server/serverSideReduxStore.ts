@@ -32,3 +32,4 @@ export const getServerSideReduxStore = () => {
 };
 
 export type ServerSideReduxStore = ReturnType<typeof getServerSideReduxStore>;
+export type ServerSideState = ReturnType<ServerSideReduxStore['getState']>;

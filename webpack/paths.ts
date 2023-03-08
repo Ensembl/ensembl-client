@@ -37,7 +37,6 @@ export const getPaths = (env = 'development') => {
     buildServerDir: path.resolve(buildPath, 'server'),
     buildStaticPath: path.resolve(buildPath, 'static'),
     htmlFileName: isDev ? 'index.html' : '../index.html',
-    htmlTemplatePath: path.resolve(staticPath, 'html/template.html'),
     envTemplatePath: path.resolve(rootPath, '.env.example')
   };
 };

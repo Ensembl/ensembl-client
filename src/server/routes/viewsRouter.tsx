@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { Request, Response } from 'express';
 import React from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
 import { matchPath } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 import { Provider } from 'react-redux';
 import pick from 'lodash/pick';
+import type { Request, Response } from 'express';
 
 import routesConfig, { type RouteConfig } from 'src/routes/routesConfig';
 import { getConfigForClient } from '../helpers/getConfigForClient';
 import readWebpackAssetsManifest from '../helpers/readWebpackManifest';
+import renderTemplate from '../templates/page';
 
 import { getServerSideReduxStore } from '../serverSideReduxStore';
 
-import Html from 'src/content/html/Html';
 import Root from 'src/root/Root';
-
-import type JSONValue from 'src/shared/types/JSON';
 
 const configForClient = getConfigForClient();
 
@@ -68,13 +66,7 @@ const viewRouter = async (req: Request, res: Response) => {
   const ReactApp = (
     <Provider store={reduxStore}>
       <StaticRouter location={req.url}>
-        <Html
-          assets={getTransferableAssetsManifest(assetsManifest)}
-          serverSideReduxState={reduxStore.getState() as unknown as JSONValue}
-          serverSideConfig={configForClient}
-        >
-          <Root />
-        </Html>
+        <Root />
       </StaticRouter>
     </Provider>
   );
@@ -86,7 +78,25 @@ const viewRouter = async (req: Request, res: Response) => {
       res.statusCode = didError ? 500 : statusCode;
       res.statusCode = statusCode;
       res.setHeader('Content-type', 'text/html');
+
+      const template = renderTemplate({
+        assets: getTransferableAssetsManifest(assetsManifest),
+        state: reduxStore.getState(),
+        config: configForClient,
+        scripts: getBootstrapScripts(assetsManifest)
+      });
+
+      const [beforeReactApp, afterReactApp] = template.split(
+        '<!-- Inject app -->'
+      );
+
+      // const writeableStream = new Duplex();
+      // writeableStream.write(beforeReactApp);
+
+      res.write(beforeReactApp);
       stream.pipe(res);
+      res.write(afterReactApp);
+      res.end();
     },
     onError(x) {
       didError = true;
