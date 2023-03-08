@@ -29,6 +29,8 @@ import windowService from 'src/services/window-service';
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
 jest.mock('../content/app/App', () => () => <div id="app" />);
+jest.mock('src/content/html/Meta', () => () => <div id="meta" />);
+jest.mock('src/content/html/ThirdParty', () => () => <div id="third-party" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
