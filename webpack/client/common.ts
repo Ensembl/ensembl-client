@@ -18,6 +18,7 @@ import path from 'path';
 import { ProgressPlugin, Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { getPaths } from '../paths';
@@ -117,6 +118,15 @@ export default (env: Record<string, unknown>): Configuration => {
       new ForkTsCheckerPlugin(),
 
       new ProgressPlugin(),
+
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.join(paths.staticPath, 'favicons/*'),
+            to: path.join(paths.buildStaticPath, 'favicons', '[name][ext]')
+          }
+        ]
+      }),
 
       new WebpackManifestPlugin({
         writeToFileEmit: true

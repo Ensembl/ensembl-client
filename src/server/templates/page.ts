@@ -62,6 +62,7 @@ const renderTemplate = (params: {
     template
   });
   template = injectOtherMeta({
+    assets,
     state,
     template
   });
@@ -94,15 +95,15 @@ const getHtmlTemplate = () => {
 const injectTitle = (params: { title: string; template: string }) => {
   const { title, template } = params;
   const titleTag = `<title>${title}</title>`;
-  template.replace(templatePlaceholders.title, titleTag);
-  return template;
+  return template.replace(templatePlaceholders.title, titleTag);
 };
 
 const injectOtherMeta = (params: {
+  assets: Record<string, string>;
   state: ServerSideState;
   template: string;
 }) => {
-  const { state, template } = params;
+  const { assets, state, template } = params;
   const description = state.pageMeta.description;
 
   let tags = '';
@@ -112,14 +113,13 @@ const injectOtherMeta = (params: {
   }
 
   const favicons = `
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="${assets['favicons/favicon-32x32.png']}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="${assets['favicons/favicon-16x16.png']}" />
   `;
 
   tags += favicons;
 
-  template.replace(templatePlaceholders.otherMeta, tags);
-  return template;
+  return template.replace(templatePlaceholders.otherMeta, tags);
 };
 
 const injectCSS = (params: {
@@ -134,8 +134,7 @@ const injectCSS = (params: {
   }
 
   const linkTag = `<link rel="stylesheet" href="${styleFileUrl}" />`;
-  template.replace(templatePlaceholders.styles, linkTag);
-  return template;
+  return template.replace(templatePlaceholders.styles, linkTag);
 };
 
 const injectBodyScripts = (params: {
@@ -144,7 +143,7 @@ const injectBodyScripts = (params: {
   scripts: string[];
   template: string;
 }) => {
-  const { state, config, scripts: scriptUrls } = params;
+  const { state, config, scripts: scriptUrls, template } = params;
 
   const dataScript = `<script>
     window.__PRELOADED_STATE__ = ${JSON.stringify(state)};
@@ -159,9 +158,7 @@ const injectBodyScripts = (params: {
 
   const scripts = `${dataScript}${appScripts}`;
 
-  template.replace(templatePlaceholders.scripts, scripts);
-
-  return template;
+  return template.replace(templatePlaceholders.scripts, scripts);
 };
 
 export default renderTemplate;

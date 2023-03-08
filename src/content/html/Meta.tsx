@@ -14,26 +14,58 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 
 import { useAppSelector } from 'src/store';
 
 import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';
 
-import favicon16 from 'static/favicons/favicon-16x16.png';
-import favicon32 from 'static/favicons/favicon-32x32.png';
+import type { PageMetaState } from 'src/shared/state/page-meta/pageMetaSlice';
 
 const Meta = () => {
   const pageMeta = useAppSelector(getPageMeta);
 
-  return (
-    <>
-      <title>{pageMeta.title}</title>
-      <meta name="description" content={pageMeta.description} />
-      <link rel="icon" type="image/png" sizes="32x32" href={favicon32} />
-      <link rel="icon" type="image/png" sizes="16x16" href={favicon16} />
-    </>
-  );
+  useEffect(() => {
+    updatePageMeta(pageMeta);
+  }, [pageMeta]);
+
+  return null;
+};
+
+const updatePageMeta = (pageMeta: PageMetaState) => {
+  updateTitle(pageMeta);
+  updateDescription(pageMeta);
+};
+
+const updateTitle = (pageMeta: PageMetaState) => {
+  const { title } = pageMeta;
+
+  const titleTag = document.querySelector('title');
+
+  if (!titleTag) {
+    return;
+  }
+
+  const currentTitle = titleTag.innerText;
+  if (title !== currentTitle) {
+    titleTag.innerText = title;
+  }
+};
+
+const updateDescription = (pageMeta: PageMetaState) => {
+  const { description } = pageMeta;
+
+  const descriptionMetaTag = document.querySelector('meta[name="description"]');
+
+  if (!descriptionMetaTag) {
+    return;
+  }
+
+  const currentDescription = descriptionMetaTag.getAttribute('content');
+
+  if (currentDescription !== description) {
+    descriptionMetaTag.setAttribute('content', description);
+  }
 };
 
 export default Meta;

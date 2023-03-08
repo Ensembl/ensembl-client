@@ -19,7 +19,6 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { matchPath } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 import { Provider } from 'react-redux';
-import pick from 'lodash/pick';
 import type { Request, Response } from 'express';
 
 import routesConfig, { type RouteConfig } from 'src/routes/routesConfig';
@@ -72,7 +71,6 @@ const viewRouter = async (req: Request, res: Response) => {
   );
 
   const stream = renderToPipeableStream(ReactApp, {
-    bootstrapScripts: getBootstrapScripts(assetsManifest),
     onShellReady() {
       // If something errored before we started streaming, we set the error code appropriately.
       res.statusCode = didError ? 500 : statusCode;
@@ -80,7 +78,7 @@ const viewRouter = async (req: Request, res: Response) => {
       res.setHeader('Content-type', 'text/html');
 
       const template = renderTemplate({
-        assets: getTransferableAssetsManifest(assetsManifest),
+        assets: assetsManifest,
         state: reduxStore.getState(),
         config: configForClient,
         scripts: getBootstrapScripts(assetsManifest)
@@ -113,13 +111,6 @@ const getBootstrapScripts = (assetsManifest: Record<string, string>) => {
     assetsManifest['vendors.js'],
     assetsManifest['runtime~client.js']
   ].filter(Boolean);
-};
-
-// pick only relevant fields from the assets manifest to pass to the client
-const getTransferableAssetsManifest = (
-  assetsManifest: Record<string, string>
-) => {
-  return pick(assetsManifest, ['client.css']);
 };
 
 export default viewRouter;

@@ -28,6 +28,8 @@ import useRestoredReduxState from './useRestoredReduxState';
 import useDisabledDocumentDragover from './useDisabledDocumentDragover';
 
 import App from '../content/app/App';
+import Meta from 'src/content/html/Meta';
+import ThirdPartyScripts from 'src/content/html/ThirdParty';
 import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
@@ -68,8 +70,10 @@ export const Root = () => {
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
         <Suspense>
+          <Meta />
           <App />
           {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
+          <ThirdPartyScripts />
         </Suspense>
       </ErrorBoundary>
     </div>

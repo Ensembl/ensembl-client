@@ -21,7 +21,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
  * Some pages will also contain structured page data in json-ld format.
  */
 
-type PageMetaState = {
+export type PageMetaState = {
   title: string;
   description: string;
   structuredData?: Record<string, string>; // TODO: add in the future

@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { useEffect } from 'react';
+
+import config from 'config';
 
 const HOTJAR_ID = 2555715; // if we discover that this needs to be updated, we will extract it into an environment variable
 const HOTJAR_SCRIPT_VERSION = 6;
 const scriptSrc = `https://static.hotjar.com/c/hotjar-${HOTJAR_ID}.js?sv=${HOTJAR_SCRIPT_VERSION}`;
+
+const ThirdPartyScripts = () => {
+  const { shouldReportAnalytics } = config;
+
+  if (shouldReportAnalytics) {
+    return <HotjarScript />;
+  } else {
+    return null;
+  }
+};
 
 // TODO: remove as soon as it is no longer needed
 export const HotjarScript = () => {
@@ -47,3 +60,5 @@ function hotjarQueue() {
   (window as any).hj.q = (window as any).hj.q || [];
   (window as any).hj.q.push(arguments); // eslint-disable-line prefer-rest-params
 }
+
+export default ThirdPartyScripts;
