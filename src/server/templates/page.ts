@@ -19,6 +19,7 @@ import path from 'path';
 
 import { getPaths } from 'webpackDir/paths';
 
+import getConfigForServer from '../helpers/getConfigForServer';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 import type { ServerSideState } from 'src/server/serverSideReduxStore';
@@ -40,6 +41,8 @@ import type { TransferredClientConfig } from 'src/server/helpers/getConfigForCli
  *  10) <link rel="prefetch"> or <link rel="prerender">
  *  11) Everything else (SEO, meta tags, icons, open graph, etc.)
  */
+
+const serverConfig = getConfigForServer();
 
 const templatePlaceholders = {
   title: '<!-- Inject title -->',
@@ -82,7 +85,7 @@ const renderTemplate = (params: {
 let template = '';
 
 const getHtmlTemplate = () => {
-  if (!template) {
+  if (!template || !serverConfig.isProductionBuild) {
     template = fs.readFileSync(
       path.resolve(getPaths().buildServerDir, 'templates/page.html'),
       { encoding: 'utf-8' }
