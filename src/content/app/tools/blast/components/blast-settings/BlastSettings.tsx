@@ -382,10 +382,7 @@ const BlastGapPenalties = (props: {
   onChange: (value: string) => void;
 }) => {
   const { program, config, blastParameters, onChange } = props;
-  const {
-    gap_penalties: gapPenaltiesConfig,
-    valid_parameters_for_program: validParamsForProgram
-  } = config;
+  const { gap_penalties: gapPenaltiesConfig, presets } = config;
   const {
     matrix,
     match_scores: matchScores,
@@ -394,10 +391,9 @@ const BlastGapPenalties = (props: {
   } = blastParameters;
 
   let gapPenaltiesOptions: [string, string][] = [];
-  const shouldUseMatrix =
-    validParamsForProgram[
-      program as keyof BlastSettingsConfig['valid_parameters_for_program']
-    ].includes('matrix');
+  const shouldUseMatrix = Object.keys(
+    presets.settings[program].normal
+  ).includes('matrix');
 
   if (shouldUseMatrix && matrix) {
     gapPenaltiesOptions = gapPenaltiesConfig.options.matrix[matrix];
