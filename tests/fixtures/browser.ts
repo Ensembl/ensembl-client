@@ -15,14 +15,6 @@
  */
 
 import { faker } from '@faker-js/faker';
-import {
-  Markup,
-  ZmenuFeatureType,
-  ZmenuPayloadVarietyType,
-  type ZmenuContentTranscript,
-  type ZmenuContentGene,
-  type ZmenuCreatePayload
-} from '@ensembl/ensembl-genome-browser';
 
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 
@@ -37,6 +29,14 @@ import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
+import {
+  Markup,
+  ZmenuFeatureType,
+  ZmenuPayloadVarietyType,
+  type ZmenuContentTranscript,
+  type ZmenuContentGene,
+  type ZmenuPayload
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 export const createTrackSettings = () => ({
   'gene-focus': getDefaultGeneTrackSettings(),
@@ -105,10 +105,16 @@ export const createZmenuContentPayload = (): {
   };
 };
 
-export const createZmenuPayload = (): ZmenuCreatePayload => {
+export const createZmenuPayload = (): ZmenuPayload => {
   return {
     x: 100,
     y: 100,
+    'hotspot-area': {
+      top: 100,
+      left: 100,
+      right: 0,
+      bottom: 0
+    },
     content: [...createZmenuContentPayload().features],
     variety: [
       {

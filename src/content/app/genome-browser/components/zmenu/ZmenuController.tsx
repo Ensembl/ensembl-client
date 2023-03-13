@@ -15,16 +15,13 @@
  */
 
 import React, { useEffect, memo } from 'react';
-import {
-  type HotspotAction,
-  type HotspotPayload,
-  type ZmenuCreatePayload,
-  IncomingActionType
-} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import Zmenu from './Zmenu';
+
+import type { ZmenuPayload } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+import type { HotspotMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 
 type Props = {
   containerRef: React.RefObject<HTMLDivElement>;
@@ -33,27 +30,27 @@ type Props = {
 // when a zmenu is created, it’s assigned an id,
 // and its data is saved in the state keyed by this id
 // (just in case we need to show more than one zmenu at a time)
-export type StateZmenu = {
-  [key: string]: ZmenuCreatePayload;
+export type Zmenus = {
+  [key: string]: ZmenuPayload;
 };
 
 const ZmenuController = (props: Props) => {
-  const { genomeBrowser, zmenus, setZmenus } = useGenomeBrowser();
+  const { genomeBrowserService, zmenus, setZmenus } = useGenomeBrowser();
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.HOTSPOT,
+    const subscription = genomeBrowserService?.subscribe(
+      'hotspot',
       handleZmenuCreation
     );
 
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  }, [genomeBrowserService]);
 
-  const handleZmenuCreation = (action: HotspotAction) => {
-    if (!isZmenuPayload(action.payload)) {
+  const handleZmenuCreation = (message: HotspotMessage) => {
+    if (!isZmenuPayload(message.payload)) {
       return;
     }
-    const payload = action.payload;
+    const payload = message.payload;
     const zmenuId = Object.keys(zmenus).length + 1;
 
     setZmenus &&
@@ -79,8 +76,8 @@ const ZmenuController = (props: Props) => {
 };
 
 const isZmenuPayload = (
-  payload: HotspotPayload
-): payload is ZmenuCreatePayload => {
+  payload: HotspotMessage['payload']
+): payload is ZmenuPayload => {
   return payload.variety[0].type === 'zmenu';
 };
 

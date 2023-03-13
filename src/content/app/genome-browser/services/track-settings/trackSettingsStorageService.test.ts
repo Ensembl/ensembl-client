@@ -215,8 +215,8 @@ describe('trackSettingsStorageService', () => {
     const geneTrackId = 'gene-track';
     const refSeqTrackId = 'reference-sequence-track';
 
-    let geneTrack: any;
-    let refSeqTrack: any;
+    let geneTrack: ReturnType<typeof buildDefaultGeneTrack>;
+    let refSeqTrack: ReturnType<typeof buildDefaultRegularTrack>;
 
     beforeEach(async () => {
       geneTrack = buildDefaultGeneTrack(geneTrackId);
@@ -237,17 +237,15 @@ describe('trackSettingsStorageService', () => {
     describe('updateTrackSettings', () => {
       it('updates a single track', async () => {
         const trackBefore = await getTrackSettings(genomeId, geneTrackId);
-        expect(trackBefore?.settings.showTranscriptIds).toBe(false);
+        expect(trackBefore?.settings['transcript-label']).toBe(false);
 
-        const updatedTrackSettings = set(
-          'settings.showTranscriptIds',
-          true,
-          geneTrack
-        );
+        const updatedTrackSettings = structuredClone(geneTrack);
+        updatedTrackSettings.settings['transcript-label'] = true;
+
         await updateTrackSettings(genomeId, updatedTrackSettings);
 
         const trackAfter = await getTrackSettings(genomeId, geneTrackId);
-        expect(trackAfter?.settings.showTranscriptIds).toBe(true);
+        expect(trackAfter?.settings['transcript-label']).toBe(true);
       });
     });
 
@@ -260,20 +258,20 @@ describe('trackSettingsStorageService', () => {
         const refSeqTrackBefore = tracksBefore.find(
           (track) => track.trackId === refSeqTrack.id
         );
-        expect(geneTrackBefore?.settings.showTranscriptIds).toBe(false);
-        expect(geneTrackBefore?.settings.showTrackName).toBe(false);
-        expect(refSeqTrackBefore?.settings.showTrackName).toBe(false);
+        expect(geneTrackBefore?.settings['transcript-label']).toBe(false);
+        expect(geneTrackBefore?.settings.name).toBe(false);
+        expect(refSeqTrackBefore?.settings.name).toBe(false);
 
         const updatedGeneTrackSettings = {
           ...geneTrack,
           settings: {
             ...geneTrack.settings,
-            showTrackName: true,
-            showTranscriptIds: true
+            name: true,
+            ['transcript-label']: true
           }
         };
         const updatedRefSeqTrackSettings = set(
-          'settings.showTrackName',
+          'settings.name',
           true,
           refSeqTrack
         );
@@ -289,9 +287,9 @@ describe('trackSettingsStorageService', () => {
         const refSeqTrackAfter = tracksAfter.find(
           (track) => track.trackId === refSeqTrack.id
         );
-        expect(geneTrackAfter?.settings.showTranscriptIds).toBe(true);
-        expect(geneTrackAfter?.settings.showTrackName).toBe(true);
-        expect(refSeqTrackAfter?.settings.showTrackName).toBe(true);
+        expect(geneTrackAfter?.settings['transcript-label']).toBe(true);
+        expect(geneTrackAfter?.settings.name).toBe(true);
+        expect(refSeqTrackAfter?.settings.name).toBe(true);
       });
     });
   });

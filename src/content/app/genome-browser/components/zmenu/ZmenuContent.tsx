@@ -30,7 +30,7 @@ import {
   ZmenuContentTranscript,
   ZmenuContentGene,
   ZmenuContentVariant
-} from '@ensembl/ensembl-genome-browser';
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 import styles from './Zmenu.scss';
 

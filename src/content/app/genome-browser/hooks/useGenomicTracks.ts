@@ -90,7 +90,7 @@ const useGenomicTracks = () => {
 
 type TrackIdsList = {
   trackId: string;
-  isTurnedOn: boolean;
+  isEnabled: boolean;
 }[];
 
 // Create a list of tracks to enable in the genome browser.
@@ -107,7 +107,7 @@ const prepareTrackIdsList = (
         (track?.settings as { isVisible?: boolean })?.isVisible ?? true;
       return {
         trackId: track_id,
-        isTurnedOn: isVisibleTrack
+        isEnabled: isVisibleTrack
       };
     });
   return trackIdsList;
@@ -119,6 +119,7 @@ const sendTrackSettings = (
     Omit<ReturnType<typeof useGenomeBrowser>, 'genomeBrowser'>
   >
 ) => {
+  const { toggleTrackSetting } = genomeBrowserMethods;
   const genomicTrackSettings = pickBy(
     trackSettings,
     (_, key) => key !== 'focus'
@@ -126,32 +127,11 @@ const sendTrackSettings = (
   Object.entries(genomicTrackSettings).forEach(([trackId, { settings }]) => {
     Object.entries(settings).forEach((keyValuePair) => {
       const [settingName, settingValue] = keyValuePair as [string, boolean];
-      switch (settingName) {
-        case 'showTrackName':
-          genomeBrowserMethods.toggleTrackName({
-            trackId,
-            shouldShowTrackName: settingValue
-          });
-          break;
-        case 'showFeatureLabels':
-          genomeBrowserMethods.toggleFeatureLabels({
-            trackId,
-            shouldShowFeatureLabels: settingValue
-          });
-          break;
-        case 'showSeveralTranscripts':
-          genomeBrowserMethods.toggleSeveralTranscripts({
-            trackId,
-            shouldShowSeveralTranscripts: settingValue
-          });
-          break;
-        case 'showTranscriptIds':
-          genomeBrowserMethods.toggleTranscriptIds({
-            trackId,
-            shouldShowTranscriptIds: settingValue
-          });
-          break;
-      }
+      toggleTrackSetting({
+        trackId,
+        setting: settingName,
+        isEnabled: settingValue
+      });
     });
   });
 };

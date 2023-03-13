@@ -35,10 +35,10 @@ export enum TrackType {
 }
 
 export const getDefaultGeneTrackSettings = (): GeneTrackSettings => ({
-  showSeveralTranscripts: false,
-  showTranscriptIds: false,
-  showTrackName: false,
-  showFeatureLabels: true,
+  several: false,
+  'transcript-label': false,
+  name: false,
+  label: true,
   isVisible: true
 });
 
@@ -68,7 +68,7 @@ export const getDefaultFocusVariantTrackSettings =
   };
 
 export const getDefaultRegularTrackSettings = (): RegularTrackSettings => ({
-  showTrackName: false,
+  name: false,
   isVisible: true
 });
 

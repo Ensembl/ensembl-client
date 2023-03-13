@@ -32,14 +32,20 @@ import TrackSettingsPanel from './TrackSettingsPanel';
 const genomeId = 'fake_genome_id_1';
 const selectedTrackId = 'focus';
 
+const mockGenomeBrowser = new MockGenomeBrowser();
+
+jest.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowser',
+  () => () => ({
+    genomeBrowser: mockGenomeBrowser,
+    toggleTrackSetting: jest.fn()
+  })
+);
+
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackTrackNameToggle: jest.fn(),
-    trackFeatureLabelToggle: jest.fn(),
-    trackShowSeveralTranscriptsToggle: jest.fn(),
-    trackShowTranscriptsIdToggle: jest.fn(),
-    trackApplyToAllInTrackSettings: jest.fn()
+    trackToggledTrackSetting: jest.fn()
   })
 );
 
@@ -50,10 +56,8 @@ const renderComponent = () => {
       trackType: TrackType.GENE,
       status: 'selected',
       settings: {
-        showSeveralTranscripts: false,
-        showTranscriptIds: false,
-        showTrackName: false,
-        showFeatureLabels: false
+        name: false,
+        label: false
       }
     }
   } as const;
@@ -99,33 +103,9 @@ const renderComponent = () => {
   };
 };
 
-const mockGenomeBrowser = new MockGenomeBrowser();
-
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    genomeBrowser: mockGenomeBrowser,
-    toggleTrackName: jest.fn(),
-    toggleFeatureLabels: jest.fn(),
-    toggleTranscriptIds: jest.fn(),
-    toggleSeveralTranscripts: jest.fn()
-  })
-);
-
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackFeatureLabelToggle: jest.fn(),
-    trackTrackNameToggle: jest.fn(),
-    trackShowSeveralTranscriptsToggle: jest.fn(),
-    trackShowTranscriptsIdToggle: jest.fn(),
-    trackApplyToAllInTrackSettings: jest.fn()
-  })
-);
-
 describe('<TrackSettingsPanel />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('behaviour', () => {
@@ -135,21 +115,23 @@ describe('<TrackSettingsPanel />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackSettingsSlice, 'updateTrackName');
+      jest.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
-      expect(trackSettingsSlice.updateTrackName).toHaveBeenCalledWith({
+      expect(
+        trackSettingsSlice.updateTrackSettingsAndSave
+      ).toHaveBeenCalledWith({
         genomeId,
-        isTrackNameShown: true,
-        trackId: selectedTrackId
+        setting: 'name',
+        isEnabled: true
       });
 
       const updatedTrackSettings = updatedState.browser.trackSettings[genomeId]
         .settingsForIndividualTracks[selectedTrackId].settings as {
-        showTrackName: boolean;
+        name: boolean;
       };
-      expect(updatedTrackSettings.showTrackName).toBe(true);
+      expect(updatedTrackSettings.name).toBe(true);
     });
 
     it('toggles feature labels on the track', async () => {
@@ -158,21 +140,21 @@ describe('<TrackSettingsPanel />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackSettingsSlice, 'updateFeatureLabelsVisibility');
+      jest.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
       await userEvent.click(toggle);
       const updatedState = store.getState();
       expect(
-        trackSettingsSlice.updateFeatureLabelsVisibility
+        trackSettingsSlice.updateTrackSettingsAndSave
       ).toHaveBeenCalledWith({
         genomeId,
-        areFeatureLabelsShown: true,
-        trackId: selectedTrackId
+        setting: 'label',
+        isEnabled: true
       });
       const trackInfo =
         updatedState.browser.trackSettings[genomeId]
           .settingsForIndividualTracks[selectedTrackId];
       if (trackInfo.trackType === TrackType.GENE) {
-        expect(trackInfo.settings.showFeatureLabels).toBeTruthy();
+        expect(trackInfo.settings.label).toBeTruthy();
       }
     });
   });

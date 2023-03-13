@@ -15,7 +15,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 export enum BrowserNavAction {
   MOVE_LEFT = 'move_left',
@@ -25,10 +24,10 @@ export enum BrowserNavAction {
 }
 
 export const browserNavButtonActionMap = {
-  [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
-  [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
-  [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
-  [BrowserNavAction.ZOOM_IN]: OutgoingActionType.ZOOM_IN
+  // [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
+  // [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
+  // [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
+  // [BrowserNavAction.ZOOM_IN]: OutgoingActionType.ZOOM_IN
 };
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)

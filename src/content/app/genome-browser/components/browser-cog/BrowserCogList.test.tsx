@@ -18,9 +18,8 @@ import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, act } from '@testing-library/react';
-import { IncomingActionType } from '@ensembl/ensembl-genome-browser';
 
-import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+import MockGenomeBrowserService from 'tests/mocks/mockGenomeBrowserService';
 
 import { BrowserCogList } from './BrowserCogList';
 
@@ -28,12 +27,12 @@ import * as displayedTracksSlice from 'src/content/app/genome-browser/state/disp
 
 import createRootReducer from 'src/root/rootReducer';
 
-const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
+const mockGenomeBrowserService = new MockGenomeBrowserService();
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => ({
-    genomeBrowser: mockGenomeBrowser()
+    genomeBrowserService: mockGenomeBrowserService
   })
 );
 
@@ -88,40 +87,34 @@ describe('<BrowserCogList />', () => {
       expect(renderedCogs.length).toBe(displayedTracks.length);
     });
 
-    it('does not render the cogs if genome browser is not activated', () => {
-      mockGenomeBrowser.mockReturnValue(undefined);
-
-      const { container } = renderComponent();
-      expect(container.querySelector('.browserCog')).toBeFalsy();
-    });
-
     it('updates displayed tracks in redux after receiving genome browser message', () => {
-      mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
       jest.spyOn(displayedTracksSlice, 'setDisplayedTracks');
 
       renderComponent();
 
-      const newTrackSummary = [
-        {
-          'switch-id': 'focus',
-          height: 200,
-          offset: 0
-        },
-        {
-          'switch-id': 'contig',
-          height: 192,
-          offset: 200
-        }
-      ];
+      const newTrackSummary = {
+        summary: [
+          {
+            'switch-id': 'focus',
+            height: 200,
+            offset: 0
+          },
+          {
+            'switch-id': 'contig',
+            height: 192,
+            offset: 200
+          }
+        ]
+      };
 
       act(() => {
-        mockGenomeBrowser().simulateBrowserMessage({
-          type: IncomingActionType.TRACK_SUMMARY,
+        mockGenomeBrowserService.simulateBrowserMessage({
+          type: 'track_summary',
           payload: newTrackSummary
         });
       });
 
-      const expectedPayload = newTrackSummary.map((track) => ({
+      const expectedPayload = newTrackSummary.summary.map((track) => ({
         id: track['switch-id'],
         height: track.height,
         offsetTop: track.offset

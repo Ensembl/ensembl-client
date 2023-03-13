@@ -42,37 +42,31 @@ export const GeneTrackSettings = (
     getTrackSettingsForTrackId(state, trackId)
   )?.settings as GeneTrackSettingsType;
 
-  const {
-    updateTrackName,
-    updateFeatureLabelsVisibility,
-    updateShowSeveralTranscripts,
-    updateShowTranscriptIds
-  } = useTrackSettings({ selectedTrackId: trackId });
+  const { updateTrackSetting } = useTrackSettings({ selectedTrackId: trackId });
 
   if (!selectedTrackSettings) {
     return null;
   }
 
-  const shouldShowTrackName = selectedTrackSettings.showTrackName;
-  const shouldShowFeatureLabels = selectedTrackSettings.showFeatureLabels;
-  const shouldShowSeveralTranscripts =
-    selectedTrackSettings.showSeveralTranscripts;
-  const shouldShowTranscriptIds = selectedTrackSettings.showTranscriptIds;
+  const shouldShowTrackName = selectedTrackSettings.name;
+  const shouldShowFeatureLabels = selectedTrackSettings.label;
+  const shouldShowSeveralTranscripts = selectedTrackSettings.several;
+  const shouldShowTranscriptIds = selectedTrackSettings['transcript-label'];
 
   const handleSeveralTranscriptsToggle = () => {
-    updateShowSeveralTranscripts(!shouldShowSeveralTranscripts);
+    updateTrackSetting('several', !shouldShowSeveralTranscripts);
   };
 
   const handleTranscriptIdsToggle = () => {
-    updateShowTranscriptIds(!shouldShowTranscriptIds);
+    updateTrackSetting('transcript-label', !shouldShowTranscriptIds);
   };
 
   const handleTrackNameToggle = () => {
-    updateTrackName(!shouldShowTrackName);
+    updateTrackSetting('name', !shouldShowTrackName);
   };
 
   const handleFeatureLabelsToggle = () => {
-    updateFeatureLabelsVisibility(!shouldShowFeatureLabels);
+    updateTrackSetting('label', !shouldShowFeatureLabels);
   };
 
   return (

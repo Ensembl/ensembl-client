@@ -17,11 +17,6 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import {
-  IncomingActionType,
-  type BrowserCurrentLocationUpdateAction,
-  type BrowserTargetLocationUpdateAction
-} from '@ensembl/ensembl-genome-browser';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -39,6 +34,11 @@ import {
   updateChrLocation,
   type ChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+
+import type {
+  CurrentPositionMessage,
+  TargetPositionMessage
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 
 /**
  * The purpose of this hook is to listen and react to genome browser position change messages.
@@ -61,7 +61,7 @@ const useGenomeBrowserPosition = () => {
     focusObjectIdForUrl
   });
 
-  const { genomeBrowser } = useGenomeBrowser();
+  const { genomeBrowserService } = useGenomeBrowser();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -76,29 +76,29 @@ const useGenomeBrowserPosition = () => {
   }, [activeGenomeId, activeFocusId, genomeIdForUrl, focusObjectIdForUrl]);
 
   useEffect(() => {
-    const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
-      IncomingActionType.CURRENT_POSITION,
-      onBrowserLocationChange
-    );
-    const subscriptionToTargetPotitionMessages = genomeBrowser?.subscribe(
-      IncomingActionType.TARGET_POSITION,
-      onBrowserLocationChange
-    );
+    const subscriptionToActualPotitionMessages =
+      genomeBrowserService?.subscribe(
+        'current_position',
+        onBrowserLocationChange
+      );
+    const subscriptionToTargetPotitionMessages =
+      genomeBrowserService?.subscribe(
+        'target_position',
+        onBrowserLocationChange
+      );
 
     return () => {
       subscriptionToActualPotitionMessages?.unsubscribe();
       subscriptionToTargetPotitionMessages?.unsubscribe();
     };
-  }, [genomeBrowser]);
+  }, [genomeBrowserService]);
 
   const onBrowserLocationChange = (
-    action:
-      | BrowserCurrentLocationUpdateAction
-      | BrowserTargetLocationUpdateAction
+    message: CurrentPositionMessage | TargetPositionMessage
   ) => {
     const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
       idRef.current;
-    const { stick, start, end } = action.payload;
+    const { stick, start, end } = message.payload;
     const [genomeId, chromosome] = stick.split(':');
 
     if (genomeId !== activeGenomeId) {
@@ -107,7 +107,7 @@ const useGenomeBrowserPosition = () => {
       return;
     }
 
-    if (action.type === IncomingActionType.CURRENT_POSITION) {
+    if (message.type === 'current_position') {
       dispatch(updateActualChrLocation([chromosome, start, end]));
     } else {
       const chrLocation = [chromosome, start, end] as ChrLocation;

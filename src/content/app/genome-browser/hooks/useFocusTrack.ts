@@ -15,14 +15,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import {
-  IncomingActionType,
-  type HotspotAction,
-  type HotspotPayload,
-  type TranscriptsLozengePayload,
-  type TranscriptsLozengeContent,
-  type ReportVisibleTranscriptsAction
-} from '@ensembl/ensembl-genome-browser';
+import xor from 'lodash/xor';
 
 import { getTrackSettings as getTrackSettingsFromStorage } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 
@@ -34,6 +27,7 @@ import usePrevious from 'src/shared/hooks/usePrevious';
 
 import { buildDefaultFocusVariantTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { toggleTrack } from 'src/content/app/genome-browser/services/genome-browser-service/genomeBrowserCommands';
 
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
@@ -47,6 +41,15 @@ import {
   type FocusVariantTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
+import type {
+  TrackSummaryMessage,
+  HotspotMessage
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
+import type {
+  TrackSummary,
+  FocusGeneTrackSummary
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/trackSummary';
+import type { TranscriptsLozengePayload } from 'src/content/app/genome-browser/services/genome-browser-service/types/hotspot';
 import type {
   FocusGene,
   FocusVariant
@@ -62,11 +65,24 @@ import type {
 
 const useFocusTrack = () => {
   const genomeBrowserMethods = useGenomeBrowser(); // getting it here once to avoid unnecessarily calling this hook from inside child hooks
+  const { genomeBrowser } = genomeBrowserMethods;
   const { focusObjectId = '', parsedFocusObjectId = null } =
     useGenomeBrowserIds();
   const focusObject = useAppSelector((state) =>
     getFocusObjectById(state, focusObjectId)
   );
+
+  // QUESTION: is this useEffect needed?
+  useEffect(() => {
+    if (!genomeBrowser || !focusObjectId) {
+      return;
+    }
+    toggleTrack({
+      genomeBrowser,
+      trackId: 'focus',
+      isEnabled: true
+    });
+  }, [genomeBrowser, focusObjectId]);
 
   useFocusGene({
     genomeBrowserMethods,
@@ -97,7 +113,7 @@ type UseFocusGeneParams = {
 
 const useFocusGene = (params: UseFocusGeneParams) => {
   const { focusGene, genomeBrowserMethods, focusObjectId } = params;
-  const { genomeBrowser, updateFocusGeneTranscripts, setFocusGene } =
+  const { genomeBrowser, genomeBrowserService, updateFocusGeneTranscripts } =
     genomeBrowserMethods;
   const geneStableId = focusGene?.stable_id;
   const focusObjectIdRef = useRef(focusObjectId);
@@ -109,10 +125,10 @@ const useFocusGene = (params: UseFocusGeneParams) => {
   const allSortedFocusGeneTranscriptsRef = useRef<string[]>([]);
   const visibleTranscriptIdsRef = useRef(visibleTranscriptIds);
   const showSeveralTranscriptsRef = useRef(
-    focusGeneTrackSettings?.settings.showSeveralTranscripts
+    focusGeneTrackSettings?.settings.several
   );
   const previousSeveralTranscriptsSetting = usePrevious(
-    focusGeneTrackSettings?.settings.showSeveralTranscripts
+    focusGeneTrackSettings?.settings.several
   );
 
   const { currentData: fetchedFocusGeneData } = useGetTrackPanelGeneQuery(
@@ -142,7 +158,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
       : [];
     visibleTranscriptIdsRef.current = visibleTranscriptIds;
     showSeveralTranscriptsRef.current =
-      focusGeneTrackSettings?.settings.showSeveralTranscripts;
+      focusGeneTrackSettings?.settings.several;
   }, [
     focusObjectId,
     geneStableId,
@@ -151,23 +167,33 @@ const useFocusGene = (params: UseFocusGeneParams) => {
   ]);
 
   useEffect(() => {
-    if (!genomeBrowser) {
+    if (!genomeBrowserService) {
       return;
     }
-    const visibleTranscriptsSubscription = genomeBrowser.subscribe(
-      IncomingActionType.VISIBLE_TRANSCRIPTS,
-      (action: ReportVisibleTranscriptsAction) => {
-        const { gene_id, transcript_ids } = action.payload;
-        if (gene_id === geneIdRef.current) {
+    const visibleTranscriptsSubscription = genomeBrowserService.subscribe(
+      'track_summary',
+      (message: TrackSummaryMessage) => {
+        const focusGeneTrackInfo = getFocusGeneTrackInfo(
+          message.payload.summary
+        );
+        if (!focusGeneTrackInfo) {
+          return; // shouldn't happen
+        }
+
+        const { gene_id, transcript_ids } = focusGeneTrackInfo;
+        if (
+          gene_id === geneIdRef.current &&
+          xor(transcript_ids, visibleTranscriptIdsRef.current).length // symmetric difference between two arrays; TODO: replace with Set.prototype.symmetricDifference when it is included in JS standard
+        ) {
           setVisibleTranscriptIds(transcript_ids);
         }
       }
     );
 
-    const lozengeClicksSubscription = genomeBrowser.subscribe(
-      IncomingActionType.HOTSPOT,
-      (action: HotspotAction) => {
-        if (isLozengeClickMessage(action.payload)) {
+    const lozengeClicksSubscription = genomeBrowserService.subscribe(
+      'hotspot',
+      (message: HotspotMessage) => {
+        if (isLozengeClickMessage(message.payload)) {
           onLozengeClick();
         }
       }
@@ -181,15 +207,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     return () => {
       subscriptions.forEach((subscription) => subscription.unsubscribe());
     };
-  }, [genomeBrowser]);
-
-  useEffect(() => {
-    if (!geneStableId) {
-      return;
-    }
-
-    setFocusGene(focusObjectId);
-  }, [genomeBrowser, focusObjectId]);
+  }, [genomeBrowserService]);
 
   /**
    * In the below hook, we are making a choice about how many transcript ids to send to the genome browser.
@@ -206,13 +224,12 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     if (
       !visibleTranscriptIds || // hopefully, there won't be any race conditions
       (typeof previousSeveralTranscriptsSetting === 'boolean' &&
-        typeof focusGeneTrackSettings?.settings.showSeveralTranscripts ===
-          'boolean' &&
+        typeof focusGeneTrackSettings?.settings.several === 'boolean' &&
         previousSeveralTranscriptsSetting !==
-          focusGeneTrackSettings?.settings.showSeveralTranscripts) // the toggle has been switched
+          focusGeneTrackSettings?.settings.several) // the toggle has been switched
     ) {
       const shouldShowSeveralTranscripts =
-        focusGeneTrackSettings?.settings.showSeveralTranscripts;
+        focusGeneTrackSettings?.settings.several;
       const numberOfTranscriptsToShow = shouldShowSeveralTranscripts ? 5 : 1;
 
       transcriptIds = allSortedFocusGeneTranscriptsRef.current.slice(
@@ -228,7 +245,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
     geneStableId,
     stringifiedVisibleTranscriptIds,
-    focusGeneTrackSettings?.settings.showSeveralTranscripts,
+    focusGeneTrackSettings?.settings.several,
     allSortedFocusGeneTranscriptsRef.current.length
   ]);
 
@@ -278,33 +295,21 @@ const sendFocusGeneTrackSettings = (
   genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>
 ) => {
   const trackId = 'focus';
+  const { toggleTrackSetting } = genomeBrowserMethods;
 
   // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
   // message to the genome browser here. We haven't found a good way of reconciling the state
   // of the "show five transcripts" toggle for the focus gene track, and the list of manually shown/hidden transcripts
-  Object.entries(trackSettings).forEach((keyValuePair) => {
-    const [settingName, settingValue] = keyValuePair as [string, boolean];
-    switch (settingName) {
-      case 'showTrackName':
-        genomeBrowserMethods.toggleTrackName({
-          trackId,
-          shouldShowTrackName: settingValue
-        });
-        break;
-      case 'showFeatureLabels':
-        genomeBrowserMethods.toggleFeatureLabels({
-          trackId,
-          shouldShowFeatureLabels: settingValue
-        });
-        break;
-      case 'showTranscriptIds':
-        genomeBrowserMethods.toggleTranscriptIds({
-          trackId,
-          shouldShowTranscriptIds: settingValue
-        });
-        break;
-    }
-  });
+  Object.entries(trackSettings)
+    .filter(([settingName]) => settingName !== 'several')
+    .forEach((keyValuePair) => {
+      const [settingName, settingValue] = keyValuePair as [string, boolean];
+      toggleTrackSetting({
+        trackId,
+        setting: settingName,
+        isEnabled: settingValue
+      });
+    });
 };
 
 type UseFocusVariantParams = {
@@ -315,12 +320,8 @@ type UseFocusVariantParams = {
 
 const useFocusVariant = (params: UseFocusVariantParams) => {
   const { focusVariant, genomeBrowserMethods } = params;
-  const {
-    setFocusGene,
-    toggleFocusVariantTrackSetting,
-    toggleTrackName,
-    genomeBrowser
-  } = genomeBrowserMethods;
+  const { setFocusObject, toggleTrackSetting, genomeBrowser } =
+    genomeBrowserMethods;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -330,8 +331,7 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
 
     restoreTrackSettings(focusVariant.genome_id);
 
-    // FIXME: rename setFocusGene method!
-    setFocusGene(focusVariant.object_id);
+    setFocusObject(focusVariant.object_id);
   }, [genomeBrowser, focusVariant?.object_id]);
 
   // NOTE: ideally, this should be run once per genome id change or once per focus object type change
@@ -365,31 +365,39 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
   };
 
   const applyGenomeBrowserSettings = (trackSettings: TrackSettings) => {
-    for (const [key, value] of Object.entries(trackSettings.settings)) {
-      if (key === 'name') {
-        toggleTrackName({
-          trackId: 'focus',
-          shouldShowTrackName: value
-        });
-      } else {
-        toggleFocusVariantTrackSetting({
-          settingName: key,
-          isOn: value
-        });
-      }
+    for (const [settingName, settingValue] of Object.entries(
+      trackSettings.settings
+    )) {
+      toggleTrackSetting({
+        trackId: 'focus-variant',
+        setting: settingName,
+        isEnabled: settingValue
+      });
     }
   };
 };
 
-const isLozengeClickMessage = (
-  payload: HotspotPayload
-): payload is TranscriptsLozengePayload => {
-  const isLozengeClickPayload = payload.variety[0].type === 'lozenge';
+const getFocusGeneTrackInfo = (trackSummary: TrackSummary[]) => {
+  const focusTrackSummary = trackSummary.find(
+    (track) => track['switch-id'] === 'focus'
+  ) as FocusGeneTrackSummary | null;
+  if (!focusTrackSummary) {
+    return null;
+  }
 
-  return (
-    isLozengeClickPayload &&
-    (payload.content[0] as TranscriptsLozengeContent).focus
-  );
+  const transcript_ids = focusTrackSummary['transcripts-shown'];
+  const gene_id = focusTrackSummary.id;
+
+  return {
+    transcript_ids,
+    gene_id
+  };
+};
+
+const isLozengeClickMessage = (payload: {
+  variety: { type: string }[];
+}): payload is TranscriptsLozengePayload => {
+  return payload.variety[0].type === 'lozenge';
 };
 
 export default useFocusTrack;

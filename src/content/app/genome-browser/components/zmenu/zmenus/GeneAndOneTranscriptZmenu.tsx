@@ -24,16 +24,16 @@ import { ToolboxExpandableContent } from 'src/shared/components/toolbox';
 import ZmenuContent from '../ZmenuContent';
 import ZmenuInstantDownload from '../ZmenuInstantDownload';
 
-import {
-  type ZmenuContentTranscript,
-  type ZmenuContentGene,
-  type ZmenuCreatePayload
-} from '@ensembl/ensembl-genome-browser';
+import type {
+  ZmenuContentTranscript,
+  ZmenuContentGene,
+  ZmenuPayload
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 import styles from '../Zmenu.scss';
 
 type Props = {
-  payload: ZmenuCreatePayload;
+  payload: ZmenuPayload;
   onDestroy: () => void;
 };
 

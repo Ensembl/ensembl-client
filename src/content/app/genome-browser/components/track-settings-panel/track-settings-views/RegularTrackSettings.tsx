@@ -42,11 +42,15 @@ export const RegularTrackSettings = (
     getTrackSettingsForTrackId(state, trackId)
   )?.settings as RegularTrackSettingsType;
 
-  const { updateTrackName } = useTrackSettings({
+  const { updateTrackSetting } = useTrackSettings({
     selectedTrackId: trackId
   });
 
-  const shouldShowTrackName = trackSettings.showTrackName;
+  const shouldShowTrackName = trackSettings.name;
+
+  const onTrackNameToggle = () => {
+    updateTrackSetting('name', !shouldShowTrackName);
+  };
 
   return (
     <div className={styles.trackSettingsPanel} ref={ref}>
@@ -57,7 +61,7 @@ export const RegularTrackSettings = (
             <label>Track name</label>
             <SlideToggle
               isOn={shouldShowTrackName}
-              onChange={() => updateTrackName(!shouldShowTrackName)}
+              onChange={onTrackNameToggle}
               className={styles.slideToggle}
             />
           </div>

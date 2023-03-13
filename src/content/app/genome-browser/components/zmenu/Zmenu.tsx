@@ -18,12 +18,6 @@ import React, { useEffect } from 'react';
 import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
-import {
-  ZmenuPayloadVariety,
-  ZmenuPayloadVarietyType,
-  ZmenuCreatePayload
-} from '@ensembl/ensembl-genome-browser';
-
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
@@ -36,6 +30,12 @@ import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import GeneAndOneTranscriptZmenu from './zmenus/GeneAndOneTranscriptZmenu';
 import VariantZmenu from './zmenus/VariantZmenu';
 
+import {
+  ZmenuPayloadVarietyType,
+  type ZmenuPayloadVariety,
+  type ZmenuPayload
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+
 import styles from './Zmenu.scss';
 
 enum Direction {
@@ -45,7 +45,7 @@ enum Direction {
 
 export type ZmenuProps = {
   zmenuId: string;
-  payload: ZmenuCreatePayload;
+  payload: ZmenuPayload;
   containerRef: React.RefObject<HTMLDivElement>;
 };
 

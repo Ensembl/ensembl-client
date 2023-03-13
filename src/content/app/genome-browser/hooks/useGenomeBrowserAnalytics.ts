@@ -103,50 +103,16 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackTrackNameToggle = (
-    selectedCog: string,
-    isTrackNameShown: boolean
+  const trackToggledTrackSetting = (
+    trackId: string,
+    settingName: string,
+    isEnabled: boolean
   ) => {
+    const trackSettingStatus = isEnabled ? 'on' : 'off';
     sendTrackEvent({
       category: 'track_settings',
-      label: selectedCog,
-      action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
-    });
-  };
-
-  const trackFeatureLabelToggle = (
-    selectedCog: string,
-    areFeatureLabelsShown: boolean
-  ) => {
-    sendTrackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'feature_labels_' + (areFeatureLabelsShown ? 'on' : 'off')
-    });
-  };
-
-  const trackShowSeveralTranscriptsToggle = (
-    selectedCog: string,
-    areSeveralTranscriptsShown: boolean
-  ) => {
-    sendTrackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action:
-        'several_transcripts_' + (areSeveralTranscriptsShown ? 'on' : 'off'),
-      feature
-    });
-  };
-
-  const trackShowTranscriptsIdToggle = (
-    selectedCog: string,
-    shouldShowTranscriptIds: boolean
-  ) => {
-    sendTrackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'transcript_labels_' + (shouldShowTranscriptIds ? 'on' : 'off'),
-      feature
+      label: trackId,
+      action: `${settingName}_${trackSettingStatus}`
     });
   };
 
@@ -295,12 +261,9 @@ const useGenomeBrowserAnalytics = () => {
     trackRegionFieldChange,
     trackBookmarksDrawerOpened,
     trackPreviouslyViewedObjectClicked,
-    trackFeatureLabelToggle,
-    trackShowSeveralTranscriptsToggle,
-    trackShowTranscriptsIdToggle,
+    trackToggledTrackSetting,
     reportTrackPanelTabChange,
     reportTrackPanelSectionToggled,
-    trackTrackNameToggle,
     reportTrackVisibilityToggled,
     trackFocusTrackVisibilityToggled,
     trackTranscriptInTrackVisibilityToggled,
