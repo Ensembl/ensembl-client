@@ -66,14 +66,6 @@ const downloadBlastSubmission = async (
     ''
   );
 
-  // const allBlastJobsWithRawData = fetchedRawJobResults.map((job, index) => {
-  //   const jobWithoutRawData = allBlastJobsWithTSVs[index];
-  //   return {
-  //     ...jobWithoutRawData,
-  //     raw: job.result
-  //   };
-  // });
-
   const zip = await createZipArchive({
     submission,
     table: blastSubmissionTable,
