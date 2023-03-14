@@ -71,7 +71,7 @@ export type BlastJobWithResults = Omit<BlastJob, 'data'> & {
   data: BlastJobResultsFromAPI;
 };
 
-type SubmittedBlastData = {
+export type SubmittedBlastData = {
   species: Species[];
   sequences: SubmittedSequence[];
   preset: string;

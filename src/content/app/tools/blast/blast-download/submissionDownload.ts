@@ -20,60 +20,16 @@ import {
 } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { getFormattedDate } from 'src/shared/helpers/formatters/dateFormatter';
 
-import {
-  createTSVForGenomicBlast,
-  createTSVForTranscriptBlast,
-  createTSVForProteinBlast
-} from './createBlastTSVTable';
+import { printBlastSubmissionTable } from './renderSubmissionTable';
 import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type { AppDispatch } from 'src/store';
-import type {
-  SuccessfulBlastSubmission,
-  BlastJobWithResults
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-
-/**
- * 1) Take a BLAST submission as an input
- * 2) Fetch all results for this submission (sometimes this will already be cached in redux)
- * 3) Also, fetch all raw BLAST files
- * 4) Create comma-separated tables for results
- * 5) Pack everything into a zip file according to a defined folder structure
- * 
- * The desired file tree structure (as a rough approximation):
-
-    submission/
-    ├─ species 1/
-    │  ├─ sequence 1/
-    │  │  ├─ table.tsv
-    │  │  ├─ alignments.txt
-    │  ├─ sequence 2/
-    │  │  ├─ table.tsv
-    │  │  ├─ alignments.txt
-    ├─ species 2/
-    │  ├─ sequence 1/
-    │  │  ├─ table.tsv
-    │  │  ├─ alignments.txt
-    │  ├─ sequence 2/
-    │  │  ├─ table.tsv
-    │  │  ├─ alignments.txt
-
- */
-
-type EnrichedBlastJobWithResults = BlastJobWithResults & {
-  tsv: string;
-  raw: string;
-};
-
-type EnrichedBlastSubmission = SuccessfulBlastSubmission & {
-  results: EnrichedBlastJobWithResults[];
-};
+import type { SuccessfulBlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
 const downloadBlastSubmission = async (
   submission: SuccessfulBlastSubmission,
   dispatch: AppDispatch
 ) => {
-  const blastedAgainst = submission.submittedData.parameters.database; // 'dna_sm' | 'dna' | 'cdna' | 'pep'
   const jobIds = submission.results.map(({ jobId }) => jobId);
   const blastJobsQuery = dispatch(fetchAllBlastJobs.initiate(jobIds));
   const rawBlastResultsQuery = dispatch(
@@ -94,33 +50,34 @@ const downloadBlastSubmission = async (
     data: fetchedJobResults[index].result
   }));
 
-  const allBlastJobsWithTSVs = allBlastJobs.map((job) => {
-    let tsv = '';
-    if (blastedAgainst === 'dna' || blastedAgainst === 'dna_sm') {
-      tsv = createTSVForGenomicBlast(job.data);
-    } else if (blastedAgainst === 'cdna') {
-      tsv = createTSVForTranscriptBlast(job.data);
-    } else if (blastedAgainst === 'pep') {
-      tsv = createTSVForProteinBlast(job.data);
-    }
-
-    return {
-      ...job,
-      tsv
-    };
+  const blastSubmissionTable = printBlastSubmissionTable({
+    ...submission,
+    results: allBlastJobs
   });
 
-  const allBlastJobsWithRawData = fetchedRawJobResults.map((job, index) => {
-    const jobWithoutRawData = allBlastJobsWithTSVs[index];
-    return {
-      ...jobWithoutRawData,
-      raw: job.result
-    };
-  });
+  const combinedRawJobResults = fetchedRawJobResults.reduce(
+    (combinedText, { result: text }): string => {
+      if (!combinedText) {
+        return text;
+      } else {
+        return combinedText + '\n\n' + text;
+      }
+    },
+    ''
+  );
+
+  // const allBlastJobsWithRawData = fetchedRawJobResults.map((job, index) => {
+  //   const jobWithoutRawData = allBlastJobsWithTSVs[index];
+  //   return {
+  //     ...jobWithoutRawData,
+  //     raw: job.result
+  //   };
+  // });
 
   const zip = await createZipArchive({
-    ...submission,
-    results: allBlastJobsWithRawData
+    submission,
+    table: blastSubmissionTable,
+    raw: combinedRawJobResults
   });
 
   const blob = await zip.generateAsync({ type: 'blob' });
@@ -128,42 +85,20 @@ const downloadBlastSubmission = async (
   await downloadBlobAsFile(blob, `${zipFileName}.zip`);
 };
 
-const createZipArchive = async (submission: EnrichedBlastSubmission) => {
+const createZipArchive = async (params: {
+  table: string;
+  raw: string;
+  submission: SuccessfulBlastSubmission;
+}) => {
+  const { submission, table, raw } = params;
   const JSZip = await import('jszip').then((module) => module.default); // use a dynamic import to split this library off in a separate chunk
-
-  const {
-    submittedData: { species: allSpecies },
-    results
-  } = submission;
-  const speciesFolderNamesMap = new Map<string, string>();
-
-  for (const species of allSpecies) {
-    const folderName = `${species.scientific_name}-${species.genome_id}`;
-    speciesFolderNamesMap.set(species.genome_id, folderName);
-  }
+  const tableFileName = 'table.tsv';
+  const rawOutputFileName = 'output.txt';
 
   const zip = new JSZip();
   const rootFolder = zip.folder(getNameForZipRoot(submission));
-
-  for (const blastResult of results) {
-    const { genomeId, sequenceId, tsv, raw } = blastResult;
-    const tsvFileName = 'table'; // NOTE: this will probably change
-    const rawFileName = 'output'; // NOTE: this will probably change
-    const speciesFolderName = speciesFolderNamesMap.get(genomeId);
-    const sequenceFolderName = `Query sequence ${sequenceId}`; // NOTE: this name will probably change as well
-    if (!speciesFolderName) {
-      // should never happen
-      continue;
-    }
-    rootFolder?.file(
-      `${speciesFolderName}/${sequenceFolderName}/${tsvFileName}.tsv`,
-      tsv
-    );
-    rootFolder?.file(
-      `${speciesFolderName}/${sequenceFolderName}/${rawFileName}.txt`,
-      raw
-    );
-  }
+  rootFolder?.file(tableFileName, table);
+  rootFolder?.file(rawOutputFileName, raw);
 
   return zip;
 };
