@@ -173,6 +173,17 @@ const useBlastForm = () => {
     dispatch(setBlastSubmissionNameAction(name));
   };
 
+  const setGapPenalties = (gapOpen: string, gapExtend: string) => {
+    setBlastParameter({
+      parameterName: 'gapopen' as BlastParameterName,
+      parameterValue: gapOpen
+    });
+    setBlastParameter({
+      parameterName: 'gapext' as BlastParameterName,
+      parameterValue: gapExtend
+    });
+  };
+
   const setBlastParameter = (params: {
     parameterName: BlastParameterName;
     parameterValue: string;
@@ -193,6 +204,7 @@ const useBlastForm = () => {
     updateSensitivityPresets,
     setUncommittedSequencePresence,
     setBlastSubmissionName,
+    setGapPenalties,
     setBlastParameter
   };
 };

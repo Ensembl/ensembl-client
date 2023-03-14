@@ -100,6 +100,7 @@ const BlastSettings = ({ config }: Props) => {
     updateBlastDatabase,
     updateBlastProgram,
     updateSensitivityPresets,
+    setGapPenalties,
     setBlastParameter
   } = useBlastForm();
 
@@ -130,14 +131,40 @@ const BlastSettings = ({ config }: Props) => {
 
   const onGapPenaltiesChange = (newValue: string) => {
     const [gapOpen, gapExtend] = newValue.split(',');
-    setBlastParameter({
-      parameterName: 'gapopen' as BlastParameterName,
-      parameterValue: gapOpen
-    });
-    setBlastParameter({
-      parameterName: 'gapext' as BlastParameterName,
-      parameterValue: gapExtend
-    });
+    setGapPenalties(gapOpen, gapExtend);
+  };
+
+  const updateGapPenalties = (currentOptions: [string, string][]) => {
+    const { gapopen: defaultGapOpen, gapext: defaultGapExtend } =
+      config.presets.settings[blastProgram][searchSensitivity];
+
+    if (
+      currentOptions.includes([
+        defaultGapOpen as string,
+        defaultGapExtend as string
+      ])
+    ) {
+      setGapPenalties(defaultGapOpen as string, defaultGapExtend as string);
+    } else {
+      const [gapOpen, gapExtend] = currentOptions[0];
+      setGapPenalties(gapOpen, gapExtend);
+    }
+  };
+
+  const onMatchScoresChange = (score: string) => {
+    onBlastParameterChange('match_scores', score);
+
+    const currentGapPenaltiesOptions =
+      config.gap_penalties.options.match_scores[score];
+    updateGapPenalties(currentGapPenaltiesOptions);
+  };
+
+  const onMatrixChange = (matrix: string) => {
+    onBlastParameterChange('matrix', matrix);
+
+    const currentGapPenaltiesOptions =
+      config.gap_penalties.options.matrix[matrix];
+    updateGapPenalties(currentGapPenaltiesOptions);
   };
 
   const onBlastParameterChange = (
@@ -295,9 +322,7 @@ const BlastSettings = ({ config }: Props) => {
                 label={config.parameters.match_scores.label}
                 description={config.parameters.match_scores.description}
                 selectedOption={blastParameters.match_scores as string}
-                onChange={(value: string) =>
-                  onBlastParameterChange('match_scores', value)
-                }
+                onChange={onMatchScoresChange}
               />
             )}
             <div className={styles.matrixSetting}>
@@ -307,9 +332,7 @@ const BlastSettings = ({ config }: Props) => {
                   label={config.parameters.matrix.label}
                   description={config.parameters.matrix.description}
                   selectedOption={blastParameters.matrix as string}
-                  onChange={(value: string) =>
-                    onBlastParameterChange('matrix', value)
-                  }
+                  onChange={onMatrixChange}
                 />
               )}
             </div>
@@ -405,6 +428,7 @@ const BlastGapPenalties = (props: {
     label: `${gapOpen}, ${gapExtend}`,
     value: `${gapOpen},${gapExtend}`
   }));
+
   return (
     <BlastSelect
       options={options as Option[]}
