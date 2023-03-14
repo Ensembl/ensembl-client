@@ -156,11 +156,13 @@ const printData = (submission: BlastSubmissionWithJobsWithResults) => {
         continue;
       }
 
-      const tableForJob = jobRenderer({
+      const tableHead = jobRenderer.printHead();
+      const tableForJob = jobRenderer.printBody({
         species,
         sequence,
         job
       });
+      table += `${tableHead}\n`;
       table += tableForJob;
     }
   }
@@ -171,22 +173,25 @@ const printData = (submission: BlastSubmissionWithJobsWithResults) => {
 const getJobRenderer = (blastDatabase: string) => {
   switch (blastDatabase) {
     case 'pep':
-      return printProteinsTable;
+      return {
+        printHead: printProteinsTableHead,
+        printBody: printProteinsTable
+      };
     case 'cdna':
-      return printTranscriptsTable;
+      return {
+        printHead: printTranscriptsTableHead,
+        printBody: printTranscriptsTable
+      };
     default:
-      return printGenomicTable;
+      return {
+        printHead: printGenomicTableHead,
+        printBody: printGenomicTable
+      };
   }
 };
 
-const printGenomicTable = (params: {
-  species: SubmittedBlastData['species'][number];
-  sequence: SubmittedBlastData['sequences'][number];
-  job: BlastJobWithResults;
-}) => {
-  const { species, sequence, job } = params;
-  const table: (string | number)[][] = [];
-  const headerRow = [
+const printGenomicTableHead = () => {
+  const columnNames = [
     'Query sequence no.',
     'Query sequence header',
     'Query full length',
@@ -195,7 +200,7 @@ const printGenomicTable = (params: {
     'E-value',
     'Hit length',
     '% ID',
-    'Bit score',
+    'Score',
     'Genomic location',
     'Hit orientation',
     'Hit start',
@@ -206,7 +211,16 @@ const printGenomicTable = (params: {
     'Query sequence',
     'Hit sequence'
   ];
-  table.push(headerRow);
+  return tabulate(columnNames);
+};
+
+const printGenomicTable = (params: {
+  species: SubmittedBlastData['species'][number];
+  sequence: SubmittedBlastData['sequences'][number];
+  job: BlastJobWithResults;
+}) => {
+  const { species, sequence, job } = params;
+  const table: (string | number)[][] = [];
 
   const hspsWithHits = job.data.hits.flatMap((hit) => {
     return hit.hit_hsps.map((hsp) => ({ ...hsp, hit }));
@@ -246,14 +260,8 @@ const printGenomicTable = (params: {
   return table.map(tabulate).join('\n');
 };
 
-const printTranscriptsTable = (params: {
-  species: SubmittedBlastData['species'][number];
-  sequence: SubmittedBlastData['sequences'][number];
-  job: BlastJobWithResults;
-}) => {
-  const { species, sequence, job } = params;
-  const table: (string | number)[][] = [];
-  const headerRow = [
+const printTranscriptsTableHead = () => {
+  const columnNames = [
     'Query sequence no.',
     'Query sequence header',
     'Query full length',
@@ -262,7 +270,7 @@ const printTranscriptsTable = (params: {
     'E-value',
     'Hit length',
     '% ID',
-    'Bit score',
+    'Score',
     'Transcript ID',
     'Hit orientation',
     'Hit start',
@@ -273,7 +281,16 @@ const printTranscriptsTable = (params: {
     'Query sequence',
     'Hit sequence'
   ];
-  table.push(headerRow);
+  return tabulate(columnNames);
+};
+
+const printTranscriptsTable = (params: {
+  species: SubmittedBlastData['species'][number];
+  sequence: SubmittedBlastData['sequences'][number];
+  job: BlastJobWithResults;
+}) => {
+  const { species, sequence, job } = params;
+  const table: (string | number)[][] = [];
 
   const hspsWithHits = job.data.hits.flatMap((hit) => {
     return hit.hit_hsps.map((hsp) => ({ ...hsp, hit }));
@@ -313,14 +330,8 @@ const printTranscriptsTable = (params: {
   return table.map(tabulate).join('\n');
 };
 
-const printProteinsTable = (params: {
-  species: SubmittedBlastData['species'][number];
-  sequence: SubmittedBlastData['sequences'][number];
-  job: BlastJobWithResults;
-}) => {
-  const { species, sequence, job } = params;
-  const table: (string | number)[][] = [];
-  const headerRow = [
+const printProteinsTableHead = () => {
+  const columnNames = [
     'Query sequence no.',
     'Query sequence header',
     'Query full length',
@@ -329,7 +340,7 @@ const printProteinsTable = (params: {
     'E-value',
     'Hit length',
     '% ID',
-    'Bit score',
+    'Score',
     'Protein ID',
     'Hit orientation',
     'Hit start',
@@ -340,7 +351,17 @@ const printProteinsTable = (params: {
     'Query sequence',
     'Hit sequence'
   ];
-  table.push(headerRow);
+
+  return tabulate(columnNames);
+};
+
+const printProteinsTable = (params: {
+  species: SubmittedBlastData['species'][number];
+  sequence: SubmittedBlastData['sequences'][number];
+  job: BlastJobWithResults;
+}) => {
+  const { species, sequence, job } = params;
+  const table: (string | number)[][] = [];
 
   const hspsWithHits = job.data.hits.flatMap((hit) => {
     return hit.hit_hsps.map((hsp) => ({ ...hsp, hit }));
