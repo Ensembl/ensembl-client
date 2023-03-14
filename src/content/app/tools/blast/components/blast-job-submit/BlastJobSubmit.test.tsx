@@ -86,6 +86,7 @@ const expectedPayload = {
     value: seq.value
   })),
   preset: 'normal',
+  sequenceType: 'dna',
   submissionName,
   parameters: {
     database,
