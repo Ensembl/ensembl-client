@@ -56,11 +56,12 @@ const printMetadata = (submission: BlastSubmissionWithJobsWithResults) => {
   rows.push(
     tabulate(['Blast type', submission.submittedData.parameters.program])
   );
-  // TODO: store query sequence type
-  // rows.push(tabulate([
-  //   'Query sequence type',
-  //   formatSequenceType(submission.submittedData.parameters.)
-  // ]));
+  rows.push(
+    tabulate([
+      'Query sequence type',
+      formatSequenceType(submission.submittedData.sequenceType)
+    ])
+  );
   rows.push(
     tabulate([
       'Database type queried',
@@ -409,13 +410,13 @@ const printCommonCells = (params: {
   };
 };
 
-// const formatSequenceType = (type: string) => {
-//   if (type === 'protein') {
-//     return 'Protein';
-//   } else {
-//     return 'Nucleotide';
-//   }
-// };
+const formatSequenceType = (type: string) => {
+  if (type === 'protein') {
+    return 'Protein';
+  } else {
+    return 'Nucleotide';
+  }
+};
 
 const formatDatabaseType = (type: string) => {
   if (type === 'pep') {

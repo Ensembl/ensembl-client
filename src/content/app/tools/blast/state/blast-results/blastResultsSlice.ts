@@ -75,6 +75,7 @@ export type SubmittedBlastData = {
   species: Species[];
   sequences: SubmittedSequence[];
   preset: string;
+  sequenceType: string;
   submissionName: string;
   parameters: BlastSubmissionParameters;
 };
