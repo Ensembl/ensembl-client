@@ -59,8 +59,13 @@ const BrowserTrackLegend = (props: Props) => {
     if (!isTrackLegendHotspot(payload)) {
       return;
     }
+
+    const { bottom, top, right } = payload['hotspot-area'];
+    const toolTipX = right;
+    const toolTipY = top + (bottom - top) / 2 + 4;
+
     if (payload.start) {
-      setPosition({ x: payload.x, y: payload.y });
+      setPosition({ x: toolTipX, y: toolTipY });
     } else {
       setPosition(null);
     }
