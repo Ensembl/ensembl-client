@@ -145,6 +145,8 @@ const printData = (submission: BlastSubmissionWithJobsWithResults) => {
   let table = '';
   table += '\n[DATA]\n';
 
+  table += `${jobRenderer.printHead()}\n`;
+
   for (const species of submission.submittedData.species) {
     for (const sequence of submission.submittedData.sequences) {
       const job = submission.results.find(
@@ -156,13 +158,11 @@ const printData = (submission: BlastSubmissionWithJobsWithResults) => {
         continue;
       }
 
-      const tableHead = jobRenderer.printHead();
       const tableForJob = jobRenderer.printBody({
         species,
         sequence,
         job
       });
-      table += `${tableHead}\n`;
       table += tableForJob;
     }
   }
