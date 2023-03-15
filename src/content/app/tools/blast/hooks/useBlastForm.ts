@@ -45,6 +45,7 @@ import type {
   BlastParameterName
 } from 'src/content/app/tools/blast/types/blastSettings';
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
+import type { BlastSettingsConfig } from 'src/content/app/tools/blast/types/blastSettings';
 
 /**
  * The purpose of this hook is to abstract away from React components
@@ -188,7 +189,12 @@ const useBlastForm = () => {
     parameterName: BlastParameterName;
     parameterValue: string;
   }) => {
-    dispatch(setBlastParameterAction(params));
+    dispatch(
+      setBlastParameterAction({
+        ...params,
+        config: config as BlastSettingsConfig
+      })
+    );
   };
 
   return {

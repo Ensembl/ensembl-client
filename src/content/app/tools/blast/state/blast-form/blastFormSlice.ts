@@ -180,6 +180,36 @@ const updateEmptyInputVisibility = (
   }
 };
 
+const updateGapPenalties = (params: {
+  state: BlastFormState;
+  parameterName: 'match_scores' | 'matrix';
+  parameterValue: string;
+  config: BlastSettingsConfig;
+}) => {
+  const { state, parameterName, parameterValue, config } = params;
+  const program = state.settings.program;
+  const preset = state.settings.preset;
+
+  if (!config.presets.settings[program][preset].gapopen) {
+    return;
+  }
+
+  if (parameterName in config.gap_penalties.options) {
+    let gapopen: string, gapext: string;
+
+    if (config.gap_penalties.defaults?.[parameterName]?.[parameterValue]) {
+      [gapopen, gapext] =
+        config.gap_penalties.defaults[parameterName][parameterValue];
+    } else {
+      [gapopen, gapext] =
+        config.gap_penalties.options[parameterName][parameterValue][0];
+    }
+
+    state.settings.parameters.gapopen = gapopen;
+    state.settings.parameters.gapext = gapext;
+  }
+};
+
 const blastFormSlice = createSlice({
   name: 'blast-form',
   initialState,
@@ -306,10 +336,15 @@ const blastFormSlice = createSlice({
       action: PayloadAction<{
         parameterName: BlastParameterName;
         parameterValue: string;
+        config: BlastSettingsConfig;
       }>
     ) {
-      const { parameterName, parameterValue } = action.payload;
+      const { parameterName, parameterValue, config } = action.payload;
       state.settings.parameters[parameterName] = parameterValue;
+
+      if (parameterName === 'match_scores' || parameterName === 'matrix') {
+        updateGapPenalties({ state, parameterName, parameterValue, config });
+      }
     },
     setBlastSubmissionName(state, action: PayloadAction<string>) {
       state.settings.submissionName = action.payload;

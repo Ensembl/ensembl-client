@@ -134,39 +134,6 @@ const BlastSettings = ({ config }: Props) => {
     setGapPenalties(gapOpen, gapExtend);
   };
 
-  const updateGapPenalties = (currentOptions: [string, string][]) => {
-    const { gapopen: defaultGapOpen, gapext: defaultGapExtend } =
-      config.presets.settings[blastProgram][searchSensitivity];
-
-    if (
-      currentOptions.includes([
-        defaultGapOpen as string,
-        defaultGapExtend as string
-      ])
-    ) {
-      setGapPenalties(defaultGapOpen as string, defaultGapExtend as string);
-    } else {
-      const [gapOpen, gapExtend] = currentOptions[0];
-      setGapPenalties(gapOpen, gapExtend);
-    }
-  };
-
-  const onMatchScoresChange = (score: string) => {
-    onBlastParameterChange('match_scores', score);
-
-    const currentGapPenaltiesOptions =
-      config.gap_penalties.options.match_scores[score];
-    updateGapPenalties(currentGapPenaltiesOptions);
-  };
-
-  const onMatrixChange = (matrix: string) => {
-    onBlastParameterChange('matrix', matrix);
-
-    const currentGapPenaltiesOptions =
-      config.gap_penalties.options.matrix[matrix];
-    updateGapPenalties(currentGapPenaltiesOptions);
-  };
-
   const onBlastParameterChange = (
     parameterName: string,
     parameterValue: string
@@ -322,7 +289,9 @@ const BlastSettings = ({ config }: Props) => {
                 label={config.parameters.match_scores.label}
                 description={config.parameters.match_scores.description}
                 selectedOption={blastParameters.match_scores as string}
-                onChange={onMatchScoresChange}
+                onChange={(value: string) =>
+                  onBlastParameterChange('match_scores', value)
+                }
               />
             )}
             <div className={styles.matrixSetting}>
@@ -332,7 +301,9 @@ const BlastSettings = ({ config }: Props) => {
                   label={config.parameters.matrix.label}
                   description={config.parameters.matrix.description}
                   selectedOption={blastParameters.matrix as string}
-                  onChange={onMatrixChange}
+                  onChange={(value: string) =>
+                    onBlastParameterChange('matrix', value)
+                  }
                 />
               )}
             </div>
