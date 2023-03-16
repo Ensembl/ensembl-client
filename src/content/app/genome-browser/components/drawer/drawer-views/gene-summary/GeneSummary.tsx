@@ -44,7 +44,7 @@ import InstantDownloadGene, {
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import { Spinner } from 'src/content/app/genome-browser/components/drawer/Drawer';
+import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 

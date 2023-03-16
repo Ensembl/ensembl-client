@@ -22,17 +22,10 @@ import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 import GeneSummary from './drawer-views/gene-summary/GeneSummary';
 import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
 import VariantGroupLegend from './drawer-views/variant-group-legend/VariantGroupLegend';
-import { CircleLoader } from 'src/shared/components/loader';
 
 import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import styles from './Drawer.scss';
-
-export const Spinner = () => (
-  <div className={styles.spinnerContainer}>
-    <CircleLoader />
-  </div>
-);
 
 export const Drawer = () => {
   const drawerView = useSelector(getActiveDrawerView);
