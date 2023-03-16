@@ -155,11 +155,13 @@ const BlastSettings = ({ config }: Props) => {
   const database = blastParameters.database || config.defaults.database;
   const databaseSequenceType = config.database_sequence_types[database];
 
-  const availableBlastPrograms = getAvailableBlastPrograms(
-    sequenceType,
-    databaseSequenceType,
-    config
-  );
+  const {
+    options: availableBlastProgramsOptions,
+    label: availableBlastProgramsLabel
+  } = getAvailableBlastPrograms(sequenceType, databaseSequenceType, config);
+
+  const { options: searchSensitivityOptions, label: searchSensitivityLabel } =
+    getPresetsList(config, blastProgram);
 
   return (
     <>
@@ -177,16 +179,16 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div>
             <BlastSelect
-              options={availableBlastPrograms.options}
-              label={availableBlastPrograms.label}
+              options={availableBlastProgramsOptions}
+              label={availableBlastProgramsLabel}
               selectedOption={blastProgram}
               onChange={onBlastProgramChange}
             />
           </div>
           <div>
             <BlastSelect
-              options={getPresetsList(config, blastProgram).options}
-              label={getPresetsList(config, blastProgram).label}
+              options={searchSensitivityOptions}
+              label={searchSensitivityLabel}
               selectedOption={searchSensitivity}
               onChange={onSearchSensitivityChange}
             />
