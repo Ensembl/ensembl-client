@@ -176,11 +176,11 @@ const useBlastForm = () => {
 
   const setGapPenalties = (gapOpen: string, gapExtend: string) => {
     setBlastParameter({
-      parameterName: 'gapopen' as BlastParameterName,
+      parameterName: 'gapopen',
       parameterValue: gapOpen
     });
     setBlastParameter({
-      parameterName: 'gapext' as BlastParameterName,
+      parameterName: 'gapext',
       parameterValue: gapExtend
     });
   };
