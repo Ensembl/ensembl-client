@@ -39,7 +39,6 @@ export const createBlastSubmission = (params?: {
   const { sequencesCount = 2, speciesCount = 1 } = params?.options ?? {};
   const species = times(speciesCount, () => createSelectedSpecies());
   const sequences = createSubmittedSequences(sequencesCount);
-  const preset = 'normal';
   const submissionName = '';
 
   return {
@@ -47,7 +46,8 @@ export const createBlastSubmission = (params?: {
     submittedData: {
       species,
       sequences,
-      preset,
+      preset: 'normal',
+      sequenceType: 'dna',
       submissionName,
       parameters: defaultBlastParameters
     },

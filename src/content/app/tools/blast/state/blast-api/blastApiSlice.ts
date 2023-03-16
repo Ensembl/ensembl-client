@@ -37,6 +37,7 @@ export type BlastSubmissionPayload = {
   species: Species[];
   sequences: SubmittedSequence[];
   preset: string;
+  sequenceType: string;
   submissionName: string;
   parameters: Record<string, string>;
 };
@@ -225,6 +226,7 @@ const prepareSuccessfulSubmissionPayload = (
         species: payload.species,
         sequences: payload.sequences,
         preset: payload.preset,
+        sequenceType: payload.sequenceType,
         submissionName: payload.submissionName,
         parameters: payload.parameters
       },
