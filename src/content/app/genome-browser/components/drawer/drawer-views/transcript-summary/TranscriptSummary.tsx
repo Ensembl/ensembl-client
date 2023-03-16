@@ -44,6 +44,7 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
@@ -71,7 +72,7 @@ const TranscriptSummary = (props: Props) => {
   );
 
   if (!activeGenomeId || isFetching) {
-    return null;
+    return <Spinner />;
   }
 
   if (!currentData?.transcript) {
