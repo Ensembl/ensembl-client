@@ -30,10 +30,6 @@ import {
 
 const actionOptions = [
   {
-    value: TableAction.DEFAULT,
-    label: 'Actions'
-  },
-  {
     value: TableAction.FIND_IN_TABLE,
     label: 'Find in table'
   },
@@ -107,7 +103,6 @@ const TableActions = () => {
         type: 'restore_defaults',
         payload: restorableTableState
       });
-      return;
     }
 
     dispatch({

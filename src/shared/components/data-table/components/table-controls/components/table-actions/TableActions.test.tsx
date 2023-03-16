@@ -64,14 +64,14 @@ describe('<TableActions />', () => {
 
   it('respects the disabledActions list', () => {
     container = renderTableActions({
-      disabledActions: [TableAction.FILTERS, TableAction.DEFAULT]
+      disabledActions: [TableAction.FILTERS, TableAction.FIND_IN_TABLE]
     }).container;
 
     const filterOption = document.querySelector(
       `option[value="${TableAction.FILTERS}"`
     );
     const defaultOption = document.querySelector(
-      `option[value="${TableAction.DEFAULT}"`
+      `option[value="${TableAction.FIND_IN_TABLE}"`
     );
     const downloadOption = document.querySelector(
       `option[value="${TableAction.DOWNLOAD_ALL_DATA}"`
