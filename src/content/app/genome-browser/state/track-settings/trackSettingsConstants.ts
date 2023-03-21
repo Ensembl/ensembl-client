@@ -17,8 +17,11 @@
 import type {
   GeneTrackSettings,
   FocusGeneTrackSettings,
+  VariantTrackSettings,
+  FocusVariantTrackSettings,
   RegularTrackSettings,
   GeneTrack,
+  FocusVariantTrack,
   FocusGeneTrack,
   RegularTrack,
   TrackSettings
@@ -26,7 +29,8 @@ import type {
 
 export enum TrackType {
   GENE = 'gene',
-  FOCUS_GENE = 'gene-focus',
+  FOCUS_GENE = 'focus-gene',
+  FOCUS_VARIANT = 'focus-variant',
   REGULAR = 'regular'
 }
 
@@ -38,12 +42,30 @@ export const getDefaultGeneTrackSettings = (): GeneTrackSettings => ({
   isVisible: true
 });
 
+export const getDefaultVariantTrackSettings = (): VariantTrackSettings => ({
+  'label-snv-id': false,
+  'label-snv-alleles': false,
+  'label-other-id': false,
+  'label-other-alleles': false,
+  'show-extents': false,
+  name: false,
+  isVisible: true
+});
+
 export const getDefaultFocusGeneTrackSettings = (): FocusGeneTrackSettings => {
   const geneTrackSettings =
     getDefaultGeneTrackSettings() as Partial<GeneTrackSettings>;
   delete geneTrackSettings.isVisible;
   return geneTrackSettings as FocusGeneTrackSettings;
 };
+
+export const getDefaultFocusVariantTrackSettings =
+  (): FocusVariantTrackSettings => {
+    const variantTrackSettings =
+      getDefaultVariantTrackSettings() as Partial<VariantTrackSettings>;
+    delete variantTrackSettings.isVisible;
+    return variantTrackSettings as FocusVariantTrackSettings;
+  };
 
 export const getDefaultRegularTrackSettings = (): RegularTrackSettings => ({
   showTrackName: false,
@@ -63,6 +85,14 @@ export const buildDefaultFocusGeneTrack = (
   trackType: TrackType.FOCUS_GENE,
   settings: getDefaultGeneTrackSettings()
 });
+
+export const buildDefaultFocusVariantTrack = (): FocusVariantTrack => {
+  return {
+    id: 'focus-variant',
+    trackType: TrackType.FOCUS_VARIANT,
+    settings: getDefaultFocusVariantTrackSettings()
+  };
+};
 
 export const buildDefaultRegularTrack = (trackId: string): RegularTrack => ({
   id: trackId,

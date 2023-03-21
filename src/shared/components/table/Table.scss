@@ -21,7 +21,7 @@
 
 .table th,
 .table td {
-  padding: 6px 12px;
+  padding: var(--table-data-padding, '6px 12px');
 }
 
 .table td {

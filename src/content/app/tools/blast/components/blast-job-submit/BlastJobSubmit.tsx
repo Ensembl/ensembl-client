@@ -47,6 +47,7 @@ export type PayloadParams = {
   species: Species[];
   sequences: SubmittedSequence[];
   preset: string;
+  sequenceType: string;
   submissionName: string;
   parameters: Partial<Record<BlastParameterName, string>> & {
     stype: SequenceType;
@@ -100,6 +101,7 @@ export const createBlastSubmissionData = (
     species: blastFormData.selectedSpecies,
     sequences,
     preset: blastFormData.settings.preset,
+    sequenceType: blastFormData.settings.sequenceType,
     submissionName: blastFormData.settings.submissionName,
     parameters: {
       database: blastFormData.settings.parameters.database,

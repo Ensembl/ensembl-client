@@ -32,10 +32,10 @@ import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
-  createCSVForGenomicBlast,
-  createCSVForProteinBlast,
-  createCSVForTranscriptBlast
-} from 'src/content/app/tools/blast/blast-download/createBlastCSVTable';
+  createTSVForGenomicBlast,
+  createTSVForProteinBlast,
+  createTSVForTranscriptBlast
+} from 'src/content/app/tools/blast/blast-download/createBlastTSVTable';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import type {
@@ -474,16 +474,16 @@ const HitsTable = (props: HitsTableProps) => {
   };
 
   const downloadHandler = async () => {
-    let csv = '';
+    let tsv = '';
     if (blastDatabase === 'dna_sm' || blastDatabase === 'dna') {
-      csv = createCSVForGenomicBlast(jobResult.data);
+      tsv = createTSVForGenomicBlast(jobResult.data);
     } else if (blastDatabase === 'cdna') {
-      csv = createCSVForTranscriptBlast(jobResult.data);
+      tsv = createTSVForTranscriptBlast(jobResult.data);
     } else if (blastDatabase === 'pep') {
-      csv = createCSVForProteinBlast(jobResult.data);
+      tsv = createTSVForProteinBlast(jobResult.data);
     }
 
-    await downloadTextAsFile(csv, 'table.csv');
+    await downloadTextAsFile(tsv, 'table.tsv');
   };
 
   return (

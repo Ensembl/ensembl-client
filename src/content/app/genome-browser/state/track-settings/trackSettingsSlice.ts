@@ -36,7 +36,18 @@ export type GeneTrackSettings = {
   isVisible: boolean;
 };
 
+export type VariantTrackSettings = {
+  'label-snv-id': boolean;
+  'label-snv-alleles': boolean;
+  'label-other-id': boolean;
+  'label-other-alleles': boolean;
+  'show-extents': boolean;
+  name: boolean;
+  isVisible: boolean;
+};
+
 export type FocusGeneTrackSettings = Omit<GeneTrackSettings, 'isVisible'>;
+export type FocusVariantTrackSettings = Omit<VariantTrackSettings, 'isVisible'>;
 
 export type RegularTrackSettings = {
   showTrackName: boolean;
@@ -55,13 +66,23 @@ export type FocusGeneTrack = {
   settings: FocusGeneTrackSettings;
 };
 
+export type FocusVariantTrack = {
+  id: string;
+  trackType: TrackType.FOCUS_VARIANT;
+  settings: FocusVariantTrackSettings;
+};
+
 export type RegularTrack = {
   id: string;
   trackType: TrackType.REGULAR;
   settings: RegularTrackSettings;
 };
 
-export type TrackSettings = GeneTrack | FocusGeneTrack | RegularTrack;
+export type TrackSettings =
+  | GeneTrack
+  | FocusGeneTrack
+  | FocusVariantTrack
+  | RegularTrack;
 
 export type TrackSettingsPerTrack = {
   [trackId: string]: TrackSettings;
@@ -151,6 +172,8 @@ export const getTrackType = (trackId: string) => {
 
   if (trackId.startsWith('gene') || trackId === 'focus') {
     return TrackType.GENE;
+  } else if (trackId === 'focus-variant') {
+    return TrackType.FOCUS_VARIANT;
   } else {
     return TrackType.REGULAR;
   }
@@ -173,6 +196,7 @@ const trackSettingsSlice = createSlice({
       state[genomeId] = {
         ...defaultTrackSettingsForGenome,
         settingsForIndividualTracks: {
+          ...state[genomeId]?.settingsForIndividualTracks,
           ...trackSettings
         }
       };
@@ -188,7 +212,9 @@ const trackSettingsSlice = createSlice({
       const { genomeId, trackId, isTrackNameShown } = action.payload;
       const trackSettingsState =
         state[genomeId].settingsForIndividualTracks[trackId];
-      trackSettingsState.settings.showTrackName = isTrackNameShown;
+      (
+        trackSettingsState.settings as { showTrackName: boolean }
+      ).showTrackName = isTrackNameShown;
     },
     updateFeatureLabelsVisibility(
       state,
@@ -245,6 +271,20 @@ const trackSettingsSlice = createSlice({
 
       trackSettingsState.settings.showTranscriptIds = shouldShowTranscriptIds;
     },
+    addSettingsForTrack(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        trackId: string;
+        trackSettings: TrackSettings;
+      }>
+    ) {
+      const { genomeId, trackId, trackSettings } = action.payload;
+      if (!state[genomeId]) {
+        state[genomeId] = { settingsForIndividualTracks: {} };
+      }
+      state[genomeId].settingsForIndividualTracks[trackId] = trackSettings;
+    },
     deleteTrackSettingsForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
       delete state[genomeId];
@@ -275,7 +315,8 @@ export const {
   updateFeatureLabelsVisibility,
   updateShowSeveralTranscripts,
   updateShowTranscriptIds,
-  deleteTrackSettingsForGenome
+  deleteTrackSettingsForGenome,
+  addSettingsForTrack
 } = trackSettingsSlice.actions;
 
 export default trackSettingsSlice.reducer;

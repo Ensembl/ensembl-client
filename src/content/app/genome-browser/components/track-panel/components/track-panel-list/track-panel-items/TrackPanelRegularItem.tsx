@@ -82,8 +82,8 @@ const TrackPanelRegularItem = (props: Props) => {
   };
 
   const color = props.colour ? colorMap[props.colour] : undefined;
-  const colorMarker = color ? (
-    <span className={styles.colorMarker} style={{ backgroundColor: color }} />
+  const colourMarker = color ? (
+    <span className={styles.colourMarker} style={{ backgroundColor: color }} />
   ) : null;
 
   return (
@@ -93,7 +93,7 @@ const TrackPanelRegularItem = (props: Props) => {
       onShowMore={onShowMore}
     >
       <div className={styles.label}>
-        {colorMarker}
+        {colourMarker}
         <span className={styles.labelText}>{props.label}</span>
         {props.additional_info ? (
           <span className={styles.labelTextSecondary}>

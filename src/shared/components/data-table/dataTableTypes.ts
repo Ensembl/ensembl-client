@@ -28,7 +28,7 @@ export type SortingOptions = {
 };
 
 export enum TableAction {
-  DEFAULT = 'default',
+  DEFAULT = '',
   FIND_IN_TABLE = 'find_in_table',
   FILTERS = 'filters',
   SHOW_HIDE_COLUMNS = 'show_hide_columns',

@@ -18,6 +18,7 @@ import React, { useEffect, memo } from 'react';
 import {
   IncomingActionType,
   type UpdateTrackSummaryAction,
+  type TrackSummary,
   type TrackSummaryList
 } from '@ensembl/ensembl-genome-browser';
 
@@ -58,9 +59,9 @@ export const BrowserCogList = () => {
 
   const updateDisplayedTracks = (trackSummaryList: TrackSummaryList) => {
     const payload = trackSummaryList.map((track) => ({
-      id: track['switch-id'],
-      height: track.height as unknown as number, // FIXME: fix genome browser types
-      offsetTop: track.offset as unknown as number // FIXME: fix genome browser types
+      id: getTrackId(track),
+      height: track.height,
+      offsetTop: track.offset
     }));
 
     dispatch(setDisplayedTracks(payload));
@@ -83,6 +84,14 @@ export const BrowserCogList = () => {
       </div>
     </div>
   ) : null;
+};
+
+const getTrackId = (trackSummary: TrackSummary) => {
+  if (trackSummary['switch-id'] === 'focus' && 'variant-id' in trackSummary) {
+    return 'focus-variant';
+  } else {
+    return trackSummary['switch-id'];
+  }
 };
 
 export default memo(BrowserCogList);

@@ -144,10 +144,12 @@ describe('<TrackSettingsPanel />', () => {
         isTrackNameShown: true,
         trackId: selectedTrackId
       });
-      expect(
-        updatedState.browser.trackSettings[genomeId]
-          .settingsForIndividualTracks[selectedTrackId].settings.showTrackName
-      ).toBeTruthy();
+
+      const updatedTrackSettings = updatedState.browser.trackSettings[genomeId]
+        .settingsForIndividualTracks[selectedTrackId].settings as {
+        showTrackName: boolean;
+      };
+      expect(updatedTrackSettings.showTrackName).toBe(true);
     });
 
     it('toggles feature labels on the track', async () => {

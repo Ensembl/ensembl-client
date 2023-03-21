@@ -14,33 +14,24 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
+import React from 'react';
+
+import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
+
+import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
+
+import styles from './TrackPanelItem.scss';
+
+const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
+  const { focusVariant } = props;
+
+  const children = (
+    <div className={styles.label}>
+      <span className={styles.labelTextStrong}>{focusVariant.label}</span>
+    </div>
+  );
+
+  return <SimpleTrackPanelItemLayout>{children}</SimpleTrackPanelItemLayout>;
 };
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  geneId: string; // in focusObjectId format
-};
-
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  transcriptId: string; // transcript stable id
-};
-
-export type GenericTrackView = {
-  name: 'track_details';
-  trackId: string;
-};
-
-export type VariantLegendView = {
-  name: 'variant_group_legend';
-  group: string;
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | GenericTrackView
-  | VariantLegendView;
+export default TrackPanelVariant;

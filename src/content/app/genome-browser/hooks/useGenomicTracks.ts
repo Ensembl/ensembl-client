@@ -23,7 +23,7 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
-import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getAllNonFocusTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
@@ -39,8 +39,9 @@ import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state
 
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
-  const trackSettingsForGenome =
-    useAppSelector(getAllTrackSettings)?.settingsForIndividualTracks;
+  const trackSettingsForGenome = useAppSelector((state) =>
+    getAllNonFocusTrackSettingsForGenome(state, activeGenomeId ?? '')
+  );
   const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
   const genomeIdInitialisedRef = useRef('');
 
@@ -63,7 +64,7 @@ const useGenomicTracks = () => {
 
     const trackIdsList = prepareTrackIdsList(
       genomeTrackCategories ?? [],
-      trackSettingsForGenome
+      trackSettingsForGenome ?? {}
     );
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
     genomeIdInitialisedRef.current = activeGenomeId as string;

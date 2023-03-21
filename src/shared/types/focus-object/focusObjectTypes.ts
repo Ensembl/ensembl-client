@@ -22,7 +22,7 @@ export type FocusObjectLocation = {
   start: number;
 };
 
-export type FocusObjectType = 'gene' | 'location';
+export type FocusObjectType = 'gene' | 'location' | 'variant';
 
 type BasicFocusObject = {
   object_id: string;
@@ -45,7 +45,11 @@ export type FocusLocation = BasicFocusObject & {
   type: 'location';
 };
 
-export type FocusObject = FocusGene | FocusLocation;
+export type FocusVariant = BasicFocusObject & {
+  type: 'variant';
+};
+
+export type FocusObject = FocusGene | FocusLocation | FocusVariant;
 
 export type FocusObjectResponse = FocusGene;
 

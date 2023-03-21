@@ -14,33 +14,14 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
-};
+import React from 'react';
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  geneId: string; // in focusObjectId format
-};
+import { CircleLoader } from 'src/shared/components/loader';
 
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  transcriptId: string; // transcript stable id
-};
+import styles from './Drawer.scss';
 
-export type GenericTrackView = {
-  name: 'track_details';
-  trackId: string;
-};
-
-export type VariantLegendView = {
-  name: 'variant_group_legend';
-  group: string;
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | GenericTrackView
-  | VariantLegendView;
+export const Spinner = () => (
+  <div className={styles.spinnerContainer}>
+    <CircleLoader />
+  </div>
+);

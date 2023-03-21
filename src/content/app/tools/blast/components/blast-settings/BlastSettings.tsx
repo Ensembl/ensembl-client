@@ -49,10 +49,12 @@ import type {
 
 import styles from './BlastSettings.scss';
 
-const getPresetsList = (config: BlastSettingsConfig) => {
-  const { presets } = config;
-  const { label, options } = presets;
-  return { label, options };
+const getPresetsList = (config: BlastSettingsConfig, program: BlastProgram) => {
+  const { label, options, settings } = config.presets;
+  const optionsForSelectedProgram = options.filter((option) =>
+    Object.keys(settings[program]).includes(option.value)
+  );
+  return { label, options: optionsForSelectedProgram };
 };
 
 const getAvailableBlastPrograms = (
@@ -85,19 +87,20 @@ const BlastSettings = ({ config }: Props) => {
   const searchSensitivity = useAppSelector(getSelectedSearchSensitivity);
   const blastParameters = useAppSelector(getBlastSearchParameters);
 
+  const availableParamsForProgram = Object.keys(
+    config.presets.settings[blastProgram].normal
+  );
   const shouldShowMatchMismatch =
-    config.valid_parameters_for_program[blastProgram].includes('match_scores');
-  const shouldShowMatrix =
-    config.valid_parameters_for_program[blastProgram].includes('matrix');
-  const shouldShowGapPenalties =
-    config.valid_parameters_for_program[blastProgram].includes('gapopen');
-  const gapAlignEnabled =
-    config.valid_parameters_for_program[blastProgram].includes('gapalign');
+    availableParamsForProgram.includes('match_scores');
+  const shouldShowMatrix = availableParamsForProgram.includes('matrix');
+  const shouldShowGapPenalties = availableParamsForProgram.includes('gapopen');
+  const shouldShowGapAlign = availableParamsForProgram.includes('gapalign');
 
   const {
     updateBlastDatabase,
     updateBlastProgram,
     updateSensitivityPresets,
+    setGapPenalties,
     setBlastParameter
   } = useBlastForm();
 
@@ -128,14 +131,7 @@ const BlastSettings = ({ config }: Props) => {
 
   const onGapPenaltiesChange = (newValue: string) => {
     const [gapOpen, gapExtend] = newValue.split(',');
-    setBlastParameter({
-      parameterName: 'gapopen' as BlastParameterName,
-      parameterValue: gapOpen
-    });
-    setBlastParameter({
-      parameterName: 'gapext' as BlastParameterName,
-      parameterValue: gapExtend
-    });
+    setGapPenalties(gapOpen, gapExtend);
   };
 
   const onBlastParameterChange = (
@@ -159,11 +155,13 @@ const BlastSettings = ({ config }: Props) => {
   const database = blastParameters.database || config.defaults.database;
   const databaseSequenceType = config.database_sequence_types[database];
 
-  const availableBlastPrograms = getAvailableBlastPrograms(
-    sequenceType,
-    databaseSequenceType,
-    config
-  );
+  const {
+    options: availableBlastProgramsOptions,
+    label: availableBlastProgramsLabel
+  } = getAvailableBlastPrograms(sequenceType, databaseSequenceType, config);
+
+  const { options: searchSensitivityOptions, label: searchSensitivityLabel } =
+    getPresetsList(config, blastProgram);
 
   return (
     <>
@@ -181,16 +179,16 @@ const BlastSettings = ({ config }: Props) => {
           </div>
           <div>
             <BlastSelect
-              options={availableBlastPrograms.options}
-              label={availableBlastPrograms.label}
+              options={availableBlastProgramsOptions}
+              label={availableBlastProgramsLabel}
               selectedOption={blastProgram}
               onChange={onBlastProgramChange}
             />
           </div>
           <div>
             <BlastSelect
-              options={getPresetsList(config).options}
-              label={getPresetsList(config).label}
+              options={searchSensitivityOptions}
+              label={searchSensitivityLabel}
               selectedOption={searchSensitivity}
               onChange={onSearchSensitivityChange}
             />
@@ -330,13 +328,13 @@ const BlastSettings = ({ config }: Props) => {
               styles.checkboxesColumn
             )}
           >
-            {buildCheckbox({
-              ...(config.parameters.gapalign as BlastBooleanSetting),
-              selectedOption: blastParameters.gapalign ?? '',
-              disabled: !gapAlignEnabled,
-              onChange: (value: string) =>
-                onBlastParameterChange('gapalign', value)
-            })}
+            {shouldShowGapAlign &&
+              buildCheckbox({
+                ...(config.parameters.gapalign as BlastBooleanSetting),
+                selectedOption: blastParameters.gapalign ?? '',
+                onChange: (value: string) =>
+                  onBlastParameterChange('gapalign', value)
+              })}
             {buildCheckbox({
               ...(config.parameters.filter as BlastBooleanSetting),
               selectedOption: blastParameters.filter as string,
@@ -380,10 +378,7 @@ const BlastGapPenalties = (props: {
   onChange: (value: string) => void;
 }) => {
   const { program, config, blastParameters, onChange } = props;
-  const {
-    gap_penalties: gapPenaltiesConfig,
-    valid_parameters_for_program: validParamsForProgram
-  } = config;
+  const { gap_penalties: gapPenaltiesConfig, presets } = config;
   const {
     matrix,
     match_scores: matchScores,
@@ -392,10 +387,9 @@ const BlastGapPenalties = (props: {
   } = blastParameters;
 
   let gapPenaltiesOptions: [string, string][] = [];
-  const shouldUseMatrix =
-    validParamsForProgram[
-      program as keyof BlastSettingsConfig['valid_parameters_for_program']
-    ].includes('matrix');
+  const shouldUseMatrix = Object.keys(
+    presets.settings[program].normal
+  ).includes('matrix');
 
   if (shouldUseMatrix && matrix) {
     gapPenaltiesOptions = gapPenaltiesConfig.options.matrix[matrix];
@@ -407,6 +401,7 @@ const BlastGapPenalties = (props: {
     label: `${gapOpen}, ${gapExtend}`,
     value: `${gapOpen},${gapExtend}`
   }));
+
   return (
     <BlastSelect
       options={options as Option[]}

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelectors';
 
 import type {
@@ -56,3 +58,21 @@ export const getAllTrackSettingsForGenome = (
 ): TrackSettingsForGenome | null => {
   return state.browser.trackSettings[genomeId] ?? null;
 };
+
+export const getAllNonFocusTrackSettingsForGenome = createSelector(
+  getAllTrackSettingsForGenome,
+  (trackSettingsForGenome) => {
+    if (!trackSettingsForGenome) {
+      return null;
+    }
+    const settings: Record<string, TrackSettings> = {};
+    for (const [trackId, trackSettings] of Object.entries(
+      trackSettingsForGenome.settingsForIndividualTracks
+    )) {
+      if (trackId !== 'focus' && trackId !== 'focus-variant') {
+        settings[trackId] = trackSettings;
+      }
+    }
+    return settings;
+  }
+);

@@ -14,33 +14,10 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
+export const formatCSV = (table: (string | number)[][]) => {
+  return table.map((row) => row.join(',')).join('\n');
 };
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  geneId: string; // in focusObjectId format
+export const formatTSV = (table: (string | number)[][]) => {
+  return table.map((row) => row.join('\t')).join('\n');
 };
-
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  transcriptId: string; // transcript stable id
-};
-
-export type GenericTrackView = {
-  name: 'track_details';
-  trackId: string;
-};
-
-export type VariantLegendView = {
-  name: 'variant_group_legend';
-  group: string;
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | GenericTrackView
-  | VariantLegendView;

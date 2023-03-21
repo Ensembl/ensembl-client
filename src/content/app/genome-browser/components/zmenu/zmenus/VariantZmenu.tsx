@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
+import React from 'react';
+
+import ZmenuContent from '../ZmenuContent';
+
+import {
+  type ZmenuCreatePayload,
+  type ZmenuContentVariantMetadata
+} from '@ensembl/ensembl-genome-browser';
+
+type Props = {
+  payload: ZmenuCreatePayload;
+  onDestroy: () => void;
 };
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  geneId: string; // in focusObjectId format
+const VariantZmenu = (props: Props) => {
+  const { content } = props.payload;
+
+  const variantMetadata = content[0]?.metadata as
+    | ZmenuContentVariantMetadata
+    | undefined;
+  const variantId = variantMetadata?.id ?? '';
+
+  return (
+    <ZmenuContent
+      features={content}
+      featureId={`variant:${variantId}`}
+      destroyZmenu={props.onDestroy}
+    />
+  );
 };
 
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  transcriptId: string; // transcript stable id
-};
-
-export type GenericTrackView = {
-  name: 'track_details';
-  trackId: string;
-};
-
-export type VariantLegendView = {
-  name: 'variant_group_legend';
-  group: string;
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | GenericTrackView
-  | VariantLegendView;
+export default VariantZmenu;

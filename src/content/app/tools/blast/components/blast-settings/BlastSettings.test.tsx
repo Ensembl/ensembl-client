@@ -40,7 +40,7 @@ jest.mock('config', () => ({
 }));
 
 // BlastSettings component depends on useBlastForm hook, which fetches the config
-setupServer(
+const mockServer = setupServer(
   rest.get('http://tools-api/blast/config', (req, res, ctx) => {
     return res(ctx.json(blastSettingsConfig));
   })
@@ -66,6 +66,17 @@ const renderBlastSettings = () => {
     store
   };
 };
+
+beforeAll(() =>
+  mockServer.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterEach(() => mockServer.resetHandlers());
+afterAll(() => mockServer.close());
 
 /**
  * - supported BLAST programs: blastn, tblastx, blastx, tblastn, blastp

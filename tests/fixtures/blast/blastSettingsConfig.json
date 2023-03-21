@@ -579,7 +579,7 @@
     "settings": {
       "blastn": {
         "normal": {
-          "alignments": "50",
+          "alignments": "100",
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
@@ -587,10 +587,10 @@
           "filter": "T",
           "compstats": "F",
           "exp": "10",
-          "gapopen": "2",
+          "gapopen": "5",
           "gapext": "2",
           "wordsize": "11",
-          "match_scores": "1,-3"
+          "match_scores": "2,-3"
         },
         "near_match": {
           "alignments": "50",
@@ -637,17 +637,16 @@
       },
       "blastx": {
         "normal": {
-          "alignments": "50",
+          "alignments": "100",
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "3",
+          "wordsize": "5",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -655,7 +654,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -669,7 +667,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -681,17 +678,16 @@
       },
       "blastp": {
         "normal": {
-          "alignments": "50",
+          "alignments": "100",
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "3",
+          "wordsize": "5",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -699,7 +695,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -713,7 +708,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -764,13 +758,12 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
           "gapopen": "11",
           "gapext": "1",
-          "wordsize": "3",
+          "wordsize": "5",
           "matrix": "BLOSUM62"
         },
         "near_match": {
@@ -778,7 +771,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -792,7 +784,6 @@
           "scores": "50",
           "hsps": "100",
           "dropoff": "0",
-          "gapalign": "true",
           "filter": "T",
           "compstats": "F",
           "exp": "1e-1",
@@ -803,13 +794,6 @@
         }
       }
     }
-  },
-  "valid_parameters_for_program": {
-    "blastn": ["match_scores", "gapopen", "gapext", "gapalign"],
-    "tblastx": ["matrix"],
-    "blastx": ["matrix", "gapopen", "gapext", "gapalign"],
-    "tblastn": ["matrix", "gapopen", "gapext", "gapalign"],
-    "blastp": ["matrix", "gapopen", "gapext", "gapalign"]
   },
   "gap_penalties": {
     "label": "Gap penalties",

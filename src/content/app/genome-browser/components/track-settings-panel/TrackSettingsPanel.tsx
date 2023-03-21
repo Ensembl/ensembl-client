@@ -19,6 +19,7 @@ import React, { useRef } from 'react';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import GeneTrackSettings from './track-settings-views/GeneTrackSettings';
+import VariantTrackSettings from './track-settings-views/VariantTrackSettings';
 import RegularTrackSettings from './track-settings-views/RegularTrackSettings';
 
 import { getTrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
@@ -34,6 +35,8 @@ const getTrackSettingsPanelComponent = (trackType: TrackType) => {
     case TrackType.GENE:
     case TrackType.FOCUS_GENE:
       return GeneTrackSettings;
+    case TrackType.FOCUS_VARIANT:
+      return VariantTrackSettings;
     case TrackType.REGULAR:
       return RegularTrackSettings;
   }
