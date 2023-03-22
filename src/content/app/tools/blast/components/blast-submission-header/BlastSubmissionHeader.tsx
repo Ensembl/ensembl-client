@@ -23,7 +23,10 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
-import { isFailedBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+import {
+  haveAllJobsFailed,
+  isFailedBlastSubmission
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -50,7 +53,8 @@ import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettin
 import styles from './BlastSubmissionHeader.scss';
 
 export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
-export const FAILED_SUBMISSION_WARNING = 'All jobs failed';
+export const FAILED_SUBMISSION_WARNING = 'Submission failed';
+export const ALL_JOBS_FAILED_WARNING = 'All jobs have failed';
 
 export type Props = {
   submission: BlastSubmission;
@@ -196,6 +200,16 @@ const ControlsSection = (props: {
         <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
         <div className={styles.errorMessage}>
           <span>{FAILED_SUBMISSION_WARNING}</span>
+          <QuestionButton helpText={<FailedSubmissionHelpText />} />
+        </div>
+      </div>
+    );
+  } else if (haveAllJobsFailed(submission)) {
+    return (
+      <div className={styles.controlsSection}>
+        <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
+        <div className={styles.errorMessage}>
+          <span>{ALL_JOBS_FAILED_WARNING}</span>
           <QuestionButton helpText={<FailedSubmissionHelpText />} />
         </div>
       </div>
