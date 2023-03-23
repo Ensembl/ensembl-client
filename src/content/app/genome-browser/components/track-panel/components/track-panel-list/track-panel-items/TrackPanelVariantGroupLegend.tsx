@@ -35,12 +35,18 @@ import variantStyles from 'src/content/app/genome-browser/components/drawer/draw
 
 const TrackPanelVariantGroupLegend = (props: {
   groups: VariantGroups;
+  shouldShowLegend: boolean;
   onShowMore: (group: string) => void;
 }) => {
-  const { groups, onShowMore } = props;
+  const { groups, onShowMore, shouldShowLegend } = props;
   const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
   const accordionHeading = 'Short variant groups';
-
+  const accordionButtonClassNames = classNames(
+    styles.trackPanelAccordionButton,
+    {
+      [styles.trackPanelAccordionButtonDisabled]: !shouldShowLegend
+    }
+  );
   return (
     <>
       <AccordionItem
@@ -49,7 +55,8 @@ const TrackPanelVariantGroupLegend = (props: {
       >
         <AccordionItemHeading className={styles.trackPanelAccordionHeader}>
           <AccordionItemButton
-            className={styles.trackPanelAccordionButton}
+            disabled={!shouldShowLegend}
+            className={accordionButtonClassNames}
             onToggle={(isExpanded: boolean) =>
               reportTrackPanelSectionToggled(accordionHeading, isExpanded)
             }
@@ -57,30 +64,32 @@ const TrackPanelVariantGroupLegend = (props: {
             {accordionHeading}
           </AccordionItemButton>
         </AccordionItemHeading>
-        <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
-          <dl>
-            {groups.map((group) => {
-              const groupColorMarkerClass = classNames(
-                variantStyles.colourMarker,
-                variantStyles[`variantColour${group.id}`]
-              );
+        {shouldShowLegend ? (
+          <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
+            <dl>
+              {groups.map((group) => {
+                const groupColorMarkerClass = classNames(
+                  variantStyles.colourMarker,
+                  variantStyles[`variantColour${group.id}`]
+                );
 
-              return (
-                <SimpleTrackPanelItemLayout
-                  key={group.id}
-                  onShowMore={() => onShowMore(group.label)}
-                >
-                  <div className={trackPanelItemStyles.label}>
-                    <span className={groupColorMarkerClass} />
-                    <span className={trackPanelItemStyles.labelText}>
-                      {group.label}
-                    </span>
-                  </div>
-                </SimpleTrackPanelItemLayout>
-              );
-            })}
-          </dl>
-        </AccordionItemPanel>
+                return (
+                  <SimpleTrackPanelItemLayout
+                    key={group.id}
+                    onShowMore={() => onShowMore(group.label)}
+                  >
+                    <div className={trackPanelItemStyles.label}>
+                      <span className={groupColorMarkerClass} />
+                      <span className={trackPanelItemStyles.labelText}>
+                        {group.label}
+                      </span>
+                    </div>
+                  </SimpleTrackPanelItemLayout>
+                );
+              })}
+            </dl>
+          </AccordionItemPanel>
+        ) : null}
       </AccordionItem>
     </>
   );

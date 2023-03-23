@@ -124,6 +124,7 @@ export const TrackPanelList = () => {
         >
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
+              shouldShowLegend={trackCategoryIds.length > 0}
               groups={variantGroups}
               onShowMore={onShowMore}
             />
