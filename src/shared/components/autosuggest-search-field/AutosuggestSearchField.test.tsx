@@ -63,17 +63,17 @@ describe('<AutosuggestSearchField />', () => {
 
   describe('appearance', () => {
     it('renders only search field if no matches have been found', () => {
-      const { container } = render(
+      const { container, queryByTestId } = render(
         <AutosuggestSearchField {...minimalProps} />
       );
 
-      expect(container.querySelector('.searchField')).toBeTruthy();
+      expect(queryByTestId('search-field')).toBeTruthy();
       expect(container.querySelector('input')?.value).toBe(search);
       expect(container.querySelector('.autosuggestionPlate')).toBeFalsy();
     });
 
     it('renders AutosuggestionPanel with matches if they are provided', () => {
-      const { container } = render(
+      const { container, queryByTestId } = render(
         <AutosuggestSearchField
           {...minimalProps}
           matchGroups={groupsOfMatches}
@@ -85,7 +85,7 @@ describe('<AutosuggestSearchField />', () => {
         return sum + numberOfMatchesInGroup;
       }, 0);
 
-      expect(container.querySelector('.searchField')).toBeTruthy();
+      expect(queryByTestId('search-field')).toBeTruthy();
       expect(container.querySelector('input')?.value).toBe(search);
       expect(container.querySelector('.autosuggestionPlate')).toBeTruthy();
       expect(

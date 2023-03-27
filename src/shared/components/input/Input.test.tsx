@@ -54,7 +54,7 @@ describe('<Input />', () => {
 
       expect(inputElement.getAttribute('id')).toBe(commonInputProps.id);
       expect(inputElement.getAttribute('name')).toBe(commonInputProps.name);
-      expect(inputElement.getAttribute('class')).toMatch(
+      expect(inputElement.parentElement?.getAttribute('class')).toMatch(
         commonInputProps.className
       );
     });

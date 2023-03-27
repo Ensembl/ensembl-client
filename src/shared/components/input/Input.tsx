@@ -14,19 +14,56 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, InputHTMLAttributes, ForwardedRef } from 'react';
+import React, {
+  forwardRef,
+  type InputHTMLAttributes,
+  type ForwardedRef,
+  type ReactNode
+} from 'react';
+import { upperFirst } from 'lodash';
 import classNames from 'classnames';
 
 import styles from './Input.scss';
 
-export type Props = InputHTMLAttributes<HTMLInputElement>;
+export type InputSize = 'large' | 'normal' | 'small';
+
+export type Props = InputHTMLAttributes<HTMLInputElement> & {
+  inputSize?: InputSize;
+  withBorder?: boolean;
+  rightCorner?: ReactNode;
+};
 
 const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
-  const { className: classNameFromProps, ...otherProps } = props;
-  const className = classNames(styles.input, classNameFromProps);
+  const {
+    className: classNameFromProps,
+    inputSize = 'normal',
+    withBorder = false,
+    disabled = false,
+    rightCorner,
+    ...otherProps
+  } = props;
+  const sizeClass = styles[`size${upperFirst(inputSize)}`];
+  const inputWrapperClasses = classNames(
+    styles.inputWrapper,
+    classNameFromProps,
+    sizeClass,
+    {
+      [styles.withBorder]: withBorder,
+      [styles.withBorderDisabled]: withBorder && disabled
+    }
+  );
 
   return (
-    <input className={className} ref={ref} spellCheck={false} {...otherProps} />
+    <div className={inputWrapperClasses}>
+      <input
+        className={styles.input}
+        ref={ref}
+        spellCheck={false}
+        disabled={disabled}
+        {...otherProps}
+      />
+      {rightCorner && <div className={styles.rightCorner}>{rightCorner}</div>}
+    </div>
   );
 };
 

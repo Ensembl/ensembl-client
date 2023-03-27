@@ -41,6 +41,7 @@ const EntityViewerInterstitial = () => {
         <InAppSearch
           app="entityViewer"
           mode="interstitial"
+          size="large"
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}
         />

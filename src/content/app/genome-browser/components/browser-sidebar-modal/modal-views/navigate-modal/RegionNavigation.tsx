@@ -184,6 +184,8 @@ const RegionNavigation = () => {
                 disabled={singleInputActive}
                 value={locationStartInput}
                 placeholder="Add co-ordinate"
+                inputSize="small"
+                withBorder={true}
               />
             </label>
           </div>
@@ -198,7 +200,9 @@ const RegionNavigation = () => {
                 disabled={singleInputActive}
                 value={locationEndInput}
                 placeholder="Add co-ordinate"
-              ></Input>
+                inputSize="small"
+                withBorder={true}
+              />
             </label>
           </div>
           {segmentedInputActive && shouldShowErrorMessage && (
@@ -217,6 +221,8 @@ const RegionNavigation = () => {
                 disabled={segmentedInputActive}
                 value={locationInput}
                 placeholder="Add region co-ordinates..."
+                inputSize="small"
+                withBorder={true}
               />
             </label>
           </div>

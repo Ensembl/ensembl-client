@@ -64,6 +64,7 @@ const BrowserInterstitial = () => {
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}
           mode="interstitial"
+          size="large"
           onSearchSubmit={trackInterstitialPageSearch}
         />
       </div>

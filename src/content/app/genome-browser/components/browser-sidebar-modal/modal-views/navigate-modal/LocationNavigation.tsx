@@ -221,6 +221,8 @@ const LocationNavigation = () => {
                 disabled={singleInputActive}
                 value={locationStartInput}
                 placeholder="Add co-ordinate"
+                inputSize="small"
+                withBorder={true}
               />
             </label>
           </div>
@@ -235,6 +237,8 @@ const LocationNavigation = () => {
                 disabled={singleInputActive}
                 value={locationEndInput}
                 placeholder="Add co-ordinate"
+                inputSize="small"
+                withBorder={true}
               />
             </label>
           </div>
@@ -254,6 +258,8 @@ const LocationNavigation = () => {
                 disabled={segmentedInputActive}
                 value={locationInput}
                 placeholder="Add location co-ordinates..."
+                inputSize="small"
+                withBorder={true}
               />
             </label>
           </div>

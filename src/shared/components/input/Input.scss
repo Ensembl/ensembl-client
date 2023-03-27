@@ -1,23 +1,62 @@
 @import 'src/styles/common';
 
+.inputWrapper {
+  background-color: var(--input-background-colour, $white);
+  border: none;
+  box-shadow: $form-field-shadow;
+  display: inline-flex;
+  padding: 0 20px;
+  font-size: $global-font-size;
+  width: var(--input-width, 100%);
+}
+
 .input {
-  display: inline-block;
-  width: 100%;
+  background-color: transparent;
+  flex-grow: 1;
+  border: none;
+  box-shadow: none;
+
+  &::placeholder {
+    color: $dark-grey;
+    font-weight: $light;
+  }
 
   &:focus,
   &:active {
     outline: none;
-  }
-
-  &::placeholder {
     color: $black;
-    font-weight: $light;
+    font-weight: $normal;
   }
+}
+
+.rightCorner {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
 }
 
 .shadedInput {
   box-shadow: $form-field-shadow;
   border: none;
-  padding: 0 15px;
+}
+
+.sizeLarge {
+  height: 40px;
+}
+
+.sizeNormal {
   height: 30px;
+}
+
+.sizeSmall {
+  height: 25px;
+}
+
+.withBorder {
+  border: 1px solid $light-grey;
+  box-shadow: none;
+
+  &Disabled {
+    border: 1px solid $grey;
+  }
 }
