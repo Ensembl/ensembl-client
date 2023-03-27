@@ -189,7 +189,7 @@ const checkFocusGene = async (params: CheckFocusObjectParams) => {
   const isMissingGene =
     isGeneQueryError &&
     'meta' in geneQueryError &&
-    geneQueryError.meta.data.gene === null;
+    geneQueryError.meta.data?.gene === null;
 
   return {
     isMissingFocusObject: isMissingGene
