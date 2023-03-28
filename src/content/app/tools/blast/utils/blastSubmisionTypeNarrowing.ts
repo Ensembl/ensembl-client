@@ -39,3 +39,9 @@ export const isFailedBlastSubmission = (
     return 'error' in submission;
   }
 };
+
+export const haveAllJobsFailed = (
+  submission?: SuccessfulBlastSubmission
+): boolean => {
+  return submission?.results?.every((job) => job.status === 'FAILURE') ?? false;
+};
