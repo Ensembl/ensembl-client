@@ -213,6 +213,7 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
+            Biotype{' '}
             <span className={styles.normalText}>
               {transcript.metadata.biotype.label}
             </span>
