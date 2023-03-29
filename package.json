@@ -90,7 +90,6 @@
     "@types/webpack-env": "1.18.0",
     "@types/webpack-hot-middleware": "2.25.6",
     "@types/webpack-node-externals": "3.0.0",
-    "@types/workbox-webpack-plugin": "6.0.0",
     "@typescript-eslint/eslint-plugin": "5.57.0",
     "@typescript-eslint/parser": "5.57.0",
     "babel-core": "7.0.0-bridge.0",
