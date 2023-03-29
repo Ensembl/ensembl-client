@@ -109,10 +109,6 @@ const EntityViewerIdsContextProvider = (props: {
       activeEntityId !== previousActiveEntityId
   );
 
-  const isMissingGenomeId =
-    typeof (error as FetchBaseQueryError)?.status === 'number' &&
-    (error as FetchBaseQueryError).status >= 400; // FIXME change status to 404 when the backend behaves
-
   const context: EntityViewerIdsContextType = {
     activeGenomeId,
     activeEntityId,
@@ -125,7 +121,7 @@ const EntityViewerIdsContextProvider = (props: {
     parsedEntityId,
     hasActiveGenomeIdChanged,
     hasActiveEntityIdChanged,
-    isMissingGenomeId,
+    isMissingGenomeId: isMissingGenomeId(error as FetchBaseQueryError),
     isMalformedEntityId
   };
 
@@ -134,6 +130,11 @@ const EntityViewerIdsContextProvider = (props: {
       {props.children}
     </EntityViewerIdsContext.Provider>
   );
+};
+
+const isMissingGenomeId = (error: FetchBaseQueryError) => {
+  const errorStatus = (error as FetchBaseQueryError)?.status;
+  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME change status to 404 when the backend behaves
 };
 
 export default EntityViewerIdsContextProvider;
