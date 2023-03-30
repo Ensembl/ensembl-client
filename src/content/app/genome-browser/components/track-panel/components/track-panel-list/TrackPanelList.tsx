@@ -108,7 +108,7 @@ export const TrackPanelList = () => {
         >
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
-              disabled={trackCategoryIds.length <= 0}
+              disabled={trackCategoryIds.length === 0}
             />
           )}
 
