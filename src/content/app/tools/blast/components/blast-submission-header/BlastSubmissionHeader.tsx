@@ -23,7 +23,10 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
-import { isFailedBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
+import {
+  isFailedBlastSubmission,
+  haveAllJobsFailed
+} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 import downloadBlastSubmission from 'src/content/app/tools/blast/blast-download/submissionDownload';
 
 import { fillBlastForm } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -190,7 +193,7 @@ const ControlsSection = (props: {
     props;
   const isExpiredSubmission = !areSubmissionResultsAvailable(submission);
 
-  if (isFailedBlastSubmission(submission)) {
+  if (isFailedBlastSubmission(submission) || haveAllJobsFailed(submission)) {
     return (
       <div className={styles.controlsSection}>
         <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
