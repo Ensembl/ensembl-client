@@ -94,12 +94,12 @@ export const sampleData: RawSpeciesStats = {
       coverage: 86
     },
     variation_stats: {
-      short_variants: 713749788,
-      structural_variants: 32170052,
-      short_variants_with_phenotype_assertions: 13365325,
-      short_variants_with_publications: 429376,
+      short_variants: 714267656,
+      structural_variants: 32845184,
+      short_variants_with_phenotype_assertions: 14350486,
+      short_variants_with_publications: 636350,
       short_variants_frequency_studies: 8,
-      structural_variants_with_phenotype_assertions: 320417
+      structural_variants_with_phenotype_assertions: 270362
     },
     regulation_stats: {
       enhancers: 132592,
@@ -174,11 +174,12 @@ export const sampleData: RawSpeciesStats = {
       coverage: 0
     },
     variation_stats: {
-      structural_variants: 36348512,
-      short_variants_with_phenotype_assertions: 10233814,
-      short_variants_with_publications: 328161,
+      short_variants: 713754076,
+      structural_variants: 36623776,
+      short_variants_with_phenotype_assertions: 13363676,
+      short_variants_with_publications: 427648,
       short_variants_frequency_studies: 8,
-      structural_variants_with_phenotype_assertions: 1682589
+      structural_variants_with_phenotype_assertions: 1957818
     },
     regulation_stats: {
       enhancers: 92264,
@@ -249,7 +250,7 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 1150.95
     },
     homology_stats: {
-      coverage: 93.1
+      coverage: 93.2
     }
   },
   'a733550b-93e7-11ec-a39d-005056b38ce3': {
@@ -316,7 +317,7 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 196.66
     },
     homology_stats: {
-      coverage: 87.3
+      coverage: 87.4
     }
   },
   'a73356e1-93e7-11ec-a39d-005056b38ce3': {
@@ -525,15 +526,15 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     variation_stats: {
-      short_variants: 18093911,
+      short_variants: 1899698,
       structural_variants: 0,
-      short_variants_frequency_studies: 1,
+      short_variants_frequency_studies: 0,
       short_variants_with_phenotype_assertions: 0,
       short_variants_with_publications: 0,
       structural_variants_with_phenotype_assertions: 0
     },
     homology_stats: {
-      coverage: 98.8
+      coverage: 99.8
     }
   },
   actinobacillus: {
