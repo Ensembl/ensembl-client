@@ -2,9 +2,9 @@
   This config allows Storybook to use its default webpack config, with slight modifications
 */
 
-const path = require('path');
+import path from 'node:path';
 
-module.exports = (config) => {
+export default (config) => {
 
   // a bit of a hack to remove svg handling from Storybook's default webpack config:
   // find the rule that matches svg files and replace its regex with Storybook's default,

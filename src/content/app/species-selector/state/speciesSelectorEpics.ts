@@ -17,7 +17,6 @@
 import { Epic } from 'redux-observable';
 import { map, switchMap, tap, filter, distinctUntilChanged } from 'rxjs';
 import { isAnyOf, isFulfilled, Action } from '@reduxjs/toolkit';
-import queryString from 'query-string';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import * as observableApiService from 'src/services/observable-api-service';
@@ -70,11 +69,13 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
       const committedSpeciesIds = getCommittedSpecies(state$.value).map(
         (species) => species.genome_id
       );
-      const query = queryString.stringify({
-        query: encodeURIComponent(action.payload),
-        limit: 20,
-        exclude: committedSpeciesIds
+      const urlSearchParams = new URLSearchParams();
+      urlSearchParams.append('query', encodeURIComponent(action.payload));
+      urlSearchParams.append('limit', '20');
+      committedSpeciesIds.forEach((id) => {
+        urlSearchParams.append('exclude', id);
       });
+      const query = urlSearchParams.toString();
       const url = `/api/genomesearch/genome_search?${query}`;
       return observableApiService.fetch<{
         genome_matches: SearchMatches[];
