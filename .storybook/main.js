@@ -1,5 +1,6 @@
-const webpackConfig = require('./webpack');
-module.exports = {
+import webpackConfig from './webpack';
+
+export default {
   stories: ['../stories/**/*.stories.tsx'],
   webpackFinal: config => webpackConfig(config),
   features: {
