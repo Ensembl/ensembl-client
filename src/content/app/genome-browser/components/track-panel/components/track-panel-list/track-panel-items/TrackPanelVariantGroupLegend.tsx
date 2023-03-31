@@ -16,6 +16,8 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from 'src/store';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
@@ -26,20 +28,41 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
+import variantGroups from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
 
-import { type VariantGroups } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
+import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
 import variantStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/VariantGroupLegend.scss';
 
-const TrackPanelVariantGroupLegend = (props: {
-  groups: VariantGroups;
-  onShowMore: (group: string) => void;
-}) => {
-  const { groups, onShowMore } = props;
-  const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
+const TrackPanelVariantGroupLegend = (props: { disabled: boolean }) => {
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const dispatch = useDispatch();
+  const { trackDrawerOpened, reportTrackPanelSectionToggled } =
+    useGenomeBrowserAnalytics();
   const accordionHeading = 'Short variant groups';
+
+  const accordionButtonClassNames = classNames(
+    styles.trackPanelAccordionButton,
+    {
+      [styles.trackPanelAccordionButtonDisabled]: props.disabled
+    }
+  );
+
+  const onShowMore = (group: string) => {
+    trackDrawerOpened('variant_group_legend');
+    dispatch(
+      changeDrawerViewForGenome({
+        genomeId: activeGenomeId,
+        drawerView: {
+          name: 'variant_group_legend',
+          group
+        }
+      })
+    );
+  };
 
   return (
     <>
@@ -49,7 +72,8 @@ const TrackPanelVariantGroupLegend = (props: {
       >
         <AccordionItemHeading className={styles.trackPanelAccordionHeader}>
           <AccordionItemButton
-            className={styles.trackPanelAccordionButton}
+            disabled={props.disabled}
+            className={accordionButtonClassNames}
             onToggle={(isExpanded: boolean) =>
               reportTrackPanelSectionToggled(accordionHeading, isExpanded)
             }
@@ -57,30 +81,32 @@ const TrackPanelVariantGroupLegend = (props: {
             {accordionHeading}
           </AccordionItemButton>
         </AccordionItemHeading>
-        <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
-          <dl>
-            {groups.map((group) => {
-              const groupColorMarkerClass = classNames(
-                variantStyles.colourMarker,
-                variantStyles[`variantColour${group.id}`]
-              );
+        {!props.disabled ? (
+          <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
+            <dl>
+              {variantGroups.map((group) => {
+                const groupColourMarkerClass = classNames(
+                  variantStyles.colourMarker,
+                  variantStyles[`variantColour${group.id}`]
+                );
 
-              return (
-                <SimpleTrackPanelItemLayout
-                  key={group.id}
-                  onShowMore={() => onShowMore(group.label)}
-                >
-                  <div className={trackPanelItemStyles.label}>
-                    <span className={groupColorMarkerClass} />
-                    <span className={trackPanelItemStyles.labelText}>
-                      {group.label}
-                    </span>
-                  </div>
-                </SimpleTrackPanelItemLayout>
-              );
-            })}
-          </dl>
-        </AccordionItemPanel>
+                return (
+                  <SimpleTrackPanelItemLayout
+                    key={group.id}
+                    onShowMore={() => onShowMore(group.label)}
+                  >
+                    <div className={trackPanelItemStyles.label}>
+                      <span className={groupColourMarkerClass} />
+                      <span className={trackPanelItemStyles.labelText}>
+                        {group.label}
+                      </span>
+                    </div>
+                  </SimpleTrackPanelItemLayout>
+                );
+              })}
+            </dl>
+          </AccordionItemPanel>
+        ) : null}
       </AccordionItem>
     </>
   );
