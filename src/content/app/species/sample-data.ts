@@ -102,8 +102,8 @@ export const sampleData: RawSpeciesStats = {
       structural_variants_with_phenotype_assertions: 270362
     },
     regulation_stats: {
-      enhancers: 132592,
-      promoters: 35191
+      enhancers: 268483,
+      promoters: 36597
     }
   },
   '3704ceb1-948d-11ec-a39d-005056b38ce3': {
@@ -182,8 +182,8 @@ export const sampleData: RawSpeciesStats = {
       structural_variants_with_phenotype_assertions: 1957818
     },
     regulation_stats: {
-      enhancers: 92264,
-      promoters: 21822
+      enhancers: 163595,
+      promoters: 32667
     }
   },
   'a73351f7-93e7-11ec-a39d-005056b38ce3': {
@@ -619,11 +619,11 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_name: 'GRCh38.p13',
     assembly_provider: {
       name: 'INSDC assembly',
-      url: ''
+      url: 'https://www.ebi.ac.uk/ena/data/view/GCA_000001405.28'
     },
     annotation_provider: {
       name: 'Ensembl',
-      url: 'http://www.ensembl.org'
+      url: 'https://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
@@ -641,11 +641,11 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_name: 'GRCh37.p13',
     assembly_provider: {
       name: 'INSDC assembly',
-      url: ''
+      url: 'https://www.ebi.ac.uk/ena/browser/view/GCA_000001405.14'
     },
     annotation_provider: {
       name: 'Ensembl',
-      url: ''
+      url: 'https://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
@@ -751,13 +751,13 @@ export const sidebarData: SpeciesSidebarData = {
     taxonomy_id: '4565',
     strain: {
       type: 'Cultivar',
-      value: 'Chinese spring'
+      value: 'Chinese Spring'
     },
     database_version: '108.4',
     common_name: 'Wheat',
     scientific_name: 'Triticum aestivum',
     gencode_version: null,
-    assembly_name: 'IWGSC',
+    assembly_name: 'IWGSC RefSeq v1.0',
     assembly_provider: {
       name: 'International Wheat Genome Sequencing Consortium',
       url: 'https://www.ebi.ac.uk/ena/data/view/GCA_900519105.1'
