@@ -18,7 +18,7 @@ import initializeGenomeBrowser, {
   GenomeBrowser
 } from '@ensembl/ensembl-genome-browser';
 
-import type { GenomeBrowserConfig } from './types/genomeBrowserCongig';
+import type { GenomeBrowserConfig } from './types/genomeBrowserConfig';
 import type { GenomeBrowserMessageMap } from './types/genomeBrowserMessages';
 
 export class GenomeBrowserLoader {
