@@ -72,6 +72,9 @@ const metadata = {
   name: {
     accession_id: 'name_accession_id',
     url: 'name_url'
+  },
+  biotype: {
+    value: 'protein_coding_gene'
   }
 };
 
@@ -80,7 +83,7 @@ const completeGeneData = {
   stable_id: stableId,
   symbol: geneSymbol,
   alternative_symbols: alternativeSymbols,
-  metadata: metadata
+  metadata
 };
 
 describe('<GeneOverview />', () => {
@@ -138,6 +141,7 @@ describe('<GeneOverview />', () => {
       const xrefElement = container.querySelector(
         '.externalLinkContainer .link'
       );
+      const biotypeValueElement = queryByTestId('biotypeValue');
 
       // child components
       const genePublications = container.querySelector('.genePublications');
@@ -149,6 +153,7 @@ describe('<GeneOverview />', () => {
       expect(synonymsElement?.textContent).toMatch(
         alternativeSymbols.join(', ')
       );
+      expect(biotypeValueElement?.textContent).toMatch(metadata.biotype.value);
       expect(genePublications).toBeTruthy();
     });
   });
