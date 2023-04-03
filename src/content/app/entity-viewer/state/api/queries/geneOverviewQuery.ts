@@ -32,6 +32,9 @@ export const geneOverviewQuery = gql`
           accession_id
           url
         }
+        biotype {
+          value
+        }
       }
     }
   }
@@ -46,6 +49,7 @@ export type GeneOverview = Pick<
       NonNullable<FullGene['metadata']['name']>,
       'accession_id' | 'url'
     > | null;
+    biotype: Pick<NonNullable<FullGene['metadata']['biotype']>, 'value'> | null;
   };
 };
 
