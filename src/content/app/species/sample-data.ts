@@ -526,9 +526,9 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     variation_stats: {
-      short_variants: 1899698,
+      short_variants: 25626843,
       structural_variants: 0,
-      short_variants_frequency_studies: 0,
+      short_variants_frequency_studies: 1,
       short_variants_with_phenotype_assertions: 0,
       short_variants_with_publications: 0,
       structural_variants_with_phenotype_assertions: 0
