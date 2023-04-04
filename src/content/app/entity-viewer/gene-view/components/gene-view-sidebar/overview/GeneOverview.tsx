@@ -126,7 +126,7 @@ const GeneOverview = () => {
           <div className={styles.attributes}>
             <div>
               <span className={styles.attributeLabel}>Biotype</span>{' '}
-              <span data-test-id="biotypeValue">{geneBiotype?.value}</span>
+              <span data-test-id="biotypeValue">{geneBiotype.value}</span>
             </div>
           </div>
         </div>

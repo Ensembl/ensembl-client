@@ -49,7 +49,7 @@ export type GeneOverview = Pick<
       NonNullable<FullGene['metadata']['name']>,
       'accession_id' | 'url'
     > | null;
-    biotype: Pick<NonNullable<FullGene['metadata']['biotype']>, 'value'> | null;
+    biotype: Pick<FullGene['metadata']['biotype'], 'value'>;
   };
 };
 
