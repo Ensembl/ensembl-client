@@ -46,7 +46,7 @@ import InAppSearchMatches from './InAppSearchMatches';
 
 import type { RootState } from 'src/store';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
-import type { InputSize } from '../input/Input';
+import type { InputSize } from '../input/ShadedInput';
 
 import styles from './InAppSearch.scss';
 

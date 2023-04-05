@@ -1,15 +1,5 @@
 @import 'src/styles/common';
 
-.inputWrapper {
-  background-color: var(--input-background-colour, $white);
-  border: none;
-  box-shadow: $form-field-shadow;
-  display: inline-flex;
-  padding: 0 20px;
-  font-size: $global-font-size;
-  width: var(--input-width, 100%);
-}
-
 .input {
   background-color: transparent;
   flex-grow: 1;
@@ -35,28 +25,34 @@
   flex: 0 0 auto;
 }
 
-.shadedInput {
-  box-shadow: $form-field-shadow;
+.inputWrapper {
+  background-color: var(--input-background-colour, $white);
+  display: inline-flex;
+  font-size: $global-font-size;
+  padding: 0 20px;
+  width: var(--input-width, 100%);
+}
+
+.shadedInputWrapper {
   border: none;
-}
-
-.sizeLarge {
-  height: 40px;
-}
-
-.sizeNormal {
-  height: 30px;
-}
-
-.sizeSmall {
+  box-shadow: $form-field-shadow;
   height: 25px;
+
+  &Large {
+    height: 40px;
+  }
+
+  &Small {
+    height: 30px;
+  }
 }
 
-.withBorder {
-  border: 1px solid $light-grey;
+.flatInputWrapper {
   box-shadow: none;
+  height: 25px;
 
   &Disabled {
     border: 1px solid $grey;
+    background-color: transparent;
   }
 }

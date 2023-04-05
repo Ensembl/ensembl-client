@@ -16,7 +16,9 @@
 
 import React, { useCallback, ReactNode, FormEvent } from 'react';
 
-import Input, { type InputSize } from 'src/shared/components/input/Input';
+import ShadedInput, {
+  type InputSize
+} from 'src/shared/components/input/ShadedInput';
 
 type Props = {
   search: string;
@@ -53,7 +55,7 @@ const SearchField = (props: Props) => {
       data-test-id="search-field"
       onSubmit={handleSubmit}
     >
-      <Input
+      <ShadedInput
         value={props.search}
         placeholder={props.placeholder}
         onChange={onChange}

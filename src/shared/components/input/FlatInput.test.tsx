@@ -17,14 +17,14 @@
 import React, { useRef, MutableRefObject } from 'react';
 import { render } from '@testing-library/react';
 
-import ShadedInput from './ShadedInput';
+import FlatInput from './FlatInput';
 
-describe('<ShadedInput />', () => {
+describe('<FlatInput />', () => {
   it('forwards the ref to the input element', () => {
     let inputRef = null as MutableRefObject<HTMLInputElement | null> | null;
     const Wrapper = () => {
       inputRef = useRef<HTMLInputElement | null>(null);
-      return <ShadedInput ref={inputRef} />;
+      return <FlatInput ref={inputRef} />;
     };
     render(<Wrapper />);
 
@@ -32,26 +32,26 @@ describe('<ShadedInput />', () => {
     expect(inputElement?.tagName).toBe('INPUT');
   });
 
-  it('renders the input with correct size', () => {
-    let { container } = render(<ShadedInput inputSize="large" />);
-    expect(container.querySelector('.shadedInputWrapper')?.classList).toContain(
-      'shadedInputWrapperLarge'
+  it('renders the input as disabled if prop passed as true', () => {
+    let { container } = render(<FlatInput disabled={true} />);
+    expect(container.querySelector('.flatInputWrapper')?.classList).toContain(
+      'flatInputWrapperDisabled'
     );
 
-    container = render(<ShadedInput inputSize="small" />).container;
-    expect(container.querySelector('.shadedInputWrapper')?.classList).toContain(
-      'shadedInputWrapperSmall'
-    );
+    container = render(<FlatInput disabled={false} />).container;
+    expect(
+      container.querySelector('.flatInputWrapper')?.classList
+    ).not.toContain('flatInputWrapperDisabled');
   });
 
   it('renders icon if passed as props', () => {
     const MockIcon = () => <div className="mockIcon">Mock Icon</div>;
-    let { container } = render(<ShadedInput rightCorner={<MockIcon />} />);
+    let { container } = render(<FlatInput rightCorner={<MockIcon />} />);
     expect(container.querySelector('.rightCorner')).toBeTruthy();
     expect(container.querySelector('.mockIcon')).toBeTruthy();
 
     // doesn't render rightCorner when prop not passed
-    container = render(<ShadedInput />).container;
+    container = render(<FlatInput />).container;
     expect(container.querySelector('.rightCorner')).toBeFalsy();
   });
 });

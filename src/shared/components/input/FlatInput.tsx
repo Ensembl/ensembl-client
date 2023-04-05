@@ -20,41 +20,37 @@ import React, {
   type ForwardedRef,
   type ReactNode
 } from 'react';
-import { upperFirst } from 'lodash';
 import classNames from 'classnames';
 
 import Input from './Input';
 
 import styles from './Input.scss';
 
-export type InputSize = 'large' | 'small';
-
 export type Props = InputHTMLAttributes<HTMLInputElement> & {
-  inputSize?: InputSize;
   rightCorner?: ReactNode;
 };
 
-const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
+const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   const {
     className: classNameFromProps,
-    inputSize = 'small',
+    disabled = false,
     rightCorner,
     ...otherProps
   } = props;
-  const sizeClass = styles[`shadedInputWrapper${upperFirst(inputSize)}`];
+
   const wrapperClasses = classNames(
     styles.inputWrapper,
-    styles.shadedInputWrapper,
+    styles.flatInputWrapper,
     classNameFromProps,
-    sizeClass
+    { [styles.flatInputWrapperDisabled]: disabled }
   );
 
   return (
     <div className={wrapperClasses}>
-      <Input ref={ref} {...otherProps} />
+      <Input disabled={disabled} ref={ref} {...otherProps} />
       {rightCorner && <div className={styles.rightCorner}>{rightCorner}</div>}
     </div>
   );
 };
 
-export default forwardRef(ShadedInput);
+export default forwardRef(FlatInput);

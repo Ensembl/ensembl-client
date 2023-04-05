@@ -30,7 +30,7 @@ import {
   type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import Input from 'src/shared/components/input/Input';
+import FlatInput from 'src/shared/components/input/FlatInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import SimpleSelect, {
   type SimpleSelectMethods
@@ -213,7 +213,7 @@ const LocationNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Start</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
                 onChange={onLocationStartChange}
@@ -221,15 +221,13 @@ const LocationNavigation = () => {
                 disabled={singleInputActive}
                 value={locationStartInput}
                 placeholder="Add co-ordinate"
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>
           <div className={styles.inputField}>
             <label>
               <span>End</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
                 onChange={onLocationEndChange}
@@ -237,8 +235,6 @@ const LocationNavigation = () => {
                 disabled={singleInputActive}
                 value={locationEndInput}
                 placeholder="Add co-ordinate"
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>
@@ -250,7 +246,7 @@ const LocationNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Go to</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSingleInputFocus}
                 onChange={onLocationInputChange}
@@ -258,8 +254,6 @@ const LocationNavigation = () => {
                 disabled={segmentedInputActive}
                 value={locationInput}
                 placeholder="Add location co-ordinates..."
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>

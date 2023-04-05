@@ -31,7 +31,7 @@ import {
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import GenomeBrowserNavigationButtons from './NavigationButtons';
-import Input from 'src/shared/components/input/Input';
+import FlatInput from 'src/shared/components/input/FlatInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
@@ -176,7 +176,7 @@ const RegionNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Start</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onsegmentedInputFocus}
                 onChange={onLocationStartChange}
@@ -184,15 +184,13 @@ const RegionNavigation = () => {
                 disabled={singleInputActive}
                 value={locationStartInput}
                 placeholder="Add co-ordinate"
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>
           <div className={styles.inputField}>
             <label>
               <span>End</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onsegmentedInputFocus}
                 onChange={onLocationEndChange}
@@ -200,8 +198,6 @@ const RegionNavigation = () => {
                 disabled={singleInputActive}
                 value={locationEndInput}
                 placeholder="Add co-ordinate"
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>
@@ -213,7 +209,7 @@ const RegionNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Go to</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSingleInputFocus}
                 onChange={onLocationChange}
@@ -221,8 +217,6 @@ const RegionNavigation = () => {
                 disabled={segmentedInputActive}
                 value={locationInput}
                 placeholder="Add region co-ordinates..."
-                inputSize="small"
-                withBorder={true}
               />
             </label>
           </div>

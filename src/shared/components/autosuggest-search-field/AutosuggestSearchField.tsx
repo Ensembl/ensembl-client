@@ -23,7 +23,7 @@ import AutosuggestionPanel, {
   type MatchIndex
 } from './AutosuggestionPanel';
 
-import type { InputSize } from '../input/Input';
+import type { InputSize } from '../input/ShadedInput';
 
 import styles from './AutosuggestSearchField.scss';
 

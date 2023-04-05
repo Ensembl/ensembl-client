@@ -18,6 +18,8 @@ import React from 'react';
 
 import Input from 'src/shared/components/input/Input';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
+import FlatInput from 'src/shared/components/input/FlatInput';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './Input.stories.scss';
 
@@ -68,10 +70,63 @@ export const ShadedInputStory = () => (
         <ShadedInput placeholder="Placeholder for dev..." />
       </div>
     </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>Against grey background with icon</p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          placeholder="Placeholder for dev..."
+          rightCorner={
+            <QuestionButton helpText="Shows some text when hovered over" />
+          }
+        />
+      </div>
+    </div>
   </>
 );
 
 ShadedInputStory.storyName = 'shaded input';
+
+export const FlatInputStory = () => (
+  <>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>With no icon in grey background</p>
+      <div className={styles.wrapper}>
+        <FlatInput placeholder="Placeholder for dev..." />
+      </div>
+    </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>Disabled with no icon in grey background</p>
+      <div className={styles.wrapper}>
+        <FlatInput placeholder="Placeholder for dev..." disabled={true} />
+      </div>
+    </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>With icon in grey background</p>
+      <div className={styles.wrapper}>
+        <FlatInput
+          placeholder="Placeholder for dev..."
+          rightCorner={
+            <QuestionButton helpText="Shows some text when hovered over" />
+          }
+        />
+      </div>
+    </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>Disabled with icon in grey background</p>
+      <div className={styles.wrapper}>
+        <FlatInput
+          placeholder="Placeholder for dev..."
+          disabled={true}
+          rightCorner={
+            <QuestionButton helpText="Shows some text when hovered over" />
+          }
+        />
+      </div>
+    </div>
+  </>
+);
+
+FlatInputStory.storyName = 'flat input';
 
 export const CustomInputStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>

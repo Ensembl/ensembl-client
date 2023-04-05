@@ -26,7 +26,6 @@ describe('<Input />', () => {
     value: '',
     id: 'testId',
     name: 'testInputName',
-    className: 'testInputClass',
     placeholder: 'type here',
     onChange: jest.fn(),
     onFocus: jest.fn(),
@@ -54,9 +53,6 @@ describe('<Input />', () => {
 
       expect(inputElement.getAttribute('id')).toBe(commonInputProps.id);
       expect(inputElement.getAttribute('name')).toBe(commonInputProps.name);
-      expect(inputElement.parentElement?.getAttribute('class')).toMatch(
-        commonInputProps.className
-      );
     });
 
     it('updates the input value when the props change', () => {
