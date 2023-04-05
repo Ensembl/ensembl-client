@@ -22,5 +22,9 @@ export const getFormattedLocation = (location: FocusObjectLocation) => {
   const start = getCommaSeparatedNumber(location.start);
   const end = getCommaSeparatedNumber(location.end);
 
-  return `${location.chromosome}:${start}-${end}`;
+  if (start === end) {
+    return `${location.chromosome}:${start}`;
+  } else {
+    return `${location.chromosome}:${start}-${end}`;
+  }
 };

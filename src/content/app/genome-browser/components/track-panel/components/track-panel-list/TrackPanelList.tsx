@@ -32,7 +32,7 @@ import {
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
-import TrackPanelVariant from './track-panel-items/TrackPanelVariant';
+import TrackPanelVariant from './track-panel-items/track-panel-variant/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
 import {
   Accordion,

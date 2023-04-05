@@ -83,7 +83,7 @@ export const variantRs699 = {
       name: 'NC_000001.1:230710048:A:G',
       slice: {
         location: {
-          start: 3230710048,
+          start: 230710048,
           end: 230710048,
           length: 1
         },

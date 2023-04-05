@@ -28,6 +28,11 @@ export type TranscriptDrawerView = {
   transcriptId: string; // transcript stable id
 };
 
+export type VariantDrawerView = {
+  name: 'variant_summary';
+  variantId: string;
+};
+
 export type GenericTrackView = {
   name: 'track_details';
   trackId: string;
@@ -42,5 +47,6 @@ export type DrawerView =
   | BookmarksDrawerView
   | GeneDrawerView
   | TranscriptDrawerView
+  | VariantDrawerView
   | GenericTrackView
   | VariantLegendView;
