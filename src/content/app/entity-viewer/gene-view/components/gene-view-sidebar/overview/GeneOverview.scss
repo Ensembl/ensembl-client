@@ -31,10 +31,27 @@
   margin-right: 10px;
 }
 
+.attributeRow {
+  line-height: 1;
+
+  > span {
+    display: inline-block;
+  }
+}
+
 .attributeLabel {
   font-size: 12px;
   font-weight: 300;
   margin-right: 10px;
+}
+
+.biotypeValue {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  top: 2px;
+  width: 240px;
 }
 
 .accordionContainer {

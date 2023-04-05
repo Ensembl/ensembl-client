@@ -141,7 +141,7 @@ describe('<GeneOverview />', () => {
       const xrefElement = container.querySelector(
         '.externalLinkContainer .link'
       );
-      const biotypeValueElement = queryByTestId('biotypeValue');
+      const biotypeValueElement = container.querySelector('.biotypeValue');
 
       // child components
       const genePublications = container.querySelector('.genePublications');

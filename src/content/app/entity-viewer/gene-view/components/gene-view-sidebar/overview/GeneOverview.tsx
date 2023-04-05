@@ -124,9 +124,9 @@ const GeneOverview = () => {
         <div className={styles.sectionHead}>Attributes</div>
         <div className={styles.sectionContent}>
           <div className={styles.attributes}>
-            <div>
+            <div className={styles.attributeRow}>
               <span className={styles.attributeLabel}>Biotype</span>{' '}
-              <span data-test-id="biotypeValue">{geneBiotype.value}</span>
+              <span className={styles.biotypeValue}>{geneBiotype.value}</span>
             </div>
           </div>
         </div>
