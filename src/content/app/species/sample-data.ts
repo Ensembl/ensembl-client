@@ -31,7 +31,7 @@ export const sampleData: RawSpeciesStats = {
     assembly_stats: {
       contig_n50: 56413054,
       total_genome_length: 3272116950,
-      total_coding_sequence_length: 34378305,
+      total_coding_sequence_length: 34459298,
       total_gap_length: 161368351,
       spanned_gaps: 661,
       chromosomes: 25,
@@ -40,70 +40,70 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 38.87
     },
     coding_stats: {
-      coding_genes: 20424,
-      average_genomic_span: 67123.2,
-      average_sequence_length: 3538.93,
-      average_cds_length: 1160.33,
+      coding_genes: 20446,
+      average_genomic_span: 67470.63,
+      average_sequence_length: 3567.83,
+      average_cds_length: 1187.42,
       shortest_gene_length: 8,
       longest_gene_length: 2473539,
-      total_transcripts: 162478,
-      coding_transcripts: 106190,
-      transcripts_per_gene: 7.96,
-      coding_transcripts_per_gene: 5.2,
-      total_exons: 1268315,
-      total_coding_exons: 825666,
-      average_exon_length: 246.94,
-      average_coding_exon_length: 149.22,
-      average_exons_per_transcript: 7.81,
-      average_coding_exons_per_coding_transcript: 7.78,
-      total_introns: 1105837,
-      average_intron_length: 6237.5
+      total_transcripts: 170605,
+      coding_transcripts: 111092,
+      transcripts_per_gene: 8.34,
+      coding_transcripts_per_gene: 5.43,
+      total_exons: 1382807,
+      total_coding_exons: 883815,
+      average_exon_length: 249.77,
+      average_coding_exon_length: 149.24,
+      average_exons_per_transcript: 8.11,
+      average_coding_exons_per_coding_transcript: 7.96,
+      total_introns: 1212202,
+      average_intron_length: 6185.42
     },
     non_coding_stats: {
-      non_coding_genes: 23967,
-      small_non_coding_genes: 4863,
-      long_non_coding_genes: 16884,
+      non_coding_genes: 25954,
+      small_non_coding_genes: 4862,
+      long_non_coding_genes: 18872,
       misc_non_coding_genes: 2220,
-      average_genomic_span: 23077.19,
-      average_sequence_length: 940.34,
+      average_genomic_span: 22941.51,
+      average_sequence_length: 970.79,
       shortest_gene_length: 41,
       longest_gene_length: 1375317,
-      total_transcripts: 54748,
-      transcripts_per_gene: 2.28,
-      total_exons: 184477,
-      average_exon_length: 347.04,
-      average_exons_per_transcript: 3.37,
-      total_introns: 129729,
-      average_intron_length: 15993.77
+      total_transcripts: 63914,
+      transcripts_per_gene: 2.46,
+      total_exons: 223321,
+      average_exon_length: 338.2,
+      average_exons_per_transcript: 3.49,
+      total_introns: 159407,
+      average_intron_length: 14976.44
     },
     pseudogene_stats: {
-      pseudogenes: 15217,
-      average_genomic_span: 4218.48,
-      average_sequence_length: 726.42,
+      pseudogenes: 15230,
+      average_genomic_span: 3410.73,
+      average_sequence_length: 725.9,
       shortest_gene_length: 23,
       longest_gene_length: 909387,
-      total_transcripts: 18617,
-      transcripts_per_gene: 1.22,
-      total_exons: 44532,
-      average_exon_length: 353.34,
-      average_exons_per_transcript: 2.39,
-      total_introns: 25915,
-      average_intron_length: 4372.89
+      total_transcripts: 16688,
+      transcripts_per_gene: 1.1,
+      total_exons: 35181,
+      average_exon_length: 371.56,
+      average_exons_per_transcript: 2.11,
+      total_introns: 18493,
+      average_intron_length: 4119.3
     },
     homology_stats: {
       coverage: 86
     },
     variation_stats: {
-      short_variants: 713749788,
-      structural_variants: 32170052,
-      short_variants_with_phenotype_assertions: 13365325,
-      short_variants_with_publications: 429376,
+      short_variants: 714267656,
+      structural_variants: 32845184,
+      short_variants_with_phenotype_assertions: 14350486,
+      short_variants_with_publications: 636350,
       short_variants_frequency_studies: 8,
-      structural_variants_with_phenotype_assertions: 320417
+      structural_variants_with_phenotype_assertions: 270362
     },
     regulation_stats: {
-      enhancers: 132592,
-      promoters: 35191
+      enhancers: 268483,
+      promoters: 36597
     }
   },
   '3704ceb1-948d-11ec-a39d-005056b38ce3': {
@@ -115,7 +115,7 @@ export const sampleData: RawSpeciesStats = {
       spanned_gaps: 242,
       chromosomes: 25,
       toplevel_sequences: 297,
-      component_sequences: null,
+      component_sequences: 27948,
       gc_percentage: 37.81
     },
     coding_stats: {
@@ -157,7 +157,7 @@ export const sampleData: RawSpeciesStats = {
     },
     pseudogene_stats: {
       pseudogenes: 14170,
-      average_genomic_span: 3525.6,
+      average_genomic_span: 3525.3,
       average_sequence_length: 809.46,
       shortest_gene_length: 23,
       longest_gene_length: 586570,
@@ -174,15 +174,16 @@ export const sampleData: RawSpeciesStats = {
       coverage: 0
     },
     variation_stats: {
-      structural_variants: 36348512,
-      short_variants_with_phenotype_assertions: 10233814,
-      short_variants_with_publications: 328161,
+      short_variants: 713754076,
+      structural_variants: 36623776,
+      short_variants_with_phenotype_assertions: 13363676,
+      short_variants_with_publications: 427648,
       short_variants_frequency_studies: 8,
-      structural_variants_with_phenotype_assertions: 1682589
+      structural_variants_with_phenotype_assertions: 1957818
     },
     regulation_stats: {
-      enhancers: 92264,
-      promoters: 21822
+      enhancers: 163595,
+      promoters: 32667
     }
   },
   'a73351f7-93e7-11ec-a39d-005056b38ce3': {
@@ -249,14 +250,14 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 1150.95
     },
     homology_stats: {
-      coverage: 93.1
+      coverage: 93.2
     }
   },
   'a733550b-93e7-11ec-a39d-005056b38ce3': {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 100272607,
-      total_coding_sequence_length: 24880113,
+      total_coding_sequence_length: 24569601,
       total_gap_length: 0,
       spanned_gaps: 0,
       chromosomes: 6,
@@ -265,58 +266,58 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 35.44
     },
     coding_stats: {
-      coding_genes: 20191,
-      average_genomic_span: 3149.75,
-      average_sequence_length: 1402.22,
-      average_cds_length: 1425.34,
+      coding_genes: 19985,
+      average_genomic_span: 3224.91,
+      average_sequence_length: 1447.28,
+      average_cds_length: 1412.42,
       shortest_gene_length: 30,
-      longest_gene_length: 102626,
-      total_transcripts: 34214,
-      coding_transcripts: 33552,
-      transcripts_per_gene: 1.69,
-      coding_transcripts_per_gene: 1.66,
-      total_exons: 240193,
-      total_coding_exons: 225661,
-      average_exon_length: 236.95,
-      average_coding_exon_length: 211.92,
+      longest_gene_length: 102756,
+      total_transcripts: 32524,
+      coding_transcripts: 31865,
+      transcripts_per_gene: 1.63,
+      coding_transcripts_per_gene: 1.59,
+      total_exons: 228411,
+      total_coding_exons: 215849,
+      average_exon_length: 237.67,
+      average_coding_exon_length: 208.51,
       average_exons_per_transcript: 7.02,
-      average_coding_exons_per_coding_transcript: 6.73,
-      total_introns: 205969,
-      average_intron_length: 398.96
+      average_coding_exons_per_coding_transcript: 6.77,
+      total_introns: 195887,
+      average_intron_length: 397.55
     },
     non_coding_stats: {
-      non_coding_genes: 24791,
-      small_non_coding_genes: 24515,
-      long_non_coding_genes: 276,
+      non_coding_genes: 24813,
+      small_non_coding_genes: 24519,
+      long_non_coding_genes: 294,
       misc_non_coding_genes: 0,
-      average_genomic_span: 81.87,
-      average_sequence_length: 74.6,
+      average_genomic_span: 82.61,
+      average_sequence_length: 75.03,
       shortest_gene_length: 17,
       longest_gene_length: 14770,
-      total_transcripts: 25279,
+      total_transcripts: 25311,
       transcripts_per_gene: 1.02,
-      total_exons: 25763,
-      average_exon_length: 72.63,
+      total_exons: 25837,
+      average_exon_length: 73,
       average_exons_per_transcript: 1.02,
-      total_introns: 484,
-      average_intron_length: 401.85
+      total_introns: 526,
+      average_intron_length: 385.3
     },
     pseudogene_stats: {
-      pseudogenes: 1922,
-      average_genomic_span: 1474.68,
-      average_sequence_length: 899.83,
+      pseudogenes: 2128,
+      average_genomic_span: 1521.23,
+      average_sequence_length: 931.43,
       shortest_gene_length: 63,
       longest_gene_length: 17899,
       total_transcripts: 1958,
       transcripts_per_gene: 1.02,
-      total_exons: 7695,
-      average_exon_length: 230.92,
-      average_exons_per_transcript: 3.93,
-      total_introns: 5737,
-      average_intron_length: 203.57
+      total_exons: 8869,
+      average_exon_length: 228.89,
+      average_exons_per_transcript: 4.1,
+      total_introns: 6704,
+      average_intron_length: 196.66
     },
     homology_stats: {
-      coverage: 87.3
+      coverage: 87.4
     }
   },
   'a73356e1-93e7-11ec-a39d-005056b38ce3': {
@@ -327,7 +328,7 @@ export const sampleData: RawSpeciesStats = {
       total_gap_length: 0,
       spanned_gaps: 0,
       chromosomes: 14,
-      toplevel_sequences: 0,
+      toplevel_sequences: 14,
       component_sequences: 14,
       gc_percentage: 19.34
     },
@@ -416,7 +417,7 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 1.05,
       average_coding_exons_per_coding_transcript: 1.05,
       total_introns: 313,
-      average_intron_length: 348.08
+      average_intron_length: 354.08
     },
     non_coding_stats: {
       non_coding_genes: 424,
@@ -525,7 +526,7 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     variation_stats: {
-      short_variants: 18093911,
+      short_variants: 25626843,
       structural_variants: 0,
       short_variants_frequency_studies: 1,
       short_variants_with_phenotype_assertions: 0,
@@ -533,7 +534,7 @@ export const sampleData: RawSpeciesStats = {
       structural_variants_with_phenotype_assertions: 0
     },
     homology_stats: {
-      coverage: 98.8
+      coverage: 99.8
     }
   },
   actinobacillus: {
@@ -611,51 +612,51 @@ export const sidebarData: SpeciesSidebarData = {
     id: 'GCA_000001405.28',
     taxonomy_id: '9606',
     strain: null,
-    database_version: '104.38',
+    database_version: '108.38',
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     gencode_version: 'GENCODE 34',
     assembly_name: 'GRCh38.p13',
     assembly_provider: {
       name: 'INSDC assembly',
-      url: ''
+      url: 'https://www.ebi.ac.uk/ena/data/view/GCA_000001405.28'
     },
     annotation_provider: {
       name: 'Ensembl',
-      url: 'http://www.ensembl.org'
+      url: 'https://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
-    assembly_date: '2019-02-01',
+    assembly_date: '2019-02-28',
     notes: []
   },
   '3704ceb1-948d-11ec-a39d-005056b38ce3': {
     id: 'GCA_000001405.14',
     taxonomy_id: '9606',
     strain: null,
-    database_version: '104.37',
+    database_version: '108.37',
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     gencode_version: 'GENCODE 19',
     assembly_name: 'GRCh37.p13',
     assembly_provider: {
       name: 'INSDC assembly',
-      url: ''
+      url: 'https://www.ebi.ac.uk/ena/browser/view/GCA_000001405.14'
     },
     annotation_provider: {
       name: 'Ensembl',
-      url: ''
+      url: 'https://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
-    assembly_date: '2013-06-01',
+    assembly_date: '2013-06-28',
     notes: []
   },
   'a73351f7-93e7-11ec-a39d-005056b38ce3': {
     id: 'GCA_000005845.2',
     taxonomy_id: '511145',
     strain: null,
-    database_version: '104.1',
+    database_version: '108.1',
     common_name: null,
     scientific_name: 'Escherichia coli str. K-12 substr. MG1655',
     gencode_version: null,
@@ -670,7 +671,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Generated from ENA annotation',
-    assembly_date: '2013-09-01',
+    assembly_date: '2013-09-26',
     notes: []
   },
   'a733550b-93e7-11ec-a39d-005056b38ce3': {
@@ -680,7 +681,7 @@ export const sidebarData: SpeciesSidebarData = {
       type: 'Strain',
       value: 'N2'
     },
-    database_version: '104.269',
+    database_version: '108.282',
     common_name: null,
     scientific_name: 'Caenorhabditis elegans',
     gencode_version: null,
@@ -695,14 +696,14 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: '2013-02-01',
+    assembly_date: '2013-02-07',
     notes: []
   },
   'a73356e1-93e7-11ec-a39d-005056b38ce3': {
     id: 'GCA_000002765.2',
     taxonomy_id: '36329',
     strain: null,
-    database_version: '104.1',
+    database_version: '108.1',
     common_name: null,
     scientific_name: 'Plasmodium falciparum 3D7',
     gencode_version: null,
@@ -717,17 +718,17 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: '2016-04-01',
+    assembly_date: '2016-04-07',
     notes: []
   },
   'a733574a-93e7-11ec-a39d-005056b38ce3': {
     id: 'GCA_000146045.2',
-    taxonomy_id: '4932',
+    taxonomy_id: '559292',
     strain: {
       type: 'Strain',
       value: 'S288C'
     },
-    database_version: '104.4',
+    database_version: '108.4',
     common_name: 'Brewers yeast',
     scientific_name: 'Saccharomyces cerevisiae',
     gencode_version: null,
@@ -742,7 +743,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: '2014-12-01',
+    assembly_date: '2014-12-17',
     notes: []
   },
   'a73357ab-93e7-11ec-a39d-005056b38ce3': {
@@ -750,13 +751,13 @@ export const sidebarData: SpeciesSidebarData = {
     taxonomy_id: '4565',
     strain: {
       type: 'Cultivar',
-      value: 'Chinese spring'
+      value: 'Chinese Spring'
     },
-    database_version: '104.4',
+    database_version: '108.4',
     common_name: 'Wheat',
     scientific_name: 'Triticum aestivum',
     gencode_version: null,
-    assembly_name: 'IWGSC',
+    assembly_name: 'IWGSC RefSeq v1.0',
     assembly_provider: {
       name: 'International Wheat Genome Sequencing Consortium',
       url: 'https://www.ebi.ac.uk/ena/data/view/GCA_900519105.1'
@@ -767,7 +768,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: '2018-08-01',
+    assembly_date: '2018-08-20',
     notes: []
   }
 };
