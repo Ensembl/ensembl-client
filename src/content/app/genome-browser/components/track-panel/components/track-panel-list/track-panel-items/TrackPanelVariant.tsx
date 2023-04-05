@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -24,6 +26,15 @@ import styles from './TrackPanelItem.scss';
 
 const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   const { focusVariant } = props;
+  const { currentData } = useGbVariantQuery({
+    genomeId: focusVariant.genome_id,
+    variantId: focusVariant.object_id // TODO: change this to the appropriate id with which to query variation api
+  });
+
+  if (!currentData) {
+    return null;
+    // TODO: handle errors
+  }
 
   const children = (
     <div className={styles.label}>

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import type { ExternalDB } from '../thoas/externalDb';
+import type { Variant } from 'src/shared/types/variation-api/variant';
 
-export type VariantPredictionResult = {
-  score: number | null;
-  result: string | null; // Odd. How can the result field of a structure that is called VariantPredictionResult be null?
-  analysis_method: AnalysisMethod;
-};
+/**
+ * NOTE: this file will need rework when we start querying real variation data:
+ * - we will have to add the actual graphql queries
+ * - we might want to split it into several queries (a smaller VariantSummary query and a larger VariantDetails query)
+ *
+ * Meanwhile, I am using this file to define the type of the expected response.
+ */
 
-// NOTE: this is likely going to be a type that recurs in other models as well; not just variation.
-// Might deserve moving to a different file/directory in the future
-export type AnalysisMethod = {
-  tool: string;
-  version: string;
-  qualifier: string | null;
-  reference_data: ExternalDB[];
+export type VariantQueryResult = {
+  variant: Variant;
 };

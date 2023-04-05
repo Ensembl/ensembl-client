@@ -27,7 +27,7 @@ import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReduce
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
 
-import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import thoasApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 const createRootReducer = () =>

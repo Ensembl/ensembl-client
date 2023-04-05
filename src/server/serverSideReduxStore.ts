@@ -16,7 +16,7 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 
-import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import thoasApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { createServerSideRootReducer } from 'src/root/rootReducer';

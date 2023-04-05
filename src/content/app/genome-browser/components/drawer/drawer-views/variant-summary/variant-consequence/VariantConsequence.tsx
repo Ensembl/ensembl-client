@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import type { ExternalDB } from '../thoas/externalDb';
+import React from 'react';
 
-export type VariantPredictionResult = {
-  score: number | null;
-  result: string | null; // Odd. How can the result field of a structure that is called VariantPredictionResult be null?
-  analysis_method: AnalysisMethod;
+import VariantColour from 'src/content/app/genome-browser/components/drawer/components/variant-colour/VariantColour';
+
+import styles from './VariantConsequence.scss';
+
+type Props = {
+  consequence: string;
 };
 
-// NOTE: this is likely going to be a type that recurs in other models as well; not just variation.
-// Might deserve moving to a different file/directory in the future
-export type AnalysisMethod = {
-  tool: string;
-  version: string;
-  qualifier: string | null;
-  reference_data: ExternalDB[];
+const VariantConsequence = (props: Props) => {
+  const { consequence } = props;
+
+  return (
+    <div className={styles.variantConsequence}>
+      <VariantColour variantType={consequence} />
+      <span>{consequence}</span>
+    </div>
+  );
 };
+
+export default VariantConsequence;

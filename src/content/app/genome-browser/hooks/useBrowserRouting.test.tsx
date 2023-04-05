@@ -26,7 +26,7 @@ import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
-import thoasSlice from 'src/shared/state/api-slices/thoasSlice';
+import thoasSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import useBrowserRouting from './useBrowserRouting';
 

@@ -17,7 +17,7 @@
 export type ExternalDB = {
   id: string;
   name: string;
-  description: string;
-  url: string;
-  release: string;
+  description: string | null;
+  url: string | null;
+  release: string | null;
 };

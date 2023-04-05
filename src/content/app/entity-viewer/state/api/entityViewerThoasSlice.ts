@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
+
+import config from 'config';
 
 import {
   genePageMetaQuery,
@@ -49,10 +51,11 @@ import {
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
 
-const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
+const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     genePageMeta: builder.query<GenePageMeta, GeneQueryParams>({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: genePageMetaQuery,
         variables: params
       }),
@@ -73,18 +76,21 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: defaultGeneQuery,
         variables: params
       })
     }),
     geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: geneSummaryQuery,
         variables: params
       })
     }),
     geneOverview: builder.query<GeneOverviewQueryResult, GeneQueryParams>({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: geneOverviewQuery,
         variables: params
       })
@@ -94,6 +100,7 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: geneExternalReferencesQuery,
         variables: params
       })
@@ -103,6 +110,7 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: geneForSequenceDownloadQuery,
         variables: params
       })
@@ -112,6 +120,7 @@ const entityViewerThoasSlice = thoasApiSlice.injectEndpoints({
       ProductQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: proteinDomainsQuery,
         variables: params
       })
