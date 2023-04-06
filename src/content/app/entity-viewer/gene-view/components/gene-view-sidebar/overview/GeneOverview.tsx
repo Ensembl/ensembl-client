@@ -62,7 +62,7 @@ const GeneOverview = () => {
 
   const { gene } = currentData;
   const {
-    metadata: { name: geneNameMetadata }
+    metadata: { name: geneNameMetadata, biotype: geneBiotype }
   } = gene;
 
   const trackLink = () => {
@@ -116,6 +116,18 @@ const GeneOverview = () => {
             {gene.alternative_symbols.length
               ? gene.alternative_symbols.join(', ')
               : 'None'}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className={styles.sectionHead}>Attributes</div>
+        <div className={styles.sectionContent}>
+          <div className={styles.attributes}>
+            <div className={styles.attributeRow}>
+              <span className={styles.attributeLabel}>Biotype</span>{' '}
+              <span className={styles.biotypeValue}>{geneBiotype.value}</span>
+            </div>
           </div>
         </div>
       </section>
