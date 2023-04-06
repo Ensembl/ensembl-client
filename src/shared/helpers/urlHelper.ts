@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import queryString from 'query-string';
-
 import config from 'config';
 
 export const home = () => '/';
@@ -48,17 +46,14 @@ export const browser = (params?: BrowserUrlParams) => {
   const browserRootPath = '/genome-browser';
   if (params) {
     const path = `${browserRootPath}/${params.genomeId}`;
-    // NOTE: if a parameter passed to queryString is null, it will still get into query;
-    // so assign it to undefined in order to omit it from the query
-    const query = queryString.stringify(
-      {
-        focus: params.focus || undefined,
-        location: params.location || undefined
-      },
-      {
-        encode: false
-      }
-    );
+    const urlSearchParams = new URLSearchParams('');
+    if (params.focus) {
+      urlSearchParams.append('focus', params.focus);
+    }
+    if (params.location) {
+      urlSearchParams.append('location', params.location);
+    }
+    const query = decodeURIComponent(urlSearchParams.toString());
     return query ? `${path}?${query}` : path;
   } else {
     return browserRootPath;
@@ -80,15 +75,14 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   if (entityId) {
     path += `/${entityId}`;
   }
-  const query = queryString.stringify(
-    {
-      view: params?.view || undefined,
-      protein_id: params?.proteinId || undefined
-    },
-    {
-      encode: false
-    }
-  );
+  const urlSearchParams = new URLSearchParams('');
+  if (params?.view) {
+    urlSearchParams.append('view', params.view);
+  }
+  if (params?.proteinId) {
+    urlSearchParams.append('protein_id', params.proteinId);
+  }
+  const query = decodeURIComponent(urlSearchParams.toString());
 
   return query ? `${path}?${query}` : path;
 };

@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -162,16 +161,12 @@ export const JobStatus = (props: JobStatusProps) => {
   const hasAllFailedJobs = jobs.every((job) => job.status === 'FAILURE');
   const hasSomeFailedJobs = jobs.some((job) => job.status === 'FAILURE');
 
-  const elementClasses = classNames({
-    [styles.jobStatusProminent]: hasRunningJobs || hasSomeFailedJobs
-  });
-
   if (hasRunningJobs) {
-    return <span className={elementClasses}>Running...</span>;
+    return <span className={styles.jobStatusProminent}>Running...</span>;
   } else if (hasAllFailedJobs) {
-    return <span className={elementClasses}>Job failed</span>;
+    return <span className={styles.jobStatusProminent}>Job failed</span>;
   } else if (hasSomeFailedJobs) {
-    return <span className={elementClasses}>Part failed</span>;
+    return <span className={styles.jobStatusProminent}>Part failed</span>;
   } else {
     return null;
   }

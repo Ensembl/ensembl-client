@@ -73,5 +73,11 @@ export const { genomeInfo: fetchGenomeInfo } = genomeApiSlice.endpoints;
 export const isGenomeNotFoundError = (
   error?: SerializedError | FetchBaseQueryError
 ): boolean => {
-  return (error && 'status' in error && error.status >= 400) || false; // FIXME: change to 404 when the backend is updated
+  const hasErrorStatus = error && 'status' in error;
+  if (!hasErrorStatus) {
+    return false;
+  }
+
+  const errorStatus = error.status;
+  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME: change to 404 when the backend is updated
 };

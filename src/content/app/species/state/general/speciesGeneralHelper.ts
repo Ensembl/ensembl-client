@@ -152,7 +152,7 @@ enum Stats {
 
 const helpText = {
   HOMOLOGY_COVERAGE:
-    'Coding genes with orthologues and/or paralogues with other species in Ensembl'
+    'Proportion of coding genes with orthologues with other species in Ensembl'
 };
 
 type SpeciesStatsSectionGroups = {

@@ -62,7 +62,7 @@ const useEntityViewerUrlCheck = () => {
   const isMissingGene =
     isGeneQueryError &&
     'meta' in geneQueryError &&
-    geneQueryError.meta?.data?.gene === null;
+    (geneQueryError.meta.data as any)?.gene === null;
 
   const isFetching = isGeneQueryFetching; // extend this when we start having other entities
   const isMissingEntity = isMissingGene; // extend this when we start having other entities

@@ -122,7 +122,12 @@ const CompactContent = ({ gene }: { gene: Gene }) => {
 const FullContent = ({ gene }: { gene: Gene }) => (
   <>
     <CompactContent gene={gene} />
-    {gene.bio_type && <div>{gene.bio_type}</div>}
+    {gene.bio_type && (
+      <div>
+        <span className={styles.featureSummaryStripLabel}>Biotype</span>
+        {gene.bio_type}
+      </div>
+    )}
     {gene.strand && <div>{getStrandDisplayName(gene.strand)}</div>}
     <div>{getFormattedLocation(gene.location)}</div>
   </>

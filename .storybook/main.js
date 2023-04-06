@@ -1,15 +1,14 @@
-const webpackConfig = require('./webpack');
+import webpackConfig from './webpack';
 
-module.exports = {
-  core: {
-    builder: "webpack5",
-  },
+export default {
   stories: ['../stories/**/*.stories.tsx'],
-  webpackFinal: (config) => webpackConfig(config),
+  webpackFinal: config => webpackConfig(config),
   features: {
-    babelModeV7: true,
+    babelModeV7: true
   },
-  addons: [
-    '@storybook/addon-essentials'
-  ]
-}
+  addons: ['@storybook/addon-essentials'],
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {}
+  }
+};

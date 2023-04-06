@@ -30,7 +30,6 @@ import {
   BrowserSidebarModalView,
   openBrowserSidebarModal
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
-import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelVariant from './track-panel-items/TrackPanelVariant';
@@ -43,7 +42,6 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 
-import variantGroups from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 
@@ -64,8 +62,7 @@ export const TrackPanelList = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const activeFocusObject = useAppSelector(getBrowserActiveFocusObject);
   const selectedTrackPanelTab = useAppSelector(getSelectedTrackPanelTab);
-  const { trackDrawerOpened, reportTrackPanelSectionToggled } =
-    useGenomeBrowserAnalytics();
+  const { reportTrackPanelSectionToggled } = useGenomeBrowserAnalytics();
 
   const dispatch = useAppDispatch();
 
@@ -89,19 +86,6 @@ export const TrackPanelList = () => {
       ?.filter((category: GenomeTrackCategory) => category.track_list.length)
       .map((category: GenomeTrackCategory) => category.track_category_id) ?? [];
 
-  const onShowMore = (group: string) => {
-    trackDrawerOpened('variant_group_legend');
-    dispatch(
-      changeDrawerViewForGenome({
-        genomeId: activeGenomeId,
-        drawerView: {
-          name: 'variant_group_legend',
-          group
-        }
-      })
-    );
-  };
-
   return (
     <div className={styles.trackPanelList}>
       <FocusObject focusObject={activeFocusObject} />
@@ -124,8 +108,7 @@ export const TrackPanelList = () => {
         >
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
-              groups={variantGroups}
-              onShowMore={onShowMore}
+              disabled={trackCategoryIds.length === 0}
             />
           )}
 
