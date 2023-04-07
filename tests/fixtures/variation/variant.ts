@@ -80,7 +80,18 @@ export const variantRs699 = {
   ],
   alleles: [
     {
+      type: 'VariantAllele',
       name: 'NC_000001.1:230710048:A:G',
+      allele_type: {
+        accession_id: 'SO:0001483',
+        value: 'SNV',
+        url: 'www.sequenceontology.org/browser/current_release/term/SO:0000147',
+        source: {
+          id: '...',
+          name: 'Sequence Ontology',
+          url: 'www.sequenceontology.org'
+        }
+      },
       slice: {
         location: {
           start: 230710048,

@@ -19,8 +19,11 @@ import type { ExternalReference } from '../thoas/externalReference';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllelePopulationFrequency } from './variantAllelePopulationFrequency';
 import type { VariantAllelePhenotypeAssertion } from './variantAllelePhenotypeAssertion';
+import type { OntologyTermMetadata } from '../thoas/metadata';
 
 export type VariantAllele = {
+  type: 'VariantAllele';
+  allele_type: OntologyTermMetadata;
   name: string; // this is a SPDI identifier
   slice: Slice;
   allele_sequence: string;

@@ -1,0 +1,35 @@
+@import 'src/styles/common';
+
+// Many of the styles are identical between GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss
+// TODO: go through GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss, and extract common styles
+
+.row {
+  display: grid;
+  grid-template-columns: [label] 130px [value] auto;
+  grid-column-gap: 10px;
+}
+
+.row .label {
+  grid-column: label;
+  font-weight: $light;
+  text-align: right;
+  font-size: 12px;
+}
+
+.row .value {
+  grid-column: value;
+}
+
+.strong {
+  font-weight: $bold;
+}
+
+.light {
+  font-weight: $light;
+}
+
+.questionButton {
+  padding-left: 10px;
+  position: relative;
+  top: 2px;
+}

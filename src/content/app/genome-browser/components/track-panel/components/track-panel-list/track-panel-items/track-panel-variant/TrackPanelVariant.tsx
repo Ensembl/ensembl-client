@@ -19,16 +19,15 @@ import classNames from 'classnames';
 
 import { useAppDispatch } from 'src/store';
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from '../track-panel-item-layout/SimpleTrackPanelItemLayout';
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import VariantAllelesSequences from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-alleles-sequences/VariantAllelesSequences';
+import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
-import type { Variant } from 'src/shared/types/variation-api/variant';
 
 import styles from './TrackPanelVariant.scss';
 import trackPanelItemStyles from '../TrackPanelItem.scss';
@@ -59,13 +58,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   };
 
   const variant = variantData.variant;
-  const mostSevereConsequence = getMostSevereVariantConsequence(variant);
-  const variantAlleleSlice = variant.alleles[0].slice;
-  const variantLocationData = {
-    chromosome: variantAlleleSlice.region.name,
-    start: variantAlleleSlice.location.start,
-    end: variantAlleleSlice.location.end
-  };
+  const mostSevereConsequence = <VariantConsequence variant={variant} />;
 
   return (
     <>
@@ -83,7 +76,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
             >
               Most severe consequence
             </span>
-            <VariantConsequence consequence={mostSevereConsequence} />
+            {mostSevereConsequence}
           </div>
         )}
         <div className={styles.rowField}>
@@ -92,7 +85,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
         </div>
         <div className={styles.rowField}>
           <span className={styles.labelText}>Location</span>
-          <span>{getFormattedLocation(variantLocationData)}</span>
+          <VariantLocation variant={variant} />
         </div>
       </div>
     </>
@@ -100,15 +93,3 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
 };
 
 export default TrackPanelVariant;
-
-const getMostSevereVariantConsequence = ({
-  prediction_results: predictionResults
-}: {
-  prediction_results: Variant['prediction_results'];
-}) => {
-  const consequencePrediction = predictionResults.find(
-    ({ analysis_method }) => analysis_method.tool === 'Ensembl VEP'
-  );
-
-  return consequencePrediction?.result;
-};

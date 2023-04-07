@@ -90,8 +90,8 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
 
     // Maybe move variation endpoints queried from the genome browser into a separate file?
     gbVariant: builder.query<VariantQueryResult, VariantQueryParams>({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       queryFn: async (params) => {
-        // eslint-disable-line @typescript-eslint/no-unused-vars
         return {
           data: { variant: variantRs699 }
         };

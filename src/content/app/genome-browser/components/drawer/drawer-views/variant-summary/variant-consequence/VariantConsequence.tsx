@@ -18,21 +18,39 @@ import React from 'react';
 
 import VariantColour from 'src/content/app/genome-browser/components/drawer/components/variant-colour/VariantColour';
 
+import type { Variant } from 'src/shared/types/variation-api/variant';
+
 import styles from './VariantConsequence.scss';
 
 type Props = {
-  consequence: string;
+  variant: Pick<Variant, 'prediction_results'>;
 };
 
 const VariantConsequence = (props: Props) => {
-  const { consequence } = props;
+  const { variant } = props;
+
+  const variantConsequence = getMostSevereVariantConsequence(variant);
+
+  if (!variantConsequence) {
+    return null;
+  }
 
   return (
     <div className={styles.variantConsequence}>
-      <VariantColour variantType={consequence} />
-      <span>{consequence}</span>
+      <VariantColour variantType={variantConsequence} />
+      <span>{variantConsequence}</span>
     </div>
   );
 };
 
 export default VariantConsequence;
+
+const getMostSevereVariantConsequence = ({
+  prediction_results: predictionResults
+}: Props['variant']) => {
+  const consequencePrediction = predictionResults.find(
+    ({ analysis_method }) => analysis_method.tool === 'Ensembl VEP'
+  );
+
+  return consequencePrediction?.result;
+};
