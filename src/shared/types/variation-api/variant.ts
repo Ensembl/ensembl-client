@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ExternalReference } from '../thoas/externalReference';
 import type { ExternalDB } from '../thoas/externalDb';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllele } from './variantAllele';
@@ -21,7 +22,7 @@ import type { VariantAllele } from './variantAllele';
 export type Variant = {
   type: 'Variant';
   name: string; // this is an rsID identifier
-  alternative_names: string[];
+  alternative_names: ExternalReference[];
   primary_source: ExternalDB;
   prediction_results: VariantPredictionResult[];
   alleles: VariantAllele[];

@@ -177,8 +177,8 @@ export const variantRs699 = {
             id: 'UniProt',
             name: 'UniProt',
             // "description": null,
-            url: 'https://www.uniprot.org/'
-            // "release": "20220211"
+            url: 'https://www.uniprot.org/',
+            release: '20220211'
           }
         },
         {

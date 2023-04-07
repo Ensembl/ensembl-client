@@ -23,6 +23,7 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import VariantAllelesSequences from './variant-alleles-sequences/VariantAllelesSequences';
 import VariantConsequence from './variant-consequence/VariantConsequence';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
+import VariantVCF from './variant-vcf/VariantVCF';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
@@ -62,9 +63,10 @@ const VariantSummary = (props: Props) => {
   const minorAlleleFrequency = <MinorAlleleFrequency variant={variant} />;
   const highestMAF = <HighestPopulationMAF variant={variant} />;
   const mostSevereConsequence = <VariantConsequence variant={variant} />;
-  const clinicalSignificance = <ClinicalSignificance variant={variant} />; // FIXME!
+  const clinicalSignificance = <ClinicalSignificance variant={variant} />; // FIXME -- detect null!
   const caddScores = <CADDScores variant={variant} />;
   const gerpScore = <GERPScore variant={variant} />;
+  const synonyms = <VariantSynonyms variant={variant} />; // FIXME! -- detect null!
 
   return (
     <>
@@ -148,11 +150,14 @@ const VariantSummary = (props: Props) => {
 
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
-        <div className={styles.value}></div>
+        <div className={styles.value}>
+          <VariantVCF variant={variant} />
+        </div>
       </div>
 
       <div className={styles.row}>
         <div className={styles.label}>Synonyms</div>
+        <div className={styles.value}>{synonyms}</div>
       </div>
     </>
   );
@@ -331,5 +336,26 @@ const GERPScore = memo((props: { variant: VariantQueryResult['variant'] }) => {
 
   return <span>{gerpPrediction.score}</span>;
 });
+
+// FIXME: links should be grouped by sources. Does ExternalReference component do this?
+const VariantSynonyms = (props: { variant: VariantQueryResult['variant'] }) => {
+  const xrefElements = props.variant.alternative_names.map(
+    (reference, index) => {
+      if (reference.url) {
+        return (
+          <ExternalLink
+            key={index}
+            to={reference.url}
+            linkText={reference.name}
+          />
+        );
+      } else {
+        return <span key={index}>{reference.name}</span>;
+      }
+    }
+  );
+
+  return <>{xrefElements}</>;
+};
 
 export default VariantSummary;
