@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import React from 'react';
 
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
+import prepareVariantSummaryData from './prepareVariantSummaryData';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import VariantAllelesSequences from './variant-alleles-sequences/VariantAllelesSequences';
@@ -58,15 +60,7 @@ const VariantSummary = (props: Props) => {
   }
 
   const { variant } = variantData;
-
-  const ancestralAllele = <AncestralAllele variant={variant} />;
-  const minorAlleleFrequency = <MinorAlleleFrequency variant={variant} />;
-  const highestMAF = <HighestPopulationMAF variant={variant} />;
-  const mostSevereConsequence = <VariantConsequence variant={variant} />;
-  const clinicalSignificance = <ClinicalSignificance variant={variant} />; // FIXME -- detect null!
-  const caddScores = <CADDScores variant={variant} />;
-  const gerpScore = <GERPScore variant={variant} />;
-  const synonyms = <VariantSynonyms variant={variant} />; // FIXME! -- detect null!
+  const preparedSummaryData = prepareVariantSummaryData(variant);
 
   return (
     <>
@@ -92,52 +86,67 @@ const VariantSummary = (props: Props) => {
         </div>
       </div>
 
-      {ancestralAllele && (
+      {preparedSummaryData.ancestralAllele && (
         <div className={styles.row}>
           <div className={styles.label}>Ancestral</div>
-          <div className={styles.value}>{ancestralAllele}</div>
+          <div className={styles.value}>
+            {preparedSummaryData.ancestralAllele}
+          </div>
         </div>
       )}
 
-      {minorAlleleFrequency && (
+      {preparedSummaryData.minorAlleleFrequency && (
         <div className={styles.row}>
           <div className={styles.label}>MAF</div>
-          <div className={styles.value}>{minorAlleleFrequency}</div>
+          <div className={styles.value}>
+            {preparedSummaryData.minorAlleleFrequency.frequency}(
+            {preparedSummaryData.minorAlleleFrequency.sequence})
+          </div>
         </div>
       )}
 
-      {highestMAF && (
+      {preparedSummaryData.highestMAF && (
         <div className={styles.row}>
           <div className={styles.label}>Highest population MAF</div>
-          <div className={styles.value}>{highestMAF}</div>
+          <div className={styles.value}>
+            {preparedSummaryData.highestMAF.frequency}
+          </div>
         </div>
       )}
 
-      {mostSevereConsequence && (
+      {preparedSummaryData.mostSevereConsequence && (
         <div className={styles.row}>
           <div className={styles.label}>Most severe consequence</div>
-          <div className={styles.value}>{mostSevereConsequence}</div>
+          <div className={styles.value}>
+            <VariantConsequence variant={variant} />
+          </div>
         </div>
       )}
 
-      {clinicalSignificance && (
+      {!!preparedSummaryData.clinicalSignificance.length && (
         <div className={styles.row}>
           <div className={styles.label}>Clinical significance</div>
-          <div className={styles.value}>{clinicalSignificance}</div>
+          <div className={styles.value}>
+            <ClinicalSignificance
+              data={preparedSummaryData.clinicalSignificance}
+            />
+          </div>
         </div>
       )}
 
-      {caddScores && (
+      {!!preparedSummaryData.caddScores.length && (
         <div className={styles.row}>
           <div className={styles.label}>CADD</div>
-          <div className={styles.value}>{caddScores}</div>
+          <div className={styles.value}>
+            <CADDScores data={preparedSummaryData.caddScores} />
+          </div>
         </div>
       )}
 
-      {gerpScore && (
+      {preparedSummaryData.gerpScore && (
         <div className={styles.row}>
           <div className={styles.label}>GERP</div>
-          <div className={styles.value}>{gerpScore}</div>
+          <div className={styles.value}>{preparedSummaryData.gerpScore}</div>
         </div>
       )}
 
@@ -155,10 +164,14 @@ const VariantSummary = (props: Props) => {
         </div>
       </div>
 
-      <div className={styles.row}>
-        <div className={styles.label}>Synonyms</div>
-        <div className={styles.value}>{synonyms}</div>
-      </div>
+      {!!variant.alternative_names.length && (
+        <div className={styles.row}>
+          <div className={styles.label}>Synonyms</div>
+          <div className={styles.value}>
+            <VariantSynonyms variant={variant} />
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -186,156 +199,27 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
   );
 };
 
-const AncestralAllele = (props: { variant: VariantQueryResult['variant'] }) => {
-  const ancestralAllelePrediction = props.variant.prediction_results.find(
-    (prediction) => {
-      return prediction.analysis_method.tool === 'AncestralAllele';
-    }
+const ClinicalSignificance = (props: {
+  data: { sequence: string; significance: string }[];
+}) => {
+  return (
+    <>
+      {props.data.map((data, index) => (
+        <span key={index}>
+          {data.significance} ({data.sequence})
+        </span>
+      ))}
+    </>
   );
-
-  if (!ancestralAllelePrediction) {
-    return null; // shouldn't happen
-  }
-
-  return <span>{ancestralAllelePrediction.result}</span>;
 };
 
-// There could be 1-20 VariantAlleles and 0-50 PopulationAlleleFrequency records for each
-const MinorAlleleFrequency = memo(
-  (props: { variant: VariantQueryResult['variant'] }) => {
-    let minorAlleleFrequency:
-      | { sequence: string; frequency: number }
-      | undefined;
-
-    for (const variantAllele of props.variant.alleles) {
-      for (const populationFrequency of variantAllele.population_frequencies) {
-        if (populationFrequency.is_minor_allele) {
-          minorAlleleFrequency = {
-            sequence: variantAllele.allele_sequence,
-            frequency: populationFrequency.allele_frequency
-          };
-          break;
-        }
-      }
-    }
-
-    if (!minorAlleleFrequency) {
-      return null;
-    }
-
-    return (
-      <span>
-        {minorAlleleFrequency.frequency} ({minorAlleleFrequency.sequence})
-      </span>
-    );
-  }
-);
-
-// There could be 1-20  VariantAlleles and 0-50 PopulationAlleleFrequency records for each
-const HighestPopulationMAF = memo(
-  (props: { variant: VariantQueryResult['variant'] }) => {
-    let highestMAF: { sequence: string; frequency: number } | undefined;
-
-    for (const variantAllele of props.variant.alleles) {
-      for (const populationFrequency of variantAllele.population_frequencies) {
-        if (populationFrequency.is_hpmaf) {
-          highestMAF = {
-            sequence: variantAllele.allele_sequence,
-            frequency: populationFrequency.allele_frequency
-          };
-          break;
-        }
-      }
-    }
-
-    if (!highestMAF) {
-      return null;
-    }
-
-    return <span>{highestMAF.frequency}</span>;
-  }
-);
-
-const ClinicalSignificance = memo(
-  (props: { variant: VariantQueryResult['variant'] }) => {
-    const clinicalSignificanceData: {
-      sequence: string;
-      significance: string;
-    }[] = [];
-
-    for (const variantAllele of props.variant.alleles) {
-      for (const phenotypeAssertion of variantAllele.phenotype_assertions) {
-        for (const evidence of phenotypeAssertion.evidence) {
-          for (const attribute of evidence.attributes) {
-            if (attribute.type === 'clin_sig') {
-              clinicalSignificanceData.push({
-                sequence: variantAllele.allele_sequence,
-                significance: attribute.value
-              });
-            }
-          }
-        }
-      }
-    }
-
-    if (!clinicalSignificanceData.length) {
-      return null;
-    }
-
-    return (
-      <>
-        {clinicalSignificanceData.map((data, index) => (
-          <span key={index}>
-            {data.significance} ({data.sequence})
-          </span>
-        ))}
-      </>
-    );
-  }
-);
-
-const CADDScores = memo((props: { variant: VariantQueryResult['variant'] }) => {
-  const caddScores: {
-    sequence: string;
-    score: number;
-  }[] = [];
-
-  for (const variantAllele of props.variant.alleles) {
-    for (const predictionResult of variantAllele.prediction_results) {
-      if (
-        predictionResult.analysis_method.tool === 'CADD' &&
-        predictionResult.score
-      ) {
-        caddScores.push({
-          sequence: variantAllele.allele_sequence,
-          score: predictionResult.score
-        });
-      }
-    }
-  }
-
-  if (!caddScores.length) {
-    return null;
-  }
-
-  const caddScoreString = caddScores
+const CADDScores = (props: { data: { sequence: string; score: number }[] }) => {
+  const caddScoreString = props.data
     .map((data) => `${data.sequence}:${data.score}`)
     .join(', ');
 
   return <span>{caddScoreString}</span>;
-});
-
-const GERPScore = memo((props: { variant: VariantQueryResult['variant'] }) => {
-  const gerpPrediction = props.variant.prediction_results.find(
-    (prediction) => prediction.analysis_method.tool === 'GERP'
-  );
-
-  if (!gerpPrediction) {
-    return null;
-  }
-
-  return <span>{gerpPrediction.score}</span>;
-});
+};
 
 // FIXME: links should be grouped by sources. Does ExternalReference component do this?
 const VariantSynonyms = (props: { variant: VariantQueryResult['variant'] }) => {
