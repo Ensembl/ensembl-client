@@ -23,8 +23,6 @@ import AutosuggestionPanel, {
   type MatchIndex
 } from './AutosuggestionPanel';
 
-import type { InputSize } from '../input/ShadedInput';
-
 import styles from './AutosuggestSearchField.scss';
 
 export const defaultNotFoundText = 'No results found';
@@ -43,7 +41,6 @@ type CommonProps = {
   searchFieldClassName?: string;
   notFound?: boolean;
   notFoundText?: string;
-  size?: InputSize;
 };
 
 // with this set of props user can submit raw content of the search field
@@ -246,7 +243,7 @@ const AutosuggestSearchField = (props: Props) => {
         onKeyDown={handleKeyDown}
         onSubmit={handleSubmit}
         className={searchFieldClassName}
-        size={props.size}
+        size="large"
       />
       {shouldShowSuggestions && (
         <AutosuggestionPanel

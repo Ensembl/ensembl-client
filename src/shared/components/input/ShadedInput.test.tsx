@@ -47,8 +47,7 @@ describe('<ShadedInput />', () => {
   it('renders icon if passed as props', () => {
     const MockIcon = () => <div className="mockIcon">Mock Icon</div>;
     let { container } = render(<ShadedInput rightCorner={<MockIcon />} />);
-    expect(container.querySelector('.rightCorner')).toBeTruthy();
-    expect(container.querySelector('.mockIcon')).toBeTruthy();
+    expect(container.querySelector('.rightCorner .mockIcon')).toBeTruthy();
 
     // doesn't render rightCorner when prop not passed
     container = render(<ShadedInput />).container;

@@ -9,8 +9,6 @@
   &:focus,
   &:active {
     outline: none;
-    color: $black;
-    font-weight: $normal;
   }
 }
 
@@ -23,7 +21,6 @@
 .inputWrapper {
   background-color: var(--input-background-colour, $white);
   display: inline-flex;
-  font-size: $global-font-size;
   padding: 0 20px;
   width: var(--input-width, 100%);
 
@@ -38,19 +35,18 @@
 .shadedInputWrapper {
   border: none;
   box-shadow: $form-field-shadow;
-  height: 25px;
+  height: var(--shaded-input-height, 40px);
 
   &Large {
-    height: 40px;
+    --shaded-input-height: 40px;
   }
 
   &Small {
-    height: 30px;
+    --shaded-input-height: 30px;
   }
 }
 
 .flatInputWrapper {
-  box-shadow: none;
   height: 25px;
 
   &Disabled {

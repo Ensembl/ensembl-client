@@ -115,7 +115,6 @@ export const SpeciesSearchField = () => {
         onSelect={onMatchSelected}
         matchGroups={matchGroups}
         searchFieldClassName={styles.speciesSearchField}
-        size="large"
         canShowSuggestions={canShowSuggesions}
         notFound={isNotFound}
         notFoundText={NOT_FOUND_TEXT}

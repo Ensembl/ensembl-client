@@ -32,23 +32,22 @@ describe('<FlatInput />', () => {
     expect(inputElement?.tagName).toBe('INPUT');
   });
 
-  it('renders the input as disabled if prop passed as true', () => {
+  it('can be disabled', () => {
     let { container } = render(<FlatInput disabled={true} />);
-    expect(container.querySelector('.flatInputWrapper')?.classList).toContain(
-      'flatInputWrapperDisabled'
+    expect(container.querySelector('.input')?.hasAttribute('disabled')).toBe(
+      true
     );
 
     container = render(<FlatInput disabled={false} />).container;
-    expect(
-      container.querySelector('.flatInputWrapper')?.classList
-    ).not.toContain('flatInputWrapperDisabled');
+    expect(container.querySelector('.input')?.hasAttribute('disabled')).toBe(
+      false
+    );
   });
 
   it('renders icon if passed as props', () => {
     const MockIcon = () => <div className="mockIcon">Mock Icon</div>;
     let { container } = render(<FlatInput rightCorner={<MockIcon />} />);
-    expect(container.querySelector('.rightCorner')).toBeTruthy();
-    expect(container.querySelector('.mockIcon')).toBeTruthy();
+    expect(container.querySelector('.rightCorner .mockIcon')).toBeTruthy();
 
     // doesn't render rightCorner when prop not passed
     container = render(<FlatInput />).container;
