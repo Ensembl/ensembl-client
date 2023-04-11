@@ -43,12 +43,29 @@ type MinimumVariantData = {
   }[];
 };
 
-type Props = {
+type PropsWithVariant = {
   variant: MinimumVariantData;
 };
 
+type PropsWithSequence = {
+  vcfSequence: string;
+};
+
+type Props = PropsWithVariant | PropsWithSequence;
+
 const VariantVCF = (props: Props) => {
-  const { variant } = props;
+  const vcfSequence = arePropsWithVariant(props)
+    ? getVCFSequence(props.variant)
+    : props.vcfSequence;
+
+  return <span>{vcfSequence}</span>;
+};
+
+const arePropsWithVariant = (props: Props): props is PropsWithVariant => {
+  return 'variant' in props;
+};
+
+export const getVCFSequence = (variant: MinimumVariantData) => {
   const variantName = variant.name;
   const firstAllele = variant.alleles[0];
   const regionName = firstAllele.slice.region.name;
@@ -58,15 +75,13 @@ const VariantVCF = (props: Props) => {
     .map((allele) => allele.allele_sequence)
     .join(',');
 
-  const vcfSequence = [
+  return [
     regionName,
     startCoordinate,
     variantName,
     referenceSequence,
     alleleSequences
   ].join(' ');
-
-  return <span>{vcfSequence}</span>;
 };
 
 export default React.memo(VariantVCF);

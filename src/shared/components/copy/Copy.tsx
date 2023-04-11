@@ -45,9 +45,9 @@ const Copy = (props: { value: string; onCopy?: () => void }) => {
       {copied ? (
         'Copied'
       ) : (
-        <span className={styles.copy} onClick={copy}>
+        <button className={styles.copy} onClick={copy}>
           Copy
-        </span>
+        </button>
       )}
     </span>
   );

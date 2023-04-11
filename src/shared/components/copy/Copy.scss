@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .copyLozenge {
-  display: flex;
+  display: inline-flex;
   height: 18px;
   padding: 0 14px;
   align-items: center;
@@ -10,7 +10,6 @@
 
 .copy {
   color: $blue;
-  cursor: pointer;
 }
 
 .copyLozengeCopied {
