@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
@@ -70,7 +71,9 @@ const VariantSummary = (props: Props) => {
         <div className={styles.label}>Variant</div>
         <div className={styles.value}>
           <span className={styles.strong}>{variant.name}</span>
-          <span>? no variant type ?</span>
+          <span className={classNames(styles.light, styles.withSpaceLeft)}>
+            ? no variant type ?
+          </span>
         </div>
       </div>
 
@@ -81,7 +84,7 @@ const VariantSummary = (props: Props) => {
         </div>
       </div>
 
-      <div className={styles.row}>
+      <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Alleles</div>
         <div className={styles.value}>
           <VariantAllelesSequences alleles={variant.alleles} />
@@ -98,7 +101,7 @@ const VariantSummary = (props: Props) => {
       )}
 
       {preparedSummaryData.minorAlleleFrequency && (
-        <div className={styles.row}>
+        <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>MAF</div>
           <div className={styles.value}>
             {preparedSummaryData.minorAlleleFrequency.frequency}(
@@ -117,16 +120,16 @@ const VariantSummary = (props: Props) => {
       )}
 
       {preparedSummaryData.mostSevereConsequence && (
-        <div className={styles.row}>
+        <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>Most severe consequence</div>
-          <div className={styles.value}>
+          <div className={classNames(styles.value, styles.alignBottom)}>
             <VariantConsequence variant={variant} />
           </div>
         </div>
       )}
 
       {!!preparedSummaryData.clinicalSignificance.length && (
-        <div className={styles.row}>
+        <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>Clinical significance</div>
           <div className={styles.value}>
             <ClinicalSignificance
@@ -137,7 +140,7 @@ const VariantSummary = (props: Props) => {
       )}
 
       {!!preparedSummaryData.caddScores.length && (
-        <div className={styles.row}>
+        <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>CADD</div>
           <div className={styles.value}>
             <CADDScores data={preparedSummaryData.caddScores} />
@@ -152,7 +155,7 @@ const VariantSummary = (props: Props) => {
         </div>
       )}
 
-      <div className={styles.row}>
+      <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Location</div>
         <div className={styles.value}>
           <VariantLocation variant={variant} />
@@ -162,8 +165,8 @@ const VariantSummary = (props: Props) => {
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
         <div className={styles.value}>
-          <VariantVCF variant={variant} />
-          <Copy value={vcfString} />
+          <VariantVCF vcfSequence={vcfString} />
+          <Copy value={vcfString} className={styles.withSpaceLeft} />
         </div>
       </div>
 
@@ -172,7 +175,6 @@ const VariantSummary = (props: Props) => {
           <div className={styles.label}>Synonyms</div>
           <div className={styles.value}>
             <VariantSynonyms variant={variant} />
-            {vcfString && <Copy value={vcfString} />}
           </div>
         </div>
       )}
@@ -197,7 +199,9 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
     <div>
       {dbElement}
       {primary_source.release && (
-        <span className={styles.light}>Release {primary_source.release}</span>
+        <span className={classNames(styles.light, styles.withSpaceLeft)}>
+          Release {primary_source.release}
+        </span>
       )}
     </div>
   );

@@ -19,7 +19,13 @@ import classNames from 'classnames';
 
 import styles from './Copy.scss';
 
-const Copy = (props: { value: string; onCopy?: () => void }) => {
+type Props = {
+  value: string;
+  onCopy?: () => void;
+  className?: string;
+};
+
+const Copy = (props: Props) => {
   const [copied, setCopied] = useState(false);
 
   let timeout: ReturnType<typeof setTimeout>;
@@ -36,9 +42,13 @@ const Copy = (props: { value: string; onCopy?: () => void }) => {
     timeout = setTimeout(() => setCopied(false), 1500);
   };
 
-  const componentStyles = classNames(styles.copyLozenge, {
-    [styles.copyLozengeCopied]: copied
-  });
+  const componentStyles = classNames(
+    styles.copyLozenge,
+    {
+      [styles.copyLozengeCopied]: copied
+    },
+    props.className
+  );
 
   return (
     <span className={componentStyles}>
