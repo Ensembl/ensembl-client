@@ -46,7 +46,6 @@ import InAppSearchMatches from './InAppSearchMatches';
 
 import type { RootState } from 'src/store';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
-import type { InputSize } from '../input/ShadedInput';
 
 import styles from './InAppSearch.scss';
 
@@ -57,7 +56,6 @@ export type Props = {
   genomeId: string;
   genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   mode: InAppSearchMode;
-  size?: InputSize;
   onSearchSubmit?: (query: string) => void;
 };
 
@@ -134,7 +132,7 @@ const InAppSearch = (props: Props) => {
             onSubmit={onSearchSubmit}
             className={styles.searchField}
             rightCorner={rightCorner}
-            size={props.size}
+            size={mode === 'interstitial' ? 'large' : 'small'}
           />
         </div>
         <PrimaryButton
