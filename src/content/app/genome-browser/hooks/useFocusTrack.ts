@@ -27,7 +27,6 @@ import usePrevious from 'src/shared/hooks/usePrevious';
 
 import { buildDefaultFocusVariantTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
-import { toggleTrack } from 'src/content/app/genome-browser/services/genome-browser-service/genomeBrowserCommands';
 
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
@@ -65,24 +64,11 @@ import type {
 
 const useFocusTrack = () => {
   const genomeBrowserMethods = useGenomeBrowser(); // getting it here once to avoid unnecessarily calling this hook from inside child hooks
-  const { genomeBrowser } = genomeBrowserMethods;
   const { focusObjectId = '', parsedFocusObjectId = null } =
     useGenomeBrowserIds();
   const focusObject = useAppSelector((state) =>
     getFocusObjectById(state, focusObjectId)
   );
-
-  // QUESTION: is this useEffect needed?
-  useEffect(() => {
-    if (!genomeBrowser || !focusObjectId) {
-      return;
-    }
-    toggleTrack({
-      genomeBrowser,
-      trackId: 'focus',
-      isEnabled: true
-    });
-  }, [genomeBrowser, focusObjectId]);
 
   useFocusGene({
     genomeBrowserMethods,
