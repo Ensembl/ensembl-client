@@ -15,6 +15,7 @@
  */
 
 import type { ExternalDB } from '../thoas/externalDb';
+import type { ValueSetMetadata } from '../thoas/metadata';
 
 export type VariantAllelePhenotypeAssertion = {
   feature: string;
@@ -31,6 +32,7 @@ type PhenotypeAssertionEvidence = {
   source: ExternalDB;
   citations: unknown[]; // will be an array of Publication data types submitted to CDM
   attributes: Attribute[];
+  assertion: ValueSetMetadata;
 };
 
 // NOTE: this might turn out to be a more global type; not just for VariantAllelePhenotypeAssertion

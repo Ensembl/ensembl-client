@@ -101,6 +101,11 @@ const addClinicalSignificance = (
 
   for (const phenotypeAssertion of variantAllele.phenotype_assertions) {
     for (const evidence of phenotypeAssertion.evidence) {
+      clinicalSignificanceData.push({
+        sequence: variantAllele.allele_sequence,
+        significance: evidence.assertion.label
+      });
+
       for (const attribute of evidence.attributes) {
         if (attribute.type === 'clin_sig') {
           clinicalSignificanceData.push({

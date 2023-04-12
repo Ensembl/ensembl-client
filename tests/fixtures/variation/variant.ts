@@ -321,7 +321,13 @@ export const variantRs699 = {
                   value: '2.00e-8'
                 }
               ],
-              assertion: {}
+              assertion: {
+                accession_id: 'evidence.assertion',
+                value: 'benign',
+                label: 'benign',
+                definition: 'Review status: no assertion criteria provided',
+                description: ''
+              }
             }
           ]
         },

@@ -51,6 +51,11 @@ For the reference (from Andrea)
   margin-left: 12px;
 }
 
+.clinicalSignificance {
+  display: flex;
+  flex-direction: column;
+}
+
 .questionButton {
   padding-left: 10px;
   position: relative;

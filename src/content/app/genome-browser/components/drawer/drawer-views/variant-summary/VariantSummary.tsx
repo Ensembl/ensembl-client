@@ -211,13 +211,13 @@ const ClinicalSignificance = (props: {
   data: { sequence: string; significance: string }[];
 }) => {
   return (
-    <>
+    <div className={styles.clinicalSignificance}>
       {props.data.map((data, index) => (
         <span key={index}>
           {data.significance} ({data.sequence})
         </span>
       ))}
-    </>
+    </div>
   );
 };
 
