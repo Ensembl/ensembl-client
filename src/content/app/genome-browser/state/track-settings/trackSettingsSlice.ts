@@ -24,15 +24,15 @@ import * as trackSettingsStorageService from 'src/content/app/genome-browser/ser
 
 import { getAllTrackSettingsForGenome } from './trackSettingsSelectors';
 
-import { isGeneTrack, TrackType } from './trackSettingsConstants';
+import { TrackType } from './trackSettingsConstants';
 
 import type { RootState } from 'src/store';
 
 export type GeneTrackSettings = {
-  showSeveralTranscripts: boolean;
-  showTranscriptIds: boolean;
-  showTrackName: boolean;
-  showFeatureLabels: boolean;
+  several: boolean; // meaning, whether to show several transcripts or just one
+  'transcript-label': boolean; // show transcript ids
+  name: boolean; // show the name of the track
+  label: boolean; // show labels (symbols or stable ids) of genes
   isVisible: boolean;
 };
 
@@ -50,7 +50,7 @@ export type FocusGeneTrackSettings = Omit<GeneTrackSettings, 'isVisible'>;
 export type FocusVariantTrackSettings = Omit<VariantTrackSettings, 'isVisible'>;
 
 export type RegularTrackSettings = {
-  showTrackName: boolean;
+  name: boolean;
   isVisible: boolean;
 };
 
@@ -132,35 +132,79 @@ export const updateTrackSettingsAndSave = createAsyncThunk(
   async (
     params: {
       genomeId: string;
-      trackId: string;
-      settings: Record<string, unknown>;
+      setting: string;
+      isEnabled: boolean;
     },
     thunkAPI
   ) => {
-    const { genomeId, trackId, settings: newSettings } = params;
+    const { genomeId, setting, isEnabled } = params;
     const state = thunkAPI.getState() as RootState;
-    const track =
-      state.browser.trackSettings[genomeId].settingsForIndividualTracks[
-        trackId
-      ] ?? null;
+    const allTrackSettingsForGenome = getAllTrackSettingsForGenome(
+      state,
+      genomeId
+    );
 
-    if (!track) {
+    if (!allTrackSettingsForGenome) {
       return; // shouldn't happen
     }
 
-    const updatedTrack = {
-      ...track,
-      settings: {
-        ...track.settings,
-        ...newSettings
+    const newTrackSettingsForGenome = structuredClone(
+      allTrackSettingsForGenome
+    );
+
+    const trackMap = newTrackSettingsForGenome.settingsForIndividualTracks;
+
+    for (const [, track] of Object.entries(trackMap)) {
+      if (setting in track.settings) {
+        track.settings[setting as keyof typeof track.settings] = isEnabled;
+
+        await trackSettingsStorageService.updateTrackSettings(genomeId, track);
       }
-    } as TrackSettings;
+    }
+
+    return {
+      genomeId,
+      settingsForGenome: newTrackSettingsForGenome
+    };
+  }
+);
+
+export const updateTrackVisibilityAndSave = createAsyncThunk(
+  'genome-browser-track-settings/update-track-visibility-and-save',
+  async (
+    params: {
+      genomeId: string;
+      trackId: string;
+      isVisible: boolean;
+    },
+    thunkAPI
+  ) => {
+    const { genomeId, trackId, isVisible } = params;
+    const state = thunkAPI.getState() as RootState;
+    const allTrackSettingsForGenome = getAllTrackSettingsForGenome(
+      state,
+      genomeId
+    );
+    const trackSettings =
+      allTrackSettingsForGenome?.settingsForIndividualTracks[trackId];
+
+    if (!trackSettings) {
+      return; // shouldn't happen
+    }
+
+    const newTrackSettings = structuredClone(trackSettings);
+    (newTrackSettings.settings as { isVisible: boolean }).isVisible = isVisible;
 
     await trackSettingsStorageService.updateTrackSettings(
       genomeId,
-      updatedTrack
+      newTrackSettings
     );
-    return params;
+
+    return {
+      genomeId,
+      trackId,
+      trackSettings: newTrackSettings
+    };
   }
 );
 
@@ -201,76 +245,6 @@ const trackSettingsSlice = createSlice({
         }
       };
     },
-    updateTrackName(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        trackId: string;
-        isTrackNameShown: boolean;
-      }>
-    ) {
-      const { genomeId, trackId, isTrackNameShown } = action.payload;
-      const trackSettingsState =
-        state[genomeId].settingsForIndividualTracks[trackId];
-      (
-        trackSettingsState.settings as { showTrackName: boolean }
-      ).showTrackName = isTrackNameShown;
-    },
-    updateFeatureLabelsVisibility(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        trackId: string;
-        areFeatureLabelsShown: boolean;
-      }>
-    ) {
-      const { genomeId, trackId, areFeatureLabelsShown } = action.payload;
-      const trackSettingsState =
-        state[genomeId].settingsForIndividualTracks[trackId];
-
-      if (!isGeneTrack(trackSettingsState)) {
-        return;
-      }
-
-      trackSettingsState.settings.showFeatureLabels = areFeatureLabelsShown;
-    },
-    updateShowSeveralTranscripts(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        trackId: string;
-        areSeveralTranscriptsShown: boolean;
-      }>
-    ) {
-      const { genomeId, trackId, areSeveralTranscriptsShown } = action.payload;
-      const trackSettingsState =
-        state[genomeId].settingsForIndividualTracks[trackId];
-
-      if (!isGeneTrack(trackSettingsState)) {
-        return;
-      }
-
-      trackSettingsState.settings.showSeveralTranscripts =
-        areSeveralTranscriptsShown;
-    },
-    updateShowTranscriptIds(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        trackId: string;
-        shouldShowTranscriptIds: boolean;
-      }>
-    ) {
-      const { genomeId, trackId, shouldShowTranscriptIds } = action.payload;
-      const trackSettingsState =
-        state[genomeId].settingsForIndividualTracks[trackId];
-
-      if (!isGeneTrack(trackSettingsState)) {
-        return;
-      }
-
-      trackSettingsState.settings.showTranscriptIds = shouldShowTranscriptIds;
-    },
     addSettingsForTrack(
       state,
       action: PayloadAction<{
@@ -295,26 +269,21 @@ const trackSettingsSlice = createSlice({
       if (!action.payload) {
         return;
       }
-
-      const { genomeId, trackId, settings } = action.payload;
-      const track = state[genomeId].settingsForIndividualTracks[trackId];
-      if (!track) {
-        return; // shouldn't happen
+      const { genomeId, settingsForGenome } = action.payload;
+      state[genomeId] = settingsForGenome;
+    });
+    builder.addCase(updateTrackVisibilityAndSave.fulfilled, (state, action) => {
+      if (!action.payload) {
+        return;
       }
-      track.settings = {
-        ...track.settings,
-        ...settings // it's interesting that Typescript allows this. Technically, this can write all sorts of nonsense into settings; but practically, that shouldn't happen
-      };
+      const { genomeId, trackId, trackSettings } = action.payload;
+      state[genomeId].settingsForIndividualTracks[trackId] = trackSettings;
     });
   }
 });
 
 export const {
   setInitialTrackSettingsForGenome,
-  updateTrackName,
-  updateFeatureLabelsVisibility,
-  updateShowSeveralTranscripts,
-  updateShowTranscriptIds,
   deleteTrackSettingsForGenome,
   addSettingsForTrack
 } = trackSettingsSlice.actions;

@@ -382,11 +382,11 @@ describe('useBrowserRouting', () => {
       await waitFor(() => {
         expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
           genomeId: humanGenomeInfo.genome_id,
+          chrLocation: ['13', 100, 200],
           focus: {
-            type: 'gene',
-            id: 'ENSG00000139618'
-          },
-          chrLocation: ['13', 100, 200]
+            id: 'ENSG00000139618',
+            type: 'gene'
+          }
         });
       });
     });

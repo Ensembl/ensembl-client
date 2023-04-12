@@ -15,11 +15,10 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { RootState } from 'src/store';
 import { useLocation, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -30,8 +29,8 @@ import {
 } from '../helpers/browserHelper';
 import {
   buildFocusIdForUrl,
-  parseFocusIdFromUrl,
-  parseFocusObjectId
+  parseFocusObjectId,
+  parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
 import {
@@ -132,28 +131,27 @@ const useBrowserRouting = () => {
       navigate(urlFor.browser({ genomeId: genomeIdForUrl, focus: newFocus }), {
         replace: true
       });
-    } else if (focusObjectId && !chrLocation) {
+    } else if (focusObjectId && !chrLocation && genomeBrowser) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
        before it gets changed by setDataFromUrlAndSave
       */
       changeFocusObject(focusObjectId);
-    } else if (focusObjectIdInUrl && chrLocation) {
+    } else if (focusObjectIdInUrl && chrLocation && genomeBrowser) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
       if (genomeId && genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
           const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
-
           changeBrowserLocation({
             genomeId,
+            chrLocation,
             focus: {
               type,
               id: objectId
-            },
-            chrLocation
+            }
           });
 
           firstRenderRef.current = false;

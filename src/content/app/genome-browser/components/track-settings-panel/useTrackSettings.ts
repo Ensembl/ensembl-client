@@ -17,16 +17,12 @@
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
-import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
-
 import {
-  updateTrackName as updateTrackSettingsTrackName,
-  updateFeatureLabelsVisibility as updateTrackSettingsFeatureLabelsVisibility,
-  updateShowSeveralTranscripts as updateTrackSettingsShowSeveralTranscripts,
-  updateShowTranscriptIds as updateTrackSettingsShowTranscriptIds,
-  saveTrackSettingsForGenome
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+  getTrackSettingsForTrackId,
+  getAllTrackSettingsForGenome
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+
+import { updateTrackSettingsAndSave } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
@@ -38,132 +34,48 @@ type Params = {
 const useBrowserTrackSettings = (params: Params) => {
   const { selectedTrackId } = params;
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const displayedTracks = useAppSelector(getDisplayedTracks);
+  const allTrackSettingsForGenome = useAppSelector((state) =>
+    getAllTrackSettingsForGenome(state, activeGenomeId ?? '')
+  );
   const selectedTrackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, selectedTrackId)
   );
   const dispatch = useAppDispatch();
 
-  const {
-    trackTrackNameToggle,
-    trackFeatureLabelToggle,
-    trackShowSeveralTranscriptsToggle,
-    trackShowTranscriptsIdToggle
-  } = useGenomeBrowserAnalytics();
+  const { trackToggledTrackSetting } = useGenomeBrowserAnalytics();
 
-  const {
-    toggleTrackName,
-    toggleFeatureLabels,
-    toggleSeveralTranscripts,
-    toggleTranscriptIds
-  } = useGenomeBrowser();
+  const { toggleTrackSetting } = useGenomeBrowser();
 
-  const updateTrackName = (isTrackNameShown: boolean) => {
+  const updateTrackSetting = (setting: string, isEnabled: boolean) => {
     if (!activeGenomeId || !selectedTrackSettings) {
       return;
     }
 
-    displayedTracks.forEach((track) => {
-      dispatch(
-        updateTrackSettingsTrackName({
-          genomeId: activeGenomeId,
-          trackId: track.id,
-          isTrackNameShown
-        })
-      );
-      toggleTrackName({
-        trackId: track.id,
-        shouldShowTrackName: isTrackNameShown
-      });
-    });
-
-    dispatch(saveTrackSettingsForGenome(activeGenomeId));
-
-    trackTrackNameToggle(selectedTrackId, isTrackNameShown);
-  };
-
-  const updateFeatureLabelsVisibility = (areFeatureLabelsShown: boolean) => {
-    if (!activeGenomeId) {
-      return;
-    }
-
-    displayedTracks.forEach((track) => {
-      dispatch(
-        updateTrackSettingsFeatureLabelsVisibility({
-          genomeId: activeGenomeId,
-          trackId: track.id,
-          areFeatureLabelsShown
-        })
-      );
-      toggleFeatureLabels({
-        trackId: track.id,
-        shouldShowFeatureLabels: areFeatureLabelsShown
-      });
-    });
-
-    dispatch(saveTrackSettingsForGenome(activeGenomeId));
-
-    trackFeatureLabelToggle(selectedTrackId, areFeatureLabelsShown);
-  };
-
-  const updateShowSeveralTranscripts = (
-    areSeveralTranscriptsShown: boolean
-  ) => {
-    if (!activeGenomeId || !selectedTrackSettings) {
-      return;
-    }
-
-    displayedTracks.forEach((track) => {
-      dispatch(
-        updateTrackSettingsShowSeveralTranscripts({
-          genomeId: activeGenomeId,
-          trackId: track.id,
-          areSeveralTranscriptsShown
-        })
-      );
-      toggleSeveralTranscripts({
-        trackId: track.id,
-        shouldShowSeveralTranscripts: areSeveralTranscriptsShown
-      });
-    });
-
-    dispatch(saveTrackSettingsForGenome(activeGenomeId));
-
-    trackShowSeveralTranscriptsToggle(
-      selectedTrackId,
-      areSeveralTranscriptsShown
+    dispatch(
+      updateTrackSettingsAndSave({
+        genomeId: activeGenomeId as string,
+        setting,
+        isEnabled
+      })
     );
-  };
 
-  const updateShowTranscriptIds = (shouldShowTranscriptIds: boolean) => {
-    if (!activeGenomeId || !selectedTrackSettings) {
-      return;
-    }
-
-    displayedTracks.forEach((track) => {
-      dispatch(
-        updateTrackSettingsShowTranscriptIds({
-          genomeId: activeGenomeId,
-          trackId: track.id,
-          shouldShowTranscriptIds
-        })
-      );
-      toggleTranscriptIds({
-        trackId: track.id,
-        shouldShowTranscriptIds
-      });
+    Object.entries(
+      allTrackSettingsForGenome?.settingsForIndividualTracks ?? {}
+    ).forEach(([trackId, track]) => {
+      if (setting in track.settings) {
+        toggleTrackSetting({
+          trackId: trackId,
+          setting,
+          isEnabled
+        });
+      }
     });
 
-    dispatch(saveTrackSettingsForGenome(activeGenomeId));
-
-    trackShowTranscriptsIdToggle(selectedTrackId, shouldShowTranscriptIds);
+    trackToggledTrackSetting(selectedTrackId, setting, isEnabled);
   };
 
   return {
-    updateTrackName,
-    updateFeatureLabelsVisibility,
-    updateShowSeveralTranscripts,
-    updateShowTranscriptIds
+    updateTrackSetting
   };
 };
 

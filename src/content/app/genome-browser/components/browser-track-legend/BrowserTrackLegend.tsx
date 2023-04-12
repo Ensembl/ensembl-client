@@ -15,12 +15,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  IncomingActionType,
-  type HotspotAction,
-  type HotspotPayload,
-  type TrackLegendHotspotPayload
-} from '@ensembl/ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
@@ -28,6 +22,9 @@ import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { Position as TooltipPosition } from 'src/shared/components/pointer-box/PointerBox';
+
+import type { HotspotMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
+import type { TrackLegendHotspotPayload } from 'src/content/app/genome-browser/services/genome-browser-service/types/hotspot';
 
 import styles from './BrowserTrackLegend.scss';
 
@@ -43,19 +40,19 @@ type Position = {
 const BrowserTrackLegend = (props: Props) => {
   const [position, setPosition] = useState<Position | null>(null);
   const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLDivElement>(null);
-  const { genomeBrowser } = useGenomeBrowser();
+  const { genomeBrowserService } = useGenomeBrowser();
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.HOTSPOT,
+    const subscription = genomeBrowserService?.subscribe(
+      'hotspot',
       handleHotspot
     );
 
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  }, [genomeBrowserService]);
 
-  const handleHotspot = (action: HotspotAction) => {
-    const { payload } = action;
+  const handleHotspot = (message: HotspotMessage) => {
+    const { payload } = message;
     if (!isTrackLegendHotspot(payload)) {
       return;
     }
@@ -94,9 +91,9 @@ const BrowserTrackLegend = (props: Props) => {
   ) : null;
 };
 
-const isTrackLegendHotspot = (
-  payload: HotspotPayload
-): payload is TrackLegendHotspotPayload => {
+const isTrackLegendHotspot = (payload: {
+  variety: { type: string }[];
+}): payload is TrackLegendHotspotPayload => {
   return payload.variety[0].type === 'track-hover';
 };
 

@@ -19,21 +19,16 @@ import React from 'react';
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import {
-  GenomeBrowserErrorType,
-  type GenomeBrowserError as GenomeBrowserErrorObj
-} from '@ensembl/ensembl-genome-browser';
-
 import styles from './GenomeBrowserError.scss';
 
 type Props = {
-  error: GenomeBrowserErrorObj;
+  error: { type: string; payload: unknown };
 };
 
 const GenomeBrowserError = (props: Props) => {
   const { error } = props;
 
-  if (error.type === GenomeBrowserErrorType.BAD_VERSION) {
+  if (error.type === 'out-of-date') {
     return <GenomeBrowserVersionError />;
   } else {
     return <GenericGenomeBrowserError />;

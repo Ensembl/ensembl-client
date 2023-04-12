@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export const BROWSER_CONTAINER_ID = 'genome-browser';
+// Just extract the type information about Ensembl Genome Browser module without having to import the actual js
+type EnsemblGenomeBrowserClass =
+  typeof import('@ensembl/ensembl-genome-browser')['GenomeBrowser'];
+
+export type EnsemblGenomeBrowser = InstanceType<EnsemblGenomeBrowserClass>;

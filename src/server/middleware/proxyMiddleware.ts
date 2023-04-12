@@ -29,27 +29,29 @@ const serverConfig = getConfigForServer();
  * update the current proxy middleware to exclude the endpoints you want to proxy to a different host,
  * and add a new dedicated middleware that would enable this proxying.
  *
- * EXAMPLE: to proxy all requests except for help&docs api to staging-2020,
- * while directing requests for help&docs api to your locally running server,
- * use the following configuraiton:
+ * EXAMPLE: to proxy all requests except for the genome browser backend to staging-2020,
+ * while directing requests for the genome browser backend to your locally running server,
+ * change the body of the createApiProxyMiddleware function as follows:
 
-const apiProxyMiddleware = createProxyMiddleware(['/api/**', '!/api/docs/**'], {
-  target: 'https://staging-2020.ensembl.org',
-  changeOrigin: true,
-  secure: false
-});
+  const apiProxyMiddleware = createHttpProxyMiddleware(
+    ['/api/**', '!/api/browser/**'],
+    {
+      target: 'https://staging-2020.ensembl.org',
+      changeOrigin: true,
+      secure: false
+    }
+  );
 
-const docsProxyMiddleware = createProxyMiddleware('/api/docs/**', {
-  target: 'http://localhost:3000',
-  pathRewrite: {
-    '^/api/docs': '/api', // rewrite path
-  },
-  changeOrigin: true,
-  secure: false
-});
+  const browserProxyMiddleware = createHttpProxyMiddleware('/api/browser/**', {
+    target: 'http://localhost:3333',
+    pathRewrite: {
+      '^/api/browser': '/api' // rewrite path
+    },
+    changeOrigin: true,
+    secure: false
+  });
 
-const proxyMiddleware = [apiProxyMiddleware, docsProxyMiddleware];
-
+  return [apiProxyMiddleware, browserProxyMiddleware];
 */
 
 const createApiProxyMiddleware = () => {

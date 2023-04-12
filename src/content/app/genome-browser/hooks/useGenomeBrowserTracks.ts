@@ -15,7 +15,6 @@
  */
 
 import { useEffect } from 'react';
-import { OutgoingActionType } from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -24,6 +23,7 @@ import useGenomicTracks from './useGenomicTracks';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import { getTrackSettingsForGenome as restoreTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
+import * as genomeBrowserCommands from 'src/content/app/genome-browser/services/genome-browser-service/genomeBrowserCommands';
 
 import {
   getBrowserActiveGenomeId,
@@ -109,7 +109,7 @@ const useGenomeBrowserTracks = () => {
     );
 
     trackIdsToHide.forEach((trackId) => {
-      toggleTrack({ trackId, isTurnedOn: false });
+      toggleTrack({ trackId, isEnabled: false });
     });
   }, [trackSettingsForGenome, visibleTrackIds]);
 
@@ -122,9 +122,9 @@ const useGenomeBrowserTracks = () => {
     // take the first letter of the track panel tab name, and chuck it over to the genome browser
     const trackGroup = selectedTrackPanelTab[0].toUpperCase();
 
-    genomeBrowser.send({
-      type: OutgoingActionType.MARK_TRACK_GROUP,
-      payload: { track_group: trackGroup }
+    genomeBrowserCommands.markTrackGroup({
+      genomeBrowser,
+      trackGroup
     });
   }, [genomeBrowser, selectedTrackPanelTab]);
 

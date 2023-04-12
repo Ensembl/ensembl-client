@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import { defaultBrowserNavButtonStates } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-
-import type { RootState } from 'src/store';
-
-export const getBrowserNavButtonStates = (state: RootState) => {
-  return (
-    state.browser.browserNav.browserNavButtonStates ||
-    defaultBrowserNavButtonStates
-  );
+export type GenomeBrowserConfig = {
+  backend_url: string;
+  target_element: HTMLElement;
+  // an alternative to the above is a field called "target_element_id" with a CSS identifier of the DOM element in question; but we don't want to use that
 };

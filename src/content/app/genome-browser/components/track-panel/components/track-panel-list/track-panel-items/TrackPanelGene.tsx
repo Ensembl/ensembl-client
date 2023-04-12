@@ -54,7 +54,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     return getFocusGeneVisibleTranscripts(state, focusObjectId);
   });
 
-  const { setFocusGene, updateFocusGeneTranscripts } = useGenomeBrowser();
+  const { updateFocusGeneTranscripts } = useGenomeBrowser();
   const { trackDrawerOpened, trackFocusTrackVisibilityToggled } =
     useGenomeBrowserAnalytics();
 
@@ -90,7 +90,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     } else if (geneVisibilityStatus === Status.UNSELECTED) {
       // also show all transcripts, but also tell genome browser to enable focus track
       visibleTranscriptIds = pluckStableIds(sortedTranscripts);
-      setFocusGene(focusObjectId);
       nextStatus = Status.SELECTED;
     } else {
       // hide all transcripts and hide the track
@@ -119,9 +118,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       ? [...updatedTranscriptIds, transcriptId]
       : updatedTranscriptIds.filter((id) => id !== transcriptId);
 
-    if (!visibleTranscriptIds?.length) {
-      setFocusGene(focusObjectId);
-    }
     updateFocusGeneTranscripts(updatedTranscriptIds);
   };
 

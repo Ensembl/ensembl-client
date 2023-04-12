@@ -18,13 +18,13 @@ import React from 'react';
 
 import ZmenuContent from '../ZmenuContent';
 
-import {
-  type ZmenuCreatePayload,
-  type ZmenuContentVariantMetadata
-} from '@ensembl/ensembl-genome-browser';
+import type {
+  ZmenuPayload,
+  ZmenuContentVariantMetadata
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 type Props = {
-  payload: ZmenuCreatePayload;
+  payload: ZmenuPayload;
   onDestroy: () => void;
 };
 

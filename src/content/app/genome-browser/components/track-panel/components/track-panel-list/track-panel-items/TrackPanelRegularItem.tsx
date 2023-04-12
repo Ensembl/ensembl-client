@@ -23,7 +23,7 @@ import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useG
 
 import { getTrackVisibility } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
-import { updateTrackSettingsAndSave } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { updateTrackVisibilityAndSave } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
@@ -69,14 +69,14 @@ const TrackPanelRegularItem = (props: Props) => {
   };
 
   const onChangeVisibility = () => {
-    toggleTrack({ trackId: track_id, isTurnedOn: !isTrackVisible });
+    toggleTrack({ trackId: track_id, isEnabled: !isTrackVisible });
     reportTrackVisibilityToggled(props.label, !isTrackVisible);
 
     dispatch(
-      updateTrackSettingsAndSave({
+      updateTrackVisibilityAndSave({
         genomeId,
         trackId: track_id,
-        settings: { isVisible: !isTrackVisible }
+        isVisible: !isTrackVisible
       })
     );
   };

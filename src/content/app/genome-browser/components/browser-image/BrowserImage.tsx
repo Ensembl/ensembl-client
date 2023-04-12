@@ -15,12 +15,6 @@
  */
 
 import React, { useState, useRef, useEffect, memo } from 'react';
-import {
-  IncomingActionType,
-  GenomeBrowserErrorType,
-  type GenomeBrowserErrorAction,
-  type GenomeBrowserError as GenomeBrowserErrorObj
-} from '@ensembl/ensembl-genome-browser';
 
 import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
@@ -33,8 +27,6 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 import GenomeBrowserError from 'src/content/app/genome-browser/components/genome-browser-error/GenomeBrowserError';
 import BrowserTrackLegend from 'src/content/app/genome-browser/components/browser-track-legend/BrowserTrackLegend';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browserConstants';
-
 import {
   getRegionEditorActive,
   getRegionFieldActive
@@ -46,11 +38,17 @@ export const BrowserImage = () => {
   const browserViewportRef = useRef<HTMLDivElement>(null);
   const browserContainerRef = useRef<HTMLDivElement>(null);
   const browserActivatedRef = useRef(false);
-  const [genomeBrowserError, setGenomeBrowserError] =
-    useState<GenomeBrowserErrorObj | null>(null);
+  const [genomeBrowserError, setGenomeBrowserError] = useState<{
+    type: string;
+    payload: unknown;
+  } | null>(null);
 
-  const { activateGenomeBrowser, clearGenomeBrowser, genomeBrowser } =
-    useGenomeBrowser();
+  const {
+    activateGenomeBrowser,
+    clearGenomeBrowser,
+    genomeBrowser,
+    genomeBrowserService
+  } = useGenomeBrowser();
 
   useGenomeBrowserPosition();
 
@@ -60,7 +58,9 @@ export const BrowserImage = () => {
 
   useEffect(() => {
     if (!genomeBrowser && !browserActivatedRef.current) {
-      activateGenomeBrowser();
+      activateGenomeBrowser({
+        container: browserContainerRef.current as HTMLElement
+      });
       // a hack to avoid repeated genome browser activation in Strict Mode
       // (which renders every component twice in dev mode)
       browserActivatedRef.current = true;
@@ -70,27 +70,35 @@ export const BrowserImage = () => {
   }, []);
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.OUT_OF_DATE, // TODO: change to IncomingActionType.ERROR when genome browser starts sending proper errors
-      (action: GenomeBrowserErrorAction) => {
-        const error = action.payload;
-        if (error.type === GenomeBrowserErrorType.BAD_VERSION) {
-          setGenomeBrowserError(error);
-        }
+    // Here's hoping that one day, the out-of-date message
+    // will be merged together with other error messages from the genome browser
+    const outOfDateErrorSubscription = genomeBrowserService?.subscribe(
+      'out-of-date',
+      (message) => {
+        setGenomeBrowserError(message);
       }
     );
-    return () => subscription?.unsubscribe();
+
+    const errorSubscription = genomeBrowserService?.subscribe(
+      'error',
+      (message: { type: string; payload: unknown }) => {
+        console.error(message.payload);
+      }
+    );
+
+    const subscriptions = [outOfDateErrorSubscription, errorSubscription];
+
+    return () =>
+      subscriptions.forEach((subscription) => {
+        subscription?.unsubscribe();
+      });
   }, [genomeBrowser]);
 
   const browserImageContents = (
     <div ref={browserViewportRef} className={styles.browserImageWrapper}>
-      <div
-        id={BROWSER_CONTAINER_ID}
-        className={styles.browserStage}
-        ref={browserContainerRef}
-      >
-        <BrowserCogList />
+      <div className={styles.browserStage} ref={browserContainerRef}>
         <ZmenuController containerRef={browserContainerRef} />
+        <BrowserCogList />
         <BrowserTrackLegend containerRef={browserViewportRef} />
       </div>
       {isDisabled ? <Overlay /> : null}

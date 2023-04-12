@@ -50,33 +50,19 @@ const VariantTrackSettings = (
   ] as FocusVariantTrack | undefined;
   const dispatch = useAppDispatch();
 
-  const { toggleFocusVariantTrackSetting, toggleTrackName } =
-    useGenomeBrowser();
+  const { toggleTrackSetting } = useGenomeBrowser();
 
-  const onSettingToggle = (setting: string, isOn: boolean) => {
-    toggleFocusVariantTrackSetting({
-      settingName: setting,
-      isOn
+  const onSettingToggle = (setting: string, isEnabled: boolean) => {
+    toggleTrackSetting({
+      trackId: 'focus-variant',
+      setting,
+      isEnabled
     });
     dispatch(
       updateTrackSettingsAndSave({
         genomeId: activeGenomeId,
-        trackId: props.trackId,
-        settings: { [setting]: isOn }
-      })
-    );
-  };
-
-  const onTrackNameToggle = (isOn: boolean) => {
-    toggleTrackName({
-      trackId: 'focus',
-      shouldShowTrackName: isOn
-    });
-    dispatch(
-      updateTrackSettingsAndSave({
-        genomeId: activeGenomeId,
-        trackId: props.trackId,
-        settings: { name: isOn }
+        setting,
+        isEnabled
       })
     );
   };
@@ -140,7 +126,7 @@ const VariantTrackSettings = (
             <label>Track name</label>
             <SlideToggle
               isOn={trackSettings?.settings['name'] ?? false}
-              onChange={onTrackNameToggle}
+              onChange={(isOn) => onSettingToggle('name', isOn)}
               className={styles.slideToggle}
             />
           </div>

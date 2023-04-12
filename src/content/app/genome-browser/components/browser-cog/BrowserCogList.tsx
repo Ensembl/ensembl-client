@@ -15,12 +15,6 @@
  */
 
 import React, { useEffect, memo } from 'react';
-import {
-  IncomingActionType,
-  type UpdateTrackSummaryAction,
-  type TrackSummary,
-  type TrackSummaryList
-} from '@ensembl/ensembl-genome-browser';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -36,28 +30,31 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 
 import BrowserCog from './BrowserCog';
 
+import type { TrackSummaryMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
+import type { TrackSummary } from 'src/content/app/genome-browser/services/genome-browser-service/types/trackSummary';
+
 import styles from './BrowserCogList.scss';
 
 export const BrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const focusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
 
-  const { genomeBrowser } = useGenomeBrowser();
+  const { genomeBrowserService } = useGenomeBrowser();
 
   const displayedTracks = useAppSelector(getDisplayedTracks);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      IncomingActionType.TRACK_SUMMARY,
-      (action: UpdateTrackSummaryAction) => {
-        updateDisplayedTracks(action.payload);
+    const subscription = genomeBrowserService?.subscribe(
+      'track_summary',
+      (message: TrackSummaryMessage) => {
+        updateDisplayedTracks(message.payload.summary);
       }
     );
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser, genomeId, focusObjectId]);
+  }, [genomeBrowserService, genomeId, focusObjectId]);
 
-  const updateDisplayedTracks = (trackSummaryList: TrackSummaryList) => {
+  const updateDisplayedTracks = (trackSummaryList: TrackSummary[]) => {
     const payload = trackSummaryList.map((track) => ({
       id: getTrackId(track),
       height: track.height,
@@ -77,7 +74,7 @@ export const BrowserCogList = () => {
     );
   });
 
-  return genomeBrowser ? (
+  return genomeBrowserService ? (
     <div className={styles.browserTrackSettingsOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner}>{cogs}</div>
