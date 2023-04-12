@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import styles from './VariantVCF.scss';
+
 /**
  * NOTE:
  * - This component almost certainly will be reused enough to become a shared component
@@ -47,41 +49,68 @@ type PropsWithVariant = {
   variant: MinimumVariantData;
 };
 
-type PropsWithSequence = {
-  vcfSequence: string;
+type VCFStringParts = {
+  variantName: string;
+  regionName: string;
+  startCoordinate: number | string;
+  referenceAlleleSequence: string;
+  alternativeAlleleSequences: string[];
 };
 
-type Props = PropsWithVariant | PropsWithSequence;
+type PropsWithStringParts = {
+  vcfStringParts: VCFStringParts;
+};
+
+type Props = PropsWithVariant | PropsWithStringParts;
 
 const VariantVCF = (props: Props) => {
-  const vcfSequence = arePropsWithVariant(props)
-    ? getVCFSequence(props.variant)
-    : props.vcfSequence;
+  const vcfSequenceParts = arePropsWithVCFStringParts(props)
+    ? props.vcfStringParts
+    : getVCFStringParts(props.variant);
 
-  return <span>{vcfSequence}</span>;
+  return (
+    <span className={styles.container}>
+      <span>{vcfSequenceParts.regionName}</span>
+      <span>{vcfSequenceParts.startCoordinate}</span>
+      <span>{vcfSequenceParts.variantName}</span>
+      <span>{vcfSequenceParts.referenceAlleleSequence}</span>
+      <span>{vcfSequenceParts.alternativeAlleleSequences.join(',')}</span>
+    </span>
+  );
 };
 
-const arePropsWithVariant = (props: Props): props is PropsWithVariant => {
-  return 'variant' in props;
+const arePropsWithVCFStringParts = (
+  props: Props
+): props is PropsWithStringParts => {
+  return 'vcfStringParts' in props;
 };
 
-export const getVCFSequence = (variant: MinimumVariantData) => {
+export const getVCFStringParts = (variant: MinimumVariantData) => {
   const variantName = variant.name;
   const firstAllele = variant.alleles[0];
   const regionName = firstAllele.slice.region.name;
   const startCoordinate = firstAllele.slice.location.start;
-  const referenceSequence = firstAllele.reference_sequence;
-  const alleleSequences = variant.alleles
-    .map((allele) => allele.allele_sequence)
-    .join(',');
+  const referenceAlleleSequence = firstAllele.reference_sequence;
+  const alternativeAlleleSequences = variant.alleles.map(
+    (allele) => allele.allele_sequence
+  );
 
-  return [
+  const vcfString = [
     regionName,
     startCoordinate,
     variantName,
-    referenceSequence,
-    alleleSequences
+    referenceAlleleSequence,
+    alternativeAlleleSequences.join(',')
   ].join(' ');
+
+  return {
+    variantName,
+    regionName,
+    startCoordinate,
+    referenceAlleleSequence,
+    alternativeAlleleSequences,
+    vcfString
+  };
 };
 
 export default React.memo(VariantVCF);

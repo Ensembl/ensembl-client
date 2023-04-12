@@ -26,7 +26,7 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import VariantAllelesSequences from './variant-alleles-sequences/VariantAllelesSequences';
 import VariantConsequence from './variant-consequence/VariantConsequence';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
-import VariantVCF, { getVCFSequence } from './variant-vcf/VariantVCF';
+import VariantVCF, { getVCFStringParts } from './variant-vcf/VariantVCF';
 import Copy from 'src/shared/components/copy/Copy';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
@@ -63,7 +63,7 @@ const VariantSummary = (props: Props) => {
 
   const { variant } = variantData;
   const preparedSummaryData = prepareVariantSummaryData(variant);
-  const vcfString = getVCFSequence(variant);
+  const vcfStringParts = getVCFStringParts(variant);
 
   return (
     <>
@@ -165,8 +165,11 @@ const VariantSummary = (props: Props) => {
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
         <div className={styles.value}>
-          <VariantVCF vcfSequence={vcfString} />
-          <Copy value={vcfString} className={styles.withSpaceLeft} />
+          <VariantVCF vcfStringParts={vcfStringParts} />
+          <Copy
+            value={vcfStringParts.vcfString}
+            className={styles.withSpaceLeft}
+          />
         </div>
       </div>
 
