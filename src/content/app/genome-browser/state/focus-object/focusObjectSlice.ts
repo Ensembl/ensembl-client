@@ -25,10 +25,7 @@ import isGeneFocusObject from './isGeneFocusObject';
 import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
-import {
-  getTrackPanelGene,
-  getGBVariant
-} from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
@@ -50,7 +47,6 @@ import type {
   FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import type { RootState, ThunkApi } from 'src/store';
-import type { Variant } from 'src/shared/types/variation-api/variant';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -131,18 +127,15 @@ const buildFocusLocationObject = (
 const buildFocusVariantObject = (payload: {
   genomeId: string;
   objectId: string;
-  variant: Variant;
+  variantId: string;
 }): FocusVariant => {
-  const { genomeId, objectId, variant } = payload;
-  const { name, prediction_results, alleles } = variant;
+  const { genomeId, objectId, variantId } = payload;
 
   return {
     type: 'variant',
     genome_id: genomeId,
     object_id: objectId,
-    label: name,
-    prediction_results,
-    alleles
+    label: variantId
   };
 };
 
@@ -210,14 +203,11 @@ export const fetchFocusObject = createAsyncThunk(
           thunkAPI
         );
       } else if (payload.type === 'variant') {
-        return await fetchFocusVariant(
-          {
-            genomeId,
-            variantId: objectId,
-            objectId: focusObjectId
-          },
-          thunkAPI
-        );
+        return await fetchFocusVariant({
+          genomeId,
+          variantId: objectId,
+          objectId: focusObjectId
+        });
       }
     } catch (error) {
       thunkAPI.rejectWithValue(error as Error);
@@ -261,35 +251,15 @@ const fetchFocusGene = async (
   });
 };
 
-const fetchFocusVariant = async (
-  payload: {
-    genomeId: string;
-    variantId: string;
-    objectId: string; // is in format genomeId:type:stableId
-  },
-  thunkApi: ThunkApi
-) => {
-  const { genomeId, variantId, objectId } = payload;
-  const { dispatch } = thunkApi;
-  const dispatchedPromise = dispatch(
-    getGBVariant.initiate({
-      genomeId,
-      variantId
-    })
-  );
-
-  const result = await dispatchedPromise;
-  dispatchedPromise.unsubscribe();
-
-  const variantFocusObject = buildFocusVariantObject({
-    objectId,
-    genomeId,
-    variant: result.data?.variant as Variant
-  });
-
+const fetchFocusVariant = async (payload: {
+  genomeId: string;
+  variantId: string;
+  objectId: string; // is in format genomeId:type:stableId
+}) => {
+  // TODO: will fetch variant data from an api when it is ready
   return buildLoadedObject({
-    id: objectId,
-    data: variantFocusObject
+    id: payload.objectId,
+    data: buildFocusVariantObject(payload)
   });
 };
 

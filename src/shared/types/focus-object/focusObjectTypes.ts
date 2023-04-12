@@ -15,7 +15,6 @@
  */
 
 import { Strand } from 'src/shared/types/thoas/strand';
-import type { Variant } from '../variation-api/variant';
 
 export type FocusObjectLocation = {
   chromosome: string;
@@ -46,10 +45,9 @@ export type FocusLocation = BasicFocusObject & {
   type: 'location';
 };
 
-export type FocusVariant = Omit<BasicFocusObject, 'location'> &
-  Pick<Variant, 'prediction_results' | 'alleles'> & {
-    type: 'variant';
-  };
+export type FocusVariant = Omit<BasicFocusObject, 'location'> & {
+  type: 'variant';
+};
 
 export type FocusObject = FocusGene | FocusLocation | FocusVariant;
 

@@ -24,11 +24,11 @@ import styles from './VariantConsequence.scss';
 
 type Props = {
   variant: Pick<Variant, 'prediction_results'>;
-  showColour?: boolean;
+  withColour?: boolean;
 };
 
 const VariantConsequence = (props: Props) => {
-  const { variant, showColour } = props;
+  const { variant, withColour } = props;
 
   const variantConsequence = getMostSevereVariantConsequence(variant);
 
@@ -38,7 +38,7 @@ const VariantConsequence = (props: Props) => {
 
   return (
     <>
-      {showColour ? (
+      {withColour ? (
         <div className={styles.variantConsequence}>
           <VariantColour variantType={variantConsequence} />
           <span>{variantConsequence}</span>

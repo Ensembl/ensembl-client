@@ -23,7 +23,10 @@ import VariantConsequence from 'src/content/app/genome-browser/components/drawer
 import VariantAllelesSequences from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-alleles-sequences/VariantAllelesSequences';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 
+import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { Variant } from 'src/shared/types/variation-api/variant';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -34,19 +37,19 @@ enum Display {
   MINIMAL = 'minimal'
 }
 
-type Props = {
+const VariantSummaryWrapper = (props: {
   variant: FocusVariant;
   isGhosted?: boolean;
-};
-
-type WidthAwareProps = Props & {
-  display: Display;
-};
-
-const VariantSummaryWrapper = (props: Props) => {
+}) => {
   const [display, setDisplay] = useState(Display.MINIMAL);
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  const { genome_id: genomeId, object_id: variantId } = props.variant;
+  const { currentData: variantData } = useGbVariantQuery({
+    genomeId,
+    variantId
+  });
 
   useEffect(() => {
     if (containerWidth < MEDIUM_WIDTH) {
@@ -56,18 +59,28 @@ const VariantSummaryWrapper = (props: Props) => {
     }
   }, [containerWidth]);
 
+  if (!variantData) {
+    return null;
+    // TODO: handle errors
+  }
+
   return (
     <div className={styles.featureSummaryStripWrapper} ref={containerRef}>
-      <VariantSummaryStrip {...props} display={display} />
+      <VariantSummaryStrip
+        {...props}
+        display={display}
+        variant={variantData.variant}
+      />
     </div>
   );
 };
 
-const VariantSummaryStrip = ({
-  variant,
-  isGhosted,
-  display
-}: WidthAwareProps) => {
+const VariantSummaryStrip = (props: {
+  variant: Variant;
+  isGhosted?: boolean;
+  display: Display;
+}) => {
+  const { variant, isGhosted, display } = props;
   const stripClasses = classNames(styles.featureSummaryStrip, {
     [styles.featureSummaryStripGhosted]: isGhosted
   });
@@ -83,14 +96,14 @@ const VariantSummaryStrip = ({
   return <div className={stripClasses}>{content}</div>;
 };
 
-const MinimalContent = ({ variant }: { variant: FocusVariant }) => (
+const MinimalContent = ({ variant }: { variant: Variant }) => (
   <>
     <span className={styles.featureSummaryStripLabel}>Variant</span>
-    <span className={styles.featureNameEmphasized}>{variant.label}</span>
+    <span className={styles.featureNameEmphasized}>{variant.name}</span>
   </>
 );
 
-const FullContent = ({ variant }: { variant: FocusVariant }) => {
+const FullContent = ({ variant }: { variant: Variant }) => {
   const mostSevereConsequence = <VariantConsequence variant={variant} />;
 
   return (
