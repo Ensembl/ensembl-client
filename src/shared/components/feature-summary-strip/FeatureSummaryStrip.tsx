@@ -18,10 +18,11 @@ import React from 'react';
 
 import {
   GeneSummaryStrip,
-  LocationSummaryStrip
+  LocationSummaryStrip,
+  VariantSummaryStrip
 } from '../feature-summary-strip';
 
-import { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export type FeatureSummaryStripProps = {
   focusObject: FocusObject;
@@ -37,6 +38,10 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
     case 'location':
       return (
         <LocationSummaryStrip location={focusObject} isGhosted={isGhosted} />
+      );
+    case 'variant':
+      return (
+        <VariantSummaryStrip variant={focusObject} isGhosted={isGhosted} />
       );
     default:
       return null;
