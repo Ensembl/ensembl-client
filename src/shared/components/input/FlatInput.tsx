@@ -45,10 +45,14 @@ const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     { [styles.flatInputWrapperDisabled]: disabled }
   );
 
+  const shouldShowRightCorner = rightCorner && !disabled;
+
   return (
     <div className={wrapperClasses}>
       <Input disabled={disabled} ref={ref} {...otherProps} />
-      {rightCorner && <div className={styles.rightCorner}>{rightCorner}</div>}
+      {shouldShowRightCorner && (
+        <div className={styles.rightCorner}>{rightCorner}</div>
+      )}
     </div>
   );
 };

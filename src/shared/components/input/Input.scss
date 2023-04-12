@@ -39,15 +39,21 @@
 
   &Large {
     --shaded-input-height: 40px;
+    --question-button-size: 16px;
+    --close-button-size: 16px;
   }
 
   &Small {
     --shaded-input-height: 30px;
+    --question-button-size: 12px;
+    --close-button-size: 12px;
   }
 }
 
 .flatInputWrapper {
   height: 25px;
+  --question-button-size: 12px;
+  --close-button-size: 12px;
 
   &Disabled {
     border: 1px solid $grey;

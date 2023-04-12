@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
 .closeButton {
-  width: 16px;
-  height: 16px;
+  width: var(--close-button-size, 16px);
+  height: var(--close-button-size, 16px);
   border-radius: 100%;
   cursor: pointer;
 }
