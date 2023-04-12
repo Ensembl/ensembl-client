@@ -35,7 +35,7 @@
 .shadedInputWrapper {
   border: none;
   box-shadow: $form-field-shadow;
-  height: var(--shaded-input-height, 40px);
+  height: var(--shaded-input-height, 30px);
 
   &Large {
     --shaded-input-height: 40px;
