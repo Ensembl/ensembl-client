@@ -19,10 +19,6 @@ import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-o
 
 import type { RootState } from 'src/store';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import type {
-  FocusGene,
-  FocusLocation
-} from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserGeneral.activeGenomeId;
@@ -73,10 +69,7 @@ export const getDefaultChrLocation = (state: RootState) => {
   if (!activeFocusObject) {
     return null;
   }
-  // TODO: Type assertion is a temporary fix as FocusVariant doesn't have location. Remove if there is a better fix or get rid of the whole function (check comment above).
-  const { chromosome, start, end } = (
-    activeFocusObject as FocusGene | FocusLocation
-  ).location;
+  const { chromosome, start, end } = activeFocusObject.location;
 
   return [chromosome, start, end] as ChrLocation;
 };

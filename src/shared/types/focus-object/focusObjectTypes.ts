@@ -45,7 +45,7 @@ export type FocusLocation = BasicFocusObject & {
   type: 'location';
 };
 
-export type FocusVariant = Omit<BasicFocusObject, 'location'> & {
+export type FocusVariant = BasicFocusObject & {
   type: 'variant';
 };
 

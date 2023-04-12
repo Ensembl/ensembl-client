@@ -135,7 +135,13 @@ const buildFocusVariantObject = (payload: {
     type: 'variant',
     genome_id: genomeId,
     object_id: objectId,
-    label: variantId
+    label: variantId,
+    location: {
+      // just some arbitrary hardcoded location; this will change to proper data in the future
+      chromosome: '13',
+      start: 1_000_000,
+      end: 1_000_001
+    }
   };
 };
 

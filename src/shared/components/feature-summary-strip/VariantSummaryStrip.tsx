@@ -61,7 +61,6 @@ const VariantSummaryWrapper = (props: {
 
   if (!variantData) {
     return null;
-    // TODO: handle errors
   }
 
   return (
