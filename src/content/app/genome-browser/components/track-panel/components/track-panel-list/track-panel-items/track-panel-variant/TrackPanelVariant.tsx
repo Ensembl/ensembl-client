@@ -58,9 +58,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   };
 
   const variant = variantData.variant;
-  const mostSevereConsequence = (
-    <VariantConsequence variant={variant} withColour={true} />
-  );
+  const mostSevereConsequence = <VariantConsequence variant={variant} />;
 
   return (
     <>

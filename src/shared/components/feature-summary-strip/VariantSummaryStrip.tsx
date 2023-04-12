@@ -103,7 +103,9 @@ const MinimalContent = ({ variant }: { variant: Variant }) => (
 );
 
 const FullContent = ({ variant }: { variant: Variant }) => {
-  const mostSevereConsequence = <VariantConsequence variant={variant} />;
+  const mostSevereConsequence = (
+    <VariantConsequence variant={variant} withoutColour={true} />
+  );
 
   return (
     <>
