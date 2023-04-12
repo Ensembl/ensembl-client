@@ -34,10 +34,10 @@ const graphqlBaseQuery = async ({
       const { name, message, stack, request, response } = error;
       return {
         error: {
-          status: error.response.status,
+          status: response.status,
           meta: {
-            data: error.response.data ?? null,
-            errors: error.response.errors
+            data: response.data ?? null,
+            errors: response.errors
           },
           name,
           message,
