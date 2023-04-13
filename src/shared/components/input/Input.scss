@@ -21,7 +21,7 @@
 .inputWrapper {
   background-color: var(--input-background-colour, $white);
   display: inline-flex;
-  padding: 0 20px;
+  padding: var(--input-padding, 0 15px);
   width: var(--input-width, 100%);
 
   input {
@@ -38,6 +38,7 @@
   height: var(--shaded-input-height, 30px);
 
   &Large {
+    --input-padding: 0 20px;
     --shaded-input-height: 40px;
     --question-button-size: 16px;
     --close-button-size: 16px;
