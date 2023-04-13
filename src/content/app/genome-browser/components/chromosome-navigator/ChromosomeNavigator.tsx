@@ -31,8 +31,6 @@ import {
   getDefaultChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import * as centromeres from 'src/shared/data/centromeres';
-
 import styles from './ChromosomeNavigator.scss';
 
 export type ChromosomeNavigatorProps = {
@@ -69,19 +67,12 @@ export const ChromosomeNavigatorWrapper = () => {
   );
   const karyotypeItemLength = currentKaryotypeItem?.length ?? 0;
 
-  // the code below is naughty and temporary (see ENSWBSITES-385):
-  // we are peeking at the string that represents genome id — something which we are not supposed to do
-  let centromere = null;
-  if (chromosomeName && genomeId.startsWith('homo_sapiens')) {
-    centromere = centromeres.humanCentromeres[chromosomeName] || null;
-  }
-
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
   const props = {
     length: karyotypeItemLength,
-    centromere,
+    centromere: null,
     viewportStart,
     viewportEnd,
     focusRegion
