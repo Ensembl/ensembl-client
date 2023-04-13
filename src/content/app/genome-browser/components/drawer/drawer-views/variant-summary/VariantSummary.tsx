@@ -71,9 +71,6 @@ const VariantSummary = (props: Props) => {
         <div className={styles.label}>Variant</div>
         <div className={styles.value}>
           <span className={styles.strong}>{variant.name}</span>
-          <span className={classNames(styles.light, styles.withSpaceLeft)}>
-            ? no variant type ?
-          </span>
         </div>
       </div>
 
@@ -104,7 +101,7 @@ const VariantSummary = (props: Props) => {
         <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>MAF</div>
           <div className={styles.value}>
-            {preparedSummaryData.minorAlleleFrequency.frequency}(
+            {preparedSummaryData.minorAlleleFrequency.frequency} (
             {preparedSummaryData.minorAlleleFrequency.sequence})
           </div>
         </div>

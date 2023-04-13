@@ -233,7 +233,7 @@ export const variantRs699 = {
               definition: 'ALL populations in 1000 genomes'
               // "description": ""
             },
-            global: true,
+            is_global: true,
             is_from_genotypes: true,
             display_group_name: '1000Genomes Phase 3',
             sub_populations: [

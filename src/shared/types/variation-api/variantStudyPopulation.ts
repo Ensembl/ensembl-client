@@ -21,7 +21,7 @@ export type VariantStudyPopulation = {
   size: number;
   description: string;
   type: ValueSetMetadata;
-  global: boolean; // should this be named is_global instead?
+  is_global: boolean;
   is_from_genotypes: boolean;
   display_group_name: string; // The name of the group of populations this population belongs to; serves for grouping purposes
   super_population: VariantStudyPopulation | null;
