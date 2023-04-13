@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import variantGroups from './variantGroups';
+import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import { Table } from 'src/shared/components/table';

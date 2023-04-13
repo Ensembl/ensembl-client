@@ -1,0 +1,22 @@
+@import 'src/styles/common';
+
+.variantDetais {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding: 4px 10px; // same as in TrackPanelItemLayout
+}
+
+.labelText {
+  font-size: 12px;
+  font-weight: $light;
+}
+
+.rowField .labelText {
+  display: inline-block;
+  margin-right: 0.6rem;
+}
+
+.labelFullLength {
+  display: block;
+}

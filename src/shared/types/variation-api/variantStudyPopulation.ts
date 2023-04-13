@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ValueSetMetadata } from '../thoas/metadata';
 
-import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
-
-import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
-
-import styles from './TrackPanelItem.scss';
-
-const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
-  const { focusVariant } = props;
-
-  const children = (
-    <div className={styles.label}>
-      <span className={styles.labelTextStrong}>{focusVariant.label}</span>
-    </div>
-  );
-
-  return <SimpleTrackPanelItemLayout>{children}</SimpleTrackPanelItemLayout>;
+export type VariantStudyPopulation = {
+  name: string;
+  size: number;
+  description: string;
+  type: ValueSetMetadata;
+  is_global: boolean;
+  is_from_genotypes: boolean;
+  display_group_name: string; // The name of the group of populations this population belongs to; serves for grouping purposes
+  super_population: VariantStudyPopulation | null;
+  sub_populations: VariantStudyPopulation[];
 };
-
-export default TrackPanelVariant;

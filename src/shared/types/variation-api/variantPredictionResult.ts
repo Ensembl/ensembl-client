@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import type { ExternalDB } from '../thoas/externalDb';
 
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
+export type VariantPredictionResult = {
+  score: number | null;
+  result: string | null; // Odd. How can the result field of a structure that is called VariantPredictionResult be null?
+  analysis_method: AnalysisMethod;
+};
 
-export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
-
-  if (start === end) {
-    return `${location.chromosome}:${start}`;
-  } else {
-    return `${location.chromosome}:${start}-${end}`;
-  }
+// NOTE: this is likely going to be a type that recurs in other models as well; not just variation.
+// Might deserve moving to a different file/directory in the future
+export type AnalysisMethod = {
+  tool: string;
+  version: string;
+  qualifier: string | null;
+  reference_data: ExternalDB[];
 };

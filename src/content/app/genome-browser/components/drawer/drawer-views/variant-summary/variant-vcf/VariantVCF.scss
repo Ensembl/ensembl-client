@@ -1,0 +1,7 @@
+.container > span {
+  word-break: break-all;
+}
+
+.container > span:not(:last-child) {
+  padding-right: 1ch;
+}

@@ -14,39 +14,29 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
+import type { ExternalDB } from '../thoas/externalDb';
+import type { ValueSetMetadata } from '../thoas/metadata';
+
+export type VariantAllelePhenotypeAssertion = {
+  feature: string;
+  feature_type: string;
+  phenotype: Phenotype;
+  evidence: PhenotypeAssertionEvidence[];
 };
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  geneId: string; // in focusObjectId format
+type Phenotype = {
+  term: string;
 };
 
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  transcriptId: string; // transcript stable id
+type PhenotypeAssertionEvidence = {
+  source: ExternalDB;
+  citations: unknown[]; // will be an array of Publication data types submitted to CDM
+  attributes: Attribute[];
+  assertion: ValueSetMetadata;
 };
 
-export type VariantDrawerView = {
-  name: 'variant_summary';
-  variantId: string;
+// NOTE: this might turn out to be a more global type; not just for VariantAllelePhenotypeAssertion
+type Attribute = {
+  type: string;
+  value: string;
 };
-
-export type GenericTrackView = {
-  name: 'track_details';
-  trackId: string;
-};
-
-export type VariantLegendView = {
-  name: 'variant_group_legend';
-  group: string;
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | VariantDrawerView
-  | GenericTrackView
-  | VariantLegendView;

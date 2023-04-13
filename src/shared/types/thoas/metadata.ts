@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { ExternalDB } from './externalDb';
+import type { Source } from './source';
+
 export type ValueSetMetadata = {
   value: string;
   label: string;
@@ -47,4 +50,18 @@ export type TranscriptMetadata = {
 export type GeneMetadata = {
   biotype: ValueSetMetadata;
   name: GeneNameMetadata | null;
+};
+
+export type OntologyTermMetadata = {
+  accession_id: string;
+  value: string;
+  url: string;
+  source: ExternalDB | null;
+  evidence_method: AssignmentMethod | null;
+  evidence_source: Source | null;
+};
+
+type AssignmentMethod = {
+  type: string;
+  description: string;
 };

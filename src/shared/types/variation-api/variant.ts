@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import type { ExternalReference } from '../thoas/externalReference';
+import type { ExternalDB } from '../thoas/externalDb';
+import type { VariantPredictionResult } from './variantPredictionResult';
+import type { VariantAllele } from './variantAllele';
 
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
-
-export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
-
-  if (start === end) {
-    return `${location.chromosome}:${start}`;
-  } else {
-    return `${location.chromosome}:${start}-${end}`;
-  }
+export type Variant = {
+  type: 'Variant';
+  name: string; // this is an rsID identifier
+  alternative_names: ExternalReference[];
+  primary_source: ExternalDB;
+  prediction_results: VariantPredictionResult[];
+  alleles: VariantAllele[];
 };

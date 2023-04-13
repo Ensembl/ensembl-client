@@ -16,7 +16,7 @@
 
 import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
-import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import trackPanelGeneQuery from './queries/trackPanelGeneQuery';
 import {
@@ -32,6 +32,8 @@ import {
   type TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
+import { variantRs699 } from 'tests/fixtures/variation/variant'; // temporary dummy data until variation backend is ready
+import { type VariantQueryResult } from './queries/variantQuery'; // will add a real query when variation backend is ready
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
@@ -39,18 +41,21 @@ import type { TrackPanelGene } from '../types/track-panel-gene';
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 type RegionQueryParams = { genomeId: string; regionName: string };
+type VariantQueryParams = { genomeId: string; variantId: string }; // it isn't quite clear yet what exactly the variant id should be; just an rsID is insufficient
 
-const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
+const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTrackPanelGene: builder.query<{ gene: TrackPanelGene }, GeneQueryParams>(
       {
         query: (params) => ({
+          url: config.thoasBaseUrl,
           body: trackPanelGeneQuery(params)
         })
       }
     ),
     gbGeneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: geneSummaryQuery,
         variables: params
       })
@@ -60,6 +65,7 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
       TranscriptQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: transcriptSummaryQuery,
         variables: params
       })
@@ -69,15 +75,27 @@ const genomeBrowserApiSlice = thoasApiSlice.injectEndpoints({
       TranscriptQueryParams
     >({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: transcriptZmenuQuery,
         variables: params
       })
     }),
     gbRegion: builder.query<RegionQueryResult, RegionQueryParams>({
       query: (params) => ({
+        url: config.thoasBaseUrl,
         body: regionQuery,
         variables: params
       })
+    }),
+
+    // Maybe move variation endpoints queried from the genome browser into a separate file?
+    gbVariant: builder.query<VariantQueryResult, VariantQueryParams>({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      queryFn: async (params) => {
+        return {
+          data: { variant: variantRs699 }
+        };
+      }
     })
   })
 });
@@ -106,7 +124,8 @@ export const {
   useGbGeneSummaryQuery,
   useGbTranscriptSummaryQuery,
   useGbTranscriptInZmenuQuery,
-  useGbRegionQuery
+  useGbRegionQuery,
+  useGbVariantQuery
 } = genomeBrowserApiSlice;
 
 export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;

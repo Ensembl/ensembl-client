@@ -1,0 +1,23 @@
+@import 'src/styles/common';
+
+.variantColour {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+.colour1 {
+  background-color: $duckegg-blue;
+}
+.colour2 {
+  background-color: $teal;
+}
+.colour3 {
+  background-color: $lime;
+}
+.colour4 {
+  background-color: $dark-yellow;
+}
+.colour5 {
+  background-color: $dark-pink;
+}

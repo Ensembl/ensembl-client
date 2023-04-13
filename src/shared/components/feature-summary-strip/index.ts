@@ -16,3 +16,4 @@
 
 export { default as GeneSummaryStrip } from './GeneSummaryStrip';
 export { default as LocationSummaryStrip } from './LocationSummaryStrip';
+export { default as VariantSummaryStrip } from './VariantSummaryStrip';

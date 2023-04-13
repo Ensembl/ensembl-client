@@ -130,6 +130,7 @@ const buildFocusVariantObject = (payload: {
   variantId: string;
 }): FocusVariant => {
   const { genomeId, objectId, variantId } = payload;
+
   return {
     type: 'variant',
     genome_id: genomeId,

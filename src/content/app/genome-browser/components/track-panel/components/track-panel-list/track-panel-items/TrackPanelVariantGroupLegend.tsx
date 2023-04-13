@@ -28,7 +28,7 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
-import variantGroups from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/variantGroups';
+import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';

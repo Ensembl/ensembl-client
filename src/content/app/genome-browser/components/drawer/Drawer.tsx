@@ -21,6 +21,7 @@ import TrackDetails from './drawer-views/track-details/TrackDetails';
 import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 import GeneSummary from './drawer-views/gene-summary/GeneSummary';
 import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
+import VariantSummary from './drawer-views/variant-summary/VariantSummary';
 import VariantGroupLegend from './drawer-views/variant-group-legend/VariantGroupLegend';
 
 import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
@@ -42,6 +43,8 @@ export const Drawer = () => {
         return <GeneSummary />;
       case 'transcript_summary':
         return <TranscriptSummary drawerView={drawerView} />;
+      case 'variant_summary':
+        return <VariantSummary drawerView={drawerView} />;
       case 'bookmarks':
         return <DrawerBookmarks />;
       case 'variant_group_legend':

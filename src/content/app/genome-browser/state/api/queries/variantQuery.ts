@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import type { Variant } from 'src/shared/types/variation-api/variant';
 
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
+/**
+ * NOTE: this file will need rework when we start querying real variation data:
+ * - we will have to add the actual graphql queries
+ * - we might want to split it into several queries (a smaller VariantSummary query and a larger VariantDetails query)
+ *
+ * Meanwhile, I am using this file to define the type of the expected response.
+ */
 
-export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
-
-  if (start === end) {
-    return `${location.chromosome}:${start}`;
-  } else {
-    return `${location.chromosome}:${start}-${end}`;
-  }
+export type VariantQueryResult = {
+  variant: Variant;
 };

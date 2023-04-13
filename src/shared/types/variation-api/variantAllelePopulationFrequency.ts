@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { VariantStudyPopulation } from './variantStudyPopulation';
+import { ValueSetMetadata } from '../thoas/metadata';
 
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
+export type VariantAllelePopulationFrequency = {
+  population: VariantStudyPopulation;
+  allele_count: number; // Number of individuals/samples in the population where variant allele is found
+  allele_number: number; // Total number of alleles in called genotypes
+  allele_frequency: number;
+  dataset: FrequencyDataset;
+  qc_filter: ValueSetMetadata;
+  is_minor_allele: boolean;
+  is_hpmaf: boolean;
+};
 
-export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
-
-  if (start === end) {
-    return `${location.chromosome}:${start}`;
-  } else {
-    return `${location.chromosome}:${start}-${end}`;
-  }
+type FrequencyDataset = {
+  version: string;
+  release_date: string; // ISO date string yyyy-mm-dd
+  source: unknown; // FIXME
 };

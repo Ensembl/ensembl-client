@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
-
-export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
-
-  if (start === end) {
-    return `${location.chromosome}:${start}`;
-  } else {
-    return `${location.chromosome}:${start}-${end}`;
-  }
+export type ExternalDB = {
+  id: string;
+  name: string;
+  description: string | null;
+  url: string | null;
+  release: string | null;
 };
