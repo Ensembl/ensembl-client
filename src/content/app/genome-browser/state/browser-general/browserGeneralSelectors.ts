@@ -61,6 +61,7 @@ export const getActualChrLocation = (state: RootState) => {
   return activeGenomeId ? locations[activeGenomeId] : null;
 };
 
+// TODO: Seems redundant since we don't use ChromosomeNavigator anywhere now. Should we remove this?
 export const getDefaultChrLocation = (state: RootState) => {
   const activeFocusObjectId = getBrowserActiveFocusObjectId(state);
   const activeFocusObject =
