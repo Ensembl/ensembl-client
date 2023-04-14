@@ -43,7 +43,6 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   } = props;
   const sizeClass = styles[`shadedInputWrapper${upperFirst(inputSize)}`];
   const wrapperClasses = classNames(
-    styles.inputWrapper,
     styles.shadedInputWrapper,
     classNameFromProps,
     sizeClass

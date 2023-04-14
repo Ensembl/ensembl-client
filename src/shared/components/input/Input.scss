@@ -18,41 +18,42 @@
   flex: 0 0 auto;
 }
 
-.inputWrapper {
-  background-color: var(--input-background-colour, $white);
+.flatInputWrapper, .shadedInputWrapper {
   display: inline-flex;
-  padding: var(--input-padding, 0 15px);
-  width: var(--input-width, 100%);
 
   input {
     background-color: transparent;
     flex-grow: 1;
     border: none;
-    box-shadow: none;
   }
 }
 
 .shadedInputWrapper {
   border: none;
   box-shadow: $form-field-shadow;
+  background-color: var(--shaded-input-background-colour, $white);
+  padding: var(--shaded-input-padding, 0 15px);
   height: var(--shaded-input-height, 30px);
+  width: var(--shaded-input-width, 100%);
 
   &Large {
-    --input-padding: 0 20px;
+    --shaded-input-padding: 0 20px;
     --shaded-input-height: 40px;
     --question-button-size: 16px;
     --close-button-size: 16px;
   }
 
   &Small {
-    --shaded-input-height: 30px;
     --question-button-size: 12px;
     --close-button-size: 12px;
   }
 }
 
 .flatInputWrapper {
+  background-color: var(--flat-input-background-colour, $white);
+  padding: 0 15px;
   height: 25px;
+  width: var(--flat-input-width, 100%);
   --question-button-size: 12px;
   --close-button-size: 12px;
 

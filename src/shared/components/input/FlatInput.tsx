@@ -39,7 +39,6 @@ const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   } = props;
 
   const wrapperClasses = classNames(
-    styles.inputWrapper,
     styles.flatInputWrapper,
     classNameFromProps,
     { [styles.flatInputWrapperDisabled]: disabled }
