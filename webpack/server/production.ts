@@ -34,11 +34,7 @@ export default (): Configuration => {
             filename: 'images/[name].[contenthash][ext]',
             publicPath: '/static/',
             emit: false
-          },
-          use: [
-            // use mage loader to compress the images — this will produce the same content hashes in the names of the images as the client's webpack
-            'image-webpack-loader'
-          ]
+          }
         },
 
         // loader for fonts that copies the fonts into the dist folder

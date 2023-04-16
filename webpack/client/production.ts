@@ -38,11 +38,7 @@ export default (): Configuration => {
           type: 'asset/resource',
           generator: {
             filename: 'images/[name].[contenthash][ext]'
-          },
-          use: [
-            // image loader should compress the images
-            'image-webpack-loader'
-          ]
+          }
         },
 
         {
