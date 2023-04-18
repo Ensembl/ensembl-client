@@ -21,6 +21,7 @@ import React, {
   type ChangeEvent
 } from 'react';
 import noop from 'lodash/noop';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
@@ -44,6 +45,7 @@ import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 
 import styles from './GeneSearchPanel.scss';
+import radioStyles from 'src/shared/components/radio-group/RadioGroup.scss';
 
 type Props = {
   onClose: () => void;
@@ -91,6 +93,8 @@ const GeneSearchForm = () => {
           Go
         </PrimaryButton>
       </form>
+      <SearchScope />
+
       {currentSearchResults && (
         <GeneSearchResults
           speciesList={committedSpecies}
@@ -98,6 +102,31 @@ const GeneSearchForm = () => {
         />
       )}
     </>
+  );
+};
+
+// NOTE: so far, this element is decorative; user won't be able to change the scope anyway
+const SearchScope = () => {
+  // FIXME: when doing this for real, use the RadioGroup component
+  // (note that RadioGroup doesn't have disabled radios)
+  return (
+    <div className={styles.pseudoRadioGroup}>
+      <div className={radioStyles.radioGroupItem}>
+        <span
+          className={classNames(radioStyles.radio, radioStyles.radioChecked)}
+        />
+        <span className={radioStyles.label}>Only species in list</span>
+      </div>
+      <div
+        className={classNames(
+          radioStyles.radioGroupItem,
+          styles.pseudoRadioDisabled
+        )}
+      >
+        <span className={classNames(radioStyles.radio)} />
+        <span className={radioStyles.label}>All Ensembl</span>
+      </div>
+    </div>
   );
 };
 
