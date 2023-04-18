@@ -19,13 +19,19 @@ import React, {
   type InputHTMLAttributes,
   type ForwardedRef
 } from 'react';
+import classNames from 'classnames';
 
 import styles from './Input.scss';
 
 export type Props = InputHTMLAttributes<HTMLInputElement>;
 
 const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => (
-  <input className={styles.input} ref={ref} spellCheck={false} {...props} />
+  <input
+    className={classNames(styles.input, props.className)}
+    ref={ref}
+    spellCheck={false}
+    {...props}
+  />
 );
 
 export default forwardRef(Input);

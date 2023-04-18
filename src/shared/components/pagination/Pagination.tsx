@@ -52,14 +52,12 @@ const Pagination = (props: PaginationProps) => {
         disabled={currentPageNumber === 1}
         onClick={() => props.onChange(currentPageNumber - 1)}
       />
-      <div className={styles.inputWrapper}>
-        <Input
-          value={currentPageNumber}
-          onChange={onChange}
-          className={styles.inputBox}
-          disabled={lastPageNumber === 1}
-        />
-      </div>
+      <Input
+        value={currentPageNumber}
+        onChange={onChange}
+        className={styles.inputBox}
+        disabled={lastPageNumber === 1}
+      />
       of {lastPageNumber}
       <ChevronButton
         direction="right"
