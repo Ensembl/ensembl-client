@@ -1,0 +1,96 @@
+@import 'src/styles/common';
+
+.geneSearchPanel {
+  height: 100%;
+  background-color: $light-grey;
+  // TODO: Can we find a better name for $global-padding-left? It is not very global, and it is pretty large
+  padding: 65px 0 $global-padding-bottom $global-padding-left; // TODO: the 65px on top looks like it is something repeatable between components?
+  position: relative;
+}
+
+.geneSearchForm {
+  display: grid;
+  grid-template-areas:
+    "label ."
+    "search-field submit-button"
+    "search-scope .";
+  grid-template-columns: 485px min-content;
+  column-gap: 1rem;
+  row-gap: 10px;
+  align-items: center;
+}
+
+.searchLabel {
+  grid-area: label;
+  margin-left: 25px;
+}
+
+.searchField {
+  grid-area: search-field;
+}
+
+.submit {
+  grid-area: submit-button;
+}
+
+.resultsTable {
+  width: 600px;
+  border-collapse: collapse;
+}
+
+.resultsTable th {
+  text-align: left;
+  border-bottom: 1px solid $blue;
+  padding: 0 0.5rem 0.4rem 1rem;
+  font-weight: $light;
+}
+
+.resultsTable td {
+  padding: 0.4rem 0.5rem 0.4rem 1rem;
+  border-bottom: 1px solid $medium-light-grey;
+}
+
+/* Species column */
+.resultsTable td:first-child {
+  width: 60%;
+  vertical-align: top;
+}
+
+.speciesCount {
+  font-weight: $bold;
+  padding: 0 0.5ch;
+}
+
+.speciesCell {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 1ch;
+}
+
+.assemblyName {
+  font-weight: $light;
+  font-size: 11px;
+}
+
+.geneMatch {
+  color: $blue;
+  cursor: pointer;
+}
+
+.closeButton {
+  position: absolute;
+  right: $standard-gutter;
+  top: $standard-gutter;
+}
+
+.tooltip {
+  background: $black;
+  padding: 12px 20px;
+  filter: drop-shadow(2px 2px 3px $shadow-color);
+  color: $white;
+}
+
+.tooltipTip {
+  fill: $black;
+}

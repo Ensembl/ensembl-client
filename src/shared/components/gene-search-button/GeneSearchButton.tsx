@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import React from 'react';
 
-import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
+import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './MultiLineSpeciesWrapper.scss';
+import styles from './GeneSearchButton.scss';
 
-export type Props = {
-  speciesTabs: ReactElement<SelectedSpeciesProps>[];
-  link?: React.ReactNode;
+type Props = {
+  onClick: () => void;
 };
 
-const MultiLineWrapper = (props: Props) => {
+const GeneSearchButton = (props: Props) => {
   return (
-    <div className={styles.multiLineSpeciesWrapper}>
-      {props.speciesTabs}
-      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
-    </div>
+    <button onClick={props.onClick} className={styles.findGeneButton}>
+      <span>Find a Gene</span>
+      <SearchIcon />
+    </button>
   );
 };
 
-export default MultiLineWrapper;
+export default GeneSearchButton;

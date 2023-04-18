@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import type { SearchMeta } from './search-meta';
+import type { SearchMatch } from './search-match';
 
-import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
-
-import styles from './MultiLineSpeciesWrapper.scss';
-
-export type Props = {
-  speciesTabs: ReactElement<SelectedSpeciesProps>[];
-  link?: React.ReactNode;
+export type SearchResults = {
+  meta: SearchMeta;
+  matches: SearchMatch[];
 };
-
-const MultiLineWrapper = (props: Props) => {
-  return (
-    <div className={styles.multiLineSpeciesWrapper}>
-      {props.speciesTabs}
-      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
-    </div>
-  );
-};
-
-export default MultiLineWrapper;

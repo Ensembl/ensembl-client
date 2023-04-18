@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import type { Strand } from 'src/shared/types/thoas/strand';
 
-import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
+type SearchMatchType = 'Gene'; // so far, search only returns genes
 
-import styles from './MultiLineSpeciesWrapper.scss';
-
-export type Props = {
-  speciesTabs: ReactElement<SelectedSpeciesProps>[];
-  link?: React.ReactNode;
+export type SearchMatch = {
+  type: SearchMatchType;
+  stable_id: string;
+  unversioned_stable_id: string;
+  biotype: string;
+  symbol: string | null;
+  name: string;
+  genome_id: string;
+  transcript_count: number;
+  slice: {
+    location: {
+      start: number;
+      end: number;
+    };
+    region: {
+      name: string;
+    };
+    strand: {
+      code: Strand;
+    };
+  };
 };
-
-const MultiLineWrapper = (props: Props) => {
-  return (
-    <div className={styles.multiLineSpeciesWrapper}>
-      {props.speciesTabs}
-      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
-    </div>
-  );
-};
-
-export default MultiLineWrapper;

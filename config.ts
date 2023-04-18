@@ -26,6 +26,7 @@ export type BaseApiUrls = {
   refgetBaseUrl: string;
   tracksApiBaseUrl: string;
   toolsApiBaseUrl: string;
+  searchApiBaseUrl: string;
 };
 
 export type PublicKeys = {
@@ -39,7 +40,8 @@ const defaultApiUrls: BaseApiUrls = {
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
   tracksApiBaseUrl: '/api/tracks',
-  toolsApiBaseUrl: '/api/tools'
+  toolsApiBaseUrl: '/api/tools',
+  searchApiBaseUrl: '/api/search'
 };
 
 const defaultKeys = {
@@ -63,7 +65,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
-    toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl
+    toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl, // irrelevant for server-side rendering
+    searchApiBaseUrl: defaultApiUrls.searchApiBaseUrl // irrelevant for server-side rendering
   };
 };
 

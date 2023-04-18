@@ -35,11 +35,9 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
-import type {
-  SearchResults,
-  SearchMatch,
-  AppName
-} from 'src/shared/state/in-app-search/inAppSearchSlice';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { SearchMatch } from 'src/shared/types/search-api/search-match';
+import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { InAppSearchMode } from './InAppSearch';
 
 import styles from './InAppSearch.scss';

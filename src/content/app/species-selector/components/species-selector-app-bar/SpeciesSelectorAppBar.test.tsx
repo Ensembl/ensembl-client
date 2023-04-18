@@ -21,6 +21,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import times from 'lodash/times';
+import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -55,7 +56,10 @@ const renderComponent = (state?: any) => {
   const renderResult = render(
     <MemoryRouter initialEntries={['/species-selector']}>
       <Provider store={mockStore(state)}>
-        <SpeciesSelectorAppBar />
+        <SpeciesSelectorAppBar
+          isGeneSearchMode={false}
+          onGeneSearchToggle={noop}
+        />
         <RouteChecker
           setLocation={(location) => (routerInfo.location = location)}
         />

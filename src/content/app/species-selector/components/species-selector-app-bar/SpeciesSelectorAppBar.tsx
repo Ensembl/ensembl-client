@@ -25,6 +25,8 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
+import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
@@ -37,12 +39,17 @@ const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-export const SpeciesSelectorAppBar = () => {
+type Props = {
+  onGeneSearchToggle: () => void;
+  isGeneSearchMode: boolean;
+};
+
+export const SpeciesSelectorAppBar = (props: Props) => {
   const selectedSpecies = useSelector(getCommittedSpecies);
 
   const mainContent =
     selectedSpecies.length > 0 ? (
-      <SelectedSpeciesList selectedSpecies={selectedSpecies} />
+      <SelectedSpeciesList selectedSpecies={selectedSpecies} {...props} />
     ) : (
       <PlaceholderMessage />
     );
@@ -56,7 +63,9 @@ export const SpeciesSelectorAppBar = () => {
   );
 };
 
-const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+const SelectedSpeciesList = (
+  props: Props & { selectedSpecies: CommittedItem[] }
+) => {
   const navigate = useNavigate();
 
   const showSpeciesPage = (species: CommittedItem) => {
@@ -76,7 +85,18 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
     />
   ));
 
-  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
+  const geneSearchButton = props.isGeneSearchMode ? (
+    <GeneSearchCloseButton
+      key="find-a-gene"
+      onClick={props.onGeneSearchToggle}
+    />
+  ) : (
+    <GeneSearchButton key="find-a-gene" onClick={props.onGeneSearchToggle} />
+  );
+
+  const speciesTabsWrapperContent = [...selectedSpecies, geneSearchButton];
+
+  return <SpeciesTabsWrapper speciesTabs={speciesTabsWrapperContent} />;
 };
 
 export default SpeciesSelectorAppBar;

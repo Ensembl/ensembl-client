@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import config from 'config';
 
-import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import styles from './MultiLineSpeciesWrapper.scss';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
-export type Props = {
-  speciesTabs: ReactElement<SelectedSpeciesProps>[];
-  link?: React.ReactNode;
+type SearchGenesParams = {
+  genome_ids: string[];
+  query: string;
+  page: number;
+  per_page: number;
 };
 
-const MultiLineWrapper = (props: Props) => {
-  return (
-    <div className={styles.multiLineSpeciesWrapper}>
-      {props.speciesTabs}
-      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
-    </div>
-  );
-};
+const searchApiSlice = restApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    searchGenes: builder.query<SearchResults, SearchGenesParams>({
+      query: (params) => {
+        return {
+          url: config.searchApiBaseUrl,
+          method: 'POST',
+          body: params
+        };
+      }
+    })
+  })
+});
 
-export default MultiLineWrapper;
+export const { useLazySearchGenesQuery } = searchApiSlice;
