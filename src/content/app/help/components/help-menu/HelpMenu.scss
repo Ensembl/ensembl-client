@@ -53,6 +53,10 @@ $submenuSidePadding: 30px;
   & + & {
     margin-left: 46px;
   }
+
+  &Active {
+    color: $black;
+  }
 }
 
 .submenu {
