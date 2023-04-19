@@ -7,16 +7,12 @@
   align-items: center;
 }
 
-.inputWrapper {
-  width: 50px;
-  margin-right: 5px;
-  display: inline-block;
-}
-
 .inputBox {
   height: 27px;
+  width: 50px;
   text-align: center;
   border: 1px solid $blue;
+  margin-right: 5px;
 }
 
 .showHide {

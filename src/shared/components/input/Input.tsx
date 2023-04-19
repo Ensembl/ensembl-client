@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, InputHTMLAttributes, ForwardedRef } from 'react';
+import React, {
+  forwardRef,
+  type InputHTMLAttributes,
+  type ForwardedRef
+} from 'react';
 import classNames from 'classnames';
 
 import styles from './Input.scss';
 
 export type Props = InputHTMLAttributes<HTMLInputElement>;
 
-const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
-  const { className: classNameFromProps, ...otherProps } = props;
-  const className = classNames(styles.input, classNameFromProps);
-
-  return (
-    <input className={className} ref={ref} spellCheck={false} {...otherProps} />
-  );
-};
+const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => (
+  <input
+    className={classNames(styles.input, props.className)}
+    ref={ref}
+    spellCheck={false}
+    {...props}
+  />
+);
 
 export default forwardRef(Input);

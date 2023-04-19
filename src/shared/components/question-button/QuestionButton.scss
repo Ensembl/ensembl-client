@@ -17,8 +17,8 @@
 
 .in-input-field {
   padding: 0;
-  height: 14px;
-  width: 14px;
+  height: var(--question-button-size, 16px);
+  width: var(--question-button-size, 16px);
 }
 
 .inline {

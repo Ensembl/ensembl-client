@@ -15,11 +15,10 @@
  */
 
 import React, { useCallback, ReactNode, FormEvent } from 'react';
-import classNames from 'classnames';
 
-import styles from './SearchField.scss';
-
-import Input from 'src/shared/components/input/Input';
+import ShadedInput, {
+  type InputSize
+} from 'src/shared/components/input/ShadedInput';
 
 type Props = {
   search: string;
@@ -33,12 +32,10 @@ type Props = {
   rightCorner?: ReactNode;
   placeholder?: string;
   className?: string;
+  size?: InputSize;
 };
 
 const SearchField = (props: Props) => {
-  const { rightCorner } = props;
-  const className = classNames(styles.searchField, props.className);
-
   const onChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
       props.onChange(event.currentTarget.value);
@@ -53,8 +50,12 @@ const SearchField = (props: Props) => {
   };
 
   return (
-    <form className={className} onSubmit={handleSubmit}>
-      <Input
+    <form
+      className={props.className}
+      data-test-id="search-field"
+      onSubmit={handleSubmit}
+    >
+      <ShadedInput
         value={props.search}
         placeholder={props.placeholder}
         onChange={onChange}
@@ -63,11 +64,9 @@ const SearchField = (props: Props) => {
         onKeyUp={props.onKeyUp}
         onKeyDown={props.onKeyDown}
         onKeyPress={props.onKeyPress}
-        className={styles.searchFieldInput}
+        inputSize={props.size}
+        rightCorner={props.rightCorner}
       />
-      {rightCorner && (
-        <div className={styles.searchFieldRightCorner}>{rightCorner}</div>
-      )}
     </form>
   );
 };

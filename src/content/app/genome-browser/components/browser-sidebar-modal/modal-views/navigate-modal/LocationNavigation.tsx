@@ -30,7 +30,7 @@ import {
   type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import Input from 'src/shared/components/input/Input';
+import FlatInput from 'src/shared/components/input/FlatInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import SimpleSelect, {
   type SimpleSelectMethods
@@ -213,7 +213,7 @@ const LocationNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Start</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
                 onChange={onLocationStartChange}
@@ -227,7 +227,7 @@ const LocationNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>End</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
                 onChange={onLocationEndChange}
@@ -246,7 +246,7 @@ const LocationNavigation = () => {
           <div className={styles.inputField}>
             <label>
               <span>Go to</span>
-              <Input
+              <FlatInput
                 type="text"
                 onFocus={onSingleInputFocus}
                 onChange={onLocationInputChange}

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import SearchField from 'src/shared/components/search-field/SearchField';
 import AutosuggestionPanel, {
-  GroupOfMatchesType,
-  MatchIndex
+  type GroupOfMatchesType,
+  type MatchIndex
 } from './AutosuggestionPanel';
 
 import styles from './AutosuggestSearchField.scss';
@@ -243,6 +243,7 @@ const AutosuggestSearchField = (props: Props) => {
         onKeyDown={handleKeyDown}
         onSubmit={handleSubmit}
         className={searchFieldClassName}
+        size="large"
       />
       {shouldShowSuggestions && (
         <AutosuggestionPanel

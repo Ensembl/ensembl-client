@@ -23,10 +23,6 @@
   grid-area: search-field;
   background: white;
 
-  &Interstitial {
-    height: 30px;
-  }
-
   // nesting to increase specificity of the selector
   .searchField {
     width: 100%;

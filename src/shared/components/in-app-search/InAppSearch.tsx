@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
 import { useAppDispatch } from 'src/store';
@@ -125,7 +124,7 @@ const InAppSearch = (props: Props) => {
         data-test-id="in-app search top"
       >
         <div className={styles.label}>Find a gene in this species</div>
-        <div className={getSearchFieldWrapperClasses(mode)}>
+        <div className={styles.searchFieldWrapper}>
           <SearchField
             placeholder="Gene ID or name..."
             search={query}
@@ -133,6 +132,7 @@ const InAppSearch = (props: Props) => {
             onSubmit={onSearchSubmit}
             className={styles.searchField}
             rightCorner={rightCorner}
+            size={mode === 'interstitial' ? 'large' : 'small'}
           />
         </div>
         <PrimaryButton
@@ -169,13 +169,6 @@ const InAppSearch = (props: Props) => {
 
 const getInAppSearchTopStyles = (mode: InAppSearchMode) => {
   return styles[`inAppSearchTop${upperFirst(mode)}`];
-};
-
-const getSearchFieldWrapperClasses = (mode: InAppSearchMode) => {
-  return classNames(
-    styles.searchFieldWrapper,
-    styles[`searchFieldWrapper${upperFirst(mode)}`]
-  );
 };
 
 export default InAppSearch;

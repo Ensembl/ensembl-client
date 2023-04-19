@@ -1,23 +1,64 @@
 @import 'src/styles/common';
 
 .input {
-  display: inline-block;
-  width: 100%;
+  &::placeholder {
+    color: $dark-grey;
+    font-weight: $light;
+  }
 
   &:focus,
   &:active {
     outline: none;
   }
+}
 
-  &::placeholder {
-    color: $black;
-    font-weight: $light;
+.rightCorner {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.flatInputWrapper, .shadedInputWrapper {
+  display: inline-flex;
+
+  input {
+    background-color: transparent;
+    flex-grow: 1;
+    border: none;
   }
 }
 
-.shadedInput {
-  box-shadow: $form-field-shadow;
+.shadedInputWrapper {
   border: none;
+  box-shadow: $form-field-shadow;
+  background-color: var(--shaded-input-background-colour, $white);
+  padding: var(--shaded-input-padding, 0 15px);
+  height: var(--shaded-input-height, 30px);
+  width: var(--shaded-input-width, 100%);
+
+  &Large {
+    --shaded-input-padding: 0 20px;
+    --shaded-input-height: 40px;
+    --question-button-size: 16px;
+    --close-button-size: 16px;
+  }
+
+  &Small {
+    --question-button-size: 12px;
+    --close-button-size: 12px;
+  }
+}
+
+.flatInputWrapper {
+  background-color: var(--flat-input-background-colour, $white);
   padding: 0 15px;
-  height: 30px;
+  height: 25px;
+  width: var(--flat-input-width, 100%);
+  --question-button-size: 12px;
+  --close-button-size: 12px;
+
+  &Disabled {
+    border: 1px solid $grey;
+    background-color: transparent;
+  }
 }
