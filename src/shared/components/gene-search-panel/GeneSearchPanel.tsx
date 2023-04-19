@@ -88,7 +88,11 @@ const GeneSearchForm = () => {
     <>
       <form className={styles.geneSearchForm} onSubmit={onFormSubmit}>
         <label className={styles.searchLabel}>Find a gene</label>
-        <ShadedInput className={styles.searchField} onChange={onQueryChange} />
+        <ShadedInput
+          className={styles.searchField}
+          inputSize="large"
+          onChange={onQueryChange}
+        />
         <PrimaryButton type="submit" className={styles.submit} onClick={noop}>
           Go
         </PrimaryButton>

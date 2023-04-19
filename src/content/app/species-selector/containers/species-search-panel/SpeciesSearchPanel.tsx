@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -22,15 +22,10 @@ import { getSelectedItem } from 'src/content/app/species-selector/state/speciesS
 
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesCommitButton from 'src/content/app/species-selector/components/species-commit-button/SpeciesCommitButton';
-import FindGeneInstructions from 'src/content/app/species-selector/components/find-gene-instructions/FindGeneInstructions';
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './SpeciesSearchPanel.scss';
 
 const SearchPanel = () => {
-  const [shouldShowFindGeneInstructions, showFindGeneInstructions] =
-    useState(false);
-
   return (
     <section className={styles.speciesSearchPanel}>
       <div className={styles.speciesSearchPanelRow}>
@@ -38,15 +33,6 @@ const SearchPanel = () => {
         <SpeciesCommitButton />
       </div>
       <SelectedAssembly />
-      <ShowHide
-        label="How to find genes"
-        isExpanded={shouldShowFindGeneInstructions}
-        onClick={() =>
-          showFindGeneInstructions(!shouldShowFindGeneInstructions)
-        }
-        className={styles.showHide}
-      />
-      {shouldShowFindGeneInstructions && <FindGeneInstructions />}
     </section>
   );
 };

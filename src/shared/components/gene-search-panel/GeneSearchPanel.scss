@@ -21,7 +21,6 @@
 }
 
 .searchLabel {
-  font-size: 12px;
   grid-area: label;
   margin-left: 25px;
 }
@@ -102,9 +101,11 @@
   display: flex;
   column-gap: 2rem;
   margin-left: 25px;
+  --radio-label-font-weight: #{$normal};
 }
 
 .pseudoRadioDisabled > * {
   cursor: default !important; // yes, !important is terrible; but this is a temporary hack anyway
-  --radio-background-color: $light-grey;
+  --radio-background-color: #{$light-grey};
+  --radio-label-font-weight: #{$light};
 }
