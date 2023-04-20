@@ -18,6 +18,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { trim } from 'lodash';
 
 import HelpMenu, { Props as HelpMenuProps } from './HelpMenu';
 
@@ -45,7 +46,9 @@ describe('<HelpMenu>', () => {
 
       expect(
         topMenuItems.every((item) =>
-          renderedMenuItems.find((element) => element.textContent === item)
+          renderedMenuItems.find(
+            (element) => trim(element.textContent as string) === item
+          )
         )
       ).toBe(true);
     });
