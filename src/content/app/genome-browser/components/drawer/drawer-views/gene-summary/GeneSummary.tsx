@@ -108,6 +108,7 @@ const GeneSummary = () => {
     trackDrawerSequenceDownloaded(selectedOptions.join(','));
   };
 
+  const biotype_definition = gene.metadata.biotype.definition;
   return (
     <div>
       <div className={styles.row}>
@@ -122,9 +123,11 @@ const GeneSummary = () => {
             </div>
             <div className={styles.featureDetail}>
               <span>{gene.metadata.biotype.label}</span>
-              <div className={styles.questionButton}>
-                <QuestionButton helpText={gene.metadata.biotype.definition} />
-              </div>
+              {!biotype_definition && (
+                <div className={styles.questionButton}>
+                  <QuestionButton helpText={biotype_definition} />
+                </div>
+              )}
             </div>
             {gene.slice.strand.code && (
               <div className={styles.featureDetail}>
