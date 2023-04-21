@@ -19,7 +19,6 @@ import React from 'react';
 import Input from 'src/shared/components/input/Input';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import FlatInput from 'src/shared/components/input/FlatInput';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './Input.stories.scss';
 
@@ -59,25 +58,113 @@ FocusAndBlurStory.storyName = 'handling focus and blur';
 export const ShadedInputStory = () => (
   <>
     <div className={styles.stage}>
-      <p>Against white background</p>
+      <h2>Against a white background</h2>
+
+      <p>Smaller shaded input</p>
       <div className={styles.wrapper}>
-        <ShadedInput placeholder="Placeholder for dev..." />
+        <ShadedInput size="small" />
       </div>
-    </div>
-    <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>Against grey background</p>
-      <div className={styles.wrapper}>
-        <ShadedInput placeholder="Placeholder for dev..." />
-      </div>
-    </div>
-    <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>Against grey background with icon</p>
+
+      <p>Smaller shaded input with placeholder and help text</p>
       <div className={styles.wrapper}>
         <ShadedInput
-          placeholder="Placeholder for dev..."
-          rightCorner={
-            <QuestionButton helpText="Shows some text when hovered over" />
-          }
+          size="small"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>
+        Smaller shaded input of type "search", with placeholder and help text
+      </p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="small"
+          type="search"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>Larger shaded input</p>
+      <div className={styles.wrapper}>
+        <ShadedInput size="large" />
+      </div>
+
+      <p>Larger shaded input with placeholder and some help text</p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="large"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>
+        Larger shaded input of type "search" with placeholder and some help text
+      </p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="large"
+          type="search"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+    </div>
+
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <h2>Against a grey background</h2>
+
+      <p>Smaller shaded input</p>
+      <div className={styles.wrapper}>
+        <ShadedInput size="small" />
+      </div>
+
+      <p>Smaller shaded input with placeholder and help text</p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="small"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>
+        Smaller shaded input of type "search", with placeholder and help text
+      </p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="small"
+          type="search"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>Larger shaded input</p>
+      <div className={styles.wrapper}>
+        <ShadedInput size="large" />
+      </div>
+
+      <p>Larger shaded input with placeholder and some help text</p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="large"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>
+        Larger shaded input of type "search" with placeholder and some help text
+      </p>
+      <div className={styles.wrapper}>
+        <ShadedInput
+          size="large"
+          type="search"
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
         />
       </div>
     </div>
@@ -89,37 +176,39 @@ ShadedInputStory.storyName = 'shaded input';
 export const FlatInputStory = () => (
   <>
     <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>With no icon in grey background</p>
-      <div className={styles.wrapper}>
-        <FlatInput placeholder="Placeholder for dev..." />
+      <h2>Against a grey background</h2>
+
+      <p>Plain flat input without placeholder or help text</p>
+      <div className={styles.smallerWrapper}>
+        <FlatInput />
       </div>
-    </div>
-    <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>Disabled with no icon in grey background</p>
-      <div className={styles.wrapper}>
-        <FlatInput placeholder="Placeholder for dev..." disabled={true} />
-      </div>
-    </div>
-    <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>With icon in grey background</p>
-      <div className={styles.wrapper}>
+
+      <p>Flat input with a placeholder and some help text</p>
+      <div className={styles.smallerWrapper}>
         <FlatInput
-          placeholder="Placeholder for dev..."
-          rightCorner={
-            <QuestionButton helpText="Shows some text when hovered over" />
-          }
+          placeholder="Add some text..."
+          help="Shows some text when hovered over"
         />
       </div>
-    </div>
-    <div className={`${styles.stage} ${styles.greyStage}`}>
-      <p>Disabled with icon in grey background</p>
-      <div className={styles.wrapper}>
+
+      <p>
+        Input of type "search" (try entering a text into it), with help text
+      </p>
+      <div className={styles.smallerWrapper}>
         <FlatInput
-          placeholder="Placeholder for dev..."
+          placeholder="Add some text..."
+          type="search"
+          help="Shows some text when hovered over"
+        />
+      </div>
+
+      <p>Disabled input (no icons shown in the right corner)</p>
+      <div className={styles.smallerWrapper}>
+        <FlatInput
           disabled={true}
-          rightCorner={
-            <QuestionButton helpText="Shows some text when hovered over" />
-          }
+          placeholder="Add some text..."
+          type="search"
+          help="Shows some text when hovered over"
         />
       </div>
     </div>

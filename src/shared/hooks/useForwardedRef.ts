@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import { useRef, useEffect, type ForwardedRef } from 'react';
 
-import CloseIcon from 'static/icons/icon_close.svg';
+/**
+ * Based on https://non-traditional.dev/how-to-use-the-forwarded-ref-in-react-1fb108f4e6af
+ * and https://stackoverflow.com/questions/73015696/whats-the-difference-between-reacts-forwardedref-and-refobject
+ *
+ * React refs are a pain.
+ */
 
-import styles from './CloseButton.scss';
+const useForwardedRef = <T>(ref: ForwardedRef<T>) => {
+  const innerRef = useRef<T>(null);
 
-type Props = {
-  onClick: () => void;
-  className?: string;
+  useEffect(() => {
+    if (!ref) return;
+
+    if (typeof ref === 'function') {
+      ref(innerRef.current);
+    } else {
+      ref.current = innerRef.current;
+    }
+  });
+
+  return innerRef;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;
+export default useForwardedRef;

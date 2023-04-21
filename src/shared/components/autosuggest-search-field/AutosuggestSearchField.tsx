@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
-import SearchField from 'src/shared/components/search-field/SearchField';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 import AutosuggestionPanel, {
   type GroupOfMatchesType,
   type MatchIndex
@@ -36,7 +36,7 @@ type CommonProps = {
   placeholder?: string;
   onFocus?: () => void;
   onBlur?: () => void;
-  rightCorner?: ReactNode;
+  help?: string;
   className?: string;
   searchFieldClassName?: string;
   notFound?: boolean;
@@ -189,13 +189,19 @@ const AutosuggestSearchField = (props: Props) => {
     setHighlightedItemIndex(itemIndex);
   };
 
-  const handleChange = (value: string) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+
     if (value !== props.search) {
       props.onChange(value);
     }
   };
 
-  const handleSubmit = (value: string) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const form = event.currentTarget;
+    const input = form.query as HTMLInputElement;
+    const value = input.value;
+
     if (!highlightedItemIndex && props.allowRawInputSubmission) {
       props.onSubmit(value);
     } else if (highlightedItemIndex) {
@@ -226,25 +232,28 @@ const AutosuggestSearchField = (props: Props) => {
     styles.autosuggestionSearchField,
     props.className
   );
-  const searchFieldClassName = classNames(
-    styles.searchFieldInput,
-    props.searchFieldClassName
-  );
 
   return (
     <div ref={element} className={className}>
-      <SearchField
-        search={props.search}
-        placeholder={props.placeholder}
-        rightCorner={props.rightCorner}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
+      <form
+        className={styles.autosuggestionSearchFieldWrapper}
         onSubmit={handleSubmit}
-        className={searchFieldClassName}
-        size="large"
-      />
+      >
+        <ShadedInput
+          name="query"
+          type="search"
+          value={props.search}
+          placeholder={props.placeholder}
+          onInput={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          help={props.help}
+          className={props.searchFieldClassName}
+          size="large"
+          autoComplete="off"
+        />
+      </form>
       {shouldShowSuggestions && (
         <AutosuggestionPanel
           highlightedItemIndex={highlightedItemIndex}

@@ -20,38 +20,67 @@ import React, {
   type ForwardedRef,
   type ReactNode
 } from 'react';
-import { upperFirst } from 'lodash';
 import classNames from 'classnames';
 
+import useForwardedRef from 'src/shared/hooks/useForwardedRef';
+import useClearInput from './useClearInput';
+
 import Input from './Input';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './Input.scss';
 
 export type InputSize = 'large' | 'small';
 
-export type Props = InputHTMLAttributes<HTMLInputElement> & {
-  inputSize?: InputSize;
-  rightCorner?: ReactNode;
+export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
+  size?: InputSize;
+  help?: string;
 };
+
+// In accordance with the most common default browser behaviour,
+// input of type search will show a button for clearing the text in the input
 
 const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   const {
     className: classNameFromProps,
-    inputSize = 'small',
-    rightCorner,
+    size,
+    help,
+    type = 'text',
     ...otherProps
   } = props;
-  const sizeClass = styles[`shadedInputWrapper${upperFirst(inputSize)}`];
+  const innerRef = useForwardedRef<HTMLInputElement>(ref);
+  const { canClearInput, clearInput } = useClearInput(innerRef);
+
   const wrapperClasses = classNames(
     styles.shadedInputWrapper,
     classNameFromProps,
-    sizeClass
+    {
+      [styles.shadedInputWrapperLarge]: size === 'large',
+      [styles.shadedInputWrapperSmall]: size === 'small'
+    }
   );
+
+  let rightCornerContent: ReactNode = null;
+
+  if (type === 'search' && canClearInput) {
+    rightCornerContent = <CloseButton onClick={clearInput} />;
+  } else if (help) {
+    rightCornerContent = (
+      <QuestionButton styleOption="in-input-field" helpText={help} />
+    );
+  }
 
   return (
     <div className={wrapperClasses}>
-      <Input ref={ref} {...otherProps} />
-      {rightCorner && <div className={styles.rightCorner}>{rightCorner}</div>}
+      <Input
+        ref={innerRef}
+        type={type === 'search' ? undefined : props.type}
+        {...otherProps}
+      />
+      {rightCornerContent && (
+        <div className={styles.rightCorner}>{rightCornerContent}</div>
+      )}
     </div>
   );
 };
