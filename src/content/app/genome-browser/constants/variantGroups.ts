@@ -16,7 +16,7 @@
 
 const variantGroups = [
   {
-    id: 5,
+    id: 1,
     label: 'Protein altering variants',
     variant_types: [
       {
@@ -62,7 +62,7 @@ const variantGroups = [
     ]
   },
   {
-    id: 4,
+    id: 2,
     label: 'Splicing variants',
     variant_types: [
       {
@@ -164,7 +164,7 @@ const variantGroups = [
     ]
   },
   {
-    id: 2,
+    id: 4,
     label: 'Regulatory region variants',
     variant_types: [
       {
@@ -180,7 +180,7 @@ const variantGroups = [
     ]
   },
   {
-    id: 1,
+    id: 5,
     label: 'Intergenic variants',
     variant_types: [
       {
