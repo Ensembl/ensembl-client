@@ -134,6 +134,7 @@ const AutosuggestSearchField = (props: Props) => {
   const [isSelected, setIsSelected] = useState(false);
   const [canShowSuggesions, setCanShowSuggestions] = useState(true);
   const element = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setIsSelected(false);
@@ -197,9 +198,8 @@ const AutosuggestSearchField = (props: Props) => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const form = event.currentTarget;
-    const input = form.query as HTMLInputElement;
+  const handleSubmit = () => {
+    const input = inputRef.current as HTMLInputElement;
     const value = input.value;
 
     if (!highlightedItemIndex && props.allowRawInputSubmission) {
@@ -240,7 +240,7 @@ const AutosuggestSearchField = (props: Props) => {
         onSubmit={handleSubmit}
       >
         <ShadedInput
-          name="query"
+          ref={inputRef}
           type="search"
           value={props.search}
           placeholder={props.placeholder}
