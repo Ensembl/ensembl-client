@@ -122,8 +122,9 @@ const GeneSummary = () => {
               <span className={styles.stableId}>{stableId}</span>
             </div>
             <div className={styles.featureDetail}>
+              <span className={styles.labelWithPadding}>Biotype</span>
               <span>{gene.metadata.biotype.label}</span>
-              {!biotype_definition && (
+              {biotype_definition && (
                 <div className={styles.questionButton}>
                   <QuestionButton helpText={biotype_definition} />
                 </div>
