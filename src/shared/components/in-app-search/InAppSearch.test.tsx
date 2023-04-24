@@ -145,15 +145,17 @@ describe('<InAppSearch />', () => {
           <InAppSearch {...props} app="entityViewer" genomeId="wheat" />
         </Provider>
       );
+      (inAppSearchSlice.search as any).mockClear();
 
       await userEvent.type(searchField, 'Traes');
 
       // also, let's try to submit the search by pressing on the button
-      const submitButton = container.querySelector('button') as HTMLElement;
+      const submitButton = container.querySelector(
+        '.searchButton'
+      ) as HTMLElement;
       await userEvent.click(submitButton);
 
-      const [search2Args] = (inAppSearchSlice.search as any).mock.calls[1];
-      expect(search2Args).toEqual({
+      expect(inAppSearchSlice.search).toHaveBeenCalledWith({
         app: 'entityViewer',
         genome_id: 'wheat',
         query: 'Traes',
