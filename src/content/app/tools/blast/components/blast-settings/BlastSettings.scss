@@ -31,7 +31,8 @@
 }
 
 .parametersColumn .select label {
-  grid-template-columns: 140px 70px;
+  grid-template-columns: max-content 90px;
+  justify-content: end;
   text-align: right;
 }
 
@@ -42,9 +43,10 @@
   justify-self: end;
 }
 
-.parametersColumn .matrixSetting .select label,
-.parametersColumn .gapPenalties .select label {
-  grid-template-columns: 140px 110px;
+.matrixSetting.select label,
+.wordSize.select label,
+.matchScores.select label {
+  grid-template-columns: max-content 110px;
 }
 
 .bottomLevel {
@@ -54,8 +56,8 @@
   padding-top: 20px;
   margin-left: 104px;
 
-  @media (max-width: 1610px) {
-    margin-left: -10px;
+  @media (max-width: 1686px) {
+    margin-left: 0px;
   }
 }
 
@@ -84,9 +86,5 @@
 }
 
 .checkboxesColumn {
-  margin-left: 60px;
-
-  @media (min-width: 1190px) and (max-width: 1490px) {
-    margin-left: 150px;
-  }
+  margin-left: 10px;
 }

@@ -284,6 +284,7 @@ const BlastSettings = ({ config }: Props) => {
               onChange={(value: string) =>
                 onBlastParameterChange('wordsize', value)
               }
+              className={styles.wordSize}
             />
             {shouldShowMatchMismatch && (
               <BlastSelect
@@ -294,21 +295,21 @@ const BlastSettings = ({ config }: Props) => {
                 onChange={(value: string) =>
                   onBlastParameterChange('match_scores', value)
                 }
+                className={styles.matchScores}
               />
             )}
-            <div className={styles.matrixSetting}>
-              {shouldShowMatrix && (
-                <BlastSelect
-                  options={config.parameters.matrix.options as Option[]}
-                  label={config.parameters.matrix.label}
-                  description={config.parameters.matrix.description}
-                  selectedOption={blastParameters.matrix as string}
-                  onChange={(value: string) =>
-                    onBlastParameterChange('matrix', value)
-                  }
-                />
-              )}
-            </div>
+            {shouldShowMatrix && (
+              <BlastSelect
+                options={config.parameters.matrix.options as Option[]}
+                label={config.parameters.matrix.label}
+                description={config.parameters.matrix.description}
+                selectedOption={blastParameters.matrix as string}
+                onChange={(value: string) =>
+                  onBlastParameterChange('matrix', value)
+                }
+                className={styles.matrixSetting}
+              />
+            )}
           </div>
 
           <div className={styles.parametersColumn}>
