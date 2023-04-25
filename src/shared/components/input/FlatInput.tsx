@@ -24,6 +24,7 @@ import classNames from 'classnames';
 
 import useForwardedRef from 'src/shared/hooks/useForwardedRef';
 import useClearInput from './useClearInput';
+import useInputPlaceholder from './useInputPlaceholder';
 
 import Input from './Input';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -44,10 +45,17 @@ const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     disabled = false,
     help,
     type = 'text',
+    placeholder: placeholderFromProps,
     ...otherProps
   } = props;
   const innerRef = useForwardedRef<HTMLInputElement>(ref);
-  const { canClearInput, clearInput } = useClearInput(innerRef);
+  const { canClearInput, clearInput } = useClearInput({
+    ref: innerRef,
+    inputType: type,
+    help,
+    minLength: props.minLength
+  });
+  const placeholder = useInputPlaceholder(innerRef, placeholderFromProps);
 
   const wrapperClasses = classNames(
     styles.flatInputWrapper,
@@ -59,7 +67,7 @@ const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
 
   if (disabled) {
     rightCornerContent = null;
-  } else if (type === 'search' && canClearInput) {
+  } else if (canClearInput) {
     rightCornerContent = <CloseButton onClick={clearInput} />;
   } else if (help) {
     rightCornerContent = <QuestionButton helpText={help} />;
@@ -71,6 +79,7 @@ const FlatInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
         ref={innerRef}
         disabled={disabled}
         type={type === 'search' ? undefined : props.type}
+        placeholder={placeholder}
         {...otherProps}
       />
       {rightCornerContent && (

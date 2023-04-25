@@ -24,6 +24,7 @@ import classNames from 'classnames';
 
 import useForwardedRef from 'src/shared/hooks/useForwardedRef';
 import useClearInput from './useClearInput';
+import useInputPlaceholder from './useInputPlaceholder';
 
 import Input from './Input';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -35,7 +36,7 @@ export type InputSize = 'large' | 'small';
 
 export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   size?: InputSize;
-  help?: string;
+  help?: ReactNode;
 };
 
 // In accordance with the most common default browser behaviour,
@@ -47,10 +48,17 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     size,
     help,
     type = 'text',
+    placeholder: placeholderFromProps,
     ...otherProps
   } = props;
   const innerRef = useForwardedRef<HTMLInputElement>(ref);
-  const { canClearInput, clearInput } = useClearInput(innerRef);
+  const { canClearInput, clearInput } = useClearInput({
+    ref: innerRef,
+    inputType: type,
+    help,
+    minLength: props.minLength
+  });
+  const placeholder = useInputPlaceholder(innerRef, placeholderFromProps);
 
   const wrapperClasses = classNames(
     styles.shadedInputWrapper,
@@ -63,7 +71,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
 
   let rightCornerContent: ReactNode = null;
 
-  if (type === 'search' && canClearInput) {
+  if (canClearInput) {
     rightCornerContent = <CloseButton onClick={clearInput} />;
   } else if (help) {
     rightCornerContent = (
@@ -76,6 +84,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
       <Input
         ref={innerRef}
         type={type === 'search' ? undefined : props.type}
+        placeholder={placeholder}
         {...otherProps}
       />
       {rightCornerContent && (

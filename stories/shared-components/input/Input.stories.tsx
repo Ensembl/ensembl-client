@@ -107,6 +107,7 @@ export const ShadedInputStory = () => (
         <ShadedInput
           size="large"
           type="search"
+          minLength={3}
           placeholder="Add some text..."
           help="Shows some text when hovered over"
         />

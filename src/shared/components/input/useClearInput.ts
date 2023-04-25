@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, type RefObject } from 'react';
+import { useState, useEffect, type RefObject, type ReactNode } from 'react';
 
-const useClearInput = (ref: RefObject<HTMLInputElement>) => {
-  const [hasContent, setHasContent] = useState(false);
+const useClearInput = ({
+  ref,
+  inputType,
+  help,
+  minLength
+}: {
+  ref: RefObject<HTMLInputElement>;
+  inputType: string;
+  help?: ReactNode;
+  minLength?: number;
+}) => {
+  const [isClearable, setIsClearable] = useState(false);
 
   useEffect(() => {
     if (!ref.current) {
@@ -26,17 +36,29 @@ const useClearInput = (ref: RefObject<HTMLInputElement>) => {
 
     const inputElement = ref.current;
     const initialInputValue = inputElement.value;
-    setHasContent(!!initialInputValue.length);
+    setIsClearable(canUseClear(initialInputValue));
 
-    inputElement.addEventListener('input', onInput);
+    if (inputType === 'search') {
+      inputElement.addEventListener('input', onInput);
+    }
 
     return () => inputElement.removeEventListener('input', onInput);
-  }, [ref.current]);
+  }, [ref.current, inputType, minLength]);
 
   const onInput = (event: Event) => {
     const inputElement = event.currentTarget as HTMLInputElement;
     const inputValue = inputElement.value;
-    setHasContent(!!inputValue.length);
+    setIsClearable(canUseClear(inputValue));
+  };
+
+  const canUseClear = (inputValue: string) => {
+    // Rules from designer: if the input has a help element,
+    // and if it has a minimum required length of input,
+    // then do not show the clear button, but keep showing the help button instead
+
+    const shouldPreferHelp = help && minLength && inputValue.length < minLength;
+
+    return inputType === 'search' && !!inputValue.length && !shouldPreferHelp;
   };
 
   const clearInput = () => {
@@ -50,7 +72,7 @@ const useClearInput = (ref: RefObject<HTMLInputElement>) => {
   };
 
   return {
-    canClearInput: hasContent,
+    canClearInput: isClearable,
     clearInput
   };
 };
