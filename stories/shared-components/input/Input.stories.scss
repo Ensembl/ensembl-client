@@ -1,21 +1,5 @@
 @import 'src/styles/common';
 
-.wrapper {
-  max-width: 500px;
-}
-
-.smallerWrapper {
-  max-width: 350px;
-}
-
-.stage {
-  padding: 50px;
-
-  & + .stage {
-    margin-top: 4ch;
-  }
-}
-
 .greyStage {
   background-color: $light-grey;
 }
@@ -25,4 +9,32 @@
   font-size: 36px;
   font-weight: bold;
   padding: 16px;
+}
+
+.shadedInputWrapper {
+  max-width: 450px;
+  padding: 2rem;
+  padding-bottom: 3rem;
+}
+
+.shadedInputOptions {
+  display: flex;
+  flex-direction: column;
+}
+
+.shadedInputOptions input[type="number"] {
+  width: 6ch;
+}
+
+.shadedInputOptions label {
+  display: flex;
+  align-items: center;
+  column-gap: 0.4rem;
+  user-select: none;
+}
+
+.flatInputWrapper {
+  max-width: 320px;
+  padding: 2rem;
+  padding-bottom: 3rem;
 }
