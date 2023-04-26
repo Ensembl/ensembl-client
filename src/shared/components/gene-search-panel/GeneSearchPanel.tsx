@@ -127,7 +127,7 @@ const SearchScope = () => {
           styles.pseudoRadioDisabled
         )}
       >
-        <span className={classNames(radioStyles.radio)} />
+        <span className={radioStyles.radio} />
         <span className={radioStyles.label}>All Ensembl</span>
       </div>
     </div>
