@@ -18,7 +18,8 @@ import React, {
   useState,
   useRef,
   type FormEvent,
-  type ChangeEvent
+  type ChangeEvent,
+  type ReactNode
 } from 'react';
 import noop from 'lodash/noop';
 import classNames from 'classnames';
@@ -53,25 +54,55 @@ type Props = {
 
 const GeneSearchPanel = (props: Props) => {
   return (
-    <div className={styles.geneSearchPanel}>
-      <GeneSearchForm />
+    <Panel {...props}>
+      <Main />
+    </Panel>
+  );
+};
+
+/**
+ * This component will likely be extracted into its own shared component.
+ * Its responsibility is to create a 100%-high grey div with a close button and space for children
+ * I am not sure what its name is going to be. "Panel" is taken (not that it's a very descriptive name anyway).
+ */
+const Panel = (props: { onClose: () => void; children: ReactNode }) => {
+  return (
+    <div className={styles.panel}>
+      {props.children}
       <CloseButton className={styles.closeButton} onClick={props.onClose} />
     </div>
   );
 };
 
-const GeneSearchForm = () => {
+const Main = () => {
   const [searchTrigger, searchResult] = useLazySearchGenesQuery();
   const committedSpecies = useAppSelector(getCommittedSpecies);
-  const queryRef = useRef('');
-
   const { currentData: currentSearchResults } = searchResult;
+
+  return (
+    <div className={styles.main}>
+      <GeneSearchForm onSearch={searchTrigger} species={committedSpecies} />
+      {currentSearchResults && (
+        <GeneSearchResults
+          speciesList={committedSpecies}
+          searchResults={currentSearchResults}
+        />
+      )}
+    </div>
+  );
+};
+
+const GeneSearchForm = (props: {
+  species: CommittedItem[];
+  onSearch: ReturnType<typeof useLazySearchGenesQuery>[0];
+}) => {
+  const queryRef = useRef('');
 
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
+    const genomeIds = props.species.map(({ genome_id }) => genome_id);
 
-    searchTrigger({
+    props.onSearch({
       genome_ids: genomeIds,
       query: queryRef.current,
       page: 1,
@@ -85,7 +116,7 @@ const GeneSearchForm = () => {
 
   // FIXME: update the Button component to not require onClick property
   return (
-    <>
+    <div>
       <form className={styles.geneSearchForm} onSubmit={onFormSubmit}>
         <label className={styles.searchLabel}>Find a gene</label>
         <ShadedInput
@@ -98,14 +129,7 @@ const GeneSearchForm = () => {
         </PrimaryButton>
       </form>
       <SearchScope />
-
-      {currentSearchResults && (
-        <GeneSearchResults
-          speciesList={committedSpecies}
-          searchResults={currentSearchResults}
-        />
-      )}
-    </>
+    </div>
   );
 };
 
@@ -144,28 +168,30 @@ const GeneSearchResults = (props: {
   );
 
   return (
-    <table className={styles.resultsTable}>
-      <thead>
-        <tr>
-          <th>
-            Found in
-            <span className={styles.speciesCount}>
-              {groupedSearchMatches.length}
-            </span>
-            species
-          </th>
-          <th>Gene</th>
-        </tr>
-      </thead>
-      <tbody>
-        {groupedSearchMatches.map((rowData) => (
-          <GeneSearchTableRows
-            key={rowData.speciesInfo.genome_id}
-            data={rowData}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className={styles.resultsWrapper}>
+      <table className={styles.resultsTable}>
+        <thead>
+          <tr>
+            <th>
+              Found in
+              <span className={styles.speciesCount}>
+                {groupedSearchMatches.length}
+              </span>
+              species
+            </th>
+            <th>Gene</th>
+          </tr>
+        </thead>
+        <tbody>
+          {groupedSearchMatches.map((rowData) => (
+            <GeneSearchTableRows
+              key={rowData.speciesInfo.genome_id}
+              data={rowData}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

@@ -1,11 +1,20 @@
 @import 'src/styles/common';
 
-.geneSearchPanel {
+.panel {
   height: 100%;
   background-color: $light-grey;
   // TODO: Can we find a better name for $global-padding-left? It is not very global, and it is pretty large
   padding: 65px 0 $global-padding-bottom $global-padding-left; // TODO: the 65px on top looks like it is something repeatable between components?
   position: relative;
+  overflow: hidden;
+}
+
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-rows: [search-form] auto [search-results] 1fr;
+  justify-content: start;
+  overflow: hidden;
 }
 
 .geneSearchForm {
@@ -33,15 +42,27 @@
   grid-area: submit-button;
 }
 
+.resultsWrapper {
+  grid-row: search-results;
+  height: 100%;
+  overflow-y: auto;
+  margin-top: 2rem;
+}
+
 .resultsTable {
   width: 600px;
   border-collapse: collapse;
-  margin-top: 2rem;
+}
+
+.resultsTable thead tr {
+  position: sticky;
+  top: 0;
+  background-color: $light-grey;
 }
 
 .resultsTable th {
   text-align: left;
-  border-bottom: 1px solid $blue;
+  box-shadow: inset 0 -1px 0 var(--table-head-border-color, #{$blue}); // same as in Table.scss
   padding: 0 0.5rem 0.4rem 1rem;
   font-weight: $light;
 }
