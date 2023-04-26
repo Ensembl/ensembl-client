@@ -76,6 +76,11 @@
   align-items: center;
   column-gap: 30px;
   margin-left: 20px;
+
+  /* TODO: remove below when our target browsers support the margin-trim property */
+  @media (max-width: 1676px) {
+    margin-left: 0px;
+  }
 }
 
 .blastSubmissionName label {
