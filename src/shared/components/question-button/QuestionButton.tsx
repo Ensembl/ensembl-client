@@ -42,6 +42,10 @@ const QuestionButton = (props: Props) => {
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
     useShowTooltip();
 
+  if (!helpText) {
+    return null;
+  }
+
   const className = classNames(
     defaultStyles.questionButton,
     {
