@@ -183,10 +183,10 @@ const GeneSearchResults = (props: {
           </tr>
         </thead>
         <tbody>
-          {groupedSearchMatches.map((rowData) => (
+          {groupedSearchMatches.map((match) => (
             <GeneSearchTableRows
-              key={rowData.speciesInfo.genome_id}
-              data={rowData}
+              key={match.speciesInfo.genome_id}
+              data={match}
             />
           ))}
         </tbody>
