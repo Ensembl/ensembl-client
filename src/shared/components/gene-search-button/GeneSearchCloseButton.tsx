@@ -26,8 +26,8 @@ type Props = {
 
 const GeneSearchButton = (props: Props) => {
   return (
-    <button onClick={props.onClick} className={styles.findGeneButton}>
-      <CloseIcon />
+    <button onClick={props.onClick} className={styles.geneSearchButton}>
+      <CloseIcon className={styles.closeIcon} />
       <span>Find a Gene</span>
     </button>
   );
