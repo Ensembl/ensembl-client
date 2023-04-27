@@ -18,7 +18,7 @@ $global-button-cursor: auto;
 $standard-gutter: 30px;
 $half-gutter: calc($standard-gutter / 2);
 $double-standard-gutter: calc($standard-gutter * 2);
-$global-padding-left: 100px;
+$global-padding-left: calc($standard-gutter * 4);
 $global-padding-bottom: 90px;
 
 // Colour Palette

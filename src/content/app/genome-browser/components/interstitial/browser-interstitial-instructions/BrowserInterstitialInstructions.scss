@@ -3,7 +3,6 @@
 $columnWidth: 230px;
 $columnGap: 60px;
 $rowGap: 60px;
-$leftMargin: 40px;
 
 .instructionsPanel {
   display: flex;
@@ -14,7 +13,6 @@ $leftMargin: 40px;
 }
 
 .instructionsWrapper {
-  margin-left: $leftMargin;
   display: grid;
   grid-template-columns: repeat(4, #{$columnWidth});
   grid-column-gap: $columnGap;
@@ -52,7 +50,7 @@ $leftMargin: 40px;
   justify-self: start;
 }
 
-@media (max-width: 2 * $global-padding-left + $leftMargin + 4 * $columnWidth + 3 * $columnGap) {
+@media (max-width: 2 * $global-padding-left + 4 * $columnWidth + 3 * $columnGap) {
   .instructionsWrapper {
     grid-template-columns: repeat(2, #{$columnWidth});
   }
