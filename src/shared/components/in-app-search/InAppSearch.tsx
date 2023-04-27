@@ -138,7 +138,7 @@ const InAppSearch = (props: Props) => {
         <PrimaryButton
           onClick={onSearchSubmit}
           className={styles.searchButton}
-          isDisabled={!query || isLoading}
+          disabled={!query || isLoading}
         >
           Go
         </PrimaryButton>

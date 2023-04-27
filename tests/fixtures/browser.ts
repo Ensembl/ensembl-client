@@ -186,14 +186,6 @@ export const createMockBrowserState = () => {
         regionEditorActive: false,
         regionFieldActive: false
       },
-      browserNav: {
-        browserNavButtonStates: {
-          move_right: false,
-          move_left: true,
-          zoom_out: false,
-          zoom_in: false
-        }
-      },
       trackPanel: {
         [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,

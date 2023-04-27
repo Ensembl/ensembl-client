@@ -235,7 +235,7 @@ const RegionNavigation = () => {
           )}
           <PrimaryButton
             onClick={handleSubmit}
-            isDisabled={shouldDisableSubmission}
+            disabled={shouldDisableSubmission}
           >
             Go
           </PrimaryButton>

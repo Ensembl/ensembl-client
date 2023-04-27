@@ -156,7 +156,7 @@ const SpeciesTitleArea = () => {
       <div className={styles.speciesRemove}>
         <SecondaryButton
           onClick={toggleRemovalDialog}
-          isDisabled={isRemoving}
+          disabled={isRemoving}
           className={classNames({ [styles.disabledRemoveButton]: isRemoving })}
         >
           Remove species

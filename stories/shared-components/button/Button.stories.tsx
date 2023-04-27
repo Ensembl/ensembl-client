@@ -48,13 +48,13 @@ export const DisabledPrimaryButton = (args: DefaultArgs) => (
   <>
     <p>On white background</p>
     <div className={styles.wrapper}>
-      <PrimaryButton onClick={args.onClick} isDisabled={true}>
+      <PrimaryButton onClick={args.onClick} disabled={true}>
         Primary button
       </PrimaryButton>
     </div>
     <p>On light-grey background</p>
     <div className={`${styles.wrapper} ${styles.lightGreyWrapper}`}>
-      <PrimaryButton onClick={args.onClick} isDisabled={true}>
+      <PrimaryButton onClick={args.onClick} disabled={true}>
         Primary button
       </PrimaryButton>
     </div>

@@ -81,7 +81,7 @@ const BlastJobSubmit = () => {
   };
 
   return (
-    <PrimaryButton onClick={onBlastSubmit} isDisabled={isDisabled}>
+    <PrimaryButton onClick={onBlastSubmit} disabled={isDisabled}>
       Run
     </PrimaryButton>
   );

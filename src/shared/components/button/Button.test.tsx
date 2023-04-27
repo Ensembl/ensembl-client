@@ -82,7 +82,7 @@ describe('PrimaryButton', () => {
 
   it('does not call onClick if disabled', async () => {
     const { container } = render(
-      <PrimaryButton {...defaultProps} isDisabled={true}>
+      <PrimaryButton {...defaultProps} disabled={true}>
         I am primary button
       </PrimaryButton>
     );

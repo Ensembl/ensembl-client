@@ -7,11 +7,10 @@
   font-weight: $bold;
 }
 
-.primaryButtonDisabled {
+.primaryButton:disabled {
   background-color: transparent;
   color: $grey;
   border: 1px solid $grey;
-  cursor: default;
 }
 
 .secondaryButton {
