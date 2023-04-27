@@ -63,7 +63,7 @@ const About = () => {
         <div className={helpStyles.articleContainer}>
           <HelpArticleGrid className={helpStyles.grid}>
             {article ? (
-              <TextArticle article={article} className={styles.textArticle} />
+              <TextArticle article={article} />
             ) : (
               <div className={styles.spinnerContainer}>
                 <CircleLoader />
