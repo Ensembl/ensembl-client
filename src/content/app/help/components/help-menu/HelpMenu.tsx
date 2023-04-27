@@ -95,7 +95,7 @@ const HelpMenu = (props: Props) => {
         <Chevron
           direction={clickedMenuRef.current === index ? 'up' : 'down'}
           animate={true}
-          className={styles.chevron}
+          className={styles.chevronVertical}
         />
       </span>
     ) : (
@@ -166,7 +166,7 @@ const Submenu = (props: SubmenuProps) => {
         {item.type === 'collection' ? (
           <>
             {item.name}
-            <Chevron direction="right" className={styles.chevron} />
+            <Chevron direction="right" className={styles.chevronHorizontal} />
           </>
         ) : (
           item.name
