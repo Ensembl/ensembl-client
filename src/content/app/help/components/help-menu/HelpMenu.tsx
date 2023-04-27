@@ -38,7 +38,6 @@ export type Props = {
 
 const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
-  const [activeTopLevelMenuName, setActiveTopLevelMenuName] = useState('');
   const clickedMenuRef = useRef<number | null>(null);
 
   const { trackTopLevelMenu } = useHelpAppAnalytics();
@@ -56,11 +55,9 @@ const HelpMenu = (props: Props) => {
       // clicking on a menu item for the first time
       clickedMenuRef.current = menuIndex;
       nextValue = items;
-      setActiveTopLevelMenuName(menuName);
     } else {
       // this means a repeated click on the same menu item
       clickedMenuRef.current = null;
-      setActiveTopLevelMenuName('');
     }
     setSubmenuItems(nextValue);
     nextValue && trackTopLevelMenu(menuName);
@@ -72,33 +69,31 @@ const HelpMenu = (props: Props) => {
   };
 
   const closeMegaMenu = () => {
-    setActiveTopLevelMenuName('');
     setSubmenuItems(null);
     clickedMenuRef.current = null;
   };
 
-  const getTopLevelMenuItemClasses = (menuName: string) =>
+  const getTopLevelMenuItemClasses = (index: number) =>
     classNames(styles.topMenuItem, {
-      [styles.topMenuItemActive]: activeTopLevelMenuName === menuName
+      [styles.topMenuItemActive]: clickedMenuRef.current === index
     });
 
-  const getHelpMenuLinkClasses = () =>
+  const getHelpMenuLinkClasses = (url: string) =>
     classNames(styles.topMenuItem, {
       [styles.topMenuItemActive]:
-        !activeTopLevelMenuName &&
-        ['/about', '/help'].includes(props.currentUrl)
+        location.pathname === url && clickedMenuRef.current === null
     });
 
   const topLevelItems = props.menu.items.map((item, index) => {
     return item.type === 'collection' ? (
       <span
         key={index}
-        className={getTopLevelMenuItemClasses(item.name)}
+        className={getTopLevelMenuItemClasses(index)}
         onClick={() => toggleMegaMenu(item.items, index, item.name)}
       >
         {item.name}{' '}
         <Chevron
-          direction={item.name === activeTopLevelMenuName ? 'up' : 'down'}
+          direction={clickedMenuRef.current === index ? 'up' : 'down'}
           animate={true}
           className={styles.chevron}
         />
@@ -107,7 +102,7 @@ const HelpMenu = (props: Props) => {
       <HelpMenuLink
         key={index}
         to={item.url}
-        className={getHelpMenuLinkClasses()}
+        className={getHelpMenuLinkClasses(item.url)}
         onClick={() => handleHelpMenuLinkClick(item.name)}
       >
         {item.name}
