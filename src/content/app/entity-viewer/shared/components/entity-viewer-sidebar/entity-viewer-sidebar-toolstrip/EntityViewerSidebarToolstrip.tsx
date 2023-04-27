@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
@@ -90,7 +89,6 @@ export const EntityViewerSidebarToolstrip = () => {
         description="Share"
         className={styles.sidebarIcon}
         key="share"
-        onClick={noop}
         image={ShareIcon}
       />
       <ImageButton
