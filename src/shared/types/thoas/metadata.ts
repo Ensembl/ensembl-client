@@ -23,6 +23,10 @@ export type ValueSetMetadata = {
   definition: string;
 };
 
+export type BiotypeMetadata = Omit<ValueSetMetadata, 'definition'> & {
+  definition: string | null;
+};
+
 export type GeneNameMetadata = {
   accession_id: string | null;
   url: string | null;
@@ -41,14 +45,14 @@ type MANEMetadata = ValueSetMetadata & {
 export type TranscriptMetadata = {
   tsl: ValueSetMetadata | null;
   appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
+  biotype: BiotypeMetadata;
   mane: MANEMetadata | null;
   canonical: CanonicalMetadata | null;
   gencode_basic: ValueSetMetadata | null;
 };
 
 export type GeneMetadata = {
-  biotype: ValueSetMetadata;
+  biotype: BiotypeMetadata;
   name: GeneNameMetadata | null;
 };
 

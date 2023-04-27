@@ -58,7 +58,7 @@ const TooltipWithAnchor = (props: Props) => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  if (isWaiting) {
+  if (isWaiting || !props.children) {
     return null;
   }
 

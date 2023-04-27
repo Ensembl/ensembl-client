@@ -148,10 +148,13 @@ const TranscriptSummary = (props: Props) => {
 
             {metadata.biotype && (
               <div className={styles.featureDetail}>
+                <span className={styles.labelWithPadding}>Biotype</span>
                 <span>{metadata.biotype.label}</span>
-                <div className={styles.questionButton}>
-                  <QuestionButton helpText={metadata.biotype.definition} />
-                </div>
+                {metadata.biotype.definition && (
+                  <div className={styles.questionButton}>
+                    <QuestionButton helpText={metadata.biotype.definition} />
+                  </div>
+                )}
               </div>
             )}
             {transcript.slice.strand.code && (

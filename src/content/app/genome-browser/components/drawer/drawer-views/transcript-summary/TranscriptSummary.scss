@@ -13,6 +13,12 @@
     font-size: 12px;
   }
 
+  .labelWithPadding{
+    font-size: 12px;
+    font-weight: $light;
+    padding-right: 10px;
+  }
+  
   .questionButton {
     padding-left: 10px;
     position: relative;
@@ -88,7 +94,7 @@
 .featureSymbol + .stableId {
   margin-left: 12px;
   color: $dark-grey;
-  font-weight: $light;
+  font-weight: $normal;
 }
 
 .geneSymbol {
