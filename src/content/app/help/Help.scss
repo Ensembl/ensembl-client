@@ -25,13 +25,13 @@
 .main {
   height: 100%;
   display: grid;
-  padding-left: 44px;
+  padding-left: $double-standard-gutter;
   padding-top: 25px;
   grid-template-areas:
     'breadcrumbs breadcrumbs navigation'
     '.  article  article';
-  grid-template-rows: 40px calc(100% - 65px);
-  grid-template-columns: 36px 1fr;
+  grid-template-rows: 40px auto;
+  grid-template-columns: $standard-gutter 1fr;
 
   .breadcrumbsContainer {
     grid-area: breadcrumbs;
