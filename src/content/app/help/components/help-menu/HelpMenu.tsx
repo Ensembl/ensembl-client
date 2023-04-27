@@ -92,7 +92,7 @@ const HelpMenu = (props: Props) => {
         className={getTopLevelMenuItemClasses(index)}
         onClick={() => toggleMegaMenu(item.items, index, item.name)}
       >
-        {item.name}{' '}
+        {item.name}
         <Chevron
           direction={clickedMenuRef.current === index ? 'up' : 'down'}
           animate={true}
