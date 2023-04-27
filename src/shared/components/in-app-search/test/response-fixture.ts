@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SearchResults } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 // response from the API queried with the string BRCA2
 export const brca2SearchResults = {

@@ -16,43 +16,9 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-import type { Strand } from 'src/shared/types/thoas/strand';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 export type AppName = 'speciesHome' | 'genomeBrowser' | 'entityViewer';
-
-export type SearchMeta = {
-  total_hits: number;
-  page: number;
-  per_page: number;
-};
-
-export type SearchMatch = {
-  type: 'Gene';
-  stable_id: string;
-  unversioned_stable_id: string;
-  biotype: string;
-  symbol: string | null;
-  name: string;
-  genome_id: string;
-  transcript_count: number;
-  slice: {
-    location: {
-      start: number;
-      end: number;
-    };
-    region: {
-      name: string;
-    };
-    strand: {
-      code: Strand;
-    };
-  };
-};
-
-export type SearchResults = {
-  meta: SearchMeta;
-  matches: SearchMatch[];
-};
 
 type StateForGenome = {
   query: string;

@@ -23,8 +23,10 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
+import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
@@ -37,12 +39,17 @@ const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-export const SpeciesSelectorAppBar = () => {
+type Props = {
+  onGeneSearchToggle: () => void;
+  isGeneSearchMode: boolean;
+};
+
+export const SpeciesSelectorAppBar = (props: Props) => {
   const selectedSpecies = useSelector(getCommittedSpecies);
 
   const mainContent =
     selectedSpecies.length > 0 ? (
-      <SelectedSpeciesList selectedSpecies={selectedSpecies} />
+      <SelectedSpeciesList selectedSpecies={selectedSpecies} {...props} />
     ) : (
       <PlaceholderMessage />
     );
@@ -56,7 +63,9 @@ export const SpeciesSelectorAppBar = () => {
   );
 };
 
-const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+const SelectedSpeciesList = (
+  props: Props & { selectedSpecies: CommittedItem[] }
+) => {
   const navigate = useNavigate();
 
   const showSpeciesPage = (species: CommittedItem) => {
@@ -68,15 +77,30 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
     navigate(speciesPageUrl);
   };
 
+  const conditionalSpeciesProps = !props.isGeneSearchMode
+    ? ({ onClick: showSpeciesPage, theme: 'blue' } as const)
+    : ({ theme: 'grey' } as const);
+
   const selectedSpecies = props.selectedSpecies.map((species) => (
-    <SelectedSpecies
+    <SpeciesLozenge
       key={species.genome_id}
       species={species}
-      onClick={showSpeciesPage}
+      {...conditionalSpeciesProps}
     />
   ));
 
-  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
+  const geneSearchButton = props.isGeneSearchMode ? (
+    <GeneSearchCloseButton
+      key="find-a-gene"
+      onClick={props.onGeneSearchToggle}
+    />
+  ) : (
+    <GeneSearchButton key="find-a-gene" onClick={props.onGeneSearchToggle} />
+  );
+
+  const speciesTabsWrapperContent = [...selectedSpecies, geneSearchButton];
+
+  return <SpeciesTabsWrapper speciesTabs={speciesTabsWrapperContent} />;
 };
 
 export default SpeciesSelectorAppBar;

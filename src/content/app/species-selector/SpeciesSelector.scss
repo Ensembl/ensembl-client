@@ -1,0 +1,6 @@
+.grid {
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  height: 100%;
+  overflow: auto; // FIXME: the whole grid shouldn't be scrollable; scrolling should only start below the species bar
+}

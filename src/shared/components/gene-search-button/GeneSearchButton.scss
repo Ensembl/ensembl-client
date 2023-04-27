@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.geneSearchButton {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 12px;
+  white-space: nowrap;
+  color: $blue;
+}
+
+.geneSearchButton > * {
+  flex: 0 0 auto;
+}
+
+.searchIconWrapper {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $blue;
+  border-radius: 5px;
+}
+
+.closeIcon {
+  fill: $blue;
+  height: 16px;
+}
+
+.searchIcon {
+  fill: $white;
+  height: 14px;
+}

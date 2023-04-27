@@ -27,7 +27,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     tracksApiBaseUrl: '/api/tracks',
     genomeBrowserBackendBaseUrl:
       process.env.GENOME_BROWSER_BACKEND_BASE_URL ?? '/api/browser/data',
-    toolsApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/tools'
+    toolsApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/tools',
+    searchApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/search'
   };
 };
 

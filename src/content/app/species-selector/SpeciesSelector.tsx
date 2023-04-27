@@ -14,18 +14,46 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import SpeciesSearchPanel from 'src/content/app/species-selector/containers/species-search-panel/SpeciesSearchPanel';
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
 import PopularSpeciesPanel from 'src/content/app/species-selector/containers/popular-species-panel/PopularSpeciesPanel';
+import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
+
+import styles from './SpeciesSelector.scss';
+
+type View = 'default' | 'gene-search';
 
 const SpeciesSelector = () => {
+  const [currentView, setCurrentView] = useState<View>('default');
+
+  const onGeneSearchClose = () => {
+    setCurrentView('default');
+  };
+
+  const onGeneSearchToggle = () => {
+    const nextView = currentView === 'default' ? 'gene-search' : 'default';
+    setCurrentView(nextView);
+  };
+
+  const main =
+    currentView === 'gene-search' ? (
+      <GeneSearchPanel onClose={onGeneSearchClose} />
+    ) : (
+      <div>
+        <SpeciesSearchPanel />
+        <PopularSpeciesPanel />
+      </div>
+    );
+
   return (
-    <div>
-      <SpeciesSelectorAppBar />
-      <SpeciesSearchPanel />
-      <PopularSpeciesPanel />
+    <div className={styles.grid}>
+      <SpeciesSelectorAppBar
+        onGeneSearchToggle={onGeneSearchToggle}
+        isGeneSearchMode={currentView === 'gene-search'}
+      />
+      {main}
     </div>
   );
 };
