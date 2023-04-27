@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
@@ -40,6 +40,7 @@ const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
   const clickedMenuRef = useRef<number | null>(null);
 
+  const { pathname } = useLocation();
   const { trackTopLevelMenu } = useHelpAppAnalytics();
 
   const toggleMegaMenu = (
@@ -81,7 +82,7 @@ const HelpMenu = (props: Props) => {
   const getHelpMenuLinkClasses = (url: string) =>
     classNames(styles.topMenuItem, {
       [styles.topMenuItemActive]:
-        location.pathname === url && clickedMenuRef.current === null
+        pathname === url && clickedMenuRef.current === null
     });
 
   const topLevelItems = props.menu.items.map((item, index) => {
