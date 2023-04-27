@@ -7,7 +7,12 @@ $submenuSidePadding: 30px;
   position: relative;
 }
 
-.chevron {
+.chevronVertical {
+  --chevron-height: 6px;
+  margin-left: 10px;
+}
+
+.chevronHorizontal {
   --chevron-height: 7px;
 }
 
@@ -52,6 +57,10 @@ $submenuSidePadding: 30px;
 .topMenuItem {
   & + & {
     margin-left: 46px;
+  }
+
+  &Active {
+    color: $black;
   }
 }
 

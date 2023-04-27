@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
@@ -40,6 +40,7 @@ const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
   const clickedMenuRef = useRef<number | null>(null);
 
+  const { pathname } = useLocation();
   const { trackTopLevelMenu } = useHelpAppAnalytics();
 
   const toggleMegaMenu = (
@@ -73,24 +74,36 @@ const HelpMenu = (props: Props) => {
     clickedMenuRef.current = null;
   };
 
-  const topLevelItems = props.menu.items.map((item, index) => {
-    const className = classNames(styles.topMenuItem);
-    const commonProps = {
-      key: index,
-      className
-    };
+  const getTopLevelMenuItemClasses = (index: number) =>
+    classNames(styles.topMenuItem, {
+      [styles.topMenuItemActive]: clickedMenuRef.current === index
+    });
 
+  const getHelpMenuLinkClasses = (url: string) =>
+    classNames(styles.topMenuItem, {
+      [styles.topMenuItemActive]:
+        pathname === url && clickedMenuRef.current === null
+    });
+
+  const topLevelItems = props.menu.items.map((item, index) => {
     return item.type === 'collection' ? (
       <span
-        {...commonProps}
+        key={index}
+        className={getTopLevelMenuItemClasses(index)}
         onClick={() => toggleMegaMenu(item.items, index, item.name)}
       >
         {item.name}
+        <Chevron
+          direction={clickedMenuRef.current === index ? 'up' : 'down'}
+          animate={true}
+          className={styles.chevronVertical}
+        />
       </span>
     ) : (
       <HelpMenuLink
-        {...commonProps}
+        key={index}
         to={item.url}
+        className={getHelpMenuLinkClasses(item.url)}
         onClick={() => handleHelpMenuLinkClick(item.name)}
       >
         {item.name}
@@ -154,7 +167,7 @@ const Submenu = (props: SubmenuProps) => {
         {item.type === 'collection' ? (
           <>
             {item.name}
-            <Chevron direction="right" className={styles.chevron} />
+            <Chevron direction="right" className={styles.chevronHorizontal} />
           </>
         ) : (
           item.name

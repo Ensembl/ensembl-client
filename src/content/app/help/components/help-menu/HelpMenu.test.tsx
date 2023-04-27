@@ -45,7 +45,9 @@ describe('<HelpMenu>', () => {
 
       expect(
         topMenuItems.every((item) =>
-          renderedMenuItems.find((element) => element.textContent === item)
+          renderedMenuItems.find(
+            (element) => element.textContent?.trim() === item
+          )
         )
       ).toBe(true);
     });
