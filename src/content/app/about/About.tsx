@@ -19,12 +19,15 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
+import { buildBreadcrumbs } from '../help/Help';
+
 import {
   TextArticle,
   RelatedArticles,
   HelpArticleGrid
 } from 'src/shared/components/help-article';
 import HelpMenu from 'src/content/app/help/components/help-menu/HelpMenu';
+import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import { CircleLoader } from 'src/shared/components/loader';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
@@ -35,36 +38,49 @@ import helpStyles from '../help/Help.scss';
 import styles from './About.scss';
 
 const About = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const { data: menu } = useApiService<MenuType>({
     endpoint: `/api/docs/menus?name=about`
   });
   const { data: article } = useApiService<TextArticleData>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
+    endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`
   });
+
+  let breadcrumbs: string[] = [];
+
+  if (menu) {
+    breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
+  }
 
   return (
     <div className={helpStyles.help}>
       <AppBar />
-      {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
-      <HelpArticleGrid className={styles.grid}>
-        {article ? (
-          <TextArticle article={article} />
-        ) : (
-          <div className={styles.spinnerContainer}>
-            <CircleLoader />
-          </div>
-        )}
-        <aside className={styles.aside}>
-          {!!article?.related_articles.length && (
-            <RelatedArticles
-              title="More about…"
-              articles={article.related_articles}
-              highlightActiveArticle={true}
-            />
-          )}
-        </aside>
-      </HelpArticleGrid>
+      {menu && <HelpMenu menu={menu} currentUrl={pathname} />}
+      <div className={helpStyles.main}>
+        <div className={helpStyles.breadcrumbsContainer}>
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+        </div>
+        <div className={helpStyles.articleContainer}>
+          <HelpArticleGrid className={helpStyles.grid}>
+            {article ? (
+              <TextArticle article={article} />
+            ) : (
+              <div className={styles.spinnerContainer}>
+                <CircleLoader />
+              </div>
+            )}
+            <aside className={styles.aside}>
+              {!!article?.related_articles.length && (
+                <RelatedArticles
+                  title="More about…"
+                  articles={article.related_articles}
+                  highlightActiveArticle={true}
+                />
+              )}
+            </aside>
+          </HelpArticleGrid>
+        </div>
+      </div>
     </div>
   );
 };

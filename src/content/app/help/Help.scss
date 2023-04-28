@@ -30,7 +30,7 @@
   grid-template-areas:
     'breadcrumbs breadcrumbs navigation'
     '.  article  article';
-  grid-template-rows: 40px auto;
+  grid-template-rows: 40px calc(100% - 65px);
   grid-template-columns: 36px 1fr;
 
   .breadcrumbsContainer {
