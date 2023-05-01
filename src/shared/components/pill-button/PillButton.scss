@@ -7,4 +7,5 @@
   font-weight: var(--pill-button-font-weight, #{$bold});
   padding: var(--pill-button-padding, 2px 8px);
   border-radius: var(--pill-button-border-radius, 14px);
+  white-space: nowrap;
 }

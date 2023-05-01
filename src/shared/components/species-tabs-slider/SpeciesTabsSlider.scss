@@ -1,0 +1,48 @@
+@import 'src/styles/common';
+
+.speciesTabsSlider {
+  display: flex;
+  align-items: center;
+  padding: 0 0.4rem;
+}
+
+.tabsContainer {
+  display: flex;
+  column-gap: 15px;
+  width: 100%;
+  // overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: none; // hides the scrollbar, but only on Firefox
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none; // hide the scrollbar in all webkit-based browsers
+}
+
+.tabsContainer > * {
+  flex: 0 0 auto;
+}
+
+.arrow {
+  background-color: white;
+  cursor: pointer;
+}
+
+.arrowDisabled {
+  --chevron-fill: #{$grey};
+  cursor: default;
+  pointer-events: none;
+}
+
+.arrowLeft {
+  margin-right: 15px;
+}
+
+.arrowRight {
+  margin-left: 15px;
+}
+
+.hiddenTabsCountPill {
+  --pill-button-color: #{$black};
+  margin-left: 15px;
+}
