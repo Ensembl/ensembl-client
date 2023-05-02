@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
-import VariantAllelesSequences from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-alleles-sequences/VariantAllelesSequences';
+import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
