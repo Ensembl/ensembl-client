@@ -22,7 +22,6 @@ import React, {
   FormEvent
 } from 'react';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
 import noEarlierThan from 'src/shared/utils/noEarlierThan';
@@ -356,12 +355,8 @@ const ContactUsInitialForm = () => {
           {isChallengeCompleted ? (
             <ControlledLoadingButton
               status={submissionState}
-              classNames={{
-                wrapper: commonStyles.submitButtonWrapper,
-                button: commonStyles.submitButton
-              }}
-              isDisabled={!isFormValid}
-              onClick={noop}
+              className={commonStyles.submitButton}
+              disabled={!isFormValid}
             >
               Send
             </ControlledLoadingButton>

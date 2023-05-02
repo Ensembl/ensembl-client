@@ -1,26 +1,29 @@
 @import 'src/styles/common';
 
 .primaryButton {
-  border: 1px solid $green;
-  background-color: $green;
-  color: $white;
+  --button-border: var(--primary-button-color, 1px solid #{$green});
+  --button-color: var(--primary-button-color, #{$green});
+  --button-text-color: var(--primary-button-text-color, #{$white});
   font-weight: $bold;
 }
 
 .primaryButton:disabled {
-  background-color: transparent;
-  color: $grey;
-  border: 1px solid $grey;
+  --button-border: var(--primary-button-disabled-border, 1px solid #{$grey});
+  --button-color: var(--primary-button-disabled-color, transparent);
+  --button-text-color: var(--primary-button-disabled-text-color, #{$grey});
 }
 
 .secondaryButton {
-  border: 1px solid $blue;
-  background-color: $blue;
-  color: $white;
+  --button-border: var(--secondary-button-color, 1px solid #{$blue});
+  --button-color: var(--secondary-button-color, #{$blue});
+  --button-text-color: var(--secondary-button-text-color, #{$white});
   font-weight: $bold;
 }
 
 .button {
+  border: var(--button-border);
+  background-color: var(--button-color);
+  color: var(--button-text-color);
   padding: 7px 18px;
   border-radius: 4px;
   user-select: none;
