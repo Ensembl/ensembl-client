@@ -21,7 +21,7 @@ $submenuSidePadding: 30px;
   display: flex;
   align-items: center;
   height: 40px;
-  padding: 0 44px;
+  padding-left: $double-standard-gutter;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   z-index: 5;
