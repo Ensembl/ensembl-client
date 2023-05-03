@@ -223,7 +223,7 @@ const ClinicalSignificance = (props: {
 
 const CADDScores = (props: { data: { sequence: string; score: number }[] }) => {
   const caddScoreString = props.data
-    .map((data) => `${data.sequence}:${data.score}`)
+    .map((data) => `${data.score} (${data.sequence})`)
     .join(', ');
 
   return <span>{caddScoreString}</span>;
