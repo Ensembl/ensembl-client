@@ -32,7 +32,6 @@
     '.  article  article';
   grid-template-rows: 40px auto;
   grid-template-columns: $standard-gutter 1fr;
-  overflow-y: auto;
 
   .breadcrumbsContainer {
     grid-area: breadcrumbs;
