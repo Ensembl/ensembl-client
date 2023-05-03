@@ -121,7 +121,7 @@ const GeneSearchForm = (props: {
         <label className={styles.searchLabel}>Find a gene</label>
         <ShadedInput
           className={styles.searchField}
-          inputSize="large"
+          size="large"
           onChange={onQueryChange}
         />
         <PrimaryButton type="submit" className={styles.submit} onClick={noop}>
