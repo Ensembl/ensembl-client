@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
@@ -34,10 +34,6 @@ import {
 
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
-import QuestionButton, {
-  QuestionButtonOption
-} from 'src/shared/components/question-button/QuestionButton';
 
 import type {
   SearchMatch,
@@ -50,19 +46,7 @@ import styles from './SpeciesSearchField.scss';
 
 export const NOT_FOUND_TEXT = 'Sorry, we have no data for this species';
 
-enum RightCornerStatus {
-  INFO,
-  CLEAR,
-  EMPTY
-}
-
-type RightCornerProps = {
-  status: RightCornerStatus;
-  clear: () => void;
-};
-
 export const SpeciesSearchField = () => {
-  const [isFocused, setIsFocused] = useState(false);
   const searchText = useAppSelector(getSearchText);
   const matches = useAppSelector(getSearchResults);
   const selectedItemText = useAppSelector(getSelectedItemText);
@@ -80,7 +64,16 @@ export const SpeciesSearchField = () => {
   };
 
   const onSearchChange = (search: string) => {
-    dispatch(updateSearch(search));
+    if (!search) {
+      clear();
+    } else {
+      dispatch(updateSearch(search));
+    }
+  };
+
+  const clear = () => {
+    dispatch(clearSearch());
+    dispatch(clearSelectedSearchResult());
   };
 
   const canShowSuggesions =
@@ -88,19 +81,6 @@ export const SpeciesSearchField = () => {
     searchText.trim().length >= MINIMUM_SEARCH_LENGTH;
 
   const matchGroups = matches ? buildMatchGroups(matches) : [];
-
-  const clear = () => {
-    dispatch(clearSearch());
-    dispatch(clearSelectedSearchResult());
-  };
-
-  const hasText = Boolean(selectedItemText || searchText);
-
-  const rightCornerStatus = hasText
-    ? RightCornerStatus.CLEAR
-    : isFocused
-    ? RightCornerStatus.EMPTY
-    : RightCornerStatus.INFO;
 
   const isNotFound = Boolean(matches && matches.length === 0);
 
@@ -118,36 +98,14 @@ export const SpeciesSearchField = () => {
         canShowSuggestions={canShowSuggesions}
         notFound={isNotFound}
         notFoundText={NOT_FOUND_TEXT}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        rightCorner={<RightCorner status={rightCornerStatus} clear={clear} />}
+        help={helpText}
       />
     </>
   );
 };
 
-const helpText = (
-  <>
-    Search for a species using a common name, scientific name or assembly. If no
-    results are shown, please try a different spelling or attribute.
-  </>
-);
-
-const RightCorner = (props: RightCornerProps) => {
-  switch (props.status) {
-    case RightCornerStatus.INFO:
-      return (
-        <QuestionButton
-          helpText={helpText}
-          styleOption={QuestionButtonOption.INPUT}
-        />
-      );
-    case RightCornerStatus.CLEAR:
-      return <CloseButton onClick={props.clear} />;
-    default:
-      return null;
-  }
-};
+const helpText = `Search for a species using a common name, scientific name or assembly. If no
+results are shown, please try a different spelling or attribute.`;
 
 const buildMatchGroups = (groups: SearchMatches[]) => {
   return groups.map((group) => {

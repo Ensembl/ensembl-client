@@ -26,19 +26,16 @@ import QuestionIcon from 'static/icons/icon_question_circle.svg';
 import defaultStyles from './QuestionButton.scss';
 
 // Extra styling options based on where the button is located
-export enum QuestionButtonOption {
-  INPUT = 'in-input-field',
-  INLINE = 'inline'
-}
+type QuestionButtonStyleOption = 'inline' | 'in-input-field';
 
 type Props = {
   helpText: React.ReactNode;
-  styleOption?: QuestionButtonOption;
-  className?: { [key in QuestionButtonOption]?: string };
+  styleOption?: QuestionButtonStyleOption;
+  className?: Partial<Record<QuestionButtonStyleOption, string>>;
 };
 
 const QuestionButton = (props: Props) => {
-  const { helpText, styleOption = QuestionButtonOption.INLINE } = props;
+  const { helpText, styleOption = 'inline' } = props;
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
     useShowTooltip();
 

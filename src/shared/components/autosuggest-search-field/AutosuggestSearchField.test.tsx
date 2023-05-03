@@ -62,18 +62,19 @@ describe('<AutosuggestSearchField />', () => {
   });
 
   describe('appearance', () => {
-    it('renders only search field if no matches have been found', () => {
-      const { container, queryByTestId } = render(
+    it('renders only the search field if no matches have been found', () => {
+      const { container } = render(
         <AutosuggestSearchField {...minimalProps} />
       );
 
-      expect(queryByTestId('search-field')).toBeTruthy();
-      expect(container.querySelector('input')?.value).toBe(search);
+      const inputField = container.querySelector('input');
+      expect(inputField).toBeTruthy();
+      expect(inputField?.value).toBe(search);
       expect(container.querySelector('.autosuggestionPlate')).toBeFalsy();
     });
 
     it('renders AutosuggestionPanel with matches if they are provided', () => {
-      const { container, queryByTestId } = render(
+      const { container } = render(
         <AutosuggestSearchField
           {...minimalProps}
           matchGroups={groupsOfMatches}
@@ -85,8 +86,9 @@ describe('<AutosuggestSearchField />', () => {
         return sum + numberOfMatchesInGroup;
       }, 0);
 
-      expect(queryByTestId('search-field')).toBeTruthy();
-      expect(container.querySelector('input')?.value).toBe(search);
+      const inputField = container.querySelector('input');
+      expect(inputField).toBeTruthy();
+      expect(inputField?.value).toBe(search);
       expect(container.querySelector('.autosuggestionPlate')).toBeTruthy();
       expect(
         container.querySelectorAll('.autosuggestionPlateItem').length
@@ -189,12 +191,13 @@ describe('<AutosuggestSearchField />', () => {
         ).toBe(true);
       });
 
-      it('triggering submit event confirms selection of a match', () => {
+      it('triggering submit event confirms selection of a match', async () => {
         const { container } = render(<AutosuggestSearchField {...props} />);
         const searchField = container.querySelector(
           'input'
         ) as HTMLInputElement;
-        fireEvent.submit(searchField);
+
+        await userEvent.type(searchField, `foo{enter}`);
 
         const firstMatchData = groupsOfMatches[0].matches[0].data;
 

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
+import noop from 'lodash/noop';
 
 import { useAppDispatch } from 'src/store';
 
@@ -35,12 +36,8 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import SearchField from 'src/shared/components/search-field/SearchField';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import QuestionButton, {
-  QuestionButtonOption
-} from 'src/shared/components/question-button/QuestionButton';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { CircleLoader } from 'src/shared/components/loader';
 import InAppSearchMatches from './InAppSearchMatches';
 
@@ -70,11 +67,16 @@ const InAppSearch = (props: Props) => {
   );
   const dispatch = useAppDispatch();
 
-  const onQueryChange = (query: string) => {
+  const onQueryChange = (event: FormEvent<HTMLInputElement>) => {
+    const query = event.currentTarget.value;
+    if (!query) {
+      clear();
+    }
     dispatch(updateQuery({ app, genomeId, query }));
   };
 
-  const onSearchSubmit = async () => {
+  const onSearchSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     setIsLoading(true);
     props.onSearchSubmit?.(query);
 
@@ -105,38 +107,28 @@ const InAppSearch = (props: Props) => {
     dispatch(clearSearch({ app, genomeId }));
   };
 
-  const questionButtonHint =
+  const helpText =
     'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym; wildcards are also supported';
-
-  const rightCorner = query ? (
-    <CloseButton onClick={clear} />
-  ) : (
-    <QuestionButton
-      helpText={questionButtonHint}
-      styleOption={QuestionButtonOption.INPUT}
-    />
-  );
 
   return (
     <div>
-      <div
+      <form
         className={getInAppSearchTopStyles(mode)}
+        onSubmit={onSearchSubmit}
         data-test-id="in-app search top"
       >
         <div className={styles.label}>Find a gene in this species</div>
-        <div className={styles.searchFieldWrapper}>
-          <SearchField
-            placeholder="Gene ID or name..."
-            search={query}
-            onChange={onQueryChange}
-            onSubmit={onSearchSubmit}
-            className={styles.searchField}
-            rightCorner={rightCorner}
-            size={mode === 'interstitial' ? 'large' : 'small'}
-          />
-        </div>
+        <ShadedInput
+          placeholder="Gene ID or name..."
+          type="search"
+          value={query}
+          onInput={onQueryChange}
+          className={styles.searchField}
+          help={helpText}
+          size={mode === 'interstitial' ? 'large' : 'small'}
+        />
         <PrimaryButton
-          onClick={onSearchSubmit}
+          onClick={noop}
           className={styles.searchButton}
           isDisabled={!query || isLoading}
         >
@@ -150,7 +142,7 @@ const InAppSearch = (props: Props) => {
             {pluralise('gene', searchResult.meta.total_hits)}
           </div>
         )}
-      </div>
+      </form>
       {isLoading ? (
         <CircleLoader className={styles.spinner} size="small" />
       ) : (

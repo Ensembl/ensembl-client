@@ -19,14 +19,10 @@
   grid-template-columns: 1fr min-content;
 }
 
-.searchFieldWrapper {
+.searchField {
   grid-area: search-field;
   background: white;
-
-  // nesting to increase specificity of the selector
-  .searchField {
-    width: 100%;
-  }
+  width: 100%;
 }
 
 .label {

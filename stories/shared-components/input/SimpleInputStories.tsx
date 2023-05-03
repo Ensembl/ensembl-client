@@ -16,30 +16,21 @@
 
 import React from 'react';
 
-import * as SimpleInputStories from './SimpleInputStories';
-import { ShadedInputPlayground } from './ShadedInputStory';
-import { FlatInputPlayground } from './FlatInputStory';
+import Input from 'src/shared/components/input/Input';
 
-export const PlainInputStory = {
-  name: 'Input',
-  render: () => <SimpleInputStories.DefaultInputStory />
-};
+import styles from './Input.stories.scss';
 
-export const ShadedInputStory = {
-  name: 'ShadedInput',
-  render: () => <ShadedInputPlayground />
-};
+export const DefaultInputStory = () => (
+  <div className={styles.wrapper}>
+    <Input placeholder="Enter something..." />
+  </div>
+);
 
-export const FlatInputStory = {
-  name: 'FlatInput',
-  render: () => <FlatInputPlayground />
-};
-
-export const CustomInputStory = {
-  name: 'Customised Input',
-  render: () => <SimpleInputStories.CustomInputStory />
-};
-
-export default {
-  title: 'Components/Shared Components/Input'
-};
+export const CustomInputStory = () => (
+  <div className={styles.wrapper}>
+    <Input
+      placeholder="Enter something..."
+      className={styles.customizedInput}
+    />
+  </div>
+);

@@ -16,9 +16,7 @@
 
 import React from 'react';
 
-import QuestionButton, {
-  QuestionButtonOption
-} from 'src/shared/components/question-button/QuestionButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './QuestionButton.stories.scss';
 
@@ -36,10 +34,7 @@ export const InlineQuestionButton = () => (
 InlineQuestionButton.storyName = 'inline';
 
 export const InputQuestionButton = () => (
-  <QuestionButton
-    helpText="This is a hint"
-    styleOption={QuestionButtonOption.INPUT}
-  />
+  <QuestionButton helpText="This is a hint" styleOption="in-input-field" />
 );
 
 InputQuestionButton.storyName = 'input';

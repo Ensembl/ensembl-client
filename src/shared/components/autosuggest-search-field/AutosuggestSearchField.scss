@@ -1,7 +1,10 @@
 @import 'src/styles/common';
 
+.autosuggestionSearchFieldWrapper {
+  width: 100%;
+}
+
 .autosuggestionSearchField {
-  display: inline-block;
   position: relative;
 }
 
