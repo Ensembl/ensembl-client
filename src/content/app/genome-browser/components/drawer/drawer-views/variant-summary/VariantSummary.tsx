@@ -84,7 +84,10 @@ const VariantSummary = (props: Props) => {
       <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Alleles</div>
         <div className={styles.value}>
-          <VariantAllelesSequences alleles={variant.alleles} />
+          <VariantAllelesSequences
+            alleles={variant.alleles}
+            isExpandable={true}
+          />
         </div>
       </div>
 

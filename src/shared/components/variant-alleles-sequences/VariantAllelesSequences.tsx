@@ -30,7 +30,6 @@ type Props = {
   }[];
 };
 
-// NOTE: the logic of this component will need to be significantly improved to handle multiple and/or longer sequences
 const VariantAllelesSequences = (props: Props) => {
   const { isExpandable = false } = props;
   const { referenceSequence, alleleSequences, combinedString } =
