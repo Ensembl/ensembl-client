@@ -21,7 +21,7 @@ import VariantAllelesSequences from 'src/shared/components/variant-alleles-seque
 
 import { rs71197234Alleles, rs699Alleles } from './sampleData';
 
-import styles from './VariantAlleleSequences.stories.scss';
+import styles from './VariantAllelesSequences.stories.scss';
 
 const CompactVariantAllelesSequencesStory = () => {
   return <VariantAllelesSequences alleles={rs71197234Alleles} />;

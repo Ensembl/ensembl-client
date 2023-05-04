@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import styles from './VariantAlleleSequences.scss';
+import styles from './VariantAllelesSequences.scss';
 
 const COMPACT_MAX_LENGTH = 18;
 
