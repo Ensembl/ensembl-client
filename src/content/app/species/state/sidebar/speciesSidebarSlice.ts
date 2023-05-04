@@ -86,8 +86,8 @@ type SpeciesPageSidebarState = {
 const initialState: SpeciesPageSidebarState = {};
 
 export const fetchSidebarPayload =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getActiveGenomeId(state);
     if (!activeGenomeId) {

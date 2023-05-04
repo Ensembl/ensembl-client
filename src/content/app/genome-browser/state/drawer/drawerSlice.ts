@@ -35,8 +35,8 @@ type DrawerState = {
 };
 
 export const closeDrawer =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {
@@ -52,8 +52,10 @@ export const closeDrawer =
   };
 
 export const changeDrawerViewAndOpen =
-  (drawerView: DrawerView): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    drawerView: DrawerView
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {

@@ -69,8 +69,10 @@ export type EntityViewerSidebarUIState = {
 };
 
 export const setSidebarTabName =
-  (tabName: SidebarTabName): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    tabName: SidebarTabName
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const genomeId = getEntityViewerActiveGenomeId(getState());
 
     if (!genomeId) {
@@ -86,8 +88,8 @@ export const setSidebarTabName =
   };
 
 export const toggleSidebar =
-  (status?: ToggleStatus): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (status?: ToggleStatus): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
 
     const genomeId = getEntityViewerActiveGenomeId(state);
@@ -111,8 +113,8 @@ export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 export const updateEntityUI =
   (
     fragment: Partial<EntityViewerSidebarUIState>
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);
     const entityId = getEntityViewerActiveEntityId(state);
@@ -127,8 +129,8 @@ export const updateEntityUI =
 export const openSidebarModal =
   (
     sidebarModalView: SidebarModalView
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
 
     const genomeId = getEntityViewerActiveGenomeId(state);
@@ -147,8 +149,8 @@ export const openSidebarModal =
   };
 
 export const closeSidebarModal =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);
 

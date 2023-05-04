@@ -40,17 +40,15 @@ export const defaultState: GlobalState = {
 };
 
 export const updateBreakpointWidth: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> =
-  (viewportWidth: BreakpointWidth) =>
-  async (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const currentBreakpointWidth = getBreakpointWidth(state);
+  ThunkAction<void, RootState, void, Action<string>>
+> = (viewportWidth: BreakpointWidth) => async (dispatch, getState) => {
+  const state = getState();
+  const currentBreakpointWidth = getBreakpointWidth(state);
 
-    if (viewportWidth !== currentBreakpointWidth) {
-      dispatch(setBreakpointWidth(viewportWidth));
-    }
-  };
+  if (viewportWidth !== currentBreakpointWidth) {
+    dispatch(setBreakpointWidth(viewportWidth));
+  }
+};
 
 const globalSlice = createSlice({
   name: 'global',

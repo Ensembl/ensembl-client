@@ -76,8 +76,8 @@ export const fetchSpeciesSearchResults = createAction<string>(
 );
 
 export const updateSearch =
-  (text: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (text: string): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const selectedItem = getSelectedItem(state);
     const previousText = getSearchText(state);
@@ -115,7 +115,8 @@ export const loadStoredSpecies = createAsyncThunk(
 );
 
 export const commitSelectedSpeciesAndSave =
-  (): ThunkAction<void, any, void, Action<string>> => (dispatch, getState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const committedSpecies = getCommittedSpecies(getState());
     const selectedItem = getSelectedItem(getState());
 
@@ -135,7 +136,7 @@ export const commitSelectedSpeciesAndSave =
   };
 
 export const toggleSpeciesUseAndSave =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
+  (genomeId: string): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {
     const state = getState();
     const committedSpecies = getCommittedSpecies(state);
@@ -157,7 +158,7 @@ export const toggleSpeciesUseAndSave =
   };
 
 export const deleteSpeciesAndSave =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
+  (genomeId: string): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {
     const committedSpecies = getCommittedSpecies(getState());
     const updatedCommittedSpecies = committedSpecies.filter(

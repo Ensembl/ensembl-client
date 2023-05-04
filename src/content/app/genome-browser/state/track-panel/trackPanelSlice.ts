@@ -53,8 +53,10 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
 };
 
 export const toggleTrackPanel =
-  (isTrackPanelOpened: boolean): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    isTrackPanelOpened: boolean
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {
@@ -78,8 +80,8 @@ export const selectTrackPanelTab =
     options: {
       shouldCloseSidebarModal: boolean;
     } = { shouldCloseSidebarModal: true }
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {
@@ -123,8 +125,10 @@ export const updateTrackPanelTabForNewFocusObject = createAsyncThunk(
 );
 
 export const changeHighlightedTrackId =
-  (highlightedTrackId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    highlightedTrackId: string
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
 

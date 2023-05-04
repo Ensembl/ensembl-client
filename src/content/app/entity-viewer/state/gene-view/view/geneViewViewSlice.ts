@@ -143,8 +143,8 @@ const initialStatePerGene: ViewStatePerGene = {
 };
 
 export const updateView =
-  (view: View): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (view: View): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const activeGenomeId = getEntityViewerActiveGenomeId(getState());
     const activeObjectId = getEntityViewerActiveEntityId(getState());
     if (!activeGenomeId || !activeObjectId) {

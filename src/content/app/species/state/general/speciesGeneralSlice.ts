@@ -61,8 +61,8 @@ const initialState: SpeciesGeneralState = {
 };
 
 export const fetchStatsForActiveGenome =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getActiveGenomeId(state);
     if (!activeGenomeId) {
@@ -99,8 +99,8 @@ export const fetchStatsForActiveGenome =
 export const setActiveGenomeExpandedSections =
   (
     expandedSections: SpeciesStatsSection[]
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getActiveGenomeId(state);
     if (!activeGenomeId) {

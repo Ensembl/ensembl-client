@@ -146,7 +146,7 @@ const buildFocusVariantObject = (payload: {
 };
 
 export const fetchExampleFocusObjects =
-  (genomeId: string): ThunkAction<void, any, void, Action<string>> =>
+  (genomeId: string): ThunkAction<void, RootState, void, Action<string>> =>
   async (dispatch) => {
     const genomeInfoResponsePromise = dispatch(
       fetchGenomeInfo.initiate(genomeId)
