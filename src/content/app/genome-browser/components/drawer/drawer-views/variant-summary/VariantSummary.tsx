@@ -23,7 +23,7 @@ import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeB
 import prepareVariantSummaryData from './prepareVariantSummaryData';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-import VariantAllelesSequences from './variant-alleles-sequences/VariantAllelesSequences';
+import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
 import VariantConsequence from './variant-consequence/VariantConsequence';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 import VariantVCF, { getVCFStringParts } from './variant-vcf/VariantVCF';
@@ -84,7 +84,10 @@ const VariantSummary = (props: Props) => {
       <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Alleles</div>
         <div className={styles.value}>
-          <VariantAllelesSequences alleles={variant.alleles} />
+          <VariantAllelesSequences
+            alleles={variant.alleles}
+            isExpandable={true}
+          />
         </div>
       </div>
 

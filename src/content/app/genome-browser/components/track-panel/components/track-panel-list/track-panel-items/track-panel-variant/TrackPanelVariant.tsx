@@ -24,7 +24,7 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 
 import SimpleTrackPanelItemLayout from '../track-panel-item-layout/SimpleTrackPanelItemLayout';
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
-import VariantAllelesSequences from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-alleles-sequences/VariantAllelesSequences';
+import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';

@@ -1,0 +1,21 @@
+.container {
+  border: 1px dashed black;
+  width: 480px;
+  word-break: break-all;
+}
+
+.narrowContainer {
+  width: 250px;
+}
+
+.options {
+  margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.options label {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.6rem;
+}
