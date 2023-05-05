@@ -18,9 +18,9 @@ import {
   createSlice,
   createAction,
   createAsyncThunk,
-  PayloadAction,
-  ThunkAction,
-  Action
+  type PayloadAction,
+  type ThunkAction,
+  type Action
 } from '@reduxjs/toolkit';
 
 import apiService from 'src/services/api-service';
@@ -39,13 +39,13 @@ import {
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import {
+import type {
   SearchMatch,
   SearchMatches,
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type CurrentItem = {
   genome_id: string; // changes every time we update strain or assembly

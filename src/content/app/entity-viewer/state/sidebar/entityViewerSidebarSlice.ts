@@ -16,9 +16,9 @@
 
 import {
   createSlice,
-  PayloadAction,
-  Action,
-  ThunkAction
+  type PayloadAction,
+  type Action,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import merge from 'lodash/merge';
 import mergeWith from 'lodash/mergeWith';
@@ -30,9 +30,9 @@ import {
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { Status } from 'src/shared/types/status';
-import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
-import JSONValue from 'src/shared/types/JSON';
-import { RootState } from 'src/store';
+import type { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
+import type JSONValue from 'src/shared/types/JSON';
+import type { RootState } from 'src/store';
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;
 

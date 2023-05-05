@@ -15,16 +15,17 @@
  */
 
 import {
-  Action,
   createSlice,
-  PayloadAction,
-  ThunkAction
+  type Action,
+  type PayloadAction,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import get from 'lodash/get';
 import merge from 'lodash/merge';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { RootState } from 'src/store';
+
+import type { RootState } from 'src/store';
 
 import { sidebarData } from 'src/content/app/species/sample-data';
 

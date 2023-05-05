@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction, type Action } from '@reduxjs/toolkit';
-import { type ThunkAction } from 'redux-thunk';
+import {
+  createSlice,
+  type Action,
+  type ThunkAction,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 import pickBy from 'lodash/pickBy';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
@@ -27,7 +31,7 @@ import {
 } from './entityViewerGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;

@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
+import {
+  createSlice,
+  type Action,
+  type ThunkAction,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export enum View {
   TRANSCRIPTS = 'transcripts',

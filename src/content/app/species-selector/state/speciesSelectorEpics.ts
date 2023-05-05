@@ -16,7 +16,7 @@
 
 import { Epic } from 'redux-observable';
 import { map, switchMap, tap, filter, distinctUntilChanged } from 'rxjs';
-import { isAnyOf, isFulfilled, Action } from '@reduxjs/toolkit';
+import { isAnyOf, isFulfilled, type Action } from '@reduxjs/toolkit';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import * as observableApiService from 'src/services/observable-api-service';

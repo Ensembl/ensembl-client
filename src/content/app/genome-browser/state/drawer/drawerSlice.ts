@@ -16,9 +16,9 @@
 
 import {
   createSlice,
-  Action,
-  PayloadAction,
-  ThunkAction
+  type Action,
+  type PayloadAction,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';

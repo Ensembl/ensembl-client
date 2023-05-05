@@ -17,10 +17,10 @@
 import {
   createAsyncThunk,
   createSlice,
+  type Action,
+  type ThunkAction,
   type PayloadAction
 } from '@reduxjs/toolkit';
-import type { Action } from 'redux';
-import type { ThunkAction } from 'redux-thunk';
 import cloneDeep from 'lodash/cloneDeep';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
@@ -30,14 +30,13 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
-
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
   getExpandedTranscriptMoreInfoIds
 } from './geneViewTranscriptsSelectors';
 
+import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 import type { RootState } from 'src/store';
 
 export enum SortingRule {

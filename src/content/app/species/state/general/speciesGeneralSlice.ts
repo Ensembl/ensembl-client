@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import {
-  Action,
   createSlice,
-  PayloadAction,
-  ThunkAction
+  type Action,
+  type PayloadAction,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import set from 'lodash/fp/set';
 
@@ -30,11 +30,11 @@ import speciesStorageService from '../../services/species-storage-service';
 
 import {
   getStatsForSection,
-  StatsSection,
+  type StatsSection,
   SpeciesStatsSection
 } from 'src/content/app/species/state/general/speciesGeneralHelper';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type GenomeStats = StatsSection[];
 
