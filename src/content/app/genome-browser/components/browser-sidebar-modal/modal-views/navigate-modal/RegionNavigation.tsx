@@ -21,6 +21,7 @@ import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 import {
+  getActualChrLocation,
   getBrowserActiveGenomeId,
   getChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
@@ -44,6 +45,7 @@ const ERROR_MESSAGE =
 const RegionNavigation = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string; // this component will never be rendered if genome id is missing
   const chrLocation = useAppSelector(getChrLocation);
+  const browserLocation = useAppSelector(getActualChrLocation) as ChrLocation;
 
   const { changeBrowserLocation } = useGenomeBrowser();
 
@@ -171,7 +173,7 @@ const RegionNavigation = () => {
         Pan and zoom, or go to a new location in this chromosome or region only
       </div>
       <div className={styles.navigateSection}>
-        <GenomeBrowserNavigationButtons />
+        {browserLocation && <GenomeBrowserNavigationButtons />}
         <div className={styles.segmentedInput}>
           <div className={styles.inputField}>
             <label>
