@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import PillButton from 'src/shared/components/pill-button/PillButton';
 
@@ -26,16 +25,16 @@ export default {
 export const PlusButtonStory = () => (
   <>
     <div>
-      <PillButton onClick={noop}>+2</PillButton>
+      <PillButton>+2</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+42</PillButton>
+      <PillButton>+42</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+512</PillButton>
+      <PillButton>+512</PillButton>
     </div>
     <div>
-      <PillButton onClick={noop}>+1234</PillButton>
+      <PillButton>+1234</PillButton>
     </div>
   </>
 );

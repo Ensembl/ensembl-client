@@ -28,32 +28,27 @@ import { LoadingState } from 'src/shared/types/loading-state';
 import styles from './LoadingButton.scss';
 
 type Props = {
-  onClick: () => unknown;
+  onClick?: () => unknown;
   status: LoadingState;
-  isDisabled?: boolean;
-  classNames?: {
-    wrapper?: string;
-    button?: string;
-  };
+  disabled?: boolean;
+  className?: string;
   children: ReactNode;
 };
 
 const ControlledLoadingButton = (props: Props) => {
   const {
     status: loadingState,
-    classNames: { wrapper: wrapperClassName, button: buttonClassName } = {},
+    className: classNameFromProps,
     ...otherProps
   } = props;
 
-  const wrapperClass = classNames(styles.buttonWrapper, wrapperClassName);
+  const wrapperClasses = classNames(styles.buttonWrapper, classNameFromProps);
 
   const buttonClass =
-    loadingState !== LoadingState.NOT_REQUESTED
-      ? classNames(buttonClassName, styles.invisible)
-      : buttonClassName;
+    loadingState !== LoadingState.NOT_REQUESTED ? styles.invisible : undefined;
 
   return (
-    <div className={wrapperClass}>
+    <div className={wrapperClasses}>
       {loadingState === LoadingState.LOADING && <Loading />}
       {loadingState === LoadingState.SUCCESS && <Success />}
       {loadingState === LoadingState.ERROR && <ErrorIndicator />}

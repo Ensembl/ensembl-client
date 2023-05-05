@@ -143,7 +143,7 @@ export const ControlledLoadingButtonStory = (args: DefaultArgs) => {
       <ControlledLoadingButton
         status={buttonStatus}
         onClick={args.onClick}
-        isDisabled={isDisabled}
+        disabled={isDisabled}
       >
         I am button
       </ControlledLoadingButton>

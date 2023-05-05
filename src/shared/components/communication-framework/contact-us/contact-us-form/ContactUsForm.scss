@@ -96,12 +96,12 @@ $columnGapWidth: 12px;
   }
 }
 
-.submitButtonWrapper {
+.submitButton {
   grid-column: submit-right;
   justify-self: end;
 }
 
-.submitButton {
+.submitButton button {
   height: 30px;
   width: 90px;
 }

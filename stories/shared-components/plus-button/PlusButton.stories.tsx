@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 
@@ -23,6 +22,6 @@ export default {
   title: 'Components/Shared Components/Plus button'
 };
 
-export const PlusButtonStory = () => <PlusButton onClick={noop} />;
+export const PlusButtonStory = () => <PlusButton />;
 
 PlusButtonStory.storyName = 'default';

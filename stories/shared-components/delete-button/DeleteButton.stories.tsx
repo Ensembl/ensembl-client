@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
@@ -23,6 +22,6 @@ export default {
   title: 'Components/Shared Components/Delete button'
 };
 
-export const DefaultDeleteButton = () => <DeleteButton onClick={noop} />;
+export const DefaultDeleteButton = () => <DeleteButton />;
 
 DefaultDeleteButton.storyName = 'default';

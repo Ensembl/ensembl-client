@@ -68,7 +68,7 @@ const GeneralErrorScreen = () => {
           </div>
         </div>
         <div className={styles.reloadButton}>
-          <PrimaryButton isDisabled={moreOptionExpanded} onClick={reloadPage}>
+          <PrimaryButton disabled={moreOptionExpanded} onClick={reloadPage}>
             Reload
           </PrimaryButton>
         </div>

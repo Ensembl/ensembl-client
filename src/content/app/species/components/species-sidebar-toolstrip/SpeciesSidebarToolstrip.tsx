@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
@@ -96,7 +95,6 @@ export const SpeciesSidebarToolstrip = () => {
         description="Previously viewed"
         className={styles.sidebarIcon}
         key={SpeciesSidebarModalView.BOOKMARKS}
-        onClick={noop}
         image={BookmarkIcon}
       />
       <ImageButton
@@ -104,14 +102,12 @@ export const SpeciesSidebarToolstrip = () => {
         description="Share"
         className={styles.sidebarIcon}
         key="share"
-        onClick={noop}
         image={ShareIcon}
       />
       <ImageButton
         status={Status.DISABLED}
         description="Download"
         className={styles.sidebarIcon}
-        onClick={noop}
         image={DownloadIcon}
       />
     </>
