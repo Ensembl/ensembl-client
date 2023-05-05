@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useReducer, Reducer } from 'react';
+import { useEffect, useReducer, type Reducer } from 'react';
 
-import apiService, { FetchOptions, APIError } from 'src/services/api-service';
+import apiService, {
+  type FetchOptions,
+  type APIError
+} from 'src/services/api-service';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 

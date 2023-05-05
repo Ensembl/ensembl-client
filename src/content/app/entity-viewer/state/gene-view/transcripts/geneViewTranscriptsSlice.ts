@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
+import {
+  createAsyncThunk,
+  createSlice,
+  type Action,
+  type ThunkAction,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 import cloneDeep from 'lodash/cloneDeep';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
@@ -26,15 +30,14 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
-
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
   getExpandedTranscriptMoreInfoIds
 } from './geneViewTranscriptsSelectors';
 
-import { RootState } from 'src/store';
+import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { RootState } from 'src/store';
 
 export enum SortingRule {
   DEFAULT = 'default',
@@ -87,8 +90,8 @@ const defaultStatePerGene: TranscriptsStatePerGene = {
 };
 
 export const resetFilterPanel =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -105,8 +108,10 @@ export const resetFilterPanel =
   };
 
 export const setFilterPanel =
-  (filterPanelOpen: boolean): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    filterPanelOpen: boolean
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -123,8 +128,8 @@ export const setFilterPanel =
   };
 
 export const setFilters =
-  (filters: Filters): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (filters: Filters): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -149,8 +154,10 @@ export const setFilters =
   };
 
 export const setSortingRule =
-  (sortingRule: SortingRule): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    sortingRule: SortingRule
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -176,8 +183,8 @@ export const setSortingRule =
   };
 
 export const toggleTranscriptInfo =
-  (transcriptId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (transcriptId: string): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -202,8 +209,8 @@ export const toggleTranscriptInfo =
   };
 
 export const toggleTranscriptDownload =
-  (transcriptId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (transcriptId: string): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);
@@ -230,8 +237,8 @@ export const toggleTranscriptDownload =
   };
 
 export const toggleTranscriptMoreInfo =
-  (transcriptId: string): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (transcriptId: string): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     const activeEntityId = getEntityViewerActiveEntityId(state);

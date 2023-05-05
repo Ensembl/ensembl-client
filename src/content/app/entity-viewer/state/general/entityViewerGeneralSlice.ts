@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction, type Action } from '@reduxjs/toolkit';
-import { type ThunkAction } from 'redux-thunk';
+import {
+  createSlice,
+  type Action,
+  type ThunkAction,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 import pickBy from 'lodash/pickBy';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
@@ -27,7 +31,7 @@ import {
 } from './entityViewerGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
@@ -45,8 +49,10 @@ export const initialState: EntityViewerGeneralState = {
 };
 
 export const setActiveIds =
-  (params: EntityViewerParams): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    params: EntityViewerParams
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const { genomeId, entityId } = params;
 
@@ -82,8 +88,8 @@ export const setActiveIds =
 // If/when we remove the redirect from /entity-viewer/:genomeId to /entity-viewer/:genomeId/:entityId,
 // the synchronous nature of this thunk will become irrelevant
 export const deleteActiveEntityIdAndSave =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
 
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
@@ -107,8 +113,8 @@ export const deleteActiveEntityIdAndSave =
   };
 
 export const setDefaultActiveGenomeId =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const [firstCommittedSpecies] = getCommittedSpecies(state);
     const activeGenomeId = firstCommittedSpecies?.genome_id;

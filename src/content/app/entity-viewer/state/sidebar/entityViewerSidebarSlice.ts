@@ -16,9 +16,9 @@
 
 import {
   createSlice,
-  PayloadAction,
-  Action,
-  ThunkAction
+  type PayloadAction,
+  type Action,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import merge from 'lodash/merge';
 import mergeWith from 'lodash/mergeWith';
@@ -30,9 +30,9 @@ import {
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { Status } from 'src/shared/types/status';
-import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
-import JSONValue from 'src/shared/types/JSON';
-import { RootState } from 'src/store';
+import type { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
+import type JSONValue from 'src/shared/types/JSON';
+import type { RootState } from 'src/store';
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;
 
@@ -69,8 +69,10 @@ export type EntityViewerSidebarUIState = {
 };
 
 export const setSidebarTabName =
-  (tabName: SidebarTabName): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (
+    tabName: SidebarTabName
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const genomeId = getEntityViewerActiveGenomeId(getState());
 
     if (!genomeId) {
@@ -86,8 +88,8 @@ export const setSidebarTabName =
   };
 
 export const toggleSidebar =
-  (status?: ToggleStatus): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (status?: ToggleStatus): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
 
     const genomeId = getEntityViewerActiveGenomeId(state);
@@ -111,8 +113,8 @@ export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 export const updateEntityUI =
   (
     fragment: Partial<EntityViewerSidebarUIState>
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);
     const entityId = getEntityViewerActiveEntityId(state);
@@ -127,8 +129,8 @@ export const updateEntityUI =
 export const openSidebarModal =
   (
     sidebarModalView: SidebarModalView
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
 
     const genomeId = getEntityViewerActiveGenomeId(state);
@@ -147,8 +149,8 @@ export const openSidebarModal =
   };
 
 export const closeSidebarModal =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const genomeId = getEntityViewerActiveGenomeId(state);
 

@@ -15,16 +15,17 @@
  */
 
 import {
-  Action,
   createSlice,
-  PayloadAction,
-  ThunkAction
+  type Action,
+  type PayloadAction,
+  type ThunkAction
 } from '@reduxjs/toolkit';
 import get from 'lodash/get';
 import merge from 'lodash/merge';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { RootState } from 'src/store';
+
+import type { RootState } from 'src/store';
 
 import { sidebarData } from 'src/content/app/species/sample-data';
 
@@ -86,8 +87,8 @@ type SpeciesPageSidebarState = {
 const initialState: SpeciesPageSidebarState = {};
 
 export const fetchSidebarPayload =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getActiveGenomeId(state);
     if (!activeGenomeId) {

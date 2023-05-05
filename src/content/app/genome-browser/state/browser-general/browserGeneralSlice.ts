@@ -66,8 +66,8 @@ export type ParsedUrlPayload = {
 };
 
 export const fetchDataForLastVisitedObjects: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = () => async (dispatch, getState: () => RootState) => {
+  ThunkAction<void, RootState, void, Action<string>>
+> = () => async (dispatch, getState) => {
   const state = getState();
   const activeFocusObjectIdsMap = getBrowserActiveFocusObjectIds(state);
   Object.values(activeFocusObjectIdsMap).forEach((objectId) =>
@@ -76,8 +76,8 @@ export const fetchDataForLastVisitedObjects: ActionCreator<
 };
 
 export const setDataFromUrlAndSave: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> = (payload: ParsedUrlPayload) => (dispatch, getState: () => RootState) => {
+  ThunkAction<void, RootState, void, Action<string>>
+> = (payload: ParsedUrlPayload) => (dispatch, getState) => {
   const { activeGenomeId, activeFocusObjectId, chrLocation } = payload;
   const state = getState();
   const currentActiveGenomeId = getBrowserActiveGenomeId(state);
@@ -120,8 +120,8 @@ export const setDataFromUrlAndSave: ActionCreator<
 
 export const updateBrowserActiveFocusObjectIdsAndSave = (
   activeFocusObjectId: string
-): ThunkAction<void, any, void, Action<string>> => {
-  return (dispatch, getState: () => RootState) => {
+): ThunkAction<void, RootState, void, Action<string>> => {
+  return (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     if (!activeGenomeId) {
@@ -144,11 +144,11 @@ export const updateBrowserActiveFocusObjectIdsAndSave = (
 
 export const deleteBrowserActiveFocusObjectIdAndSave = (): ThunkAction<
   void,
-  any,
+  RootState,
   void,
   Action<string>
 > => {
-  return (dispatch, getState: () => RootState) => {
+  return (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     if (!activeGenomeId) {
@@ -170,9 +170,9 @@ export const deleteBrowserActiveFocusObjectIdAndSave = (): ThunkAction<
 };
 
 export const setChrLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
+  ThunkAction<void, RootState, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
-  return (dispatch, getState: () => RootState) => {
+  return (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     const activeFocusObjectId = getBrowserActiveFocusObjectId(state);
@@ -192,8 +192,8 @@ export const setChrLocation: ActionCreator<
 
 export const deleteSpeciesInGenomeBrowser = (
   genomeIdToRemove: string
-): ThunkAction<void, any, void, Action<string>> => {
-  return async (dispatch, getState: () => RootState) => {
+): ThunkAction<void, RootState, void, Action<string>> => {
+  return async (dispatch, getState) => {
     const state = getState();
 
     dispatch(deleteBrowserDataForGenome(genomeIdToRemove));
@@ -216,7 +216,7 @@ export const deleteSpeciesInGenomeBrowser = (
 
 export const loadBrowserGeneralState = (): ThunkAction<
   void,
-  any,
+  RootState,
   void,
   Action<string>
 > => {

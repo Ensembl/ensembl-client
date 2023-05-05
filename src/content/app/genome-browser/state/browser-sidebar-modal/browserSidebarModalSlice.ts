@@ -49,8 +49,8 @@ export const defaultBrowserSidebarModalStateForGenome: BrowserSidebarModalStateF
 export const openBrowserSidebarModal =
   (
     browserSidebarModalView: BrowserSidebarModalView
-  ): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  ): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
 
@@ -72,8 +72,8 @@ export const openBrowserSidebarModal =
   };
 
 export const closeBrowserSidebarModal =
-  (): ThunkAction<void, any, void, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
 

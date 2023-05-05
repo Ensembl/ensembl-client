@@ -16,16 +16,16 @@
 
 import {
   createSlice,
-  Action,
-  PayloadAction,
-  ThunkAction,
-  ActionCreator
+  type Action,
+  type PayloadAction,
+  type ThunkAction,
+  type ActionCreator
 } from '@reduxjs/toolkit';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
-import { BreakpointWidth, ScrollPosition } from './globalConfig';
-import { RootState } from 'src/store';
+import { BreakpointWidth, type ScrollPosition } from './globalConfig';
+import type { RootState } from 'src/store';
 
 export type GlobalState = Readonly<{
   breakpointWidth: BreakpointWidth;
@@ -40,17 +40,15 @@ export const defaultState: GlobalState = {
 };
 
 export const updateBreakpointWidth: ActionCreator<
-  ThunkAction<void, any, void, Action<string>>
-> =
-  (viewportWidth: BreakpointWidth) =>
-  async (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const currentBreakpointWidth = getBreakpointWidth(state);
+  ThunkAction<void, RootState, void, Action<string>>
+> = (viewportWidth: BreakpointWidth) => async (dispatch, getState) => {
+  const state = getState();
+  const currentBreakpointWidth = getBreakpointWidth(state);
 
-    if (viewportWidth !== currentBreakpointWidth) {
-      dispatch(setBreakpointWidth(viewportWidth));
-    }
-  };
+  if (viewportWidth !== currentBreakpointWidth) {
+    dispatch(setBreakpointWidth(viewportWidth));
+  }
+};
 
 const globalSlice = createSlice({
   name: 'global',
