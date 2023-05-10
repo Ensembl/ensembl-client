@@ -42,8 +42,9 @@ const Copy = (props: Props) => {
     timeout = setTimeout(() => setCopied(false), 1500);
   };
 
+  // check if the browser exposes the clipboard api (it won't be available e.g. over http)
+  // (using globalThis to query the navigator so as not to explode if this component is ever rendered on the server)
   if (!globalThis?.navigator?.clipboard) {
-    // <-- checking via globalThis not to explode when rendering on the server
     // do not display the Copy button in the environments where it is unusable
     return null;
   }

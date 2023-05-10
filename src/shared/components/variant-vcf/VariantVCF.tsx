@@ -57,7 +57,7 @@ const VariantVCF = (props: Props) => {
         <span>{vcfSequenceParts.referenceAlleleSequence}</span>
         <span>{vcfSequenceParts.alternativeAlleleSequences.join(',')}</span>
       </span>
-      <Copy value={vcfSequenceParts.vcfString} />
+      {props.withCopy && <Copy value={vcfSequenceParts.vcfString} />}
     </div>
   );
 };
@@ -90,4 +90,4 @@ export const getVCFStringParts = (variant: MinimumVariantData) => {
   };
 };
 
-export default React.memo(VariantVCF);
+export default VariantVCF;
