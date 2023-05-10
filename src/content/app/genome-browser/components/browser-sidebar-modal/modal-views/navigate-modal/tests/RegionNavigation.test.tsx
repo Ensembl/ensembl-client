@@ -85,6 +85,9 @@ const renderComponent = () => {
         },
         chrLocations: {
           human: ['2', 2000, 3000]
+        },
+        actualChrLocations: {
+          human: ['2', 2000, 3000]
         }
       }
     }
