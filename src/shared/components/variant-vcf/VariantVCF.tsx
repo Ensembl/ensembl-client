@@ -15,19 +15,11 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
+
+import Copy from 'src/shared/components/copy/Copy';
 
 import styles from './VariantVCF.scss';
-
-/**
- * NOTE:
- * - This component almost certainly will be reused enough to become a shared component
- * - This component will need to learn how to display VCF string for multiple long alleles.
- *   See example:
- *   - https://xd.adobe.com/view/b485e6c9-546a-4627-a5a6-0edf77651f09-e1d6/screen/973f8bb3-05c1-4cf8-9220-08009640c571?fullscreen
- * - Should the Copy component be part of VariantVCF component; or should VariantVCF component
- *   expose a method that a parent can use to get the VCF string from VariantVCF? The second
- *   options seems more composable.
- */
 
 type MinimumVariantData = {
   name: string;
@@ -45,44 +37,29 @@ type MinimumVariantData = {
   }[];
 };
 
-type PropsWithVariant = {
+type Props = {
   variant: MinimumVariantData;
+  withCopy?: boolean;
+  className?: string;
 };
-
-type VCFStringParts = {
-  variantName: string;
-  regionName: string;
-  startCoordinate: number | string;
-  referenceAlleleSequence: string;
-  alternativeAlleleSequences: string[];
-};
-
-type PropsWithStringParts = {
-  vcfStringParts: VCFStringParts;
-};
-
-type Props = PropsWithVariant | PropsWithStringParts;
 
 const VariantVCF = (props: Props) => {
-  const vcfSequenceParts = arePropsWithVCFStringParts(props)
-    ? props.vcfStringParts
-    : getVCFStringParts(props.variant);
+  const vcfSequenceParts = getVCFStringParts(props.variant);
+
+  const componentClasses = classNames(styles.container, props.className);
 
   return (
-    <span className={styles.container}>
-      <span>{vcfSequenceParts.regionName}</span>
-      <span>{vcfSequenceParts.startCoordinate}</span>
-      <span>{vcfSequenceParts.variantName}</span>
-      <span>{vcfSequenceParts.referenceAlleleSequence}</span>
-      <span>{vcfSequenceParts.alternativeAlleleSequences.join(',')}</span>
-    </span>
+    <div className={componentClasses}>
+      <span className={styles.vcfString}>
+        <span>{vcfSequenceParts.regionName}</span>
+        <span>{vcfSequenceParts.startCoordinate}</span>
+        <span>{vcfSequenceParts.variantName}</span>
+        <span>{vcfSequenceParts.referenceAlleleSequence}</span>
+        <span>{vcfSequenceParts.alternativeAlleleSequences.join(',')}</span>
+      </span>
+      {props.withCopy && <Copy value={vcfSequenceParts.vcfString} />}
+    </div>
   );
-};
-
-const arePropsWithVCFStringParts = (
-  props: Props
-): props is PropsWithStringParts => {
-  return 'vcfStringParts' in props;
 };
 
 export const getVCFStringParts = (variant: MinimumVariantData) => {
@@ -113,4 +90,4 @@ export const getVCFStringParts = (variant: MinimumVariantData) => {
   };
 };
 
-export default React.memo(VariantVCF);
+export default VariantVCF;
