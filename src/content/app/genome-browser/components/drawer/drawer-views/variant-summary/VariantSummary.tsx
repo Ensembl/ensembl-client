@@ -163,7 +163,7 @@ const VariantSummary = (props: Props) => {
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
         <div className={styles.value}>
-          <VariantVCF variant={variant} />
+          <VariantVCF variant={variant} withCopy={true} />
         </div>
       </div>
 

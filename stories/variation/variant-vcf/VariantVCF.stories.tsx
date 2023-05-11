@@ -30,7 +30,7 @@ const VariantVCFStory = () => {
   return (
     <div>
       <div className={styles.container}>
-        <VariantVCF variant={variantData} />
+        <VariantVCF variant={variantData} withCopy={true} />
       </div>
       <form className={styles.options}>
         <label>
