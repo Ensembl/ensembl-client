@@ -15,20 +15,28 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import set from 'lodash/fp/set';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 
-import { createMockBrowserState } from 'tests/fixtures/browser';
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+
+import createRootReducer from 'src/root/rootReducer';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { TrackPanelTabs } from './TrackPanelTabs';
 
 import { TrackSet } from '../../trackPanelConfig';
+
+const mockTrackApi = 'http://track-api';
+
+jest.mock('config', () => ({
+  tracksApiBaseUrl: 'http://track-api'
+}));
 
 jest.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
@@ -37,21 +45,84 @@ jest.mock(
   })
 );
 
-const mockState = createMockBrowserState();
-const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
+const mockTrackCategories = {
+  track_categories: [
+    {
+      label: 'Genes & transcripts',
+      track_category_id: 'genes-transcripts',
+      types: ['Genomic'],
+      track_list: [
+        {
+          track_id: 'gene-pc-fwd'
+        }
+      ]
+    }
+  ]
+};
 
-const mockStore = configureMockStore([thunk]);
+const server = setupServer(
+  rest.get(`${mockTrackApi}/track_categories/:genomeId`, (req, res, ctx) => {
+    return res(ctx.json(mockTrackCategories));
+  })
+);
 
-let store: ReturnType<typeof mockStore>;
+const initialReduxState = {
+  browser: {
+    browserGeneral: {
+      activeGenomeId: 'human',
+      activeFocusObjectIds: {
+        human: `human:gene:fake_gene_stable_id`
+      }
+    },
+    focusObjects: {
+      'human:gene:fake_gene_stable_id': {
+        data: {
+          type: 'gene',
+          object_id: `human:gene:fake_gene_stable_id_1`,
+          genome_id: 'human'
+        }
+      }
+    },
+    trackPanel: {
+      human: {
+        selectedTrackPanelTab: TrackSet.GENOMIC,
+        isTrackPanelOpened: true
+      }
+    },
+    drawer: {
+      general: {
+        human: {
+          drawerView: null as string | null
+        }
+      }
+    }
+  }
+};
 
-const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
+const renderComponent = (state = initialReduxState) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([restApiSlice.middleware]),
+    preloadedState: state as any
+  });
+
   return render(
     <Provider store={store}>
       <TrackPanelTabs />
     </Provider>
   );
 };
+
+beforeAll(() =>
+  server.listen({
+    onUnhandledRequest(req) {
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      throw new Error(errorMessage);
+    }
+  })
+);
+afterAll(() => server.close());
 
 describe('<TrackPanelTabs />', () => {
   beforeEach(() => {
@@ -93,13 +164,9 @@ describe('<TrackPanelTabs />', () => {
         await userEvent.click(tab);
         expect(trackPanelActions.toggleTrackPanel).not.toHaveBeenCalled();
 
-        container = renderComponent(
-          set(
-            `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,
-            false,
-            mockState
-          )
-        ).container;
+        const newState = structuredClone(initialReduxState);
+        newState.browser.trackPanel.human.isTrackPanelOpened = false;
+        container = renderComponent(newState).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         await userEvent.click(tab);
@@ -116,13 +183,9 @@ describe('<TrackPanelTabs />', () => {
         await userEvent.click(tab);
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
-        container = renderComponent(
-          set(
-            `browser.drawer.general.${activeGenomeId}.isDrawerOpened`,
-            true,
-            mockState
-          )
-        ).container;
+        const newState = structuredClone(initialReduxState);
+        newState.browser.drawer.general.human.drawerView = 'some view';
+        container = renderComponent(newState).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         await userEvent.click(tab);

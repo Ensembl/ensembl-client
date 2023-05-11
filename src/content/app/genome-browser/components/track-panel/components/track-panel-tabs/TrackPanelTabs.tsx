@@ -32,6 +32,7 @@ import {
   selectTrackPanelTab,
   toggleTrackPanel
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import { getIsBrowserSidebarModalOpened } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
@@ -46,8 +47,24 @@ export const TrackPanelTabs = () => {
   const isBrowserSidebarModalOpened = useAppSelector(
     getIsBrowserSidebarModalOpened
   );
+  const { currentData: genomeTrackCategories } = useGenomeTracksQuery(
+    focusObject?.genome_id ?? '',
+    {
+      skip: !focusObject?.genome_id
+    }
+  );
+
   const { reportTrackPanelTabChange } = useGenomeBrowserAnalytics();
   const dispatch = useAppDispatch();
+
+  const hasTracksInCategory = (trackSet: TrackSet) => {
+    return genomeTrackCategories?.reduce((hasTracks, category) => {
+      return (
+        (category.types.includes(trackSet) && category.track_list.length > 0) ||
+        hasTracks
+      );
+    }, false);
+  };
 
   const handleTabClick = (value: TrackSet) => {
     if (!focusObject?.genome_id) {
@@ -67,7 +84,10 @@ export const TrackPanelTabs = () => {
     dispatch(selectTrackPanelTab(value));
   };
 
-  const getTrackPanelTabClassNames = (trackSet: TrackSet) => {
+  const getTrackPanelTabClassNames = (
+    trackSet: TrackSet,
+    isDisabled: boolean
+  ) => {
     const isTrackPanelTabActive =
       isTrackPanelOpened &&
       focusObject?.genome_id &&
@@ -77,21 +97,27 @@ export const TrackPanelTabs = () => {
 
     return classNames(styles.trackPanelTab, {
       [styles.trackPanelTabActive]: isTrackPanelTabActive,
-      [styles.trackPanelTabDisabled]: !focusObject?.genome_id
+      [styles.trackPanelTabDisabled]: isDisabled
     });
   };
 
   return (
     <div className={`${styles.trackPanelTabs}`}>
-      {Object.values(TrackSet).map((value: TrackSet) => (
-        <span
-          className={getTrackPanelTabClassNames(value)}
-          key={value}
-          onClick={() => handleTabClick(value)}
-        >
-          {value}
-        </span>
-      ))}
+      {Object.values(TrackSet).map((tabName: TrackSet) => {
+        const isTabDisabled =
+          !focusObject?.genome_id || !hasTracksInCategory(tabName);
+        const isTabEnabled = !isTabDisabled;
+
+        return (
+          <span
+            className={getTrackPanelTabClassNames(tabName, isTabDisabled)}
+            key={tabName}
+            onClick={isTabEnabled ? () => handleTabClick(tabName) : undefined}
+          >
+            {tabName}
+          </span>
+        );
+      })}
     </div>
   );
 };
