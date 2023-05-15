@@ -70,17 +70,17 @@ type AppClickHandlers = Partial<Record<AppName, () => void>>;
  * into the component, which makes for an awkward api.
  */
 
+type Theme = 'light' | 'dark';
+
 export type ViewInAppProps = {
   links: LinksConfig;
   onAppClick?: AppClickHandlers;
   onAnyAppClick?: (appName?: AppName) => void;
-  classNames?: {
-    label?: string;
-  };
+  theme?: Theme;
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
-  const labelClass = classNames(styles.label, props.classNames?.label);
+  const theme = props.theme ?? 'light';
 
   const navigate = useNavigate();
   if (Object.keys(props.links).length === 0) {
@@ -107,13 +107,18 @@ export const ViewInApp = (props: ViewInAppProps) => {
     }
   };
 
+  const componentClasses = classNames(styles.viewInApp, {
+    [styles.viewInAppLight]: theme === 'light',
+    [styles.viewInAppDark]: theme === 'dark'
+  });
+
   const enabledApps = Object.keys({
     ...props.links
   }) as AppName[];
 
   return (
-    <div className={styles.viewInAppLinkButtons}>
-      <span className={labelClass}>View in</span>
+    <div className={componentClasses}>
+      <span className={styles.label}>View in</span>
 
       {enabledApps.map((appName, index) => {
         return (

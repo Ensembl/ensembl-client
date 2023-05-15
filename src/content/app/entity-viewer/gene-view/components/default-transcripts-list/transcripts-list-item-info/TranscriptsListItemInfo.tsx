@@ -282,7 +282,10 @@ export const TranscriptsListItemInfo = (
       </div>
       <div className={transcriptsListStyles.right}>
         <div className={styles.viewInApp}>
-          <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
+          <ViewInApp
+            theme="dark"
+            links={{ genomeBrowser: { url: getBrowserLink() } }}
+          />
         </div>
       </div>
     </div>

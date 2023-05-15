@@ -54,7 +54,7 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
             pointer: styles.pointerBoxPointer
           }}
         >
-          <ViewInApp links={links} />
+          <ViewInApp theme="dark" links={links} />
         </PointerBox>
       )}
     </span>

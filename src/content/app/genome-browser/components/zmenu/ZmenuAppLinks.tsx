@@ -83,7 +83,11 @@ const ZmenuAppLinks = (props: Props) => {
         className={styles.zmenuToggleFooter}
         label="Download"
       />
-      <ViewInApp links={links} onAnyAppClick={props.destroyZmenu} />
+      <ViewInApp
+        theme="dark"
+        links={links}
+        onAnyAppClick={props.destroyZmenu}
+      />
     </div>
   );
 };

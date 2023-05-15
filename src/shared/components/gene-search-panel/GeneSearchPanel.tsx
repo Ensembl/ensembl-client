@@ -282,7 +282,7 @@ const GeneMatch = (props: { match: SearchMatch; species: CommittedItem }) => {
           position={PointerBoxPosition.RIGHT_TOP}
           onOutsideClick={handleClick}
         >
-          <ViewInApp links={links} />
+          <ViewInApp theme="dark" links={links} />
         </PointerBox>
       )}
     </>
