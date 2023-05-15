@@ -62,12 +62,12 @@ $textColumnWidth: 450px;
   // But the version copied here has the fill color set inline, because it is being accessed as an external image via url
   a[href^='http'] {
     &::before {
-      content: url('static/icons/icon_xlink_orange.svg');
-      display: inline-block;
+      content: '';
+      background-image: url('static/icons/icon_xlink_orange.svg');
+      background-repeat: no-repeat;
+      background-position: center;
       margin: 0 0.125rem;
-      position: relative;
-      height: 10px;
-      width: 10px;
+      padding: 0 5px;
     }
   }
 }
