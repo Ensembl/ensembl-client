@@ -201,7 +201,7 @@ const MatchDetails = (
       </div>
 
       <div>
-        <ViewInApp links={links} onAnyAppClick={props.onClick} />
+        <ViewInApp theme="dark" links={links} onAnyAppClick={props.onClick} />
       </div>
     </div>
   );
