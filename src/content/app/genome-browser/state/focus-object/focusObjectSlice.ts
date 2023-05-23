@@ -135,6 +135,7 @@ const buildFocusVariantObject = (payload: {
     type: 'variant',
     genome_id: genomeId,
     object_id: objectId,
+    variant_id: variantId,
     label: variantId,
     location: {
       // just some arbitrary hardcoded location; this will change to proper data in the future

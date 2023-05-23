@@ -36,7 +36,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   const { focusVariant } = props;
   const { currentData: variantData } = useGbVariantQuery({
     genomeId: focusVariant.genome_id,
-    variantId: focusVariant.object_id // TODO: change this to the appropriate id with which to query variation api
+    variantId: focusVariant.variant_id // TODO: change this to the appropriate id with which to query variation api
   });
   const dispatch = useAppDispatch();
 

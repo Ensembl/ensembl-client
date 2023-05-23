@@ -45,7 +45,7 @@ const VariantSummaryWrapper = (props: {
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
-  const { genome_id: genomeId, object_id: variantId } = props.variant;
+  const { genome_id: genomeId, variant_id: variantId } = props.variant;
   const { currentData: variantData } = useGbVariantQuery({
     genomeId,
     variantId

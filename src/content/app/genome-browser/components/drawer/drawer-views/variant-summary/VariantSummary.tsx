@@ -17,6 +17,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'src/store';
+
+import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
+
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -29,6 +33,7 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 import VariantVCF from 'src/shared/components/variant-vcf/VariantVCF';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
+import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { VariantQueryResult } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
@@ -40,15 +45,18 @@ type Props = {
 
 const VariantSummary = (props: Props) => {
   const { variantId } = props.drawerView;
+  const focusVariant = useAppSelector((state) =>
+    getFocusObjectById(state, variantId)
+  ) as FocusVariant | null;
   const { activeGenomeId } = useGenomeBrowserIds();
 
   const { currentData: variantData, isFetching } = useGbVariantQuery(
     {
       genomeId: activeGenomeId || '',
-      variantId // TODO: change this to the appropriate id with which to query variation api
+      variantId: focusVariant?.variant_id ?? '' // TODO: change this to the appropriate id with which to query variation api
     },
     {
-      skip: !activeGenomeId
+      skip: !activeGenomeId || !focusVariant
     }
   );
 
