@@ -26,33 +26,14 @@ type MinimalSlice = Pick2<Slice, 'location', 'start' | 'end'> &
 
 type Props = {
   variant: {
-    alleles: {
-      slice: MinimalSlice;
-    }[];
+    slice: MinimalSlice;
   };
 };
 
-/**
- * Variant location is calculated as the maximum extent (on the reference sequence)
- * of all the variant's alleles.
- */
-
 const VariantLocation = (props: Props) => {
-  let start = Infinity;
-  let end = -Infinity;
-  const regionName = props.variant.alleles[0].slice.region.name;
-
-  for (const variantAllele of props.variant.alleles) {
-    const alleleStart = variantAllele.slice.location.start;
-    const alleleEnd = variantAllele.slice.location.end;
-
-    if (alleleStart < start) {
-      start = alleleStart;
-    }
-    if (alleleEnd > end) {
-      end = alleleEnd;
-    }
-  }
+  const regionName = props.variant.slice.region.name;
+  const start = props.variant.slice.location.start;
+  const end = props.variant.slice.location.end;
 
   const locationString = getFormattedLocation({
     chromosome: regionName,

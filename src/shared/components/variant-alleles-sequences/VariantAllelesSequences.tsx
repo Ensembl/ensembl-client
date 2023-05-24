@@ -16,6 +16,8 @@
 
 import React, { useState } from 'react';
 
+import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './VariantAllelesSequences.scss';
@@ -27,13 +29,15 @@ type Props = {
   alleles: {
     allele_sequence: string;
     reference_sequence: string;
+    allele_type: {
+      value: string;
+    };
   }[];
 };
 
 const VariantAllelesSequences = (props: Props) => {
   const { isExpandable = false } = props;
-  const { referenceSequence, alleleSequences, combinedString } =
-    prepareSequenceData(props);
+  const { alleleSequences, combinedString } = prepareSequenceData(props);
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -49,10 +53,7 @@ const VariantAllelesSequences = (props: Props) => {
     return (
       <div>
         {isExpanded ? (
-          <ExpandedView
-            referenceSequence={referenceSequence}
-            alleleSequences={alleleSequences}
-          />
+          <ExpandedView alleleSequences={alleleSequences} />
         ) : (
           <div>
             <CompactView sequence={combinedString} />
@@ -77,15 +78,11 @@ const CompactView = (props: { sequence: string }) => {
   return <span>{trimmedSequence}</span>;
 };
 
-const ExpandedView = (props: {
-  referenceSequence: string;
-  alleleSequences: string[];
-}) => {
-  const { referenceSequence, alleleSequences } = props;
+const ExpandedView = (props: { alleleSequences: string[] }) => {
+  const { alleleSequences } = props;
 
   return (
     <div className={styles.expanded}>
-      <span>{referenceSequence}/</span>
       {alleleSequences.map((sequence, index) => (
         <span key={index}>
           {sequence}
@@ -96,17 +93,24 @@ const ExpandedView = (props: {
   );
 };
 
-// TODO: make sure not to include reference allele sequence in the list of alternative allele sequences
 const prepareSequenceData = (props: Props) => {
-  const referenceSequence = props.alleles[0].reference_sequence;
-  const alleleSequences = props.alleles.map(
-    ({ allele_sequence }) => allele_sequence
+  const { referenceAllele, alternativeAlleles } = getReferenceAndAltAlleles(
+    props.alleles
   );
 
-  const combinedString = `${referenceSequence}/${alleleSequences.join('/')}`;
+  const alleleSequences = alternativeAlleles.map(
+    (allele) => allele.allele_sequence
+  );
+
+  if (referenceAllele) {
+    // we expect reference allele to always exist in the data;
+    // but no harm in checking
+    alleleSequences.unshift(referenceAllele.reference_sequence);
+  }
+
+  const combinedString = alleleSequences.join('/');
 
   return {
-    referenceSequence,
     alleleSequences,
     combinedString
   };

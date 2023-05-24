@@ -16,17 +16,27 @@
 
 export const rs699 = {
   name: 'rs699',
+  slice: {
+    location: {
+      start: 230710048
+    },
+    region: {
+      name: '1'
+    }
+  },
   alleles: [
+    {
+      allele_sequence: 'A',
+      reference_sequence: 'A',
+      allele_type: {
+        value: 'biological_region'
+      }
+    },
     {
       allele_sequence: 'G',
       reference_sequence: 'A',
-      slice: {
-        location: {
-          start: 230710048
-        },
-        region: {
-          name: '1'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     }
   ]
@@ -34,161 +44,111 @@ export const rs699 = {
 
 export const rs71197234 = {
   name: 'rs71197234',
+  slice: {
+    location: {
+      start: 57932509
+    },
+    region: {
+      name: '13'
+    }
+  },
   alleles: [
     {
       reference_sequence: 'ATATATATATATAT',
+      allele_sequence: 'ATATATATATATAT',
+      allele_type: {
+        value: 'biological_region'
+      }
+    },
+    {
+      reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATACACACACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATACATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATATACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATATATATATACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     },
     {
       reference_sequence: 'ATATATATATATAT',
       allele_sequence: 'ATATATATATATATATATATATATATATACACATATATATATATAT',
-      slice: {
-        location: {
-          start: 57932509
-        },
-        region: {
-          name: '13'
-        }
+      allele_type: {
+        value: 'insertion'
       }
     }
   ]

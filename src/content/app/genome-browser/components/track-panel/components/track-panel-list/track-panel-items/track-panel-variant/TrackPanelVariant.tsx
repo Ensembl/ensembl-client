@@ -66,6 +66,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
         <span className={trackPanelItemStyles.labelTextStrong}>
           {focusVariant.label}
         </span>
+        <span className={styles.variantType}>{variant.allele_type.value}</span>
       </SimpleTrackPanelItemLayout>
 
       <div className={styles.variantDetais}>

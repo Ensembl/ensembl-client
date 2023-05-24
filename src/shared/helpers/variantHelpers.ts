@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import type { Slice } from '../thoas/slice';
-import type { ExternalReference } from '../thoas/externalReference';
-import type { ExternalDB } from '../thoas/externalDb';
-import type { OntologyTermMetadata } from '../thoas/metadata';
-import type { VariantPredictionResult } from './variantPredictionResult';
-import type { VariantAllele } from './variantAllele';
+export const getReferenceAndAltAlleles = <
+  T extends {
+    allele_type: {
+      value: string;
+    };
+  }
+>(
+  alleles: Array<T>
+) => {
+  const referenceAlleleIndex = alleles.findIndex(
+    (allele) => allele.allele_type.value === 'biological_region'
+  );
 
-export type Variant = {
-  type: 'Variant';
-  name: string; // this is an rsID identifier
-  slice: Slice;
-  allele_type: OntologyTermMetadata;
-  alternative_names: ExternalReference[];
-  primary_source: ExternalDB;
-  prediction_results: VariantPredictionResult[];
-  alleles: VariantAllele[];
+  const referenceAllele = alleles[referenceAlleleIndex];
+  const alternativeAlleles = alleles.filter(
+    (_, index) => index !== referenceAlleleIndex
+  );
+
+  return {
+    referenceAllele: referenceAllele as T | undefined, // should always exist; but technically, the find operation may result in an undefined
+    alternativeAlleles
+  };
 };

@@ -21,7 +21,7 @@ const rs699 = {
   alternative_names: [],
   slice: {
     location: {
-      start: 3230710048,
+      start: 230710048,
       end: 230710048,
       length: 1
     },
@@ -109,7 +109,7 @@ const rs699 = {
       name: 'NC_000001.1:230710048:A:G',
       slice: {
         location: {
-          start: 3230710048,
+          start: 230710048,
           end: 230710048,
           length: 1
         },
@@ -345,7 +345,7 @@ const rs699 = {
       name: 'NC_000001.1:230710048:A:A',
       slice: {
         location: {
-          start: 3230710048,
+          start: 230710048,
           end: 230710048,
           length: 1
         },
@@ -365,7 +365,7 @@ const rs699 = {
       type: 'VariantAllele',
       allele_type: {
         accession_id: 'SO:0001411',
-        value: 'biological_region ',
+        value: 'biological_region',
         url: 'www.sequenceontology.org/browser/current_release/term/SO:0001411',
         source: {
           id: '...',

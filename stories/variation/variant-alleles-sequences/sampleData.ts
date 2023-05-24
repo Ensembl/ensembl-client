@@ -16,62 +16,118 @@
 
 export const rs699Alleles = [
   {
+    allele_sequence: 'A',
+    reference_sequence: 'A',
+    allele_type: {
+      value: 'biological_region'
+    }
+  },
+  {
     allele_sequence: 'G',
-    reference_sequence: 'A'
+    reference_sequence: 'A',
+    allele_type: {
+      value: 'insertion'
+    }
   }
 ];
 
 export const rs71197234Alleles = [
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATACACACACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATAT',
+    allele_type: {
+      value: 'biological_region'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATACACACACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATACATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATACATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATATACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATATACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATATATATATACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   },
   {
     reference_sequence: 'ATATATATATATAT',
-    allele_sequence: 'ATATATATATATATATATATATATATATACACATATATATATATAT'
+    allele_sequence: 'ATATATATATATATATATATATATATACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
+  },
+  {
+    reference_sequence: 'ATATATATATATAT',
+    allele_sequence: 'ATATATATATATATATATATATATATATACACATATATATATATAT',
+    allele_type: {
+      value: 'insertion'
+    }
   }
 ];

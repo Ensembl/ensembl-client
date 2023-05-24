@@ -87,7 +87,7 @@ const rs202155613 = {
     },
     {
       score: null,
-      result: 'stop gained',
+      result: 'stop_gained',
       analysis_method: {
         tool: 'Ensembl VEP',
         qualifier: 'most severe  consequence',
@@ -2110,7 +2110,7 @@ const rs202155613 = {
       type: 'VariantAllele',
       allele_type: {
         accession_id: 'SO:0001411',
-        value: 'biological_region ',
+        value: 'biological_region',
         url: 'www.sequenceontology.org/browser/current_release/term/SO:0001411',
         source: {
           id: '...',

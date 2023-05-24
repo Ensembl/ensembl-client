@@ -17,23 +17,26 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+
 import Copy from 'src/shared/components/copy/Copy';
 
 import styles from './VariantVCF.scss';
 
 type MinimumVariantData = {
   name: string;
+  slice: {
+    location: {
+      start: number;
+    };
+    region: {
+      name: string;
+    };
+  };
   alleles: {
     reference_sequence: string;
     allele_sequence: string;
-    slice: {
-      location: {
-        start: number;
-      };
-      region: {
-        name: string;
-      };
-    };
+    allele_type: { value: string };
   }[];
 };
 
@@ -64,11 +67,14 @@ const VariantVCF = (props: Props) => {
 
 export const getVCFStringParts = (variant: MinimumVariantData) => {
   const variantName = variant.name;
-  const firstAllele = variant.alleles[0];
-  const regionName = firstAllele.slice.region.name;
-  const startCoordinate = firstAllele.slice.location.start;
-  const referenceAlleleSequence = firstAllele.reference_sequence;
-  const alternativeAlleleSequences = variant.alleles.map(
+  const startCoordinate = variant.slice.location.start;
+  const regionName = variant.slice.region.name;
+
+  const { referenceAllele, alternativeAlleles } = getReferenceAndAltAlleles(
+    variant.alleles
+  );
+  const referenceAlleleSequence = referenceAllele?.reference_sequence ?? '';
+  const alternativeAlleleSequences = alternativeAlleles.map(
     (allele) => allele.allele_sequence
   );
 

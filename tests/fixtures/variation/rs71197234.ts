@@ -88,7 +88,7 @@ const rs71197234 = {
     },
     {
       score: null,
-      result: 'intergenic variant',
+      result: 'intergenic_variant',
       classification: {},
       analysis_method: {
         tool: 'Ensembl VEP',
@@ -4234,12 +4234,12 @@ const rs71197234 = {
           value: 1
         }
       },
-      allele_sequence: 'ATATATATATATAT',
-      reference_sequence: '',
+      allele_sequence: '',
+      reference_sequence: 'ATATATATATATAT',
       type: 'VariantAllele',
       allele_type: {
         accession_id: 'SO:0001411',
-        value: 'biological_region ',
+        value: 'biological_region',
         url: 'www.sequenceontology.org/browser/current_release/term/SO:0001411',
         source: {
           id: '...',

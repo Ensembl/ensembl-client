@@ -77,6 +77,9 @@ const VariantSummary = (props: Props) => {
         <div className={styles.label}>Variant</div>
         <div className={styles.value}>
           <span className={styles.strong}>{variant.name}</span>
+          <span className={classNames(styles.light, styles.withSpaceLeft)}>
+            {variant.allele_type.value}
+          </span>
         </div>
       </div>
 
@@ -89,7 +92,7 @@ const VariantSummary = (props: Props) => {
 
       <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Alleles</div>
-        <div className={styles.value}>
+        <div className={classNames(styles.value, styles.variantSequenceBlock)}>
           <VariantAllelesSequences
             alleles={variant.alleles}
             isExpandable={true}
@@ -170,7 +173,7 @@ const VariantSummary = (props: Props) => {
 
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
-        <div className={styles.value}>
+        <div className={classNames(styles.value, styles.variantSequenceBlock)}>
           <VariantVCF variant={variant} withCopy={true} />
         </div>
       </div>
