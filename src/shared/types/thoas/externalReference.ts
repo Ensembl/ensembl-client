@@ -19,8 +19,8 @@ import { Source } from './source';
 export type ExternalReference = {
   accession_id: string;
   name: string;
-  description: string;
-  url: string;
+  description: string | null;
+  url: string | null;
   source: Source;
 };
 

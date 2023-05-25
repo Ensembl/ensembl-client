@@ -22,7 +22,7 @@ import ExternalLink from '../external-link/ExternalLink';
 import styles from './ExternalReference.scss';
 
 export type ExternalReferenceProps = {
-  label?: string;
+  label?: string | null;
   to: string;
   linkText: string;
   classNames?: {
