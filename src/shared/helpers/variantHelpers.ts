@@ -23,17 +23,19 @@ export const getReferenceAndAltAlleles = <
 >(
   alleles: Array<T>
 ) => {
-  const referenceAlleleIndex = alleles.findIndex(
-    (allele) => allele.allele_type.value === 'biological_region'
-  );
+  let referenceAllele;
+  const alternativeAlleles: T[] = [];
 
-  const referenceAllele = alleles[referenceAlleleIndex];
-  const alternativeAlleles = alleles.filter(
-    (_, index) => index !== referenceAlleleIndex
-  );
+  for (const allele of alleles) {
+    if (allele.allele_type.value === 'biological_region') {
+      referenceAllele = allele;
+    } else {
+      alternativeAlleles.push(allele);
+    }
+  }
 
   return {
-    referenceAllele: referenceAllele as T | undefined, // should always exist; but technically, the find operation may result in an undefined
+    referenceAllele,
     alternativeAlleles
   };
 };
