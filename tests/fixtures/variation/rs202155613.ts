@@ -767,7 +767,32 @@ const rs202155613 = {
           is_hpmaf: false
         }
       ],
-      phenotype_assertions: []
+      phenotype_assertions: [
+        {
+          feature: 'NC_000013.11:32379901:C:A',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'Hereditary cancer-predisposing syndrome'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.uncertain_significance',
+                value: 'uncertain_significance',
+                label: 'uncertain significance',
+                definition: 'Clinical significance is uncertain significance',
+                description: ''
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'NC_000013.11:32379901:C:G',

@@ -269,36 +269,26 @@ const rs699 = {
       ],
       phenotype_assertions: [
         {
-          feature: 'NC_000001.1:230710048A:G',
+          feature: 'NC_000001.1:230710048:A:G',
           feature_type: 'VariantAllele',
           phenotype: {
-            term: 'Coronary Artery Disease'
+            term: 'Hypertensive disorder'
           },
           evidence: [
             {
               source: {
-                id: 'NHGRI-EBI_GWAS_catalog',
-                name: 'NHGRI-EBI GWAS catalog',
-                description: null,
-                url: null,
-                release: '2021-07-01'
+                name: 'ClinVar',
+                release: '2021-07-07'
               },
               citations: [],
-              attributes: [
-                {
-                  type: 'beta_coefficient',
-                  value: '0.036 unitdecrease'
-                },
-                {
-                  type: 'associated_gene',
-                  value: 'AGT'
-                },
-                {
-                  type: 'pvalue',
-                  value: '2.00e-8'
-                }
-              ],
-              assertion: {}
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.benign',
+                value: 'benign',
+                label: 'benign',
+                definition: 'Clinical significance is benign',
+                description: ''
+              }
             }
           ]
         },
@@ -312,28 +302,15 @@ const rs699 = {
             {
               source: {
                 name: 'ClinVar',
-                version: '2021-07-07'
+                release: '2021-07-07'
               },
               citations: [],
-              attributes: [
-                {
-                  type: 'review status',
-                  value: 'expert panel'
-                },
-                {
-                  type: 'associated_gene',
-                  value: 'AGT'
-                },
-                {
-                  type: 'external identifier',
-                  value: 'MIM:106150'
-                }
-              ],
+              attributes: [],
               assertion: {
-                accession_id: 'evidence.assertion',
+                accession_id: 'evidence.assertion.risk_factor',
                 value: 'risk_factor',
                 label: 'risk factor',
-                definition: 'Review status: no assertion criteria provided',
+                definition: 'Clinical significance is risk factor',
                 description: ''
               }
             }

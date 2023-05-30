@@ -421,7 +421,56 @@ const rs71197234 = {
           is_hpmaf: false
         }
       ],
-      phenotype_assertions: []
+      phenotype_assertions: [
+        {
+          feature: 'NC_000013.11:57932522::ATATATATATATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'BREAST-OVARIAN CANCER, FAMILIAL, SUSCEPTIBILITY TO, 2'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.pathogenic',
+                value: 'pathogenic',
+                label: 'pathogenic',
+                definition: 'Clinical significance is pathogenic',
+                description: ''
+              }
+            }
+          ]
+        },
+        {
+          feature: 'NC_000013.11:57932522::ATATATATATATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'Hereditary breast ovarian cancer syndrome'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.pathogenic',
+                value: 'pathogenic',
+                label: 'pathogenic',
+                definition: 'Clinical significance is pathogenic',
+                description: ''
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'NC_000013.11:57932522::ATACACATATATATATATAT',
@@ -738,7 +787,32 @@ const rs71197234 = {
           is_hpmaf: false
         }
       ],
-      phenotype_assertions: []
+      phenotype_assertions: [
+        {
+          feature: 'NC_000013.11:57932522::ATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'Hereditary cancer-predisposing syndrome'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.uncertain_significance',
+                value: 'uncertain_significance',
+                label: 'uncertain significance',
+                definition: 'Clinical significance is uncertain significance',
+                description: ''
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'NC_000013.11:57932522::ATATATATATACACATATATATATATAT',
@@ -1054,7 +1128,56 @@ const rs71197234 = {
           is_hpmaf: false
         }
       ],
-      phenotype_assertions: []
+      phenotype_assertions: [
+        {
+          feature: 'NC_000013.11:57932522::ATATATATATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'BREAST-OVARIAN CANCER, FAMILIAL, SUSCEPTIBILITY TO, 2'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.pathogenic',
+                value: 'pathogenic',
+                label: 'pathogenic',
+                definition: 'Clinical significance is pathogenic',
+                description: ''
+              }
+            }
+          ]
+        },
+        {
+          feature: 'NC_000013.11:57932522::ATATATATATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'Hereditary breast ovarian cancer syndrome'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.pathogenic',
+                value: 'pathogenic',
+                label: 'pathogenic',
+                definition: 'Clinical significance is pathogenic',
+                description: ''
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'NC_000013.11:57932522::ATATATATATATATACACATATATATATATAT',
@@ -1370,7 +1493,32 @@ const rs71197234 = {
           is_hpmaf: false
         }
       ],
-      phenotype_assertions: []
+      phenotype_assertions: [
+        {
+          feature: 'NC_000013.11:57932522::ATATATATATATATACACATATATATATATAT',
+          feature_type: 'VariantAllele',
+          phenotype: {
+            term: 'Hereditary cancer-predisposing syndrome'
+          },
+          evidence: [
+            {
+              source: {
+                name: 'ClinVar',
+                release: '2021-07-07'
+              },
+              citations: [],
+              attributes: [],
+              assertion: {
+                accession_id: 'evidence.assertion.uncertain_significance',
+                value: 'uncertain_significance',
+                label: 'uncertain significance',
+                definition: 'Clinical significance is uncertain significance',
+                description: ''
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       name: 'NC_000013.11:57932522::ATACATATATATACACATATATATATATAT',

@@ -30,6 +30,7 @@ type PreparedVariantSummaryData = {
     frequency: number;
   };
   clinicalSignificance: {
+    condition: string;
     sequence: string;
     significance: string;
   }[];
@@ -100,10 +101,13 @@ const addClinicalSignificance = (
 
   for (const phenotypeAssertion of variantAllele.phenotype_assertions) {
     for (const evidence of phenotypeAssertion.evidence) {
-      store.clinicalSignificance.push({
-        sequence: variantAllele.allele_sequence,
-        significance: evidence.assertion.label
-      });
+      if (evidence.source.name === 'ClinVar') {
+        store.clinicalSignificance.push({
+          condition: phenotypeAssertion.phenotype.term,
+          sequence: variantAllele.allele_sequence,
+          significance: evidence.assertion.label
+        });
+      }
     }
   }
 };

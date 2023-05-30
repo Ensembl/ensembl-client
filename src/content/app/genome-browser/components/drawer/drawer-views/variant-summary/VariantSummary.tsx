@@ -216,13 +216,13 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
 };
 
 const ClinicalSignificance = (props: {
-  data: { sequence: string; significance: string }[];
+  data: { condition: string; sequence: string; significance: string }[];
 }) => {
   return (
     <div className={styles.clinicalSignificance}>
       {props.data.map((data, index) => (
         <span key={index}>
-          {data.significance} ({data.sequence})
+          {data.condition} — {data.significance} ({data.sequence})
         </span>
       ))}
     </div>
