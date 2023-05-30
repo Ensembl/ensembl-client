@@ -17,6 +17,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'src/store';
+
+import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
+
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -29,6 +33,7 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 import VariantVCF from 'src/shared/components/variant-vcf/VariantVCF';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
+import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { VariantQueryResult } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
@@ -40,15 +45,18 @@ type Props = {
 
 const VariantSummary = (props: Props) => {
   const { variantId } = props.drawerView;
+  const focusVariant = useAppSelector((state) =>
+    getFocusObjectById(state, variantId)
+  ) as FocusVariant | null;
   const { activeGenomeId } = useGenomeBrowserIds();
 
   const { currentData: variantData, isFetching } = useGbVariantQuery(
     {
       genomeId: activeGenomeId || '',
-      variantId // TODO: change this to the appropriate id with which to query variation api
+      variantId: focusVariant?.variant_id ?? '' // TODO: change this to the appropriate id with which to query variation api
     },
     {
-      skip: !activeGenomeId
+      skip: !activeGenomeId || !focusVariant
     }
   );
 
@@ -69,6 +77,9 @@ const VariantSummary = (props: Props) => {
         <div className={styles.label}>Variant</div>
         <div className={styles.value}>
           <span className={styles.strong}>{variant.name}</span>
+          <span className={classNames(styles.light, styles.withSpaceLeft)}>
+            {variant.allele_type.value}
+          </span>
         </div>
       </div>
 
@@ -81,7 +92,7 @@ const VariantSummary = (props: Props) => {
 
       <div className={classNames(styles.row, styles.newRowGroup)}>
         <div className={styles.label}>Alleles</div>
-        <div className={styles.value}>
+        <div className={classNames(styles.value, styles.variantSequenceBlock)}>
           <VariantAllelesSequences
             alleles={variant.alleles}
             isExpandable={true}
@@ -162,7 +173,7 @@ const VariantSummary = (props: Props) => {
 
       <div className={styles.row}>
         <div className={styles.label}>VCF</div>
-        <div className={styles.value}>
+        <div className={classNames(styles.value, styles.variantSequenceBlock)}>
           <VariantVCF variant={variant} withCopy={true} />
         </div>
       </div>
@@ -205,13 +216,13 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
 };
 
 const ClinicalSignificance = (props: {
-  data: { sequence: string; significance: string }[];
+  data: { condition: string; sequence: string; significance: string }[];
 }) => {
   return (
     <div className={styles.clinicalSignificance}>
       {props.data.map((data, index) => (
         <span key={index}>
-          {data.significance} ({data.sequence})
+          {data.condition} — {data.significance} ({data.sequence})
         </span>
       ))}
     </div>

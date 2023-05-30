@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { VariantStudyPopulation } from './variantStudyPopulation';
 import { ValueSetMetadata } from '../thoas/metadata';
 
 export type VariantAllelePopulationFrequency = {
-  population: VariantStudyPopulation;
-  allele_count: number; // Number of individuals/samples in the population where variant allele is found
-  allele_number: number; // Total number of alleles in called genotypes
+  population: string;
+  allele_count: number | null; // Number of individuals/samples in the population where variant allele is found
+  allele_number: number | null; // Total number of alleles in called genotypes
   allele_frequency: number;
   dataset: FrequencyDataset;
   qc_filter: ValueSetMetadata;

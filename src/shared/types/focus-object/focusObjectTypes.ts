@@ -47,6 +47,7 @@ export type FocusLocation = BasicFocusObject & {
 
 export type FocusVariant = BasicFocusObject & {
   type: 'variant';
+  variant_id: string; // to store the variant id as it is read from the url; this field will likely change when we change what a variant id is
 };
 
 export type FocusObject = FocusGene | FocusLocation | FocusVariant;

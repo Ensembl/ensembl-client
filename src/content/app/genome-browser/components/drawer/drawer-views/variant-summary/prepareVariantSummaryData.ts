@@ -30,6 +30,7 @@ type PreparedVariantSummaryData = {
     frequency: number;
   };
   clinicalSignificance: {
+    condition: string;
     sequence: string;
     significance: string;
   }[];
@@ -94,51 +95,40 @@ const addVariantAllelePopulationFrequencyData = (
 
 const addClinicalSignificance = (
   variantAllele: Variant['alleles'][0],
-  store: Record<string, unknown>
+  store: Partial<PreparedVariantSummaryData>
 ) => {
-  const clinicalSignificanceData: PreparedVariantSummaryData['clinicalSignificance'] =
-    [];
+  store.clinicalSignificance = store.clinicalSignificance ?? [];
 
   for (const phenotypeAssertion of variantAllele.phenotype_assertions) {
     for (const evidence of phenotypeAssertion.evidence) {
-      clinicalSignificanceData.push({
-        sequence: variantAllele.allele_sequence,
-        significance: evidence.assertion.label
-      });
-
-      for (const attribute of evidence.attributes) {
-        if (attribute.type === 'clin_sig') {
-          clinicalSignificanceData.push({
-            sequence: variantAllele.allele_sequence,
-            significance: attribute.value
-          });
-        }
+      if (evidence.source.name === 'ClinVar') {
+        store.clinicalSignificance.push({
+          condition: phenotypeAssertion.phenotype.term,
+          sequence: variantAllele.allele_sequence,
+          significance: evidence.assertion.label
+        });
       }
     }
   }
-
-  store.clinicalSignificance = clinicalSignificanceData;
 };
 
 const addVariantAllelePredictions = (
   variantAllele: Variant['alleles'][0],
-  store: Record<string, unknown>
+  store: Partial<PreparedVariantSummaryData>
 ) => {
-  const caddScores: PreparedVariantSummaryData['caddScores'] = [];
+  store.caddScores = store.caddScores ?? [];
 
   for (const predictionResult of variantAllele.prediction_results) {
     if (
       predictionResult.analysis_method.tool === 'CADD' &&
       predictionResult.score
     ) {
-      caddScores.push({
+      store.caddScores.push({
         sequence: variantAllele.allele_sequence,
         score: predictionResult.score
       });
     }
   }
-
-  store.caddScores = caddScores;
 };
 
 export default memoize(prepareVariantSummaryData);

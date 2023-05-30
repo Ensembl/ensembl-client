@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-import { ValueSetMetadata } from '../thoas/metadata';
+export const getReferenceAndAltAlleles = <
+  T extends {
+    allele_type: {
+      value: string;
+    };
+  }
+>(
+  alleles: Array<T>
+) => {
+  let referenceAllele;
+  const alternativeAlleles: T[] = [];
 
-export type VariantStudyPopulation = {
-  name: string;
-  size: number;
-  description: string;
-  type: ValueSetMetadata;
-  is_global: boolean;
-  is_from_genotypes: boolean;
-  display_group_name: string; // The name of the group of populations this population belongs to; serves for grouping purposes
-  super_population: VariantStudyPopulation | null;
-  sub_populations: VariantStudyPopulation[];
+  for (const allele of alleles) {
+    if (allele.allele_type.value === 'biological_region') {
+      referenceAllele = allele;
+    } else {
+      alternativeAlleles.push(allele);
+    }
+  }
+
+  return {
+    referenceAllele,
+    alternativeAlleles
+  };
 };

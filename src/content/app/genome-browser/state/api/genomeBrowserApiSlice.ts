@@ -32,11 +32,11 @@ import {
   type TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
-import { variantRs699 } from 'tests/fixtures/variation/variant'; // temporary dummy data until variation backend is ready
 import { type VariantQueryResult } from './queries/variantQuery'; // will add a real query when variation backend is ready
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
+import type { Variant } from 'src/shared/types/variation-api/variant';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
@@ -92,8 +92,20 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
     gbVariant: builder.query<VariantQueryResult, VariantQueryParams>({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       queryFn: async (params) => {
+        const { variantId } = params;
+        const knownVariantIds = ['rs699', 'rs71197234', 'rs202155613'];
+
+        const variantIdToImport = knownVariantIds.includes(variantId)
+          ? variantId
+          : knownVariantIds[1];
+
+        const variantDataModule = await import(
+          `tests/fixtures/variation/${variantIdToImport}`
+        );
+        const variantData = variantDataModule.default as Variant;
+
         return {
-          data: { variant: variantRs699 }
+          data: { variant: variantData }
         };
       }
     })

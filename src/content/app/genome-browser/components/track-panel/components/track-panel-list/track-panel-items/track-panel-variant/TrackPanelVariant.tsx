@@ -36,7 +36,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   const { focusVariant } = props;
   const { currentData: variantData } = useGbVariantQuery({
     genomeId: focusVariant.genome_id,
-    variantId: focusVariant.object_id // TODO: change this to the appropriate id with which to query variation api
+    variantId: focusVariant.variant_id // TODO: change this to the appropriate id with which to query variation api
   });
   const dispatch = useAppDispatch();
 
@@ -66,6 +66,7 @@ const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
         <span className={trackPanelItemStyles.labelTextStrong}>
           {focusVariant.label}
         </span>
+        <span className={styles.variantType}>{variant.allele_type.value}</span>
       </SimpleTrackPanelItemLayout>
 
       <div className={styles.variantDetais}>
