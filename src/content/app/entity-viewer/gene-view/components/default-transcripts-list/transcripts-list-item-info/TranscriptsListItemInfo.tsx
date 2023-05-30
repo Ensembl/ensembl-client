@@ -189,7 +189,7 @@ export const TranscriptsListItemInfo = (
                 onClick={() => handleExternalReferenceClick('RefSeq match')}
               />
             )}
-            {!!transcriptCCDS?.url && (
+            {transcriptCCDS?.url && (
               <ExternalReference
                 classNames={{
                   link: styles.externalRefLink
