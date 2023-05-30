@@ -173,23 +173,25 @@ const ExternalReferencesGroup = (props: {
     setExternalReferencesGroupOpen(!isExternalReferencesGroupOpen);
 
   const { references, source } = props.externalReferencesGroup;
-  const externalReferencesList = references.map((entry, key) => (
-    <ExternalReference
-      label={
-        entry.description === entry.accession_id ||
-        source.name === entry.description
-          ? ''
-          : entry.description
-      }
-      to={entry.url}
-      linkText={entry.accession_id}
-      key={key}
-      classNames={{
-        container: styles.externalReferenceContainer,
-        link: styles.externalReferenceLink
-      }}
-    />
-  ));
+  const externalReferencesList = references.map((entry, key) =>
+    entry.url ? (
+      <ExternalReference
+        label={
+          entry.description === entry.accession_id ||
+          source.name === entry.description
+            ? ''
+            : entry.description
+        }
+        to={entry.url}
+        linkText={entry.accession_id}
+        key={key}
+        classNames={{
+          container: styles.externalReferenceContainer,
+          link: styles.externalReferenceLink
+        }}
+      />
+    ) : null
+  );
 
   return (
     <>
@@ -257,16 +259,18 @@ const renderExternalReferencesGroups = (
     (externalReferencesGroup, key) => (
       <div key={key}>
         {externalReferencesGroup.references.length === 1 ? (
-          <ExternalReference
-            label={externalReferencesGroup.source.name}
-            to={externalReferencesGroup.references[0].url}
-            linkText={externalReferencesGroup.references[0].accession_id}
-            onClick={() => onClick(externalReferencesGroup.source.name)}
-            classNames={{
-              container: styles.externalReferenceContainer,
-              link: styles.externalReferenceLink
-            }}
-          />
+          externalReferencesGroup.references[0].url ? (
+            <ExternalReference
+              label={externalReferencesGroup.source.name}
+              to={externalReferencesGroup.references[0].url}
+              linkText={externalReferencesGroup.references[0].accession_id}
+              onClick={() => onClick(externalReferencesGroup.source.name)}
+              classNames={{
+                container: styles.externalReferenceContainer,
+                link: styles.externalReferenceLink
+              }}
+            />
+          ) : null
         ) : (
           <ExternalReferencesGroup
             externalReferencesGroup={externalReferencesGroup}

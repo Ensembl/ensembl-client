@@ -254,7 +254,7 @@ const TranscriptSummary = (props: Props) => {
             {product && (
               <div className={styles.lightText}>{product.stable_id}</div>
             )}
-            {uniprotXref && (
+            {uniprotXref?.url && (
               <ExternalReference
                 label={'UniProtKB/Swiss-Prot'}
                 to={uniprotXref.url}
@@ -265,7 +265,7 @@ const TranscriptSummary = (props: Props) => {
         </div>
       )}
 
-      {ccdsXref && (
+      {ccdsXref?.url && (
         <div className={`${styles.row} ${styles.spaceAbove}`}>
           <div className={styles.value}>
             <ExternalReference
