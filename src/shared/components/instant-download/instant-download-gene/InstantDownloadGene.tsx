@@ -165,7 +165,7 @@ const InstantDownloadGene = (props: Props) => {
         onChange={onTranscriptOptionChange}
       />
       <InstantDownloadButton
-        isDisabled={isButtonDisabled}
+        disabled={isButtonDisabled}
         onClick={onSubmit}
         theme={theme}
         classNames={{

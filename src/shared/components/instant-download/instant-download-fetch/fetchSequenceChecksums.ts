@@ -106,6 +106,14 @@ type TranscriptQueryResult = {
   transcript: TranscriptInResponse;
 };
 
+type RegionSequenceChecksumQueryResult = {
+  region: {
+    sequence: {
+      checksum: string;
+    };
+  };
+};
+
 type GeneAndTranscriptQueryVariables = {
   genomeId: string;
   geneId: string;
@@ -219,6 +227,16 @@ const transcriptChecksumsQuery = gql`
   ${transcriptQueryFragment}
 `;
 
+const regioSequenceChecksumQuery = gql`
+  query Region($genomeId: String!, $regionName: String!) {
+    region(by_name: { genome_id: $genomeId, name: $regionName }) {
+      sequence {
+        checksum
+      }
+    }
+  }
+`;
+
 const processGeneAndTranscriptData = (data: GeneAndTranscriptQueryResult) => {
   const { gene, transcript } = data;
 
@@ -304,4 +322,16 @@ export const fetchTranscriptSequenceMetadata = (
     transcriptChecksumsQuery,
     variables
   ).then((data) => processTranscriptData(data.transcript));
+};
+
+export const fetchRegionSequenceChecksum = async (variables: {
+  genomeId: string;
+  regionName: string;
+}): Promise<string> => {
+  const data = await request<RegionSequenceChecksumQueryResult>(
+    '/api/thoas',
+    regioSequenceChecksumQuery,
+    variables
+  );
+  return data.region.sequence.checksum;
 };

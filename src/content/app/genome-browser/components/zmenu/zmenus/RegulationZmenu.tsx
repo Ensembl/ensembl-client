@@ -16,11 +16,20 @@
 
 import React from 'react';
 
+import { useAppSelector } from 'src/store';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
 import ZmenuContent from '../ZmenuContent';
+import {
+  ToolboxExpandableContent,
+  ToggleButton
+} from 'src/shared/components/toolbox';
+import InstantDownloadRegFeature from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadRegFeature';
 
 import type {
   ZmenuPayload,
-  ZmenuContentVariantMetadata
+  ZmenuContentRegulation
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 type Props = {
@@ -30,19 +39,46 @@ type Props = {
 
 const RegulationZmenu = (props: Props) => {
   const { content } = props.payload;
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) || '';
 
-  const variantMetadata = content[0]?.metadata as
-    | ZmenuContentVariantMetadata
-    | undefined;
-  const variantId = variantMetadata?.id ?? '';
+  const featureMetadata = extractFeatureMetadata(props.payload);
+
+  const mainContent = (
+    <div>
+      <ZmenuContent
+        features={content}
+        featureId={`regulation:${featureMetadata.id}`} /* we can't navigate to regulatory feature anyway */
+        destroyZmenu={props.onDestroy}
+      />
+      <ToggleButton label="Download" />
+    </div>
+  );
+
+  const footerContent = genomeId ? (
+    <InstantDownloadRegFeature genomeId={genomeId} {...featureMetadata} />
+  ) : null;
 
   return (
-    <ZmenuContent
-      features={content}
-      featureId={`variant:${variantId}`}
-      destroyZmenu={props.onDestroy}
+    <ToolboxExpandableContent
+      mainContent={mainContent}
+      footerContent={footerContent}
     />
   );
+};
+
+const extractFeatureMetadata = (payload: ZmenuPayload) => {
+  const zmenuContent = payload.content[0] as ZmenuContentRegulation;
+  const featureMetadata = zmenuContent.metadata;
+
+  return {
+    id: featureMetadata.id,
+    regionName: featureMetadata.region_name,
+    featureType: featureMetadata.feature_type,
+    start: featureMetadata.start,
+    end: featureMetadata.end,
+    coreStart: featureMetadata.core_start,
+    coreEnd: featureMetadata.core_end
+  };
 };
 
 export default RegulationZmenu;
