@@ -44,6 +44,7 @@ import {
 
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
+import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 import ResetIcon from 'static/icons/icon_reset.svg';
@@ -108,6 +109,12 @@ export const TrackPanelList = () => {
         >
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
+              disabled={trackCategoryIds.length === 0}
+            />
+          )}
+
+          {selectedTrackPanelTab === TrackSet.REGULATION && (
+            <TrackPanelRegulationLegend
               disabled={trackCategoryIds.length === 0}
             />
           )}
