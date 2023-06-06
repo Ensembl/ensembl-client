@@ -68,14 +68,15 @@ const InstantDownloadRegFeature = (props: Props) => {
         <span className={styles.featurePartLabel}>Core region</span>
         <span>{formattedLocation}</span>
       </div>
-      <label>
+      <div>
         <Checkbox
           theme="dark"
           checked={isCoreSequenceSelected}
           onChange={setIsCoreSequenceSelected}
+          className={styles.checkbox}
+          label="Genomic sequence"
         />
-        <span>Genomic sequence</span>
-      </label>
+      </div>
       <div className={styles.download}>
         <InstantDownloadButton
           disabled={!isCoreSequenceSelected}
