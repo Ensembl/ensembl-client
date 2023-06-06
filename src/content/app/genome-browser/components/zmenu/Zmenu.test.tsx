@@ -56,6 +56,7 @@ jest.mock('./ZmenuContent', () => () => (
 jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
+jest.mock('./zmenus/RegulationZmenu', () => () => <div>RegulationZmenu</div>);
 
 const chrName = faker.lorem.word();
 const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
