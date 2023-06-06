@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 
-import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { fetchRegulatoryFeatureSequences } from '../instant-download-fetch/fetchRegulatoryFeature';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -36,19 +35,13 @@ type Props = {
 const InstantDownloadRegFeature = (props: Props) => {
   const [isCoreSequenceSelected, setIsCoreSequenceSelected] = useState(false);
 
-  const formattedLocation = getFormattedLocation({
-    chromosome: props.regionName,
-    start: props.start,
-    end: props.end
-  });
-
   const onSubmit = async () => {
     const payload = {
       id: props.id,
       genomeId: props.genomeId,
       featureType: props.featureType,
       regionName: props.regionName,
-      coreRegion: {
+      boundsRegion: {
         start: props.start,
         end: props.end
       }
@@ -64,16 +57,15 @@ const InstantDownloadRegFeature = (props: Props) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.featurePart}>
-        <span className={styles.featurePartLabel}>Core region</span>
-        <span>{formattedLocation}</span>
+      <div className={styles.feature}>
+        <span className={styles.featureType}>{props.featureType}</span>
+        <span>{props.id}</span>
       </div>
-      <div>
+      <div className={styles.checkboxContainer}>
         <Checkbox
           theme="dark"
           checked={isCoreSequenceSelected}
           onChange={setIsCoreSequenceSelected}
-          className={styles.checkbox}
           label="Genomic sequence"
         />
       </div>

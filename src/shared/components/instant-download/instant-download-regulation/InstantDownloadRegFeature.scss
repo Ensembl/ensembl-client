@@ -1,20 +1,20 @@
 @import 'src/styles/common';
 
-.checkbox {
-  margin-left: 36px;
+.container {
+  margin-top: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
-.container label span {
-  font-weight: $light;
-  margin-left: 0.6rem;
+.checkboxContainer {
+  padding-left: 18px; // same as for transcript download
 }
 
-.featurePart {
+.feature {
   display: flex;
   column-gap: 0.6rem;
 }
 
-.featurePartLabel {
+.featureType {
   font-weight: $light;
 }
 

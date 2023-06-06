@@ -32,21 +32,12 @@ export const fetchRegulatoryFeatureSequences = async (payload: {
   genomeId: string;
   featureType: string;
   regionName: string;
-  coreRegion?: {
-    start: number;
-    end: number;
-  };
-  boundaryRegion?: {
+  boundsRegion: {
     start: number;
     end: number;
   };
 }) => {
-  const { id, genomeId, featureType, regionName, coreRegion, boundaryRegion } =
-    payload;
-
-  if (!coreRegion && !boundaryRegion) {
-    throw new Error('Feature location for download was not provided');
-  }
+  const { id, genomeId, featureType, regionName, boundsRegion } = payload;
 
   const regionSequenceChecksum = await fetchRegionSequenceChecksum({
     genomeId,
@@ -55,43 +46,22 @@ export const fetchRegulatoryFeatureSequences = async (payload: {
 
   const downloadParameters: SingleSequenceFetchParams[] = [];
 
-  if (coreRegion) {
-    const { start, end } = coreRegion;
-    const label = buildFastaHeader({
-      id,
-      featureType,
-      regionName,
+  const { start, end } = boundsRegion;
+  const label = buildFastaHeader({
+    id,
+    featureType,
+    regionName,
+    start,
+    end
+  });
+  downloadParameters.push(
+    prepareRegulatoryFeatureDownloadParameters({
+      label,
+      checksum: regionSequenceChecksum,
       start,
       end
-    });
-    downloadParameters.push(
-      prepareRegulatoryFeatureDownloadParameters({
-        label,
-        checksum: regionSequenceChecksum,
-        start,
-        end
-      })
-    );
-  }
-
-  if (boundaryRegion) {
-    const { start, end } = boundaryRegion;
-    const label = buildFastaHeader({
-      id,
-      featureType,
-      regionName,
-      start,
-      end
-    });
-    downloadParameters.push(
-      prepareRegulatoryFeatureDownloadParameters({
-        label,
-        checksum: regionSequenceChecksum,
-        start,
-        end
-      })
-    );
-  }
+    })
+  );
 
   const worker = new Worker(
     new URL('src/shared/workers/sequenceFetcher.worker.ts', import.meta.url)
@@ -130,5 +100,5 @@ const buildFastaHeader = (params: {
   end: number;
 }) => {
   const { id, featureType, regionName, start, end } = params;
-  return `>er|${id}|${featureType}|${regionName}:${start}-${end}`;
+  return `er|${id}|${featureType}|${regionName}:${start}-${end}`;
 };
