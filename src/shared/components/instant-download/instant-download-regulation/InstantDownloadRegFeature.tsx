@@ -22,6 +22,8 @@ import { fetchRegulatoryFeatureSequences } from '../instant-download-fetch/fetch
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
+import styles from './InstantDownloadRegFeature.scss';
+
 type Props = {
   id: string;
   genomeId: string;
@@ -61,9 +63,9 @@ const InstantDownloadRegFeature = (props: Props) => {
   };
 
   return (
-    <div>
-      <div>
-        <span>Core region</span>
+    <div className={styles.container}>
+      <div className={styles.featurePart}>
+        <span className={styles.featurePartLabel}>Core region</span>
         <span>{formattedLocation}</span>
       </div>
       <label>
@@ -74,7 +76,7 @@ const InstantDownloadRegFeature = (props: Props) => {
         />
         <span>Genomic sequence</span>
       </label>
-      <div>
+      <div className={styles.download}>
         <InstantDownloadButton
           disabled={!isCoreSequenceSelected}
           onClick={onSubmit}

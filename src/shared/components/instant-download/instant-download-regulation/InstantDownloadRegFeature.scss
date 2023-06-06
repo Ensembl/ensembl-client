@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.container label {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 0 36px;
+}
+
+.container label span {
+  font-weight: $light;
+  margin-left: 0.6rem;
+}
+
+.featurePart {
+  display: flex;
+  column-gap: 0.6rem;
+}
+
+.featurePartLabel {
+  font-weight: $light;
+}
+
+.download {
+  display: flex;
+  justify-content: end;
+  margin-top: 1rem;
+}

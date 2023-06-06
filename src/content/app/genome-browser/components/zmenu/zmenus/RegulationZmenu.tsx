@@ -25,7 +25,7 @@ import {
   ToolboxExpandableContent,
   ToggleButton
 } from 'src/shared/components/toolbox';
-import InstantDownloadRegFeature from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadRegFeature';
+import InstantDownloadRegFeature from 'src/shared/components/instant-download/instant-download-regulation/InstantDownloadRegFeature';
 
 import type {
   ZmenuPayload,
