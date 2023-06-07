@@ -330,7 +330,7 @@ export const fetchRegionSequenceChecksum = async (variables: {
 }): Promise<string> => {
   const data = await request<RegionSequenceChecksumQueryResult>(
     '/api/thoas',
-    regioSequenceChecksumQuery,
+    regionSequenceChecksumQuery,
     variables
   );
   return data.region.sequence.checksum;
