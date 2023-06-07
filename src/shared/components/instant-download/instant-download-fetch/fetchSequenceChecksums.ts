@@ -227,7 +227,7 @@ const transcriptChecksumsQuery = gql`
   ${transcriptQueryFragment}
 `;
 
-const regioSequenceChecksumQuery = gql`
+const regionSequenceChecksumQuery = gql`
   query Region($genomeId: String!, $regionName: String!) {
     region(by_name: { genome_id: $genomeId, name: $regionName }) {
       sequence {
