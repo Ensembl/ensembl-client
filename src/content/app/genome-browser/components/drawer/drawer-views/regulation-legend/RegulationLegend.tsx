@@ -47,6 +47,7 @@ const RegulationLegend = (props: Props) => {
         <span className={groupColorMarkerClass} />
         <span className={styles.labelTextStrong}>{activeLegend.label}</span>
       </div>
+      <div className={styles.labelDefinition}>{activeLegend.definition}</div>
     </div>
   );
 };

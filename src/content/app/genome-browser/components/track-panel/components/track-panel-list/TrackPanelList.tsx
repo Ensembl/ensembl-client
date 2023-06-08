@@ -105,7 +105,11 @@ export const TrackPanelList = () => {
         <Accordion
           className={styles.trackPanelAccordion}
           allowMultipleExpanded={true}
-          preExpanded={[...trackCategoryIds, 'variant_legend']}
+          preExpanded={[
+            ...trackCategoryIds,
+            'variant_legend',
+            'regulation_legend'
+          ]}
         >
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend

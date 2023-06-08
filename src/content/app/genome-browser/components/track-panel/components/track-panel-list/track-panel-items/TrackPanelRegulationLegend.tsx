@@ -65,50 +65,48 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   };
 
   return (
-    <>
-      <AccordionItem
-        className={styles.trackPanelAccordionItem}
-        uuid="regulation_legend"
-      >
-        <AccordionItemHeading className={styles.trackPanelAccordionHeader}>
-          <AccordionItemButton
-            disabled={props.disabled}
-            className={accordionButtonClassNames}
-            onToggle={(isExpanded: boolean) =>
-              reportTrackPanelSectionToggled(accordionHeading, isExpanded)
-            }
-          >
-            {accordionHeading}
-          </AccordionItemButton>
-        </AccordionItemHeading>
-        {!props.disabled ? (
-          <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
-            <dl>
-              {regulationLegends.map((legend) => {
-                const groupColourMarkerClass = classNames(
-                  regulationStyles.colourMarker,
-                  regulationStyles[`regulationColour${legend.id}`]
-                );
+    <AccordionItem
+      className={styles.trackPanelAccordionItem}
+      uuid="regulation_legend"
+    >
+      <AccordionItemHeading className={styles.trackPanelAccordionHeader}>
+        <AccordionItemButton
+          disabled={props.disabled}
+          className={accordionButtonClassNames}
+          onToggle={(isExpanded: boolean) =>
+            reportTrackPanelSectionToggled(accordionHeading, isExpanded)
+          }
+        >
+          {accordionHeading}
+        </AccordionItemButton>
+      </AccordionItemHeading>
+      {!props.disabled ? (
+        <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
+          <dl>
+            {regulationLegends.map((legend) => {
+              const groupColourMarkerClass = classNames(
+                regulationStyles.colourMarker,
+                regulationStyles[`regulationColour${legend.id}`]
+              );
 
-                return (
-                  <SimpleTrackPanelItemLayout
-                    key={legend.id}
-                    onShowMore={() => onShowMore(legend.label)}
-                  >
-                    <div className={trackPanelItemStyles.label}>
-                      <span className={groupColourMarkerClass} />
-                      <span className={trackPanelItemStyles.labelText}>
-                        {legend.label}
-                      </span>
-                    </div>
-                  </SimpleTrackPanelItemLayout>
-                );
-              })}
-            </dl>
-          </AccordionItemPanel>
-        ) : null}
-      </AccordionItem>
-    </>
+              return (
+                <SimpleTrackPanelItemLayout
+                  key={legend.id}
+                  onShowMore={() => onShowMore(legend.label)}
+                >
+                  <div className={trackPanelItemStyles.label}>
+                    <span className={groupColourMarkerClass} />
+                    <span className={trackPanelItemStyles.labelText}>
+                      {legend.label}
+                    </span>
+                  </div>
+                </SimpleTrackPanelItemLayout>
+              );
+            })}
+          </dl>
+        </AccordionItemPanel>
+      ) : null}
+    </AccordionItem>
   );
 };
 
