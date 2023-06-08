@@ -29,13 +29,19 @@ import {
   Markup,
   ZmenuContentTranscript,
   ZmenuContentGene,
-  ZmenuContentVariant
+  ZmenuContentVariant,
+  ZmenuContentRegulation
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
-  features: (ZmenuContentTranscript | ZmenuContentGene | ZmenuContentVariant)[];
+  features: (
+    | ZmenuContentTranscript
+    | ZmenuContentGene
+    | ZmenuContentVariant
+    | ZmenuContentRegulation
+  )[];
   featureId: string;
   destroyZmenu: () => void;
 };

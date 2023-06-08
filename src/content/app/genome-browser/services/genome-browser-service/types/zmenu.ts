@@ -26,7 +26,8 @@ export enum Markup {
 export enum ZmenuFeatureType {
   GENE = 'gene',
   TRANSCRIPT = 'transcript',
-  VARIANT = 'variant'
+  VARIANT = 'variant',
+  REGULATORY_FEATURE = 'regulatory_feature'
 }
 
 export type ZmenuContentItem = {
@@ -70,6 +71,17 @@ export type ZmenuContentVariantMetadata = {
   type: ZmenuFeatureType.VARIANT;
 };
 
+export type ZmenuContentRegulationMetadata = {
+  id: string; // identifier of the regulatory feature
+  type: ZmenuFeatureType.REGULATORY_FEATURE;
+  feature_type: string; // e.g. Promoter, Enhancer, etc.
+  region_name: string;
+  start: number; // start coordinate of the feature bounds (always forward strand)
+  end: number; // end coordinate of the feature bounds (always forward strand)
+  core_start: number; // start coordinate of the feature core
+  core_end: number; // end coordinate of the feature core
+};
+
 export type ZmenuContentGene = {
   data: ZmenuContentLine[];
   metadata: ZmenuContentGeneMetadata;
@@ -85,14 +97,21 @@ export type ZmenuContentVariant = {
   metadata: ZmenuContentVariantMetadata;
 };
 
+export type ZmenuContentRegulation = {
+  data: ZmenuContentLine[];
+  metadata: ZmenuContentRegulationMetadata;
+};
+
 export type ZmenuContent =
   | ZmenuContentGene
   | ZmenuContentTranscript
-  | ZmenuContentVariant;
+  | ZmenuContentVariant
+  | ZmenuContentRegulation;
 
 export enum ZmenuPayloadVarietyType {
   GENE_AND_ONE_TRANSCRIPT = 'gene-and-one-transcript',
-  VARIANT = 'variant'
+  VARIANT = 'variant',
+  REGULATION = 'regulation'
 }
 
 export type ZmenuPayloadVariety = {

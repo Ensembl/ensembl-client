@@ -29,6 +29,7 @@ import { getActualChrLocation } from 'src/content/app/genome-browser/state/brows
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import GeneAndOneTranscriptZmenu from './zmenus/GeneAndOneTranscriptZmenu';
 import VariantZmenu from './zmenus/VariantZmenu';
+import RegulationZmenu from './zmenus/RegulationZmenu';
 
 import {
   ZmenuPayloadVarietyType,
@@ -90,9 +91,13 @@ const Zmenu = (props: ZmenuProps) => {
         onDestroy={destroyZmenu}
       />
     );
-  } else if (zmenuType === 'variant') {
+  } else if (zmenuType === ZmenuPayloadVarietyType.VARIANT) {
     zmenuContent = (
       <VariantZmenu payload={props.payload} onDestroy={destroyZmenu} />
+    );
+  } else if (zmenuType === ZmenuPayloadVarietyType.REGULATION) {
+    zmenuContent = (
+      <RegulationZmenu payload={props.payload} onDestroy={destroyZmenu} />
     );
   }
 

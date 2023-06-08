@@ -24,7 +24,7 @@ import styles from './InstantDownloadButton.scss';
 type Theme = 'light' | 'dark';
 
 type Props = {
-  isDisabled?: boolean;
+  disabled?: boolean;
   theme: Theme;
   classNames?: {
     wrapper: string;
@@ -35,7 +35,7 @@ type Props = {
 const InstantDownloadButton = (props: Props) => {
   const buttonClass = classNames({
     [styles.themeDark]: props.theme === 'dark',
-    [styles.disabled]: props.isDisabled
+    [styles.disabled]: props.disabled
   });
   const allClassNames = { ...props.classNames, button: buttonClass };
   const propsToPass = { ...props, classNames: allClassNames };

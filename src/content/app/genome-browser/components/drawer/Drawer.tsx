@@ -23,6 +23,7 @@ import GeneSummary from './drawer-views/gene-summary/GeneSummary';
 import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
 import VariantSummary from './drawer-views/variant-summary/VariantSummary';
 import VariantGroupLegend from './drawer-views/variant-group-legend/VariantGroupLegend';
+import RegulationLegend from './drawer-views/regulation-legend/RegulationLegend';
 
 import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
@@ -49,6 +50,8 @@ export const Drawer = () => {
         return <DrawerBookmarks />;
       case 'variant_group_legend':
         return <VariantGroupLegend drawerView={drawerView} />;
+      case 'regulation_legend':
+        return <RegulationLegend drawerView={drawerView} />;
     }
   };
 

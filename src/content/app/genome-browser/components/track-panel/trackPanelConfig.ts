@@ -29,7 +29,7 @@ export type TrackActivityStatus = Status.SELECTED | Status.UNSELECTED;
 export enum TrackSet {
   GENOMIC = 'Genomic',
   VARIATION = 'Variation',
-  EXPRESSION = 'Regulation'
+  REGULATION = 'Regulation'
 }
 
 export type TrackSetKey = keyof typeof TrackSet;
