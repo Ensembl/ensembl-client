@@ -43,10 +43,16 @@ export type VariantLegendView = {
   group: string;
 };
 
+export type RegulationLegendView = {
+  name: 'regulation_legend';
+  group: string;
+};
+
 export type DrawerView =
   | BookmarksDrawerView
   | GeneDrawerView
   | TranscriptDrawerView
   | VariantDrawerView
   | GenericTrackView
-  | VariantLegendView;
+  | VariantLegendView
+  | RegulationLegendView;

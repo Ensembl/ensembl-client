@@ -40,7 +40,7 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
     label: faker.lorem.words(),
     track_category_id: faker.lorem.words(),
     track_list: [],
-    types: [TrackSet.EXPRESSION]
+    types: [TrackSet.REGULATION]
   }
 ];
 
