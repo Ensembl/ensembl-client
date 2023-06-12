@@ -89,7 +89,6 @@
     "@types/webpack-node-externals": "3.0.0",
     "@typescript-eslint/eslint-plugin": "5.59.9",
     "@typescript-eslint/parser": "5.59.9",
-    "babel-core": "7.0.0-bridge.0",
     "babel-jest": "29.5.0",
     "babel-loader": "9.1.2",
     "babel-plugin-react-remove-properties": "0.3.0",
