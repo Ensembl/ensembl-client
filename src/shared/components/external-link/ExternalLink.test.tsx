@@ -21,7 +21,7 @@ import { faker } from '@faker-js/faker';
 import ExternalLink, { ExternalLinkProps } from './ExternalLink';
 
 const defaultProps: ExternalLinkProps = {
-  linkText: faker.random.words(),
+  linkText: faker.lorem.words(),
   to: faker.internet.url(),
   classNames: {
     icon: faker.lorem.word(),

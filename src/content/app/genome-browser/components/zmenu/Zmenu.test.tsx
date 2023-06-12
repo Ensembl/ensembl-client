@@ -58,9 +58,9 @@ jest.mock('./ZmenuInstantDownload', () => () => (
 ));
 
 const chrName = faker.lorem.word();
-const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
+const startPosition = faker.number.int({ min: 1, max: 1000000 });
 const endPosition =
-  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
+  startPosition + faker.number.int({ min: 1000, max: 1000000 });
 
 const initialState = {
   browser: {

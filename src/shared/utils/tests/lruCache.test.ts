@@ -79,7 +79,7 @@ describe('LRUCache', () => {
 
   it('invalidates cached item if it’s gone stale', () => {
     const cache = new LRUCache({ maxAge: 1000 });
-    const item = { key: faker.datatype.uuid(), value: faker.lorem.words() };
+    const item = { key: faker.string.uuid(), value: faker.lorem.words() };
     const timestamp = Date.now();
     cache.set(item.key, item.value);
 

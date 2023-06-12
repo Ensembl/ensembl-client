@@ -21,7 +21,7 @@ import { faker } from '@faker-js/faker';
 import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
 
 const defaultProps: ExternalReferenceProps = {
-  label: faker.random.word(),
+  label: faker.lorem.word(),
   linkText: faker.lorem.word(),
   to: faker.internet.url(),
   classNames: {

@@ -25,8 +25,8 @@ import times from 'lodash/times';
 const onChange = jest.fn();
 
 const createOption = () => ({
-  value: faker.datatype.uuid(),
-  label: faker.random.words(5)
+  value: faker.string.uuid(),
+  label: faker.lorem.words(5)
 });
 
 describe('<RadioGroup />', () => {

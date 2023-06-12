@@ -54,7 +54,7 @@ export const createBlastSubmissionResponse = (
   fragment: Partial<BlastSubmissionResponse> = {}
 ): BlastSubmissionResponse => {
   const submission = {
-    submission_id: faker.datatype.uuid(),
+    submission_id: faker.string.uuid(),
     jobs: times(3, createSuccessfulBlastJobInSubmissionResponse)
   };
 
@@ -69,7 +69,7 @@ export const createSuccessfulBlastJobInSubmissionResponse =
     return {
       genome_id: 'human-genome-id',
       sequence_id: 1,
-      job_id: faker.datatype.uuid()
+      job_id: faker.string.uuid()
     };
   };
 

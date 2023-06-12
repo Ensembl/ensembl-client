@@ -68,10 +68,10 @@ jest.mock(
 );
 
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
-  genome_id: faker.random.word(),
-  object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
+  genome_id: faker.lorem.word(),
+  object_id: `${faker.lorem.word()}:gene:${faker.string.uuid()}`,
   type: 'gene',
-  label: [faker.random.word(), faker.random.word()]
+  label: [faker.lorem.word(), faker.lorem.word()]
 });
 
 const mockState = createMockBrowserState();
@@ -105,7 +105,7 @@ describe('<BookmarksModal />', () => {
         genome_id: activeGenomeId,
         object_id: geneObjectId,
         type: 'gene',
-        label: [geneId, faker.random.word()]
+        label: [geneId, faker.lorem.word()]
       },
       {
         genome_id: activeGenomeId,

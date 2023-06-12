@@ -46,7 +46,7 @@ const SidebarNavigation = () => (
 );
 
 const sidebarNavigationLinks = [...Array(3)].map(() => ({
-  label: faker.random.word(),
+  label: faker.lorem.word(),
   isActive: false
 }));
 const activeSidebarNavLinkIndex = Math.floor(
