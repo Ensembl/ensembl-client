@@ -90,7 +90,7 @@ const AboutEnsembl = () => {
     >
       About the
       <Logotype className={styles.logotype} />
-      team & its work
+      project
     </Link>
   );
 };
