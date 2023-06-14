@@ -72,7 +72,7 @@ $textColumnWidth: 450px;
   }
 
   pre {
-    background-color: #F1F2F4; // Add a background color to code snippets
+    background-color: $light-grey; // Add a background color to code snippets
     padding: 15px;
   }
 }
