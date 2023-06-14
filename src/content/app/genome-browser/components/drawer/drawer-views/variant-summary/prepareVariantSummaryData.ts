@@ -29,11 +29,7 @@ type PreparedVariantSummaryData = {
     sequence: string;
     frequency: number;
   };
-  clinicalSignificance: {
-    condition: string;
-    sequence: string;
-    significance: string;
-  }[];
+  hasPhenotypeAssociations: boolean;
   caddScores: {
     sequence: string;
     score: number;
@@ -45,14 +41,23 @@ const prepareVariantSummaryData = (variant: Variant) => {
   const variantSummaryData: Record<string, unknown> = {};
 
   addVariantPredictions(variant, variantSummaryData);
+  updateHasPhenotypeAssociations(variant, variantSummaryData);
 
   for (const variantAllele of variant.alleles) {
     addVariantAllelePopulationFrequencyData(variantAllele, variantSummaryData); // iterates over population frequencies
-    addClinicalSignificance(variantAllele, variantSummaryData); // iterates over phenotype assertions
     addVariantAllelePredictions(variantAllele, variantSummaryData); // iterates over prediction results
   }
 
   return variantSummaryData as PreparedVariantSummaryData;
+};
+
+const updateHasPhenotypeAssociations = (
+  variant: Variant,
+  store: Record<string, unknown>
+) => {
+  store.hasPhenotypeAssociations = variant.alleles.some(
+    (variantAllele) => !!variantAllele.phenotype_assertions?.length
+  );
 };
 
 const addVariantPredictions = (
@@ -89,25 +94,6 @@ const addVariantAllelePopulationFrequencyData = (
         sequence: variantAllele.allele_sequence,
         frequency: populationFrequency.allele_frequency
       };
-    }
-  }
-};
-
-const addClinicalSignificance = (
-  variantAllele: Variant['alleles'][0],
-  store: Partial<PreparedVariantSummaryData>
-) => {
-  store.clinicalSignificance = store.clinicalSignificance ?? [];
-
-  for (const phenotypeAssertion of variantAllele.phenotype_assertions) {
-    for (const evidence of phenotypeAssertion.evidence) {
-      if (evidence.source.name === 'ClinVar') {
-        store.clinicalSignificance.push({
-          condition: phenotypeAssertion.phenotype.term,
-          sequence: variantAllele.allele_sequence,
-          significance: evidence.assertion.label
-        });
-      }
     }
   }
 };
