@@ -41,7 +41,7 @@ const prepareVariantSummaryData = (variant: Variant) => {
   const variantSummaryData: Record<string, unknown> = {};
 
   addVariantPredictions(variant, variantSummaryData);
-  updateHasPhenotypeAssociations(variant, variantSummaryData);
+  addHasPhenotypeAssociations(variant, variantSummaryData);
 
   for (const variantAllele of variant.alleles) {
     addVariantAllelePopulationFrequencyData(variantAllele, variantSummaryData); // iterates over population frequencies
@@ -51,7 +51,7 @@ const prepareVariantSummaryData = (variant: Variant) => {
   return variantSummaryData as PreparedVariantSummaryData;
 };
 
-const updateHasPhenotypeAssociations = (
+const addHasPhenotypeAssociations = (
   variant: Variant,
   store: Record<string, unknown>
 ) => {

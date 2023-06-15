@@ -37,7 +37,7 @@ import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectType
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { VariantQueryResult } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
-import HasIcon from 'static/icons/icon_has.svg';
+import TickCircleIcon from 'static/icons/icon_tick_circle.svg';
 
 import styles from './VariantSummary.scss';
 
@@ -149,7 +149,7 @@ const VariantSummary = (props: Props) => {
         >
           <div className={styles.label}></div>
           <div className={styles.value}>
-            <HasIcon /> <span>has phenotype associations</span>
+            <TickCircleIcon /> <span>has phenotype associations</span>
           </div>
         </div>
       )}
