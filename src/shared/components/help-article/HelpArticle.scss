@@ -70,6 +70,11 @@ $textColumnWidth: 450px;
       padding: 0 5px;
     }
   }
+
+  pre {
+    background-color: $light-grey; // Add a background color to code snippets
+    padding: 15px;
+  }
 }
 
 .indexArticle {
