@@ -147,7 +147,9 @@
   },
   "overrides": {
     "react": "$react",
-    "react-dom": "$react-dom"
+    "react-dom": "$react-dom",
+    "msw": "$msw",
+    "@mswjs/interceptors": "file:../../experiments/msw/interceptors"
   },
   "browserslist": [
     "> 1% and last 2 versions",
