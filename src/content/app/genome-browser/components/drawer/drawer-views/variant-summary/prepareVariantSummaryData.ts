@@ -41,23 +41,26 @@ const prepareVariantSummaryData = (variant: Variant) => {
   const variantSummaryData: Record<string, unknown> = {};
 
   addVariantPredictions(variant, variantSummaryData);
-  addHasPhenotypeAssociations(variant, variantSummaryData);
 
   for (const variantAllele of variant.alleles) {
     addVariantAllelePopulationFrequencyData(variantAllele, variantSummaryData); // iterates over population frequencies
     addVariantAllelePredictions(variantAllele, variantSummaryData); // iterates over prediction results
+
+    if (!variantSummaryData.hasPhenotypeAssociations) {
+      checkPhenotypeAssociations(variantAllele, variantSummaryData);
+    }
   }
 
   return variantSummaryData as PreparedVariantSummaryData;
 };
 
-const addHasPhenotypeAssociations = (
-  variant: Variant,
+const checkPhenotypeAssociations = (
+  variantAllele: Variant['alleles'][0],
   store: Record<string, unknown>
 ) => {
-  store.hasPhenotypeAssociations = variant.alleles.some(
-    (variantAllele) => !!variantAllele.phenotype_assertions?.length
-  );
+  if (variantAllele.phenotype_assertions?.length) {
+    store.hasPhenotypeAssociations = true;
+  }
 };
 
 const addVariantPredictions = (
