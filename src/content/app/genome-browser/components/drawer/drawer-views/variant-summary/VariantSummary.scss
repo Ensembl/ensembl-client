@@ -55,9 +55,19 @@ For the reference (from Andrea)
   max-width: 60ch;
 }
 
-.clinicalSignificance {
-  display: flex;
-  flex-direction: column;
+.phenotypeAssociations {
+  margin-top: 15px;
+  margin-bottom: 30px;
+
+  .value {
+    display: flex;
+    column-gap: 10px;
+  }
+
+  svg {
+    fill: $green;
+    width: 12px;
+  }
 }
 
 .questionButton {

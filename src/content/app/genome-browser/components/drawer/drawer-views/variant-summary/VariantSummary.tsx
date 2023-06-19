@@ -37,6 +37,8 @@ import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectType
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { VariantQueryResult } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
+import TickCircleIcon from 'static/icons/icon_tick_circle.svg';
+
 import styles from './VariantSummary.scss';
 
 type Props = {
@@ -137,13 +139,17 @@ const VariantSummary = (props: Props) => {
         </div>
       )}
 
-      {!!preparedSummaryData.clinicalSignificance.length && (
-        <div className={classNames(styles.row, styles.newRowGroup)}>
-          <div className={styles.label}>Clinical significance</div>
+      {!!preparedSummaryData.hasPhenotypeAssociations && (
+        <div
+          className={classNames(
+            styles.row,
+            styles.newRowGroup,
+            styles.phenotypeAssociations
+          )}
+        >
+          <div className={styles.label}></div>
           <div className={styles.value}>
-            <ClinicalSignificance
-              data={preparedSummaryData.clinicalSignificance}
-            />
+            <TickCircleIcon /> <span>has phenotype associations</span>
           </div>
         </div>
       )}
@@ -211,20 +217,6 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
           Release {primary_source.release}
         </span>
       )}
-    </div>
-  );
-};
-
-const ClinicalSignificance = (props: {
-  data: { condition: string; sequence: string; significance: string }[];
-}) => {
-  return (
-    <div className={styles.clinicalSignificance}>
-      {props.data.map((data, index) => (
-        <span key={index}>
-          {data.condition} — {data.significance} ({data.sequence})
-        </span>
-      ))}
     </div>
   );
 };
