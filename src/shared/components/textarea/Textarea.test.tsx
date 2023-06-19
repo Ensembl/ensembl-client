@@ -22,7 +22,7 @@ import Textarea from './Textarea';
 
 describe('<Textarea />', () => {
   const commonTextareaProps = {
-    id: faker.random.word(),
+    id: faker.lorem.word(),
     name: faker.lorem.word(),
     className: faker.lorem.word(),
     onChange: jest.fn(),
@@ -34,7 +34,7 @@ describe('<Textarea />', () => {
     jest.resetAllMocks();
   });
 
-  const textareaValue = faker.random.words();
+  const textareaValue = faker.lorem.words();
 
   describe('rendering', () => {
     const props = {

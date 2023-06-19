@@ -68,7 +68,7 @@ export type NonCodingTranscript = Omit<
 const createCommonTranscriptFields = (): CommonTranscriptFields => {
   const transcriptSlice = createSlice();
 
-  const unversionedStableId = faker.datatype.uuid();
+  const unversionedStableId = faker.string.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -141,7 +141,7 @@ export const createTranscriptMetadata = (
 };
 
 const createExternalReferences = (): ExternalReference[] => {
-  const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
+  const numberOfExternalReferences = faker.number.int({ min: 1, max: 10 });
 
   return times(numberOfExternalReferences, () => createExternalReference());
 };
@@ -189,7 +189,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   });
   const length = transcriptEnd - transcriptStart + 1;
 
-  const numberOfExons = faker.datatype.number({ min: 1, max: 10 });
+  const numberOfExons = faker.number.int({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
 
   return times(numberOfExons, (index: number) => {
@@ -197,11 +197,11 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
     const maxCoordinate = minCoordinate + maxExonLength;
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
-    const exonStart = faker.datatype.number({
+    const exonStart = faker.number.int({
       min: minCoordinate,
       max: middleCoordinate
     });
-    const exonEnd = faker.datatype.number({
+    const exonEnd = faker.number.int({
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
@@ -219,7 +219,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
     };
 
     return {
-      stable_id: faker.datatype.uuid(),
+      stable_id: faker.string.uuid(),
       slice
     };
   });
@@ -238,7 +238,7 @@ const createCDS = (transcriptSlice: Slice): FullCDS => {
     nucleotide_length: nucleotideLength,
     protein_length: proteinLength,
     sequence: {
-      checksum: faker.datatype.uuid()
+      checksum: faker.string.uuid()
     }
   };
 };
@@ -251,7 +251,7 @@ const createCDNA = (transcriptSlice: Slice): CDNA => {
     end,
     length: end - start + 1,
     sequence: {
-      checksum: faker.datatype.uuid()
+      checksum: faker.string.uuid()
     }
   };
 };

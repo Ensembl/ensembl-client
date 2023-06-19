@@ -21,7 +21,7 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/speci
 export const createSelectedSpecies = (
   fragment: Partial<CommittedItem> = {}
 ): CommittedItem => ({
-  genome_id: faker.datatype.uuid(),
+  genome_id: faker.string.uuid(),
   common_name: null,
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),

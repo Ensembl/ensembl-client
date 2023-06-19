@@ -27,11 +27,11 @@ const onTabChange = jest.fn();
 const createTabGroup = (): Tab[] => {
   const options = [
     ...times(5, () => ({
-      title: faker.datatype.uuid(),
+      title: faker.string.uuid(),
       isDisabled: false
     })),
     ...times(5, () => ({
-      title: faker.datatype.uuid(),
+      title: faker.string.uuid(),
       isDisabled: true
     }))
   ];

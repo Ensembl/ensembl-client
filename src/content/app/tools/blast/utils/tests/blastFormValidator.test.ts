@@ -21,7 +21,7 @@ import {
 } from '../blastFormValidator';
 
 const createFakeSpecies = (times: number) => {
-  return Array(times).fill(faker.datatype.uuid());
+  return Array(times).fill(faker.string.uuid());
 };
 
 const createFakeSequences = (times: number) => {

@@ -26,8 +26,8 @@ import userEvent from '@testing-library/user-event';
 import Select from './Select';
 
 const createOption = (isSelected = false) => ({
-  value: faker.datatype.uuid(),
-  label: faker.random.words(5),
+  value: faker.string.uuid(),
+  label: faker.lorem.words(5),
   isSelected
 });
 

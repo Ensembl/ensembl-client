@@ -126,7 +126,7 @@ export const createZmenuPayload = (): ZmenuPayload => {
 };
 
 export const createRegionValidationInfo = (): LocationValidationResponse => {
-  const randomValue = faker.datatype.number();
+  const randomValue = faker.number.int();
 
   return {
     end: {
@@ -153,7 +153,7 @@ export const createRegionValidationInfo = (): LocationValidationResponse => {
       error_code: null,
       error_message: null,
       is_valid: true,
-      value: randomValue + faker.datatype.number()
+      value: randomValue + faker.number.int()
     }
   };
 };
@@ -161,8 +161,8 @@ export const createRegionValidationInfo = (): LocationValidationResponse => {
 export const createChrLocationValues = () => {
   const tupleValue: ChrLocation = [
     faker.lorem.words(),
-    faker.datatype.number(),
-    faker.datatype.number()
+    faker.number.int(),
+    faker.number.int()
   ];
   const stringValue = getChrLocationStr(tupleValue);
 

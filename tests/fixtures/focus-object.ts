@@ -37,7 +37,7 @@ export const createFocusObject = (
 
 const createFocusGene = (): FocusGene => {
   const genome_id = faker.lorem.word();
-  const object_id = `${genome_id}:gene:${faker.datatype.uuid()};`;
+  const object_id = `${genome_id}:gene:${faker.string.uuid()};`;
 
   return {
     ...commonFocusObjectFields({ genome_id }),
@@ -49,7 +49,7 @@ const createFocusGene = (): FocusGene => {
 
 const createFocusLocation = (): FocusLocation => {
   const genome_id = faker.lorem.word();
-  const object_id = `${genome_id}:location:${faker.datatype.uuid()};`;
+  const object_id = `${genome_id}:location:${faker.string.uuid()};`;
 
   return {
     ...commonFocusObjectFields({ genome_id }),
@@ -71,11 +71,11 @@ const commonFocusObjectFields = ({ genome_id }: { genome_id: string }) => {
 };
 
 const createLocation = () => {
-  const startPosition = faker.datatype.number(10000);
-  const endPosition = startPosition + faker.datatype.number(10000);
+  const startPosition = faker.number.int(10000);
+  const endPosition = startPosition + faker.number.int(10000);
 
   return {
-    chromosome: String(faker.datatype.number(30)),
+    chromosome: String(faker.number.int(30)),
     start: startPosition,
     end: endPosition
   };

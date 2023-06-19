@@ -37,7 +37,7 @@ export const createGene = (
   const geneSlice = createSlice();
   const transcripts = fragment.transcripts || [createProteinCodingTranscript()];
 
-  const unversionedStableId = faker.datatype.uuid();
+  const unversionedStableId = faker.string.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -68,15 +68,15 @@ export const createGene = (
 };
 
 const getScale = () => {
-  const domain = [1000, faker.datatype.number({ min: 2000, max: 100000 })];
-  const range = [100, faker.datatype.number({ min: 200, max: 600 })];
+  const domain = [1000, faker.number.int({ min: 2000, max: 100000 })];
+  const range = [100, faker.number.int({ min: 200, max: 600 })];
   const scale = scaleLinear().domain(domain).rangeRound(range);
 
   return scale;
 };
 
 export const createRulerTicks = (): TicksAndScale => ({
-  labelledTicks: times(faker.datatype.number({ min: 1, max: 10 }), Number),
-  ticks: times(faker.datatype.number({ min: 1, max: 5 }), Number),
+  labelledTicks: times(faker.number.int({ min: 1, max: 10 }), Number),
+  ticks: times(faker.number.int({ min: 1, max: 5 }), Number),
   scale: getScale()
 });

@@ -94,7 +94,7 @@ const createCCDSXrefTranscript = () => {
   const xref = {
     source: {
       name: 'CCDS',
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       url: faker.internet.url()
     }
   };

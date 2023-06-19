@@ -42,7 +42,7 @@ export const createBlastSubmission = (params?: {
   const submissionName = '';
 
   return {
-    id: faker.datatype.uuid(),
+    id: faker.string.uuid(),
     submittedData: {
       species,
       sequences,
@@ -94,9 +94,9 @@ export const createBlastJobs = ({
 
 export const createBlastJob = (fragment: Partial<BlastJob> = {}): BlastJob => {
   return {
-    jobId: faker.datatype.uuid(),
-    sequenceId: parseInt(faker.random.numeric()),
-    genomeId: faker.datatype.uuid(),
+    jobId: faker.string.uuid(),
+    sequenceId: parseInt(faker.string.numeric()),
+    genomeId: faker.string.uuid(),
     status: 'RUNNING',
     data: null,
     ...fragment

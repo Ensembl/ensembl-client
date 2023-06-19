@@ -26,9 +26,8 @@ import {
 } from 'src/shared/types/thoas/product';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
-  const length =
-    fragment?.length || faker.datatype.number({ min: 50, max: 100 });
-  const unversionedStableId = faker.datatype.uuid();
+  const length = fragment?.length || faker.number.int({ min: 50, max: 100 });
+  const unversionedStableId = faker.string.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -41,14 +40,14 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     family_matches: createFamilyMatches(length),
     external_references: times(2, () => createExternalReference()),
     sequence: {
-      checksum: faker.datatype.uuid()
+      checksum: faker.string.uuid()
     },
     ...fragment
   };
 };
 
 const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
-  const numberOfDomains = faker.datatype.number({ min: 1, max: 10 });
+  const numberOfDomains = faker.number.int({ min: 1, max: 10 });
   const maxDomainLength = Math.floor(proteinLength / numberOfDomains);
 
   return times(numberOfDomains, (index: number) => {
@@ -57,11 +56,11 @@ const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
     const middleCoordinate = Math.floor(
       maxCoordinate - (maxCoordinate - minCoordinate) / 2
     );
-    const start = faker.datatype.number({
+    const start = faker.number.int({
       min: minCoordinate,
       max: middleCoordinate
     });
-    const end = faker.datatype.number({
+    const end = faker.number.int({
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
@@ -74,12 +73,12 @@ const createFamilyMatches = (proteinLength: number): FamilyMatch[] => {
         length
       },
       sequence_family: {
-        name: faker.random.words(),
-        description: faker.random.words(),
+        name: faker.lorem.words(),
+        description: faker.lorem.words(),
         url: faker.internet.url(),
         source: {
-          id: faker.datatype.uuid(),
-          name: faker.random.word(),
+          id: faker.string.uuid(),
+          name: faker.lorem.word(),
           url: faker.internet.url()
         }
       },

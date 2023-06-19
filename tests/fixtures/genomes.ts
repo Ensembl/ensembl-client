@@ -53,7 +53,7 @@ const createTrack = (): GenomicTrack => {
     description: faker.lorem.sentence(),
     sources: [
       {
-        name: faker.random.word(),
+        name: faker.lorem.word(),
         url: faker.internet.url()
       }
     ]
@@ -63,7 +63,7 @@ export const createGenomeKaryotype = () =>
   times(25, () => ({
     is_chromosome: true,
     is_circular: false,
-    length: faker.datatype.number(),
+    length: faker.number.int(),
     name: faker.lorem.words(),
     type: GenomeKaryotypeItemType.CHROMOSOME
   }));
