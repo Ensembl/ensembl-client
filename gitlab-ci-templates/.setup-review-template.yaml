@@ -25,6 +25,7 @@
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
     - sed -i "s#<THOAS_SERVICE_SLUG>#${THOAS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<GENOME_SEARCH_SERVICE_SLUG>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
+    - sed -i "s#<HELP_DOCS_SERVICE_SLUG>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<GA_KEY>#${GA_KEY}#g" ensembl_client_node_cm.yaml
     # ensembl-new-genome-browser
