@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import type { SerializedError } from '@reduxjs/toolkit';
-
 import config from 'config';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -56,15 +53,3 @@ const helpApiSlice = restApiSlice.injectEndpoints({
 
 export const { getHelpArticle } = helpApiSlice.endpoints;
 export const { useGetHelpArticleQuery, useGetHelpMenuQuery } = helpApiSlice;
-
-export const isArticleNotFoundError = (
-  error?: SerializedError | FetchBaseQueryError
-): boolean => {
-  const hasErrorStatus = error && 'status' in error;
-  if (!hasErrorStatus) {
-    return false;
-  }
-
-  const errorStatus = error.status;
-  return typeof errorStatus === 'number' && errorStatus === 404;
-};

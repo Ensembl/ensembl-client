@@ -22,10 +22,10 @@ import { useAppDispatch } from 'src/store';
 import useHelpHistory from 'src/content/app/help/hooks/useHelpHistory';
 import {
   useGetHelpArticleQuery,
-  useGetHelpMenuQuery,
-  isArticleNotFoundError
+  useGetHelpMenuQuery
 } from 'src/content/app/help/state/api/helpApiSlice';
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
 
 import { createHelpPageMeta } from './helpers/helpPageMetaHelpers';
 import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
@@ -86,7 +86,7 @@ const Help = () => {
     breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
   }
 
-  if (isArticleNotFoundError(articleError)) {
+  if (isMissingResourceError(articleError)) {
     return <NotFoundErrorScreen />;
   }
 

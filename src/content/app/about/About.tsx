@@ -21,10 +21,10 @@ import { useAppDispatch } from 'src/store';
 
 import {
   useGetHelpArticleQuery,
-  useGetHelpMenuQuery,
-  isArticleNotFoundError
+  useGetHelpMenuQuery
 } from 'src/content/app/help/state/api/helpApiSlice';
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
 
 import {
   createAboutPageTitle,
@@ -72,7 +72,7 @@ const About = () => {
     );
   }, [article]);
 
-  if (isArticleNotFoundError(articleError)) {
+  if (isMissingResourceError(articleError)) {
     return <NotFoundErrorScreen />;
   }
 

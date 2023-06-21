@@ -19,10 +19,8 @@ import React from 'react';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
-import {
-  getHelpArticle,
-  isArticleNotFoundError
-} from 'src/content/app/help/state/api/helpApiSlice';
+import { getHelpArticle } from 'src/content/app/help/state/api/helpApiSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
 
 import {
   createAboutPageTitle,
@@ -50,7 +48,7 @@ export const serverFetch: ServerFetch = async (params) => {
 
   const { data: article, error: articleError } = await articlePromise;
 
-  if (isArticleNotFoundError(articleError)) {
+  if (isMissingResourceError(articleError)) {
     return {
       status: 404
     };
