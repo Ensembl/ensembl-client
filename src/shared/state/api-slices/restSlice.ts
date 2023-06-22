@@ -22,6 +22,8 @@ import {
   Response as crossFetchResponse
 } from 'cross-fetch';
 
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { SerializedError } from '@reduxjs/toolkit';
 import type { FetchArgs } from '@reduxjs/toolkit/dist/query/fetchBaseQuery';
 
 /**
@@ -62,6 +64,18 @@ const staggeredBaseQueryWithBailout = retry(
     maxRetries: 5
   }
 );
+
+export const isMissingResourceError = (
+  error?: SerializedError | FetchBaseQueryError
+): boolean => {
+  const hasErrorStatus = error && 'status' in error;
+  if (!hasErrorStatus) {
+    return false;
+  }
+
+  const errorStatus = error.status;
+  return errorStatus === 404;
+};
 
 export default createApi({
   reducerPath: 'restApi',

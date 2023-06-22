@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router';
 
-import useApiService from 'src/shared/hooks/useApiService';
+import { useAppDispatch } from 'src/store';
+
+import {
+  useGetHelpArticleQuery,
+  useGetHelpMenuQuery
+} from 'src/content/app/help/state/api/helpApiSlice';
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
+
+import {
+  createAboutPageTitle,
+  ABOUT_PAGE_FALLBACK_DESCRIPTION
+} from './helpers/aboutPageMetaHelpers';
 
 import { buildBreadcrumbs } from '../help/Help';
 
@@ -30,23 +42,39 @@ import HelpMenu from 'src/content/app/help/components/help-menu/HelpMenu';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import { CircleLoader } from 'src/shared/components/loader';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
-
-import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
-import { TextArticleData } from 'src/shared/types/help-and-docs/article';
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import helpStyles from '../help/Help.scss';
 import styles from './About.scss';
 
 const About = () => {
   const { pathname } = useLocation();
-  const { data: menu } = useApiService<MenuType>({
-    endpoint: `/api/docs/menus?name=about`
-  });
-  const { data: article } = useApiService<TextArticleData>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`
+  const dispatch = useAppDispatch();
+
+  const { currentData: menu } = useGetHelpMenuQuery({ name: 'about' });
+
+  const { currentData: article, error: articleError } = useGetHelpArticleQuery({
+    pathname
   });
 
   let breadcrumbs: string[] = [];
+
+  useEffect(() => {
+    if (!article) {
+      return;
+    }
+
+    dispatch(
+      updatePageMeta({
+        title: createAboutPageTitle(article.title),
+        description: article.description || ABOUT_PAGE_FALLBACK_DESCRIPTION
+      })
+    );
+  }, [article]);
+
+  if (isMissingResourceError(articleError)) {
+    return <NotFoundErrorScreen />;
+  }
 
   if (menu) {
     breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
@@ -62,7 +90,7 @@ const About = () => {
         </div>
         <div className={helpStyles.articleContainer}>
           <HelpArticleGrid className={helpStyles.grid}>
-            {article ? (
+            {article?.type === 'article' ? (
               <TextArticle article={article} />
             ) : (
               <div className={styles.spinnerContainer}>

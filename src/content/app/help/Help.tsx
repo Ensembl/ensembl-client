@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import useApiService from 'src/shared/hooks/useApiService';
+import { useAppDispatch } from 'src/store';
+
 import useHelpHistory from 'src/content/app/help/hooks/useHelpHistory';
+import {
+  useGetHelpArticleQuery,
+  useGetHelpMenuQuery
+} from 'src/content/app/help/state/api/helpApiSlice';
+import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
+
+import { createHelpPageMeta } from './helpers/helpPageMetaHelpers';
+import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
@@ -31,6 +41,7 @@ import {
 } from 'src/shared/components/help-article';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import HistoryButtons from 'src/shared/components/help-popup/HistoryButtons';
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import {
   Menu as MenuType,
@@ -47,20 +58,36 @@ type ArticleData = TextArticleData | VideoArticleData;
 
 const Help = () => {
   const { pathname } = useLocation();
-  const isIndexPage = isIndexRoute(pathname);
-  const { data: menu } = useApiService<MenuType>({
-    endpoint: `/api/docs/menus?name=help`
-  });
-  const { data: article } = useApiService<any>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(pathname)}`,
-    skip: isIndexPage
-  });
+  const isIndexPage = isHelpIndexRoute(pathname);
+  const dispatch = useAppDispatch();
+
+  const { currentData: menu } = useGetHelpMenuQuery({ name: 'help' });
+
+  const { currentData: article, error: articleError } = useGetHelpArticleQuery(
+    { pathname },
+    {
+      skip: isIndexPage
+    }
+  );
+
   const { hasNext, hasPrevious } = useHelpHistory();
 
   let breadcrumbs: string[] = [];
 
+  useEffect(() => {
+    if (!article) {
+      return;
+    }
+
+    dispatch(updatePageMeta(createHelpPageMeta({ path: pathname, article })));
+  }, [pathname, article]);
+
   if (menu) {
     breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
+  }
+
+  if (isMissingResourceError(articleError)) {
+    return <NotFoundErrorScreen />;
   }
 
   const main = isIndexPage ? (
@@ -201,11 +228,6 @@ const collectBreadcrumbs = (
   }
 
   return null;
-};
-
-export const isIndexRoute = (pathname: string) => {
-  // handle both /help and /help/
-  return pathname.replaceAll('/', '') === 'help';
 };
 
 export default Help;

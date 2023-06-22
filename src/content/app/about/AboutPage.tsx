@@ -14,44 +14,50 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { getHelpArticle } from 'src/content/app/help/state/api/helpApiSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
+
+import {
+  createAboutPageTitle,
+  ABOUT_PAGE_FALLBACK_DESCRIPTION
+} from './helpers/aboutPageMetaHelpers';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
 const LazilyLoadedAbout = React.lazy(() => import('./About'));
 
-const pageTitle = 'About Ensembl';
-const pageDescription = 'About the Ensembl project';
-
 const AboutPage = () => {
   const hasMounted = useHasMounted();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(
-      updatePageMeta({
-        title: pageTitle,
-        description: pageDescription
-      })
-    );
-  }, []);
 
   return hasMounted ? <LazilyLoadedAbout /> : null;
 };
 
 export default AboutPage;
 
-// not really fetching anything; just setting page meta
 export const serverFetch: ServerFetch = async (params) => {
-  params.store.dispatch(
+  const { path, store } = params;
+
+  const articlePromise = store.dispatch(
+    getHelpArticle.initiate({ pathname: path })
+  );
+
+  const { data: article, error: articleError } = await articlePromise;
+
+  if (isMissingResourceError(articleError)) {
+    return {
+      status: 404
+    };
+  }
+
+  store.dispatch(
     updatePageMeta({
-      title: pageTitle,
-      description: pageDescription
+      title: createAboutPageTitle(article.title),
+      description: article.description || ABOUT_PAGE_FALLBACK_DESCRIPTION
     })
   );
 };

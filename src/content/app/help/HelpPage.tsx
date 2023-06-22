@@ -14,44 +14,48 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import { getHelpArticle } from 'src/content/app/help/state/api/helpApiSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
+
+import { createHelpPageMeta } from './helpers/helpPageMetaHelpers';
+import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
 const LazilyLoadedHelp = React.lazy(() => import('./Help'));
 
-const pageTitle = 'Help and documentation — Ensembl';
-const pageDescription = 'Ensembl help and documentation';
-
 const HelpPage = () => {
   const hasMounted = useHasMounted();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(
-      updatePageMeta({
-        title: pageTitle,
-        description: pageDescription
-      })
-    );
-  }, []);
 
   return hasMounted ? <LazilyLoadedHelp /> : null;
 };
 
 export default HelpPage;
 
-// not really fetching anything; just setting page meta
 export const serverFetch: ServerFetch = async (params) => {
-  params.store.dispatch(
-    updatePageMeta({
-      title: pageTitle,
-      description: pageDescription
-    })
+  const { path, store } = params;
+
+  if (isHelpIndexRoute(path)) {
+    store.dispatch(updatePageMeta(createHelpPageMeta({ path })));
+    return;
+  }
+
+  const articlePromise = store.dispatch(
+    getHelpArticle.initiate({ pathname: path })
   );
+
+  const { data: article, error: articleError } = await articlePromise;
+
+  if (isMissingResourceError(articleError)) {
+    return {
+      status: 404
+    };
+  }
+
+  store.dispatch(updatePageMeta(createHelpPageMeta({ article, path })));
 };

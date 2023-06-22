@@ -61,7 +61,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     genomeSearchBaseUrl:
       process.env.SSR_GENOME_SEARCH_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.genomeSearchBaseUrl}`,
-    docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
+    docsBaseUrl:
+      process.env.SSR_DOCS_BASE_URL ??
+      `${defaultServerHost}${defaultApiUrls.docsBaseUrl}`,
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
