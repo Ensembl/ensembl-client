@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -27,15 +27,12 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 
 import {
   getActiveGenomeId,
-  getActiveGenomeStats,
   getActiveGenomeUIState
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  fetchStatsForActiveGenome,
-  setActiveGenomeExpandedSections
-} from 'src/content/app/species/state/general/speciesGeneralSlice';
+
+import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
+import { setActiveGenomeExpandedSections } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
 import { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
@@ -164,27 +161,26 @@ const getExpandedContent = (props: ContentProps) => {
 const SpeciesMainViewStats = () => {
   const dispatch = useAppDispatch();
   const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const genomeStats = useAppSelector(getActiveGenomeStats);
   const genomeUIState = useAppSelector(getActiveGenomeUIState);
-  const exampleFocusObjects = useAppSelector((state: RootState) =>
-    getGenomeExampleFocusObjects(state, activeGenomeId)
-  );
   const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
 
-  useEffect(() => {
-    if (!genomeStats && exampleFocusObjects?.length) {
-      dispatch(fetchStatsForActiveGenome());
+  const { currentData: genomeStats } = useGetSpeciesStatisticsQuery(
+    {
+      genomeId: activeGenomeId ?? ''
+    },
+    {
+      skip: !activeGenomeId
     }
-  }, [genomeStats, activeGenomeId, exampleFocusObjects]);
+  );
 
   const { trackSpeciesPageExampleLink, trackSpeciesStatsSectionOpen } =
     useSpeciesAnalytics();
 
   const expandedSections = genomeUIState ? genomeUIState.expandedSections : [];
 
-  if (!genomeStats || !exampleFocusObjects?.length || !species) {
+  if (!genomeStats || !species) {
     return null;
   }
 

@@ -22,21 +22,11 @@ import {
 import set from 'lodash/fp/set';
 
 import { getActiveGenomeId } from './speciesGeneralSelectors';
-import {
-  getGenomeIdForUrl,
-  getGenomeExampleFocusObjects
-} from 'src/shared/state/genome/genomeSelectors';
 import speciesStorageService from '../../services/species-storage-service';
 
-import {
-  getStatsForSection,
-  type StatsSection,
-  SpeciesStatsSection
-} from 'src/content/app/species/state/general/speciesGeneralHelper';
+import { SpeciesStatsSection } from 'src/content/app/species/state/general/speciesGeneralHelper';
 
 import type { RootState } from 'src/store';
-
-export type GenomeStats = StatsSection[];
 
 export type GenomeUIState = {
   expandedSections: SpeciesStatsSection[];
@@ -48,53 +38,13 @@ export type UIState = {
 
 type SpeciesGeneralState = {
   activeGenomeId: string | null;
-  stats: {
-    [genomeId: string]: GenomeStats | undefined;
-  };
   uiState: UIState;
 };
 
 const initialState: SpeciesGeneralState = {
   activeGenomeId: null,
-  stats: {},
   uiState: {}
 };
-
-export const fetchStatsForActiveGenome =
-  (): ThunkAction<void, RootState, void, Action<string>> =>
-  (dispatch, getState) => {
-    const state = getState();
-    const activeGenomeId = getActiveGenomeId(state);
-    if (!activeGenomeId) {
-      return;
-    }
-
-    // if active genome id exists, then genomeIdForUrl must be a string
-    const genomeIdForUrl = getGenomeIdForUrl(state, activeGenomeId) as string;
-
-    const exampleFocusObjects = getGenomeExampleFocusObjects(
-      state,
-      activeGenomeId
-    );
-
-    const speciesStats = Object.values(SpeciesStatsSection)
-      .map((section) =>
-        getStatsForSection({
-          genome_id: activeGenomeId,
-          genomeIdForUrl,
-          section,
-          exampleFocusObjects
-        })
-      )
-      .filter(Boolean) as GenomeStats;
-
-    dispatch(
-      speciesGeneralSlice.actions.setStatsForGenomeId({
-        genomeId: activeGenomeId,
-        stats: speciesStats
-      })
-    );
-  };
 
 export const setActiveGenomeExpandedSections =
   (
@@ -131,13 +81,6 @@ const speciesGeneralSlice = createSlice({
       state.activeGenomeId = action.payload;
     },
 
-    setStatsForGenomeId(
-      state,
-      action: PayloadAction<{ genomeId: string; stats: GenomeStats }>
-    ) {
-      state.stats[action.payload.genomeId] = action.payload.stats;
-    },
-
     setExpandedSections(
       state,
       action: PayloadAction<{
@@ -162,11 +105,7 @@ const speciesGeneralSlice = createSlice({
   }
 });
 
-export const {
-  setActiveGenomeId,
-  setStatsForGenomeId,
-  setExpandedSections,
-  restoreUI
-} = speciesGeneralSlice.actions;
+export const { setActiveGenomeId, setExpandedSections, restoreUI } =
+  speciesGeneralSlice.actions;
 
 export default speciesGeneralSlice.reducer;
