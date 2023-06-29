@@ -23,6 +23,7 @@ import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchP
 
 import styles from './SpeciesSelector.scss';
 
+// TODO: figure out how gene search ought to work alongside the species search results
 type View = 'default' | 'gene-search';
 
 const SpeciesSelector = () => {
