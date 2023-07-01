@@ -26,7 +26,7 @@ import {
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { LocationValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import {

@@ -17,8 +17,8 @@
 import { gql } from 'graphql-request';
 import { Pick2 } from 'ts-multipick';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { FullTranscript } from 'src/shared/types/core-api/transcript';
+import { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 
 export const transcriptZmenuQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {

@@ -16,7 +16,7 @@
 
 import { gql } from 'graphql-request';
 
-import type { Region } from 'src/shared/types/thoas/slice';
+import type { Region } from 'src/shared/types/core-api/slice';
 
 export const regionQuery = gql`
   query Region($genomeId: String!, $regionName: String!) {

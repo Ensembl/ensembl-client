@@ -16,7 +16,7 @@
 
 import { gql } from 'graphql-request';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
+import type { FullGene } from 'src/shared/types/core-api/gene';
 
 // This query is intended to populate the right-hand sidebar for the gene view
 // It looks very similar to geneSummaryQuery; but has a potential of becoming heavier

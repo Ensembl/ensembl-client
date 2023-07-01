@@ -42,7 +42,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 import styles from './TranscriptsFilter.scss';
 

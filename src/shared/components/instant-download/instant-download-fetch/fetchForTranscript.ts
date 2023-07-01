@@ -33,7 +33,7 @@ import type {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;

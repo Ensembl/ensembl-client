@@ -23,7 +23,7 @@ import {
   Product,
   ProductType,
   FamilyMatch
-} from 'src/shared/types/thoas/product';
+} from 'src/shared/types/core-api/product';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
   const length = fragment?.length || faker.number.int({ min: 50, max: 100 });

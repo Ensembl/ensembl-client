@@ -48,14 +48,14 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
     getTrackPanelGene: builder.query<{ gene: TrackPanelGene }, GeneQueryParams>(
       {
         query: (params) => ({
-          url: config.thoasBaseUrl,
+          url: config.coreApiUrl,
           body: trackPanelGeneQuery(params)
         })
       }
     ),
     gbGeneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: geneSummaryQuery,
         variables: params
       })
@@ -65,7 +65,7 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
       TranscriptQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: transcriptSummaryQuery,
         variables: params
       })
@@ -75,14 +75,14 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
       TranscriptQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: transcriptZmenuQuery,
         variables: params
       })
     }),
     gbRegion: builder.query<RegionQueryResult, RegionQueryParams>({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: regionQuery,
         variables: params
       })

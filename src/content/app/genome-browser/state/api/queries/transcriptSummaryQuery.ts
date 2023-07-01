@@ -17,11 +17,11 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
-import { FullGene } from 'src/shared/types/thoas/gene';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import type { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import { FullGene } from 'src/shared/types/core-api/gene';
+import { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { SplicedExon, PhasedExon } from 'src/shared/types/core-api/exon';
+import { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 export const transcriptSummaryQuery = gql`
   query TranscriptSummary($genomeId: String!, $transcriptId: String!) {

@@ -22,7 +22,7 @@ import {
   FocusLocation,
   FocusObjectType
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 export const createFocusObject = (
   objectType?: FocusObjectType

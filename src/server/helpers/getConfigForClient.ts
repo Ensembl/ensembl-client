@@ -19,7 +19,7 @@ import type { BaseApiUrls } from 'config';
 
 const getBaseApiUrls = (): BaseApiUrls => {
   return {
-    thoasBaseUrl: process.env.BROWSER_THOAS_BASE_URL ?? '/api/thoas',
+    coreApiUrl: process.env.BROWSER_CORE_API_BASE_URL ?? '/api/graphql/core',
     genomeSearchBaseUrl:
       process.env.BROWSER_GENOME_SEARCH_BASE_URL ?? '/api/genomesearch',
     docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',

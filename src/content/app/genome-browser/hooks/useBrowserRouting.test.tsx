@@ -44,7 +44,7 @@ const mockGenomeBrowserObj = {};
 
 jest.mock('config', () => ({
   genomeSearchBaseUrl: 'http://genome-search-api',
-  thoasBaseUrl: 'http://graphql-api'
+  coreApiUrl: 'http://graphql-api'
 }));
 
 jest.mock(

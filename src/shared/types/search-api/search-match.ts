@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Strand } from 'src/shared/types/thoas/strand';
+import type { Strand } from 'src/shared/types/core-api/strand';
 
 type SearchMatchType = 'Gene'; // so far, search only returns genes
 

@@ -20,7 +20,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 export type SequenceQueryParams = {
   checksum: string;

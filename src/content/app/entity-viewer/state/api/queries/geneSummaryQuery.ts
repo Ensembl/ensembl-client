@@ -17,7 +17,7 @@
 import { gql } from 'graphql-request';
 import { Pick3 } from 'ts-multipick';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
+import type { FullGene } from 'src/shared/types/core-api/gene';
 
 // A light query to get brief information about a gene.
 // Useful for populating the top bar and example links in the interstitial.

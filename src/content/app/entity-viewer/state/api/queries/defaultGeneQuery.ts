@@ -17,12 +17,12 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
-import type { FullTranscript } from 'src/shared/types/thoas/transcript';
-import type { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
-import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import type { Product } from 'src/shared/types/thoas/product';
-import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { SplicedExon, PhasedExon } from 'src/shared/types/core-api/exon';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { Product } from 'src/shared/types/core-api/product';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 export const defaultGeneQuery = gql`
   query DefaultEntityViewerGene($genomeId: String!, $geneId: String!) {

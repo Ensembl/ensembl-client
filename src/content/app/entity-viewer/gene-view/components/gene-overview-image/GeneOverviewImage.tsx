@@ -30,8 +30,8 @@ import UnsplicedTranscript, {
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
-import { FullGene } from 'src/shared/types/thoas/gene';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullGene } from 'src/shared/types/core-api/gene';
+import { FullTranscript } from 'src/shared/types/core-api/transcript';
 import { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import styles from './GeneOverviewImage.scss';

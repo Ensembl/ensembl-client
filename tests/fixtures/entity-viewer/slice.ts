@@ -16,8 +16,8 @@
 
 import { faker } from '@faker-js/faker';
 
-import { Slice } from 'src/shared/types/thoas/slice';
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Slice } from 'src/shared/types/core-api/slice';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 export const createSlice = (): Slice => {
   const start = faker.number.int({ min: 1, max: 1000000 });
