@@ -27,7 +27,7 @@ import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReduce
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
 
-import thoasApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 const createRootReducer = () =>
@@ -42,7 +42,7 @@ const createRootReducer = () =>
     speciesPage,
     entityViewer,
     blast,
-    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer,
+    [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 
@@ -54,7 +54,7 @@ export const createServerSideRootReducer = () =>
     entityViewer,
     genome,
     blast,
-    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer,
+    [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 

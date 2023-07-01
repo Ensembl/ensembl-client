@@ -28,7 +28,7 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
 
-import thoasApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import createRootReducer from './root/rootReducer';
@@ -40,7 +40,7 @@ const rootReducer = createRootReducer();
 
 const middleware = [
   epicMiddleware,
-  thoasApiSlice.middleware,
+  graphqlApiSlice.middleware,
   restApiSlice.middleware
 ];
 
