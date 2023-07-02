@@ -1,0 +1,22 @@
+.speciesSearchField {
+  display: grid;
+  grid-template-areas:
+    'label .'
+    'input button';
+  grid-template-columns: 486px 64px;
+  row-gap: 10px;
+  column-gap: 45px;
+}
+
+.speciesSearchField label {
+  grid-area: label;
+}
+
+.input {
+  grid-area: input;
+}
+
+.submit {
+  grid-area: button;
+  align-self: center;
+}

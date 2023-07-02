@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
-
-import speciesSelectorUIReducer from './species-selector-ui-slice/speciesSelectorUISlice';
-import speciesSelectorSearchReducer from './species-selector-search-slice/speciesSelectorSearchSlice';
-
-export default combineReducers({
-  ui: speciesSelectorUIReducer,
-  search: speciesSelectorSearchReducer
-});
+export type PopularSpecies = {
+  id: string; // <-- an id of the collection of genomes associated with this species
+  name: string; // <-- human-friendly text we are going to show in the tooltip
+  image: string; // <-- url of the associated svg
+  members_count: number; // <-- the number to show in the lozenge (could name the field "genomes_count")
+  is_selected: boolean; // <-- to display popular species button as selected
+};

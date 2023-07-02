@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import speciesSelectorUIReducer from './species-selector-ui-slice/speciesSelectorUISlice';
-import speciesSelectorSearchReducer from './species-selector-search-slice/speciesSelectorSearchSlice';
+type State = {
+  query: string;
+};
 
-export default combineReducers({
-  ui: speciesSelectorUIReducer,
-  search: speciesSelectorSearchReducer
+const initialState: State = {
+  query: ''
+};
+
+const speciesSelectorSearchSlice = createSlice({
+  name: 'species-selector-ui',
+  initialState,
+  reducers: {
+    setQuery(state, action: PayloadAction<string>) {
+      state.query = action.payload;
+    }
+  }
 });
+
+export const { setQuery } = speciesSelectorSearchSlice.actions;
+
+export default speciesSelectorSearchSlice.reducer;

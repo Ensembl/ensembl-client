@@ -1,0 +1,12 @@
+@import 'src/styles/common';
+
+.main {
+  height: 100%;
+}
+
+.searchPanel {
+  height: 270px;
+  padding-left: $global-padding-left;
+  padding-top: 38px;
+  background-color: $light-grey;
+}

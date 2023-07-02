@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
+import config from 'config';
 
-import speciesSelectorUIReducer from './species-selector-ui-slice/speciesSelectorUISlice';
-import speciesSelectorSearchReducer from './species-selector-search-slice/speciesSelectorSearchSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-export default combineReducers({
-  ui: speciesSelectorUIReducer,
-  search: speciesSelectorSearchReducer
+const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    getPopularSpecies: builder.query<any, any>({
+      query: (params) => ({
+        url: `${config.docsBaseUrl}/menus?name=${params.name}`
+      })
+    })
+  })
 });
+
+export const { useGetPopularSpeciesQuery } = speciesSelectorApiSlice;

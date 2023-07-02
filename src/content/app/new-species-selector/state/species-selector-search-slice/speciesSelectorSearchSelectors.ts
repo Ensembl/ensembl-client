@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
+import type { RootState } from 'src/store';
 
-import speciesSelectorUIReducer from './species-selector-ui-slice/speciesSelectorUISlice';
-import speciesSelectorSearchReducer from './species-selector-search-slice/speciesSelectorSearchSlice';
-
-export default combineReducers({
-  ui: speciesSelectorUIReducer,
-  search: speciesSelectorSearchReducer
-});
+export const getSpeciesSearchQuery = (state: RootState) => {
+  return state.newSpeciesSelector.search.query;
+};
