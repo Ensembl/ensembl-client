@@ -15,7 +15,7 @@
  */
 
 export type PopularSpecies = {
-  id: string; // <-- an id of the collection of genomes associated with this species
+  id: string | number; // <-- an id of the collection of genomes associated with this species
   name: string; // <-- human-friendly text we are going to show in the tooltip
   image: string; // <-- url of the associated svg
   members_count: number; // <-- the number to show in the lozenge (could name the field "genomes_count")

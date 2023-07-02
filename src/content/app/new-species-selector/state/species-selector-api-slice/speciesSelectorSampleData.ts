@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import config from 'config';
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
-import restApiSlice from 'src/shared/state/api-slices/restSlice';
-
-const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getPopularSpecies: builder.query<any, any>({
-      query: (params) => ({
-        url: `${config.docsBaseUrl}/menus?name=${params.name}`
-      })
-    })
-  })
-});
-
-export const { useGetPopularSpeciesQuery } = speciesSelectorApiSlice;
+export const popularSpecies: PopularSpecies[] = [
+  {
+    id: 1,
+    name: 'Human',
+    image:
+      'https://staging-2020.ensembl.org/static/genome_images/homo_sapiens_GCA_000001405_14.svg', // TODO: change this to updated human image
+    members_count: 2,
+    is_selected: false
+  }
+];
