@@ -17,18 +17,53 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getSpeciesSelectorModalView } from './state/species-selector-ui-slice/speciesSelectorUISelectors';
+import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
+import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
+import SpeciesSelectorSelectionModalView from './components/species-selector-selection-modal-view/SpeciesSelectorSelectionModalView';
 
 import styles from './SpeciesSelector.scss';
 
 const SpeciesSelector = () => {
-  return (
-    <div className={styles.grid}>
+  const dispatch = useAppDispatch();
+  const modalView = useAppSelector(getSpeciesSelectorModalView);
+
+  const openSelectionModalView = () => {
+    dispatch(setModalView('species-search'));
+  };
+
+  // TODO: add 'find a gene' functionality
+
+  const appBar =
+    modalView === 'species-search' ? (
+      <SpeciesSearchResultsModalAppBar />
+    ) : (
       <SpeciesSelectorAppBar
         onGeneSearchToggle={noop}
         isGeneSearchMode={false}
       />
-      <div>This will be the page for our new species selector</div>
+    );
+
+  const body =
+    modalView === 'species-search' ? (
+      <SpeciesSelectorSelectionModalView />
+    ) : (
+      <div>
+        This will be the page for our new species selector
+        <div>
+          <button onClick={openSelectionModalView}>Open modal view</button>
+        </div>
+      </div>
+    );
+
+  return (
+    <div className={styles.grid}>
+      {appBar}
+      {body}
     </div>
   );
 };

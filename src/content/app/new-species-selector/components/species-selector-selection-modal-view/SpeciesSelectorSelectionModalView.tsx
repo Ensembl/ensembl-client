@@ -15,24 +15,23 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import CloseIcon from 'static/icons/icon_close.svg';
+import { useAppDispatch } from 'src/store';
 
-import styles from './CloseButton.scss';
+import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
-type Props = {
-  onClick?: () => void;
-  className?: string;
+import ModalView from 'src/shared/components/modal-view/ModalView';
+
+const SpeciesSelectorSelectionModalView = () => {
+  const dispatch = useAppDispatch();
+
+  const onClose = () => {
+    dispatch(setModalView(null));
+  };
+
+  const content = 'There will be content!';
+
+  return <ModalView onClose={onClose}>{content}</ModalView>;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;
+export default SpeciesSelectorSelectionModalView;

@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import { combineReducers } from '@reduxjs/toolkit';
 
-import CloseIcon from 'static/icons/icon_close.svg';
+import speciesSelectorUIReducer from './species-selector-ui-slice/speciesSelectorUISlice';
 
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
-};
-
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;
+export default combineReducers({
+  ui: speciesSelectorUIReducer
+});
