@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
 
@@ -25,6 +24,7 @@ import SpeciesSelectorAppBar from './components/species-selector-app-bar/Species
 import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
 import SpeciesSelectorSelectionModalView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
+import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
 
 import styles from './SpeciesSelector.scss';
 
@@ -35,15 +35,14 @@ const SpeciesSelector = () => {
     modalView === 'species-search' ? (
       <SpeciesSearchResultsModalAppBar />
     ) : (
-      <SpeciesSelectorAppBar
-        onGeneSearchToggle={noop}
-        isGeneSearchMode={false}
-      />
+      <SpeciesSelectorAppBar />
     );
 
   const body =
     modalView === 'species-search' ? (
       <SpeciesSelectorSelectionModalView />
+    ) : modalView === 'find-gene' ? (
+      <SpeciesSelectorGeneSearchView />
     ) : (
       <SpeciesSelectorMainView />
     );
