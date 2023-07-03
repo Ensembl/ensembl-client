@@ -22,7 +22,7 @@ import PopularSpeciesButton from 'src/content/app/new-species-selector/component
 import humanIconUrl from './homo_sapiens.svg?url';
 import zebrafishIconUrl from './danio_rerio.svg?url';
 
-import type { PopularSpecies } from '/Users/andrey/development/ensembl-client/src/content/app/new-species-selector/types/popularSpecies';
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 const humanData: PopularSpecies = {
   id: 1,

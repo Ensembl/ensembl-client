@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 
 import PopularSpeciesButton from './PopularSpeciesButton';
 
-import type { PopularSpecies } from '/Users/andrey/development/ensembl-client/src/content/app/new-species-selector/types/popularSpecies';
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 const humanData: PopularSpecies = {
   id: 1,

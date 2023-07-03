@@ -21,7 +21,7 @@ import useHover from 'src/shared/hooks/useHover';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import type { PopularSpecies } from '/Users/andrey/development/ensembl-client/src/content/app/new-species-selector/types/popularSpecies';
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 import styles from './PopularSpeciesButton.scss';
 
