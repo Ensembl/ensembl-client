@@ -23,7 +23,7 @@ import { getSpeciesSelectorModalView } from './state/species-selector-ui-slice/s
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
 import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
-import SpeciesSelectorSelectionModalView from './components/species-selector-selection-modal-view/SpeciesSelectorSelectionModalView';
+import SpeciesSelectorSelectionModalView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
 
 import styles from './SpeciesSelector.scss';
