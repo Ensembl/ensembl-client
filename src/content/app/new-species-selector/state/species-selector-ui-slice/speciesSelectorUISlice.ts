@@ -16,7 +16,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-type ModalView = 'species-search' | 'find-gene';
+type ModalView = 'species-search' | 'gene-search';
 
 type State = {
   modalView: ModalView | null;

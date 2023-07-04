@@ -41,7 +41,7 @@ const SpeciesSelector = () => {
   const body =
     modalView === 'species-search' ? (
       <SpeciesSelectorSelectionModalView />
-    ) : modalView === 'find-gene' ? (
+    ) : modalView === 'gene-search' ? (
       <SpeciesSelectorGeneSearchView />
     ) : (
       <SpeciesSelectorMainView />

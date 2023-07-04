@@ -67,10 +67,10 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isInGeneSearchMode =
-    useAppSelector(getSpeciesSelectorModalView) === 'find-gene';
+    useAppSelector(getSpeciesSelectorModalView) === 'gene-search';
 
   const onGeneSearchOpen = () => {
-    dispatch(setModalView('find-gene'));
+    dispatch(setModalView('gene-search'));
   };
 
   const onGeneSearchClose = () => {
