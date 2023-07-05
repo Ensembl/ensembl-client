@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
+type State = {
+  query: string;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
+const initialState: State = {
+  query: ''
 };
 
-export default CloseButton;
+const speciesSelectorSearchSlice = createSlice({
+  name: 'species-selector-ui',
+  initialState,
+  reducers: {
+    setQuery(state, action: PayloadAction<string>) {
+      state.query = action.payload;
+    }
+  }
+});
+
+export const { setQuery } = speciesSelectorSearchSlice.actions;
+
+export default speciesSelectorSearchSlice.reducer;

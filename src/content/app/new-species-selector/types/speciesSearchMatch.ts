@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
+export type SpeciesSearchMatch = {
+  genome_id: string;
+  common_name: string | null;
+  scientific_name: string;
+  type: {
+    kind: string; // e.g. "population"
+    value: string; // e.g. "European"
+  } | null;
+  is_reference: boolean;
+  assembly: {
+    accession_id: string;
+    name: string;
+    url: string;
+  };
+  coding_genes_count: number;
+  contig_n50: number | null; // E.coli doesn't have contig n50 in species stats
+  has_variation: boolean;
+  has_regulation: boolean;
+  annotation_provider: string;
+  annotation_method: string;
+  rank: number | null; // <-- to know that some matches are more important than others and should be put on top
 };
-
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;

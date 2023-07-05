@@ -14,21 +14,52 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import noop from 'lodash/noop';
+import React, { useEffect } from 'react';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getSpeciesSelectorModalView } from './state/species-selector-ui-slice/speciesSelectorUISelectors';
+import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
+import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
+import SpeciesSelectorSelectionModalView from './views/species-selector-results-view/SpeciesSelectorResultsView';
+import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
+import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
 
 import styles from './SpeciesSelector.scss';
 
 const SpeciesSelector = () => {
+  const modalView = useAppSelector(getSpeciesSelectorModalView);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    return () => {
+      // close the modal view when leaving Species Selector
+      dispatch(setModalView(null));
+    };
+  }, []);
+
+  const appBar =
+    modalView === 'species-search' ? (
+      <SpeciesSearchResultsModalAppBar />
+    ) : (
+      <SpeciesSelectorAppBar />
+    );
+
+  const body =
+    modalView === 'species-search' ? (
+      <SpeciesSelectorSelectionModalView />
+    ) : modalView === 'gene-search' ? (
+      <SpeciesSelectorGeneSearchView />
+    ) : (
+      <SpeciesSelectorMainView />
+    );
+
   return (
     <div className={styles.grid}>
-      <SpeciesSelectorAppBar
-        onGeneSearchToggle={noop}
-        isGeneSearchMode={false}
-      />
-      <div>This will be the page for our new species selector</div>
+      {appBar}
+      {body}
     </div>
   );
 };

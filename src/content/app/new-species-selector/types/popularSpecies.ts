@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
+export type PopularSpecies = {
+  id: string | number; // <-- an id of the collection of genomes associated with this species
+  name: string; // <-- human-friendly text we are going to show in the tooltip
+  image: string; // <-- url of the associated svg
+  members_count: number; // <-- the number to show in the lozenge (could name the field "genomes_count")
+  is_selected: boolean; // <-- to display popular species button as selected
 };
-
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;

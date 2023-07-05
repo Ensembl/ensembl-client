@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import type { RootState } from 'src/store';
 
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
+export const getSpeciesSelectorModalView = (state: RootState) => {
+  return state.newSpeciesSelector.ui.modalView;
 };
-
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;

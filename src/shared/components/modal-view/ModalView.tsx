@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import React, { type ReactNode } from 'react';
 
-import CloseIcon from 'static/icons/icon_close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './CloseButton.scss';
+import styles from './ModalView.scss';
 
 type Props = {
-  onClick?: () => void;
-  className?: string;
+  children: ReactNode;
+  onClose: () => void;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
+const ModalView = (props: Props) => {
+  const { children, onClose } = props;
+
   return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
+    <div className={styles.modalView}>
+      <CloseButton onClick={onClose} className={styles.closeButton} />
+      {children}
+    </div>
   );
 };
 
-export default CloseButton;
+export default ModalView;

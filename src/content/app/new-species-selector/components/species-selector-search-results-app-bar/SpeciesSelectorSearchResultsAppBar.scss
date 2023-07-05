@@ -1,0 +1,9 @@
+@import 'src/styles/common';
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 1rem;
+  color: $blue;
+  cursor: pointer;
+}

@@ -1,0 +1,17 @@
+@import 'src/styles/common';
+
+.modalView {
+  // TODO: check the size of the close button with Andrea
+  --close-button-size: 16px; /* same as regular close button; but we can now use this for calculations */
+  position: relative; 
+  height: 100%;
+  background-color: $light-grey;
+  padding-right: calc(#{$standard-gutter} + var(--close-button-size));
+  padding-top: calc(26px + var(--close-button-size));
+}
+
+.closeButton {
+  position: absolute;
+  right: $standard-gutter;
+  top: 26px;
+}

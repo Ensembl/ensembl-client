@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './CloseButton.scss';
-
-type Props = {
-  onClick?: () => void;
-  className?: string;
-};
-
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;
+export const popularSpecies: PopularSpecies[] = [
+  {
+    id: 1,
+    name: 'Human',
+    image:
+      'https://staging-2020.ensembl.org/static/genome_images/homo_sapiens_GCA_000001405_14.svg', // TODO: change this to updated human image
+    members_count: 2,
+    is_selected: false
+  }
+];

@@ -15,24 +15,21 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import CloseIcon from 'static/icons/icon_close.svg';
+import { useAppDispatch } from 'src/store';
 
-import styles from './CloseButton.scss';
+import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
-type Props = {
-  onClick?: () => void;
-  className?: string;
+import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
+
+const SpeciesSelectorGeneSearchView = () => {
+  const dispatch = useAppDispatch();
+
+  const onClose = () => {
+    dispatch(setModalView(null));
+  };
+
+  return <GeneSearchPanel onClose={onClose} />;
 };
 
-const CloseButton = (props: Props) => {
-  const className = classNames(styles.closeButton, props.className);
-  return (
-    <button type="button" className={className} onClick={props.onClick}>
-      <CloseIcon className={styles.icon} />
-    </button>
-  );
-};
-
-export default CloseButton;
+export default SpeciesSelectorGeneSearchView;
