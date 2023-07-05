@@ -22,7 +22,7 @@ import { setModalView } from 'src/content/app/new-species-selector/state/species
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 
-const SpeciesSelectorSelectionModalView = () => {
+const SpeciesSelectorResultsView = () => {
   const dispatch = useAppDispatch();
 
   const onClose = () => {
@@ -34,4 +34,4 @@ const SpeciesSelectorSelectionModalView = () => {
   return <ModalView onClose={onClose}>{content}</ModalView>;
 };
 
-export default SpeciesSelectorSelectionModalView;
+export default SpeciesSelectorResultsView;
