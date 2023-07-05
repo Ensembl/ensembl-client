@@ -1,0 +1,54 @@
+@import 'src/styles/common';
+
+$button-size: 57px;
+
+.popularSpeciesButton {
+  position: relative;
+  font-size: 0;
+  user-select: none;
+  width: $button-size;
+  height: $button-size;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  *[class*='tooltip'] {
+    user-select: none;
+  }
+}
+
+.popularSpeciesButton:not(.popularSpeciesButtonSelected) {
+  background: $blue;
+  border: 1px solid $blue;
+
+  img {
+    filter: #{"invert()"};  // <-- unfortunate consequence of CSS and SCSS keyword collision
+  }
+}
+
+.popularSpeciesButtonSelected {
+  background: $white;
+  border: 1px solid $blue;
+
+  img {
+    filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%); // magic from https://codepen.io/sosuke/pen/Pjoqqp
+  }
+}
+
+.membersCount {
+  --border-radius: 14px;
+  position: absolute;
+  bottom: 0;
+  right: calc(-1 * var(--border-radius) / 2);
+  transform: translateY(50%);
+  font-size: 11px;
+  font-weight: $bold;
+  font-family: $font-family-monospace;
+  color: $white;
+  background-color: $black;
+  min-width: 27px;
+  padding: 2px calc(var(--border-radius) / 2);
+  border-radius: var(--border-radius);
+}
