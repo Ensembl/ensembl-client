@@ -20,18 +20,31 @@ import { useAppDispatch } from 'src/store';
 
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
+import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
 import ModalView from 'src/shared/components/modal-view/ModalView';
 
-const SpeciesSelectorResultsView = () => {
+import styles from './SpeciesSelectorResultsView.scss';
+
+const SpeciesSelectorResultslView = () => {
   const dispatch = useAppDispatch();
 
   const onClose = () => {
     dispatch(setModalView(null));
   };
 
-  const content = 'There will be content!';
-
-  return <ModalView onClose={onClose}>{content}</ModalView>;
+  return (
+    <ModalView onClose={onClose}>
+      <Content />
+    </ModalView>
+  );
 };
 
-export default SpeciesSelectorResultsView;
+const Content = () => {
+  return (
+    <div className={styles.main}>
+      <SpeciesSearchField />
+    </div>
+  );
+};
+
+export default SpeciesSelectorResultslView;
