@@ -2,5 +2,11 @@
 
 .main {
   height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
   padding-left: $global-padding-left;
+}
+
+.tableContainer {
+  overflow: auto;
 }

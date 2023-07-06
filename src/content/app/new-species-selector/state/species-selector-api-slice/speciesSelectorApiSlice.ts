@@ -19,19 +19,19 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
-type PopularSpeciesRequestParams = {
+export type PopularSpeciesRequestParams = {
   selected_genome_ids?: string[]; // <-- // so that the backend can tell us whether popular species contain the genomes that user has selected
 };
 
-type PopularSpeciesResponse = {
+export type PopularSpeciesResponse = {
   popular_species: PopularSpecies[];
 };
 
-type SpeciesSearchRequestParams = {
+export type SpeciesSearchRequestParams = {
   query: string;
 };
 
-type SpeciesSearchResponse = {
+export type SpeciesSearchResponse = {
   matches: SpeciesSearchMatch[];
   meta: {
     total_count: number;

@@ -57,9 +57,9 @@ export const humanSearchMatches: SpeciesSearchMatch[] = [
     type: null,
     is_reference: false,
     assembly: {
-      accession_id: 'GCA_000001405.28',
+      accession_id: 'GCA_000001405.14',
       name: 'GRCh37.p13',
-      url: 'https://www.ebi.ac.uk/ena/data/view/GCA_000001405.28'
+      url: 'https://www.ebi.ac.uk/ena/browser/view/GCA_000001405.14'
     },
     coding_genes_count: 20787,
     contig_n50: 38440852,

@@ -1,0 +1,13 @@
+@import 'src/styles/common';
+
+.table {
+  --table-background: $light-grey;
+}
+
+.showMore {
+  color: $blue;
+}
+
+.referenceGenome {
+  font-style: italic;
+}
