@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
 import { Table } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
@@ -83,7 +85,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
             </td>
-            <td>{searchMatch.common_name}</td>
+            <td>{searchMatch.common_name ?? '-'}</td>
             <td>{searchMatch.scientific_name}</td>
             <td>
               <SpeciesType species={searchMatch} />
@@ -100,8 +102,14 @@ const SpeciesSearchResultsTable = (props: Props) => {
 
             {isExpanded && (
               <>
-                <td>{searchMatch.coding_genes_count}</td>
-                <td>{searchMatch.contig_n50}</td>
+                <td>
+                  {getCommaSeparatedNumber(searchMatch.coding_genes_count)}
+                </td>
+                <td>
+                  {searchMatch.contig_n50
+                    ? getCommaSeparatedNumber(searchMatch.contig_n50)
+                    : '-'}
+                </td>
                 <td>VAR</td>
                 <td>REG</td>
                 <td>{searchMatch.annotation_provider}</td>
