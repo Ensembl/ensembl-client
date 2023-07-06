@@ -7,6 +7,7 @@
     NEW_BROWSER_SERVICE_SLUG: dev
     GENOME_SEARCH_SERVICE_SLUG: dev
     THOAS_SERVICE_SLUG: dev
+    CORE_API_SERVICE_SLUG: dev
     REFGET_SERVICE_SLUG: dev
     HELP_DOCS_SERVICE_SLUG: dev
     TRACK_API_SERVICE_SLUG: dev
@@ -24,6 +25,7 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
     - sed -i "s#<THOAS_SERVICE_SLUG>#${THOAS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
+    - sed -i "s#<CORE_API_SERVICE_SLUG>#${CORE_API_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<GENOME_SEARCH_SERVICE_SLUG>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<HELP_DOCS_SERVICE_SLUG>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_cm.yaml
