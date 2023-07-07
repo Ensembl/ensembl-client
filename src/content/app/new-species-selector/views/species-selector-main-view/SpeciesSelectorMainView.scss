@@ -2,6 +2,9 @@
 
 .main {
   height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: auto;
 }
 
 .searchPanel {
@@ -9,4 +12,13 @@
   padding-left: $global-padding-left;
   padding-top: 38px;
   background-color: $light-grey;
+}
+
+.popularSpecies {
+  height: 100%;
+  padding-top: 26px;
+  padding-left: $global-padding-left;
+  padding-right: $standard-gutter;
+  padding-bottom: $global-padding-bottom;
+  overflow: auto;
 }
