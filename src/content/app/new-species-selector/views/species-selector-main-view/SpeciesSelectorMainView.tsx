@@ -16,31 +16,19 @@
 
 import React from 'react';
 
-import { useAppDispatch } from 'src/store';
-
-import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
-
 import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
+import PopularSpeciesList from 'src/content/app/new-species-selector/components/popular-species-list/PopularSpeciesList';
 
 import styles from './SpeciesSelectorMainView.scss';
 
 const SpeciesSelectorMainView = () => {
-  const dispatch = useAppDispatch();
-
-  const openSelectionModalView = () => {
-    dispatch(setModalView('species-search'));
-  };
-
   return (
     <div className={styles.main}>
       <div className={styles.searchPanel}>
         <SpeciesSearchField />
       </div>
-      <div>
-        <label>Popular</label>
-        <div>
-          <button onClick={openSelectionModalView}>Open modal view</button>
-        </div>
+      <div className={styles.popularSpecies}>
+        <PopularSpeciesList />
       </div>
     </div>
   );
