@@ -17,9 +17,9 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
-import { FullGene } from 'src/shared/types/core-api/gene';
-import { FullTranscript } from 'src/shared/types/core-api/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 
 export const geneSummaryQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {

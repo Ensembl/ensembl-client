@@ -15,12 +15,12 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2, Pick3, Pick4 } from 'ts-multipick';
+import type { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
-import { FullGene } from 'src/shared/types/core-api/gene';
-import { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { SplicedExon, PhasedExon } from 'src/shared/types/core-api/exon';
-import { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 export const transcriptSummaryQuery = gql`

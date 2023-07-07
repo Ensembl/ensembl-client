@@ -16,7 +16,7 @@
 
 import { faker } from '@faker-js/faker';
 
-import { Slice } from 'src/shared/types/core-api/slice';
+import type { Slice } from 'src/shared/types/core-api/slice';
 import { Strand } from 'src/shared/types/core-api/strand';
 
 export const createSlice = (): Slice => {

@@ -17,7 +17,7 @@
 import { faker } from '@faker-js/faker';
 import merge from 'lodash/merge';
 
-import { ExternalReference } from 'src/shared/types/core-api/externalReference';
+import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
 
 export const createExternalReference = (
   fragment?: Partial<

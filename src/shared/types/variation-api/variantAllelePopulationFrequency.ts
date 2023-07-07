@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueSetMetadata } from '../core-api/metadata';
+import type { ValueSetMetadata } from '../core-api/metadata';
 
 export type VariantAllelePopulationFrequency = {
   population: string;

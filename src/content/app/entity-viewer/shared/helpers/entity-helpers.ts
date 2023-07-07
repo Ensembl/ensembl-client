@@ -16,10 +16,10 @@
 
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import { Slice } from 'src/shared/types/core-api/slice';
-import { PhasedExon, Exon } from 'src/shared/types/core-api/exon';
-import { Product, ProductType } from 'src/shared/types/core-api/product';
-import { ExternalReference } from 'src/shared/types/core-api/externalReference';
+import type { Slice } from 'src/shared/types/core-api/slice';
+import type { PhasedExon, Exon } from 'src/shared/types/core-api/exon';
+import { ProductType, type Product } from 'src/shared/types/core-api/product';
+import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
 
 import {
   SWISSPROT_SOURCE,

@@ -24,8 +24,8 @@ import {
   ProteinCodingTranscript
 } from './transcript';
 
-import { FullGene } from 'src/shared/types/core-api/gene';
-import { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 type GeneFixture = Omit<FullGene, 'transcripts'> & {
   transcripts: ProteinCodingTranscript[];
