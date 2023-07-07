@@ -26,7 +26,7 @@ import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
-import thoasSlice from 'src/shared/state/api-slices/graphqlApiSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import useBrowserRouting from './useBrowserRouting';
 
@@ -44,7 +44,7 @@ const mockGenomeBrowserObj = {};
 
 jest.mock('config', () => ({
   genomeSearchBaseUrl: 'http://genome-search-api',
-  thoasBaseUrl: 'http://graphql-api'
+  coreApiUrl: 'http://graphql-api'
 }));
 
 jest.mock(
@@ -145,7 +145,7 @@ const renderComponent = ({
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat([
         restApiSlice.middleware,
-        thoasSlice.middleware
+        graphqlApiSlice.middleware
       ]),
     preloadedState: state as any
   });

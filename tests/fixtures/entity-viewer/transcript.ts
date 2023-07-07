@@ -22,19 +22,19 @@ import { createProduct } from './product';
 import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import type { FullTranscript } from 'src/shared/types/thoas/transcript';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type {
   Exon,
   SplicedExon,
   PhasedExon
-} from 'src/shared/types/thoas/exon';
-import type { Slice } from 'src/shared/types/thoas/slice';
-import type { FullCDS } from 'src/shared/types/thoas/cds';
-import type { CDNA } from 'src/shared/types/thoas/cdna';
-import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { ProductType, type Product } from 'src/shared/types/thoas/product';
-import type { ExternalReference } from 'src/shared/types/thoas/externalReference';
-import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+} from 'src/shared/types/core-api/exon';
+import type { Slice } from 'src/shared/types/core-api/slice';
+import type { FullCDS } from 'src/shared/types/core-api/cds';
+import type { CDNA } from 'src/shared/types/core-api/cdna';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import { ProductType, type Product } from 'src/shared/types/core-api/product';
+import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 type CommonTranscriptFields = Omit<
   FullTranscript,

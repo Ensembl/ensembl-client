@@ -16,10 +16,10 @@
 
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
-import type { FullTranscript } from 'src/shared/types/thoas/transcript';
-import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import type { Product } from 'src/shared/types/thoas/product';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { Product } from 'src/shared/types/core-api/product';
 
 type GeneFields = Pick<
   FullGene,

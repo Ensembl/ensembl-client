@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ExternalDB } from '../thoas/externalDb';
+import type { ExternalDB } from '../core-api/externalDb';
 
 export type VariantPredictionResult = {
   score: number | null;

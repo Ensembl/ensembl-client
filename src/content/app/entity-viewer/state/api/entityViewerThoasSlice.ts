@@ -55,7 +55,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     genePageMeta: builder.query<GenePageMeta, GeneQueryParams>({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: genePageMetaQuery,
         variables: params
       }),
@@ -76,21 +76,21 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: defaultGeneQuery,
         variables: params
       })
     }),
     geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: geneSummaryQuery,
         variables: params
       })
     }),
     geneOverview: builder.query<GeneOverviewQueryResult, GeneQueryParams>({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: geneOverviewQuery,
         variables: params
       })
@@ -100,7 +100,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: geneExternalReferencesQuery,
         variables: params
       })
@@ -110,7 +110,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       GeneQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: geneForSequenceDownloadQuery,
         variables: params
       })
@@ -120,7 +120,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       ProductQueryParams
     >({
       query: (params) => ({
-        url: config.thoasBaseUrl,
+        url: config.coreApiUrl,
         body: proteinDomainsQuery,
         variables: params
       })

@@ -19,7 +19,7 @@ import type { Pick2 } from 'ts-multipick';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
-import type { Slice } from 'src/shared/types/thoas/slice';
+import type { Slice } from 'src/shared/types/core-api/slice';
 
 type MinimalSlice = Pick2<Slice, 'location', 'start' | 'end'> &
   Pick2<Slice, 'region', 'name'>;

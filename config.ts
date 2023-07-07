@@ -19,7 +19,7 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import { hostWithProtocol as defaultServerHost } from 'src/server/constants';
 
 export type BaseApiUrls = {
-  thoasBaseUrl: string;
+  coreApiUrl: string;
   genomeSearchBaseUrl: string;
   docsBaseUrl: string;
   genomeBrowserBackendBaseUrl: string;
@@ -34,7 +34,7 @@ export type PublicKeys = {
 };
 
 const defaultApiUrls: BaseApiUrls = {
-  thoasBaseUrl: '/api/thoas',
+  coreApiUrl: '/api/graphql/core',
   genomeSearchBaseUrl: '/api/genomesearch',
   docsBaseUrl: '/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
@@ -55,9 +55,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
 
   // the following will be run on the server
   return {
-    thoasBaseUrl:
-      process.env.SSR_THOAS_BASE_URL ??
-      `${defaultServerHost}${defaultApiUrls.thoasBaseUrl}`,
+    coreApiUrl:
+      process.env.SSR_CORE_API_BASE_URL ??
+      `${defaultServerHost}${defaultApiUrls.coreApiUrl}`,
     genomeSearchBaseUrl:
       process.env.SSR_GENOME_SEARCH_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.genomeSearchBaseUrl}`,

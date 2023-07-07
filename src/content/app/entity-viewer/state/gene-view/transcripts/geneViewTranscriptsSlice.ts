@@ -36,7 +36,7 @@ import {
   getExpandedTranscriptMoreInfoIds
 } from './geneViewTranscriptsSelectors';
 
-import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 import type { RootState } from 'src/store';
 
 export enum SortingRule {

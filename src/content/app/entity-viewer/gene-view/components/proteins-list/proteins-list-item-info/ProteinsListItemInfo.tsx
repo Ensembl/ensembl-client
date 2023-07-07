@@ -46,7 +46,7 @@ import {
 import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import type { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
+import type { ExternalReference as ExternalReferenceType } from 'src/shared/types/core-api/externalReference';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 

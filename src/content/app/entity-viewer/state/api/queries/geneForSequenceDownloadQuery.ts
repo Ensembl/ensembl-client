@@ -16,8 +16,8 @@
 
 import { gql } from 'graphql-request';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
-import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 
 export const geneForSequenceDownloadQuery = gql`
   query GeneForSequenceDownload($genomeId: String!, $geneId: String!) {

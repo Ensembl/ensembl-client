@@ -56,7 +56,7 @@ const graphqlBaseQuery = async ({
 };
 
 export default createApi({
-  reducerPath: 'thoasApi',
+  reducerPath: 'graphqlApi',
   baseQuery: graphqlBaseQuery,
   endpoints: () => ({}) // will inject endpoints in other files
 });

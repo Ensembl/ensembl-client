@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Slice } from '../thoas/slice';
-import type { ExternalReference } from '../thoas/externalReference';
-import type { ExternalDB } from '../thoas/externalDb';
-import type { OntologyTermMetadata } from '../thoas/metadata';
+import type { Slice } from '../core-api/slice';
+import type { ExternalReference } from '../core-api/externalReference';
+import type { ExternalDB } from '../core-api/externalDb';
+import type { OntologyTermMetadata } from '../core-api/metadata';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllele } from './variantAllele';
 

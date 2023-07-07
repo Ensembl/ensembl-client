@@ -19,9 +19,9 @@ import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { SplicedExon } from 'src/shared/types/thoas/exon';
-import { FullCDS } from 'src/shared/types/thoas/cds';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { SplicedExon } from 'src/shared/types/core-api/exon';
+import type { FullCDS } from 'src/shared/types/core-api/cds';
 
 import styles from './UnsplicedTranscript.scss';
 

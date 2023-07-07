@@ -20,7 +20,7 @@ import { Pick2, Pick3 } from 'ts-multipick';
 import type {
   FamilyMatch,
   ClosestDataProvider
-} from 'src/shared/types/thoas/product';
+} from 'src/shared/types/core-api/product';
 
 export const proteinDomainsQuery = gql`
   query ProteinDomains($genomeId: String!, $productId: String!) {

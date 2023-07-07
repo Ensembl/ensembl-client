@@ -18,7 +18,7 @@ import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
 import styles from './TranscriptQualityLabel.scss';
 

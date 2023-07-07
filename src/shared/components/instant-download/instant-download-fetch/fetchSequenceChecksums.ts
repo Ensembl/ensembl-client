@@ -16,8 +16,8 @@
 
 import { request, gql } from 'graphql-request';
 
-import type { Sequence } from 'src/shared/types/thoas/sequence';
-import type { Strand } from 'src/shared/types/thoas/strand';
+import type { Sequence } from 'src/shared/types/core-api/sequence';
+import type { Strand } from 'src/shared/types/core-api/strand';
 
 type NonGenomicSequenceMetadata = {
   checksum: string;
@@ -297,7 +297,7 @@ export const fetchGeneAndTranscriptSequenceMetadata = (
   variables: GeneAndTranscriptQueryVariables
 ): Promise<GeneAndTranscriptSequenceMetadata> =>
   request<GeneAndTranscriptQueryResult>(
-    '/api/thoas',
+    '/api/graphql/core',
     geneAndTranscriptChecksumsQuery,
     variables
   ).then((data) => processGeneAndTranscriptData(data));
@@ -305,20 +305,22 @@ export const fetchGeneAndTranscriptSequenceMetadata = (
 export const fetchGeneSequenceMetadata = (
   variables: GeneQueryVariables
 ): Promise<GeneWithTranscriptsSequenceMetadata> =>
-  request<GeneQueryResult>('/api/thoas', geneChecksumsQuery, variables).then(
-    (data) => ({
-      ...processGeneData(data.gene),
-      transcripts: data.gene.transcripts.map((transcript) =>
-        processTranscriptData(transcript)
-      )
-    })
-  );
+  request<GeneQueryResult>(
+    '/api/graphql/core',
+    geneChecksumsQuery,
+    variables
+  ).then((data) => ({
+    ...processGeneData(data.gene),
+    transcripts: data.gene.transcripts.map((transcript) =>
+      processTranscriptData(transcript)
+    )
+  }));
 
 export const fetchTranscriptSequenceMetadata = (
   variables: TranscriptQueryVariables
 ): Promise<TranscriptSequenceMetadata> => {
   return request<TranscriptQueryResult>(
-    '/api/thoas',
+    '/api/graphql/core',
     transcriptChecksumsQuery,
     variables
   ).then((data) => processTranscriptData(data.transcript));
@@ -329,7 +331,7 @@ export const fetchRegionSequenceChecksum = async (variables: {
   regionName: string;
 }): Promise<string> => {
   const data = await request<RegionSequenceChecksumQueryResult>(
-    '/api/thoas',
+    '/api/graphql/core',
     regionSequenceChecksumQuery,
     variables
   );

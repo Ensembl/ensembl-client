@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ExternalDB } from '../thoas/externalDb';
-import type { ValueSetMetadata } from '../thoas/metadata';
+import type { ExternalDB } from '../core-api/externalDb';
+import type { ValueSetMetadata } from '../core-api/metadata';
 
 export type VariantAllelePhenotypeAssertion = {
   feature: string;

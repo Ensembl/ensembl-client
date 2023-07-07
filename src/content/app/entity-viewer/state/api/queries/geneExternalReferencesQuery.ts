@@ -17,11 +17,11 @@
 import { gql } from 'graphql-request';
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import type { FullGene } from 'src/shared/types/thoas/gene';
-import type { FullTranscript } from 'src/shared/types/thoas/transcript';
-import type { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import type { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
-import type { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
+import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
+import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
 
 export const geneExternalReferencesQuery = gql`
   query GeneExternalReferences($geneId: String!, $genomeId: String!) {

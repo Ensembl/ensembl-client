@@ -15,7 +15,7 @@
  */
 
 import { getStrandDisplayName } from './strandFormatter';
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 describe('getStrandDisplayName', () => {
   it('returns the correct strand display name', () => {

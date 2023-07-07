@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Strand } from 'src/shared/types/thoas/strand';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 export type FocusObjectLocation = {
   chromosome: string;
