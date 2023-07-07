@@ -16,6 +16,7 @@
 
 export type SpeciesSearchMatch = {
   genome_id: string;
+  genome_tag: string | null;
   common_name: string | null;
   scientific_name: string;
   type: {

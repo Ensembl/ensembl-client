@@ -14,24 +14,84 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
+
+import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
+import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
+import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
+import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 
-const SpeciesSelectorResultsView = () => {
+import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
+
+import styles from './SpeciesSelectorResultsView.scss';
+
+const SpeciesSelectorResultslView = () => {
   const dispatch = useAppDispatch();
 
   const onClose = () => {
     dispatch(setModalView(null));
   };
 
-  const content = 'There will be content!';
-
-  return <ModalView onClose={onClose}>{content}</ModalView>;
+  return (
+    <ModalView onClose={onClose}>
+      <Content />
+    </ModalView>
+  );
 };
 
-export default SpeciesSelectorResultsView;
+const Content = () => {
+  const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
+  const { currentData } = result;
+  const [preselectedSpecies, setPreselectedSpecies] = useState<
+    SpeciesSearchMatch[]
+  >([]);
+  const [isTableExpanded, setIsTableExpanded] = useState(false);
+
+  useEffect(() => {
+    searchTrigger({ query: 'hello' }); // TODO: read the query from the search field
+  }, []);
+
+  const onSpeciesPreselectToggle = (
+    species: SpeciesSearchMatch,
+    isAdding?: boolean
+  ) => {
+    if (isAdding) {
+      setPreselectedSpecies([...preselectedSpecies, species]);
+    } else {
+      const updatedList = preselectedSpecies.filter(
+        ({ genome_id }) => genome_id !== species.genome_id
+      );
+      setPreselectedSpecies(updatedList);
+    }
+  };
+
+  const onTableExpandToggle = () => {
+    setIsTableExpanded(!isTableExpanded);
+  };
+
+  return (
+    <div className={styles.main}>
+      <SpeciesSearchField />
+      <SpeciesSearchResultsSummary searchResult={currentData} />
+      {currentData && (
+        <div className={styles.tableContainer}>
+          <SpeciesSearchResultsTable
+            results={currentData.matches}
+            isExpanded={isTableExpanded}
+            onTableExpandToggle={onTableExpandToggle}
+            preselectedSpecies={preselectedSpecies}
+            onSpeciesSelectToggle={onSpeciesPreselectToggle}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SpeciesSelectorResultslView;

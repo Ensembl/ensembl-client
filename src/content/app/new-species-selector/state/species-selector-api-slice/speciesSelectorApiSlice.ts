@@ -17,13 +17,25 @@
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
+import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
-type PopularSpeciesRequestParams = {
+export type PopularSpeciesRequestParams = {
   selected_genome_ids?: string[]; // <-- // so that the backend can tell us whether popular species contain the genomes that user has selected
 };
 
-type PopularSpeciesResponse = {
+export type PopularSpeciesResponse = {
   popular_species: PopularSpecies[];
+};
+
+export type SpeciesSearchRequestParams = {
+  query: string;
+};
+
+export type SpeciesSearchResponse = {
+  matches: SpeciesSearchMatch[];
+  meta: {
+    total_count: number;
+  };
 };
 
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
@@ -33,14 +45,35 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       PopularSpeciesRequestParams
     >({
       queryFn: async () => {
-        // <-- TODO: change this function when BE exposes an endpoint
+        // TODO: change this function when BE exposes an endpoint
         const { popularSpecies: popularSpeciesSampleData } = await import(
           './speciesSelectorSampleData'
         );
         return { data: { popular_species: popularSpeciesSampleData } };
       }
+    }),
+    getSpeciesSearchResults: builder.query<
+      SpeciesSearchResponse,
+      SpeciesSearchRequestParams
+    >({
+      queryFn: async () => {
+        // TODO: change this function when BE exposes an endpoint
+        const { humanSearchMatches } = await import(
+          './speciesSelectorSampleData'
+        );
+
+        return {
+          data: {
+            matches: humanSearchMatches,
+            meta: { total_count: humanSearchMatches.length }
+          }
+        };
+      }
     })
   })
 });
 
-export const { useGetPopularSpeciesQuery } = speciesSelectorApiSlice;
+export const {
+  useGetPopularSpeciesQuery,
+  useLazyGetSpeciesSearchResultsQuery
+} = speciesSelectorApiSlice;

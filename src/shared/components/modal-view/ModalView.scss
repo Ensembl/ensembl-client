@@ -8,6 +8,7 @@
   background-color: $light-grey;
   padding-right: calc(#{$standard-gutter} + var(--close-button-size));
   padding-top: calc(26px + var(--close-button-size));
+  overflow: auto;
 }
 
 .closeButton {
