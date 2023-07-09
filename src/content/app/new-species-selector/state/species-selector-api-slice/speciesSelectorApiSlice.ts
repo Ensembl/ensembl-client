@@ -58,14 +58,18 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async () => {
         // TODO: change this function when BE exposes an endpoint
-        const { humanSearchMatches } = await import(
-          './speciesSelectorSampleData'
-        );
+        const { humanSearchMatches, createHumanPangenomeSearchMatches } =
+          await import('./speciesSelectorSampleData');
+
+        const combinedHumanSearchMatches = [
+          ...humanSearchMatches,
+          ...createHumanPangenomeSearchMatches()
+        ];
 
         return {
           data: {
-            matches: humanSearchMatches,
-            meta: { total_count: humanSearchMatches.length }
+            matches: combinedHumanSearchMatches,
+            meta: { total_count: combinedHumanSearchMatches.length }
           }
         };
       }
