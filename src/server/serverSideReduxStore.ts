@@ -19,13 +19,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import { createServerSideRootReducer } from 'src/root/rootReducer';
+import createRootReducer from 'src/root/rootReducer';
 
+// compared to the client-side store, the server-side store does not need
+// the middleware for redux-observable
 const middleware = [graphqlApiSlice.middleware, restApiSlice.middleware];
 
 export const getServerSideReduxStore = () => {
   return configureStore({
-    reducer: createServerSideRootReducer(),
+    reducer: createRootReducer(),
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(middleware)
   });
