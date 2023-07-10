@@ -16,16 +16,28 @@
 
 import React from 'react';
 
+import { useAppDispatch } from 'src/store';
+
+import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import { setPopularSpecies } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+
 import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
 import PopularSpeciesList from 'src/content/app/new-species-selector/components/popular-species-list/PopularSpeciesList';
 
 import styles from './SpeciesSelectorMainView.scss';
 
 const SpeciesSelectorMainView = () => {
+  const dispatch = useAppDispatch();
+
+  const onSearchSubmit = () => {
+    dispatch(setPopularSpecies(null));
+    dispatch(setModalView('species-search'));
+  };
+
   return (
     <div className={styles.main}>
       <div className={styles.searchPanel}>
-        <SpeciesSearchField />
+        <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
       </div>
       <div className={styles.popularSpecies}>
         <PopularSpeciesList />

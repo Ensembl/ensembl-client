@@ -26,9 +26,11 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import styles from './SpeciesSearchField.scss';
 
-// TODO: add 'find a gene' functionality
+type Props = {
+  onSearchSubmit: () => void;
+};
 
-const SpeciesSearchField = () => {
+const SpeciesSearchField = (props: Props) => {
   const dispatch = useAppDispatch();
   const query = useAppSelector(getSpeciesSearchQuery);
 
@@ -37,8 +39,12 @@ const SpeciesSearchField = () => {
     dispatch(setQuery(value));
   };
 
+  const onSubmit = () => {
+    props.onSearchSubmit();
+  };
+
   return (
-    <div className={styles.speciesSearchField}>
+    <form className={styles.speciesSearchField} onSubmit={onSubmit}>
       <label>Find a species</label>
       <ShadedInput
         size="large"
@@ -50,7 +56,7 @@ const SpeciesSearchField = () => {
       <PrimaryButton disabled={query.length < 3} className={styles.submit}>
         Find
       </PrimaryButton>
-    </div>
+    </form>
   );
 };
 
