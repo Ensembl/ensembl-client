@@ -19,9 +19,15 @@ import React from 'react';
 import { useAppDispatch } from 'src/store';
 
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import {
+  setQuery,
+  setPopularSpecies
+} from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { useGetPopularSpeciesQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import PopularSpeciesButton from 'src/content/app/new-species-selector/components/popular-species-button/PopularSpeciesButton';
+
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 import styles from './PopularSpeciesList.scss';
 
@@ -31,7 +37,9 @@ const PopularSpeciesList = () => {
     selected_genome_ids: []
   });
 
-  const openSelectionModalView = () => {
+  const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
+    dispatch(setQuery(species.name));
+    dispatch(setPopularSpecies(species));
     dispatch(setModalView('species-search'));
   };
 
@@ -43,7 +51,7 @@ const PopularSpeciesList = () => {
           <PopularSpeciesButton
             key={species.id}
             species={species}
-            onClick={openSelectionModalView}
+            onClick={() => onPopularSpeciesButtonClick(species)}
           />
         ))}
       </div>

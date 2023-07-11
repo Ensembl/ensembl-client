@@ -16,24 +16,33 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
+
 type State = {
   query: string;
+  popularSpeciesId: string | number | null;
 };
 
 const initialState: State = {
-  query: ''
+  query: '',
+  popularSpeciesId: null
 };
 
 const speciesSelectorSearchSlice = createSlice({
-  name: 'species-selector-ui',
+  name: 'species-selector-search',
   initialState,
   reducers: {
     setQuery(state, action: PayloadAction<string>) {
       state.query = action.payload;
+    },
+    setPopularSpecies(state, action: PayloadAction<PopularSpecies | null>) {
+      const popularSpecies = action.payload;
+      state.popularSpeciesId = popularSpecies?.id ?? null;
     }
   }
 });
 
-export const { setQuery } = speciesSelectorSearchSlice.actions;
+export const { setQuery, setPopularSpecies } =
+  speciesSelectorSearchSlice.actions;
 
 export default speciesSelectorSearchSlice.reducer;

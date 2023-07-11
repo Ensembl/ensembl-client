@@ -44,9 +44,11 @@ const CloseModalView = () => {
   };
 
   return (
-    <div className={styles.close} onClick={handleClick}>
-      <CloseButton />
-      <span>Find a species</span>
+    <div className={styles.container}>
+      <div className={styles.close} onClick={handleClick}>
+        <CloseButton />
+        <span>Find a species</span>
+      </div>
     </div>
   );
 };

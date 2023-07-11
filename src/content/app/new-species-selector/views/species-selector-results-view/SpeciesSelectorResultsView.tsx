@@ -16,10 +16,12 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { getSpeciesSearchQuery } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-
+import { setQuery } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
@@ -35,6 +37,7 @@ const SpeciesSelectorResultslView = () => {
   const dispatch = useAppDispatch();
 
   const onClose = () => {
+    dispatch(setQuery(''));
     dispatch(setModalView(null));
   };
 
@@ -46,6 +49,7 @@ const SpeciesSelectorResultslView = () => {
 };
 
 const Content = () => {
+  const query = useAppSelector(getSpeciesSearchQuery);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData } = result;
   const [preselectedSpecies, setPreselectedSpecies] = useState<
@@ -54,8 +58,12 @@ const Content = () => {
   const [isTableExpanded, setIsTableExpanded] = useState(false);
 
   useEffect(() => {
-    searchTrigger({ query: 'hello' }); // TODO: read the query from the search field
+    searchTrigger({ query });
   }, []);
+
+  const onSearchSubmit = () => {
+    searchTrigger({ query });
+  };
 
   const onSpeciesPreselectToggle = (
     species: SpeciesSearchMatch,
@@ -77,7 +85,7 @@ const Content = () => {
 
   return (
     <div className={styles.main}>
-      <SpeciesSearchField />
+      <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
       <SpeciesSearchResultsSummary searchResult={currentData} />
       {currentData && (
         <div className={styles.tableContainer}>

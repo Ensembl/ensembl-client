@@ -15,11 +15,14 @@
  */
 
 import React from 'react';
+import upperFirst from 'lodash/upperFirst';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { Table } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import SolidDot from 'src/shared/components/table/dot/SolidDot';
+import EmptyDot from 'src/shared/components/table/dot/EmptyDot';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
@@ -92,7 +95,11 @@ const SpeciesSearchResultsTable = (props: Props) => {
             </td>
             <td>{searchMatch.assembly.name}</td>
             <td>
-              <a href={searchMatch.assembly.url}>
+              <a
+                href={searchMatch.assembly.url}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {searchMatch.assembly.accession_id}
               </a>
             </td>
@@ -110,8 +117,12 @@ const SpeciesSearchResultsTable = (props: Props) => {
                     ? getCommaSeparatedNumber(searchMatch.contig_n50)
                     : '-'}
                 </td>
-                <td>VAR</td>
-                <td>REG</td>
+                <td>
+                  {searchMatch.has_variation ? <SolidDot /> : <EmptyDot />}
+                </td>
+                <td>
+                  {searchMatch.has_regulation ? <SolidDot /> : <EmptyDot />}
+                </td>
                 <td>{searchMatch.annotation_provider}</td>
                 <td>{searchMatch.annotation_method}</td>
               </>
@@ -144,7 +155,7 @@ const SpeciesType = (props: { species: SpeciesSearchMatch }) => {
     return '-';
   }
 
-  return `${speciesType.kind} - ${speciesType.value}`;
+  return `${upperFirst(speciesType.kind)} - ${speciesType.value}`;
 };
 
 export default SpeciesSearchResultsTable;

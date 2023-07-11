@@ -1,5 +1,9 @@
 @import 'src/styles/common';
 
+.container {
+  display: flex;
+}
+
 .close {
   display: inline-flex;
   align-items: center;
