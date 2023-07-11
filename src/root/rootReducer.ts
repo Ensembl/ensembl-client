@@ -48,16 +48,4 @@ const createRootReducer = () =>
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
 
-export const createServerSideRootReducer = () =>
-  combineReducers({
-    global,
-    pageMeta,
-    speciesSelector,
-    entityViewer,
-    genome,
-    blast,
-    [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,
-    [restApiSlice.reducerPath]: restApiSlice.reducer
-  });
-
 export default createRootReducer;
