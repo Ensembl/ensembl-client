@@ -22,7 +22,6 @@ import {
   SpeciesStatsSection,
   type StatsSection
 } from 'src/content/app/species/state/general/speciesGeneralHelper';
-import { sampleData as hardCodedGenomeStats } from 'src/content/app/species/sample-data';
 
 import {
   getGenomeExampleFocusObjects,
@@ -61,12 +60,7 @@ const helpApiSlice = restApiSlice.injectEndpoints({
           );
           const genomeIdForUrl = getGenomeIdForUrl(state, genomeId) ?? genomeId;
 
-          const mergedStats = {
-            ...hardCodedGenomeStats[params.genomeId],
-            ...responseData.genome_stats
-          };
-
-          const genomeStats = Object.keys(mergedStats)
+          const genomeStats = Object.keys(responseData.genome_stats)
             .map((section) =>
               getStatsForSection({
                 genome_id: genomeId,
