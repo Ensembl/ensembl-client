@@ -63,7 +63,7 @@ const helpApiSlice = restApiSlice.injectEndpoints({
           const genomeStats = Object.keys(responseData.genome_stats)
             .map((section) =>
               getStatsForSection({
-                genome_id: genomeId,
+                allStats: responseData.genome_stats,
                 genomeIdForUrl,
                 section: section as SpeciesStatsSection,
                 exampleFocusObjects
