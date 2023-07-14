@@ -95,9 +95,11 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
         const { variantId } = params;
         const knownVariantIds = ['rs699', 'rs71197234', 'rs202155613'];
 
-        const variantIdToImport = knownVariantIds.includes(variantId)
-          ? variantId
-          : knownVariantIds[1];
+        const foundVariantId = knownVariantIds.find((id) =>
+          variantId.includes(id)
+        );
+
+        const variantIdToImport = foundVariantId || knownVariantIds[1];
 
         const variantDataModule = await import(
           `tests/fixtures/variation/${variantIdToImport}`

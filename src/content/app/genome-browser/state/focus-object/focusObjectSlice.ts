@@ -130,13 +130,14 @@ const buildFocusVariantObject = (payload: {
   variantId: string;
 }): FocusVariant => {
   const { genomeId, objectId, variantId } = payload;
+  const variantName = variantId.split(':')[2];
 
   return {
     type: 'variant',
     genome_id: genomeId,
     object_id: objectId,
     variant_id: variantId,
-    label: variantId,
+    label: variantName,
     location: {
       // just some arbitrary hardcoded location; this will change to proper data in the future
       chromosome: '13',
