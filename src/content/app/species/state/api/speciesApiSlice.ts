@@ -20,6 +20,7 @@ import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import {
   getStatsForSection,
   SpeciesStatsSection,
+  speciesStatsSectionNames,
   type StatsSection
 } from 'src/content/app/species/state/general/speciesGeneralHelper';
 
@@ -60,7 +61,7 @@ const helpApiSlice = restApiSlice.injectEndpoints({
           );
           const genomeIdForUrl = getGenomeIdForUrl(state, genomeId) ?? genomeId;
 
-          const genomeStats = Object.keys(responseData.genome_stats)
+          const genomeStats = speciesStatsSectionNames
             .map((section) =>
               getStatsForSection({
                 allStats: responseData.genome_stats,

@@ -35,6 +35,8 @@ export enum SpeciesStatsSection {
   REGULATION = 'regulation_stats'
 }
 
+export const speciesStatsSectionNames = Object.values(SpeciesStatsSection);
+
 // SpeciesStatsSection -> Groups
 enum Groups {
   CODING_GENES = 'coding_genes',
