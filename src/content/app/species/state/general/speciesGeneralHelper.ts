@@ -20,9 +20,10 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
-import { sampleData } from '../../sample-data';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
+
+import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
+import type { SpeciesStatistics } from 'src/content/app/species/state/api/speciesApiTypes';
 
 export enum SpeciesStatsSection {
   CODING_STATS = 'coding_stats',
@@ -33,6 +34,8 @@ export enum SpeciesStatsSection {
   VARIATION = 'variation_stats',
   REGULATION = 'regulation_stats'
 }
+
+export const speciesStatsSectionNames = Object.values(SpeciesStatsSection);
 
 // SpeciesStatsSection -> Groups
 enum Groups {
@@ -705,14 +708,14 @@ const getExampleLinks = (props: {
 };
 
 export const getStatsForSection = (props: {
-  genome_id: string;
+  allStats: SpeciesStatistics;
   genomeIdForUrl: string;
   section: SpeciesStatsSection;
   exampleFocusObjects: ExampleFocusObject[];
 }): StatsSection | undefined => {
-  const { section, genome_id, genomeIdForUrl, exampleFocusObjects } = props;
+  const { section, allStats, genomeIdForUrl, exampleFocusObjects } = props;
 
-  const data = sampleData[genome_id][section];
+  const data = allStats[section];
 
   if (!data) {
     return {
@@ -724,9 +727,9 @@ export const getStatsForSection = (props: {
     [key: string]: string | number;
   } = {};
 
-  Object.keys(data).forEach((key) => {
-    if (data[key] || data[key] === 0) {
-      filteredData[key] = data[key] as string | number;
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== null) {
+      filteredData[key] = value;
     }
   });
 

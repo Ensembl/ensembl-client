@@ -21,6 +21,7 @@ import { hostWithProtocol as defaultServerHost } from 'src/server/constants';
 export type BaseApiUrls = {
   coreApiUrl: string;
   genomeSearchBaseUrl: string;
+  metadataApiBaseUrl: string;
   docsBaseUrl: string;
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
@@ -36,6 +37,7 @@ export type PublicKeys = {
 const defaultApiUrls: BaseApiUrls = {
   coreApiUrl: '/api/graphql/core',
   genomeSearchBaseUrl: '/api/genomesearch',
+  metadataApiBaseUrl: '/api/metadata',
   docsBaseUrl: '/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
@@ -64,6 +66,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl:
       process.env.SSR_DOCS_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.docsBaseUrl}`,
+    metadataApiBaseUrl: defaultApiUrls.metadataApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
