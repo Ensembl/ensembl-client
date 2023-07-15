@@ -1,7 +1,9 @@
 @import 'src/styles/common';
 
 .speciesContainer {
+  width: 100%;
   max-width: 1380px;
+  overflow-x: auto;
 }
 
 .speciesMainViewTop {

@@ -6,6 +6,8 @@ $container-padding-right: 20px;
   container-name: species-page-title-area;
   container-type: inline-size;
   margin-left: $double-standard-gutter;
+  position: sticky;
+  left: $double-standard-gutter;
 }
 
 .grid {
