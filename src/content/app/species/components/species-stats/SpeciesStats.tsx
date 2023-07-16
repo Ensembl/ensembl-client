@@ -112,7 +112,7 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
         </div>
       )}
 
-      <span className={styles.link}>{props.link}</span>
+      {props.link && <span className={styles.link}>{props.link}</span>}
     </div>
   );
 };

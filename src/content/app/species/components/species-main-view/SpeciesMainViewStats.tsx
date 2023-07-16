@@ -80,30 +80,37 @@ const getCollapsedContent = (props: ContentProps) => {
 
   return (
     <div className={styles.collapsedContent}>
-      <span className={styles.title}>{title}</span>
-      {summaryStats?.length ? (
-        summaryStats.map((summaryStat, index) => {
-          return (
-            <div className={styles.summaryStat} key={index}>
-              <span className={styles.value}>{summaryStat.primaryValue}</span>
-              <span className={styles.unit}>{summaryStat.primaryUnit}</span>
-              {helpText && (
-                <span className={styles.questionButton}>
-                  <QuestionButton helpText={helpText} />
-                </span>
-              )}
-            </div>
-          );
-        })
-      ) : (
-        <div className={styles.noData}>no data</div>
-      )}
+      <div className={styles.collapsedContentGrid}>
+        <span className={styles.title}>{title}</span>
 
-      {exampleLinks && species.isEnabled && (
-        <ExampleLinkWithPopup links={exampleLinks}>
-          <span onClick={onExampleLinkClick}>{exampleLinkText}</span>
-        </ExampleLinkWithPopup>
-      )}
+        <div className={styles.statisticsContainer}>
+          {summaryStats?.length ? (
+            summaryStats.map((summaryStat, index) => {
+              return (
+                <div className={styles.summaryStat} key={index}>
+                  <span className={styles.value}>
+                    {summaryStat.primaryValue}
+                  </span>
+                  <span className={styles.unit}>{summaryStat.primaryUnit}</span>
+                  {helpText && (
+                    <span className={styles.questionButton}>
+                      <QuestionButton helpText={helpText} />
+                    </span>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className={styles.noData}>no data</div>
+          )}
+        </div>
+
+        {exampleLinks && species.isEnabled && (
+          <ExampleLinkWithPopup links={exampleLinks}>
+            <span onClick={onExampleLinkClick}>{exampleLinkText}</span>
+          </ExampleLinkWithPopup>
+        )}
+      </div>
     </div>
   );
 };
@@ -153,6 +160,7 @@ const getExpandedContent = (props: ContentProps) => {
     })
     .filter(Boolean);
 
+  // TODO: here
   return expandedContent.length ? (
     <div className={styles.expandedContent}>{expandedContent}</div>
   ) : null;
