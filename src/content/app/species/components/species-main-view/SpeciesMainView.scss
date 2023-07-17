@@ -55,6 +55,7 @@
     [title] 120px [statistics] 1fr
     [example-link] 150px;
     align-items: center;
+    width: 100%;
   }
 
   .title {
@@ -104,13 +105,16 @@
   }
 }
 
+@container species-statistics-section-collapsed (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .collapsedContent .summaryStat {
+    width: 220px;
+  }
+}
+
 .expandedContent {
   container-name: species-statistics-section-expanded;
   container-type: inline-size;
-  // display: flex;
-  // align-items: center;
-  // padding: 6px 20px;
-  // min-height: 50px;
 }
 
 .statsGroup {
@@ -149,6 +153,13 @@
     grid-area: example-link;
     display: inline-block;
     margin-bottom: 30px;
+  }
+}
+
+@container species-statistics-section-expanded (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .stats > * {
+    width: 220px;
   }
 }
 
