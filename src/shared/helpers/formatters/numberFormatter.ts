@@ -18,8 +18,12 @@
     Formats the input number to comma separated representation
     eg: 10000 -> 10,000
 */
-export const getCommaSeparatedNumber = (input: number) => {
-  return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const getCommaSeparatedNumber = (
+  input: number,
+  options?: Intl.NumberFormatOptions
+) => {
+  const numberFormat = Intl.NumberFormat('en-GB', options);
+  return numberFormat.format(input);
 };
 
 export const getNumberWithoutCommas = (input: string) => {

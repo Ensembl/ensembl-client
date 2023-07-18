@@ -603,7 +603,9 @@ const buildIndividualStat = (
   } = statsFormattingOptions[section][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
-    primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
+    primaryValue =
+      getCommaSeparatedNumber(primaryValue, { maximumFractionDigits: 2 }) +
+      primaryValuePostfix;
   }
 
   return {
@@ -633,7 +635,9 @@ const buildHeaderStat = (
   ][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
-    primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
+    primaryValue =
+      getCommaSeparatedNumber(primaryValue, { maximumFractionDigits: 2 }) +
+      primaryValuePostfix;
   }
 
   return {
