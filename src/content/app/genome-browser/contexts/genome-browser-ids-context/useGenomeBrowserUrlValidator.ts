@@ -224,23 +224,23 @@ const checkFocusLocation = async (params: CheckFocusObjectParams) => {
 
 const checkFocusVariant = async (params: CheckFocusObjectParams) => {
   // NOTE: so far, only checking that focus variant id conforms to the following format
-  // <region_name>:<start_coordinate>:<variant_name>:<reference_sequence>
+  // <region_name>:<start_coordinate>:<variant_name>
   const { parsedFocusObjectId } = params;
   const { objectId } = parsedFocusObjectId;
 
   const variantIdParts = objectId.split(':');
 
-  if (variantIdParts.length !== 4) {
-    // expect four parts in a focus variant id
+  if (variantIdParts.length !== 3) {
+    // expect three parts in a focus variant id
     return {
       isMissingFocusObject: true
     };
   }
 
-  const [regionName, start, variantName, referenceSequence] = variantIdParts; // eslint-disable-line
+  const [regionName, start, variantName] = variantIdParts; // eslint-disable-line
 
-  // we know that at least start coordinate must be a number, and reference sequence consists only of letters
-  if (/\D/.test(start) || /[^a-z]/i.test(referenceSequence)) {
+  // we know that at least the start coordinate must consist only of digits
+  if (/\D/.test(start)) {
     return {
       isMissingFocusObject: true
     };
