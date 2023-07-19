@@ -407,8 +407,9 @@ Live:wp40:HL:
   - new-kubernetes-deployment # TODO: remove!
   needs:
     - Test_N_Build:review
+    - Node:review
     # - Test_N_Build
-    - Node:Live
+    # - Node:Live
 
 Pub:Live-HL:wp40:
   extends: .publish_assets-wp40
@@ -421,8 +422,9 @@ Pub:Live-HL:wp40:
   - new-kubernetes-deployment # TODO: remove!
   needs:
     - Test_N_Build:review
+    - Node:review
     # - Test_N_Build
-    - Node:Live
+    # - Node:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
 Internal:HX:
