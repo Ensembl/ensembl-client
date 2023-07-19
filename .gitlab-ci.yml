@@ -403,10 +403,11 @@ Live:wp40:HL:
   environment:
     name: wp40-hl-prod
   only:
-  - master
+  # - master
   - new-kubernetes-deployment # TODO: remove!
   needs:
-    - Test_N_Build
+    - Test_N_Build:review
+    # - Test_N_Build
     - Node:Live
 
 Pub:Live-HL:wp40:
@@ -416,10 +417,11 @@ Pub:Live-HL:wp40:
     kubernetes:
       namespace: ensembl-prod
   only:
-  - master
+  # - master
   - new-kubernetes-deployment # TODO: remove!
   needs:
-    - Test_N_Build
+    - Test_N_Build:review
+    # - Test_N_Build
     - Node:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
