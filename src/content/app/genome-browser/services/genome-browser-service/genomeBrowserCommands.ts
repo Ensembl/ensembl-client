@@ -132,8 +132,15 @@ const setFocusGene: typeof setFocus = (payload) => {
 const setFocusVariant: typeof setFocus = (payload) => {
   const { genomeBrowser, genomeId, focusId, bringIntoView } = payload;
 
+  const [regionName, start, variantName] = focusId.split(':');
+
   if (bringIntoView) {
-    genomeBrowser.jump(`focus:variant:${genomeId}:${focusId}`);
+    const startNumber = parseInt(start);
+    const viewportStart = startNumber - 25;
+    const viewportEnd = startNumber + 25;
+
+    genomeBrowser.set_stick(`${genomeId}:${regionName}`);
+    genomeBrowser.goto(viewportStart, viewportEnd);
     genomeBrowser.wait();
   }
 
@@ -141,7 +148,7 @@ const setFocusVariant: typeof setFocus = (payload) => {
   genomeBrowser.switch(['track', 'focus', 'label'], true);
   genomeBrowser.switch(['track', 'focus', 'item', 'variant'], {
     genome_id: genomeId,
-    variant_id: focusId
+    variant_id: variantName
   });
 };
 

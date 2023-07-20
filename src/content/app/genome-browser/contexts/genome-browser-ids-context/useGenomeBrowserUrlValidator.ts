@@ -162,6 +162,8 @@ const checkFocusObject = async (
     return checkFocusGene(params);
   } else if (type === 'location') {
     return checkFocusLocation(params);
+  } else if (type === 'variant') {
+    return checkFocusVariant(params);
   }
 
   return { isMissingFocusObject: false }; // largely unnecessary line (code should never reach it), to satisfy the function contract
@@ -218,6 +220,38 @@ const checkFocusLocation = async (params: CheckFocusObjectParams) => {
   }
 
   return { isMissingFocusObject };
+};
+
+const checkFocusVariant = async (params: CheckFocusObjectParams) => {
+  // NOTE: so far, only checking that focus variant id conforms to the following format
+  // <region_name>:<start_coordinate>:<variant_name>
+  const { parsedFocusObjectId } = params;
+  const { objectId } = parsedFocusObjectId;
+
+  const variantIdParts = objectId.split(':');
+  // a valid id consists of three non-empty parts
+  const hasValidIdParts =
+    variantIdParts.length === 3 && variantIdParts.every((part) => part.length);
+
+  if (!hasValidIdParts) {
+    // expect three parts in a focus variant id
+    return {
+      isMissingFocusObject: true
+    };
+  }
+
+  const [regionName, start, variantName] = variantIdParts; // eslint-disable-line
+
+  // we know that at least the start coordinate must consist only of digits
+  if (/\D/.test(start)) {
+    return {
+      isMissingFocusObject: true
+    };
+  }
+
+  return {
+    isMissingFocusObject: false
+  };
 };
 
 type CheckLocationFromUrlParams = {
