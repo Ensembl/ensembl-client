@@ -87,6 +87,25 @@ variables:
     - kustomize edit set namesuffix -- -${CI_PROJECT_ID}-${BUILD_JOB_ID}
     - kubectl apply -k .
 
+# Template for publishing static assets for the new kubernetes cluster
+# Will need updating after the migration is completed (see the name of the template, name of the ensembl-k8s-manifests branch)
+.publish_assets-wp40:
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  stage: deploy
+  environment:
+    name : jobs/k8s-job
+
+  before_script:
+    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - git -C ensembl-k8s-manifests/ checkout k8s123-migration
+    - cd ensembl-k8s-manifests/ensembl-client/static-assets
+
+  script:
+    - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" copy_job.yaml
+    - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" copy_job.yaml
+    - kustomize edit set namesuffix -- -${CI_PROJECT_ID}-${BUILD_JOB_ID}
+    - kubectl apply -k .
+
 # Template to build node docker image for WP k8s cluster
 # WP k8s cluster uses ingress
 .build-node:
@@ -115,6 +134,19 @@ variables:
   - git -C ensembl-k8s-manifests/ checkout wp-k8s
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
   - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+
+# Template for deployment to the new kubernetes cluster
+# For live deployment, it does not need to deploy a static assets container
+# Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
+.deploy-wp40:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.6
+  script:
+    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - git -C ensembl-k8s-manifests/ checkout k8s123-migration
+    - cd ensembl-k8s-manifests/ensembl-client/node
+    - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+    - kubectl apply -k ./
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
@@ -354,6 +386,31 @@ Pub:Live-HL:
   extends: .publish_assets
   environment:
     name : hl-jobs/prod
+    kubernetes:
+      namespace: ensembl-prod
+  only:
+  - master
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+# Job to deploy to live environment in the new kubernetes cluster (wp40)
+Live:wp40:HL:
+  extends: .deploy-wp40
+  variables:
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+  environment:
+    name: wp40-hl-prod
+  only:
+  - master
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+Pub:Live-HL:wp40:
+  extends: .publish_assets-wp40
+  environment:
+    name : wp40-hl-prod
     kubernetes:
       namespace: ensembl-prod
   only:
