@@ -229,8 +229,11 @@ const checkFocusVariant = async (params: CheckFocusObjectParams) => {
   const { objectId } = parsedFocusObjectId;
 
   const variantIdParts = objectId.split(':');
+  // a valid id consists of three non-empty parts
+  const hasValidIdParts =
+    variantIdParts.length === 3 && variantIdParts.every((part) => part.length);
 
-  if (variantIdParts.length !== 3) {
+  if (!hasValidIdParts) {
     // expect three parts in a focus variant id
     return {
       isMissingFocusObject: true
