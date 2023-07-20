@@ -17,7 +17,6 @@
 
 .statsWrapper {
   padding: 5px 20px $global-padding-bottom 140px;
-  min-width: 980px;
 }
 
 .exampleLinkText {
@@ -41,14 +40,21 @@
 }
 
 .collapsedContent {
-  display: grid;
-  padding: 6px 20px;
-  grid-template-columns:
-    [title] 120px [first_summary_stat] minmax(250px, 350px)
-    [second_summary_stat] minmax(250px, 350px)
-    [example-link] 150px;
+  container-name: species-statistics-section-collapsed;
+  container-type: inline-size;
+  display: flex;
   align-items: center;
+  padding: 6px 20px;
   min-height: 50px;
+
+  .collapsedContentGrid {
+    display: grid;
+    grid-template-columns:
+    [title] 120px [statistics] 1fr
+    [example-link] 150px;
+    align-items: center;
+    width: 100%;
+  }
 
   .title {
     grid-column: title;
@@ -56,8 +62,14 @@
     font-weight: $light;
   }
 
+  .statisticsContainer {
+    grid-column: statistics;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
   .summaryStat {
-    grid-column: first_summary_stat;
+    width: 250px;
     white-space: nowrap;
 
     .value {
@@ -71,10 +83,6 @@
     }
   }
 
-  .summaryStat + .summaryStat {
-    grid-column: second_summary_stat;
-  }
-
   .exampleLink {
     grid-column: example-link;
   }
@@ -83,6 +91,28 @@
     top: 2px;
     position: relative;
   }
+}
+
+@container species-statistics-section-collapsed (max-width: 549px) {
+  .collapsedContent .collapsedContentGrid {
+    grid-template-columns:
+    [title] 120px [statistics] 1fr;
+  }
+  .collapsedContent .exampleLink {
+    grid-column: statistics;
+  }
+}
+
+@container species-statistics-section-collapsed (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .collapsedContent .summaryStat {
+    width: 220px;
+  }
+}
+
+.expandedContent {
+  container-name: species-statistics-section-expanded;
+  container-type: inline-size;
 }
 
 .statsGroup {
@@ -106,6 +136,28 @@
 
   .exampleLink {
     grid-column: example-link;
+  }
+}
+
+@container species-statistics-section-expanded (max-width: 549px) {
+  .statsGroupWithExampleLink {
+    grid-template-areas:
+      "title stats"
+      ". example-link";
+    grid-template-columns: 120px 1fr;
+  }
+
+  .statsGroupWithExampleLink .exampleLink {
+    grid-area: example-link;
+    display: inline-block;
+    margin-bottom: 30px;
+  }
+}
+
+@container species-statistics-section-expanded (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .stats > * {
+    width: 220px;
   }
 }
 

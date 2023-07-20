@@ -3,15 +3,15 @@
 $container-padding-right: 20px;
 
 .speciesTitleArea {
+  container-name: species-page-title-area;
+  container-type: inline-size;
+  margin-left: $double-standard-gutter;
+}
+
+.grid {
   display: grid;
-  grid-template-areas:
-    'icon species-name usage-toggle search remove'
-    '. remove-message remove-message remove-message remove-message';
-  grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
-  grid-template-rows: 80px auto;
-  grid-column-gap: 20px;
   align-items: center;
-  margin-left: 60px;
+  grid-column-gap: 20px;
   padding-right: $container-padding-right;
 }
 
@@ -42,7 +42,6 @@ $container-padding-right: 20px;
 
 .speciesToggle {
   grid-area: usage-toggle;
-  padding-left: 25px;
 }
 
 .speciesRemove {
@@ -79,31 +78,52 @@ $container-padding-right: 20px;
   }
 }
 
-.speciesTitleAreaCompact {
-  grid-template-areas:
-    'icon species-name usage-toggle remove'
-    '. remove-message remove-message remove-message'
-    '. search . .';
-  grid-template-columns: 60px 150px auto 1fr;
-  grid-template-rows: 80px auto auto;
-  margin-bottom: 20px;
+.remove {
+  grid-area: remove;
+  align-self: start;
+  white-space: nowrap;
+}
+
+@container species-page-title-area (min-width: 761px) {
+  .grid {
+    display: grid;
+    grid-template-areas:
+      'icon species-name usage-toggle search remove'
+      '. remove-message remove-message remove-message remove-message';
+    grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
+    grid-template-rows: 80px auto;
+  }
+
+  .speciesToggle {
+    padding-left: 25px;
+  }
+}
+
+
+@container species-page-title-area (min-width: 641px) and (max-width: 760px) {
+  .grid {
+    grid-template-areas:
+      'icon species-name usage-toggle remove'
+      '. remove-message remove-message remove-message'
+      '. search . .';
+    grid-template-columns: 60px min-content auto 1fr;
+    grid-template-rows: 80px auto auto;
+    margin-bottom: 20px;
+  }
 
   .speciesNameWrapper {
-    grid-area: species-name;
     min-height: 60px;
     display: flex;
     align-items: center;
   }
 
-  .speciesToggle {
-    grid-area: usage-toggle;
-    padding: 0;
+  .assemblyName {
+    padding-top: 3px;
+    white-space: nowrap;
   }
 
-  .remove {
-    grid-area: remove;
-    align-self: start;
-    white-space: nowrap;
+  .speciesToggle {
+    padding: 0;
   }
 
   .speciesRemove {
@@ -119,18 +139,23 @@ $container-padding-right: 20px;
     grid-area: search;
     margin: 0;
   }
+
 }
 
-.speciesTitleAreaMinimal {
-  grid-template-areas:
-    'icon species-name .'
-    '. usage-toggle remove'
-    '. remove-message remove-message'
-    '. search .';
-  grid-template-columns: 60px 150px 1fr;
-  grid-template-rows: 80px 0px auto 40px;
-  grid-row-gap: 10px;
-  margin-bottom: 20px;
+@container species-page-title-area (max-width: 640px) {
+
+  .grid {
+    grid-template-areas:
+      'icon species-name .'
+      '. usage-toggle remove'
+      '. remove-message remove-message'
+      '. search .';
+    grid-template-columns: 60px 150px 1fr;
+    grid-template-rows: 80px 0px auto 40px;
+    grid-row-gap: 10px;
+    margin-bottom: 20px;
+  }
+
 
   .speciesRemoveMessage {
     margin-top: 20px;
@@ -140,4 +165,10 @@ $container-padding-right: 20px;
   .speciesToggle {
     padding: 0;
   }
+
+}
+
+
+.speciesTitleAreaEmpty {
+  height: 80px;
 }

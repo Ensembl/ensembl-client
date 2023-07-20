@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +24,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
-import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
@@ -49,15 +48,6 @@ import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 import { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.scss';
-
-const MEDIUM_WIDTH = 720;
-const SMALL_WIDTH = 560;
-
-enum Display {
-  FULL = 'full',
-  COMPACT = 'compact',
-  MINIMAL = 'minimal'
-}
 
 const useSpecies = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -91,28 +81,7 @@ const SpeciesTitleArea = () => {
   const navigate = useNavigate();
   const { species, iconUrl } = useSpecies() || {};
   const [isRemoving, setIsRemoving] = useState(false);
-  const [display, setDisplay] = useState(Display.FULL);
   const { trackDeletedSpecies } = useSpeciesAnalytics();
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
-
-  // TODO:
-  // Remove the useEffect below when all of our target browsers support CSS container queries
-  useEffect(() => {
-    if (containerWidth < SMALL_WIDTH) {
-      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
-    } else if (containerWidth < MEDIUM_WIDTH) {
-      display !== Display.COMPACT && setDisplay(Display.COMPACT);
-    } else {
-      display !== Display.FULL && setDisplay(Display.FULL);
-    }
-  }, [containerWidth]);
-
-  const blockClasses = classNames(styles.speciesTitleArea, {
-    [styles.speciesTitleAreaMinimal]: display === Display.MINIMAL,
-    [styles.speciesTitleAreaCompact]: display === Display.COMPACT
-  });
 
   if (!activeGenomeId) {
     return null;
@@ -138,43 +107,47 @@ const SpeciesTitleArea = () => {
   };
 
   return species && iconUrl ? (
-    <div className={blockClasses} ref={containerRef}>
-      <div className={styles.speciesIcon}>
-        <img src={iconUrl} />
+    <div className={styles.speciesTitleArea}>
+      <div className={styles.grid}>
+        <div className={styles.speciesIcon}>
+          <img src={iconUrl} />
+        </div>
+        <div className={styles.speciesNameWrapper}>
+          <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
+          <span className={styles.assemblyName}>{species.assembly_name}</span>
+        </div>
+        <div className={styles.speciesToggle}>
+          <SpeciesUsageToggle />
+        </div>
+        <div className={styles.geneSearchWrapper} onClick={openSearch}>
+          <span>Find a gene</span>
+          <SearchIcon />
+        </div>
+        <div className={styles.speciesRemove}>
+          <SecondaryButton
+            onClick={toggleRemovalDialog}
+            disabled={isRemoving}
+            className={classNames({
+              [styles.disabledRemoveButton]: isRemoving
+            })}
+          >
+            Remove species
+          </SecondaryButton>
+        </div>
+        {isRemoving && (
+          <DeletionConfirmation
+            warningText="If you remove this species, any views you have configured will be lost — do you wish to continue?"
+            confirmText="Remove"
+            cancelText="Do not remove"
+            className={styles.speciesRemoveMessage}
+            onCancel={toggleRemovalDialog}
+            onConfirm={onRemove}
+          />
+        )}
       </div>
-      <div className={styles.speciesNameWrapper}>
-        <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
-        <span className={styles.assemblyName}>{species.assembly_name}</span>
-      </div>
-      <div className={styles.speciesToggle}>
-        <SpeciesUsageToggle />
-      </div>
-      <div className={styles.geneSearchWrapper} onClick={openSearch}>
-        <span>Find a gene</span>
-        <SearchIcon />
-      </div>
-      <div className={styles.speciesRemove}>
-        <SecondaryButton
-          onClick={toggleRemovalDialog}
-          disabled={isRemoving}
-          className={classNames({ [styles.disabledRemoveButton]: isRemoving })}
-        >
-          Remove species
-        </SecondaryButton>
-      </div>
-      {isRemoving && (
-        <DeletionConfirmation
-          warningText="If you remove this species, any views you have configured will be lost — do you wish to continue?"
-          confirmText="Remove"
-          cancelText="Do not remove"
-          className={styles.speciesRemoveMessage}
-          onCancel={toggleRemovalDialog}
-          onConfirm={onRemove}
-        />
-      )}
     </div>
   ) : (
-    <div className={blockClasses} />
+    <div className={styles.speciesTitleAreaEmpty} />
   );
 };
 
