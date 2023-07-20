@@ -398,7 +398,6 @@ Pub:Live-HL:
 Live:wp40:HL:
   extends: .deploy-wp40
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod # this is nginx image; is it needed? we aren't deploying new nginx containers in production
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name: wp40-hl-prod
