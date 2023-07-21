@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { useAppSelector } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
@@ -52,9 +52,9 @@ export const BrowserLocationIndicator = () => {
           <div className={styles.chrCode}>{chrCode}</div>
         )}
         <div className={styles.chrRegion}>
-          <span>{getCommaSeparatedNumber(chrStart as number)}</span>
+          <span>{formatNumber(chrStart as number)}</span>
           <span className={styles.chrSeparator}>-</span>
-          <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
+          <span>{formatNumber(chrEnd as number)}</span>
         </div>
       </div>
     </div>

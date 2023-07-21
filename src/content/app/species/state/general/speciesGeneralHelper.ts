@@ -15,7 +15,7 @@
  */
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
@@ -604,7 +604,7 @@ const buildIndividualStat = (
 
   if (typeof primaryValue === 'number') {
     primaryValue =
-      getCommaSeparatedNumber(primaryValue, { maximumFractionDigits: 2 }) +
+      formatNumber(primaryValue, { maximumFractionDigits: 2 }) +
       primaryValuePostfix;
   }
 
@@ -636,7 +636,7 @@ const buildHeaderStat = (
 
   if (typeof primaryValue === 'number') {
     primaryValue =
-      getCommaSeparatedNumber(primaryValue, { maximumFractionDigits: 2 }) +
+      formatNumber(primaryValue, { maximumFractionDigits: 2 }) +
       primaryValuePostfix;
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { measureText } from 'src/shared/helpers/textHelpers';
 
 import * as constants from './chromosomeNavigatorConstants';
@@ -284,8 +284,8 @@ const getLabelStyles = (
     return null;
   }
 
-  const formattedStart = getCommaSeparatedNumber(params.focusRegion.start);
-  const formattedEnd = getCommaSeparatedNumber(params.focusRegion.end);
+  const formattedStart = formatNumber(params.focusRegion.start);
+  const formattedEnd = formatNumber(params.focusRegion.end);
   const labelFont = '11px "IBM Plex Mono"';
 
   if (focusPointerStyles.length === 1) {

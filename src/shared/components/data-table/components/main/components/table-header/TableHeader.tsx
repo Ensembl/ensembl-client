@@ -16,7 +16,7 @@
 
 import React, { useContext } from 'react';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
@@ -87,12 +87,12 @@ const HeaderStats = (props: {
         <span>
           <span className={styles.rowsCountText}>Showing </span>
           <span className={styles.rowsCountNumberProminent}>
-            {getCommaSeparatedNumber(visibleRowsCount)}
+            {formatNumber(visibleRowsCount)}
           </span>
           <span className={styles.rowsCountText}> of</span>
         </span>
         <span>
-          <span>{getCommaSeparatedNumber(totalRows)}</span>
+          <span>{formatNumber(totalRows)}</span>
           <span className={styles.rowsCountText}> rows</span>
         </span>
       </div>

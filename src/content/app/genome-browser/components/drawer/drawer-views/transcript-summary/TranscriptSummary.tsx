@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -107,11 +107,9 @@ const TranscriptSummary = (props: Props) => {
     (xref) => xref.source.id === 'CCDS'
   );
 
-  const splicedRNALength = getCommaSeparatedNumber(
-    getSplicedRNALength(transcript)
-  );
+  const splicedRNALength = formatNumber(getSplicedRNALength(transcript));
 
-  const productAminoAcidLength = getCommaSeparatedNumber(
+  const productAminoAcidLength = formatNumber(
     defaultProductGeneratingContext?.cds?.protein_length || 0
   );
 
@@ -221,7 +219,7 @@ const TranscriptSummary = (props: Props) => {
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Transcript length</div>
         <div className={styles.value}>
-          {getCommaSeparatedNumber(transcript.slice.location.length)}{' '}
+          {formatNumber(transcript.slice.location.length)}{' '}
           <span className={styles.unit}>bp</span>{' '}
         </div>
       </div>
