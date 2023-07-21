@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import { useAppDispatch } from 'src/store';
 import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import {
   isProteinCodingTranscript,
@@ -117,13 +117,9 @@ export const TranscriptsListItemInfo = (
     });
   };
 
-  const splicedRNALength = getCommaSeparatedNumber(
-    getSplicedRNALength(transcript)
-  );
+  const splicedRNALength = formatNumber(getSplicedRNALength(transcript));
 
-  const aminoAcidLength = getCommaSeparatedNumber(
-    getProductAminoAcidLength(transcript)
-  );
+  const aminoAcidLength = formatNumber(getProductAminoAcidLength(transcript));
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);

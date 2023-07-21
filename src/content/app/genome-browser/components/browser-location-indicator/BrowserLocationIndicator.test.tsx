@@ -23,7 +23,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import merge from 'lodash/fp/merge';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
@@ -149,9 +149,7 @@ describe('BrowserLocationIndicator', () => {
       await waitFor(() => {
         const renderedLocation = container.querySelector('.chrRegion');
         expect(renderedLocation?.textContent).toBe(
-          `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
-            endPosition
-          )}`
+          `${formatNumber(startPosition)}-${formatNumber(endPosition)}`
         );
       });
     });

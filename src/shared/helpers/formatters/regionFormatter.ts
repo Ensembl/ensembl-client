@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
 export const getFormattedLocation = (location: FocusObjectLocation) => {
-  const start = getCommaSeparatedNumber(location.start);
-  const end = getCommaSeparatedNumber(location.end);
+  const start = formatNumber(location.start);
+  const end = formatNumber(location.end);
 
   if (start === end) {
     return `${location.chromosome}:${start}`;

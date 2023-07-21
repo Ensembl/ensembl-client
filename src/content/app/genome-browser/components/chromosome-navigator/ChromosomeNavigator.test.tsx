@@ -19,7 +19,7 @@ import { render } from '@testing-library/react';
 import random from 'lodash/random';
 
 import * as textHelpers from 'src/shared/helpers/textHelpers';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import * as constants from './chromosomeNavigatorConstants';
 
@@ -359,12 +359,10 @@ describe('Chromosome Navigator', () => {
       const { labels } = getRenderedLabels(props);
       const expectedLabel1X =
         props.focusRegion.start * scalingFactor - mockLabelWidth / 2;
-      const expectedLabel1Text = getCommaSeparatedNumber(
-        props.focusRegion.start
-      );
+      const expectedLabel1Text = formatNumber(props.focusRegion.start);
       const expectedLabel2X =
         props.focusRegion.end * scalingFactor - mockLabelWidth / 2;
-      const expectedLabel2Text = getCommaSeparatedNumber(props.focusRegion.end);
+      const expectedLabel2Text = formatNumber(props.focusRegion.end);
       assertLabels(labels, [
         { x: expectedLabel1X, text: expectedLabel1Text },
         { x: expectedLabel2X, text: expectedLabel2Text }
@@ -384,9 +382,9 @@ describe('Chromosome Navigator', () => {
           2;
       const expectedLabelX = midpointBetweenPointers - mockLabelWidth / 2;
       const expectedLabelText =
-        getCommaSeparatedNumber(props.focusRegion.start) +
+        formatNumber(props.focusRegion.start) +
         '-' +
-        getCommaSeparatedNumber(props.focusRegion.end);
+        formatNumber(props.focusRegion.end);
       assertLabels(labels, [{ x: expectedLabelX, text: expectedLabelText }]);
     });
 
@@ -406,9 +404,7 @@ describe('Chromosome Navigator', () => {
       const { labels } = getRenderedLabels(props);
 
       const expectedLabelX = focusPosition * scalingFactor - mockLabelWidth / 2;
-      const expectedLabelText = getCommaSeparatedNumber(
-        props.focusRegion.start
-      );
+      const expectedLabelText = formatNumber(props.focusRegion.start);
       assertLabels(labels, [{ x: expectedLabelX, text: expectedLabelText }]);
     });
   });

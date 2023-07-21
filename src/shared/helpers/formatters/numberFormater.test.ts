@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from './numberFormatter';
+import { formatNumber } from './numberFormatter';
 
 import { faker } from '@faker-js/faker';
 
-describe('getCommaSeparatedNumber', () => {
+describe('formatNumber', () => {
   it('returns x,xxx for the input number xxxx', () => {
     const randomNumber = faker.number.int({ min: 1000, max: 9999 });
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
@@ -41,7 +41,7 @@ describe('getCommaSeparatedNumber', () => {
   it('returns xx,xxx for the input number xxxxx', () => {
     const randomNumber = faker.number.int({ min: 10000, max: 99999 });
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
@@ -60,7 +60,7 @@ describe('getCommaSeparatedNumber', () => {
   it('returns xxx,xxx for the input number xxxxxx', () => {
     const randomNumber = faker.number.int({ min: 100000, max: 999999 });
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
@@ -79,7 +79,7 @@ describe('getCommaSeparatedNumber', () => {
   it('returns x,xxx,xxx for the input number xxxxxxx', () => {
     const randomNumber = faker.number.int({ min: 1000000, max: 9999999 });
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
@@ -101,7 +101,7 @@ describe('getCommaSeparatedNumber', () => {
   it('returns -x,xxx for the input number -xxxx', () => {
     const randomNumber = faker.number.int({ min: -9999, max: -1000 });
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 
@@ -122,7 +122,7 @@ describe('getCommaSeparatedNumber', () => {
       faker.number.int({ min: 1000, max: 9999 }) +
       faker.number.int({ min: 1, max: 9 }) / 10;
 
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
+    const formattedRandomNumber = formatNumber(randomNumber);
 
     const numberSplitByComma = formattedRandomNumber.split(',');
 

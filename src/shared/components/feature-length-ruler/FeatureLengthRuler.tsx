@@ -34,7 +34,7 @@ import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getTicks } from './featureLengthRulerHelper';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import styles from './FeatureLengthRuler.scss';
 
@@ -96,7 +96,7 @@ const FeatureLengthRuler = (props: Props) => {
           <rect className={styles.tick} width={1} height={6} />
           {labelledTicks.includes(tick) && (
             <text className={styles.label} x={0} y={20} textAnchor="middle">
-              {getCommaSeparatedNumber(tick)}
+              {formatNumber(tick)}
             </text>
           )}
         </g>
@@ -108,7 +108,7 @@ const FeatureLengthRuler = (props: Props) => {
         textAnchor="start"
         transform={`translate(${scale(props.length)})`}
       >
-        {getCommaSeparatedNumber(props.length)}
+        {formatNumber(props.length)}
       </text>
     </g>
   );

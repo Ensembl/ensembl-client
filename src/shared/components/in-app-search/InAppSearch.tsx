@@ -32,7 +32,7 @@ import {
 } from 'src/shared/state/in-app-search/inAppSearchSelectors';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -137,7 +137,7 @@ const InAppSearch = (props: Props) => {
         {!isLoading && searchResult && (
           <div className={styles.hitsCount}>
             <span className={styles.hitsNumber}>
-              {getCommaSeparatedNumber(searchResult.meta.total_hits)}
+              {formatNumber(searchResult.meta.total_hits)}
             </span>{' '}
             {pluralise('gene', searchResult.meta.total_hits)}
           </div>

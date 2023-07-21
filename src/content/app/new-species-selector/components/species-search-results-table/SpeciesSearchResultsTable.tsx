@@ -17,7 +17,7 @@
 import React from 'react';
 import upperFirst from 'lodash/upperFirst';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { Table } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -109,12 +109,10 @@ const SpeciesSearchResultsTable = (props: Props) => {
 
             {isExpanded && (
               <>
-                <td>
-                  {getCommaSeparatedNumber(searchMatch.coding_genes_count)}
-                </td>
+                <td>{formatNumber(searchMatch.coding_genes_count)}</td>
                 <td>
                   {searchMatch.contig_n50
-                    ? getCommaSeparatedNumber(searchMatch.contig_n50)
+                    ? formatNumber(searchMatch.contig_n50)
                     : '-'}
                 </td>
                 <td>
