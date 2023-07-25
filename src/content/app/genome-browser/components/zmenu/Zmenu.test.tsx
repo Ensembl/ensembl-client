@@ -57,7 +57,9 @@ jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
 jest.mock('./zmenus/GeneAndOneTranscriptZmenu', () => () => (
-  <div>GeneAndOneTranscriptZmenu</div>
+  <div data-test-id="gene-and-one-transcript-zmenu">
+    GeneAndOneTranscriptZmenu
+  </div>
 ));
 jest.mock('./zmenus/VariantZmenu', () => () => <div>VariantZmenu</div>);
 jest.mock('./zmenus/RegulationZmenu', () => () => <div>RegulationZmenu</div>);
@@ -115,9 +117,9 @@ const defaultProps: ZmenuProps = {
 
 describe('<Zmenu />', () => {
   describe('rendering', () => {
-    it.skip('renders zmenu content', () => {
+    it('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();
-      expect(queryByTestId('zmenuContent')).toBeTruthy();
+      expect(queryByTestId('gene-and-one-transcript-zmenu')).toBeTruthy();
     });
   });
 
