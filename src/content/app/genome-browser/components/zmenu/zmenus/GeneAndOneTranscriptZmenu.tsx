@@ -20,9 +20,13 @@ import { useAppDispatch } from 'src/store';
 
 import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
-import { ToolboxExpandableContent } from 'src/shared/components/toolbox';
+import {
+  ToolboxExpandableContent,
+  ToggleButton as ToolboxToggleButton
+} from 'src/shared/components/toolbox';
 import ZmenuContent from '../ZmenuContent';
 import ZmenuInstantDownload from '../ZmenuInstantDownload';
+import ZmenuAppLinks from '../ZmenuAppLinks';
 
 import type {
   ZmenuContentTranscript,
@@ -73,11 +77,20 @@ const GeneAndOneTranscriptZmenu = (props: Props) => {
   }, []);
 
   const mainContent = (
-    <ZmenuContent
-      features={features}
-      featureId={featureId}
-      destroyZmenu={props.onDestroy}
-    />
+    <>
+      <ZmenuContent
+        features={features}
+        featureId={featureId}
+        destroyZmenu={props.onDestroy}
+      />
+      <div className={styles.zmenuLinksGrid}>
+        <ToolboxToggleButton
+          className={styles.zmenuToggleFooter}
+          label="Download"
+        />
+        <ZmenuAppLinks featureId={featureId} destroyZmenu={props.onDestroy} />
+      </div>
+    </>
   );
 
   const footerContent = (

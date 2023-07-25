@@ -65,7 +65,9 @@ export type ZmenuContentGeneMetadata = {
 export type ZmenuContentVariantMetadata = {
   alleles: string;
   consequence: string;
-  id: string;
+  id: string; // just the rsID; will have to be combined with region name and start coordinate for full id
+  region_name: string; // needed to generate full variant id
+  start: number; // needed to generate full variant id
   position: string; // formatted as "region:start-end". NOTE: start and end coordinates have commas in them
   variety: string; // e.g. SNV, INS... Do we have a full list of such varieties?
   type: ZmenuFeatureType.VARIANT;

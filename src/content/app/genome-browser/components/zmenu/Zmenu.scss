@@ -36,10 +36,15 @@
   color: $blue;
 }
 
-.zmenuAppLinks {
-  display: flex;
+.zmenuLinksGrid {
+  display: grid;
+  grid-template-columns: auto [app-links] 1fr;
   align-items: center;
-  justify-content: space-between;
+}
+
+.zmenuAppLinks {
+  grid-column: app-links;
+  justify-self: end;
 }
 
 .zmenuToggleFooter {

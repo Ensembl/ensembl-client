@@ -16,12 +16,19 @@
 
 import React from 'react';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
 import ZmenuContent from '../ZmenuContent';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type {
   ZmenuPayload,
   ZmenuContentVariantMetadata
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+
+import styles from '../Zmenu.scss';
 
 type Props = {
   payload: ZmenuPayload;
@@ -30,18 +37,42 @@ type Props = {
 
 const VariantZmenu = (props: Props) => {
   const { content } = props.payload;
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const variantMetadata = content[0]?.metadata as
     | ZmenuContentVariantMetadata
     | undefined;
-  const variantId = variantMetadata?.id ?? '';
+
+  if (!variantMetadata) {
+    // something has gone wrong
+    return null;
+  }
+
+  const { region_name, start, id } = variantMetadata;
+  const variantId = `${region_name}:${start}:${id}`;
+  const featureId = `variant:${variantId}`;
+
+  const linkToVariantInGenomeBrowser = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: featureId
+  });
 
   return (
-    <ZmenuContent
-      features={content}
-      featureId={`variant:${variantId}`}
-      destroyZmenu={props.onDestroy}
-    />
+    <>
+      <ZmenuContent
+        features={content}
+        featureId={featureId}
+        destroyZmenu={props.onDestroy}
+      />
+      <div className={styles.zmenuLinksGrid}>
+        <ViewInApp
+          theme="dark"
+          links={{ genomeBrowser: { url: linkToVariantInGenomeBrowser } }}
+          onAnyAppClick={props.onDestroy}
+          className={styles.zmenuAppLinks}
+        />
+      </div>
+    </>
   );
 };
 
