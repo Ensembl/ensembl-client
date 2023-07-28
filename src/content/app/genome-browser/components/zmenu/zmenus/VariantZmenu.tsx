@@ -17,6 +17,7 @@
 import React from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusVariantId } from 'src/shared/helpers/focusObjectHelpers';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
@@ -49,20 +50,22 @@ const VariantZmenu = (props: Props) => {
     return null;
   }
 
-  const { region_name, start, id } = variantMetadata;
-  const variantId = `${region_name}:${start}:${id}`;
-  const featureId = `variant:${variantId}`;
+  const variantId = buildFocusVariantId({
+    regionName: variantMetadata.region_name,
+    start: variantMetadata.start,
+    variantName: variantMetadata.id
+  });
 
   const linkToVariantInGenomeBrowser = urlFor.browser({
     genomeId: genomeIdForUrl,
-    focus: featureId
+    focus: variantId
   });
 
   return (
     <>
       <ZmenuContent
         features={content}
-        featureId={featureId}
+        featureId={variantId}
         destroyZmenu={props.onDestroy}
       />
       {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (

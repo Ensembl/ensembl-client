@@ -83,3 +83,12 @@ export const parseFocusObjectIdFromUrl = (
 
 export const getDisplayStableId = (focusObject: Partial<FocusGene>) =>
   focusObject.versioned_stable_id || focusObject.stable_id || '';
+
+export const buildFocusVariantId = (params: {
+  regionName: string;
+  start: number;
+  variantName: string;
+}) => {
+  const { regionName, start, variantName } = params;
+  return `variant:${regionName}:${start}:${variantName}`;
+};
