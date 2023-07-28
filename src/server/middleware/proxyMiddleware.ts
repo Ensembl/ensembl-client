@@ -55,25 +55,15 @@ const serverConfig = getConfigForServer();
 */
 
 const createApiProxyMiddleware = () => {
-  const apiProxyMiddleware = createHttpProxyMiddleware(
-    ['/api/**', '!/api/browser/**'],
-    {
-      target: 'https://staging-2020.ensembl.org',
-      changeOrigin: true,
-      secure: false
-    }
-  );
-
-  const browserProxyMiddleware = createHttpProxyMiddleware('/api/browser/**', {
-    target: 'http://localhost:3333',
-    pathRewrite: {
-      '^/api/browser': '/api' // rewrite path
-    },
+  const apiProxyMiddleware = createHttpProxyMiddleware('/api', {
+    target: 'https://staging-2020.ensembl.org',
     changeOrigin: true,
     secure: false
   });
 
-  return [apiProxyMiddleware, browserProxyMiddleware];
+  // returning an array so that the specific proxies can be easily modified in local development
+  // (see example in the comment block above)
+  return [apiProxyMiddleware];
 };
 
 const createStaticAssetsMiddleware = () => {
