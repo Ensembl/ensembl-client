@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 
 export default function useOutsideClick<T extends HTMLElement>(
   refOrRefs: React.RefObject<T> | React.RefObject<T>[],
-  callback: () => void
+  callback: (() => void) | ((event: Event) => void)
 ) {
   const refs = Array.isArray(refOrRefs) ? refOrRefs : [refOrRefs];
 
@@ -32,7 +32,7 @@ export default function useOutsideClick<T extends HTMLElement>(
     }
 
     if (!isClickInside) {
-      callback();
+      callback(event);
     }
   };
 

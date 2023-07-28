@@ -39,14 +39,32 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
     setShowPointerBox(!showPointerBox);
   };
 
+  const onClose = () => {
+    setShowPointerBox(false);
+  };
+
+  const onOutsideClick = (event: Event) => {
+    // If the PointerBox is rendered outside the anchor (i.e. as a top-level child of the document body)
+    // (to avoid adjacent elements from being positioned in front of the popup and intercepting clicks on its buttons),
+    // then a click on any of the props.children will be outside the anchor.
+    // Thus, an extra check of the click target relative to the anchor becomes necessary.
+    // All this will go away when we can switch to the popover api.
+    if (!anchorRef.current?.contains(event.target as HTMLElement)) {
+      onClose();
+    }
+  };
+
   return (
-    <span className={styles.wrapper} ref={anchorRef} onClick={onAnchorClick}>
-      {children}
+    <>
+      <span className={styles.wrapper} ref={anchorRef} onClick={onAnchorClick}>
+        {children}
+      </span>
       {showPointerBox && anchorRef.current && (
         <PointerBox
           anchor={anchorRef.current}
-          renderInsideAnchor={true}
-          onOutsideClick={() => setShowPointerBox(false)}
+          renderInsideAnchor={false}
+          onOutsideClick={onOutsideClick}
+          onClose={onClose}
           position={position}
           autoAdjust={true}
           classNames={{
@@ -57,7 +75,7 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
           <ViewInApp theme="dark" links={links} />
         </PointerBox>
       )}
-    </span>
+    </>
   );
 };
 
