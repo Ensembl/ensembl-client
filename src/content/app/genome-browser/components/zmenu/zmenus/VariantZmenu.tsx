@@ -17,6 +17,7 @@
 import React from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -64,14 +65,16 @@ const VariantZmenu = (props: Props) => {
         featureId={featureId}
         destroyZmenu={props.onDestroy}
       />
-      <div className={styles.zmenuLinksGrid}>
-        <ViewInApp
-          theme="dark"
-          links={{ genomeBrowser: { url: linkToVariantInGenomeBrowser } }}
-          onAnyAppClick={props.onDestroy}
-          className={styles.zmenuAppLinks}
-        />
-      </div>
+      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+        <div className={styles.zmenuLinksGrid}>
+          <ViewInApp
+            theme="dark"
+            links={{ genomeBrowser: { url: linkToVariantInGenomeBrowser } }}
+            onAnyAppClick={props.onDestroy}
+            className={styles.zmenuAppLinks}
+          />
+        </div>
+      )}
     </>
   );
 };
