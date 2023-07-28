@@ -65,7 +65,7 @@ export type PointerBoxProps = {
     pointer?: string;
   };
   children: ReactNode;
-  onOutsideClick?: () => void;
+  onOutsideClick?: (() => void) | ((event: Event) => void);
   onClose?: () => void;
 };
 
