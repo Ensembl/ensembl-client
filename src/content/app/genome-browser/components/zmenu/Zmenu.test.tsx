@@ -56,6 +56,12 @@ jest.mock('./ZmenuContent', () => () => (
 jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
+jest.mock('./zmenus/GeneAndOneTranscriptZmenu', () => () => (
+  <div data-test-id="gene-and-one-transcript-zmenu">
+    GeneAndOneTranscriptZmenu
+  </div>
+));
+jest.mock('./zmenus/VariantZmenu', () => () => <div>VariantZmenu</div>);
 jest.mock('./zmenus/RegulationZmenu', () => () => <div>RegulationZmenu</div>);
 
 const chrName = faker.lorem.word();
@@ -113,7 +119,7 @@ describe('<Zmenu />', () => {
   describe('rendering', () => {
     it('renders zmenu content', () => {
       const { queryByTestId } = renderComponent();
-      expect(queryByTestId('zmenuContent')).toBeTruthy();
+      expect(queryByTestId('gene-and-one-transcript-zmenu')).toBeTruthy();
     });
   });
 

@@ -77,6 +77,7 @@ export type ViewInAppProps = {
   onAppClick?: AppClickHandlers;
   onAnyAppClick?: (appName?: AppName) => void;
   theme?: Theme;
+  className?: string;
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
@@ -107,7 +108,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
     }
   };
 
-  const componentClasses = classNames(styles.viewInApp, {
+  const componentClasses = classNames(styles.viewInApp, props.className, {
     [styles.viewInAppLight]: theme === 'light',
     [styles.viewInAppDark]: theme === 'dark'
   });

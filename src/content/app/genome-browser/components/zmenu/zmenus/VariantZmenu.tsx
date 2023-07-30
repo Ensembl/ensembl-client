@@ -16,12 +16,21 @@
 
 import React from 'react';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusVariantId } from 'src/shared/helpers/focusObjectHelpers';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+
 import ZmenuContent from '../ZmenuContent';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type {
   ZmenuPayload,
   ZmenuContentVariantMetadata
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+
+import styles from '../Zmenu.scss';
 
 type Props = {
   payload: ZmenuPayload;
@@ -30,18 +39,46 @@ type Props = {
 
 const VariantZmenu = (props: Props) => {
   const { content } = props.payload;
+  const { genomeIdForUrl } = useGenomeBrowserIds();
 
   const variantMetadata = content[0]?.metadata as
     | ZmenuContentVariantMetadata
     | undefined;
-  const variantId = variantMetadata?.id ?? '';
+
+  if (!variantMetadata) {
+    // something has gone wrong
+    return null;
+  }
+
+  const variantId = buildFocusVariantId({
+    regionName: variantMetadata.region_name,
+    start: variantMetadata.start,
+    variantName: variantMetadata.id
+  });
+
+  const linkToVariantInGenomeBrowser = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: variantId
+  });
 
   return (
-    <ZmenuContent
-      features={content}
-      featureId={`variant:${variantId}`}
-      destroyZmenu={props.onDestroy}
-    />
+    <>
+      <ZmenuContent
+        features={content}
+        featureId={variantId}
+        destroyZmenu={props.onDestroy}
+      />
+      {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+        <div className={styles.zmenuLinksGrid}>
+          <ViewInApp
+            theme="dark"
+            links={{ genomeBrowser: { url: linkToVariantInGenomeBrowser } }}
+            onAnyAppClick={props.onDestroy}
+            className={styles.zmenuAppLinks}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

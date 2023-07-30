@@ -17,14 +17,12 @@
 import React from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import useGenomeBrowser from '../../hooks/useGenomeBrowser';
 
-import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp, {
-  LinksConfig
+  type LinksConfig
 } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
@@ -41,12 +39,6 @@ const ZmenuAppLinks = (props: Props) => {
     useGenomeBrowserIds();
   const { changeFocusObject } = useGenomeBrowser();
   const navigate = useNavigate();
-
-  const { type: featureType } = parseFocusIdFromUrl(featureId);
-
-  if (featureType !== 'gene') {
-    return null;
-  }
 
   const onGenomeBrowserAppClick = () => {
     if (!(focusObjectIdForUrl && focusObjectId)) {
@@ -79,10 +71,6 @@ const ZmenuAppLinks = (props: Props) => {
 
   return (
     <div className={styles.zmenuAppLinks}>
-      <ToolboxToggleButton
-        className={styles.zmenuToggleFooter}
-        label="Download"
-      />
       <ViewInApp
         theme="dark"
         links={links}

@@ -22,8 +22,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
-import ZmenuAppLinks from './ZmenuAppLinks';
-
 import {
   ZmenuContentItem as ZmenuContentItemType,
   Markup,
@@ -60,7 +58,6 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
           />
         </p>
       ))}
-      <ZmenuAppLinks featureId={featureId} destroyZmenu={props.destroyZmenu} />
     </>
   );
 
