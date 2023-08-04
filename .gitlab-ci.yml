@@ -89,7 +89,7 @@ variables:
 
 # Template for publishing static assets for the new kubernetes cluster
 # Will need updating after the migration is completed (see the name of the template, name of the ensembl-k8s-manifests branch)
-.publish_assets-wp40:
+.publish_assets-newcluster:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
   stage: deploy
   environment:
@@ -138,7 +138,7 @@ variables:
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
 # Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
-.deploy-wp40:
+.deploy-newcluster:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.6
   script:
@@ -209,6 +209,7 @@ Test_N_Build:
   only:
   - dev
   - master
+  - new-cluster-deployments
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -222,6 +223,7 @@ Test_N_Build:internal:
 
   only:
   - master
+  - new-cluster-deployments
 
 Test_N_Build:review:
   extends: .build-static
@@ -240,6 +242,7 @@ Node:Staging:
   extends: .build-node
   only:
   - dev
+  - new-cluster-deployments
   needs:
     - Test_N_Build
 
@@ -251,6 +254,7 @@ Node:Live:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   only:
   - master
+  - new-cluster-deployments
   needs:
     - Test_N_Build
 
@@ -263,6 +267,7 @@ Node:Internal:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   only:
   - master
+  - new-cluster-deployments
   needs:
     - Test_N_Build:internal
 
@@ -295,6 +300,9 @@ Node:review:
 
   needs:
     - Test_N_Build:review
+
+
+######## DEPLOYMENT JOBS ########
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
 Staging:HX:
@@ -338,6 +346,31 @@ Pub:Staging-HL:
       namespace: ensembl-stage
   only:
     - dev
+  needs:
+    - Test_N_Build
+    - Node:Staging
+
+# Job to deploy to staging environment on the new cluster (WP40-HL k8s cluster)
+Staging:WP40:HL:
+  extends: .deploy-newcluster
+  environment:
+    name : wp40-hl-staging
+  only:
+  - dev
+  - new-cluster-deployments
+  needs:
+    - Test_N_Build
+    - Node:Staging
+
+Pub:Staging:WP40:HL:
+  extends: .publish_assets-newcluster
+  environment:
+    name : hl-jobs/staging
+    kubernetes:
+      namespace: ensembl-stage
+  only:
+    - dev
+    - new-cluster-deployments
   needs:
     - Test_N_Build
     - Node:Staging
@@ -396,28 +429,60 @@ Pub:Live-HL:
 
 # Job to deploy to live environment in the new kubernetes cluster (wp40)
 Live:wp40:HL:
-  extends: .deploy-wp40
+  extends: .deploy-newcluster
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name: wp40-hl-prod
   only:
   - master
+  - new-cluster-deployments
   needs:
     - Test_N_Build
     - Node:Live
 
 Pub:Live-HL:wp40:
-  extends: .publish_assets-wp40
+  extends: .publish_assets-newcluster
   environment:
     name : wp40-hl-prod
     kubernetes:
       namespace: ensembl-prod
   only:
   - master
+  - new-cluster-deployments
   needs:
     - Test_N_Build
     - Node:Live
+
+
+# Job to deploy a production fallback to the new kubernetes cluster in Hinxton (WP41)
+Live:WP41:HX:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+  environment:
+    name : wp41-hx-prod
+  only:
+  - master
+  - new-cluster-deployments
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+Pub::WP41:Live-HX:
+  extends: .publish_assets-newcluster
+  environment:
+    name : hx-jobs/prod
+    kubernetes:
+      namespace: ensembl-prod
+  only:
+  - master
+  - new-cluster-deployments
+  needs:
+    - Test_N_Build
+    - Node:Live
+
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
 Internal:HX:
@@ -471,6 +536,35 @@ Pub:Internal-HL:
     - Test_N_Build:internal
     - Node:Internal
 
+# Job to deploy to internal environment in the new cluster in Harlow (WP40)
+Internal:WP40:HL:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
+  environment:
+    name: wp40-hl-internal
+  only:
+  - master
+  - new-cluster-deployments
+  needs:
+    - Test_N_Build:internal
+    - Node:Internal
+
+Pub:Internal::WP40:HL:
+  extends: .publish_assets-newcluster
+  environment:
+    name : hl-jobs/internal
+    kubernetes:
+      namespace: ensembl-internal
+  only:
+  - master
+  - new-cluster-deployments
+  needs:
+    - Test_N_Build:internal
+    - Node:Internal
+
+# Job to deploy review deployments to development environment in Hinxton
 Review:HX:
   extends: .deploy-review
   variables:
@@ -490,6 +584,49 @@ Review:HX:
     - Test_N_Build:review
     - Nginx:review
     - Node:review
+
+# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
+Review:WP40:HL:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ensembl-dev
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
+  needs:
+    - Test_N_Build:review
+    - Nginx:review
+    - Node:review
+
+# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
+Review:WP41:HX:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ensembl-dev
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
+  needs:
+    - Test_N_Build:review
+    - Nginx:review
+    - Node:review
+
 
 stop_review:
   extends: .stop-review
