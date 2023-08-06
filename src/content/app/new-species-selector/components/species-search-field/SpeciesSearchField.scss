@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .speciesSearchField {
   display: grid;
   grid-template-areas:
@@ -17,7 +19,11 @@
   grid-area: input;
 }
 
-.submit {
+.button {
   grid-area: button;
   align-self: center;
+}
+
+.submit {
+  --primary-button-color: #{$blue};
 }
