@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { nanoid } from '@reduxjs/toolkit';
-
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
@@ -992,7 +989,7 @@ export const createHumanPangenomeSearchMatches = () => {
 
   return humanPangenomeAssemblies.map((assemblyData) => {
     const searchMatch = structuredClone(humanSearchMatch);
-    searchMatch.genome_id = nanoid();
+    searchMatch.genome_id = assemblyData.assembly_accession_id;
     searchMatch.assembly.accession_id = assemblyData.assembly_accession_id;
     searchMatch.assembly.name = assemblyData.assembly_name;
     searchMatch.assembly.url = assemblyData.assembly_link;
