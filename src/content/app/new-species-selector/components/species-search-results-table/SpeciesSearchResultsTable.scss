@@ -17,5 +17,6 @@
 }
 
 .isAlreadySelected {
-  color: $grey;
+  color: $medium-dark-grey;
+  --dot-solid-color: #{$medium-light-grey};
 }
