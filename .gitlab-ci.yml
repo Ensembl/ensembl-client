@@ -90,7 +90,7 @@ variables:
 # Template for publishing static assets for the new kubernetes cluster
 # Will need updating after the migration is completed (see the name of the template, name of the ensembl-k8s-manifests branch)
 .publish_assets-newcluster:
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   stage: deploy
   environment:
     name : jobs/k8s-job
@@ -140,7 +140,7 @@ variables:
 # Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
 .deploy-newcluster:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.6
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout k8s123-migration
@@ -355,9 +355,8 @@ Staging:WP40:HL:
   extends: .deploy-newcluster
   environment:
     name : wp40-hl-staging
-  only:
-  - dev
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Staging
@@ -368,9 +367,8 @@ Pub:Staging:WP40:HL:
     name : hl-jobs/staging
     kubernetes:
       namespace: ensembl-stage
-  only:
-    - dev
-    - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Staging
@@ -434,9 +432,8 @@ Live:wp40:HL:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name: wp40-hl-prod
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -447,9 +444,8 @@ Pub:Live-HL:wp40:
     name : wp40-hl-prod
     kubernetes:
       namespace: ensembl-prod
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -463,9 +459,8 @@ Live:WP41:HX:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name : wp41-hx-prod
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -476,9 +471,8 @@ Pub::WP41:Live-HX:
     name : hx-jobs/prod
     kubernetes:
       namespace: ensembl-prod
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -544,9 +538,8 @@ Internal:WP40:HL:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
     name: wp40-hl-internal
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build:internal
     - Node:Internal
@@ -557,9 +550,8 @@ Pub:Internal::WP40:HL:
     name : hl-jobs/internal
     kubernetes:
       namespace: ensembl-internal
-  only:
-  - master
-  - new-cluster-deployments
+  rules:
+    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build:internal
     - Node:Internal
@@ -597,10 +589,8 @@ Review:WP40:HL:
     on_stop: stop_review
     kubernetes:
       namespace: ensembl-dev
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+  rules:
+    if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
@@ -618,10 +608,8 @@ Review:WP41:HX:
     on_stop: stop_review
     kubernetes:
       namespace: ensembl-dev
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+  rules:
+    if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
