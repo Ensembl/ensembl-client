@@ -74,7 +74,7 @@ variables:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
   stage: deploy
   environment:
-    name : jobs/k8s-job
+    name: jobs/k8s-job
 
   before_script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
@@ -93,7 +93,7 @@ variables:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   stage: deploy
   environment:
-    name : jobs/k8s-job
+    name: jobs/k8s-job
 
   before_script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
@@ -298,7 +298,7 @@ Node:review:
 Staging:HX:
   extends: .deploy
   environment:
-    name : wp-hx-staging
+    name: wp-hx-staging
   only:
   - dev
   needs:
@@ -308,7 +308,7 @@ Staging:HX:
 Pub:Staging-HX:
   extends: .publish_assets
   environment:
-    name : hx-jobs/staging
+    name: hx-jobs/staging
     kubernetes:
       namespace: ensembl-stage
   only:
@@ -321,7 +321,7 @@ Pub:Staging-HX:
 Staging:HL:
   extends: .deploy
   environment:
-    name : wp-hh-staging
+    name: wp-hh-staging
   only:
   - dev
   needs:
@@ -331,7 +331,7 @@ Staging:HL:
 Pub:Staging-HL:
   extends: .publish_assets
   environment:
-    name : hl-jobs/staging
+    name: hl-jobs/staging
     kubernetes:
       namespace: ensembl-stage
   only:
@@ -344,7 +344,7 @@ Pub:Staging-HL:
 Staging:WP40:HL:
   extends: .deploy-newcluster
   environment:
-    name : wp40-hl-staging
+    name: wp40-hl-staging
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
   needs:
@@ -354,7 +354,7 @@ Staging:WP40:HL:
 Pub:Staging:WP40:HL:
   extends: .publish_assets-newcluster
   environment:
-    name : wp40-hl-staging
+    name: wp40-hl-staging
     kubernetes:
       namespace: ensembl-stage
   rules:
@@ -370,7 +370,7 @@ Live:HX:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
-    name : wp-hx-live
+    name: wp-hx-live
   only:
   - master
   needs:
@@ -380,7 +380,7 @@ Live:HX:
 Pub:Live-HX:
   extends: .publish_assets
   environment:
-    name : hx-jobs/prod
+    name: hx-jobs/prod
     kubernetes:
       namespace: ensembl-prod
   only:
@@ -396,7 +396,7 @@ Live:HL:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
-    name : wp-hh-live
+    name: wp-hh-live
   only:
   - master
   needs:
@@ -406,7 +406,7 @@ Live:HL:
 Pub:Live-HL:
   extends: .publish_assets
   environment:
-    name : hl-jobs/prod
+    name: hl-jobs/prod
     kubernetes:
       namespace: ensembl-prod
   only:
@@ -431,7 +431,7 @@ Live:wp40:HL:
 Pub:Live-HL:wp40:
   extends: .publish_assets-newcluster
   environment:
-    name : wp40-hl-prod
+    name: wp40-hl-prod
     kubernetes:
       namespace: ensembl-prod
   rules:
@@ -448,7 +448,7 @@ Live:WP41:HX:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
-    name : wp41-hx-prod
+    name: wp41-hx-prod
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   needs:
@@ -458,7 +458,7 @@ Live:WP41:HX:
 Pub::WP41:Live-HX:
   extends: .publish_assets-newcluster
   environment:
-    name : wp41-hx-prod
+    name: wp41-hx-prod
     kubernetes:
       namespace: ensembl-prod
   rules:
@@ -475,7 +475,7 @@ Internal:HX:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
-    name : wp-hx-internal
+    name: wp-hx-internal
   only:
   - master
   needs:
@@ -485,7 +485,7 @@ Internal:HX:
 Pub:Internal-HX:
   extends: .publish_assets
   environment:
-    name : hx-jobs/internal
+    name: hx-jobs/internal
     kubernetes:
       namespace: ensembl-internal
   only:
@@ -501,7 +501,7 @@ Internal:HL:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
-    name : wp-hh-internal
+    name: wp-hh-internal
   only:
   - master
   needs:
@@ -511,7 +511,7 @@ Internal:HL:
 Pub:Internal-HL:
   extends: .publish_assets
   environment:
-    name : hl-jobs/internal
+    name: hl-jobs/internal
     kubernetes:
       namespace: ensembl-internal
   only:
@@ -537,7 +537,7 @@ Internal:WP40:HL:
 Pub:Internal::WP40:HL:
   extends: .publish_assets-newcluster
   environment:
-    name : wp40-hl-internal
+    name: wp40-hl-internal
     kubernetes:
       namespace: ensembl-internal
   rules:
@@ -621,7 +621,7 @@ stop_review:
 SetupReview:HX:
   extends: .setup-review
   environment:
-    name : wp-hx-dev-ing
+    name: wp-hx-dev-ing
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && 
           $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
