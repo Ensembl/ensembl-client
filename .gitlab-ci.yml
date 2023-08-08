@@ -205,7 +205,7 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -234,7 +234,7 @@ Test_N_Build:review:
 Node:Staging:
   extends: .build-node
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
 
@@ -346,7 +346,7 @@ Staging:WP40:HL:
   environment:
     name : wp40-hl-staging
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Staging
