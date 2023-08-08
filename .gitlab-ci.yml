@@ -356,7 +356,7 @@ Staging:WP40:HL:
   environment:
     name : wp40-hl-staging
   rules:
-    if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Staging
@@ -368,7 +368,7 @@ Pub:Staging:WP40:HL:
     kubernetes:
       namespace: ensembl-stage
   rules:
-    if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Staging
@@ -433,7 +433,7 @@ Live:wp40:HL:
   environment:
     name: wp40-hl-prod
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -445,7 +445,7 @@ Pub:Live-HL:wp40:
     kubernetes:
       namespace: ensembl-prod
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -460,7 +460,7 @@ Live:WP41:HX:
   environment:
     name : wp41-hx-prod
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -472,7 +472,7 @@ Pub::WP41:Live-HX:
     kubernetes:
       namespace: ensembl-prod
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build
     - Node:Live
@@ -539,7 +539,7 @@ Internal:WP40:HL:
   environment:
     name: wp40-hl-internal
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build:internal
     - Node:Internal
@@ -551,7 +551,7 @@ Pub:Internal::WP40:HL:
     kubernetes:
       namespace: ensembl-internal
   rules:
-    if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
   needs:
     - Test_N_Build:internal
     - Node:Internal
@@ -590,7 +590,7 @@ Review:WP40:HL:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
@@ -609,7 +609,7 @@ Review:WP41:HX:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
