@@ -205,7 +205,7 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -234,7 +234,7 @@ Test_N_Build:review:
 Node:Staging:
   extends: .build-node
   rules:
-    - if: $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "dev"
   needs:
     - Test_N_Build
 
@@ -358,7 +358,7 @@ Pub:Staging:WP40:HL:
     kubernetes:
       namespace: ensembl-stage
   rules:
-    - if: $CI_COMMIT_BRANCH == "new-cluster-deployments"
+    - if: $CI_COMMIT_BRANCH == "dev"
   needs:
     - Test_N_Build
     - Node:Staging
