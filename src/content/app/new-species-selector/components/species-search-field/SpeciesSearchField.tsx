@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
+import React, { type MouseEvent, FormEvent } from 'react';
+import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -26,21 +27,35 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import styles from './SpeciesSearchField.scss';
 
-type Props = {
+type Mode = 'species-search' | 'species-add';
+
+export type Props = {
   onSearchSubmit: () => void;
+  mode?: Mode;
+  canSubmit?: boolean;
+  onSpeciesAdd?: () => void;
+  onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
 
 const SpeciesSearchField = (props: Props) => {
+  const { mode = 'species-search', canSubmit = true } = props;
   const dispatch = useAppDispatch();
   const query = useAppSelector(getSpeciesSearchQuery);
 
   const onInput = (event: FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     dispatch(setQuery(value));
+    props.onInput?.(event);
   };
 
-  const onSubmit = () => {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     props.onSearchSubmit();
+  };
+
+  const onAdd = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // to avoid triggering form submission
+    props.onSpeciesAdd?.();
   };
 
   return (
@@ -52,12 +67,31 @@ const SpeciesSearchField = (props: Props) => {
         className={styles.input}
         value={query}
         onInput={onInput}
+        placeholder={placeholderText}
+        help={helpText}
+        minLength={3}
       />
-      <PrimaryButton disabled={query.length < 3} className={styles.submit}>
-        Find
-      </PrimaryButton>
+      {mode === 'species-search' ? (
+        <PrimaryButton
+          disabled={!canSubmit || query.length < 3}
+          className={classNames(styles.button, styles.submit)}
+        >
+          Find
+        </PrimaryButton>
+      ) : (
+        <PrimaryButton className={styles.button} onClick={onAdd}>
+          Add
+        </PrimaryButton>
+      )}
     </form>
   );
 };
+
+const placeholderText = 'Common or scientific name...';
+
+const helpText = `
+Search for a species using a common name, scientific name, assembly ID or GCA.
+If no results are shown, please try a different spelling or attribute
+`;
 
 export default SpeciesSearchField;

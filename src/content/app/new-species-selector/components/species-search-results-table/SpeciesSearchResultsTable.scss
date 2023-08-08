@@ -4,10 +4,19 @@
   --table-background: $light-grey;
 }
 
+.assemblyName {
+  font-weight: $light;
+}
+
 .showMore {
   color: $blue;
 }
 
 .referenceGenome {
   font-style: italic;
+}
+
+.isAlreadySelected {
+  color: $medium-dark-grey;
+  --dot-solid-color: #{$medium-light-grey};
 }

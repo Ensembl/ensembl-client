@@ -19,9 +19,13 @@ import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getSpeciesSearchQuery } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-import { setQuery } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+import {
+  setQuery,
+  commitSelectedSpeciesAndSave
+} from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
@@ -30,6 +34,7 @@ import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/co
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
+import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSelectorResultsView.scss';
 
@@ -50,19 +55,33 @@ const SpeciesSelectorResultslView = () => {
 
 const Content = () => {
   const query = useAppSelector(getSpeciesSearchQuery);
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const [hasQueryChangedSinceSubmission, setHasQueryChangedSinceSubmission] =
+    useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData } = result;
   const [preselectedSpecies, setPreselectedSpecies] = useState<
     SpeciesSearchMatch[]
   >([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     searchTrigger({ query });
   }, []);
 
+  const onInput = () => {
+    setHasQueryChangedSinceSubmission(true);
+    setPreselectedSpecies([]); // remove all preselected species because user has changed value of the search field
+  };
+
   const onSearchSubmit = () => {
     searchTrigger({ query });
+    setHasQueryChangedSinceSubmission(false);
+  };
+
+  const onSpeciesAdd = () => {
+    dispatch(commitSelectedSpeciesAndSave(preselectedSpecies));
   };
 
   const onSpeciesPreselectToggle = (
@@ -83,23 +102,52 @@ const Content = () => {
     setIsTableExpanded(!isTableExpanded);
   };
 
+  const speciesSearchFieldMode = preselectedSpecies.length
+    ? 'species-add'
+    : 'species-search';
+
   return (
     <div className={styles.main}>
-      <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
-      <SpeciesSearchResultsSummary searchResult={currentData} />
-      {currentData && (
-        <div className={styles.tableContainer}>
-          <SpeciesSearchResultsTable
-            results={currentData.matches}
-            isExpanded={isTableExpanded}
-            onTableExpandToggle={onTableExpandToggle}
-            preselectedSpecies={preselectedSpecies}
-            onSpeciesSelectToggle={onSpeciesPreselectToggle}
-          />
-        </div>
+      <SpeciesSearchField
+        onInput={onInput}
+        onSearchSubmit={onSearchSubmit}
+        mode={speciesSearchFieldMode}
+        onSpeciesAdd={onSpeciesAdd}
+        canSubmit={hasQueryChangedSinceSubmission}
+      />
+      {currentData && !hasQueryChangedSinceSubmission && (
+        <>
+          <SpeciesSearchResultsSummary searchResult={currentData} />
+          <div className={styles.tableContainer}>
+            <SpeciesSearchResultsTable
+              results={markCommittedSpecies(
+                currentData.matches,
+                committedSpecies
+              )}
+              isExpanded={isTableExpanded}
+              onTableExpandToggle={onTableExpandToggle}
+              preselectedSpecies={preselectedSpecies}
+              onSpeciesSelectToggle={onSpeciesPreselectToggle}
+            />
+          </div>
+        </>
       )}
     </div>
   );
+};
+
+const markCommittedSpecies = (
+  searchMatches: SpeciesSearchMatch[],
+  committedSpecies: CommittedItem[]
+) => {
+  const committedSpeciesIds = new Set(
+    committedSpecies.map((species) => species.genome_id)
+  );
+
+  return searchMatches.map((match) => ({
+    ...match,
+    isSelected: committedSpeciesIds.has(match.genome_id)
+  }));
 };
 
 export default SpeciesSelectorResultslView;

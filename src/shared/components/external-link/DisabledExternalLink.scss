@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.container {
+  display: inline-grid;
+  grid-template-columns:  [icon] auto [text] auto;
+  column-gap: 5px;
+  align-items: baseline;
+}
+
+.icon {
+  fill: var(--disabled-external-link-icon-color, #{$grey});
+  grid-column: icon;
+  height: 12px;
+  width: 12px;
+}
+
+.text {
+  grid-column: text;
+  color: var(--disabled-external-link-text-color, #{$grey});
+}

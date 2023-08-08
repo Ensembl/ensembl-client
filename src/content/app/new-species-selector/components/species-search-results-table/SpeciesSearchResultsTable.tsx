@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -23,6 +24,8 @@ import { Table } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SolidDot from 'src/shared/components/table/dot/SolidDot';
 import EmptyDot from 'src/shared/components/table/dot/EmptyDot';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import DisabledExternalLink from 'src/shared/components/external-link/DisabledExternalLink';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
@@ -30,14 +33,13 @@ import styles from './SpeciesSearchResultsTable.scss';
 
 type Props = {
   isExpanded: boolean;
-  results: SpeciesSearchMatch[];
+  results: Array<SpeciesSearchMatch & { isSelected: boolean }>;
   preselectedSpecies: SpeciesSearchMatch[];
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
     species: SpeciesSearchMatch,
     isAdding?: boolean
   ) => void;
-  // TODO: add selectedGenomes — they should be shown but disabled
 };
 
 const SpeciesSearchResultsTable = (props: Props) => {
@@ -81,9 +83,15 @@ const SpeciesSearchResultsTable = (props: Props) => {
       </thead>
       <tbody>
         {results.map((searchMatch) => (
-          <tr key={searchMatch.genome_id}>
+          <tr
+            key={searchMatch.genome_id}
+            className={classNames({
+              [styles.isAlreadySelected]: searchMatch.isSelected
+            })}
+          >
             <td>
               <Checkbox
+                disabled={searchMatch.isSelected}
                 checked={preselectedSpeciesIds.has(searchMatch.genome_id)}
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
@@ -93,15 +101,18 @@ const SpeciesSearchResultsTable = (props: Props) => {
             <td>
               <SpeciesType species={searchMatch} />
             </td>
-            <td>{searchMatch.assembly.name}</td>
+            <td className={styles.assemblyName}>{searchMatch.assembly.name}</td>
             <td>
-              <a
-                href={searchMatch.assembly.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {searchMatch.assembly.accession_id}
-              </a>
+              {!searchMatch.isSelected ? (
+                <ExternalLink
+                  to={searchMatch.assembly.url}
+                  linkText={searchMatch.assembly.accession_id}
+                />
+              ) : (
+                <DisabledExternalLink>
+                  {searchMatch.assembly.accession_id}
+                </DisabledExternalLink>
+              )}
             </td>
 
             {/* empty column under the 'show more' heading */}
