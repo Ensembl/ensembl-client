@@ -354,7 +354,7 @@ Staging:WP40:HL:
 Pub:Staging:WP40:HL:
   extends: .publish_assets-newcluster
   environment:
-    name : hl-jobs/staging
+    name : wp40-hl-staging
     kubernetes:
       namespace: ensembl-stage
   rules:
@@ -458,7 +458,7 @@ Live:WP41:HX:
 Pub::WP41:Live-HX:
   extends: .publish_assets-newcluster
   environment:
-    name : hx-jobs/prod
+    name : wp41-hx-prod
     kubernetes:
       namespace: ensembl-prod
   rules:
@@ -537,7 +537,7 @@ Internal:WP40:HL:
 Pub:Internal::WP40:HL:
   extends: .publish_assets-newcluster
   environment:
-    name : hl-jobs/internal
+    name : wp40-hl-internal
     kubernetes:
       namespace: ensembl-internal
   rules:
