@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: var(--circular-fraction-indicator-label-distance, 20px);
+  align-items: center;
+}
+
+.diagram {
+  --_value: var(--circular-fraction-indicator-value, 0%);
+  --_color-completed: var(--circular-fraction-indicator-color-completed, #{$grey});
+  --_color-remaining: var(--circular-fraction-indicator-color-remaining, #{$light-grey});
+  width: var(--circular-fraction-indicator-size, 28px);
+  height: var(--circular-fraction-indicator-size, 28px);
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--_color-completed) 0,
+    var(--_color-completed) var(--_value),
+    var(--_color-remaining) var(--_value),
+    var(--_color-remaining) 100%
+  );
+}
+
+.label {
+  font-weight: $light;
+}
