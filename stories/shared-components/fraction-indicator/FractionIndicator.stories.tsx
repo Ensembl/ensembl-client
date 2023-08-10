@@ -16,66 +16,114 @@
 
 import React, { useState, type FormEvent } from 'react';
 
-import CircularFractionIndicator from 'src/shared/components/fraction-indicator/CircularFractionIndicator';
-import LinearFractionIndicator from 'src/shared/components/fraction-indicator/LinearFractionIndicator';
+import {
+  CircularPercentageIndicator,
+  CircularFractionIndicator
+} from 'src/shared/components/fraction-indicator/CircularProportionIndicator';
+import {
+  LinearPercentageIndicator,
+  LinearFractionIndicator
+} from 'src/shared/components/fraction-indicator/LinearProportionIndicator';
 
 import styles from './FractionIndicator.stories.scss';
 
-const CircularFractionIndicatorStory = () => {
-  const [value, setValue] = useState(20);
+const percentageControlDefaults = {
+  min: 0,
+  max: 100,
+  step: 0.5
+};
 
-  const onValueChange = (event: FormEvent<HTMLInputElement>) => {
+const fractionControlDefaults = {
+  min: 0,
+  max: 1,
+  step: 0.01
+};
+
+const renderControls = (
+  props: {
+    value: number;
+    setValue: (val: number) => void;
+  } & typeof percentageControlDefaults
+) => {
+  const { value, setValue, min, max, step } = props;
+
+  const onChange = (event: FormEvent<HTMLInputElement>) => {
     const newValue = parseFloat(event.currentTarget.value);
     setValue(newValue);
   };
 
   return (
+    <div className={styles.controls}>
+      <label>Change value</label>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  );
+};
+
+const CircularPercentageIndicatorStory = () => {
+  const [value, setValue] = useState(20);
+
+  return (
+    <div>
+      <CircularPercentageIndicator value={value} />
+      {renderControls({ value, setValue, ...percentageControlDefaults })}
+    </div>
+  );
+};
+
+const CircularFractionIndicatorStory = () => {
+  const [value, setValue] = useState(0.3);
+
+  return (
     <div>
       <CircularFractionIndicator value={value} />
-      <div className={styles.controls}>
-        <label>Change value</label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.5"
-          value={value}
-          onChange={onValueChange}
-        />
-      </div>
+      {renderControls({ value, setValue, ...fractionControlDefaults })}
+    </div>
+  );
+};
+
+const LinearPercentageIndicatorStory = () => {
+  const [value, setValue] = useState(20);
+
+  return (
+    <div>
+      <LinearPercentageIndicator value={value} />
+      {renderControls({ value, setValue, ...percentageControlDefaults })}
     </div>
   );
 };
 
 const LinearFractionIndicatorStory = () => {
-  const [value, setValue] = useState(20);
-
-  const onValueChange = (event: FormEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(event.currentTarget.value);
-    setValue(newValue);
-  };
+  const [value, setValue] = useState(0.3);
 
   return (
     <div>
       <LinearFractionIndicator value={value} />
-      <div className={styles.controls}>
-        <label>Change value</label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.5"
-          value={value}
-          onChange={onValueChange}
-        />
-      </div>
+      {renderControls({ value, setValue, ...fractionControlDefaults })}
     </div>
   );
 };
 
+export const ExportedCircularPercentageIndicatorStory = {
+  name: 'CircularPercentageIndicator',
+  render: () => <CircularPercentageIndicatorStory />
+};
+
 export const ExportedCircularFractionIndicatorStory = {
-  name: 'CircularFractionIndicator',
+  name: 'CirculaFractionIndicator',
   render: () => <CircularFractionIndicatorStory />
+};
+
+export const ExportedLinearPercentageIndicatorStory = {
+  name: 'LinearPercentageIndicator',
+  render: () => <LinearPercentageIndicatorStory />
 };
 
 export const ExportedLinearFractionIndicatorStory = {
