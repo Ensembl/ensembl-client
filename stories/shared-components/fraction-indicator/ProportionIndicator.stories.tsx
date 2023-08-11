@@ -25,7 +25,7 @@ import {
   LinearFractionIndicator
 } from 'src/shared/components/fraction-indicator/LinearProportionIndicator';
 
-import styles from './FractionIndicator.stories.scss';
+import styles from './ProportionIndicator.stories.scss';
 
 const percentageControlDefaults = {
   min: 0,
@@ -132,5 +132,5 @@ export const ExportedLinearFractionIndicatorStory = {
 };
 
 export default {
-  title: 'Components/Shared Components/FractionIndicator'
+  title: 'Components/Shared Components/ProportionIndicator'
 };
