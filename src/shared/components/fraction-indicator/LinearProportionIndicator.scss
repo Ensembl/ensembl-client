@@ -1,0 +1,25 @@
+@import 'src/styles/common';
+
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: var(--linear-proportion-indicator-label-distance, 18px);
+  align-items: center;
+}
+
+.diagram {
+  --_value: var(--linear-proportion-indicator-value, 0%);
+  --_color-completed: var(--linear-proportion-indicator-value-color, #{$mustard});
+  --_color-remaining: var(--linear-proportion-indicator-background-color, #{$light-grey});
+  width: var(--linear-proportion-indicator-size, 62px);
+  height: var(--linear-proportion-indicator-size, 9px);
+  background: linear-gradient(
+    to right,
+    var(--_color-completed) 0 var(--_value),
+    var(--_color-remaining) var(--_value) 100%
+  );
+}
+
+.label {
+  font-weight: $light;
+}
