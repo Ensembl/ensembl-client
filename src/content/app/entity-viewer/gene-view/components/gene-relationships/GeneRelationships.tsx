@@ -22,24 +22,24 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
-import Panel from 'src/shared/components/panel/Panel';
-
 import {
   GeneViewTabMap,
   GeneViewTabName,
-  GeneRelationshipsTabName
+  GeneRelationshipsTabName,
+  View
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
+
+import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import Panel from 'src/shared/components/panel/Panel';
+import GeneHomology from 'src/content/app/entity-viewer/gene-view/components/gene-homology/GeneHomology';
 
 import styles from './GeneRelationships.scss';
 
-// TODO: the isDisabled flags are hardcoded here since we do not have any data available.
-// We need to update this logic once we have the data available
 const tabsData = [...GeneViewTabMap.values()]
   .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
   .map((item) => ({
     title: item.secondaryTab,
-    isDisabled: true // TODO FIXME (Use real data when available)
+    isDisabled: item.view !== View.HOMOLOGY // TODO Use real data for tab availability if it becomes available
   })) as Tab[];
 
 const tabClassNames = {
@@ -89,8 +89,8 @@ const GeneRelationships = () => {
 
   const getCurrentTabContent = () => {
     switch (selectedTabName) {
-      case GeneRelationshipsTabName.GENE_FAMILIES:
-        return <>Gene families data</>;
+      case GeneRelationshipsTabName.HOMOLOGY:
+        return <GeneHomology />;
       default:
         return <>No data</>;
     }

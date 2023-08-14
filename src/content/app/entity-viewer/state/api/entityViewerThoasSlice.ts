@@ -33,20 +33,21 @@ import {
 } from './queries/geneSummaryQuery';
 import {
   geneExternalReferencesQuery,
-  GeneExternalReferencesQueryResult
+  type GeneExternalReferencesQueryResult
 } from './queries/geneExternalReferencesQuery';
 import {
   geneOverviewQuery,
-  GeneOverviewQueryResult
+  type GeneOverviewQueryResult
 } from './queries/geneOverviewQuery';
 import {
   geneForSequenceDownloadQuery,
-  GeneForSequenceDownloadQueryResult
+  type GeneForSequenceDownloadQueryResult
 } from './queries/geneForSequenceDownloadQuery';
 import {
   proteinDomainsQuery,
-  ProteinDomainsQueryResult
+  type ProteinDomainsQueryResult
 } from './queries/proteinDomainsQuery';
+import type { MockHomologiesResponse } from 'src/content/app/entity-viewer/state/api/fixtures/mockHomologyData'; // Update the type after switch to real data
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
@@ -124,6 +125,17 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: proteinDomainsQuery,
         variables: params
       })
+    }),
+    evGeneHomology: builder.query<MockHomologiesResponse, GeneQueryParams>({
+      // eslint-disable-next-line
+      queryFn: async (params) => {
+        const { default: geneHomologies } = await import(
+          'src/content/app/entity-viewer/state/api/fixtures/mockHomologyData'
+        );
+        return {
+          data: geneHomologies
+        };
+      }
     })
   })
 });
@@ -135,7 +147,8 @@ export const {
   useGeneOverviewQuery,
   useGeneExternalReferencesQuery,
   useGeneForSequenceDownloadQuery,
-  useProteinDomainsQuery
+  useProteinDomainsQuery,
+  useEvGeneHomologyQuery
 } = entityViewerThoasSlice;
 
 export const { genePageMeta: fetchGenePageMeta } =
