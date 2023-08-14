@@ -118,7 +118,9 @@ const tableColumns: DataTableColumns = [
           withPercentSign={false}
         />
       );
-    }
+    },
+    helpText:
+      'The percentage of identical amino acid residues aligned against each other'
   },
   {
     columnId: 'coverage',
@@ -131,7 +133,9 @@ const tableColumns: DataTableColumns = [
           withPercentSign={false}
         />
       );
-    }
+    },
+    helpText:
+      'The percent of query which is in local alignment with the respective reference'
   },
   {
     columnId: 'gene_symbol',
@@ -154,7 +158,9 @@ const tableColumns: DataTableColumns = [
   },
   {
     columnId: 'homology_hit_type',
-    title: 'Hit type'
+    title: 'Hit type',
+    helpText:
+      'The type of homology: RBBH - reciprocal best blast hit, BBH - best blast hit'
   }
 ];
 
