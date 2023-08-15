@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
@@ -35,11 +36,18 @@ import GeneHomology from 'src/content/app/entity-viewer/gene-view/components/gen
 
 import styles from './GeneRelationships.scss';
 
+const shouldDisableTab = (tabName: View) => {
+  return (
+    isEnvironment([Environment.PRODUCTION]) || // so far, we aren't showing any gene relationships tabs in production
+    tabName !== View.HOMOLOGY
+  ); // in non-production environments, homology tab should be enabled
+};
+
 const tabsData = [...GeneViewTabMap.values()]
   .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
   .map((item) => ({
     title: item.secondaryTab,
-    isDisabled: item.view !== View.HOMOLOGY // TODO Use real data for tab availability if it becomes available
+    isDisabled: shouldDisableTab(item.view) // TODO Use real data for tab availability if it becomes available
   })) as Tab[];
 
 const tabClassNames = {

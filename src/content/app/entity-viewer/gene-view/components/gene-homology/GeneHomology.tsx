@@ -30,7 +30,8 @@ const GeneHomology = () => {
   if (isFetching) {
     return <CircleLoader />;
   } else if (isError) {
-    return 'Failed to fetch homology data';
+    // might be smarter, and show this message only in 404-like errors; while showing something like 'Failed to fetch homology data' otherwise
+    return 'No data';
   } else if (!currentData) {
     return null; // this should not happen; but will make typescript happy
   }
