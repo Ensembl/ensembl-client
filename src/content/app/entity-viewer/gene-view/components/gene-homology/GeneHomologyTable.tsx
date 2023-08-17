@@ -61,8 +61,8 @@ const prepareTableData = (homologies: GeneHomology[]) => {
       homology.target_genome.scientific_name,
       homology.target_genome.assembly.name,
       homology.target_genome.assembly.accession_id,
-      homology.stats.target_percent_id,
-      homology.stats.target_percent_coverage,
+      homology.stats.query_percent_id, // using query instead of the target here is intentional
+      homology.stats.query_percent_coverage, // using query instead of the target here is intentional
       homology.target_gene.symbol ?? '-',
       {
         data: {
