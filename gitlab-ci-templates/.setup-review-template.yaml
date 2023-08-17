@@ -93,3 +93,5 @@
     - kubectl apply -f ensembl_client_node_service.yaml
     - kubectl apply -f ensembl_client_node_ingress.yaml
     - kubectl apply -f ensembl_client_node_cm.yaml
+    # metadata api ingress
+    - kubectl apply -f metadata_api_ingress.yaml
