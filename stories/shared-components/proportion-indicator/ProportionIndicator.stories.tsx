@@ -19,11 +19,11 @@ import React, { useState, type FormEvent } from 'react';
 import {
   CircularPercentageIndicator,
   CircularFractionIndicator
-} from 'src/shared/components/fraction-indicator/CircularProportionIndicator';
+} from 'src/shared/components/proportion-indicator/CircularProportionIndicator';
 import {
   LinearPercentageIndicator,
   LinearFractionIndicator
-} from 'src/shared/components/fraction-indicator/LinearProportionIndicator';
+} from 'src/shared/components/proportion-indicator/LinearProportionIndicator';
 
 import styles from './ProportionIndicator.stories.scss';
 

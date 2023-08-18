@@ -20,8 +20,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { Link } from 'react-router-dom';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
-import { CircularPercentageIndicator } from 'src/shared/components/fraction-indicator/CircularProportionIndicator';
-import { LinearPercentageIndicator } from 'src/shared/components/fraction-indicator/LinearProportionIndicator';
+import { CircularPercentageIndicator } from 'src/shared/components/proportion-indicator/CircularProportionIndicator';
+import { LinearPercentageIndicator } from 'src/shared/components/proportion-indicator/LinearProportionIndicator';
 
 import type { GeneHomology } from 'src/content/app/entity-viewer/state/api/types/geneHomology';
 import {
