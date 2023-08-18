@@ -36,7 +36,8 @@ export enum View {
   GENE_EXPRESSION = 'gene_expression',
   GENE_ONTOLOGY = 'gene_ontology',
   GENE_PATHWAYS = 'gene_pathways',
-  ORTHOLOGUES = 'orthologues',
+  HOMOLOGY = 'homology',
+  GENE_TREES = 'gene_trees',
   GENE_FAMILIES = 'gene_families',
   GENE_PANELS = 'gene_panels'
 }
@@ -57,7 +58,8 @@ export enum GeneFunctionTabName {
 }
 
 export enum GeneRelationshipsTabName {
-  ORTHOLOGUES = 'Orthologues',
+  HOMOLOGY = 'Homology',
+  GENE_TREES = 'Gene trees',
   GENE_FAMILIES = 'Gene families',
   GENE_PANELS = 'Gene panels'
 }
@@ -105,10 +107,10 @@ GeneViewTabMap.set(View.GENE_PATHWAYS, {
   primaryTab: GeneViewTabName.GENE_FUNCTION,
   secondaryTab: GeneFunctionTabName.GENE_PATHWAYS
 });
-GeneViewTabMap.set(View.ORTHOLOGUES, {
-  view: View.ORTHOLOGUES,
+GeneViewTabMap.set(View.HOMOLOGY, {
+  view: View.HOMOLOGY,
   primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-  secondaryTab: GeneRelationshipsTabName.ORTHOLOGUES
+  secondaryTab: GeneRelationshipsTabName.HOMOLOGY
 });
 GeneViewTabMap.set(View.GENE_FAMILIES, {
   view: View.GENE_FAMILIES,

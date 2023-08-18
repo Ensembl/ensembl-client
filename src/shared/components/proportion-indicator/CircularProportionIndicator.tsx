@@ -27,7 +27,6 @@ type Props = {
 };
 
 const defaultValueFormatOptions = {
-  minimumFractionDigits: 2,
   maximumFractionDigits: 2
 };
 

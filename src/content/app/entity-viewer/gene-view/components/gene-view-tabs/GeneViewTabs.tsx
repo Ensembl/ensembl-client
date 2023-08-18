@@ -68,7 +68,7 @@ const GeneViewTabs = (props: Props) => {
     if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
       view = selectedTabViews?.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
-      view = selectedTabViews?.geneRelationshipsTab || View.ORTHOLOGUES;
+      view = selectedTabViews?.geneRelationshipsTab || View.HOMOLOGY;
     }
 
     trackTabChange(selectedTabName);

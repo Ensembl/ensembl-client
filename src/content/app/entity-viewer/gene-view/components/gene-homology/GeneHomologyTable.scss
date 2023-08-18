@@ -1,0 +1,13 @@
+@import 'src/styles/common';
+
+.table {
+  margin-left: $standard-gutter;
+}
+
+.scientificName {
+  font-style: italic;
+}
+
+.assembly {
+  font-weight: $light;
+}
