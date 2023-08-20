@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import type { Pick2 } from 'ts-multipick';
 
 import VariantColour from 'src/content/app/genome-browser/components/drawer/components/variant-colour/VariantColour';
 
@@ -22,8 +23,16 @@ import type { Variant } from 'src/shared/types/variation-api/variant';
 
 import styles from './VariantConsequence.scss';
 
+type MinimumPredictionResultData = Pick<
+  Variant['prediction_results'][number],
+  'result'
+> &
+  Pick2<Variant['prediction_results'][number], 'analysis_method', 'tool'>;
+
 type Props = {
-  variant: Pick<Variant, 'prediction_results'>;
+  variant: {
+    prediction_results: MinimumPredictionResultData[];
+  };
   withColour?: boolean;
 };
 

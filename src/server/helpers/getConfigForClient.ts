@@ -29,7 +29,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     genomeBrowserBackendBaseUrl:
       process.env.GENOME_BROWSER_BACKEND_BASE_URL ?? '/api/browser/data',
     toolsApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/tools',
-    searchApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/search'
+    searchApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/search',
+    variationApiUrl:
+      process.env.VARIATION_GRAPHQL_API_URL ?? '/api/graphql/variation'
   };
 };
 

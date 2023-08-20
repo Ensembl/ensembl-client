@@ -202,19 +202,22 @@ const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
   let dbElement;
 
   if (!primary_source.url) {
-    dbElement = <span>{primary_source.name}</span>;
+    dbElement = <span>{primary_source.source.name}</span>;
   } else {
     dbElement = (
-      <ExternalLink to={primary_source.url} linkText={primary_source.name} />
+      <ExternalLink
+        to={primary_source.url}
+        linkText={primary_source.source.name}
+      />
     );
   }
 
   return (
     <div>
       {dbElement}
-      {primary_source.release && (
+      {primary_source.source.release && (
         <span className={classNames(styles.light, styles.withSpaceLeft)}>
-          Release {primary_source.release}
+          Release {primary_source.source.release}
         </span>
       )}
     </div>

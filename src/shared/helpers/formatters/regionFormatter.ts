@@ -16,13 +16,17 @@
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { FocusObjectLocation } from 'src/shared/types/focus-object/focusObjectTypes';
+type Location = {
+  chromosome: string;
+  start: number;
+  end?: number;
+};
 
-export const getFormattedLocation = (location: FocusObjectLocation) => {
+export const getFormattedLocation = (location: Location) => {
   const start = formatNumber(location.start);
-  const end = formatNumber(location.end);
+  const end = location.end ? formatNumber(location.end) : null;
 
-  if (start === end) {
+  if (end === null || start === end) {
     return `${location.chromosome}:${start}`;
   } else {
     return `${location.chromosome}:${start}-${end}`;

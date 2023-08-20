@@ -16,7 +16,6 @@
 
 import type { Slice } from '../core-api/slice';
 import type { ExternalReference } from '../core-api/externalReference';
-import type { ExternalDB } from '../core-api/externalDb';
 import type { OntologyTermMetadata } from '../core-api/metadata';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllele } from './variantAllele';
@@ -27,7 +26,7 @@ export type Variant = {
   slice: Slice;
   allele_type: OntologyTermMetadata;
   alternative_names: ExternalReference[];
-  primary_source: ExternalDB;
+  primary_source: ExternalReference;
   prediction_results: VariantPredictionResult[];
   alleles: VariantAllele[];
 };

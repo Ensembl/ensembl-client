@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, type ComponentProps } from 'react';
 import classNames from 'classnames';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
@@ -26,7 +26,6 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
-import type { Variant } from 'src/shared/types/variation-api/variant';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -74,8 +73,16 @@ const VariantSummaryWrapper = (props: {
   );
 };
 
+export type VariantForSummaryStrip = ComponentProps<
+  typeof VariantConsequence
+>['variant'] &
+  ComponentProps<typeof VariantLocation>['variant'] & {
+    name: string;
+    alleles: ComponentProps<typeof VariantAllelesSequences>['alleles'];
+  };
+
 const VariantSummaryStrip = (props: {
-  variant: Variant;
+  variant: VariantForSummaryStrip;
   isGhosted?: boolean;
   display: Display;
 }) => {
@@ -95,14 +102,14 @@ const VariantSummaryStrip = (props: {
   return <div className={stripClasses}>{content}</div>;
 };
 
-const MinimalContent = ({ variant }: { variant: Variant }) => (
+const MinimalContent = ({ variant }: { variant: VariantForSummaryStrip }) => (
   <>
     <span className={styles.featureSummaryStripLabel}>Variant</span>
     <span className={styles.featureNameEmphasized}>{variant.name}</span>
   </>
 );
 
-const FullContent = ({ variant }: { variant: Variant }) => {
+const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
   const mostSevereConsequence = (
     <VariantConsequence variant={variant} withColour={false} />
   );

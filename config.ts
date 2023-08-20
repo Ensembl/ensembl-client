@@ -28,6 +28,7 @@ export type BaseApiUrls = {
   tracksApiBaseUrl: string;
   toolsApiBaseUrl: string;
   searchApiBaseUrl: string;
+  variationApiUrl: string;
 };
 
 export type PublicKeys = {
@@ -43,7 +44,8 @@ const defaultApiUrls: BaseApiUrls = {
   refgetBaseUrl: '/api/refget',
   tracksApiBaseUrl: '/api/tracks',
   toolsApiBaseUrl: '/api/tools',
-  searchApiBaseUrl: '/api/search'
+  searchApiBaseUrl: '/api/search',
+  variationApiUrl: '/api/graphql/variation'
 };
 
 const defaultKeys = {
@@ -66,6 +68,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl:
       process.env.SSR_DOCS_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.docsBaseUrl}`,
+    variationApiUrl:
+      process.env.SSR_VARIATION_GRAPHQL_API_URL ??
+      `${defaultServerHost}${defaultApiUrls.variationApiUrl}`,
     metadataApiBaseUrl: defaultApiUrls.metadataApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { Source } from './source';
+import { ExternalDB } from './externalDb';
 
 export type ExternalReference = {
   accession_id: string;
   name: string;
   description: string | null;
   url: string | null;
-  source: Source;
+  source: ExternalDB;
 };
 
 export type ExternalReferenceWithoutSource = Omit<ExternalReference, 'source'>;
 
 export type ExternalReferencesGroup = {
-  source: Source;
+  source: ExternalDB;
   references: ExternalReferenceWithoutSource[];
 };
