@@ -70,7 +70,7 @@ const prepareTableData = (homologies: GeneHomology[]) => {
           geneId: homology.target_gene.stable_id
         }
       },
-      homology.subtype
+      homology.subtype.label
     ];
   });
 };
