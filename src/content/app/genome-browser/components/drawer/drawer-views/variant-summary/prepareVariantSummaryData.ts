@@ -16,7 +16,7 @@
 
 import memoize from 'lodash/memoize';
 
-import type { Variant } from 'src/shared/types/variation-api/variant';
+import type { VariantDetails } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
 type PreparedVariantSummaryData = {
   ancestralAllele?: string;
@@ -37,7 +37,7 @@ type PreparedVariantSummaryData = {
   gerpScore?: number;
 };
 
-const prepareVariantSummaryData = (variant: Variant) => {
+const prepareVariantSummaryData = (variant: VariantDetails) => {
   const variantSummaryData: Record<string, unknown> = {};
 
   addVariantPredictions(variant, variantSummaryData);
@@ -55,7 +55,7 @@ const prepareVariantSummaryData = (variant: Variant) => {
 };
 
 const checkPhenotypeAssociations = (
-  variantAllele: Variant['alleles'][0],
+  variantAllele: VariantDetails['alleles'][number],
   store: Record<string, unknown>
 ) => {
   if (variantAllele.phenotype_assertions?.length) {
@@ -64,7 +64,7 @@ const checkPhenotypeAssociations = (
 };
 
 const addVariantPredictions = (
-  variant: Variant,
+  variant: VariantDetails,
   store: Record<string, unknown>
 ) => {
   for (const prediction of variant.prediction_results) {
@@ -82,7 +82,7 @@ const addVariantPredictions = (
 
 // There could be 1-20 VariantAlleles and 0-50 PopulationAlleleFrequency records for each
 const addVariantAllelePopulationFrequencyData = (
-  variantAllele: Variant['alleles'][0],
+  variantAllele: VariantDetails['alleles'][number],
   store: Record<string, unknown>
 ) => {
   for (const populationFrequency of variantAllele.population_frequencies) {
@@ -102,7 +102,7 @@ const addVariantAllelePopulationFrequencyData = (
 };
 
 const addVariantAllelePredictions = (
-  variantAllele: Variant['alleles'][0],
+  variantAllele: VariantDetails['alleles'][number],
   store: Partial<PreparedVariantSummaryData>
 ) => {
   store.caddScores = store.caddScores ?? [];

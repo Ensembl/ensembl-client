@@ -31,8 +31,11 @@ import {
   transcriptZmenuQuery,
   type TranscriptZmenuQueryResult
 } from './queries/transcriptInZmenuQuery';
+import {
+  variantDetailsQuery,
+  type VariantQueryResult
+} from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
-import { type VariantQueryResult } from './queries/variantQuery'; // will add a real query when variation backend is ready
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
@@ -90,8 +93,14 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
 
     // Maybe move variation endpoints queried from the genome browser into a separate file?
     gbVariant: builder.query<VariantQueryResult, VariantQueryParams>({
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      queryFn: async (params) => {
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantDetailsQuery,
+        variables: params
+      }),
+      transformResponse: async (data: VariantQueryResult, _, params) => {
+        // This is a temporary method
+        // to add the missing data to the response while the api is not providing it.
         const { variantId } = params;
         const knownVariantIds = ['rs699', 'rs71197234', 'rs202155613'];
 
@@ -99,16 +108,36 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
           variantId.includes(id)
         );
 
-        const variantIdToImport = foundVariantId || knownVariantIds[1];
+        if (foundVariantId) {
+          const variantDataModule = await import(
+            `tests/fixtures/variation/${foundVariantId}`
+          );
+          const importedVariantData = variantDataModule.default as Variant;
 
-        const variantDataModule = await import(
-          `tests/fixtures/variation/${variantIdToImport}`
-        );
-        const variantData = variantDataModule.default as Variant;
+          data.variant.prediction_results =
+            importedVariantData.prediction_results;
+          data.variant.alleles.forEach((allele, index) => {
+            const importedVariantAllele = importedVariantData.alleles[index];
+            allele.phenotype_assertions =
+              importedVariantAllele.phenotype_assertions ?? [];
+            allele.population_frequencies =
+              importedVariantAllele.population_frequencies ?? [];
+            allele.prediction_results =
+              importedVariantAllele.prediction_results ?? [];
+          });
+        } else {
+          data.variant.prediction_results = [];
 
-        return {
-          data: { variant: variantData }
-        };
+          data.variant.alleles.forEach((allele) => {
+            allele.phenotype_assertions = [];
+            allele.population_frequencies = [];
+            allele.prediction_results = [];
+          });
+        }
+
+        data.variant.alternative_names = []; // TODO Agree with the Variation team what the value of alternative names should be if none exist
+
+        return data;
       }
     })
   })

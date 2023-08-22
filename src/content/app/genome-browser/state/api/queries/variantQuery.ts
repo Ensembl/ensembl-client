@@ -14,16 +14,111 @@
  * limitations under the License.
  */
 
+import { gql } from 'graphql-request';
+import { Pick2, Pick3 } from 'ts-multipick';
+
 import type { Variant } from 'src/shared/types/variation-api/variant';
+import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
 
 /**
- * NOTE: this file will need rework when we start querying real variation data:
- * - we will have to add the actual graphql queries
- * - we might want to split it into several queries (a smaller VariantSummary query and a larger VariantDetails query)
- *
- * Meanwhile, I am using this file to define the type of the expected response.
+ * TODO:
+ * - add prediction_results field to the variant query, when it is ready
+ * - add prediction_results field to variant allele, when it is ready
+ * - add population_frequencies field to variant allele, when it is ready
+ * - add phenotype_assertions field to variant allele, when it is ready
  */
+export const variantDetailsQuery = gql`
+  query VariantDetails($genomeId: String!, $variantId: String!) {
+    variant(by_id: { genome_id: $genomeId, variant_id: $variantId }) {
+      name
+      alternative_names {
+        name
+        url
+      }
+      slice {
+        location {
+          start
+          end
+        }
+        region {
+          name
+        }
+      }
+      allele_type {
+        value
+      }
+      primary_source {
+        url
+        source {
+          name
+          release
+        }
+      }
+      alleles {
+        name
+        allele_type {
+          value
+        }
+        slice {
+          location {
+            start
+            end
+          }
+        }
+        allele_sequence
+        reference_sequence
+      }
+    }
+  }
+`;
+
+type VariantDetailsAllele = Pick<
+  VariantAllele,
+  'name' | 'allele_sequence' | 'reference_sequence'
+> &
+  Pick2<VariantAllele, 'allele_type', 'value'> &
+  Pick3<VariantAllele, 'slice', 'location', 'start' | 'end'> & {
+    population_frequencies: VariantDetailsAllelePopulationFrequency[];
+    prediction_results: VariantDetailsAllelePredictionResult[];
+    phenotype_assertions: VariantDetailsAllelePhenotypeAssertion[];
+  };
+
+type VariantDetailsAllelePopulationFrequency = Pick<
+  VariantAllele['population_frequencies'][number],
+  'is_minor_allele' | 'is_hpmaf' | 'allele_frequency'
+>;
+
+type VariantDetailsAllelePhenotypeAssertion = Pick<
+  VariantAllele['phenotype_assertions'][number],
+  'feature'
+>; // it doesn't really matter what we request; the point is to check whether the array of assertions will be empty
+
+type VariantDetailsPredictionResult = Pick<
+  Variant['prediction_results'][number],
+  'result' | 'score'
+> &
+  Pick2<Variant['prediction_results'][number], 'analysis_method', 'tool'>;
+
+type VariantDetailsAllelePredictionResult = Pick<
+  VariantAllele['prediction_results'][number],
+  'result' | 'score'
+> &
+  Pick2<VariantAllele['prediction_results'][number], 'analysis_method', 'tool'>;
+
+export type VariantDetails = Pick<Variant, 'name'> &
+  Pick3<Variant, 'slice', 'location', 'start' | 'end'> &
+  Pick3<Variant, 'slice', 'region', 'name'> &
+  Pick2<Variant, 'allele_type', 'value'> &
+  Pick2<Variant, 'primary_source', 'url'> &
+  Pick3<Variant, 'primary_source', 'source', 'name' | 'release'> & {
+    alternative_names: Pick<
+      Variant['alternative_names'][number],
+      'name' | 'url'
+    >[];
+    prediction_results: VariantDetailsPredictionResult[];
+    alleles: VariantDetailsAllele[];
+  };
 
 export type VariantQueryResult = {
-  variant: Variant;
+  variant: VariantDetails;
 };

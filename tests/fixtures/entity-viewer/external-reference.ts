@@ -34,7 +34,9 @@ export const createExternalReference = (
     source: {
       name: faker.lorem.word(),
       id: faker.lorem.word(),
-      url: faker.lorem.word()
+      url: faker.lorem.word(),
+      description: null,
+      release: null
     }
   };
 
