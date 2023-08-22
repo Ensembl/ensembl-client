@@ -60,7 +60,7 @@
   font-family: 'IBM Plex Mono';
   font-style: normal;
   font-weight: 300;
-  src: local('IBM Plex Mono'), local('IBMPlexMono'),
+  src: local('IBM Plex Mono Light'), local('IBMPlexMono-Light'),
     url('../../static/fonts/ibm-plex-mono/IBMPlexMono-Light-Latin1.woff2')
       format('woff2'),
     url('../../static/fonts/ibm-plex-mono/IBMPlexMono-Light-Latin1.woff')
@@ -82,7 +82,7 @@
   font-family: 'IBM Plex Mono';
   font-style: normal;
   font-weight: 600;
-  src: local('IBM Plex Mono'), local('IBMPlexMono'),
+  src: local('IBM Plex Mono SmBld'), local('IBMPlexMono-SmBld'),
     url('../../static/fonts/ibm-plex-mono/IBMPlexMono-SemiBold-Latin1.woff2')
       format('woff2'),
     url('../../static/fonts/ibm-plex-mono/IBMPlexMono-SemiBold-Latin1.woff')
