@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { ValueSetMetadata } from 'src/shared/types/core-api/metadata';
+
 type GenomeInHomology = {
   genome_id: string;
-  common_name: string;
+  common_name: string | null;
   scientific_name: string;
   assembly: {
     accession_id: string;
@@ -45,6 +47,7 @@ export type GeneHomology = {
   query_genome: GenomeInHomology;
   query_gene: GeneInHomology;
   type: 'homology';
-  subtype: string;
+  release_version: number;
+  subtype: ValueSetMetadata;
   stats: GeneHomologyStatistics;
 };
