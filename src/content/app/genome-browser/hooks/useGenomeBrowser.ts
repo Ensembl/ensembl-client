@@ -28,18 +28,34 @@ import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/Ge
 
 import { useAppSelector } from 'src/store';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 
-const useGenomeBrowser = () => {
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+const useMandatoryGenomeBrowserContext = () => {
   const genomeBrowserContext = useContext(GenomeBrowserContext);
-
   if (!genomeBrowserContext) {
     throw new Error(
       'useGenomeBrowser must be used with GenomeBrowserContext Provider'
     );
   }
+
+  return genomeBrowserContext;
+};
+
+const useGenomeBrowser = () => {
+  const genomeBrowserContext = useMandatoryGenomeBrowserContext();
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+
+  const { currentData: trackCategories } = useGenomeTracksQuery(
+    activeGenomeId ?? '',
+    {
+      skip: !activeGenomeId
+    }
+  );
+
+  const trackIdToPathMap = getTrackIdToTrackPathMap(trackCategories ?? []);
 
   const {
     genomeBrowser,
@@ -130,10 +146,11 @@ const useGenomeBrowser = () => {
       return;
     }
     const { trackId, isEnabled } = params;
+    const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
 
     genomeBrowserCommands.toggleTrack({
       genomeBrowser,
-      trackId,
+      trackPath,
       isEnabled
     });
   };
@@ -147,11 +164,14 @@ const useGenomeBrowser = () => {
     if (!genomeBrowser) {
       return;
     }
+    const { trackId, setting, isEnabled } = params;
+    const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
+
     genomeBrowserCommands.toggleTrackSetting({
       genomeBrowser,
-      trackId: params.trackId,
-      setting: params.setting,
-      isEnabled: params.isEnabled
+      trackPath,
+      setting,
+      isEnabled
     });
   };
 
@@ -181,6 +201,15 @@ const useGenomeBrowser = () => {
     genomeBrowserService,
     zmenus
   };
+};
+
+const getTrackIdToTrackPathMap = (trackCategories: GenomeTrackCategory[]) => {
+  const tracks = trackCategories.flatMap(({ track_list }) => track_list);
+
+  return tracks.reduce((accumulator, track) => {
+    accumulator[track.track_id] = track.trigger;
+    return accumulator;
+  }, {} as Record<string, string[]>);
 };
 
 export default useGenomeBrowser;

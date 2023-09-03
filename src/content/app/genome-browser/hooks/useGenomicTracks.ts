@@ -101,10 +101,11 @@ const prepareTrackIdsList = (
 ): TrackIdsList => {
   const trackIdsList = trackGroups
     .flatMap(({ track_list }) => track_list)
-    .map(({ track_id }) => {
+    .map(({ track_id, on_by_default }) => {
       const track = trackSettings[track_id];
       const isVisibleTrack =
-        (track?.settings as { isVisible?: boolean })?.isVisible ?? true;
+        (track?.settings as { isVisible?: boolean })?.isVisible ??
+        on_by_default;
       return {
         trackId: track_id,
         isEnabled: isVisibleTrack
