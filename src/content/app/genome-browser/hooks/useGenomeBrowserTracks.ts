@@ -181,13 +181,17 @@ const prepareTrackSettings = ({
 
   trackCategories.forEach((category) => {
     category.track_list.forEach((track) => {
-      const { track_id } = track;
+      const { track_id, on_by_default } = track;
       const trackType = getTrackType(track_id);
 
       if (trackType === TrackType.GENE) {
-        defaultTrackSettings[track_id] = buildDefaultGeneTrack(track_id);
+        const trackSettings = buildDefaultGeneTrack(track_id);
+        trackSettings.settings.isVisible = on_by_default;
+        defaultTrackSettings[track_id] = trackSettings;
       } else {
-        defaultTrackSettings[track_id] = buildDefaultRegularTrack(track_id);
+        const trackSettings = buildDefaultRegularTrack(track_id);
+        trackSettings.settings.isVisible = on_by_default;
+        defaultTrackSettings[track_id] = trackSettings;
       }
     });
   });

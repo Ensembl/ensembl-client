@@ -59,26 +59,26 @@ export const setBrowserLocation = (payload: {
 
 export const toggleTrack = (payload: {
   genomeBrowser: EnsemblGenomeBrowser;
-  trackId: string;
+  trackPath: string[];
   isEnabled: boolean;
 }) => {
-  const { genomeBrowser, trackId, isEnabled } = payload;
-  genomeBrowser.switch(['track', trackId], isEnabled);
+  const { genomeBrowser, trackPath, isEnabled } = payload;
+  genomeBrowser.switch(trackPath, isEnabled);
 };
 
 // NOTE: this method can only handle boolean flags
 export const toggleTrackSetting = (payload: {
   genomeBrowser: EnsemblGenomeBrowser;
-  trackId: string;
+  trackPath: string[];
   setting: string;
   isEnabled: boolean;
 }) => {
-  const { genomeBrowser, trackId, setting, isEnabled } = payload;
+  const { genomeBrowser, trackPath, setting, isEnabled } = payload;
 
-  if (trackId === 'focus-variant') {
+  if (trackPath.includes('focus-variant')) {
     toggleFocusVariantTrackSetting(payload);
   } else {
-    genomeBrowser.switch(['track', trackId, setting], isEnabled);
+    genomeBrowser.switch([...trackPath, setting], isEnabled);
   }
 };
 

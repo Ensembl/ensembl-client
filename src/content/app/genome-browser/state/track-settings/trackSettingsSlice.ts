@@ -104,29 +104,6 @@ export const defaultTrackSettingsForGenome: TrackSettingsForGenome = {
   settingsForIndividualTracks: {}
 };
 
-export const saveTrackSettingsForGenome = createAsyncThunk(
-  'genome-browser-track-settings/save-track-settings-for-genome',
-  async (genomeId: string, thunkAPI) => {
-    const state = thunkAPI.getState() as RootState;
-    const trackSettingsForGenome = getAllTrackSettingsForGenome(
-      state,
-      genomeId
-    );
-    if (!trackSettingsForGenome) {
-      return; // shouldn't happen
-    }
-
-    const trackSettingsArray = Object.values(
-      trackSettingsForGenome.settingsForIndividualTracks
-    );
-
-    await trackSettingsStorageService.updateTrackSettingsForGenome(
-      genomeId,
-      trackSettingsArray
-    );
-  }
-);
-
 export const updateTrackSettingsAndSave = createAsyncThunk(
   'genome-browser-track-settings/update-track-settings-and-save',
   async (
