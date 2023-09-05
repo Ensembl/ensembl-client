@@ -17,6 +17,7 @@
 import React from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { buildFocusVariantId } from 'src/shared/helpers/focusObjectHelpers';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -56,9 +57,16 @@ const VariantZmenu = (props: Props) => {
     variantName: variantMetadata.id
   });
 
+  const locationForVariant = calculateLocation(
+    variantMetadata.region_name,
+    variantMetadata.start,
+    variantMetadata.end
+  );
+
   const linkToVariantInGenomeBrowser = urlFor.browser({
     genomeId: genomeIdForUrl,
-    focus: variantId
+    focus: variantId,
+    location: locationForVariant
   });
 
   return (
@@ -80,6 +88,41 @@ const VariantZmenu = (props: Props) => {
       )}
     </>
   );
+};
+
+/**
+ * Consider that the genome browser shows the detailed zoomed-in view for variants
+ * at scales 2**1 to 2**6 base pairs. 2**6 is 64; and when the genome browser zooms out to this point,
+ * it switches to the zoomed-out view.
+ */
+const MAX_NUCLEOTIDES_PER_VIEWPORT = 64 - 2;
+const MIN_NUCLEOTIDES_PER_VIEWPORT = 32;
+
+const calculateLocation = (
+  regionName: string,
+  variantStart: number,
+  variantEnd: number
+) => {
+  const variantLength = variantEnd - variantStart;
+  const variantMidpoint = variantStart + Math.ceil(variantLength / 2);
+
+  let start: number;
+  let end: number;
+
+  if (variantLength < MIN_NUCLEOTIDES_PER_VIEWPORT) {
+    start = variantMidpoint - MIN_NUCLEOTIDES_PER_VIEWPORT / 2;
+    end = variantMidpoint + MIN_NUCLEOTIDES_PER_VIEWPORT / 2;
+  } else if (variantLength <= MAX_NUCLEOTIDES_PER_VIEWPORT) {
+    start = variantMidpoint - MAX_NUCLEOTIDES_PER_VIEWPORT / 2;
+    end = variantMidpoint + MAX_NUCLEOTIDES_PER_VIEWPORT / 2;
+  } else {
+    const viewportSize = variantLength / 0.7; // variant should take 70% of the viewport
+    const halfViewportSize = Math.ceil(viewportSize / 2);
+    start = Math.max(variantMidpoint - halfViewportSize, 0);
+    end = variantMidpoint + halfViewportSize; // hopefully, this won't exceed region length; might be a problem for circular chromosomes
+  }
+
+  return getChrLocationStr([regionName, start, end]);
 };
 
 export default VariantZmenu;
