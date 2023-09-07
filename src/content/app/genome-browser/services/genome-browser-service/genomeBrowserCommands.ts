@@ -45,6 +45,9 @@ export const setBrowserLocation = (payload: {
   const { genomeBrowser, regionName, start, end, genomeId, focus } = payload;
   genomeBrowser.set_stick(`${genomeId}:${regionName}`);
 
+  genomeBrowser.goto(start, end);
+  genomeBrowser.wait();
+
   if (focus) {
     setFocus({
       genomeBrowser,
@@ -53,8 +56,6 @@ export const setBrowserLocation = (payload: {
       focusType: focus.type
     });
   }
-
-  genomeBrowser.goto(start, end);
 };
 
 export const toggleTrack = (payload: {
