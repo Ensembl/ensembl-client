@@ -92,11 +92,12 @@ const VariantZmenu = (props: Props) => {
 
 /**
  * Consider that the genome browser shows the detailed zoomed-in view for variants
- * at scales 2**1 to 2**6 base pairs. 2**6 is 64; and when the genome browser zooms out to this point,
+ * at scales between 2**1 and 2**6 base pairs. 2**6 is 64; and when the genome browser zooms out to this point,
  * it switches to the zoomed-out view.
  */
-const MAX_NUCLEOTIDES_PER_VIEWPORT = 64 - 2;
-const MIN_NUCLEOTIDES_PER_VIEWPORT = 32;
+const VARIANT_DETAILS_MAX_NUCLEOTIDES = 2 ** 6 - 1; // variant details program of the genome browser shows up to 63 nucleotides
+const MAX_NUCLEOTIDES_PER_VIEWPORT = VARIANT_DETAILS_MAX_NUCLEOTIDES - 2; // to leave at least one nucleotide on either side
+const MIN_NUCLEOTIDES_PER_VIEWPORT = 32; // genome browser doesn't zoom past 32 nucleotides in viewport
 
 const calculateLocation = (
   regionName: string,
