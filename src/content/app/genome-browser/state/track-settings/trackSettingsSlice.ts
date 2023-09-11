@@ -60,6 +60,12 @@ export type GeneTrack = {
   settings: GeneTrackSettings;
 };
 
+export type VariantTrack = {
+  id: string;
+  trackType: TrackType.VARIANT;
+  settings: VariantTrackSettings;
+};
+
 export type FocusGeneTrack = {
   id: string;
   trackType: TrackType.FOCUS_GENE;
@@ -80,6 +86,7 @@ export type RegularTrack = {
 
 export type TrackSettings =
   | GeneTrack
+  | VariantTrack
   | FocusGeneTrack
   | FocusVariantTrack
   | RegularTrack;

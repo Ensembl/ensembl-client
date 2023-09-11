@@ -22,11 +22,11 @@ import GeneTrackSettings from './track-settings-views/GeneTrackSettings';
 import VariantTrackSettings from './track-settings-views/VariantTrackSettings';
 import RegularTrackSettings from './track-settings-views/RegularTrackSettings';
 
-import { getTrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
 type Props = {
   trackId: string;
+  trackType: TrackType;
   onOutsideClick: () => void;
 };
 
@@ -35,6 +35,7 @@ const getTrackSettingsPanelComponent = (trackType: TrackType) => {
     case TrackType.GENE:
     case TrackType.FOCUS_GENE:
       return GeneTrackSettings;
+    case TrackType.VARIANT:
     case TrackType.FOCUS_VARIANT:
       return VariantTrackSettings;
     case TrackType.REGULAR:
@@ -43,8 +44,7 @@ const getTrackSettingsPanelComponent = (trackType: TrackType) => {
 };
 
 export const TrackSettingsPanel = (props: Props) => {
-  const { trackId } = props;
-  const trackType = getTrackType(trackId); // FIXME: probably should use a redux selector to get the type of the track given genome id and track id
+  const { trackId, trackType } = props;
 
   const trackSettingsRef = useRef<HTMLDivElement | null>(null);
 

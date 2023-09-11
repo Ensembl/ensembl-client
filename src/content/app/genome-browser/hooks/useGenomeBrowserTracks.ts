@@ -35,12 +35,12 @@ import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/t
 
 import {
   setInitialTrackSettingsForGenome,
-  getTrackType,
   type TrackSettingsPerTrack
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   buildDefaultFocusGeneTrack,
   buildDefaultGeneTrack,
+  buildDefaultVariantTrack,
   buildDefaultRegularTrack,
   TrackType
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
@@ -181,18 +181,17 @@ const prepareTrackSettings = ({
 
   trackCategories.forEach((category) => {
     category.track_list.forEach((track) => {
-      const { track_id, on_by_default } = track;
-      const trackType = getTrackType(track_id);
+      const { track_id, on_by_default, type } = track;
 
-      if (trackType === TrackType.GENE) {
-        const trackSettings = buildDefaultGeneTrack(track_id);
-        trackSettings.settings.isVisible = on_by_default;
-        defaultTrackSettings[track_id] = trackSettings;
-      } else {
-        const trackSettings = buildDefaultRegularTrack(track_id);
-        trackSettings.settings.isVisible = on_by_default;
-        defaultTrackSettings[track_id] = trackSettings;
-      }
+      const trackSettings =
+        type === TrackType.GENE
+          ? buildDefaultGeneTrack(track_id)
+          : type === TrackType.VARIANT
+          ? buildDefaultVariantTrack(track_id)
+          : buildDefaultRegularTrack(track_id);
+
+      trackSettings.settings.isVisible = on_by_default;
+      defaultTrackSettings[track_id] = trackSettings;
     });
   });
   return defaultTrackSettings;

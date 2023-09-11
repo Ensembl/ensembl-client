@@ -21,6 +21,7 @@ import type {
   FocusVariantTrackSettings,
   RegularTrackSettings,
   GeneTrack,
+  VariantTrack,
   FocusVariantTrack,
   FocusGeneTrack,
   RegularTrack,
@@ -29,6 +30,7 @@ import type {
 
 export enum TrackType {
   GENE = 'gene',
+  VARIANT = 'variant',
   FOCUS_GENE = 'focus-gene',
   FOCUS_VARIANT = 'focus-variant',
   REGULAR = 'regular'
@@ -76,6 +78,12 @@ export const buildDefaultGeneTrack = (trackId: string): GeneTrack => ({
   id: trackId,
   trackType: TrackType.GENE,
   settings: getDefaultGeneTrackSettings()
+});
+
+export const buildDefaultVariantTrack = (trackId: string): VariantTrack => ({
+  id: trackId,
+  trackType: TrackType.VARIANT,
+  settings: getDefaultVariantTrackSettings()
 });
 
 export const buildDefaultFocusGeneTrack = (
