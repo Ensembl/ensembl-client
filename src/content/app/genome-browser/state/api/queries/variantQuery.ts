@@ -54,6 +54,13 @@ export const variantDetailsQuery = gql`
           release
         }
       }
+      prediction_results {
+        score
+        result
+        analysis_method {
+          tool
+        }
+      }
       alleles {
         name
         allele_type {
@@ -67,6 +74,21 @@ export const variantDetailsQuery = gql`
         }
         allele_sequence
         reference_sequence
+        phenotype_assertions {
+          feature
+        }
+        prediction_results {
+          score
+          result
+          analysis_method {
+            tool
+          }
+        }
+        population_frequencies {
+          is_minor_allele
+          is_hpmaf
+          allele_frequency
+        }
       }
     }
   }
