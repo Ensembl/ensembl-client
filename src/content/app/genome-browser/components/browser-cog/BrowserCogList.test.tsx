@@ -23,6 +23,7 @@ import MockGenomeBrowserService from 'tests/mocks/mockGenomeBrowserService';
 
 import { BrowserCogList } from './BrowserCogList';
 
+import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import * as displayedTracksSlice from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSlice';
 
 import createRootReducer from 'src/root/rootReducer';
@@ -59,7 +60,26 @@ const displayedTracks = [
 const renderComponent = () => {
   const initialState = {
     browser: {
-      displayedTracks
+      browserGeneral: {
+        ...browserGeneralSlice.defaultBrowserGeneralState,
+        activeGenomeId: 'human'
+      },
+      displayedTracks,
+      trackSettings: {
+        human: {
+          settingsForIndividualTracks: {
+            'gene-focus': {
+              trackType: 'gene'
+            },
+            contig: {
+              trackType: 'regular'
+            },
+            gc: {
+              trackType: 'regular'
+            }
+          }
+        }
+      }
     }
   };
 

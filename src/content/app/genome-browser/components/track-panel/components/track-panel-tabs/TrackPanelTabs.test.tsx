@@ -53,7 +53,8 @@ const mockTrackCategories = {
       types: ['Genomic'],
       track_list: [
         {
-          track_id: 'gene-pc-fwd'
+          track_id: 'gene-pc-fwd',
+          trigger: ['track', 'gene-pc-fwd']
         }
       ]
     }
