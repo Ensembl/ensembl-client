@@ -112,7 +112,7 @@ const VariantTrackSettings = (
           <div className={styles.toggleWrapper}>
             <label>Variant extent</label>
             <SlideToggle
-              isOn={trackSettings?.settings['show-extents'] ?? false}
+              isOn={trackSettings?.settings['show-extents'] ?? true}
               onChange={(isOn) => onSettingToggle('show-extents', isOn)}
               className={styles.slideToggle}
             />

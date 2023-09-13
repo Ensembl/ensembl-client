@@ -49,7 +49,7 @@ export const getDefaultVariantTrackSettings = (): VariantTrackSettings => ({
   'label-snv-alleles': false,
   'label-other-id': false,
   'label-other-alleles': false,
-  'show-extents': false,
+  'show-extents': true,
   name: false,
   isVisible: true
 });
