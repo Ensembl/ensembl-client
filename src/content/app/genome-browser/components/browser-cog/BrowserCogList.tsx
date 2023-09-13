@@ -19,6 +19,7 @@ import React, { useEffect, memo } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
+import { getAllTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId
@@ -38,6 +39,9 @@ import styles from './BrowserCogList.scss';
 export const BrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const focusObjectId = useAppSelector(getBrowserActiveFocusObjectId);
+  const allTrackSettings = useAppSelector((state) =>
+    getAllTrackSettingsForGenome(state, genomeId)
+  );
 
   const { genomeBrowserService } = useGenomeBrowser();
 
@@ -66,12 +70,14 @@ export const BrowserCogList = () => {
 
   const cogs = displayedTracks.map((track) => {
     const posStyle = { top: `${track.offsetTop}px` };
+    const trackType =
+      allTrackSettings?.settingsForIndividualTracks?.[track.id]?.trackType;
 
-    return (
+    return trackType ? (
       <div key={track.id} className={styles.browserCogOuter} style={posStyle}>
-        <BrowserCog trackId={track.id} />
+        <BrowserCog trackId={track.id} trackType={trackType} />
       </div>
-    );
+    ) : null;
   });
 
   return genomeBrowserService ? (

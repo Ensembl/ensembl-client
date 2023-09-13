@@ -93,6 +93,7 @@ const renderComponent = () => {
     <Provider store={store}>
       <TrackSettingsPanel
         trackId={selectedTrackId}
+        trackType={TrackType.GENE}
         onOutsideClick={jest.fn()}
       />
     </Provider>

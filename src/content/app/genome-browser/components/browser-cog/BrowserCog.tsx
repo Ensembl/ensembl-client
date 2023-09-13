@@ -25,10 +25,13 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import CogIcon from 'static/icons/icon_settings.svg';
 
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
+
 import styles from './BrowserCogList.scss';
 
 export type BrowserCogProps = {
   trackId: string;
+  trackType: TrackType;
 };
 
 const BrowserCog = (props: BrowserCogProps) => {
@@ -77,6 +80,7 @@ const BrowserCog = (props: BrowserCogProps) => {
             <animated.div key="trackSettingsPanel" style={style}>
               <TrackSettingsPanel
                 trackId={trackId}
+                trackType={props.trackType}
                 onOutsideClick={closeTrackSettingsPanel}
               />
             </animated.div>

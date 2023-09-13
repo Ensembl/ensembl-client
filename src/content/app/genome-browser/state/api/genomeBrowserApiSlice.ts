@@ -112,7 +112,25 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
         url: `${config.tracksApiBaseUrl}/track_categories/${genomeId}`
       }),
       transformResponse: (response: GenomeTrackCategoriesResponse) => {
-        return response.track_categories;
+        /**
+         * NOTE: the transformation inside of the map function below is rather disturbing,
+         * and should be replaced with something better.
+         * It is intended to fix the discrepancy between how the genome browser client identifies a track
+         * (it uses the path to the track that triggers the appropriate genome browser program),
+         * and how the track api identifies a track.
+         *
+         * Genome browser will report back to the browser chrome the tracks that it has enabled,
+         * using the ids from the track path (i.e. the last string in track trigger arrays).
+         * Browser chrome needs to be able to recognize these messages and to respond to them appropriately.
+         * For which purpose, we are here redefining track ids as the last string inside of track trigger array.
+         */
+        return response.track_categories.map((category) => ({
+          ...category,
+          track_list: category.track_list.map((track) => ({
+            ...track,
+            track_id: (track.track_id = track.trigger.at(-1) as string)
+          }))
+        }));
       }
     })
   })

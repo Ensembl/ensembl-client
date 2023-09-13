@@ -21,6 +21,8 @@ import { faker } from '@faker-js/faker';
 
 import BrowserCog, { BrowserCogProps } from './BrowserCog';
 
+import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
+
 jest.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
   <div id="trackSettingsPanel">TrackSettingsPanel</div>
 ));
@@ -38,7 +40,8 @@ describe('<BrowserCog />', () => {
   });
 
   const defaultProps: BrowserCogProps = {
-    trackId: faker.lorem.words()
+    trackId: faker.lorem.words(),
+    trackType: TrackType.GENE
   };
 
   describe('rendering', () => {

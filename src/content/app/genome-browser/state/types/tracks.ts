@@ -37,8 +37,11 @@ import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/
  * on the client.
  */
 
+type GenomicTrackType = 'gene' | 'variant' | 'regular';
+
 export type GenomicTrack = {
   track_id: string;
+  type: GenomicTrackType;
   trigger: string[]; // <-- see the note about triggers above
   label: string;
   colour: string; // NOTE: the backend will want to get rid of this field
