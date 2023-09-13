@@ -168,22 +168,10 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
          */
         return response.track_categories.map((category) => ({
           ...category,
-          track_list: category.track_list
-            .filter(
-              (track) =>
-                !track.trigger.some((str) =>
-                  [
-                    'variant-gnomad-genomes',
-                    'variant-gnomad-exomes',
-                    'variant-clinvar',
-                    'variant-gwas'
-                  ].includes(str)
-                )
-            ) // FIXME: remove
-            .map((track) => ({
-              ...track,
-              track_id: (track.track_id = track.trigger.at(-1) as string)
-            }))
+          track_list: category.track_list.map((track) => ({
+            ...track,
+            track_id: (track.track_id = track.trigger.at(-1) as string)
+          }))
         }));
       }
     })
