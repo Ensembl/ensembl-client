@@ -31,7 +31,7 @@ type Props = {
 
 const ConversationIcon = (props: Props) => {
   const dispatch = useDispatch();
-  const elementRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLButtonElement | null>(null);
 
   const onClick = () => {
     dispatch(toggleCommunicationPanel());
@@ -54,14 +54,14 @@ const ConversationIcon = (props: Props) => {
   return (
     <>
       <CommunicationPanel />
-      <div
-        className={styles.conversationIconWrapper}
+      <button
+        className={styles.communicationPanelToggle}
         onClick={onClick}
         ref={elementRef}
       >
         {props.withLabel && 'Contact us'}
         <ConversationImageIcon className={styles.conversationIcon} />
-      </div>
+      </button>
     </>
   );
 };
