@@ -33,7 +33,7 @@ $button-size: 57px;
   border: 1px solid $blue;
 
   img {
-    filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%); // magic from https://codepen.io/sosuke/pen/Pjoqqp
+    filter: var(--black-to-grey-species-icon-filter);
   }
 }
 

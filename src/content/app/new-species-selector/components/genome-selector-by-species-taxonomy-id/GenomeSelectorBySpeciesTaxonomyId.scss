@@ -29,7 +29,7 @@
 }
 
 .speciesImage img {
-  filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%);
+  filter: var(--black-to-grey-species-icon-filter);
 }
 
 .genomesCount {

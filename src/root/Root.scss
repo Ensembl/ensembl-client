@@ -1,3 +1,8 @@
+:root {
+  --black-to-grey-species-icon-filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%); // magic from https://codepen.io/sosuke/pen/Pjoqqp
+}
+
+
 .root {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
