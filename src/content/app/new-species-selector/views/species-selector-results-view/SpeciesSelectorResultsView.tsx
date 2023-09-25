@@ -65,7 +65,7 @@ const Content = () => {
     <GenomeSelectorBySearchQuery query={query} onSpeciesAdd={onSpeciesAdd} />
   ) : selectedPopularSpecies ? (
     <GenomeSelectorBySpeciesTaxonomyId
-      speciesTaxonomyId={selectedPopularSpecies.id}
+      speciesTaxonomyId={selectedPopularSpecies.species_taxonomy_id}
       speciesImageUrl={selectedPopularSpecies.image}
     />
   ) : null; // this last option should never happen
