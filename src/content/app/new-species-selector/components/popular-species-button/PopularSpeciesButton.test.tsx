@@ -75,7 +75,7 @@ describe('<PopularSpeciesButton />', () => {
       />
     );
 
-    const countPill = container.querySelector('.membersCount') as HTMLElement;
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
     expect(countPill).toBeTruthy();
     expect(countPill.innerHTML).toBe(`${humanData.genomes_count}`);
@@ -90,7 +90,7 @@ describe('<PopularSpeciesButton />', () => {
       />
     );
 
-    const countPill = container.querySelector('.membersCount') as HTMLElement;
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
     expect(countPill).toBeFalsy();
   });
