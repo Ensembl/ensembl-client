@@ -32,12 +32,7 @@ const useSelectableGenomesTable = (genomes: SpeciesSearchMatch[]) => {
     SpeciesSearchMatch[]
   >([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  // const dispatch = useAppDispatch();
   const selectableGenomes = useMarkedGenomes(genomes, preselectedGenomes);
-
-  // const onGenomeAdd = () => {
-  //   dispatch(commitSelectedSpeciesAndSave(preselectedGenomes));
-  // };
 
   const onGenomePreselectToggle = (
     genome: SpeciesSearchMatch,
@@ -60,7 +55,6 @@ const useSelectableGenomesTable = (genomes: SpeciesSearchMatch[]) => {
   return {
     genomes: selectableGenomes,
     preselectedGenomes,
-    // onGenomeAdd,
     onGenomePreselectToggle,
     isTableExpanded,
     onTableExpandToggle,
