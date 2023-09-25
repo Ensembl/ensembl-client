@@ -1,0 +1,50 @@
+@import 'src/styles/common';
+
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 60px 1fr;
+  grid-template-areas:
+    "top top"
+    ". table";
+  row-gap: 30px;
+  padding-left: $double-standard-gutter;
+}
+
+.top {
+  display: grid;
+  grid-area: top;
+  align-items: center;
+  justify-self: start;
+  grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] 1fr;
+  column-gap: $standard-gutter;
+}
+
+.speciesImage {
+  grid-column: species-image;
+  background-color: $white;
+  border: 1px solid $blue;
+  padding: 2px;
+}
+
+.speciesImage img {
+  filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%);
+}
+
+.genomesCount {
+  grid-column: genomes-count;
+  display: flex;
+  column-gap: 1rem;
+}
+
+.addButton {
+  grid-column: add-button;
+  margin-left: $standard-gutter;
+}
+
+.tableContainer {
+  grid-area: table;
+  overflow: auto;
+  padding-bottom: $global-padding-bottom;
+}

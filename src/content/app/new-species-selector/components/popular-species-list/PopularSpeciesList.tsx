@@ -19,10 +19,7 @@ import React from 'react';
 import { useAppDispatch } from 'src/store';
 
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
-import {
-  setQuery,
-  setPopularSpecies
-} from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+import { setPopularSpecies } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { useGetPopularSpeciesQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import PopularSpeciesButton from 'src/content/app/new-species-selector/components/popular-species-button/PopularSpeciesButton';
@@ -38,9 +35,8 @@ const PopularSpeciesList = () => {
   });
 
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
-    dispatch(setQuery(species.name));
     dispatch(setPopularSpecies(species));
-    dispatch(setModalView('species-search'));
+    dispatch(setModalView('popular-species-genomes'));
   };
 
   return (
