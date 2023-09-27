@@ -39,14 +39,17 @@ const PopularSpeciesList = () => {
     dispatch(setModalView('popular-species-genomes'));
   };
 
+  // TODO: after we include species taxonomy id in the committed species payload,
+  // we will use real data for the isSelected property
   return (
     <>
       <h1 className={styles.sectionHeading}>Popular</h1>
       <div className={styles.container}>
         {currentData?.popular_species.map((species) => (
           <PopularSpeciesButton
-            key={species.id}
+            key={species.species_taxonomy_id}
             species={species}
+            isSelected={false}
             onClick={() => onPopularSpeciesButtonClick(species)}
           />
         ))}
