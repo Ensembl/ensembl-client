@@ -41,7 +41,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
   const {
     genomes,
-    preselectedGenomes,
+    stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
     onGenomePreselectToggle
@@ -58,7 +58,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
           <TopContent
             {...props}
             genomes={genomes}
-            preselectedGenomes={preselectedGenomes}
+            stagedGenomes={stagedGenomes}
           />
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
@@ -76,17 +76,15 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
 type TopContentProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
-  preselectedGenomes: ReturnType<
-    typeof useSelectableGenomesTable
-  >['preselectedGenomes'];
+  stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
 };
 
 const TopContent = (props: TopContentProps) => {
-  const { speciesImageUrl, genomes, preselectedGenomes } = props;
+  const { speciesImageUrl, genomes, stagedGenomes } = props;
   const dispatch = useAppDispatch();
 
   const onSpeciesAdd = () => {
-    dispatch(commitSelectedSpeciesAndSave(preselectedGenomes));
+    dispatch(commitSelectedSpeciesAndSave(stagedGenomes));
   };
 
   const selectedGenomesCount = genomes.filter(
@@ -109,7 +107,7 @@ const TopContent = (props: TopContentProps) => {
       </span>
       <PrimaryButton
         className={styles.addButton}
-        disabled={preselectedGenomes.length === 0}
+        disabled={stagedGenomes.length === 0}
         onClick={onSpeciesAdd}
       >
         Add

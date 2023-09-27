@@ -24,27 +24,25 @@ import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/ty
 
 export type SelectableGenome = SpeciesSearchMatch & {
   isSelected: boolean;
-  isPreselected: boolean;
+  isStaged: boolean;
 };
 
 const useSelectableGenomesTable = (genomes: SpeciesSearchMatch[]) => {
-  const [preselectedGenomes, setPreselectedGenomes] = useState<
-    SpeciesSearchMatch[]
-  >([]);
+  const [stagedGenomes, setStagedGenomes] = useState<SpeciesSearchMatch[]>([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  const selectableGenomes = useMarkedGenomes(genomes, preselectedGenomes);
+  const selectableGenomes = useMarkedGenomes(genomes, stagedGenomes);
 
   const onGenomePreselectToggle = (
     genome: SpeciesSearchMatch,
     isAdding?: boolean
   ) => {
     if (isAdding) {
-      setPreselectedGenomes([...preselectedGenomes, genome]);
+      setStagedGenomes([...stagedGenomes, genome]);
     } else {
-      const updatedList = preselectedGenomes.filter(
+      const updatedList = stagedGenomes.filter(
         ({ genome_id }) => genome_id !== genome.genome_id
       );
-      setPreselectedGenomes(updatedList);
+      setStagedGenomes(updatedList);
     }
   };
 
@@ -54,11 +52,11 @@ const useSelectableGenomesTable = (genomes: SpeciesSearchMatch[]) => {
 
   return {
     genomes: selectableGenomes,
-    preselectedGenomes,
+    stagedGenomes,
     onGenomePreselectToggle,
     isTableExpanded,
     onTableExpandToggle,
-    setPreselectedGenomes
+    setStagedGenomes
   };
 };
 
@@ -83,7 +81,7 @@ const useMarkedGenomes = (
   return genomes.map((genome) => ({
     ...genome,
     isSelected: committedSpeciesIds.has(genome.genome_id),
-    isPreselected: preselectedGenomeIds.has(genome.genome_id)
+    isStaged: preselectedGenomeIds.has(genome.genome_id)
   }));
 };
 
