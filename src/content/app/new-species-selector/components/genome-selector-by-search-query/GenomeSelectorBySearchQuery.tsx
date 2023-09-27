@@ -42,8 +42,8 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
 
   const {
     genomes,
-    preselectedGenomes,
-    setPreselectedGenomes,
+    stagedGenomes,
+    setStagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
     onGenomePreselectToggle
@@ -55,7 +55,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
 
   const onInput = () => {
     setHasQueryChangedSinceSubmission(true);
-    setPreselectedGenomes([]); // remove all preselected species because user has changed value of the search field
+    setStagedGenomes([]); // remove all preselected species because user has changed value of the search field
   };
 
   const onSearchSubmit = () => {
@@ -64,10 +64,10 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   };
 
   const onSpeciesAdd = () => {
-    props.onSpeciesAdd(preselectedGenomes);
+    props.onSpeciesAdd(stagedGenomes);
   };
 
-  const speciesSearchFieldMode = preselectedGenomes.length
+  const speciesSearchFieldMode = stagedGenomes.length
     ? 'species-add'
     : 'species-search';
 

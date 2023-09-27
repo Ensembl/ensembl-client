@@ -46,7 +46,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
   const { isExpanded, results, onSpeciesSelectToggle } = props;
 
   const onSpeciesPreselect = (species: SelectableGenome) => {
-    const isAdding = !species.isPreselected;
+    const isAdding = !species.isStaged;
     onSpeciesSelectToggle(species, isAdding);
   };
 
@@ -88,7 +88,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
             <td>
               <Checkbox
                 disabled={searchMatch.isSelected}
-                checked={searchMatch.isPreselected}
+                checked={searchMatch.isStaged}
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
             </td>
