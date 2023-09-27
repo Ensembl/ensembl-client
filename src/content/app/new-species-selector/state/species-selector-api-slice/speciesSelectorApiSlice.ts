@@ -38,6 +38,10 @@ export type SpeciesSearchResponse = {
   };
 };
 
+export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
+  speciesTaxonomyId: string | number;
+};
+
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPopularSpecies: builder.query<
@@ -73,11 +77,34 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
           }
         };
       }
+    }),
+    getGenomesBySpeciesTaxonomyId: builder.query<
+      SpeciesSearchResponse,
+      GenomesSearchBySpeciesTaxonomyIdRequestParams
+    >({
+      queryFn: async () => {
+        // TODO: change this function when BE exposes an endpoint
+        const { humanSearchMatches, createHumanPangenomeSearchMatches } =
+          await import('./speciesSelectorSampleData');
+
+        const combinedHumanSearchMatches = [
+          ...humanSearchMatches,
+          ...createHumanPangenomeSearchMatches()
+        ];
+
+        return {
+          data: {
+            matches: combinedHumanSearchMatches,
+            meta: { total_count: combinedHumanSearchMatches.length }
+          }
+        };
+      }
     })
   })
 });
 
 export const {
   useGetPopularSpeciesQuery,
-  useLazyGetSpeciesSearchResultsQuery
+  useLazyGetSpeciesSearchResultsQuery,
+  useLazyGetGenomesBySpeciesTaxonomyIdQuery
 } = speciesSelectorApiSlice;

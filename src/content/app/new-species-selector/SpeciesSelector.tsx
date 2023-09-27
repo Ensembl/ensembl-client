@@ -23,7 +23,7 @@ import { setModalView } from 'src/content/app/new-species-selector/state/species
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
 import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
-import SpeciesSelectorSelectionModalView from './views/species-selector-results-view/SpeciesSelectorResultsView';
+import SpeciesSelectorResultsView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
 import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
 
@@ -33,6 +33,11 @@ const SpeciesSelector = () => {
   const modalView = useAppSelector(getSpeciesSelectorModalView);
   const dispatch = useAppDispatch();
 
+  const isSpeciesSelectorResultsView = [
+    'species-search',
+    'popular-species-genomes'
+  ].includes(modalView || '');
+
   useEffect(() => {
     return () => {
       // close the modal view when leaving Species Selector
@@ -40,21 +45,19 @@ const SpeciesSelector = () => {
     };
   }, []);
 
-  const appBar =
-    modalView === 'species-search' ? (
-      <SpeciesSearchResultsModalAppBar />
-    ) : (
-      <SpeciesSelectorAppBar />
-    );
+  const appBar = isSpeciesSelectorResultsView ? (
+    <SpeciesSearchResultsModalAppBar />
+  ) : (
+    <SpeciesSelectorAppBar />
+  );
 
-  const body =
-    modalView === 'species-search' ? (
-      <SpeciesSelectorSelectionModalView />
-    ) : modalView === 'gene-search' ? (
-      <SpeciesSelectorGeneSearchView />
-    ) : (
-      <SpeciesSelectorMainView />
-    );
+  const body = isSpeciesSelectorResultsView ? (
+    <SpeciesSelectorResultsView />
+  ) : modalView === 'gene-search' ? (
+    <SpeciesSelectorGeneSearchView />
+  ) : (
+    <SpeciesSelectorMainView />
+  );
 
   return (
     <div className={styles.grid}>

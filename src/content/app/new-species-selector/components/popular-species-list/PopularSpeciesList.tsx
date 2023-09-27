@@ -19,10 +19,7 @@ import React from 'react';
 import { useAppDispatch } from 'src/store';
 
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
-import {
-  setQuery,
-  setPopularSpecies
-} from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+import { setPopularSpecies } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { useGetPopularSpeciesQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import PopularSpeciesButton from 'src/content/app/new-species-selector/components/popular-species-button/PopularSpeciesButton';
@@ -38,19 +35,21 @@ const PopularSpeciesList = () => {
   });
 
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
-    dispatch(setQuery(species.name));
     dispatch(setPopularSpecies(species));
-    dispatch(setModalView('species-search'));
+    dispatch(setModalView('popular-species-genomes'));
   };
 
+  // TODO: after we include species taxonomy id in the committed species payload,
+  // we will use real data for the isSelected property
   return (
     <>
       <h1 className={styles.sectionHeading}>Popular</h1>
       <div className={styles.container}>
         {currentData?.popular_species.map((species) => (
           <PopularSpeciesButton
-            key={species.id}
+            key={species.species_taxonomy_id}
             species={species}
+            isSelected={false}
             onClick={() => onPopularSpeciesButtonClick(species)}
           />
         ))}

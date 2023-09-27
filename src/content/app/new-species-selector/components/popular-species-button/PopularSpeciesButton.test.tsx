@@ -23,11 +23,10 @@ import PopularSpeciesButton from './PopularSpeciesButton';
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 const humanData: PopularSpecies = {
-  id: 1,
+  species_taxonomy_id: 1,
   name: 'Human',
   image: 'image.svg',
-  members_count: 2,
-  is_selected: false
+  genomes_count: 2
 };
 
 beforeEach(() => {
@@ -37,7 +36,11 @@ beforeEach(() => {
 describe('<PopularSpeciesButton />', () => {
   it('applies correct classes when species is not selected', () => {
     const { container } = render(
-      <PopularSpeciesButton species={humanData} onClick={jest.fn()} />
+      <PopularSpeciesButton
+        species={humanData}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
     );
 
     const button = container.querySelector('button') as HTMLElement;
@@ -50,7 +53,8 @@ describe('<PopularSpeciesButton />', () => {
   it('applies correct classes when species is selected', () => {
     const { container } = render(
       <PopularSpeciesButton
-        species={{ ...humanData, is_selected: true }}
+        species={humanData}
+        isSelected={true}
         onClick={jest.fn()}
       />
     );
@@ -64,24 +68,29 @@ describe('<PopularSpeciesButton />', () => {
 
   it('renders a pill with genomes count if it is greater than 1', () => {
     const { container } = render(
-      <PopularSpeciesButton species={humanData} onClick={jest.fn()} />
+      <PopularSpeciesButton
+        species={humanData}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
     );
 
-    const countPill = container.querySelector('.membersCount') as HTMLElement;
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
     expect(countPill).toBeTruthy();
-    expect(countPill.innerHTML).toBe(`${humanData.members_count}`);
+    expect(countPill.innerHTML).toBe(`${humanData.genomes_count}`);
   });
 
   it('does not render a genomes count pill if species only has one genome', () => {
     const { container } = render(
       <PopularSpeciesButton
-        species={{ ...humanData, members_count: 1 }}
+        species={{ ...humanData, genomes_count: 1 }}
+        isSelected={false}
         onClick={jest.fn()}
       />
     );
 
-    const countPill = container.querySelector('.membersCount') as HTMLElement;
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
     expect(countPill).toBeFalsy();
   });
@@ -90,7 +99,8 @@ describe('<PopularSpeciesButton />', () => {
     const clickHandler = jest.fn();
     const { container } = render(
       <PopularSpeciesButton
-        species={{ ...humanData, members_count: 1 }}
+        species={{ ...humanData, genomes_count: 1 }}
+        isSelected={false}
         onClick={clickHandler}
       />
     );

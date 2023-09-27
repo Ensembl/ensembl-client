@@ -27,11 +27,12 @@ import styles from './PopularSpeciesButton.scss';
 
 export type Props = {
   species: PopularSpecies;
+  isSelected: boolean;
   onClick: (species: PopularSpecies) => void;
 };
 
 const PopularSpeciesButton = (props: Props) => {
-  const { species } = props;
+  const { species, isSelected } = props;
   const [hoverRef, isHovered] = useHover<HTMLButtonElement>();
 
   const handleClick = () => {
@@ -39,14 +40,14 @@ const PopularSpeciesButton = (props: Props) => {
   };
 
   const buttonClasses = classNames(styles.popularSpeciesButton, {
-    [styles.popularSpeciesButtonSelected]: species.is_selected
+    [styles.popularSpeciesButtonSelected]: isSelected
   });
 
   return (
     <button className={buttonClasses} ref={hoverRef} onClick={handleClick}>
       <img src={species.image} />
-      {species.members_count > 1 && (
-        <span className={styles.membersCount}>{species.members_count}</span>
+      {species.genomes_count > 1 && (
+        <span className={styles.genomesCount}>{species.genomes_count}</span>
       )}
       {isHovered && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>

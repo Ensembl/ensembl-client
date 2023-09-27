@@ -19,3 +19,7 @@ import type { RootState } from 'src/store';
 export const getSpeciesSearchQuery = (state: RootState) => {
   return state.newSpeciesSelector.search.query;
 };
+
+export const getSelectedPopularSpecies = (state: RootState) => {
+  return state.newSpeciesSelector.search.popularSpecies;
+};

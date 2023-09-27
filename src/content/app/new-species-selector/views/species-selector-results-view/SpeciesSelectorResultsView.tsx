@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getSpeciesSearchQuery } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import {
+  getSpeciesSearchQuery,
+  getSelectedPopularSpecies
+} from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
+import { getSpeciesSelectorModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISelectors';
 
-import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import {
   setQuery,
   commitSelectedSpeciesAndSave
@@ -29,14 +31,10 @@ import {
 import { setModalView } from 'src/content/app/new-species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
-import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
-import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
-import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import GenomeSelectorBySearchQuery from 'src/content/app/new-species-selector/components/genome-selector-by-search-query/GenomeSelectorBySearchQuery';
+import GenomeSelectorBySpeciesTaxonomyId from 'src/content/app/new-species-selector/components/genome-selector-by-species-taxonomy-id/GenomeSelectorBySpeciesTaxonomyId';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-
-import styles from './SpeciesSelectorResultsView.scss';
 
 const SpeciesSelectorResultslView = () => {
   const dispatch = useAppDispatch();
@@ -54,100 +52,23 @@ const SpeciesSelectorResultslView = () => {
 };
 
 const Content = () => {
+  const modalView = useAppSelector(getSpeciesSelectorModalView);
   const query = useAppSelector(getSpeciesSearchQuery);
-  const committedSpecies = useAppSelector(getCommittedSpecies);
-  const [hasQueryChangedSinceSubmission, setHasQueryChangedSinceSubmission] =
-    useState(false);
-  const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData } = result;
-  const [preselectedSpecies, setPreselectedSpecies] = useState<
-    SpeciesSearchMatch[]
-  >([]);
-  const [isTableExpanded, setIsTableExpanded] = useState(false);
+  const selectedPopularSpecies = useAppSelector(getSelectedPopularSpecies);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    searchTrigger({ query });
-  }, []);
-
-  const onInput = () => {
-    setHasQueryChangedSinceSubmission(true);
-    setPreselectedSpecies([]); // remove all preselected species because user has changed value of the search field
+  const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
+    dispatch(commitSelectedSpeciesAndSave(genomes));
   };
 
-  const onSearchSubmit = () => {
-    searchTrigger({ query });
-    setHasQueryChangedSinceSubmission(false);
-  };
-
-  const onSpeciesAdd = () => {
-    dispatch(commitSelectedSpeciesAndSave(preselectedSpecies));
-  };
-
-  const onSpeciesPreselectToggle = (
-    species: SpeciesSearchMatch,
-    isAdding?: boolean
-  ) => {
-    if (isAdding) {
-      setPreselectedSpecies([...preselectedSpecies, species]);
-    } else {
-      const updatedList = preselectedSpecies.filter(
-        ({ genome_id }) => genome_id !== species.genome_id
-      );
-      setPreselectedSpecies(updatedList);
-    }
-  };
-
-  const onTableExpandToggle = () => {
-    setIsTableExpanded(!isTableExpanded);
-  };
-
-  const speciesSearchFieldMode = preselectedSpecies.length
-    ? 'species-add'
-    : 'species-search';
-
-  return (
-    <div className={styles.main}>
-      <SpeciesSearchField
-        onInput={onInput}
-        onSearchSubmit={onSearchSubmit}
-        mode={speciesSearchFieldMode}
-        onSpeciesAdd={onSpeciesAdd}
-        canSubmit={hasQueryChangedSinceSubmission}
-      />
-      {currentData && !hasQueryChangedSinceSubmission && (
-        <>
-          <SpeciesSearchResultsSummary searchResult={currentData} />
-          <div className={styles.tableContainer}>
-            <SpeciesSearchResultsTable
-              results={markCommittedSpecies(
-                currentData.matches,
-                committedSpecies
-              )}
-              isExpanded={isTableExpanded}
-              onTableExpandToggle={onTableExpandToggle}
-              preselectedSpecies={preselectedSpecies}
-              onSpeciesSelectToggle={onSpeciesPreselectToggle}
-            />
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
-const markCommittedSpecies = (
-  searchMatches: SpeciesSearchMatch[],
-  committedSpecies: CommittedItem[]
-) => {
-  const committedSpeciesIds = new Set(
-    committedSpecies.map((species) => species.genome_id)
-  );
-
-  return searchMatches.map((match) => ({
-    ...match,
-    isSelected: committedSpeciesIds.has(match.genome_id)
-  }));
+  return modalView === 'species-search' ? (
+    <GenomeSelectorBySearchQuery query={query} onSpeciesAdd={onSpeciesAdd} />
+  ) : selectedPopularSpecies ? (
+    <GenomeSelectorBySpeciesTaxonomyId
+      speciesTaxonomyId={selectedPopularSpecies.species_taxonomy_id}
+      speciesImageUrl={selectedPopularSpecies.image}
+    />
+  ) : null; // this last option should never happen
 };
 
 export default SpeciesSelectorResultslView;

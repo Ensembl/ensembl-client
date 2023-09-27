@@ -25,11 +25,10 @@ import zebrafishIconUrl from './danio_rerio.svg?url';
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 
 const humanData: PopularSpecies = {
-  id: 1,
+  species_taxonomy_id: 1,
   name: 'Human',
   image: humanIconUrl,
-  members_count: 2,
-  is_selected: false
+  genomes_count: 2
 };
 
 const humanWithManyGenomesData = {
@@ -37,24 +36,30 @@ const humanWithManyGenomesData = {
   members_count: 5289
 };
 
-const zebrafisData: PopularSpecies = {
-  id: 2,
+const zebrafishData: PopularSpecies = {
+  species_taxonomy_id: 2,
   name: 'Zebrafish',
   image: zebrafishIconUrl,
-  members_count: 1,
-  is_selected: false
+  genomes_count: 1
 };
 
 export const UnselectedSmallCountStory = {
   name: 'Unselected, small count',
-  render: () => <PopularSpeciesButton species={humanData} onClick={noop} />
+  render: () => (
+    <PopularSpeciesButton
+      species={humanData}
+      isSelected={false}
+      onClick={noop}
+    />
+  )
 };
 
 export const SelectedSmallCountStory = {
   name: 'Selected, small count',
   render: () => (
     <PopularSpeciesButton
-      species={{ ...humanData, is_selected: true }}
+      species={humanData}
+      isSelected={true}
       onClick={noop}
     />
   )
@@ -63,7 +68,11 @@ export const SelectedSmallCountStory = {
 export const UnselectedLargeCountStory = {
   name: 'Unselected, large count',
   render: () => (
-    <PopularSpeciesButton species={humanWithManyGenomesData} onClick={noop} />
+    <PopularSpeciesButton
+      species={humanWithManyGenomesData}
+      isSelected={false}
+      onClick={noop}
+    />
   )
 };
 
@@ -71,7 +80,8 @@ export const SelectedLargeCountStory = {
   name: 'Selected, large count',
   render: () => (
     <PopularSpeciesButton
-      species={{ ...humanWithManyGenomesData, is_selected: true }}
+      species={humanWithManyGenomesData}
+      isSelected={true}
       onClick={noop}
     />
   )
@@ -79,14 +89,21 @@ export const SelectedLargeCountStory = {
 
 export const UnselectedNoCountStory = {
   name: 'Unselected, no count',
-  render: () => <PopularSpeciesButton species={zebrafisData} onClick={noop} />
+  render: () => (
+    <PopularSpeciesButton
+      species={zebrafishData}
+      isSelected={false}
+      onClick={noop}
+    />
+  )
 };
 
 export const SelectedNoCountStory = {
   name: 'Selected, no count',
   render: () => (
     <PopularSpeciesButton
-      species={{ ...zebrafisData, is_selected: true }}
+      species={zebrafishData}
+      isSelected={true}
       onClick={noop}
     />
   )

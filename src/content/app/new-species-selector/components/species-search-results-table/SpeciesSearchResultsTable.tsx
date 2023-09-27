@@ -28,13 +28,13 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import DisabledExternalLink from 'src/shared/components/external-link/DisabledExternalLink';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
+import type { SelectableGenome } from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import styles from './SpeciesSearchResultsTable.scss';
 
 type Props = {
   isExpanded: boolean;
-  results: Array<SpeciesSearchMatch & { isSelected: boolean }>;
-  preselectedSpecies: SpeciesSearchMatch[];
+  results: SelectableGenome[];
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
     species: SpeciesSearchMatch,
@@ -43,14 +43,10 @@ type Props = {
 };
 
 const SpeciesSearchResultsTable = (props: Props) => {
-  const { isExpanded, results, preselectedSpecies, onSpeciesSelectToggle } =
-    props;
-  const preselectedSpeciesIds = new Set(
-    preselectedSpecies.map(({ genome_id }) => genome_id)
-  ); // to reduce further iteration
+  const { isExpanded, results, onSpeciesSelectToggle } = props;
 
-  const onSpeciesPreselect = (species: SpeciesSearchMatch) => {
-    const isAdding = !preselectedSpeciesIds.has(species.genome_id);
+  const onSpeciesPreselect = (species: SelectableGenome) => {
+    const isAdding = !species.isStaged;
     onSpeciesSelectToggle(species, isAdding);
   };
 
@@ -92,7 +88,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
             <td>
               <Checkbox
                 disabled={searchMatch.isSelected}
-                checked={preselectedSpeciesIds.has(searchMatch.genome_id)}
+                checked={searchMatch.isStaged}
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
             </td>

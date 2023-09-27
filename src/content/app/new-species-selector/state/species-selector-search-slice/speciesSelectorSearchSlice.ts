@@ -34,12 +34,12 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/speci
 
 type State = {
   query: string;
-  popularSpeciesId: string | number | null;
+  popularSpecies: PopularSpecies | null;
 };
 
 const initialState: State = {
   query: '',
-  popularSpeciesId: null
+  popularSpecies: null
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -83,8 +83,7 @@ const speciesSelectorSearchSlice = createSlice({
       state.query = action.payload;
     },
     setPopularSpecies(state, action: PayloadAction<PopularSpecies | null>) {
-      const popularSpecies = action.payload;
-      state.popularSpeciesId = popularSpecies?.id ?? null;
+      state.popularSpecies = action.payload;
     }
   },
   extraReducers: (builder) => {

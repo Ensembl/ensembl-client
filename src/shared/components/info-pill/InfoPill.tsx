@@ -14,28 +14,16 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import React, { type ReactNode } from 'react';
 
-type ModalView = 'species-search' | 'popular-species-genomes' | 'gene-search';
+import styles from './InfoPill.scss';
 
-type State = {
-  modalView: ModalView | null;
+type Props = {
+  children: ReactNode;
 };
 
-const initialState: State = {
-  modalView: null
+const InfoPill = (props: Props) => {
+  return <span className={styles.infoPill}>{props.children}</span>;
 };
 
-const speciesSelectorUISlice = createSlice({
-  name: 'species-selector-ui',
-  initialState,
-  reducers: {
-    setModalView(state, action: PayloadAction<ModalView | null>) {
-      state.modalView = action.payload;
-    }
-  }
-});
-
-export const { setModalView } = speciesSelectorUISlice.actions;
-
-export default speciesSelectorUISlice.reducer;
+export default InfoPill;
