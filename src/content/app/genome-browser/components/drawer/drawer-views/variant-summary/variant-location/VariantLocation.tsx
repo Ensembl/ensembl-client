@@ -33,12 +33,10 @@ type Props = {
 const VariantLocation = (props: Props) => {
   const regionName = props.variant.slice.region.name;
   const start = props.variant.slice.location.start;
-  const end = props.variant.slice.location.end;
 
   const locationString = getFormattedLocation({
     chromosome: regionName,
-    start,
-    end
+    start
   });
 
   return <span>{locationString}</span>;

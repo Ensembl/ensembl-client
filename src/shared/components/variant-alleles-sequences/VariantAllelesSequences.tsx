@@ -108,7 +108,7 @@ const prepareSequenceData = (props: Props) => {
     alleleSequences.unshift(referenceAllele.reference_sequence);
   }
 
-  const combinedString = alleleSequences.join('/');
+  const combinedString = alleleSequences.join(' ');
 
   return {
     alleleSequences,
