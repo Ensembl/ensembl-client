@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import upperFirst from 'lodash/upperFirst';
+
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+
+import config from 'config';
 
 import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
@@ -60,48 +64,31 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchResponse,
       SpeciesSearchRequestParams
     >({
-      queryFn: async () => {
-        // TODO: change this function when BE exposes an endpoint
-        const { humanSearchMatches, createHumanPangenomeSearchMatches } =
-          await import('./speciesSelectorSampleData');
-
-        const combinedHumanSearchMatches = [
-          ...humanSearchMatches,
-          ...createHumanPangenomeSearchMatches()
-        ];
-
-        return {
-          data: {
-            matches: combinedHumanSearchMatches,
-            meta: { total_count: combinedHumanSearchMatches.length }
-          }
-        };
-      }
+      query: ({ query }) => ({
+        url: `${config.searchApiBaseUrl}/genomes?query=${query}`
+      }),
+      transformResponse: transformGenomesSearchResponse
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
       SpeciesSearchResponse,
       GenomesSearchBySpeciesTaxonomyIdRequestParams
     >({
-      queryFn: async () => {
-        // TODO: change this function when BE exposes an endpoint
-        const { humanSearchMatches, createHumanPangenomeSearchMatches } =
-          await import('./speciesSelectorSampleData');
-
-        const combinedHumanSearchMatches = [
-          ...humanSearchMatches,
-          ...createHumanPangenomeSearchMatches()
-        ];
-
-        return {
-          data: {
-            matches: combinedHumanSearchMatches,
-            meta: { total_count: combinedHumanSearchMatches.length }
-          }
-        };
-      }
+      query: ({ speciesTaxonomyId }) => ({
+        url: `${config.searchApiBaseUrl}/genomes?species_taxonomy_id=${speciesTaxonomyId}`
+      }),
+      transformResponse: transformGenomesSearchResponse
     })
   })
 });
+
+const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
+  response.matches.forEach((match) => {
+    match.common_name = match.common_name
+      ? upperFirst(match.common_name)
+      : match.common_name;
+  });
+  return response;
+};
 
 export const {
   useGetPopularSpeciesQuery,
