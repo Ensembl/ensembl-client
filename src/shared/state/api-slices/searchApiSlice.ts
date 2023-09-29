@@ -32,7 +32,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
     searchGenes: builder.query<SearchResults, SearchGenesParams>({
       query: (params) => {
         return {
-          url: config.searchApiBaseUrl,
+          url: `${config.searchApiBaseUrl}/genes`,
           method: 'POST',
           body: params
         };
