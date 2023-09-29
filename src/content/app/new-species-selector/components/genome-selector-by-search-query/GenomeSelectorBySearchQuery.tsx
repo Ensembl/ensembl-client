@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
-import SpeciesSearchField from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
+import AddFoundSpecies from 'src/content/app/new-species-selector/components/species-search-field/AddFoundSpecies';
 import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 
@@ -35,15 +35,12 @@ type Props = {
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { query } = props;
-  const [hasQueryChangedSinceSubmission, setHasQueryChangedSinceSubmission] =
-    useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData } = result;
 
   const {
     genomes,
     stagedGenomes,
-    setStagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
     onGenomePreselectToggle
@@ -53,34 +50,18 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     searchTrigger({ query });
   }, []);
 
-  const onInput = () => {
-    setHasQueryChangedSinceSubmission(true);
-    setStagedGenomes([]); // remove all preselected species because user has changed value of the search field
-  };
-
-  const onSearchSubmit = () => {
-    searchTrigger({ query });
-    setHasQueryChangedSinceSubmission(false);
-  };
-
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
-  const speciesSearchFieldMode = stagedGenomes.length
-    ? 'species-add'
-    : 'species-search';
-
   return (
     <div className={styles.main}>
-      <SpeciesSearchField
-        onInput={onInput}
-        onSearchSubmit={onSearchSubmit}
-        mode={speciesSearchFieldMode}
-        onSpeciesAdd={onSpeciesAdd}
-        canSubmit={hasQueryChangedSinceSubmission}
+      <AddFoundSpecies
+        query={query}
+        canAdd={stagedGenomes.length > 0}
+        onAdd={onSpeciesAdd}
       />
-      {currentData && !hasQueryChangedSinceSubmission && (
+      {currentData && (
         <>
           <SpeciesSearchResultsSummary searchResult={currentData} />
           <div className={styles.tableContainer}>

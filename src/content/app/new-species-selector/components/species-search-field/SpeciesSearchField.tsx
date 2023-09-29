@@ -31,8 +31,9 @@ type Mode = 'species-search' | 'species-add';
 
 export type Props = {
   onSearchSubmit: () => void;
-  mode?: Mode;
+  mode?: Mode; // FIXME: no need
   canSubmit?: boolean;
+  disabled?: boolean; // FIXME: no need
   onSpeciesAdd?: () => void;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
@@ -59,7 +60,7 @@ const SpeciesSearchField = (props: Props) => {
   };
 
   return (
-    <form className={styles.speciesSearchField} onSubmit={onSubmit}>
+    <form className={styles.grid} onSubmit={onSubmit}>
       <label>Find a species</label>
       <ShadedInput
         size="large"
@@ -70,16 +71,17 @@ const SpeciesSearchField = (props: Props) => {
         placeholder={placeholderText}
         help={helpText}
         minLength={3}
+        disabled={props.disabled}
       />
       {mode === 'species-search' ? (
         <PrimaryButton
           disabled={!canSubmit || query.length < 3}
-          className={classNames(styles.button, styles.submit)}
+          className={classNames(styles.controls, styles.submit)}
         >
           Find
         </PrimaryButton>
       ) : (
-        <PrimaryButton className={styles.button} onClick={onAdd}>
+        <PrimaryButton className={styles.controls} onClick={onAdd}>
           Add
         </PrimaryButton>
       )}

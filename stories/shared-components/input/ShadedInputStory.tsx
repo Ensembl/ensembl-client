@@ -32,6 +32,7 @@ export const ShadedInputPlayground = () => {
   const [withPlaceholder, setWithPlaceholder] = useState(false);
   const [withHelp, setWithHelp] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const wrapperClasses = classNames(styles.shadedInputWrapper, {
     [styles.greyStage]: isDarkBackground
@@ -47,6 +48,7 @@ export const ShadedInputPlayground = () => {
           minLength={minLength}
           help={withHelp ? helpText : undefined}
           type={isSearch ? 'search' : 'text'}
+          disabled={isDisabled}
         />
       </div>
       <div>
@@ -63,6 +65,8 @@ export const ShadedInputPlayground = () => {
           setWithHelp={setWithHelp}
           isSearch={isSearch}
           setIsSearch={setIsSearch}
+          isDisabled={isDisabled}
+          setIsDisabled={setIsDisabled}
         />
       </div>
     </div>
@@ -82,6 +86,8 @@ const Options = (props: {
   setWithHelp: (x: boolean) => void;
   isSearch: boolean;
   setIsSearch: (x: boolean) => void;
+  isDisabled: boolean;
+  setIsDisabled: (x: boolean) => void;
 }) => {
   const [minLength, setMinLength] = useState(defaultMinLength);
 
@@ -159,6 +165,14 @@ const Options = (props: {
           disabled={props.minLength === undefined}
           value={props.minLength}
           onChange={onMinimumLengthChange}
+        />
+      </label>
+      <label>
+        Is disabled
+        <input
+          type="checkbox"
+          checked={props.isDisabled}
+          onChange={() => props.setIsDisabled(!props.isDisabled)}
         />
       </label>
     </div>
