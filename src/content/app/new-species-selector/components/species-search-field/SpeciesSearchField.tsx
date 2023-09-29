@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type MouseEvent, FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -27,19 +27,15 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import styles from './SpeciesSearchField.scss';
 
-type Mode = 'species-search' | 'species-add';
-
 export type Props = {
   onSearchSubmit: () => void;
-  mode?: Mode; // FIXME: no need
   canSubmit?: boolean;
-  disabled?: boolean; // FIXME: no need
   onSpeciesAdd?: () => void;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
 
 const SpeciesSearchField = (props: Props) => {
-  const { mode = 'species-search', canSubmit = true } = props;
+  const { canSubmit = true } = props;
   const dispatch = useAppDispatch();
   const query = useAppSelector(getSpeciesSearchQuery);
 
@@ -54,11 +50,6 @@ const SpeciesSearchField = (props: Props) => {
     props.onSearchSubmit();
   };
 
-  const onAdd = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault(); // to avoid triggering form submission
-    props.onSpeciesAdd?.();
-  };
-
   return (
     <form className={styles.grid} onSubmit={onSubmit}>
       <label>Find a species</label>
@@ -71,20 +62,13 @@ const SpeciesSearchField = (props: Props) => {
         placeholder={placeholderText}
         help={helpText}
         minLength={3}
-        disabled={props.disabled}
       />
-      {mode === 'species-search' ? (
-        <PrimaryButton
-          disabled={!canSubmit || query.length < 3}
-          className={classNames(styles.controls, styles.submit)}
-        >
-          Find
-        </PrimaryButton>
-      ) : (
-        <PrimaryButton className={styles.controls} onClick={onAdd}>
-          Add
-        </PrimaryButton>
-      )}
+      <PrimaryButton
+        disabled={!canSubmit || query.length < 3}
+        className={classNames(styles.controls, styles.submit)}
+      >
+        Find
+      </PrimaryButton>
     </form>
   );
 };
