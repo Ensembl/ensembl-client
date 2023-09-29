@@ -21,6 +21,7 @@ import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species
 import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import AddFoundSpecies from 'src/content/app/new-species-selector/components/species-search-field/AddFoundSpecies';
+import SpeciesSearchField from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 
@@ -55,25 +56,37 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
+  const onSearchSubmit = () => {
+    searchTrigger({ query });
+  };
+
   return (
     <div className={styles.main}>
-      <AddFoundSpecies
-        query={query}
-        canAdd={stagedGenomes.length > 0}
-        onAdd={onSpeciesAdd}
-        onCancel={onClose}
-      />
+      {currentData?.matches.length ? (
+        <AddFoundSpecies
+          query={query}
+          canAdd={stagedGenomes.length > 0}
+          onAdd={onSpeciesAdd}
+          onCancel={onClose}
+        />
+      ) : (
+        <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
+      )}
+
       {currentData && (
         <>
           <SpeciesSearchResultsSummary searchResult={currentData} />
-          <div className={styles.tableContainer}>
-            <SpeciesSearchResultsTable
-              results={genomes}
-              isExpanded={isTableExpanded}
-              onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomePreselectToggle}
-            />
-          </div>
+
+          {currentData.matches.length > 0 && (
+            <div className={styles.tableContainer}>
+              <SpeciesSearchResultsTable
+                results={genomes}
+                isExpanded={isTableExpanded}
+                onTableExpandToggle={onTableExpandToggle}
+                onSpeciesSelectToggle={onGenomePreselectToggle}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

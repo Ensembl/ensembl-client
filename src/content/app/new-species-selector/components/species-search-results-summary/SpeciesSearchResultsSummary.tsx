@@ -28,21 +28,56 @@ type Props = {
 // TODO: add a filter component to this section
 
 const SpeciesSearchResultsSummary = (props: Props) => {
-  const searchMatchesCount = props.searchResult?.meta.total_count;
+  const searchMatchesCount = props.searchResult?.meta.total_count ?? 0;
 
-  // TODO: style the contents differently if the results are from a popular species
+  return searchMatchesCount > 0 ? (
+    <SuccessfulSearchResults count={searchMatchesCount} />
+  ) : (
+    <NoResults />
+  );
+};
+
+const SuccessfulSearchResults = (props: { count: number }) => {
+  const { count } = props;
 
   return (
     <section className={styles.container}>
-      {searchMatchesCount && searchMatchesCount > 1 && (
-        <span>
-          <span className={styles.searchMatchesCount}>
-            {searchMatchesCount}
-          </span>{' '}
-          results
-        </span>
-      )}
+      <span>
+        <span className={styles.searchMatchesCount}>{count}</span> results
+      </span>
     </section>
+  );
+};
+
+const NoResults = () => {
+  return (
+    <section className={styles.container}>
+      <div>
+        <span>
+          <span className={styles.searchMatchesCount}>0</span> results
+        </span>
+      </div>
+      <div className={styles.noMatchesMessage}>
+        Sorry, we don’t recognise, or may not have data for this species
+      </div>
+      <SearchHelp />
+    </section>
+  );
+};
+
+const SearchHelp = () => {
+  return (
+    <div className={styles.searchHelp}>
+      <p>
+        In order to help you find what you’re really looking for, could we
+        suggest
+      </p>
+      <ul>
+        <li>only search for a species</li>
+        <li>use a full name where possible</li>
+        <li>try a different name or identifier</li>
+      </ul>
+    </div>
   );
 };
 
