@@ -46,6 +46,19 @@ export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
   speciesTaxonomyId: string | number;
 };
 
+// NOTE: needs to be defined before speciesSelectorApiSlice;
+// either because of the temporal dead zone that occurs otherwise (though typescript doesn't complain)
+// or due to some bundler nonsense
+const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
+  response.matches.forEach((match) => {
+    match.common_name = match.common_name
+      ? upperFirst(match.common_name)
+      : match.common_name;
+  });
+
+  return response;
+};
+
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPopularSpecies: builder.query<
@@ -80,15 +93,6 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     })
   })
 });
-
-const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
-  response.matches.forEach((match) => {
-    match.common_name = match.common_name
-      ? upperFirst(match.common_name)
-      : match.common_name;
-  });
-  return response;
-};
 
 export const {
   useGetPopularSpeciesQuery,
