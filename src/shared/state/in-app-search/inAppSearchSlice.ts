@@ -48,7 +48,7 @@ export const search = createAsyncThunk(
       per_page: params.per_page
     };
 
-    const url = '/api/search';
+    const url = '/api/search/genes';
     const response: SearchResults = await fetch(url, {
       headers: {
         Accept: 'application/json',
