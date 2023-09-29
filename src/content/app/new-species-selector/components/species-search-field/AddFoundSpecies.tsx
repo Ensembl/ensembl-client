@@ -27,10 +27,11 @@ export type Props = {
   query: string;
   canAdd: boolean;
   onAdd: () => void;
+  onCancel: () => void;
 };
 
 const AddFoundSpecies = (props: Props) => {
-  const { query, canAdd, onAdd } = props;
+  const { query, canAdd, onAdd, onCancel } = props;
 
   return (
     <div className={styles.grid}>
@@ -45,7 +46,7 @@ const AddFoundSpecies = (props: Props) => {
         <PrimaryButton disabled={!canAdd} onClick={onAdd}>
           Add
         </PrimaryButton>
-        <TextButton>Cancel</TextButton>
+        <TextButton onClick={onCancel}>Cancel</TextButton>
       </div>
     </div>
   );

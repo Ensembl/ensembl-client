@@ -31,10 +31,11 @@ import styles from './GenomeSelectorBySearchQuery.scss';
 type Props = {
   query: string;
   onSpeciesAdd: (genomes: SpeciesSearchMatch[]) => void;
+  onClose: () => void;
 };
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
-  const { query } = props;
+  const { query, onClose } = props;
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData } = result;
 
@@ -60,6 +61,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
         query={query}
         canAdd={stagedGenomes.length > 0}
         onAdd={onSpeciesAdd}
+        onCancel={onClose}
       />
       {currentData && (
         <>

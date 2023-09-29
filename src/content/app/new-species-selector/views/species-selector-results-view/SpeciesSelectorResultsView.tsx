@@ -46,12 +46,12 @@ const SpeciesSelectorResultslView = () => {
 
   return (
     <ModalView onClose={onClose}>
-      <Content />
+      <Content onClose={onClose} />
     </ModalView>
   );
 };
 
-const Content = () => {
+const Content = (props: { onClose: () => void }) => {
   const modalView = useAppSelector(getSpeciesSelectorModalView);
   const query = useAppSelector(getSpeciesSearchQuery);
   const selectedPopularSpecies = useAppSelector(getSelectedPopularSpecies);
@@ -62,7 +62,11 @@ const Content = () => {
   };
 
   return modalView === 'species-search' ? (
-    <GenomeSelectorBySearchQuery query={query} onSpeciesAdd={onSpeciesAdd} />
+    <GenomeSelectorBySearchQuery
+      query={query}
+      onSpeciesAdd={onSpeciesAdd}
+      onClose={props.onClose}
+    />
   ) : selectedPopularSpecies ? (
     <GenomeSelectorBySpeciesTaxonomyId
       speciesTaxonomyId={selectedPopularSpecies.species_taxonomy_id}
