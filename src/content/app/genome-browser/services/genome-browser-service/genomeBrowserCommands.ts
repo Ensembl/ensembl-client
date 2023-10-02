@@ -149,7 +149,9 @@ const setFocusVariant: typeof setFocus = (payload) => {
   genomeBrowser.switch(['track', 'focus', 'label'], true);
   genomeBrowser.switch(['track', 'focus', 'item', 'variant'], {
     genome_id: genomeId,
-    variant_id: variantName
+    variant_id: variantName,
+    region_name: regionName,
+    start
   });
 };
 
