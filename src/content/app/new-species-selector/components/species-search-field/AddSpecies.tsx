@@ -30,7 +30,7 @@ export type Props = {
   onCancel: () => void;
 };
 
-const AddFoundSpecies = (props: Props) => {
+const AddSpecies = (props: Props) => {
   const { query, canAdd, onAdd, onCancel } = props;
 
   return (
@@ -52,4 +52,4 @@ const AddFoundSpecies = (props: Props) => {
   );
 };
 
-export default AddFoundSpecies;
+export default AddSpecies;

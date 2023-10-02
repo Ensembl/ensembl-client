@@ -20,7 +20,7 @@ import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species
 
 import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
-import AddFoundSpecies from 'src/content/app/new-species-selector/components/species-search-field/AddFoundSpecies';
+import AddSpecies from 'src/content/app/new-species-selector/components/species-search-field/AddSpecies';
 import SpeciesSearchField from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
@@ -71,7 +71,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   return (
     <div className={styles.main}>
       {currentData?.matches.length ? (
-        <AddFoundSpecies
+        <AddSpecies
           query={query}
           canAdd={stagedGenomes.length > 0}
           onAdd={onSpeciesAdd}
