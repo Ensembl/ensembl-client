@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
@@ -37,6 +37,7 @@ type Props = {
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { query, onClose } = props;
+  const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData } = result;
 
@@ -52,12 +53,19 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     searchTrigger({ query });
   }, []);
 
+  const onSearchInput = () => {
+    if (!canSubmitSearch) {
+      setCanSubmitSearch(true);
+    }
+  };
+
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
   const onSearchSubmit = () => {
     searchTrigger({ query });
+    setCanSubmitSearch(false);
   };
 
   return (
@@ -70,7 +78,11 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
           onCancel={onClose}
         />
       ) : (
-        <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
+        <SpeciesSearchField
+          onInput={onSearchInput}
+          canSubmit={canSubmitSearch}
+          onSearchSubmit={onSearchSubmit}
+        />
       )}
 
       {currentData && (
