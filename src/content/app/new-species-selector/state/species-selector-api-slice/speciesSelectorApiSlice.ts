@@ -60,11 +60,12 @@ const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
 };
 
 const transformPopularSpeciesResponse = (response: PopularSpeciesResponse) => {
-  response.popular_species.forEach((species) => {
-    species.name = upperFirst(species.name);
-  });
+  const popularSpecies = response.popular_species.map((species) => ({
+    ...species,
+    name: upperFirst(species.name)
+  }));
 
-  return response;
+  return { ...response, popular_species: popularSpecies };
 };
 
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
