@@ -51,8 +51,33 @@ describe('<ShadedInput />', () => {
     expect(component.classList).toContain('shadedInputWrapperSmall');
   });
 
+  it('cannot be interacted with if disabled', async () => {
+    // before disabling
+    const { container, rerender } = render(<ShadedInput />);
+    const wrapper = container.querySelector(
+      '.shadedInputWrapper'
+    ) as HTMLElement;
+    const inputElement = container.querySelector('input') as HTMLInputElement;
+
+    const inputText = 'Hello world';
+
+    await userEvent.type(inputElement, inputText);
+
+    expect(inputElement.value).toBe(inputText);
+    expect(wrapper.classList.contains('shadedInputDisabled')).toBe(false);
+
+    rerender(<ShadedInput disabled={true} />);
+
+    await userEvent.type(inputElement, 'Goodbye!');
+
+    // the disabled input element should still be showing the initial text;
+    // but no additional interactions should be able to modify it
+    expect(inputElement.value).toBe(inputText);
+    expect(wrapper.classList.contains('shadedInputDisabled')).toBe(true);
+  });
+
   describe('help element', () => {
-    it('can show help element', () => {
+    it('appears if help text is provided', () => {
       // no help element rendered if no help text provided
       const { container, rerender } = render(<ShadedInput />);
       expect(container.querySelector('.rightCorner')).toBeFalsy();
@@ -61,6 +86,18 @@ describe('<ShadedInput />', () => {
       expect(
         container.querySelector('.rightCorner .questionButton')
       ).toBeTruthy();
+    });
+
+    it('does not show up in a disabled shaded input', () => {
+      // we already know fron another test
+      // that a help element appears if help text is provided
+      const { container } = render(
+        <ShadedInput help="More info..." disabled={true} />
+      );
+
+      expect(
+        container.querySelector('.rightCorner .questionButton')
+      ).toBeFalsy();
     });
   });
 
@@ -102,6 +139,13 @@ describe('<ShadedInput />', () => {
       await userEvent.click(clearButton);
       expect(inputElement.value).toBe('');
       expect(onInput).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not show the clear button if input is disabled', async () => {
+      const { container } = render(
+        <ShadedInput type="search" defaultValue="hello" disabled={true} />
+      );
+      expect(container.querySelector('.closeButton')).toBeFalsy();
     });
   });
 });

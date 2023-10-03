@@ -45,6 +45,7 @@ export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
 const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   const {
     className: classNameFromProps,
+    disabled = false,
     size,
     help,
     type = 'text',
@@ -64,6 +65,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     styles.shadedInputWrapper,
     classNameFromProps,
     {
+      [styles.shadedInputDisabled]: disabled,
       [styles.shadedInputWrapperLarge]: size === 'large',
       [styles.shadedInputWrapperSmall]: size === 'small'
     }
@@ -83,11 +85,12 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     <div className={wrapperClasses}>
       <Input
         ref={innerRef}
+        disabled={disabled}
         type={type === 'search' ? undefined : props.type}
         placeholder={placeholder}
         {...otherProps}
       />
-      {rightCornerContent && (
+      {!disabled && rightCornerContent && (
         <div className={styles.rightCorner}>{rightCornerContent}</div>
       )}
     </div>

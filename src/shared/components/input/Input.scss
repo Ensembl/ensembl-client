@@ -48,6 +48,10 @@
   }
 }
 
+.shadedInputDisabled {
+  background-color: $light-grey;
+}
+
 .flatInputWrapper {
   background-color: var(--flat-input-background-colour, $white);
   padding: 0 15px;

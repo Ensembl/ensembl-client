@@ -1,11 +1,11 @@
 @import 'src/styles/common';
 
-.speciesSearchField {
+.grid {
   display: grid;
   grid-template-areas:
     'label .'
-    'input button';
-  grid-template-columns: 486px 64px;
+    'input controls';
+  grid-template-columns: 486px max-content;
   row-gap: 10px;
   column-gap: 45px;
 }
@@ -19,11 +19,17 @@
   grid-area: input;
 }
 
-.button {
-  grid-area: button;
+.controls {
+  grid-area: controls;
   align-self: center;
 }
 
 .submit {
   --primary-button-color: #{$blue};
+}
+
+.addSpeciesControls {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }

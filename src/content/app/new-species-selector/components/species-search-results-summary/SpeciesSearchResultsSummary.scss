@@ -9,3 +9,21 @@
 .searchMatchesCount {
   font-weight: $bold;
 }
+
+.noMatchesMessage {
+  color: $red;
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+.searchHelp p {
+  margin: 0;
+}
+
+.searchHelp ul {
+  padding-inline-start: 20px;
+}
+
+.searchHelp li {
+  list-style: disc;
+}
