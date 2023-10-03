@@ -152,15 +152,26 @@ const ShowMore = (props: Props) => {
 
 const SpeciesType = (props: { species: SpeciesSearchMatch }) => {
   const { type: speciesType, is_reference } = props.species;
-  if (is_reference) {
-    return <span className={styles.referenceGenome}>Reference</span>;
-  }
 
-  if (!speciesType) {
+  const referenceElement = is_reference ? (
+    <span className={styles.referenceGenome}>Reference</span>
+  ) : null;
+
+  const speciesTypeText = speciesType
+    ? `${upperFirst(speciesType.kind)} - ${speciesType.value}`
+    : null;
+
+  if (!referenceElement && !speciesTypeText) {
     return '-';
   }
 
-  return `${upperFirst(speciesType.kind)} - ${speciesType.value}`;
+  return (
+    <>
+      {speciesTypeText}
+      {speciesTypeText && referenceElement && ', '}
+      {referenceElement}
+    </>
+  );
 };
 
 export default SpeciesSearchResultsTable;

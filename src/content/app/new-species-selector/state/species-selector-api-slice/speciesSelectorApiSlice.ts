@@ -59,6 +59,14 @@ const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
   return response;
 };
 
+const transformPopularSpeciesResponse = (response: PopularSpeciesResponse) => {
+  response.popular_species.forEach((species) => {
+    species.name = upperFirst(species.name);
+  });
+
+  return response;
+};
+
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPopularSpecies: builder.query<
@@ -70,7 +78,11 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
         const { popularSpecies: popularSpeciesSampleData } = await import(
           './speciesSelectorSampleData'
         );
-        return { data: { popular_species: popularSpeciesSampleData } };
+        const responseData = transformPopularSpeciesResponse({
+          popular_species: popularSpeciesSampleData
+        });
+
+        return { data: responseData };
       }
     }),
     getSpeciesSearchResults: builder.query<
