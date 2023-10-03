@@ -46,7 +46,7 @@ const VariantAllelesSequences = (props: Props) => {
   };
 
   if (combinedString.length <= COMPACT_MAX_LENGTH) {
-    return <span>{combinedString}</span>;
+    return <span className={styles.alleleSequence}>{combinedString}</span>;
   }
 
   if (isExpandable) {
@@ -75,7 +75,7 @@ const CompactView = (props: { sequence: string }) => {
   const { sequence } = props;
   const trimmedSequence = `${sequence.slice(0, COMPACT_MAX_LENGTH - 1)}…`;
 
-  return <span>{trimmedSequence}</span>;
+  return <span className={styles.alleleSequence}>{trimmedSequence}</span>;
 };
 
 const ExpandedView = (props: { alleleSequences: string[] }) => {
@@ -86,7 +86,7 @@ const ExpandedView = (props: { alleleSequences: string[] }) => {
       {alleleSequences.map((sequence, index) => (
         <span key={index}>
           {sequence}
-          {index < alleleSequences.length - 1 && '/'}
+          {index < alleleSequences.length - 1 && ','}
         </span>
       ))}
     </div>
@@ -108,7 +108,9 @@ const prepareSequenceData = (props: Props) => {
     alleleSequences.unshift(referenceAllele.reference_sequence);
   }
 
-  const combinedString = alleleSequences.join(' ');
+  const alleleSequencesCopy = alleleSequences.slice(0);
+  const combinedString =
+    alleleSequencesCopy.shift() + '  ' + alleleSequencesCopy.join(',');
 
   return {
     alleleSequences,
