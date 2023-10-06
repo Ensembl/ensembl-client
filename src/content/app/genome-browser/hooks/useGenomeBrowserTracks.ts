@@ -93,7 +93,7 @@ const useGenomeBrowserTracks = () => {
     });
   }, [trackCategories, focusObject, genomeId]);
 
-  // make sure to tell genome browser to hide tracks that a given genome id doesn't have
+  // make sure to tell genome browser to hide tracks that a given genome doesn't have
   useEffect(() => {
     if (
       !trackSettingsForGenome ||

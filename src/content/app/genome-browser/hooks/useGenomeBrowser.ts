@@ -27,8 +27,6 @@ import * as genomeBrowserCommands from 'src/content/app/genome-browser/services/
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserContext';
 
-import usePrevious from 'src/shared/hooks/usePrevious';
-
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
@@ -216,6 +214,11 @@ const useGenomeBrowser = () => {
 const useTrackIdToTrackPathMap = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
 
+  const trackCategoriesRef = useRef<{
+    previous: GenomeTrackCategory[];
+    current: GenomeTrackCategory[];
+  }>({ previous: [], current: [] });
+
   const { currentData: trackCategories = [] } = useGenomeTracksQuery(
     activeGenomeId ?? '',
     {
@@ -223,11 +226,19 @@ const useTrackIdToTrackPathMap = () => {
     }
   );
 
-  const previousTrackCategories = usePrevious(trackCategories) ?? [];
+  useEffect(() => {
+    if (
+      trackCategories.length &&
+      trackCategories !== trackCategoriesRef.current.previous
+    ) {
+      trackCategoriesRef.current.previous = trackCategoriesRef.current.current;
+      trackCategoriesRef.current.current = trackCategories;
+    }
+  }, [trackCategories]);
 
   const trackIdToPathMap = getTrackIdToTrackPathMap([
-    ...trackCategories,
-    ...previousTrackCategories
+    ...trackCategoriesRef.current.previous,
+    ...trackCategoriesRef.current.current
   ]);
 
   return trackIdToPathMap;
