@@ -16,6 +16,7 @@
 import { useContext, useRef, useEffect } from 'react';
 
 import config from 'config';
+import { useAppSelector } from 'src/store';
 
 import {
   GenomeBrowserLoader,
@@ -26,7 +27,8 @@ import * as genomeBrowserCommands from 'src/content/app/genome-browser/services/
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserContext';
 
-import { useAppSelector } from 'src/store';
+import usePrevious from 'src/shared/hooks/usePrevious';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
@@ -48,14 +50,7 @@ const useGenomeBrowser = () => {
   const genomeBrowserContext = useMandatoryGenomeBrowserContext();
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
 
-  const { currentData: trackCategories } = useGenomeTracksQuery(
-    activeGenomeId ?? '',
-    {
-      skip: !activeGenomeId
-    }
-  );
-
-  const trackIdToPathMap = getTrackIdToTrackPathMap(trackCategories ?? []);
+  const trackIdToPathMap = useTrackIdToTrackPathMap();
 
   const {
     genomeBrowser,
@@ -203,13 +198,51 @@ const useGenomeBrowser = () => {
   };
 };
 
+/**
+ * There is, currently, a disconnect between what information genome browser needs
+ * to toggle a track on or off (it needs a full "path" to the track, expressed in
+ * the "trigger" field of track payload), and what the genome browser sends back
+ * in its message about which tracks are being displayed (it only sends the last part
+ * of the path, i.e. the last string of the "trigger" array).
+ *
+ * This hook creates a map between a track id and the trigger required for
+ * messages to the genome browser. The map includes non-focus tracks
+ * for the currently active genome, as well as for the previous active genome.
+ * The reason for storing information about tracks of the previous active genome
+ * is to be able to turn off previous genome's tracks that don't even exist
+ * for the currently active genome (e.g. a variation track may exist for human,
+ * but not for some bacterium).
+ */
+const useTrackIdToTrackPathMap = () => {
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
+
+  const { currentData: trackCategories = [] } = useGenomeTracksQuery(
+    activeGenomeId ?? '',
+    {
+      skip: !activeGenomeId
+    }
+  );
+
+  const previousTrackCategories = usePrevious(trackCategories) ?? [];
+
+  const trackIdToPathMap = getTrackIdToTrackPathMap([
+    ...trackCategories,
+    ...previousTrackCategories
+  ]);
+
+  return trackIdToPathMap;
+};
+
 const getTrackIdToTrackPathMap = (trackCategories: GenomeTrackCategory[]) => {
   const tracks = trackCategories.flatMap(({ track_list }) => track_list);
 
-  return tracks.reduce((accumulator, track) => {
-    accumulator[track.track_id] = track.trigger;
-    return accumulator;
-  }, {} as Record<string, string[]>);
+  return tracks.reduce(
+    (accumulator, track) => {
+      accumulator[track.track_id] = track.trigger;
+      return accumulator;
+    },
+    {} as Record<string, string[]>
+  );
 };
 
 export default useGenomeBrowser;

@@ -95,11 +95,16 @@ const useGenomeBrowserTracks = () => {
 
   // make sure to tell genome browser to hide tracks that a given genome id doesn't have
   useEffect(() => {
-    if (!trackSettingsForGenome || !visibleTrackIds.length) {
+    if (
+      !trackSettingsForGenome ||
+      !visibleTrackIds.length ||
+      !hasGenomicTrackSettings(trackSettingsForGenome, trackCategories ?? [])
+    ) {
       return;
     }
+
     const nonFocusVisibleTracks = visibleTrackIds.filter(
-      (id) => id !== 'focus'
+      (id) => !id.startsWith('focus')
     );
     const trackIdsForCurrentGenome = new Set(
       Object.keys(trackSettingsForGenome)
@@ -195,6 +200,30 @@ const prepareTrackSettings = ({
     });
   });
   return defaultTrackSettings;
+};
+
+/**
+ * Below function is a somewhat hacky guard against a race condition that occurs when reading focus track settings
+ * as opposed to other (genomic) track settings. It seems that focus track settings get read earlier —
+ * probably because the useFocusTrack hook above is executed before the useGenomicTracks —
+ * which results in incorrectly setting the visibility of genomic tracks to false.
+ *
+ * Thus, what the function below is doing is making sure that the track settings object has settings
+ * for genomic tracks, and therefore is good to be used for sending a message to the genome browser
+ * about track visibility.
+ *
+ * This hack is probably good for now; but the race condition suggests that there is an underlying
+ * problem with event coordination, and trat we should probably look into refactoring.
+ */
+const hasGenomicTrackSettings = (
+  trackSettings: TrackSettingsPerTrack,
+  trackCategories: GenomeTrackCategory[]
+) => {
+  const firstGenomicTrackId = trackCategories
+    .find((category) => category.track_list.length > 0)
+    ?.track_list[0].trigger.at(-1);
+
+  return !!firstGenomicTrackId && firstGenomicTrackId in trackSettings;
 };
 
 export default useGenomeBrowserTracks;
