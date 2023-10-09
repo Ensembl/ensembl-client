@@ -25,6 +25,7 @@ import SpeciesSearchField from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import GenomesFilterField from 'src/content/app/new-species-selector/components/genomes-filter-field/GenomesFilterField';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
@@ -122,12 +123,15 @@ type TopSectionProps = {
 const TopSection = (props: TopSectionProps) => {
   if (props.isLoading) {
     return (
-      <AddSpecies
-        query={props.query}
-        canAdd={false}
-        onAdd={props.onGenomesAdd}
-        onCancel={props.onClose}
-      />
+      <>
+        <AddSpecies
+          query={props.query}
+          canAdd={false}
+          onAdd={props.onGenomesAdd}
+          onCancel={props.onClose}
+        />
+        <CircleLoader className={styles.loader} />
+      </>
     );
   }
 

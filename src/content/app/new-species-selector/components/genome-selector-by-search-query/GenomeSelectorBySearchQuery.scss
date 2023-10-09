@@ -29,6 +29,11 @@
   grid-area: filter;
 }
 
+.loader {
+  margin-top: 40px;
+  margin-left: 60px;
+}
+
 .tableContainer {
   overflow: auto;
   padding-bottom: $global-padding-bottom;
