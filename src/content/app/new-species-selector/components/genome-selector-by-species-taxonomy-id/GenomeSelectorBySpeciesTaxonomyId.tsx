@@ -26,6 +26,7 @@ import useSelectableGenomesTable from 'src/content/app/new-species-selector/comp
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import GenomesFilterField from 'src/content/app/new-species-selector/components/genomes-filter-field/GenomesFilterField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
+import { CircleLoader } from 'src/shared/components/loader';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 
 import styles from './GenomeSelectorBySpeciesTaxonomyId.scss';
@@ -39,7 +40,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
   const [filterQuery, setFilterQuery] = useState('');
   const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
-  const { currentData } = result;
+  const { currentData, isLoading, isError } = result;
 
   const {
     genomes,
@@ -58,6 +59,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
   return (
     <div className={styles.main}>
+      {isLoading && <CircleLoader className={styles.loader} />}
       {currentData && (
         <>
           <TopSection
@@ -76,6 +78,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
           </div>
         </>
       )}
+      {isError && <div>An unexpected error has occurred</div>}
     </div>
   );
 };

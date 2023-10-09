@@ -48,6 +48,10 @@
   padding-left: 400px;
 }
 
+.loader {
+  grid-area: table;  
+}
+
 .tableContainer {
   grid-area: table;
   overflow: auto;
