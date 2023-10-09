@@ -20,6 +20,8 @@ import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import filterGenomes from './filterGenomes';
+
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
 export type SelectableGenome = SpeciesSearchMatch & {
@@ -27,10 +29,19 @@ export type SelectableGenome = SpeciesSearchMatch & {
   isStaged: boolean;
 };
 
-const useSelectableGenomesTable = (genomes: SpeciesSearchMatch[]) => {
+type Params = {
+  genomes: SpeciesSearchMatch[];
+  filterQuery?: string;
+};
+
+const useSelectableGenomesTable = (params: Params) => {
+  const { genomes, filterQuery } = params;
   const [stagedGenomes, setStagedGenomes] = useState<SpeciesSearchMatch[]>([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  const selectableGenomes = useMarkedGenomes(genomes, stagedGenomes);
+  const filteredGenomes = filterQuery
+    ? filterGenomes({ query: filterQuery, genomes })
+    : genomes;
+  const selectableGenomes = useMarkedGenomes(filteredGenomes, stagedGenomes);
 
   const onGenomePreselectToggle = (
     genome: SpeciesSearchMatch,

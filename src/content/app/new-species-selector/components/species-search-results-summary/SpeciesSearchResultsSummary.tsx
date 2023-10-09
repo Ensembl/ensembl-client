@@ -41,17 +41,17 @@ const SuccessfulSearchResults = (props: { count: number }) => {
   const { count } = props;
 
   return (
-    <section className={styles.container}>
+    <div className={styles.container}>
       <span>
         <span className={styles.searchMatchesCount}>{count}</span> results
       </span>
-    </section>
+    </div>
   );
 };
 
 const NoResults = () => {
   return (
-    <section className={styles.container}>
+    <div className={styles.container}>
       <div>
         <span>
           <span className={styles.searchMatchesCount}>0</span> results
@@ -61,7 +61,7 @@ const NoResults = () => {
         Sorry, we don’t recognise, or may not have data for this species
       </div>
       <SearchHelp />
-    </section>
+    </div>
   );
 };
 

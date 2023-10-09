@@ -17,7 +17,7 @@
   grid-area: top;
   align-items: center;
   justify-self: start;
-  grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] 1fr;
+  grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] max-content [filter] max-content;
   column-gap: $standard-gutter;
 }
 
@@ -41,6 +41,11 @@
 .addButton {
   grid-column: add-button;
   margin-left: $standard-gutter;
+}
+
+.filterWrapper {
+  grid-column: filter;
+  padding-left: 400px;
 }
 
 .tableContainer {

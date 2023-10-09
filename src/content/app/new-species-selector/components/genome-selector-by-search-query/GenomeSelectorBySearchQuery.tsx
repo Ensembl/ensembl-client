@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useDeferredValue } from 'react';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
@@ -24,7 +24,9 @@ import AddSpecies from 'src/content/app/new-species-selector/components/species-
 import SpeciesSearchField from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import GenomesFilterField from 'src/content/app/new-species-selector/components/genomes-filter-field/GenomesFilterField';
 
+import type { SpeciesSearchResponse } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 
 import styles from './GenomeSelectorBySearchQuery.scss';
@@ -37,9 +39,10 @@ type Props = {
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { query, onClose } = props;
+  const [filterQuery, setFilterQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData } = result;
+  const { currentData, isLoading } = result;
 
   const {
     genomes,
@@ -47,7 +50,12 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     isTableExpanded,
     onTableExpandToggle,
     onGenomePreselectToggle
-  } = useSelectableGenomesTable(currentData?.matches ?? []);
+  } = useSelectableGenomesTable({
+    genomes: currentData?.matches ?? [],
+    filterQuery
+  });
+
+  const deferredGenomes = useDeferredValue(genomes);
 
   useEffect(() => {
     searchTrigger({ query });
@@ -70,39 +78,101 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
 
   return (
     <div className={styles.main}>
-      {currentData?.matches.length ? (
-        <AddSpecies
-          query={query}
-          canAdd={stagedGenomes.length > 0}
-          onAdd={onSpeciesAdd}
-          onCancel={onClose}
-        />
-      ) : (
-        <SpeciesSearchField
-          onInput={onSearchInput}
-          canSubmit={canSubmitSearch}
-          onSearchSubmit={onSearchSubmit}
-        />
-      )}
+      <TopSection
+        query={query}
+        isLoading={isLoading}
+        searchResults={currentData}
+        canAddGenomes={stagedGenomes.length > 0}
+        canSubmitSearch={canSubmitSearch}
+        onSearchSubmit={onSearchSubmit}
+        onSearchInput={onSearchInput}
+        onGenomesAdd={onSpeciesAdd}
+        onFilterChange={setFilterQuery}
+        onClose={onClose}
+      />
 
-      {currentData && (
-        <>
-          <SpeciesSearchResultsSummary searchResult={currentData} />
-
-          {currentData.matches.length > 0 && (
-            <div className={styles.tableContainer}>
-              <SpeciesSearchResultsTable
-                results={genomes}
-                isExpanded={isTableExpanded}
-                onTableExpandToggle={onTableExpandToggle}
-                onSpeciesSelectToggle={onGenomePreselectToggle}
-              />
-            </div>
-          )}
-        </>
+      {currentData && currentData.matches.length > 0 && (
+        <div className={styles.tableContainer}>
+          <SpeciesSearchResultsTable
+            results={deferredGenomes}
+            isExpanded={isTableExpanded}
+            onTableExpandToggle={onTableExpandToggle}
+            onSpeciesSelectToggle={onGenomePreselectToggle}
+          />
+        </div>
       )}
     </div>
   );
+};
+
+// TODO: consider errors in response to search request
+type TopSectionProps = {
+  query: string;
+  isLoading: boolean;
+  searchResults?: SpeciesSearchResponse;
+  canAddGenomes: boolean;
+  canSubmitSearch: boolean;
+  onSearchSubmit: () => void;
+  onSearchInput: () => void;
+  onGenomesAdd: () => void;
+  onFilterChange: (filter: string) => void;
+  onClose: () => void;
+};
+
+const TopSection = (props: TopSectionProps) => {
+  if (props.isLoading) {
+    return (
+      <AddSpecies
+        query={props.query}
+        canAdd={false}
+        onAdd={props.onGenomesAdd}
+        onCancel={props.onClose}
+      />
+    );
+  }
+
+  // search returned some results
+  if (props.searchResults?.matches.length) {
+    return (
+      <section className={styles.topSection}>
+        <div className={styles.searchFieldWrapper}>
+          <AddSpecies
+            query={props.query}
+            canAdd={props.canAddGenomes}
+            onAdd={props.onGenomesAdd}
+            onCancel={props.onClose}
+          />
+        </div>
+        <div className={styles.resultsSummaryWrapper}>
+          <SpeciesSearchResultsSummary searchResult={props.searchResults} />
+        </div>
+        <div className={styles.filterFieldWrapper}>
+          <GenomesFilterField onFilterChange={props.onFilterChange} />
+        </div>
+      </section>
+    );
+  }
+
+  // search returned no results
+  if (props.searchResults?.matches.length === 0) {
+    return (
+      <section className={styles.topSection}>
+        <div className={styles.searchFieldWrapper}>
+          <SpeciesSearchField
+            onInput={props.onSearchInput}
+            canSubmit={props.canSubmitSearch}
+            onSearchSubmit={props.onSearchSubmit}
+          />
+        </div>
+        <div className={styles.resultsSummaryWrapper}>
+          <SpeciesSearchResultsSummary searchResult={props.searchResults} />
+        </div>
+      </section>
+    );
+  }
+
+  // this must be an error
+  return <div>An unexpected error happened during search.</div>;
 };
 
 export default GenomeSelectorBySearchQuery;
