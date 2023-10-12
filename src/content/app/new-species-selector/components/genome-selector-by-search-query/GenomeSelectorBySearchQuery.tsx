@@ -148,7 +148,7 @@ const TopSection = (props: TopSectionProps) => {
           />
         </div>
         <div className={styles.resultsSummaryWrapper}>
-          <SpeciesSearchResultsSummary searchResult={props.searchResults} />
+          <SpeciesSearchResultsSummary searchResults={props.searchResults} />
         </div>
         <div className={styles.filterFieldWrapper}>
           <GenomesFilterField onFilterChange={props.onFilterChange} />
@@ -169,7 +169,7 @@ const TopSection = (props: TopSectionProps) => {
           />
         </div>
         <div className={styles.resultsSummaryWrapper}>
-          <SpeciesSearchResultsSummary searchResult={props.searchResults} />
+          <SpeciesSearchResultsSummary searchResults={props.searchResults} />
         </div>
       </section>
     );

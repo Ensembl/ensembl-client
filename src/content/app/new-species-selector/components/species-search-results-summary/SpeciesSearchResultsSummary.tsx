@@ -20,15 +20,12 @@ import type { SpeciesSearchResponse } from 'src/content/app/new-species-selector
 
 import styles from './SpeciesSearchResultsSummary.scss';
 
-// TODO update the props to reflect the fact that results may come from either search or from a popular species
 type Props = {
-  searchResult?: SpeciesSearchResponse;
+  searchResults?: SpeciesSearchResponse;
 };
 
-// TODO: add a filter component to this section
-
 const SpeciesSearchResultsSummary = (props: Props) => {
-  const searchMatchesCount = props.searchResult?.meta.total_count ?? 0;
+  const searchMatchesCount = props.searchResults?.meta.total_count ?? 0;
 
   return searchMatchesCount > 0 ? (
     <SuccessfulSearchResults count={searchMatchesCount} />
