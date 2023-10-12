@@ -20,15 +20,12 @@ import type { SpeciesSearchResponse } from 'src/content/app/new-species-selector
 
 import styles from './SpeciesSearchResultsSummary.scss';
 
-// TODO update the props to reflect the fact that results may come from either search or from a popular species
 type Props = {
-  searchResult?: SpeciesSearchResponse;
+  searchResults?: SpeciesSearchResponse;
 };
 
-// TODO: add a filter component to this section
-
 const SpeciesSearchResultsSummary = (props: Props) => {
-  const searchMatchesCount = props.searchResult?.meta.total_count ?? 0;
+  const searchMatchesCount = props.searchResults?.meta.total_count ?? 0;
 
   return searchMatchesCount > 0 ? (
     <SuccessfulSearchResults count={searchMatchesCount} />
@@ -41,17 +38,17 @@ const SuccessfulSearchResults = (props: { count: number }) => {
   const { count } = props;
 
   return (
-    <section className={styles.container}>
+    <div className={styles.container}>
       <span>
         <span className={styles.searchMatchesCount}>{count}</span> results
       </span>
-    </section>
+    </div>
   );
 };
 
 const NoResults = () => {
   return (
-    <section className={styles.container}>
+    <div className={styles.container}>
       <div>
         <span>
           <span className={styles.searchMatchesCount}>0</span> results
@@ -61,7 +58,7 @@ const NoResults = () => {
         Sorry, we don’t recognise, or may not have data for this species
       </div>
       <SearchHelp />
-    </section>
+    </div>
   );
 };
 

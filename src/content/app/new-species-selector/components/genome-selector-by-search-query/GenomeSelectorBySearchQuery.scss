@@ -7,6 +7,33 @@
   padding-left: $global-padding-left;
 }
 
+.topSection {
+  display: grid;
+  grid-template-areas:
+    "search-field ."
+    "results-summary filter";
+  grid-template-columns: max-content max-content;
+  column-gap: 80px;
+  row-gap: 32px;
+}
+
+.searchFieldWrapper {
+  grid-area: search-field;
+}
+
+.resultsSummaryWrapper {
+  grid-area: results-summary;
+}
+
+.filterFieldWrapper {
+  grid-area: filter;
+}
+
+.loader {
+  margin-top: 40px;
+  margin-left: 60px;
+}
+
 .tableContainer {
   overflow: auto;
   padding-bottom: $global-padding-bottom;

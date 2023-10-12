@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent } from 'react';
+import React, { type FormEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';

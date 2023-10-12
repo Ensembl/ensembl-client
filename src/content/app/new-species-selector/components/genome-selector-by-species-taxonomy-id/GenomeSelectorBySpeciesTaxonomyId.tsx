@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -24,7 +24,9 @@ import { commitSelectedSpeciesAndSave } from 'src/content/app/new-species-select
 import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import GenomesFilterField from 'src/content/app/new-species-selector/components/genomes-filter-field/GenomesFilterField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
+import { CircleLoader } from 'src/shared/components/loader';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 
 import styles from './GenomeSelectorBySpeciesTaxonomyId.scss';
@@ -36,8 +38,9 @@ type Props = {
 
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
+  const [filterQuery, setFilterQuery] = useState('');
   const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
-  const { currentData } = result;
+  const { currentData, isLoading, isError } = result;
 
   const {
     genomes,
@@ -45,7 +48,10 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     isTableExpanded,
     onTableExpandToggle,
     onGenomePreselectToggle
-  } = useSelectableGenomesTable(currentData?.matches ?? []);
+  } = useSelectableGenomesTable({
+    genomes: currentData?.matches ?? [],
+    filterQuery
+  });
 
   useEffect(() => {
     searchTrigger({ speciesTaxonomyId });
@@ -53,12 +59,14 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
   return (
     <div className={styles.main}>
+      {isLoading && <CircleLoader className={styles.loader} />}
       {currentData && (
         <>
-          <TopContent
+          <TopSection
             {...props}
             genomes={genomes}
             stagedGenomes={stagedGenomes}
+            onFilterChange={setFilterQuery}
           />
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
@@ -70,16 +78,18 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
           </div>
         </>
       )}
+      {isError && <div>An unexpected error has occurred</div>}
     </div>
   );
 };
 
-type TopContentProps = Props & {
+type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
+  onFilterChange: (filter: string) => void;
 };
 
-const TopContent = (props: TopContentProps) => {
+const TopSection = (props: TopSectionProps) => {
   const { speciesImageUrl, genomes, stagedGenomes } = props;
   const dispatch = useAppDispatch();
 
@@ -93,7 +103,7 @@ const TopContent = (props: TopContentProps) => {
   const totalGenomesCount = genomes.length;
 
   return (
-    <div className={styles.top}>
+    <section className={styles.top}>
       {speciesImageUrl && (
         <span className={styles.speciesImage}>
           <img src={speciesImageUrl} />
@@ -112,7 +122,10 @@ const TopContent = (props: TopContentProps) => {
       >
         Add
       </PrimaryButton>
-    </div>
+      <div className={styles.filterWrapper}>
+        <GenomesFilterField onFilterChange={props.onFilterChange} />
+      </div>
+    </section>
   );
 };
 
