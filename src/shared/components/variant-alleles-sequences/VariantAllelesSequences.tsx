@@ -37,7 +37,11 @@ type Props = {
 
 const VariantAllelesSequences = (props: Props) => {
   const { isExpandable = false } = props;
-  const { alleleSequences, combinedString } = prepareSequenceData(props);
+  const {
+    referenceAlleleSequence,
+    alternativeAlleleSequences,
+    combinedString
+  } = prepareSequenceData(props);
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -46,14 +50,17 @@ const VariantAllelesSequences = (props: Props) => {
   };
 
   if (combinedString.length <= COMPACT_MAX_LENGTH) {
-    return <span>{combinedString}</span>;
+    return <span className={styles.trimmedSequence}>{combinedString}</span>;
   }
 
   if (isExpandable) {
     return (
       <div>
         {isExpanded ? (
-          <ExpandedView alleleSequences={alleleSequences} />
+          <ExpandedView
+            referenceAlleleSequence={referenceAlleleSequence}
+            alternativeAlleleSequences={alternativeAlleleSequences}
+          />
         ) : (
           <div>
             <CompactView sequence={combinedString} />
@@ -75,18 +82,22 @@ const CompactView = (props: { sequence: string }) => {
   const { sequence } = props;
   const trimmedSequence = `${sequence.slice(0, COMPACT_MAX_LENGTH - 1)}…`;
 
-  return <span>{trimmedSequence}</span>;
+  return <span className={styles.trimmedSequence}>{trimmedSequence}</span>;
 };
 
-const ExpandedView = (props: { alleleSequences: string[] }) => {
-  const { alleleSequences } = props;
+const ExpandedView = (props: {
+  referenceAlleleSequence: string;
+  alternativeAlleleSequences: string[];
+}) => {
+  const { referenceAlleleSequence, alternativeAlleleSequences } = props;
 
   return (
     <div className={styles.expanded}>
-      {alleleSequences.map((sequence, index) => (
+      <span> {referenceAlleleSequence} </span>
+      {alternativeAlleleSequences.map((sequence, index) => (
         <span key={index}>
           {sequence}
-          {index < alleleSequences.length - 1 && '/'}
+          {index < alternativeAlleleSequences.length - 1 && ','}
         </span>
       ))}
     </div>
@@ -98,20 +109,21 @@ const prepareSequenceData = (props: Props) => {
     props.alleles
   );
 
-  const alleleSequences = alternativeAlleles.map(
+  // we expect reference allele to always exist in the data;
+  // but default to an empty string to appease typescript
+  const referenceAlleleSequence = referenceAllele?.reference_sequence ?? '';
+
+  const alternativeAlleleSequences = alternativeAlleles.map(
     (allele) => allele.allele_sequence
   );
 
-  if (referenceAllele) {
-    // we expect reference allele to always exist in the data;
-    // but no harm in checking
-    alleleSequences.unshift(referenceAllele.reference_sequence);
-  }
-
-  const combinedString = alleleSequences.join('/');
+  const combinedString = `${referenceAlleleSequence}  ${alternativeAlleleSequences.join(
+    ','
+  )}`;
 
   return {
-    alleleSequences,
+    referenceAlleleSequence,
+    alternativeAlleleSequences,
     combinedString
   };
 };
