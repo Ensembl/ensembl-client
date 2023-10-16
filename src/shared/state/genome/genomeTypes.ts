@@ -37,7 +37,6 @@ export enum GenomeKaryotypeItemType {
 }
 
 export type GenomeKaryotypeItem = {
-  is_chromosome: boolean;
   is_circular: boolean;
   length: number;
   name: string;
