@@ -213,7 +213,7 @@ const prepareTrackSettings = ({
  * about track visibility.
  *
  * This hack is probably good for now; but the race condition suggests that there is an underlying
- * problem with event coordination, and trat we should probably look into refactoring.
+ * problem with event coordination, and that we should probably look into refactoring.
  */
 const hasGenomicTrackSettings = (
   trackSettings: TrackSettingsPerTrack,
