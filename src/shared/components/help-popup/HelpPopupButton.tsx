@@ -33,7 +33,7 @@ type Props = {
 const HelpPopupButton = (props: Props) => {
   const { label: labelText = 'Help', slug } = props;
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const elementRef = useRef<HTMLDivElement | null>(null);
+  const elementRef = useRef<HTMLButtonElement | null>(null);
 
   const openModal = () => {
     setShouldShowModal(true);
@@ -61,12 +61,12 @@ const HelpPopupButton = (props: Props) => {
 
   return (
     <>
-      <div className={styles.wrapper} onClick={openModal} ref={elementRef}>
+      <button className={styles.wrapper} onClick={openModal} ref={elementRef}>
         <span className={labelClasses}>{labelText}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
-      </div>
+      </button>
       {shouldShowModal && (
         <Modal classNames={{ body: styles.helpPopup }} onClose={closeModal}>
           <HelpPopupBody slug={slug} />

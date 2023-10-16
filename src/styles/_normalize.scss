@@ -16,10 +16,6 @@ html {
   -webkit-tap-highlight-color: transparent; // disable blue highlight colour that can otherwise be seen upon tapping an element with cursor: pointer in mobile browser
 }
 
-*:focus {
-  outline: none;
-}
-
 body {
   margin: 0;
   padding: 0;
