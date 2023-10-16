@@ -19,8 +19,9 @@ import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getSortOrderForColumn } from 'src/content/app/new-species-selector/components/selectable-genomes-table/useOrderedGenomes';
 
-import { Table } from 'src/shared/components/table';
+import { Table, ColumnHead } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SolidDot from 'src/shared/components/table/dot/SolidDot';
 import EmptyDot from 'src/shared/components/table/dot/EmptyDot';
@@ -29,21 +30,33 @@ import DisabledExternalLink from 'src/shared/components/external-link/DisabledEx
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
 import type { SelectableGenome } from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
+import type {
+  SortRule,
+  ChangeSortRule
+} from 'src/content/app/new-species-selector/components/selectable-genomes-table/useOrderedGenomes';
 
 import styles from './SpeciesSearchResultsTable.scss';
 
 type Props = {
   isExpanded: boolean;
   results: SelectableGenome[];
+  sortRule: SortRule | null;
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
     species: SpeciesSearchMatch,
     isAdding?: boolean
   ) => void;
+  onSortRuleChange: ChangeSortRule;
 };
 
 const SpeciesSearchResultsTable = (props: Props) => {
-  const { isExpanded, results, onSpeciesSelectToggle } = props;
+  const {
+    isExpanded,
+    results,
+    onSpeciesSelectToggle,
+    sortRule,
+    onSortRuleChange
+  } = props;
 
   const onSpeciesPreselect = (species: SelectableGenome) => {
     const isAdding = !species.isStaged;
@@ -51,28 +64,78 @@ const SpeciesSearchResultsTable = (props: Props) => {
   };
 
   return (
-    <Table className={styles.table}>
+    <Table stickyHeader={true} className={styles.table}>
       <thead>
         <tr>
-          <th>Select to add</th>
-          <th>Common name</th>
-          <th>Scientific name</th>
-          <th>Type</th>
-          <th>Assembly</th>
-          <th>Assembly accession</th>
+          <ColumnHead>Select to add</ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('common_name', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('common_name', newOrder)
+            }
+          >
+            Common name
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('scientific_name', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('scientific_name', newOrder)
+            }
+          >
+            Scientific name
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('type', sortRule)}
+            onSortOrderChange={(newOrder) => onSortRuleChange('type', newOrder)}
+          >
+            Type
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('assembly_name', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('assembly_name', newOrder)
+            }
+          >
+            Assembly
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('assembly_accession_id', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('assembly_accession_id', newOrder)
+            }
+          >
+            Assembly accession
+          </ColumnHead>
 
-          <th>
+          <ColumnHead>
             <ShowMore {...props} />
-          </th>
+          </ColumnHead>
 
           {isExpanded && (
             <>
-              <th>Coding genes</th>
-              <th>N50</th>
-              <th>Variation</th>
-              <th>Regulation</th>
-              <th>Annotation provider</th>
-              <th>Annotation method</th>
+              <ColumnHead
+                sortOrder={getSortOrderForColumn(
+                  'coding_genes_count',
+                  sortRule
+                )}
+                onSortOrderChange={(newOrder) =>
+                  onSortRuleChange('coding_genes_count', newOrder)
+                }
+              >
+                Coding genes
+              </ColumnHead>
+              <ColumnHead
+                sortOrder={getSortOrderForColumn('contig_n50', sortRule)}
+                onSortOrderChange={(newOrder) =>
+                  onSortRuleChange('contig_n50', newOrder)
+                }
+              >
+                N50
+              </ColumnHead>
+              <ColumnHead>Variation</ColumnHead>
+              <ColumnHead>Regulation</ColumnHead>
+              <ColumnHead>Annotation provider</ColumnHead>
+              <ColumnHead>Annotation method</ColumnHead>
             </>
           )}
         </tr>

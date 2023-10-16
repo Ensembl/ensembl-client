@@ -19,9 +19,9 @@
   background-clip: padding-box;
 }
 
-.table th,
+// .table th,
 .table td {
-  padding: var(--table-data-padding, 6px 12px);
+  padding: var(--table-data-padding, 6px 32px 6px 24px);
 }
 
 .table td {

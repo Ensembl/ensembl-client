@@ -16,3 +16,4 @@
 
 export { default as Table } from './Table';
 export { default as RowFooter } from './RowFooter';
+export { default as ColumnHead } from './ColumnHead';

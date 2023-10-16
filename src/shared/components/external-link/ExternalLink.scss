@@ -3,21 +3,18 @@
 .externalLinkContainer {
   display: inline-grid;
   grid-template-columns:  [icon] auto [link] auto;
+  column-gap: 5px;
+  align-items: baseline;
 }
 
 .icon {
   display: inline-block;
   fill: $orange;
   grid-column: icon;
-  top: 1px;
-  position: relative;
   height: 12px;
   width: 12px;
 }
 
 .link {
   display: inline-block;
-  position: relative;
-  top: -2px;
-  margin-left: 5px;
 }
