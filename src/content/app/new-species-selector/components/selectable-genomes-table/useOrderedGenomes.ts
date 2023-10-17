@@ -15,6 +15,14 @@
  */
 
 import { useState, useCallback } from 'react';
+
+import {
+  sortStringAsc,
+  sortStringDesc,
+  sortNumberAsc,
+  sortNumberDesc
+} from 'src/shared/helpers/sortingHelpers';
+
 import type { SelectableGenome } from './useSelectableGenomesTable';
 
 type SortableColumn =
@@ -152,46 +160,6 @@ export const getSortOrderForColumn = (
     return sortRule.sortOrder;
   } else {
     return 'none';
-  }
-};
-
-const sortStringAsc = (a: string | null, b: string | null) => {
-  if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  } else {
-    return a.localeCompare(b);
-  }
-};
-
-const sortStringDesc = (a: string | null, b: string | null) => {
-  if (!a) {
-    return -1;
-  } else if (!b) {
-    return 1;
-  } else {
-    return b.localeCompare(a);
-  }
-};
-
-const sortNumberAsc = (a: number | null, b: number | null) => {
-  if (a === null) {
-    return 1;
-  } else if (b === null) {
-    return -1;
-  } else {
-    return a - b;
-  }
-};
-
-const sortNumberDesc = (a: number | null, b: number | null) => {
-  if (a === null) {
-    return 1;
-  } else if (b === null) {
-    return -1;
-  } else {
-    return b - a;
   }
 };
 
