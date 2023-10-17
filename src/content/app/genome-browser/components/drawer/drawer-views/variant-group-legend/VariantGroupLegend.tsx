@@ -19,7 +19,7 @@ import React from 'react';
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-import { Table } from 'src/shared/components/table';
+import { Table, ColumnHead } from 'src/shared/components/table';
 
 import type { VariantLegendView } from 'src/content/app/genome-browser/state/drawer/types';
 
@@ -57,8 +57,8 @@ const VariantGroupLegend = (props: Props) => {
         <Table stickyHeader={true}>
           <thead className={styles.tableHead}>
             <tr>
-              <th>SO term</th>
-              <th>SO accession</th>
+              <ColumnHead>SO term</ColumnHead>
+              <ColumnHead>SO accession</ColumnHead>
             </tr>
           </thead>
           <tbody>

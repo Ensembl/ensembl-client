@@ -20,6 +20,8 @@ import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import useOrderedGenomes from './useOrderedGenomes';
+
 import filterGenomes from './filterGenomes';
 
 import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
@@ -42,6 +44,8 @@ const useSelectableGenomesTable = (params: Params) => {
     ? filterGenomes({ query: filterQuery, genomes })
     : genomes;
   const selectableGenomes = useMarkedGenomes(filteredGenomes, stagedGenomes);
+  const { orderedGenomes, sortRule, changeSortRule } =
+    useOrderedGenomes(selectableGenomes);
 
   const onGenomePreselectToggle = (
     genome: SpeciesSearchMatch,
@@ -62,12 +66,14 @@ const useSelectableGenomesTable = (params: Params) => {
   };
 
   return {
-    genomes: selectableGenomes,
+    genomes: orderedGenomes,
     stagedGenomes,
     onGenomePreselectToggle,
     isTableExpanded,
     onTableExpandToggle,
-    setStagedGenomes
+    setStagedGenomes,
+    sortRule,
+    changeSortRule
   };
 };
 

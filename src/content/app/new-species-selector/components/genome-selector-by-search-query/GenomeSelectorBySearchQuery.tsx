@@ -50,7 +50,9 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomePreselectToggle
+    onGenomePreselectToggle,
+    sortRule,
+    changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
     filterQuery
@@ -97,6 +99,8 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
           <SpeciesSearchResultsTable
             results={deferredGenomes}
             isExpanded={isTableExpanded}
+            sortRule={sortRule}
+            onSortRuleChange={changeSortRule}
             onTableExpandToggle={onTableExpandToggle}
             onSpeciesSelectToggle={onGenomePreselectToggle}
           />
