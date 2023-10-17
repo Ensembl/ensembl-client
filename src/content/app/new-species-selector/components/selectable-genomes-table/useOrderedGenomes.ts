@@ -24,6 +24,7 @@ import {
 } from 'src/shared/helpers/sortingHelpers';
 
 import type { SelectableGenome } from './useSelectableGenomesTable';
+import type { SortOrder, SortOrderWithNone } from 'src/shared/types/sort-order';
 
 type SortableColumn =
   | 'common_name'
@@ -34,16 +35,14 @@ type SortableColumn =
   | 'coding_genes_count'
   | 'contig_n50';
 
-type SortOrder = 'asc' | 'desc';
-
 export type SortRule = {
   column: SortableColumn;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: SortOrder;
 };
 
 export type ChangeSortRule = (
   column: SortableColumn,
-  sortOrder: SortOrder | 'none'
+  sortOrder: SortOrderWithNone
 ) => void;
 
 const useOrderedGenomes = (genomes: SelectableGenome[]) => {

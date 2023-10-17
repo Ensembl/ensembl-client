@@ -19,9 +19,9 @@ import classNames from 'classnames';
 
 import SortIcon from 'static/icons/icon_arrow.svg';
 
-import styles from './ColumnHead.scss';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
-type SortOrder = 'none' | 'asc' | 'desc';
+import styles from './ColumnHead.scss';
 
 type RegularColumnHeadProps = DetailedHTMLProps<
   ThHTMLAttributes<HTMLTableCellElement>,
@@ -29,8 +29,8 @@ type RegularColumnHeadProps = DetailedHTMLProps<
 >;
 
 type SortableColumnHeadProps = RegularColumnHeadProps & {
-  sortOrder: SortOrder;
-  onSortOrderChange: (order: SortOrder) => void;
+  sortOrder: SortOrderWithNone;
+  onSortOrderChange: (order: SortOrderWithNone) => void;
 };
 
 type Props = RegularColumnHeadProps | SortableColumnHeadProps;
@@ -44,7 +44,7 @@ const ColumnHead = (props: Props) => {
   const isSortingApplied = props.sortOrder !== 'none';
 
   const changeSortingOrder = () => {
-    const nextOrder: SortOrder =
+    const nextOrder: SortOrderWithNone =
       sortOrder === 'none' ? 'desc' : sortOrder === 'desc' ? 'asc' : 'none';
 
     onSortOrderChange(nextOrder);
