@@ -60,7 +60,7 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
     }),
     genomeKaryotype: builder.query<GenomeKaryotypeItem[], string>({
       query: (genomeId) => ({
-        url: `${config.genomeSearchBaseUrl}/genome/karyotype?genome_id=${genomeId}`
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/karyotype`
       })
     })
   })

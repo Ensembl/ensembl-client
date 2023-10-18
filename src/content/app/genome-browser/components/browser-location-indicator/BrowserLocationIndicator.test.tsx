@@ -43,10 +43,10 @@ const mockBacteriumKaryotype = [
   { is_circular: true, name: bacterialChromosomeName }
 ];
 
-const mockGenomeSearchApi = 'http://genome-search-api';
+const mockGenomeSearchApi = 'http://metadata-api';
 
 jest.mock('config', () => ({
-  genomeSearchBaseUrl: 'http://genome-search-api'
+  metadataApiBaseUrl: 'http://metadata-api'
 }));
 
 jest.mock(
@@ -55,15 +55,18 @@ jest.mock(
 );
 
 const server = setupServer(
-  rest.get(`${mockGenomeSearchApi}/genome/karyotype`, (req, res, ctx) => {
-    const genomeId = req.url.searchParams.get('genome_id');
+  rest.get(
+    `${mockGenomeSearchApi}/genome/:genomeId/karyotype`,
+    (req, res, ctx) => {
+      const { genomeId } = req.params;
 
-    if (genomeId === 'human') {
-      return res(ctx.json(mockHumanKaryotype));
-    } else if (genomeId === 'ecoli') {
-      return res(ctx.json(mockBacteriumKaryotype));
+      if (genomeId === 'human') {
+        return res(ctx.json(mockHumanKaryotype));
+      } else if (genomeId === 'ecoli') {
+        return res(ctx.json(mockBacteriumKaryotype));
+      }
     }
-  })
+  )
 );
 
 const initialReduxState = {

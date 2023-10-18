@@ -74,17 +74,10 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       PopularSpeciesResponse,
       PopularSpeciesRequestParams
     >({
-      queryFn: async () => {
-        // TODO: change this function when BE exposes an endpoint
-        const { popularSpecies: popularSpeciesSampleData } = await import(
-          './speciesSelectorSampleData'
-        );
-        const responseData = transformPopularSpeciesResponse({
-          popular_species: popularSpeciesSampleData
-        });
-
-        return { data: responseData };
-      }
+      query: () => ({
+        url: `${config.metadataApiBaseUrl}/popular_species`
+      }),
+      transformResponse: transformPopularSpeciesResponse
     }),
     getSpeciesSearchResults: builder.query<
       SpeciesSearchResponse,
