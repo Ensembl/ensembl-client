@@ -17,6 +17,8 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import type { LocationValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+
 const validRegionName = '2';
 const invalidRegionName = '30';
 const startCoordinate = 100;
@@ -28,39 +30,32 @@ export const invalidLocationInput = `${invalidRegionName}:${startCoordinate}-${e
 export const getMockServer = () =>
   setupServer(
     rest.get(
-      'http://location-validation-api/genome/region/validate',
+      'http://location-validation-api/validate_location',
       (req, res, ctx) => {
-        const region = req.url.searchParams.get('region');
-        if (region === validLocationInput) {
+        const location = req.url.searchParams.get('location');
+        if (location === validLocationInput) {
           return res(ctx.json(validLocationResponse));
-        } else if (region === invalidLocationInput) {
+        } else if (location === invalidLocationInput) {
           return res(ctx.json(invalidLocationResponse));
         }
       }
     )
   );
 
-const validLocationResponse = {
+const validLocationResponse: LocationValidationResponse = {
   end: {
     error_code: null,
     error_message: null,
     is_valid: true,
     value: endCoordinate
   },
-  genome_id: {
-    error_code: null,
-    error_message: null,
-    is_valid: true,
-    value: 'a7335667-93e7-11ec-a39d-005056b38ce3'
-  },
   region: {
     error_code: null,
     error_message: null,
     is_valid: true,
-    region_code: 'chromosome',
     region_name: validRegionName
   },
-  region_id: `${validRegionName}:${startCoordinate}-${endCoordinate}`,
+  location: `${validRegionName}:${startCoordinate}-${endCoordinate}`,
   start: {
     error_code: null,
     error_message: null,
@@ -69,27 +64,20 @@ const validLocationResponse = {
   }
 };
 
-export const invalidLocationResponse = {
+export const invalidLocationResponse: LocationValidationResponse = {
   end: {
     error_code: null,
     error_message: null,
     is_valid: false,
     value: endCoordinate
   },
-  genome_id: {
-    error_code: null,
-    error_message: null,
-    is_valid: true,
-    value: 'a7335667-93e7-11ec-a39d-005056b38ce3'
-  },
   region: {
     error_code: null,
     error_message: 'Could not find region 30',
     is_valid: false,
-    region_code: null,
     region_name: '30'
   },
-  region_id: null,
+  location: null,
   start: {
     error_code: null,
     error_message: null,

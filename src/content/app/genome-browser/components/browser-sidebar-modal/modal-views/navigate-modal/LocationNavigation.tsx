@@ -104,12 +104,12 @@ const LocationNavigation = () => {
 
     try {
       const validatedLocation = await validateGenomicLocation({
-        regionInput: newLocation,
+        location: newLocation,
         genomeId: activeGenomeId
       });
       onValidationSuccess(validatedLocation);
     } catch (error) {
-      if (error && typeof error === 'object' && 'region_id' in error) {
+      if (error && typeof error === 'object' && 'location' in error) {
         onValidationError();
       }
     }
@@ -170,12 +170,12 @@ const LocationNavigation = () => {
     validatedLocation: LocationValidationResponse
   ) => {
     resetForm();
-    const { region_id } = validatedLocation;
+    const { location } = validatedLocation;
 
     navigate(
       urlFor.browser({
         genomeId: genomeIdForUrl,
-        focus: `location:${region_id}`
+        focus: `location:${location}`
       }),
       {
         replace: true

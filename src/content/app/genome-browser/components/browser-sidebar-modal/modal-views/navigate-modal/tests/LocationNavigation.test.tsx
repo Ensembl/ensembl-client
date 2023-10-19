@@ -47,7 +47,7 @@ const generateKaryotype = () =>
 const mockKaryotype = generateKaryotype();
 
 jest.mock('config', () => ({
-  genomeSearchBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
 }));
 jest.mock('src/shared/state/genome/genomeApiSlice', () => {
   const originalModule = jest.requireActual(
@@ -265,7 +265,7 @@ describe('<LocationNavigation />', () => {
     it('displays the wrong location error', async () => {
       server.use(
         rest.get(
-          'http://location-validation-api/genome/region/validate',
+          'http://location-validation-api/validate_location',
           (_, res, ctx) => {
             return res.once(ctx.json(invalidLocationResponse));
           }
