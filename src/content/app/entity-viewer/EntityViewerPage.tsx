@@ -67,10 +67,10 @@ const EntityViewerPage = () => {
     }
 
     const preparedPageMeta = entityId
-      ? buildPageMetaData({
+      ? buildPageMeta({
           title: pageMeta?.title ?? defaultPageTitle
         })
-      : buildPageMetaData();
+      : buildPageMeta();
 
     dispatch(updatePageMeta(preparedPageMeta));
   }, [isLoading]);
@@ -87,7 +87,7 @@ export const serverFetch: ServerFetch = async (params) => {
 
   // If the url is just /entity-viewer, update page meta and exit
   if (!genomeIdFromUrl) {
-    dispatch(updatePageMeta(buildPageMetaData()));
+    dispatch(updatePageMeta(buildPageMeta()));
     return;
   }
 
@@ -107,7 +107,7 @@ export const serverFetch: ServerFetch = async (params) => {
 
   // If the url is just /entity-viewer/:genomeId, update page meta and exit
   if (!entityId) {
-    dispatch(updatePageMeta(buildPageMetaData()));
+    dispatch(updatePageMeta(buildPageMeta()));
     return;
   }
 
@@ -140,7 +140,7 @@ export const serverFetch: ServerFetch = async (params) => {
     const title = pageMetaQueryResult.data?.title ?? '';
     dispatch(
       updatePageMeta(
-        buildPageMetaData({
+        buildPageMeta({
           title
         })
       )
@@ -148,7 +148,7 @@ export const serverFetch: ServerFetch = async (params) => {
   }
 };
 
-const buildPageMetaData = (
+const buildPageMeta = (
   params: {
     title?: string;
     description?: string;
