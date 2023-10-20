@@ -63,7 +63,11 @@ const Help = () => {
 
   const { currentData: menu } = useGetHelpMenuQuery({ name: 'help' });
 
-  const { currentData: article, error: articleError } = useGetHelpArticleQuery(
+  const {
+    currentData: article,
+    isLoading,
+    error: articleError
+  } = useGetHelpArticleQuery(
     { pathname },
     {
       skip: isIndexPage
@@ -75,12 +79,12 @@ const Help = () => {
   let breadcrumbs: string[] = [];
 
   useEffect(() => {
-    if (!article) {
+    if (isLoading) {
       return;
     }
 
     dispatch(updatePageMeta(createHelpPageMeta({ path: pathname, article })));
-  }, [pathname, article]);
+  }, [isLoading, pathname, article]);
 
   if (menu) {
     breadcrumbs = buildBreadcrumbs(menu, { url: pathname });

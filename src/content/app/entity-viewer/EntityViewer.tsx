@@ -39,7 +39,6 @@ import {
   initializeSidebar
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contexts/entity-viewer-ids-context/EntityViewerIdsContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
 import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
@@ -222,12 +221,4 @@ const useEntityViewerRouting = () => {
   ]);
 };
 
-const WrappedEntityViewer = () => {
-  return (
-    <EntityViewerIdsContextProvider>
-      <EntityViewer />
-    </EntityViewerIdsContextProvider>
-  );
-};
-
-export default WrappedEntityViewer;
+export default EntityViewer;

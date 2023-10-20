@@ -34,6 +34,8 @@ import {
   fetchGenePageMeta
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contexts/entity-viewer-ids-context/EntityViewerIdsContextProvider';
+
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
@@ -142,4 +144,12 @@ export const serverFetch: ServerFetch = async (params) => {
   }
 };
 
-export default EntityViewerPage;
+const WrappedEntityViewerPage = () => {
+  return (
+    <EntityViewerIdsContextProvider>
+      <EntityViewerPage />
+    </EntityViewerIdsContextProvider>
+  );
+};
+
+export default WrappedEntityViewerPage;
