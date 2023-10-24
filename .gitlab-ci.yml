@@ -324,7 +324,7 @@ Live:wp40:HL:
   environment:
     name: wp40-hl-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -336,7 +336,7 @@ Pub:Live-HL:wp40:
     kubernetes:
       namespace: ensembl-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -351,7 +351,7 @@ Live:WP41:HX:
   environment:
     name: wp41-hx-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -363,7 +363,7 @@ Pub::WP41:Live-HX:
     kubernetes:
       namespace: ensembl-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
