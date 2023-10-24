@@ -20,7 +20,11 @@ import type { SerializedError } from '@reduxjs/toolkit';
 import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { GenomeInfo, GenomeKaryotypeItem } from './genomeTypes';
+import type {
+  GenomeInfo,
+  GenomeKaryotypeItem,
+  ExampleFocusObject
+} from './genomeTypes';
 
 type GenomeInfoResponse = {
   genomeId: string;
@@ -62,13 +66,25 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
       query: (genomeId) => ({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/karyotype`
       })
+    }),
+    exampleObjectsForGenome: builder.query<ExampleFocusObject[], string>({
+      query: (genomeId) => ({
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/example_objects`
+      })
     })
   })
 });
 
-export const { useGenomeInfoQuery, useGenomeKaryotypeQuery } = genomeApiSlice;
+export const {
+  useGenomeInfoQuery,
+  useGenomeKaryotypeQuery,
+  useExampleObjectsForGenomeQuery
+} = genomeApiSlice;
 
-export const { genomeInfo: fetchGenomeInfo } = genomeApiSlice.endpoints;
+export const {
+  genomeInfo: fetchGenomeInfo,
+  exampleObjectsForGenome: fetchExampleObjectsForGenome
+} = genomeApiSlice.endpoints;
 
 export const isGenomeNotFoundError = (
   error?: SerializedError | FetchBaseQueryError

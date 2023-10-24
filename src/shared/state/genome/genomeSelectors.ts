@@ -53,14 +53,3 @@ export const getGenomeIdForUrl = (
   const genome = getGenomeById(state, genomeId);
   return genome?.genome_tag ?? genome?.genome_id;
 };
-
-export const getGenomeExampleFocusObjects = (
-  state: RootState,
-  genomeId: string | null
-) => {
-  const emptyObjects: never[] = [];
-  if (!genomeId) {
-    return emptyObjects;
-  }
-  return state.genome.genomes[genomeId]?.example_objects || emptyObjects;
-};

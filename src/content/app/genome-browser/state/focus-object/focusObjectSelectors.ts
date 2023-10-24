@@ -20,9 +20,6 @@ import get from 'lodash/get';
 import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 import isGeneFocusObject from './isGeneFocusObject';
 
-import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
 import { LoadingState } from 'src/shared/types/loading-state';
 import type {
   FocusObject,
@@ -54,36 +51,6 @@ export const getFocusObjectByParams = (
 ): FocusObject | null => {
   const focusObjectId = buildFocusObjectId(params);
   return getFocusObjectById(state, focusObjectId);
-};
-
-export const getExampleFocusObjects = (state: RootState): FocusObject[] => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  if (!activeGenomeId) {
-    return [];
-  }
-  const exampleObjects = getGenomeExampleFocusObjects(state, activeGenomeId);
-  return exampleObjects
-    .map(({ id, type }) => {
-      const focusObjectId = buildFocusObjectId({
-        genomeId: activeGenomeId,
-        type,
-        objectId: id
-      });
-      return state.browser.focusObjects[focusObjectId]?.data;
-    })
-    .filter(Boolean) as FocusObject[]; // make sure there are no undefineds in the returned array;
-};
-
-export const getExampleGenes = (state: RootState): FocusObject[] => {
-  return getExampleFocusObjects(state).filter(
-    (entity) => entity.type === 'gene'
-  );
-};
-
-export const getExampleLocations = (state: RootState): FocusObject[] => {
-  return getExampleFocusObjects(state).filter(
-    (entity) => entity.type === 'location'
-  );
 };
 
 export const getFocusGene = (
