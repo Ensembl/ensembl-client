@@ -91,24 +91,22 @@ export type ValueValidationResult = LocationValidationCommonFields & {
 };
 
 export type RegionValidationResult = LocationValidationCommonFields & {
-  region_code: string;
   region_name: string;
 };
 
 export type LocationValidationResponse = Partial<{
   end: ValueValidationResult;
-  genome_id: ValueValidationResult;
-  region_id: string | null;
+  location: string | null; // location being null means that it failed validation
   region: RegionValidationResult;
   start: ValueValidationResult;
 }>;
 
 export const validateGenomicLocation = async (params: {
-  regionInput: string;
+  location: string;
   genomeId: string;
 }) => {
-  const { regionInput, genomeId } = params;
-  const url = `${config.genomeSearchBaseUrl}/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
+  const { location, genomeId } = params;
+  const url = `${config.metadataApiBaseUrl}/validate_location?genome_id=${genomeId}&location=${location}`;
 
   let response: LocationValidationResponse;
 
@@ -128,7 +126,7 @@ export const validateGenomicLocation = async (params: {
     }
   }
 
-  if (response.region_id === null) {
+  if (response.location === null) {
     // the backend service thinks that the submitted location is invalid
     throw response;
   }

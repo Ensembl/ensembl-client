@@ -135,20 +135,13 @@ export const createRegionValidationInfo = (): LocationValidationResponse => {
       is_valid: true,
       value: randomValue
     },
-    genome_id: {
-      error_code: null,
-      error_message: null,
-      is_valid: true,
-      value: faker.lorem.words()
-    },
     region: {
       error_code: null,
       error_message: null,
       is_valid: true,
-      region_code: faker.lorem.words(),
       region_name: faker.lorem.words()
     },
-    region_id: faker.lorem.words(),
+    location: faker.lorem.words(),
     start: {
       error_code: null,
       error_message: null,

@@ -96,7 +96,7 @@ const RegionNavigation = () => {
 
     try {
       const validatedLocation = await validateGenomicLocation({
-        regionInput: getLocationForSubmission(),
+        location: getLocationForSubmission(),
         genomeId: activeGenomeId
       });
       if (regionName !== validatedLocation.region?.region_name) {
@@ -106,7 +106,7 @@ const RegionNavigation = () => {
         onValidationSuccess(validatedLocation);
       }
     } catch (error) {
-      if (error && typeof error === 'object' && 'region_id' in error) {
+      if (error && typeof error === 'object' && 'location' in error) {
         onValidationError();
       }
     }
