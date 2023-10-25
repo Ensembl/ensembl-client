@@ -221,7 +221,7 @@ const SpeciesType = (props: { species: SpeciesSearchMatch }) => {
   ) : null;
 
   const speciesTypeText = speciesType
-    ? `${upperFirst(speciesType.kind)} - ${speciesType.value}`
+    ? `${upperFirst(speciesType.kind)} - ${speciesType.value}`
     : null;
 
   if (!referenceElement && !speciesTypeText) {
