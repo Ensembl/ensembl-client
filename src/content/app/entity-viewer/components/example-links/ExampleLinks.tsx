@@ -15,41 +15,29 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
-import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
-import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
-
 import { CircleLoader } from 'src/shared/components/loader';
-
-import { RootState } from 'src/store';
 
 import styles from './ExampleLinks.scss';
 
 // NOTE: the component currently handles only example gene
 const ExampleLinks = () => {
   const { activeGenomeId, genomeIdForUrl } = useEntityViewerIds();
-  const exampleEntities = useSelector((state: RootState) =>
-    getGenomeExampleFocusObjects(state, activeGenomeId || '')
-  );
-  const exampleGeneId = exampleEntities.find(({ type }) => type === 'gene')?.id;
-  const { isFetching, currentData, error } = useGeneSummaryQuery(
+  const { currentData, isLoading } = useExampleObjectsForGenomeQuery(
+    activeGenomeId ?? '',
     {
-      geneId: exampleGeneId || '',
-      genomeId: activeGenomeId || ''
-    },
-    {
-      skip: !exampleGeneId || !activeGenomeId
+      skip: !activeGenomeId
     }
   );
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div>
         <div className={styles.exampleLinks__emptyTopbar} />
@@ -60,14 +48,16 @@ const ExampleLinks = () => {
     );
   }
 
-  // TODO: Data doesn't get changed when there is an error?
-  if (!currentData || error) {
+  const exampleGene = (currentData ?? []).find(({ type }) => {
+    return type === 'gene';
+  });
+  if (!exampleGene) {
     return null;
   }
 
   const featureIdInUrl = buildFocusIdForUrl({
     type: 'gene',
-    objectId: currentData.gene.unversioned_stable_id
+    objectId: exampleGene.id
   });
   const path = urlHelper.entityViewer({
     genomeId: genomeIdForUrl,

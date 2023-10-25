@@ -24,15 +24,14 @@ import {
   type StatsSection
 } from 'src/content/app/species/state/general/speciesGeneralHelper';
 
-import {
-  getGenomeExampleFocusObjects,
-  getGenomeIdForUrl
-} from 'src/shared/state/genome/genomeSelectors';
+import { getGenomeIdForUrl } from 'src/shared/state/genome/genomeSelectors';
 
+import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { RootState } from 'src/store';
 import type { SpeciesStatistics } from './speciesApiTypes';
+import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 export type GenomeStats = StatsSection[];
 
@@ -44,27 +43,38 @@ type SpeciesStatsResponse = {
   genome_stats: SpeciesStatistics;
 };
 
-const helpApiSlice = restApiSlice.injectEndpoints({
+const speciesApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getSpeciesStatistics: builder.query<GenomeStats, SpeciesStatsQueryParams>({
       queryFn: async (params, queryApi, _, baseQuery) => {
         const { genomeId } = params;
-        const response = await baseQuery({
+        const { dispatch } = queryApi;
+
+        const statsResponsePromise = baseQuery({
           url: `${config.metadataApiBaseUrl}/genome/${genomeId}/stats`
         });
-        if (response.data) {
-          const responseData = response.data as SpeciesStatsResponse;
+        const exampleObjectsResponsePromise = dispatch(
+          fetchExampleObjectsForGenome.initiate(genomeId)
+        );
+
+        const [statsReponse, exampleObjectsResponse] = await Promise.all([
+          statsResponsePromise,
+          exampleObjectsResponsePromise
+        ]);
+        exampleObjectsResponsePromise.unsubscribe();
+
+        if (statsReponse.data && exampleObjectsResponse.data) {
+          const statsResponseData = statsReponse.data as SpeciesStatsResponse;
+          const exampleFocusObjects =
+            exampleObjectsResponse.data as ExampleFocusObject[];
+
           const state = queryApi.getState() as RootState;
-          const exampleFocusObjects = getGenomeExampleFocusObjects(
-            state,
-            genomeId
-          );
           const genomeIdForUrl = getGenomeIdForUrl(state, genomeId) ?? genomeId;
 
           const genomeStats = speciesStatsSectionNames
             .map((section) =>
               getStatsForSection({
-                allStats: responseData.genome_stats,
+                allStats: statsResponseData.genome_stats,
                 genomeIdForUrl,
                 section: section as SpeciesStatsSection,
                 exampleFocusObjects
@@ -76,8 +86,10 @@ const helpApiSlice = restApiSlice.injectEndpoints({
             data: genomeStats
           };
         } else {
+          const error = (statsReponse.error ||
+            exampleObjectsResponse.error) as FetchBaseQueryError;
           return {
-            error: response.error as FetchBaseQueryError
+            error
           };
         }
       }
@@ -85,4 +97,4 @@ const helpApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useGetSpeciesStatisticsQuery } = helpApiSlice;
+export const { useGetSpeciesStatisticsQuery } = speciesApiSlice;

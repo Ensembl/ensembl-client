@@ -14,43 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
-import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
+import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
-import {
-  getExampleGenes,
-  getExampleLocations
-} from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
-
-import {
-  parseFocusObjectId,
-  buildFocusIdForUrl
-} from 'src/shared/helpers/focusObjectHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import BrowserInterstitialInstructions from './browser-interstitial-instructions/BrowserInterstitialInstructions';
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './BrowserInterstitial.scss';
 
 const BrowserInterstitial = () => {
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const { trackInterstitialPageSearch } = useGenomeBrowserAnalytics();
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!activeGenomeId) {
-      return;
-    }
-    dispatch(fetchExampleFocusObjects(activeGenomeId));
-  }, [activeGenomeId]);
 
   if (!activeGenomeId) {
     return <BrowserInterstitialInstructions />;
@@ -73,28 +56,39 @@ const BrowserInterstitial = () => {
 };
 
 const ExampleLinks = () => {
-  const { genomeIdForUrl } = useGenomeBrowserIds();
-  const focusObjects = useAppSelector(getExampleGenes);
-  const focusLocations = useAppSelector(getExampleLocations);
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
+  const { currentData, isLoading } = useExampleObjectsForGenomeQuery(
+    activeGenomeId as string
+  );
 
-  const exampleLinks = focusObjects
-    .concat(focusLocations)
-    .map((exampleObject) => {
-      const parsedFocusObjectId = parseFocusObjectId(exampleObject.object_id);
-      const focusId = buildFocusIdForUrl(parsedFocusObjectId);
-      const path = urlFor.browser({
-        genomeId: genomeIdForUrl,
-        focus: focusId
-      });
+  if (isLoading) {
+    return (
+      <div className={styles.exampleLinks}>
+        <CircleLoader />
+      </div>
+    );
+  }
 
-      return (
-        <div key={exampleObject.object_id}>
-          <Link to={path} replace>
-            Example {exampleObject.type}
-          </Link>
-        </div>
-      );
+  const focusObjects = currentData || [];
+
+  const exampleLinks = focusObjects.map((exampleObject) => {
+    const focusId = buildFocusIdForUrl({
+      type: exampleObject.type,
+      objectId: exampleObject.id
     });
+    const path = urlFor.browser({
+      genomeId: genomeIdForUrl,
+      focus: focusId
+    });
+
+    return (
+      <div key={exampleObject.id}>
+        <Link to={path} replace>
+          Example {exampleObject.type}
+        </Link>
+      </div>
+    );
+  });
 
   return <div className={styles.exampleLinks}>{exampleLinks}</div>;
 };
