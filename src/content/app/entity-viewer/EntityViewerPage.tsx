@@ -34,6 +34,8 @@ import {
   fetchGenePageMeta
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contexts/entity-viewer-ids-context/EntityViewerIdsContextProvider';
+
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
@@ -47,9 +49,9 @@ const EntityViewerPage = () => {
 
   // TODO: eventually, EntityViewerPage should not use a hook that is explicitly about gene,
   // because we will have entities other than gene
-  const { genomeId, geneId } = useGeneViewIds();
+  const { genomeId, geneId, entityId } = useGeneViewIds();
 
-  const { data: pageMeta } = useGenePageMetaQuery(
+  const { data: pageMeta, isLoading } = useGenePageMetaQuery(
     {
       genomeId: genomeId ?? '',
       geneId: geneId ?? ''
@@ -60,17 +62,18 @@ const EntityViewerPage = () => {
   );
 
   useEffect(() => {
-    if (!pageMeta) {
+    if (isLoading) {
       return;
     }
 
-    dispatch(
-      updatePageMeta({
-        title: pageMeta?.title ?? defaultPageTitle,
-        description: pageMeta?.title ?? '' // TODO: eventually, decide what page description should be
-      })
-    );
-  }, [pageMeta]);
+    const preparedPageMeta = entityId
+      ? buildPageMeta({
+          title: pageMeta?.title ?? defaultPageTitle
+        })
+      : buildPageMeta();
+
+    dispatch(updatePageMeta(preparedPageMeta));
+  }, [isLoading]);
 
   return hasMounted ? <LazilyLoadedEntityViewer /> : null;
 };
@@ -82,8 +85,9 @@ export const serverFetch: ServerFetch = async (params) => {
     'genomeId' | 'entityId'
   >(['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'], path);
 
-  // If the url is just /entity-viewer, there is nothing more to do
+  // If the url is just /entity-viewer, update page meta and exit
   if (!genomeIdFromUrl) {
+    dispatch(updatePageMeta(buildPageMeta()));
     return;
   }
 
@@ -101,8 +105,9 @@ export const serverFetch: ServerFetch = async (params) => {
 
   const genomeId = genomeInfoData?.genomeId as string; // by this point, genomeId clearly exists
 
-  // If the url is /entity-viewer/:genomeId, there is nothing more to do
+  // If the url is just /entity-viewer/:genomeId, update page meta and exit
   if (!entityId) {
+    dispatch(updatePageMeta(buildPageMeta()));
     return;
   }
 
@@ -134,12 +139,35 @@ export const serverFetch: ServerFetch = async (params) => {
   } else {
     const title = pageMetaQueryResult.data?.title ?? '';
     dispatch(
-      updatePageMeta({
-        title,
-        description: title // TODO: eventually, decide what page description should be here
-      })
+      updatePageMeta(
+        buildPageMeta({
+          title
+        })
+      )
     );
   }
 };
 
-export default EntityViewerPage;
+const buildPageMeta = (
+  params: {
+    title?: string;
+    description?: string;
+  } = {}
+) => {
+  // TODO: eventually, decide on page description
+  const { title = defaultPageTitle, description = '' } = params;
+  return {
+    title,
+    description
+  };
+};
+
+const WrappedEntityViewerPage = () => {
+  return (
+    <EntityViewerIdsContextProvider>
+      <EntityViewerPage />
+    </EntityViewerIdsContextProvider>
+  );
+};
+
+export default WrappedEntityViewerPage;
