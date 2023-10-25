@@ -31,6 +31,7 @@ const GenomesFilterField = (props: {
     <ShadedInput
       placeholder="Filter results"
       type="search"
+      size="small"
       onInput={onInput}
       className={props.className}
     />

@@ -46,7 +46,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   const {
     className: classNameFromProps,
     disabled = false,
-    size = 'small',
+    size,
     help,
     type = 'text',
     placeholder: placeholderFromProps,
