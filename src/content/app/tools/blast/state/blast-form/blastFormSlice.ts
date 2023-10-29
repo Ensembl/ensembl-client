@@ -47,6 +47,7 @@ export type Species = {
 
 export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
+  modalView: 'species-search' | null;
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
   hasUncommittedSequence: boolean;
@@ -66,6 +67,7 @@ export const initialBlastFormSettings: BlastFormSettings = {
 
 export const initialState: BlastFormState = {
   step: 'sequences',
+  modalView: null,
   sequences: [],
   shouldAppendEmptyInput: true,
   hasUncommittedSequence: false,
@@ -237,9 +239,12 @@ const blastFormSlice = createSlice({
         autoUpdateSettings(state, config);
       }
     },
-    addSelectedSpecies(state, action: PayloadAction<Species>) {
-      const species = action.payload;
-      state.selectedSpecies.push(species);
+    addSelectedSpecies(state, action: PayloadAction<Species | Species[]>) {
+      if (Array.isArray(action.payload)) {
+        state.selectedSpecies = state.selectedSpecies.concat(action.payload);
+      } else {
+        state.selectedSpecies.push(action.payload);
+      }
     },
     removeSelectedSpecies(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -261,6 +266,12 @@ const blastFormSlice = createSlice({
     },
     switchToSpeciesStep(state) {
       state.step = 'species';
+    },
+    openSpeciesSearchModal(state) {
+      state.modalView = 'species-search';
+    },
+    closeSpeciesSearchModal(state) {
+      state.modalView = null;
     },
     setSequenceType(
       state,
@@ -402,6 +413,8 @@ export const {
   setHasUncommittedSequence,
   switchToSpeciesStep,
   switchToSequencesStep,
+  openSpeciesSearchModal,
+  closeSpeciesSearchModal,
   addSelectedSpecies,
   removeSelectedSpecies,
   clearSelectedSpecies,

@@ -16,6 +16,10 @@
 
 import React, { useState, useEffect, useDeferredValue } from 'react';
 
+import { useAppSelector } from 'src/store';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
@@ -42,6 +46,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   const { query, onClose } = props;
   const [filterQuery, setFilterQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
+  const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData, isLoading } = result;
 
@@ -55,6 +60,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
+    selectedGenomes: committedSpecies,
     filterQuery
   });
 

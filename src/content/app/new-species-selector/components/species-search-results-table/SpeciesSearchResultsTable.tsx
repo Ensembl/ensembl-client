@@ -40,6 +40,7 @@ import styles from './SpeciesSearchResultsTable.scss';
 type Props = {
   isExpanded: boolean;
   results: SelectableGenome[];
+  maxStagedGenomesNumber?: number; // if you need to limit how many of the displayed genomes can be added
   sortRule: SortRule | null;
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
@@ -53,6 +54,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
   const {
     isExpanded,
     results,
+    maxStagedGenomesNumber = Infinity,
     onSpeciesSelectToggle,
     sortRule,
     onSortRuleChange
@@ -62,6 +64,12 @@ const SpeciesSearchResultsTable = (props: Props) => {
     const isAdding = !species.isStaged;
     onSpeciesSelectToggle(species, isAdding);
   };
+
+  const stagedGenomesCount = results.reduce((acc, genome) => {
+    return genome.isStaged ? acc + 1 : acc;
+  }, 0);
+
+  const canAddToStaged = stagedGenomesCount < maxStagedGenomesNumber;
 
   return (
     <Table stickyHeader={true} className={styles.table}>
@@ -145,12 +153,12 @@ const SpeciesSearchResultsTable = (props: Props) => {
           <tr
             key={searchMatch.genome_id}
             className={classNames({
-              [styles.isAlreadySelected]: searchMatch.isSelected
+              [styles.disabled]: shouldDisableRow(searchMatch, canAddToStaged)
             })}
           >
             <td>
               <Checkbox
-                disabled={searchMatch.isSelected}
+                disabled={shouldDisableRow(searchMatch, canAddToStaged)}
                 checked={searchMatch.isStaged}
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
@@ -162,7 +170,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
             </td>
             <td className={styles.assemblyName}>{searchMatch.assembly.name}</td>
             <td>
-              {!searchMatch.isSelected ? (
+              {!shouldDisableRow(searchMatch, canAddToStaged) ? (
                 <ExternalLink
                   to={searchMatch.assembly.url}
                   linkText={searchMatch.assembly.accession_id}
@@ -235,6 +243,13 @@ const SpeciesType = (props: { species: SpeciesSearchMatch }) => {
       {referenceElement}
     </>
   );
+};
+
+const shouldDisableRow = (
+  searchMatch: SelectableGenome,
+  canAddToStaged: boolean
+) => {
+  return searchMatch.isSelected || (!searchMatch.isStaged && !canAddToStaged);
 };
 
 export default SpeciesSearchResultsTable;

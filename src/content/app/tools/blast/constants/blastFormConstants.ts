@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
-import classNames from 'classnames';
-
-import styles from './TextButton.scss';
-
-// same props as for a button; but children are required
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
-  children: ReactNode;
-};
-
-export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(styles.textButton, props.className);
-
-  return (
-    <button {...props} className={buttonClasses}>
-      {props.children}
-    </button>
-  );
-};
-
-export default TextButton;
+export const BLAST_MAX_SPECIES_COUNT = 25;

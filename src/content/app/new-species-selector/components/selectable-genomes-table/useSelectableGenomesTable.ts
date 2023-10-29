@@ -16,10 +16,6 @@
 
 import { useState, useMemo } from 'react';
 
-import { useAppSelector } from 'src/store';
-
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
 import useOrderedGenomes from './useOrderedGenomes';
 
 import filterGenomes from './filterGenomes';
@@ -33,17 +29,22 @@ export type SelectableGenome = SpeciesSearchMatch & {
 
 type Params = {
   genomes: SpeciesSearchMatch[];
+  selectedGenomes: Array<{ genome_id: string }>;
   filterQuery?: string;
 };
 
 const useSelectableGenomesTable = (params: Params) => {
-  const { genomes, filterQuery } = params;
+  const { genomes, selectedGenomes, filterQuery } = params;
   const [stagedGenomes, setStagedGenomes] = useState<SpeciesSearchMatch[]>([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
   const filteredGenomes = filterQuery
     ? filterGenomes({ query: filterQuery, genomes })
     : genomes;
-  const selectableGenomes = useMarkedGenomes(filteredGenomes, stagedGenomes);
+  const selectableGenomes = useMarkedGenomes({
+    genomes: filteredGenomes,
+    selectedGenomes,
+    stagedGenomes
+  });
   const { orderedGenomes, sortRule, changeSortRule } =
     useOrderedGenomes(selectableGenomes);
 
@@ -82,23 +83,24 @@ const useSelectableGenomesTable = (params: Params) => {
  * A selected genome is the one that the user has already added to the list of the selected genomes.
  * A pre-selected genome is a genome that the user has ticked but has not yet confirmed (not yet pressed the "Add" button).
  */
-const useMarkedGenomes = (
-  genomes: SpeciesSearchMatch[],
-  preselectedGenomes: SpeciesSearchMatch[]
-): SelectableGenome[] => {
-  const committedSpecies = useAppSelector(getCommittedSpecies);
-  const committedSpeciesIds = new Set(
-    committedSpecies.map((species) => species.genome_id)
+const useMarkedGenomes = (params: {
+  genomes: SpeciesSearchMatch[];
+  selectedGenomes: Array<{ genome_id: string }>;
+  stagedGenomes: SpeciesSearchMatch[];
+}): SelectableGenome[] => {
+  const { genomes, selectedGenomes, stagedGenomes } = params;
+  const selectedGenomeIds = new Set(
+    selectedGenomes.map(({ genome_id }) => genome_id)
   );
-  const preselectedGenomeIds = useMemo(() => {
-    const ids = preselectedGenomes.map((genome) => genome.genome_id);
+  const stagedGenomeIds = useMemo(() => {
+    const ids = stagedGenomes.map((genome) => genome.genome_id);
     return new Set(ids);
-  }, [preselectedGenomes]);
+  }, [stagedGenomes]);
 
   return genomes.map((genome) => ({
     ...genome,
-    isSelected: committedSpeciesIds.has(genome.genome_id),
-    isStaged: preselectedGenomeIds.has(genome.genome_id)
+    isSelected: selectedGenomeIds.has(genome.genome_id),
+    isStaged: stagedGenomeIds.has(genome.genome_id)
   }));
 };
 

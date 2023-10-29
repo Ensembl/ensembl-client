@@ -17,21 +17,32 @@
 import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './TextButton.scss';
+import PlusIcon from 'static/icons/icon_plus_circle.svg';
+
+import styles from './AddButton.scss';
 
 // same props as for a button; but children are required
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
   children: ReactNode;
 };
 
-export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(styles.textButton, props.className);
+/**
+ * This is a combination of a label (passed as a children property and placed to the left),
+ * and the plus icon (placed to the right).
+ * If you only want the plus icon to act as a button, please use the PlusButton component.
+ * Alternatively, if you only want text to act as a button, please use the TextButton component.
+ */
+const AddButton = (props: Props) => {
+  const { children, className, ...otherProps } = props;
+
+  const buttonClasses = classNames(styles.button, className);
 
   return (
-    <button {...props} className={buttonClasses}>
-      {props.children}
+    <button {...otherProps} className={buttonClasses}>
+      {children}
+      <PlusIcon />
     </button>
   );
 };
 
-export default TextButton;
+export default AddButton;

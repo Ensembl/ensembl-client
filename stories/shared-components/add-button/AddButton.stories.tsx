@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
-import classNames from 'classnames';
+import React from 'react';
 
-import styles from './TextButton.scss';
+import AddButton from 'src/shared/components/add-button/AddButton';
 
-// same props as for a button; but children are required
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
-  children: ReactNode;
+export const AddButtonStory = {
+  name: 'default',
+  render: () => <AddButton>Add species</AddButton>
 };
 
-export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(styles.textButton, props.className);
-
-  return (
-    <button {...props} className={buttonClasses}>
-      {props.children}
-    </button>
-  );
+export const DisabledAddButtonStory = {
+  name: 'disabled',
+  render: () => <AddButton disabled>I am disabled</AddButton>
 };
 
-export default TextButton;
+export default {
+  title: 'Components/Shared Components/AddButton'
+};
