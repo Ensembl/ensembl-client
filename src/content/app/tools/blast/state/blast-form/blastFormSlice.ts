@@ -240,11 +240,17 @@ const blastFormSlice = createSlice({
       }
     },
     addSelectedSpecies(state, action: PayloadAction<Species | Species[]>) {
+      let speciesList = [...state.selectedSpecies];
+
       if (Array.isArray(action.payload)) {
-        state.selectedSpecies = state.selectedSpecies.concat(action.payload);
+        speciesList = speciesList.concat(action.payload);
       } else {
-        state.selectedSpecies.push(action.payload);
+        speciesList.push(action.payload);
       }
+
+      const sortedSpeciesList = sortAddedSpecies(speciesList);
+
+      state.selectedSpecies = sortedSpeciesList;
     },
     removeSelectedSpecies(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -406,6 +412,19 @@ const blastFormSlice = createSlice({
     }
   }
 });
+
+// Regardless of the order in which species are added, sort them alphabetically
+// NOTE: it is very likely that species type will also need to be accounted for in the sorting algorithm;
+// but so far, we are not saving it. Something for the future.
+const sortAddedSpecies = (speciesList: Species[]) => {
+  const sortedList = [...speciesList]; // note: change to toSorted when we think that browser support is right
+  sortedList.sort((a, b) => {
+    const nameA = a.common_name ?? a.scientific_name;
+    const nameB = b.common_name ?? b.scientific_name;
+    return nameA.toLowerCase().localeCompare(nameB.toLocaleLowerCase());
+  });
+  return sortedList;
+};
 
 export const {
   setSequences,
