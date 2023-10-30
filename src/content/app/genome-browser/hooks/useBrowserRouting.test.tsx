@@ -40,10 +40,12 @@ const mockChangeFocusObject = jest.fn();
 const mockChangeBrowserLocation = jest.fn();
 
 const mockGenomeSearchApiBaseUrl = 'http://genome-search-api';
+const mockMetadataApiBaseUrl = 'http://metadata-api';
 const mockGenomeBrowserObj = {};
 
 jest.mock('config', () => ({
   genomeSearchBaseUrl: 'http://genome-search-api',
+  metadataApiBaseUrl: 'http://metadata-api',
   coreApiUrl: 'http://graphql-api'
 }));
 
@@ -198,17 +200,19 @@ const server = setupServer(
       );
     }
   }),
+  rest.get(`${mockMetadataApiBaseUrl}/validate_location`, (req, res, ctx) => {
+    const location = req.url.searchParams.get('location');
+
+    return res(
+      ctx.json({
+        location // send back the same location as was in the url; this should be enough to pass the validation
+      })
+    );
+  }),
   graphql.query('TrackPanelGene', (req, res, ctx) => {
     return res(
       ctx.data({
         gene: true // doesn't matter, as long it's a truthy value
-      })
-    );
-  }),
-  graphql.query('Region', (req, res, ctx) => {
-    return res(
-      ctx.data({
-        region: true // doesn't matter, as long it's a truthy value
       })
     );
   })
