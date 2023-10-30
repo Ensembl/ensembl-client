@@ -42,7 +42,6 @@ type Props = {
 // that can be selected.
 type PropsWithMaximumSelectableSpeciesCount = Props & {
   maxSelectableGenomesCount: number;
-  // selectedGenomesCount: number;
 };
 
 /**
@@ -52,9 +51,8 @@ type PropsWithMaximumSelectableSpeciesCount = Props & {
  *   that user has entered on the main screen of Species Selector
  * - It has a limit on how many genomes can be selected (we aren't allowing more than 25 in BLAST).
  *   GenomeSelectorBySearchQuery has no such limit.
- * It is almost certain that this species selector component will reppear for other tools (VEP, etc.).
- * It is thus very likely that this component will be shared across different tools.
- * But we won't know for sure until we see relevant designs.
+ * It is thus very likely that this component will be shared across different tools;
+ * but we won't know for sure until we see relevant designs.
  * Whether we want to use the same component as in the Species Selector app though, is questionable to me.
  */
 
@@ -73,7 +71,7 @@ const BlastSpeciesSelector = (
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomePreselectToggle,
+    onGenomeStageToggle,
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
@@ -122,7 +120,7 @@ const BlastSpeciesSelector = (
         onClose={onClose}
       />
 
-      {currentData && currentData.matches.length > 0 && (
+      {currentData?.matches.length && (
         <div className={styles.tableContainer}>
           <SpeciesSearchResultsTable
             results={deferredGenomes}
@@ -133,7 +131,7 @@ const BlastSpeciesSelector = (
             sortRule={sortRule}
             onSortRuleChange={changeSortRule}
             onTableExpandToggle={onTableExpandToggle}
-            onSpeciesSelectToggle={onGenomePreselectToggle}
+            onSpeciesSelectToggle={onGenomeStageToggle}
           />
         </div>
       )}
@@ -218,7 +216,7 @@ const TopSection = (props: TopSectionProps) => {
     );
   }
 
-  // this must be an error
+  // this shouldn't happen
   return null;
 };
 

@@ -31,7 +31,6 @@ export type Props = {
   query: string;
   onSearchSubmit: () => void;
   canSubmit?: boolean;
-  // onSpeciesAdd?: () => void;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
 

@@ -55,7 +55,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomePreselectToggle,
+    onGenomeStageToggle,
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
@@ -108,7 +108,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
             sortRule={sortRule}
             onSortRuleChange={changeSortRule}
             onTableExpandToggle={onTableExpandToggle}
-            onSpeciesSelectToggle={onGenomePreselectToggle}
+            onSpeciesSelectToggle={onGenomeStageToggle}
           />
         </div>
       )}

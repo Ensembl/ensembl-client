@@ -50,7 +50,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomePreselectToggle,
+    onGenomeStageToggle,
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
@@ -80,7 +80,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
               isExpanded={isTableExpanded}
               sortRule={sortRule}
               onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomePreselectToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
               onSortRuleChange={changeSortRule}
             />
           </div>

@@ -48,7 +48,7 @@ const useSelectableGenomesTable = (params: Params) => {
   const { orderedGenomes, sortRule, changeSortRule } =
     useOrderedGenomes(selectableGenomes);
 
-  const onGenomePreselectToggle = (
+  const onGenomeStageToggle = (
     genome: SpeciesSearchMatch,
     isAdding?: boolean
   ) => {
@@ -69,7 +69,7 @@ const useSelectableGenomesTable = (params: Params) => {
   return {
     genomes: orderedGenomes,
     stagedGenomes,
-    onGenomePreselectToggle,
+    onGenomeStageToggle,
     isTableExpanded,
     onTableExpandToggle,
     setStagedGenomes,
