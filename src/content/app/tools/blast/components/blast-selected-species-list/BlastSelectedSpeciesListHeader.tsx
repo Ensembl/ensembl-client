@@ -30,13 +30,19 @@ import styles from './BlastSelectedSpeciesListHeader.scss';
 export type Props = {
   compact: boolean;
   onSpeciesAdd: () => void;
+  canAddSpecies: boolean;
   selectedSpeciesCount: number;
   maxSpeciesCount: number;
 };
 
 const BlastSelectedSpeciesListHeader = (props: Props) => {
-  const { compact, onSpeciesAdd, selectedSpeciesCount, maxSpeciesCount } =
-    props;
+  const {
+    compact,
+    onSpeciesAdd,
+    canAddSpecies,
+    selectedSpeciesCount,
+    maxSpeciesCount
+  } = props;
 
   const componentClass = classNames(styles.container, {
     [styles.containerSmallScreen]: compact
@@ -51,7 +57,11 @@ const BlastSelectedSpeciesListHeader = (props: Props) => {
           of {maxSpeciesCount} species (max)
         </span>
       </div>
-      <AddButton className={styles.addButton} onClick={onSpeciesAdd}>
+      <AddButton
+        disabled={!canAddSpecies}
+        className={styles.addButton}
+        onClick={onSpeciesAdd}
+      >
         Add a species
       </AddButton>
     </div>
@@ -75,6 +85,7 @@ const WrappedBlastSelectedSpeciesListHeader = (props: WrapperProps) => {
   return (
     <BlastSelectedSpeciesListHeader
       {...props}
+      canAddSpecies={selectedSpeciesList.length < BLAST_MAX_SPECIES_COUNT}
       onSpeciesAdd={showBlastSpeciesSelector}
       selectedSpeciesCount={selectedSpeciesList.length}
       maxSpeciesCount={BLAST_MAX_SPECIES_COUNT}
