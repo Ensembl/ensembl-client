@@ -24,7 +24,10 @@ import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
 import { smallViewportMediaQuery } from 'src/content/app/tools/blast/views/blast-form/blastFormConstants';
 
-import { getStep as getBlastFormStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  getStep as getBlastFormStep,
+  getModalView
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
@@ -44,6 +47,7 @@ const BlastAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const speciesListIds = useAppSelector(getSelectedSpeciesIds);
   const blastView = useAppSelector(getBlastView);
+  const modalView = useAppSelector(getModalView);
   const blastFormStep = useAppSelector(getBlastFormStep);
 
   const dispatch = useAppDispatch();
@@ -77,13 +81,14 @@ const BlastAppBar = () => {
     }
   };
 
-  const shouldEnableSpecies =
-    (blastView === 'blast-form' && !isSmallViewport) ||
-    (blastView === 'blast-form' &&
-      isSmallViewport &&
-      blastFormStep === 'species');
+  const areSpeciesEnabled = shouldEnableSpecies({
+    blastView,
+    blastFormStep,
+    modalView,
+    isSmallViewport
+  });
 
-  const speciesTabs = shouldEnableSpecies
+  const speciesTabs = areSpeciesEnabled
     ? speciesList.map((species, index) => (
         <SpeciesLozenge
           key={index}
@@ -101,6 +106,26 @@ const BlastAppBar = () => {
   );
 
   return <AppBar mainContent={wrappedSpecies} {...appBarProps} />;
+};
+
+const shouldEnableSpecies = (params: {
+  blastView: string;
+  blastFormStep: string;
+  modalView: string | null;
+  isSmallViewport: boolean | null;
+}) => {
+  const { blastView, blastFormStep, modalView, isSmallViewport } = params;
+
+  if (modalView) {
+    return false;
+  }
+
+  return (
+    (blastView === 'blast-form' && !isSmallViewport) ||
+    (blastView === 'blast-form' &&
+      isSmallViewport &&
+      blastFormStep === 'species')
+  );
 };
 
 export default BlastAppBar;

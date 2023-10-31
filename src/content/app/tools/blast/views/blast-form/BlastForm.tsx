@@ -25,7 +25,10 @@ import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 import { smallViewportMediaQuery } from './blastFormConstants';
 
-import { getStep } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
+import {
+  getStep,
+  getModalView
+} from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import {
   switchToSequencesStep,
   switchToSpeciesStep
@@ -39,23 +42,35 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import BlastInputSequencesHeader from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequencesHeader';
 import BlastInputSequences from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
 import BlastSettings from 'src/content/app/tools/blast/components/blast-settings/BlastSettings';
-
-import BlastSpeciesSelectorHeader from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelectorHeader';
-import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelector';
+import BlastSpeciesSelectorModal from 'src/content/app/tools/blast/components/blast-species-selector/BlastSpeciesSelectorModal';
+import BlastSelectedSpeciesListHeader from 'src/content/app/tools/blast/components/blast-selected-species-list/BlastSelectedSpeciesListHeader';
+import BlastSelectedSpeciesList from 'src/content/app/tools/blast/components/blast-selected-species-list/BlastSelectedSpeciesList';
 
 import styles from './BlastForm.scss';
 
 const BlastForm = () => {
   const { data: config } = useBlastConfigQuery();
 
+  const modalView = useAppSelector(getModalView);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setBlastView('blast-form'));
   }, []);
 
+  useEffect(() => {
+    dispatch(setBlastView('blast-form'));
+  }, [modalView]);
+
   if (!config) {
     return null;
+  } else if (modalView) {
+    return (
+      <div className={styles.containerWithModal}>
+        <BlastAppBar />
+        <BlastSpeciesSelectorModal />
+      </div>
+    );
   }
 
   return (
@@ -92,8 +107,8 @@ const MainLarge = () => {
           <BlastInputSequences />
         </div>
         <div className={styles.speciesSelectorContainer}>
-          <BlastSpeciesSelectorHeader compact={false} />
-          <BlastSpeciesSelector />
+          <BlastSelectedSpeciesListHeader compact={false} />
+          <BlastSelectedSpeciesList />
         </div>
       </div>
     </div>
@@ -120,8 +135,8 @@ const MainSmall = () => {
         </>
       ) : (
         <>
-          <BlastSpeciesSelectorHeader compact={true} />
-          <BlastSpeciesSelector />
+          <BlastSelectedSpeciesListHeader compact={true} />
+          <BlastSelectedSpeciesList />
         </>
       )}
     </div>

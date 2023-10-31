@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.container {
+  width: 860px;
+  flex-grow: 1;
+  background-color: $light-grey;
+  border: 1px solid $grey;
+  padding: 10px; 
+
+
+  /**
+  TODO: for small screens
+  min-height: calc(100% - 80px);
+  */
+}
+
+.container table {
+  width: 100%;
+  --table-background: $light-grey;
+}
+
+.container th:first-child {
+  width: 30%;
+}
+
+.container th:last-child {
+  width: 100px;
+}

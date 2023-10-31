@@ -47,6 +47,9 @@ export const getBlastSubmissionName = (state: RootState) =>
 
 export const getStep = (state: RootState) => state.blast.blastForm.step;
 
+export const getModalView = (state: RootState) =>
+  state.blast.blastForm.modalView;
+
 export const getSelectedSpeciesList = (state: RootState) =>
   state.blast.blastForm.selectedSpecies;
 

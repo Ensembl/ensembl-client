@@ -7,11 +7,19 @@
   position: relative;
 }
 
+.containerWithModal {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
 .mainContainer {
   height: 100%;
 }
 
 .mainContainerSmall {
+  display: flex;
+  flex-direction: column;
   overflow: auto;
   scroll-behavior: smooth;
   scrollbar-gutter: stable;

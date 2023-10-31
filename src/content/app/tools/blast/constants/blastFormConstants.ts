@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
-
-import ShadedInput from 'src/shared/components/input/ShadedInput';
-
-const GenomesFilterField = (props: {
-  className?: string;
-  onFilterChange: (filterQuery: string) => void;
-}) => {
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
-    const filterQuery = event.currentTarget.value;
-    props.onFilterChange(filterQuery);
-  };
-
-  return (
-    <ShadedInput
-      placeholder="Filter results"
-      type="search"
-      size="small"
-      onInput={onInput}
-      className={props.className}
-    />
-  );
-};
-
-export default GenomesFilterField;
+export const BLAST_MAX_SPECIES_COUNT = 25;

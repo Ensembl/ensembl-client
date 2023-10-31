@@ -28,22 +28,14 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import styles from './SpeciesSearchField.scss';
 
 export type Props = {
+  query: string;
   onSearchSubmit: () => void;
   canSubmit?: boolean;
-  onSpeciesAdd?: () => void;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
 
-const SpeciesSearchField = (props: Props) => {
-  const { canSubmit = true } = props;
-  const dispatch = useAppDispatch();
-  const query = useAppSelector(getSpeciesSearchQuery);
-
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value;
-    dispatch(setQuery(value));
-    props.onInput?.(event);
-  };
+export const SpeciesSearchField = (props: Props) => {
+  const { query, onInput, canSubmit = true } = props;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -80,4 +72,19 @@ Search for a species using a common name, scientific name, assembly ID or GCA.
 If no results are shown, please try a different spelling or attribute
 `;
 
-export default SpeciesSearchField;
+// Species search field, but wrapped in redux.
+// Can be used by default in Species Selector
+const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
+  const dispatch = useAppDispatch();
+  const query = useAppSelector(getSpeciesSearchQuery);
+
+  const onInput = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    dispatch(setQuery(value));
+    props.onInput?.(event);
+  };
+
+  return <SpeciesSearchField {...props} onInput={onInput} query={query} />;
+};
+
+export default WrappedSpeciesSearchField;

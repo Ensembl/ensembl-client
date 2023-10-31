@@ -16,7 +16,9 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { useLazyGetGenomesBySpeciesTaxonomyIdQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import { commitSelectedSpeciesAndSave } from 'src/content/app/new-species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
@@ -39,6 +41,7 @@ type Props = {
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
   const [filterQuery, setFilterQuery] = useState('');
+  const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
   const { currentData, isLoading, isError } = result;
 
@@ -47,11 +50,12 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomePreselectToggle,
+    onGenomeStageToggle,
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
+    selectedGenomes: committedSpecies,
     filterQuery
   });
 
@@ -76,7 +80,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
               isExpanded={isTableExpanded}
               sortRule={sortRule}
               onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomePreselectToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
               onSortRuleChange={changeSortRule}
             />
           </div>

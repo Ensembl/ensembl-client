@@ -1,0 +1,50 @@
+@import 'src/styles/common';
+
+.container {
+  display: grid;
+  grid-template-columns: [species-counter] max-content [add-species] 1fr;
+  width: 860px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 12px 28px;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+  background-color: $white;
+}
+
+.containerSmallScreen {
+  top: 49px;
+}
+
+.titleWithCounter {
+  grid-column: species-counter; 
+}
+
+.title {
+  font-size: 15px;
+  font-weight: $bold;
+}
+
+.speciesCounter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: $white;
+  background-color: $dark-grey;
+  font-weight: $bold;
+  border-radius: 100%;
+  font-size: 15px;
+  margin: 0 0.6rem 0 0.6rem;
+}
+
+.maxSpecies {
+  font-weight: $light;
+}
+
+.addButton {
+  justify-self: end;
+  margin-right: $standard-gutter;
+}

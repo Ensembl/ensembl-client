@@ -47,6 +47,7 @@ export type Species = {
 
 export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
+  modalView: 'species-search' | null;
   sequences: ParsedInputSequence[];
   shouldAppendEmptyInput: boolean;
   hasUncommittedSequence: boolean;
@@ -66,6 +67,7 @@ export const initialBlastFormSettings: BlastFormSettings = {
 
 export const initialState: BlastFormState = {
   step: 'sequences',
+  modalView: null,
   sequences: [],
   shouldAppendEmptyInput: true,
   hasUncommittedSequence: false,
@@ -237,9 +239,18 @@ const blastFormSlice = createSlice({
         autoUpdateSettings(state, config);
       }
     },
-    addSelectedSpecies(state, action: PayloadAction<Species>) {
-      const species = action.payload;
-      state.selectedSpecies.push(species);
+    addSelectedSpecies(state, action: PayloadAction<Species | Species[]>) {
+      let speciesList = [...state.selectedSpecies];
+
+      if (Array.isArray(action.payload)) {
+        speciesList = speciesList.concat(action.payload);
+      } else {
+        speciesList.push(action.payload);
+      }
+
+      const sortedSpeciesList = sortAddedSpecies(speciesList);
+
+      state.selectedSpecies = sortedSpeciesList;
     },
     removeSelectedSpecies(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -261,6 +272,12 @@ const blastFormSlice = createSlice({
     },
     switchToSpeciesStep(state) {
       state.step = 'species';
+    },
+    openSpeciesSearchModal(state) {
+      state.modalView = 'species-search';
+    },
+    closeSpeciesSearchModal(state) {
+      state.modalView = null;
     },
     setSequenceType(
       state,
@@ -396,12 +413,27 @@ const blastFormSlice = createSlice({
   }
 });
 
+// Regardless of the order in which species are added, sort them alphabetically
+// NOTE: it is very likely that species type will also need to be accounted for in the sorting algorithm;
+// but so far, we are not saving it. Something for the future.
+const sortAddedSpecies = (speciesList: Species[]) => {
+  const sortedList = [...speciesList]; // note: change to toSorted when we think that browser support is right
+  sortedList.sort((a, b) => {
+    const nameA = a.common_name ?? a.scientific_name;
+    const nameB = b.common_name ?? b.scientific_name;
+    return nameA.toLowerCase().localeCompare(nameB.toLocaleLowerCase());
+  });
+  return sortedList;
+};
+
 export const {
   setSequences,
   updateEmptyInputDisplay,
   setHasUncommittedSequence,
   switchToSpeciesStep,
   switchToSequencesStep,
+  openSpeciesSearchModal,
+  closeSpeciesSearchModal,
   addSelectedSpecies,
   removeSelectedSpecies,
   clearSelectedSpecies,

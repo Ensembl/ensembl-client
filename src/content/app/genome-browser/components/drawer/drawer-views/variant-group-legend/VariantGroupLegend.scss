@@ -22,7 +22,10 @@
     text-align: left;
   }
   thead th, tbody td {
-    --table-data-padding: 8px 20px;
+    padding-left: var(--table-cell-padding-left, 24px);
+    padding-right: var(--table-cell-padding-left, 32px);
+    padding-top: var(--table-cell-padding-top, 6px);
+    padding-bottom: var(--table-cell-padding-bottom, 6px);
   }
 }
 

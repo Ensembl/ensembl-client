@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
+import React from 'react';
 
-import ShadedInput from 'src/shared/components/input/ShadedInput';
+import AddButton from 'src/shared/components/add-button/AddButton';
 
-const GenomesFilterField = (props: {
-  className?: string;
-  onFilterChange: (filterQuery: string) => void;
-}) => {
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
-    const filterQuery = event.currentTarget.value;
-    props.onFilterChange(filterQuery);
-  };
-
-  return (
-    <ShadedInput
-      placeholder="Filter results"
-      type="search"
-      size="small"
-      onInput={onInput}
-      className={props.className}
-    />
-  );
+export const AddButtonStory = {
+  name: 'default',
+  render: () => <AddButton>Add species</AddButton>
 };
 
-export default GenomesFilterField;
+export const DisabledAddButtonStory = {
+  name: 'disabled',
+  render: () => <AddButton disabled>I am disabled</AddButton>
+};
+
+export default {
+  title: 'Components/Shared Components/AddButton'
+};
