@@ -18,12 +18,12 @@ import { useState, useEffect, useRef } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
-import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
-
 import {
-  getTrackPanelGene,
-  getGBRegion
-} from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+  getChrLocationFromStr,
+  validateGenomicLocation
+} from 'src/content/app/genome-browser/helpers/browserHelper';
+
+import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -81,8 +81,7 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
         genomeId,
         regionName,
         start,
-        end,
-        dispatch
+        end
       });
       checkPromises.push(locationCheckPromise);
     }
@@ -209,8 +208,7 @@ const checkFocusLocation = async (params: CheckFocusObjectParams) => {
       genomeId: params.genomeId,
       regionName,
       start,
-      end,
-      dispatch: params.dispatch
+      end
     });
     if (locationCheckResult.isInvalidLocation) {
       isMissingFocusObject = true;
@@ -259,44 +257,20 @@ type CheckLocationFromUrlParams = {
   regionName: string;
   start: number;
   end: number;
-  dispatch: ReturnType<typeof useAppDispatch>;
 };
 
 const checkLocationFromUrl = async (params: CheckLocationFromUrlParams) => {
-  const { genomeId, regionName, start, end, dispatch } = params;
+  const { genomeId, regionName, start, end } = params;
 
   let isInvalidLocation = false;
 
-  const dispatchedPromise = dispatch(
-    getGBRegion.initiate({
-      genomeId,
-      regionName
-    })
-  );
+  const locationStringForValidation = `${regionName}:${start}-${end}`;
+  const validationResult = await validateGenomicLocation({
+    genomeId,
+    location: locationStringForValidation
+  });
 
-  const result = await dispatchedPromise;
-  dispatchedPromise.unsubscribe();
-
-  const {
-    data: regionData,
-    isError: isRegionQueryError,
-    error: regionQueryError
-  } = result;
-
-  if (regionData) {
-    const { length, topology } = regionData.region;
-    const isStartOutOfBounds = start < 1 || start > length;
-    const isEndOutOfBounds = end < 1 || end > length;
-    const isStartGreaterThanEnd = start > end && topology === 'linear';
-
-    if (isStartOutOfBounds || isEndOutOfBounds || isStartGreaterThanEnd) {
-      isInvalidLocation = true;
-    }
-  } else if (
-    isRegionQueryError &&
-    (regionQueryError as any)?.meta?.errors?.[0]?.extensions?.code ===
-      'REGION_NOT_FOUND'
-  ) {
+  if (validationResult.location !== locationStringForValidation) {
     isInvalidLocation = true;
   }
 
