@@ -127,7 +127,7 @@ const SpeciesPageContent = () => {
         isSidebarOpen={sidebarStatus}
         sidebarToolstripContent={<SpeciesSidebarToolstrip />}
         onSidebarToggle={() => {
-          dispatch(toggleSidebar({ genomeId }));
+          dispatch(toggleSidebar({ genomeId: genomeId ?? '' }));
         }}
         viewportWidth={BreakpointWidth.DESKTOP}
       />
@@ -147,9 +147,6 @@ const TopBar = () => {
       <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
         <Chevron direction="left" animate={false} />
         <span className={styles.pageTitle}>Find a Species</span>
-      </div>
-      <div className={styles.dataForSpecies}>
-        {/* placeholder for future species data */}
       </div>
     </div>
   );
