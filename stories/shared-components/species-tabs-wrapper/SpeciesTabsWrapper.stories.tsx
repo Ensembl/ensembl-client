@@ -22,7 +22,7 @@ import speciesData from './speciesData';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesTabsWrapper.stories.scss';
 

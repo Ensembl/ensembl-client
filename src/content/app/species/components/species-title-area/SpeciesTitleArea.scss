@@ -23,6 +23,10 @@ $container-padding-right: 20px;
   padding: 6px;
 }
 
+.speciesIcon img {
+  filter: var(--black-to-grey-species-icon-filter);
+}
+
 .speciesNameWrapper {
   grid-area: species-name;
 }

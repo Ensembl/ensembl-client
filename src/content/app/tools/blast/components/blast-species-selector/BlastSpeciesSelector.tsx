@@ -16,19 +16,19 @@
 
 import React, { useState, useDeferredValue, type FormEvent } from 'react';
 
-import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
-import useSelectableGenomesTable from 'src/content/app/new-species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
+import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
-import AddSpecies from 'src/content/app/new-species-selector/components/species-search-field/AddSpecies';
-import { SpeciesSearchField } from 'src/content/app/new-species-selector/components/species-search-field/SpeciesSearchField';
-import SpeciesSearchResultsSummary from 'src/content/app/new-species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
-import SpeciesSearchResultsTable from 'src/content/app/new-species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import GenomesFilterField from 'src/content/app/new-species-selector/components/genomes-filter-field/GenomesFilterField';
+import AddSpecies from 'src/content/app/species-selector/components/species-search-field/AddSpecies';
+import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
+import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
+import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import type { SpeciesSearchResponse } from 'src/content/app/new-species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
+import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 import styles from './BlastSpeciesSelector.scss';
 

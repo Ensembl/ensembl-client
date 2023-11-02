@@ -25,13 +25,13 @@ import { AppName } from 'src/global/globalConfig';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type BrowserAppBarProps = {
   onSpeciesSelect: (genomeId: string) => void;

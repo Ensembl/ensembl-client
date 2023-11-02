@@ -1,46 +1,35 @@
 @import 'src/styles/common';
 
-$rightCornerWidth: 40px;
-
-.speciesSearchLabel {
-  display: block;
-  margin-left: 25px;
-  margin-bottom: 10px;
+.grid {
+  display: grid;
+  grid-template-areas:
+    'label .'
+    'input controls';
+  grid-template-columns: 486px max-content;
+  row-gap: 10px;
+  column-gap: 45px;
 }
 
-.speciesSearchFieldWrapper {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  max-width: 485px;
-
-  // nesting to increase specificity of the selector (needs to override child rules)
-  .speciesSearchField {
-    width: 100%;
-
-    input {
-      &::placeholder {
-        color: $grey;
-      }
-
-      &:focus {
-        &::placeholder {
-          color: white;
-        }
-      }
-    }
-  }
+.speciesSearchField label {
+  grid-area: label;
+  margin-left: 20px;
 }
 
-.speciesSearchFieldRightCorner {
+.input {
+  grid-area: input;
+}
+
+.controls {
+  grid-area: controls;
+  align-self: center;
+}
+
+.submit {
+  --primary-button-color: #{$blue};
+}
+
+.addSpeciesControls {
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: $rightCornerWidth;
-  height: 100%;
-  padding-top: 1px;
+  gap: 30px;
 }

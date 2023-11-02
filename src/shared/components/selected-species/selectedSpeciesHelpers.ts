@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const SPECIES_NAME_SIZE = 15;
 const ASSEMBLY_NAME_SIZE = 11;

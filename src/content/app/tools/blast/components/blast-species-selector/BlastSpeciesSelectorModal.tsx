@@ -30,7 +30,7 @@ import BlastSpeciesSelector from 'src/content/app/tools/blast/components/blast-s
 
 import { BLAST_MAX_SPECIES_COUNT } from 'src/content/app/tools/blast/constants/blastFormConstants';
 
-import type { SpeciesSearchMatch } from 'src/content/app/new-species-selector/types/speciesSearchMatch';
+import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 const BlastSpeciesSelectorModal = () => {
   const dispatch = useAppDispatch();

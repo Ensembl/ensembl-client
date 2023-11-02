@@ -23,7 +23,7 @@ import { useAppSelector } from 'src/store';
 import useParsedGenomeBrowserUrl from 'src/content/app/genome-browser/contexts/genome-browser-ids-context/useParsedGenomeBrowserUrl';
 import useGenomeBrowserUrlValidator from 'src/content/app/genome-browser/contexts/genome-browser-ids-context/useGenomeBrowserUrlValidator';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import {
   getBrowserActiveFocusObjectId,
   getBrowserActiveGenomeId

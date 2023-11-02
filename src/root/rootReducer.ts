@@ -22,8 +22,7 @@ import global from 'src/global/globalSlice';
 import pageMeta from 'src/shared/state/page-meta/pageMetaSlice';
 import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
-import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import newSpeciesSelector from 'src/content/app/new-species-selector/state/speciesSelectorReducer';
+import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
@@ -40,7 +39,6 @@ const createRootReducer = () =>
     genome,
     global,
     speciesSelector,
-    newSpeciesSelector, // TODO: rename to just species slector when we retire the old one
     speciesPage,
     entityViewer,
     blast,

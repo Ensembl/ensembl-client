@@ -14,47 +14,55 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
-import SpeciesSearchPanel from 'src/content/app/species-selector/containers/species-search-panel/SpeciesSearchPanel';
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getSpeciesSelectorModalView } from './state/species-selector-ui-slice/speciesSelectorUISelectors';
+import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
-import PopularSpeciesPanel from 'src/content/app/species-selector/containers/popular-species-panel/PopularSpeciesPanel';
-import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
+import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
+import SpeciesSelectorResultsView from './views/species-selector-results-view/SpeciesSelectorResultsView';
+import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
+import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
 
 import styles from './SpeciesSelector.scss';
 
-// TODO: figure out how gene search ought to work alongside the species search results
-type View = 'default' | 'gene-search';
-
 const SpeciesSelector = () => {
-  const [currentView, setCurrentView] = useState<View>('default');
+  const modalView = useAppSelector(getSpeciesSelectorModalView);
+  const dispatch = useAppDispatch();
 
-  const onGeneSearchClose = () => {
-    setCurrentView('default');
-  };
+  const isSpeciesSelectorResultsView = [
+    'species-search',
+    'popular-species-genomes'
+  ].includes(modalView || '');
 
-  const onGeneSearchToggle = () => {
-    const nextView = currentView === 'default' ? 'gene-search' : 'default';
-    setCurrentView(nextView);
-  };
+  useEffect(() => {
+    return () => {
+      // close the modal view when leaving Species Selector
+      dispatch(setModalView(null));
+    };
+  }, []);
 
-  const main =
-    currentView === 'gene-search' ? (
-      <GeneSearchPanel onClose={onGeneSearchClose} />
-    ) : (
-      <div>
-        <SpeciesSearchPanel />
-        <PopularSpeciesPanel />
-      </div>
-    );
+  const appBar = isSpeciesSelectorResultsView ? (
+    <SpeciesSearchResultsModalAppBar />
+  ) : (
+    <SpeciesSelectorAppBar />
+  );
+
+  const body = isSpeciesSelectorResultsView ? (
+    <SpeciesSelectorResultsView />
+  ) : modalView === 'gene-search' ? (
+    <SpeciesSelectorGeneSearchView />
+  ) : (
+    <SpeciesSelectorMainView />
+  );
 
   return (
     <div className={styles.grid}>
-      <SpeciesSelectorAppBar
-        onGeneSearchToggle={onGeneSearchToggle}
-        isGeneSearchMode={currentView === 'gene-search'}
-      />
-      {main}
+      {appBar}
+      {body}
     </div>
   );
 };

@@ -21,15 +21,15 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './UrlError.scss';
 

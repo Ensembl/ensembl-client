@@ -24,7 +24,7 @@ import merge from 'lodash/fp/merge';
 import SelectedSpecies, {
   Props as SelectedSpeciesProps
 } from './SelectedSpecies';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const speciesData = {
   genome_id: faker.string.uuid(),

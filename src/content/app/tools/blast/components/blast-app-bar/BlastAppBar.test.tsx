@@ -25,9 +25,7 @@ import blastFormReducer, {
   initialState as initialBlastFormState
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import speciesSelectorReducer, {
-  SpeciesSelectorState
-} from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import speciesSelectorReducer from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from './BlastAppBar';
@@ -56,8 +54,10 @@ const mockCommittedItems = [
 const initialState = {
   blast: { blastForm: initialBlastFormState },
   speciesSelector: {
-    committedItems: mockCommittedItems
-  } as SpeciesSelectorState
+    general: {
+      committedItems: mockCommittedItems
+    }
+  }
 };
 
 const rootReducer = combineReducers({
@@ -70,7 +70,7 @@ const rootReducer = combineReducers({
 
 const store = configureStore({
   reducer: rootReducer,
-  preloadedState: initialState
+  preloadedState: initialState as any
 });
 
 const renderComponent = () => {

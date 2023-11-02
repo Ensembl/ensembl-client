@@ -22,9 +22,6 @@ import HomePage, {
 import SpeciesSelectorPage, {
   serverFetch as speciesSelectorServerFetch
 } from 'src/content/app/species-selector/SpeciesSelectorPage';
-import NewSpeciesSelectorPage, {
-  serverFetch as newSpeciesSelectorServerFetch
-} from 'src/content/app/new-species-selector/SpeciesSelectorPage';
 import SpeciesPage, {
   serverFetch as speciesPageServerFetch
 } from 'src/content/app/species/SpeciesPage';
@@ -72,12 +69,6 @@ const routes: RouteConfig[] = [
     path: '/species-selector',
     element: <SpeciesSelectorPage />,
     serverFetch: speciesSelectorServerFetch
-  },
-  // TODO: For the new species selector below, change the route and the component name when we are done (remove "new")
-  {
-    path: '/new-species-selector',
-    element: <NewSpeciesSelectorPage />,
-    serverFetch: newSpeciesSelectorServerFetch
   },
   {
     path: '/species/:genomeId',

@@ -21,7 +21,7 @@ import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useG
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import BlastSequenceButton from 'src/shared/components/blast-sequence-button/BlastSequenceButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
@@ -32,7 +32,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import Copy from 'src/shared/components/copy/Copy';
 
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './DrawerSequenceView.scss';
 

@@ -17,12 +17,12 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
-import PopularSpeciesButton from 'src/content/app/new-species-selector/components/popular-species-button/PopularSpeciesButton';
+import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
 import humanIconUrl from './homo_sapiens.svg?url';
 import zebrafishIconUrl from './danio_rerio.svg?url';
 
-import type { PopularSpecies } from 'src/content/app/new-species-selector/types/popularSpecies';
+import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 
 const humanData: PopularSpecies = {
   species_taxonomy_id: 1,

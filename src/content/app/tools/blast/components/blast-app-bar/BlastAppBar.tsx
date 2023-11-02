@@ -28,7 +28,7 @@ import {
   getStep as getBlastFormStep,
   getModalView
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -41,7 +41,7 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { AppName } from 'src/global/globalConfig';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const BlastAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);

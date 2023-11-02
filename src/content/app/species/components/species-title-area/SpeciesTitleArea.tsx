@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router-dom';
 
@@ -30,18 +30,15 @@ import DeletionConfirmation from 'src/shared/components/deletion-confirmation/De
 
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import {
   SpeciesSidebarModalView,
   updateSpeciesSidebarModalForGenome
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-import {
-  fetchPopularSpecies,
-  deleteSpeciesAndSave
-} from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 
@@ -50,22 +47,24 @@ import { RootState } from 'src/store';
 import styles from './SpeciesTitleArea.scss';
 
 const useSpecies = () => {
+  const { currentData } = useGetPopularSpeciesQuery();
   const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const popularSpecies = useAppSelector(getPopularSpecies);
   const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
-  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (!popularSpecies.length) {
-      dispatch(fetchPopularSpecies());
-    }
-  }, []);
+  if (!currentData) {
+    return null;
+  }
 
-  const iconUrl = popularSpecies.find(
-    (species) => species.genome_id === activeGenomeId
-  )?.image;
+  const { popular_species } = currentData;
+
+  // TODO: fix popular species icon
+  // const iconUrl = popular_species.find(
+  //   (species) => species.genome_id === activeGenomeId
+  // )?.image;
+
+  const iconUrl = popular_species[0].image;
 
   return committedSpecies
     ? {

@@ -18,11 +18,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import { RootState } from 'src/store';
 
 import geneOverviewStyles from '../overview/GeneOverview.scss';

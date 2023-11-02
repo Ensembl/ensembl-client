@@ -16,7 +16,7 @@
 
 import { faker } from '@faker-js/faker';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export const createSelectedSpecies = (
   fragment: Partial<CommittedItem> = {}

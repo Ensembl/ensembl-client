@@ -20,9 +20,9 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';

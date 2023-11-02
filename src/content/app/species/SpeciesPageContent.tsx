@@ -44,7 +44,7 @@ import SpeciesSidebarModal from './components/species-sidebar-modal/SpeciesSideb
 import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/SpeciesSidebarToolstrip';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesPage.scss';
 

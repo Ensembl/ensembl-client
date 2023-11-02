@@ -20,14 +20,14 @@ import { useSelector } from 'react-redux';
 import { AppName } from 'src/global/globalConfig';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type SpeciesAppBarProps = {
   onSpeciesSelect: (species: CommittedItem) => void;
