@@ -60,7 +60,7 @@ export const TrackPanelTabs = () => {
   const hasTracksInCategory = (trackSet: TrackSet) => {
     return genomeTrackCategories?.reduce((hasTracks, category) => {
       return (
-        (category.types.includes(trackSet) && category.track_list.length > 0) ||
+        (category.type === trackSet && category.track_list.length > 0) ||
         hasTracks
       );
     }, false);

@@ -50,7 +50,7 @@ const mockTrackCategories = {
     {
       label: 'Genes & transcripts',
       track_category_id: 'genes-transcripts',
-      types: ['Genomic'],
+      type: 'Genomic',
       track_list: [
         {
           track_id: 'gene-pc-fwd',
