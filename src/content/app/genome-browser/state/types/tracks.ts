@@ -59,5 +59,5 @@ export type GenomeTrackCategory = {
   label: string;
   track_category_id: string;
   track_list: GenomicTrack[];
-  type: TrackSet; // shows which groups of tracks this category belongs to
+  type: TrackSet;
 };
