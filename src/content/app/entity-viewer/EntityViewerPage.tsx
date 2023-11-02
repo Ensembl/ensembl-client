@@ -25,7 +25,7 @@ import { getPathParameters } from 'src/shared/hooks/useUrlParams';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import {
-  fetchGenomeInfo,
+  fetchGenomeSummary,
   isGenomeNotFoundError
 } from 'src/shared/state/genome/genomeApiSlice';
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
@@ -92,7 +92,7 @@ export const serverFetch: ServerFetch = async (params) => {
   }
 
   const genomeInfoResponsePromise = dispatch(
-    fetchGenomeInfo.initiate(genomeIdFromUrl)
+    fetchGenomeSummary.initiate(genomeIdFromUrl)
   );
   const { data: genomeInfoData, error: genomeInfoError } =
     await genomeInfoResponsePromise;
@@ -103,7 +103,7 @@ export const serverFetch: ServerFetch = async (params) => {
     };
   }
 
-  const genomeId = genomeInfoData?.genomeId as string; // by this point, genomeId clearly exists
+  const genomeId = genomeInfoData?.genome_id as string; // by this point, genomeId clearly exists
 
   // If the url is just /entity-viewer/:genomeId, update page meta and exit
   if (!entityId) {

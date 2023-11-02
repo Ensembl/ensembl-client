@@ -66,11 +66,11 @@ const EntityViewerIdsContextProvider = (props: {
     }
   );
 
-  const genomeId = genomeInfo?.genomeId;
+  const genomeId = genomeInfo?.genome_id;
   const genomeIdForUrl =
     genomeIdInUrl ??
-    genomeInfo?.genomeTag ??
-    genomeInfo?.genomeId ??
+    genomeInfo?.genome_tag ??
+    genomeInfo?.genome_id ??
     savedGenomeInfo?.genome_tag ??
     savedGenomeInfo?.genome_id;
 

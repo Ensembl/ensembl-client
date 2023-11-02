@@ -27,7 +27,7 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import {
-  fetchGenomeInfo,
+  fetchGenomeSummary,
   isGenomeNotFoundError
 } from 'src/shared/state/genome/genomeApiSlice';
 import { getPathParameters, useUrlParams } from 'src/shared/hooks/useUrlParams';
@@ -79,9 +79,9 @@ export const serverFetch: ServerFetch = async (params) => {
   ) as { genomeId: string };
 
   const genomeInfoResponsePromise = dispatch(
-    fetchGenomeInfo.initiate(genomeIdFromUrl)
+    fetchGenomeSummary.initiate(genomeIdFromUrl)
   );
-  const { data: genomeInfoData, error: genomeInfoError } =
+  const { data: genomeInfo, error: genomeInfoError } =
     await genomeInfoResponsePromise;
 
   if (isGenomeNotFoundError(genomeInfoError)) {
@@ -89,7 +89,6 @@ export const serverFetch: ServerFetch = async (params) => {
       status: 404
     };
   } else {
-    const genomeInfo = genomeInfoData?.genomeInfo;
     const title = genomeInfo ? getDisplayName(genomeInfo) : defaultTitle;
     dispatch(
       updatePageMeta({

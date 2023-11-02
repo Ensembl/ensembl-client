@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  createAsyncThunk,
-  createSlice,
-  type Action,
-  type ThunkAction
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import isGeneFocusObject from './isGeneFocusObject';
 import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
 import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
@@ -146,28 +140,6 @@ const buildFocusVariantObject = (payload: {
     }
   };
 };
-
-export const fetchExampleFocusObjects =
-  (genomeId: string): ThunkAction<void, RootState, void, Action<string>> =>
-  async (dispatch) => {
-    const genomeInfoResponsePromise = dispatch(
-      fetchGenomeInfo.initiate(genomeId)
-    );
-    const { data: genomeInfoResponse } = await genomeInfoResponsePromise;
-    genomeInfoResponsePromise.unsubscribe();
-
-    if (!genomeInfoResponse) {
-      // failed network request; nothing to do
-      return;
-    }
-
-    const { genomeInfo } = genomeInfoResponse;
-    const exampleFocusObjects = genomeInfo.example_objects;
-
-    exampleFocusObjects.forEach(({ id, type }) => {
-      dispatch(fetchFocusObject({ genomeId, type, objectId: id }));
-    });
-  };
 
 export const fetchFocusObject = createAsyncThunk(
   'genome-browser/fetch-focus-object',

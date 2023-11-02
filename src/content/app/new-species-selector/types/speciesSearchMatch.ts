@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-export type SpeciesSearchMatch = {
-  genome_id: string;
-  genome_tag: string | null;
-  common_name: string | null;
-  scientific_name: string;
-  type: {
-    kind: string; // e.g. "population"
-    value: string; // e.g. "European"
-  } | null;
-  is_reference: boolean;
-  assembly: {
-    accession_id: string;
-    name: string;
-    url: string;
-  };
+import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
+
+type SearchMatchFieldsFromGenomeInfo =
+  | 'genome_id'
+  | 'genome_tag'
+  | 'common_name'
+  | 'scientific_name'
+  | 'type'
+  | 'is_reference'
+  | 'assembly';
+
+export type SpeciesSearchMatch = Pick<
+  GenomeInfo,
+  SearchMatchFieldsFromGenomeInfo
+> & {
   coding_genes_count: number;
   contig_n50: number | null; // E.coli doesn't have contig n50 in species stats
   has_variation: boolean;

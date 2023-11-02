@@ -15,16 +15,16 @@
  */
 
 import type { RootState } from 'src/store';
-import type { GenomeInfo } from './genomeTypes';
+import type { BriefGenomeSummary } from './genomeTypes';
 
 export const getGenomes = (state: RootState) => state.genome.genomes;
 
 export const getGenomeById = (
   state: RootState,
   genomeId: string
-): GenomeInfo | null => {
+): BriefGenomeSummary | null => {
   const allGenomes = getGenomes(state);
-  return allGenomes[genomeId] || null;
+  return allGenomes[genomeId] ?? null;
 };
 
 export const getGenomeIdForGenomeTag = (
@@ -37,7 +37,7 @@ export const getGenomeIdForGenomeTag = (
 export const getGenomeByUrlId = (
   state: RootState,
   id: string
-): GenomeInfo | null => {
+): BriefGenomeSummary | null => {
   const allGenomes = getGenomes(state);
   return (
     Object.values(allGenomes).find(

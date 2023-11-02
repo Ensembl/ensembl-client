@@ -86,6 +86,7 @@ type SpeciesPageSidebarState = {
 
 const initialState: SpeciesPageSidebarState = {};
 
+// TODO: remove (also, clean up the slice)
 export const fetchSidebarPayload =
   (): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {

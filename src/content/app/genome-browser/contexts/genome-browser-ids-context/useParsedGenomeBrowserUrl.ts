@@ -46,7 +46,7 @@ const useParsedGenomeBrowserUrl = () => {
   } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
     skip: !genomeIdInUrl
   });
-  const genomeId = genomeInfo?.genomeId;
+  const genomeId = genomeInfo?.genome_id;
   const isMissingGenomeId = isError && isGenomeNotFoundError(error);
 
   let focusObjectId;
