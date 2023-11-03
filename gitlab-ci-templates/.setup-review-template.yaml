@@ -61,6 +61,8 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${TOOLS_API_SERVICE_SLUG}#g" ensembl_tools_api_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${TOOLS_API_SERVICE_SLUG}#g" ensembl_tools_api_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_tools_api_ingress.yaml
+    # ensembl-search-api
+    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_search_hub_ingress.yaml
     # metadata api
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" metadata_api_ingress.yaml
   script:
