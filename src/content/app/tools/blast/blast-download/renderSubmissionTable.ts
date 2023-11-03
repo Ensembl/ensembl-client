@@ -422,7 +422,7 @@ const printCommonCells = (params: {
     sequenceHeader,
     queryLength: sequence.value.length,
     speciesName: species.scientific_name,
-    assemblyName: species.assembly_name,
+    assemblyName: species.assembly.name,
     alignmentLength: hsp.hsp_align_len,
     evalue: hsp.hsp_expect,
     hitLength: hit.hit_len,

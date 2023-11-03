@@ -59,12 +59,11 @@ const useSpecies = () => {
 
   const { popular_species } = currentData;
 
-  // TODO: fix popular species icon
-  // const iconUrl = popular_species.find(
-  //   (species) => species.genome_id === activeGenomeId
-  // )?.image;
-
-  const iconUrl = popular_species[0].image;
+  const iconUrl = popular_species.find(
+    // eslint-disable-next-line eqeqeq
+    (species) =>
+      species.species_taxonomy_id == committedSpecies?.species_taxonomy_id
+  )?.image;
 
   return committedSpecies
     ? {
@@ -115,7 +114,7 @@ const SpeciesTitleArea = () => {
         )}
         <div className={styles.speciesNameWrapper}>
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
-          <span className={styles.assemblyName}>{species.assembly_name}</span>
+          <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />

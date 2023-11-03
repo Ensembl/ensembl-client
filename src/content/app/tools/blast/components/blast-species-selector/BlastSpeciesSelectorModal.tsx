@@ -51,14 +51,19 @@ const Content = (props: { onClose: () => void }) => {
   const selectedSpecies = useAppSelector(getSelectedSpeciesList); // list of species already selected for BLAST search
 
   const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
-    // TODO: We probably will want to update the Species type of Blast form slice
-    // to include more fields; but we can only do this when we update the CommittedItem type of Species Selector
     const preparedGenomes = genomes.map((genome) => ({
       genome_id: genome.genome_id,
-      scientific_name: genome.scientific_name,
+      genome_tag: genome.genome_tag,
       common_name: genome.common_name,
-      assembly_name: genome.assembly.name,
-      genome_tag: genome.genome_tag
+      scientific_name: genome.scientific_name,
+      species_taxonomy_id: genome.species_taxonomy_id,
+      assembly: {
+        accession_id: genome.assembly.name,
+        name: genome.assembly.name
+      },
+      is_reference: genome.is_reference,
+      type: genome.type,
+      isEnabled: true
     }));
     dispatch(addSelectedSpecies(preparedGenomes));
     props.onClose();

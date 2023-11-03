@@ -29,7 +29,7 @@ export const getDisplayName = (species: {
 
 export const getFullSpeciesItemWidth = (species: CommittedItem) => {
   const name = getDisplayName(species);
-  const { assembly_name } = species;
+  const assembly_name = species.assembly.name;
 
   const canvas = document.createElement('canvas');
   const canvasContext = canvas.getContext('2d') as CanvasRenderingContext2D;

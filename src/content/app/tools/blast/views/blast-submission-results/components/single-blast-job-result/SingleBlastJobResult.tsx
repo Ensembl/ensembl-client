@@ -301,7 +301,7 @@ const BlastSpecies = (props: {
         {species.scientific_name}
       </span>
       <span className={styles.speciesAssemblyName}>
-        {species.assembly_name}
+        {species.assembly.name}
         {hasHits && (
           <Chevron
             className={styles.blastSpeciesChevron}

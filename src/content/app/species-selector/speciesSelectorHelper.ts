@@ -18,6 +18,6 @@ import { CommittedItem } from 'src/content/app/species-selector/types/committedI
 
 export const getSpeciesAnalyticsName = (species: CommittedItem) => {
   return `${species.common_name || species.scientific_name} - ${
-    species.assembly_name
+    species.assembly.name
   }`;
 };

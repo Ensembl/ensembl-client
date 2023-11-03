@@ -22,10 +22,16 @@ export const createSelectedSpecies = (
   fragment: Partial<CommittedItem> = {}
 ): CommittedItem => ({
   genome_id: faker.string.uuid(),
+  genome_tag: null,
   common_name: null,
   scientific_name: faker.lorem.words(),
-  assembly_name: faker.lorem.word(),
-  genome_tag: null,
+  species_taxonomy_id: faker.lorem.word(),
+  type: null,
+  is_reference: true,
+  assembly: {
+    accession_id: faker.lorem.word(),
+    name: faker.lorem.word()
+  },
   isEnabled: true,
   ...fragment
 });

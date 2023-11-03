@@ -26,6 +26,7 @@ import type {
   BlastProgram,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type BlastFormSettings = {
   submissionName: string;
@@ -37,13 +38,7 @@ type BlastFormSettings = {
   parameters: Partial<Record<BlastParameterName, string>>;
 };
 
-export type Species = {
-  genome_id: string;
-  common_name: string | null;
-  scientific_name: string;
-  assembly_name: string;
-  genome_tag: string | null;
-};
+export type Species = CommittedItem;
 
 export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens

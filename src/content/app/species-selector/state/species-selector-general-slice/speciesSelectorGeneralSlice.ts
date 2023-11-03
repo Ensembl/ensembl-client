@@ -38,14 +38,6 @@ import {
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { RootState } from 'src/store';
 
-export type CurrentItem = {
-  genome_id: string; // changes every time we update strain or assembly
-  common_name: string | null;
-  scientific_name: string;
-  assembly_name: string | null; // name of the selected assembly
-  genome_tag: string | null;
-};
-
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
 };

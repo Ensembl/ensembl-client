@@ -50,7 +50,13 @@ const prepareSelectedSpeciesForCommit = (
     genome_tag: species.genome_tag,
     common_name: species.common_name,
     scientific_name: species.scientific_name,
-    assembly_name: species.assembly.name,
+    species_taxonomy_id: species.species_taxonomy_id,
+    assembly: {
+      accession_id: species.assembly.name,
+      name: species.assembly.name
+    },
+    is_reference: species.is_reference,
+    type: species.type,
     isEnabled: true
   }));
 };

@@ -71,7 +71,9 @@ const mockState = {
         {
           genome_id: 'human',
           common_name: 'human',
-          assembly_name: 'grch38'
+          assembly: {
+            name: 'grch38'
+          }
         }
       ]
     }

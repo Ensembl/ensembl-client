@@ -34,6 +34,7 @@ import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 /**
  * When information about a genome is fetched:
@@ -62,14 +63,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
     }),
     map(({ action, state }) => {
       const genomeInfo = action.payload;
-      const newSpecies: CommittedItem = {
-        genome_id: genomeInfo.genome_id,
-        common_name: genomeInfo.common_name,
-        scientific_name: genomeInfo.scientific_name,
-        assembly_name: genomeInfo.assembly.name,
-        genome_tag: genomeInfo.genome_tag,
-        isEnabled: true
-      };
+      const newSpecies = buildCommittedItemFromBriefGenomeSummary(genomeInfo);
       const allCommittedSpecies = [...getCommittedSpecies(state), newSpecies];
       return allCommittedSpecies;
     }),
@@ -118,14 +112,7 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return uncommittedGenomes.length > 0;
     }),
     map(({ state, uncommittedGenomes }) => {
-      const newSpecies: CommittedItem[] = uncommittedGenomes.map((genome) => ({
-        genome_id: genome.genome_id,
-        common_name: genome.common_name,
-        scientific_name: genome.scientific_name,
-        assembly_name: genome.assembly.name,
-        genome_tag: genome.genome_tag,
-        isEnabled: true
-      }));
+      const newSpecies = uncommittedGenomes.map(buildCommittedItemFromBriefGenomeSummary);
       const allCommittedSpecies = [
         ...getCommittedSpecies(state),
         ...newSpecies
@@ -139,3 +126,21 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return updateCommittedSpecies(allCommittedSpecies);
     })
   );
+
+
+const buildCommittedItemFromBriefGenomeSummary = (genome: BriefGenomeSummary): CommittedItem => {
+  return {
+    genome_id: genome.genome_id,
+    genome_tag: genome.genome_tag,
+    common_name: genome.common_name,
+    scientific_name: genome.scientific_name,
+    species_taxonomy_id: genome.species_taxonomy_id,
+    type: genome.type,
+    is_reference: genome.is_reference,
+    assembly: {
+      accession_id: genome.assembly.accession_id,
+      name: genome.assembly.name
+    },
+    isEnabled: true
+  };
+};

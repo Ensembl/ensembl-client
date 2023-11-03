@@ -67,7 +67,7 @@ const BlastSelectedSpeciesList = (props: Props) => {
           {genomes.map((genome) => (
             <tr key={genome.genome_id}>
               <td>{genome.common_name ?? genome.scientific_name}</td>
-              <td>{genome.assembly_name}</td>
+              <td>{genome.assembly.name}</td>
               <td>
                 <DeleteButton
                   onClick={() => onGenomeRemove(genome.genome_id)}

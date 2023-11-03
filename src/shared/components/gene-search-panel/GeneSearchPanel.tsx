@@ -201,7 +201,7 @@ const GeneSearchTableRows = (props: { data: SearchMatchesWithSpecies }) => {
   const speciesElement = (
     <div className={styles.speciesCell}>
       <span>{speciesInfo.common_name ?? speciesInfo.scientific_name}</span>
-      <span className={styles.assemblyName}>{speciesInfo.assembly_name}</span>
+      <span className={styles.assemblyName}>{speciesInfo.assembly.name}</span>
     </div>
   );
 

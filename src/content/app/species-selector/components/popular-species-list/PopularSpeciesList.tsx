@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
@@ -30,15 +32,18 @@ import styles from './PopularSpeciesList.scss';
 
 const PopularSpeciesList = () => {
   const dispatch = useAppDispatch();
+  const committedItems = useAppSelector(getCommittedSpecies);
   const { currentData } = useGetPopularSpeciesQuery();
+
+  const committedItemsSet = useMemo(() => {
+    return new Set(committedItems.map((item) => item.species_taxonomy_id));
+  }, [committedItems]);
 
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
     dispatch(setPopularSpecies(species));
     dispatch(setModalView('popular-species-genomes'));
   };
 
-  // TODO: after we include species taxonomy id in the committed species payload,
-  // we will use real data for the isSelected property
   return (
     <>
       <h1 className={styles.sectionHeading}>Popular</h1>
@@ -47,7 +52,7 @@ const PopularSpeciesList = () => {
           <PopularSpeciesButton
             key={species.species_taxonomy_id}
             species={species}
-            isSelected={false}
+            isSelected={committedItemsSet.has(`${species.species_taxonomy_id}`)}
             onClick={() => onPopularSpeciesButtonClick(species)}
           />
         ))}

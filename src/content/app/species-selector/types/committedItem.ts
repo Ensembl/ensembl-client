@@ -16,9 +16,18 @@
 
 export type CommittedItem = {
   genome_id: string;
+  genome_tag: string | null;
   common_name: string | null;
   scientific_name: string;
-  assembly_name: string;
-  genome_tag: string | null;
+  species_taxonomy_id: string;
+  type: {
+    kind: string; // e.g. "population"
+    value: string; // e.g. "European"
+  } | null;
+  is_reference: boolean;
+  assembly: {
+    accession_id: string;
+    name: string;
+  };
   isEnabled: boolean;
 };

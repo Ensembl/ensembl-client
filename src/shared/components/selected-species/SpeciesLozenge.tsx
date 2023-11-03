@@ -67,7 +67,7 @@ const SpeciesLozenge = (props: Props) => {
     >
       <div className={styles.inner}>
         <span className={styles.name}>{displayName}</span>
-        <span className={styles.assembly}>{props.species.assembly_name}</span>
+        <span className={styles.assembly}>{props.species.assembly.name}</span>
       </div>
     </div>
   );

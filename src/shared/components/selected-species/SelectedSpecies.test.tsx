@@ -30,7 +30,9 @@ const speciesData = {
   genome_id: faker.string.uuid(),
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
-  assembly_name: 'GRCh38',
+  assembly: {
+    name: 'GRCh38'
+  },
   isEnabled: true
 };
 
