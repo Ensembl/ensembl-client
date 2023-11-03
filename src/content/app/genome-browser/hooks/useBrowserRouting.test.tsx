@@ -39,12 +39,10 @@ import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context
 const mockChangeFocusObject = jest.fn();
 const mockChangeBrowserLocation = jest.fn();
 
-const mockGenomeSearchApiBaseUrl = 'http://genome-search-api';
 const mockMetadataApiBaseUrl = 'http://metadata-api';
 const mockGenomeBrowserObj = {};
 
 jest.mock('config', () => ({
-  genomeSearchBaseUrl: 'http://genome-search-api',
   metadataApiBaseUrl: 'http://metadata-api',
   coreApiUrl: 'http://graphql-api'
 }));
@@ -66,19 +64,17 @@ jest.mock(
 );
 
 const humanGenomeInfo = {
-  assembly_name: 'GRCh38.p13',
-  common_name: 'Human',
   genome_id: 'homo_sapiens_GCA_000001405_28',
-  scientific_name: 'Homo sapiens',
-  genome_tag: 'grch38'
+  genome_tag: 'grch38',
+  common_name: 'Human',
+  scientific_name: 'Homo sapiens'
 };
 
 const wheatGenomeInfo = {
-  assembly_name: 'IWGSC',
-  common_name: null,
   genome_id: 'triticum_aestivum_GCA_900519105_1',
-  scientific_name: 'Triticum aestivum',
-  genome_tag: 'iwgsc'
+  genome_tag: 'iwgsc',
+  common_name: null,
+  scientific_name: 'Triticum aestivum'
 };
 
 const committedHuman = {
@@ -177,29 +173,24 @@ const renderComponent = ({
 };
 
 const server = setupServer(
-  rest.get(`${mockGenomeSearchApiBaseUrl}/genome/info`, (req, res, ctx) => {
-    const genomeId = req.url.searchParams.get('genome_id');
+  rest.get(
+    `${mockMetadataApiBaseUrl}/genome/:slug/explain`,
+    (req, res, ctx) => {
+      const { slug } = req.params;
 
-    if (
-      genomeId === humanGenomeInfo.genome_id ||
-      genomeId === humanGenomeInfo.genome_tag
-    ) {
-      return res(
-        ctx.json({
-          genome_info: [humanGenomeInfo]
-        })
-      );
-    } else if (
-      genomeId === wheatGenomeInfo.genome_id ||
-      genomeId === wheatGenomeInfo.genome_tag
-    ) {
-      return res(
-        ctx.json({
-          genome_info: [wheatGenomeInfo]
-        })
-      );
+      if (
+        slug === humanGenomeInfo.genome_id ||
+        slug === humanGenomeInfo.genome_tag
+      ) {
+        return res(ctx.json(humanGenomeInfo));
+      } else if (
+        slug === wheatGenomeInfo.genome_id ||
+        slug === wheatGenomeInfo.genome_tag
+      ) {
+        return res(ctx.json(wheatGenomeInfo));
+      }
     }
-  }),
+  ),
   rest.get(`${mockMetadataApiBaseUrl}/validate_location`, (req, res, ctx) => {
     const location = req.url.searchParams.get('location');
 

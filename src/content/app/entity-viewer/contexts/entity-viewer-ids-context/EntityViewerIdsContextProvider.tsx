@@ -26,7 +26,7 @@ import {
 import { useAppSelector } from 'src/store';
 import usePrevious from 'src/shared/hooks/usePrevious';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
-import { useGenomeInfoQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useGenomeSummaryByGenomeSlugQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -59,18 +59,16 @@ const EntityViewerIdsContextProvider = (props: {
   ]);
   const { genomeId: genomeIdInUrl, entityId: entityIdInUrl } = params;
 
-  const { currentData: genomeInfo, error } = useGenomeInfoQuery(
-    genomeIdInUrl ?? '',
-    {
+  const { currentData: genomeSummary, error } =
+    useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
       skip: !genomeIdInUrl
-    }
-  );
+    });
 
-  const genomeId = genomeInfo?.genome_id;
+  const genomeId = genomeSummary?.genome_id;
   const genomeIdForUrl =
     genomeIdInUrl ??
-    genomeInfo?.genome_tag ??
-    genomeInfo?.genome_id ??
+    genomeSummary?.genome_tag ??
+    genomeSummary?.genome_id ??
     savedGenomeInfo?.genome_tag ??
     savedGenomeInfo?.genome_id;
 
