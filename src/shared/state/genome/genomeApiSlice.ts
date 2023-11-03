@@ -21,7 +21,6 @@ import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type {
-  GenomeInfo,
   BriefGenomeSummary,
   GenomeKaryotypeItem,
   ExampleFocusObject
@@ -33,11 +32,6 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
     genomeSummaryByGenomeSlug: builder.query<BriefGenomeSummary, string>({
       query: (slug) => ({
         url: `${config.metadataApiBaseUrl}/genome/${slug}/explain`
-      })
-    }),
-    genomeInfo: builder.query<GenomeInfo, string>({
-      query: (genomeId) => ({
-        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
       })
     }),
     genomeKaryotype: builder.query<GenomeKaryotypeItem[], string>({
@@ -54,7 +48,6 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
 });
 
 export const {
-  useGenomeInfoQuery,
   useGenomeSummaryByGenomeSlugQuery,
   useGenomeKaryotypeQuery,
   useExampleObjectsForGenomeQuery
