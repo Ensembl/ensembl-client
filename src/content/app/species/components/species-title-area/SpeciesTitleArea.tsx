@@ -67,7 +67,7 @@ const useSpecies = () => {
     (species) => species.genome_id === activeGenomeId
   )?.image;
 
-  return committedSpecies && iconUrl
+  return committedSpecies
     ? {
         species: committedSpecies,
         iconUrl
@@ -106,12 +106,14 @@ const SpeciesTitleArea = () => {
     navigate(urlFor.speciesSelector());
   };
 
-  return species && iconUrl ? (
+  return species ? (
     <div className={styles.speciesTitleArea}>
       <div className={styles.grid}>
-        <div className={styles.speciesIcon}>
-          <img src={iconUrl} />
-        </div>
+        {iconUrl && (
+          <div className={styles.speciesIcon}>
+            <img src={iconUrl} />
+          </div>
+        )}
         <div className={styles.speciesNameWrapper}>
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly_name}</span>
