@@ -78,8 +78,7 @@ export const TrackPanelList = () => {
   };
 
   const currentTrackCategories = genomeTrackCategories?.filter(
-    (category: GenomeTrackCategory) =>
-      category.types.includes(selectedTrackPanelTab)
+    (category: GenomeTrackCategory) => category.type === selectedTrackPanelTab
   );
 
   const trackCategoryIds =
