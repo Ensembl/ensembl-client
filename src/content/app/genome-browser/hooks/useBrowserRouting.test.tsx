@@ -18,7 +18,7 @@ import React, { createContext, useContext } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { rest, graphql } from 'msw';
+import { http, graphql, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import set from 'lodash/fp/set';
@@ -33,6 +33,8 @@ import useBrowserRouting from './useBrowserRouting';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
+
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
 // jest will allow passing them to the factory function of jest.mock
@@ -63,27 +65,32 @@ jest.mock(
   })
 );
 
-const humanGenomeInfo = {
+type GenomeExplainerResponse = Pick<
+  BriefGenomeSummary,
+  'genome_id' | 'genome_tag' | 'common_name' | 'scientific_name'
+>;
+
+const humanGenomeInfo: GenomeExplainerResponse = {
   genome_id: 'homo_sapiens_GCA_000001405_28',
   genome_tag: 'grch38',
   common_name: 'Human',
   scientific_name: 'Homo sapiens'
 };
 
-const wheatGenomeInfo = {
+const wheatGenomeInfo: GenomeExplainerResponse = {
   genome_id: 'triticum_aestivum_GCA_900519105_1',
   genome_tag: 'iwgsc',
   common_name: null,
   scientific_name: 'Triticum aestivum'
 };
 
-const committedHuman = {
+const committedHuman: GenomeExplainerResponse = {
   ...createSelectedSpecies(),
   genome_id: humanGenomeInfo.genome_id,
   genome_tag: humanGenomeInfo.genome_tag
 };
 
-const committedWheat = {
+const committedWheat: GenomeExplainerResponse = {
   ...createSelectedSpecies(),
   genome_id: wheatGenomeInfo.genome_id,
   genome_tag: wheatGenomeInfo.genome_tag
@@ -175,46 +182,41 @@ const renderComponent = ({
 };
 
 const server = setupServer(
-  rest.get(
-    `${mockMetadataApiBaseUrl}/genome/:slug/explain`,
-    (req, res, ctx) => {
-      const { slug } = req.params;
+  http.get(`${mockMetadataApiBaseUrl}/genome/:slug/explain`, ({ params }) => {
+    const { slug } = params;
 
-      if (
-        slug === humanGenomeInfo.genome_id ||
-        slug === humanGenomeInfo.genome_tag
-      ) {
-        return res(ctx.json(humanGenomeInfo));
-      } else if (
-        slug === wheatGenomeInfo.genome_id ||
-        slug === wheatGenomeInfo.genome_tag
-      ) {
-        return res(ctx.json(wheatGenomeInfo));
-      }
+    if (
+      slug === humanGenomeInfo.genome_id ||
+      slug === humanGenomeInfo.genome_tag
+    ) {
+      return HttpResponse.json(humanGenomeInfo);
+    } else if (
+      slug === wheatGenomeInfo.genome_id ||
+      slug === wheatGenomeInfo.genome_tag
+    ) {
+      return HttpResponse.json(wheatGenomeInfo);
     }
-  ),
-  rest.get(`${mockMetadataApiBaseUrl}/validate_location`, (req, res, ctx) => {
-    const location = req.url.searchParams.get('location');
-
-    return res(
-      ctx.json({
-        location // send back the same location as was in the url; this should be enough to pass the validation
-      })
-    );
   }),
-  graphql.query('TrackPanelGene', (req, res, ctx) => {
-    return res(
-      ctx.data({
+  http.get(`${mockMetadataApiBaseUrl}/validate_location`, ({ request }) => {
+    const url = new URL(request.url);
+    const location = url.searchParams.get('location');
+
+    // send back the same location as was in the url; this should be enough to pass the validation
+    return HttpResponse.json({ location });
+  }),
+  graphql.query('TrackPanelGene', () => {
+    return HttpResponse.json({
+      data: {
         gene: true // doesn't matter, as long it's a truthy value
-      })
-    );
+      }
+    });
   })
 );
 
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })

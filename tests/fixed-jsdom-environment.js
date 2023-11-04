@@ -1,0 +1,24 @@
+const JSDOMEnvironment = require('jest-environment-jsdom').default; // eslint-disable-line @typescript-eslint/no-var-requires
+
+/**
+ * NOTE:
+ * The purpose of this file is to inject into the jsdom environment
+ * the globals that should exist both in the browser and in Node,
+ * but which Jest removes from Node.
+ */
+
+// Adapted from:
+// https://github.com/jsdom/jsdom/issues/3363#issuecomment-1467894943
+
+class FixedJSDOMEnvironment extends JSDOMEnvironment {
+  constructor(...args) {
+    super(...args);
+
+    this.global.structuredClone = structuredClone;
+    this.global.Request = Request;
+    this.global.Response = Response;
+    this.global.fetch = fetch;
+  }
+}
+
+module.exports = FixedJSDOMEnvironment;

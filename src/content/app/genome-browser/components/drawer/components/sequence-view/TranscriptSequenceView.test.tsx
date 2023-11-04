@@ -18,7 +18,7 @@ import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import userEvent from '@testing-library/user-event';
 
@@ -97,15 +97,15 @@ const proteinCodingTranscript = createProteinCodingTranscript();
 const nonCodingTranscript = createNonCodingTranscript();
 
 const server = setupServer(
-  rest.get('http://refget-api/sequence/:checksum', (req, res, ctx) => {
-    const checksum = req.params.checksum as string;
+  http.get('http://refget-api/sequence/:checksum', ({ params }) => {
+    const checksum = params.checksum as string;
     if (
       [
         proteinCodingTranscript.slice.region.sequence.checksum,
         nonCodingTranscript.slice.region.sequence.checksum
       ].includes(checksum)
     ) {
-      return res(ctx.text(mockGenomicSequence));
+      return HttpResponse.text(mockGenomicSequence);
     } else if (
       [
         proteinCodingTranscript.product_generating_contexts[0].cdna.sequence
@@ -114,21 +114,21 @@ const server = setupServer(
           .checksum
       ].includes(checksum)
     ) {
-      return res(ctx.text(mockCDNASequence));
+      return HttpResponse.text(mockCDNASequence);
     } else if (
       [
         proteinCodingTranscript.product_generating_contexts[0].cds.sequence
           .checksum
       ].includes(checksum)
     ) {
-      return res(ctx.text(mockCDSSequence));
+      return HttpResponse.text(mockCDSSequence);
     } else if (
       [
         proteinCodingTranscript.product_generating_contexts[0].product.sequence
           .checksum
       ].includes(checksum)
     ) {
-      return res(ctx.text(mockProteinSequence));
+      return HttpResponse.text(mockProteinSequence);
     }
   })
 );
@@ -136,7 +136,7 @@ const server = setupServer(
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })

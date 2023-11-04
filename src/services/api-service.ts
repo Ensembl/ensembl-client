@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 

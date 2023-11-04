@@ -17,7 +17,7 @@
 import { setTimeout } from 'timers/promises';
 import { configureStore } from '@reduxjs/toolkit';
 import { waitFor } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { createEpicMiddleware } from 'redux-observable';
 
@@ -94,8 +94,8 @@ const buildReduxStore = () => {
 
 const server = setupServer(
   // create a blast submission
-  rest.post('http://tools-api-url/blast/job', (_, res, ctx) => {
-    return res(ctx.json(successfulSubmission));
+  http.post('http://tools-api-url/blast/job', () => {
+    return HttpResponse.json(successfulSubmission);
   })
 );
 
@@ -109,7 +109,7 @@ const successfulSubmission = createBlastSubmissionResponse({
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })
@@ -133,12 +133,9 @@ describe('blast epics', () => {
   describe('blastFormSubmissionEpic', () => {
     it('immediately saves submission to indexedDB', async () => {
       server.use(
-        rest.get(
-          'http://tools-api-url/blast/jobs/status/:jobId',
-          (_, res, ctx) => {
-            return res(ctx.json(createFinishedJobStatusResponse()));
-          }
-        )
+        http.get('http://tools-api-url/blast/jobs/status/:jobId', () => {
+          return HttpResponse.json(createFinishedJobStatusResponse());
+        })
       );
 
       await store.dispatch(
@@ -155,20 +152,20 @@ describe('blast epics', () => {
 
       // finish first job after 3 requests and fail the second job after 2 requests
       server.use(
-        rest.get(
+        http.get(
           'http://tools-api-url/blast/jobs/status/:jobId',
-          (req, res, ctx) => {
-            const { jobId } = req.params;
+          ({ params }) => {
+            const { jobId } = params;
             if (jobId === firstJobInResponse.job_id) {
               firstJobPollCount++;
               return firstJobPollCount >= firstJobMaxPollCount
-                ? res(ctx.json(createFinishedJobStatusResponse()))
-                : res(ctx.json(createRunningJobStatusResponse()));
+                ? HttpResponse.json(createFinishedJobStatusResponse())
+                : HttpResponse.json(createRunningJobStatusResponse());
             } else {
               secondJobPollCount++;
               return secondJobPollCount >= secondJobMaxPollCount
-                ? res(ctx.json(createFailedJobStatusResponse()))
-                : res(ctx.json(createRunningJobStatusResponse()));
+                ? HttpResponse.json(createFailedJobStatusResponse())
+                : HttpResponse.json(createRunningJobStatusResponse());
             }
           }
         )
@@ -212,19 +209,19 @@ describe('blast epics', () => {
 
       // respond with a 404 error or a network error the first time the request is received
       server.use(
-        rest.get(
+        http.get(
           'http://tools-api-url/blast/jobs/status/:jobId',
-          (req, res, ctx) => {
-            const jobId = req.params.jobId as string;
+          ({ params }) => {
+            const jobId = params.jobId as string;
             if (!jobMap[jobId]) {
               jobMap[jobId] = true;
               if (jobId === firstJobInResponse.job_id) {
-                return res(ctx.status(404));
+                return new HttpResponse(null, { status: 404 });
               } else {
-                return res.networkError('Failed to connect');
+                return HttpResponse.error();
               }
             } else {
-              return res(ctx.json(createFinishedJobStatusResponse()));
+              return HttpResponse.json(createFinishedJobStatusResponse());
             }
           }
         )
@@ -249,13 +246,10 @@ describe('blast epics', () => {
 
       // always respond with a running job status
       server.use(
-        rest.get(
-          'http://tools-api-url/blast/jobs/status/:jobId',
-          (_, res, ctx) => {
-            pollCount += 1;
-            return res(ctx.json(createRunningJobStatusResponse()));
-          }
-        )
+        http.get('http://tools-api-url/blast/jobs/status/:jobId', () => {
+          pollCount += 1;
+          return HttpResponse.json(createRunningJobStatusResponse());
+        })
       );
 
       store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
@@ -295,15 +289,12 @@ describe('blast epics', () => {
       let jobPollCount = 0;
 
       server.use(
-        rest.get(
-          'http://tools-api-url/blast/jobs/status/:jobId',
-          (_, res, ctx) => {
-            jobPollCount++;
-            return jobPollCount === maxJobPollCount
-              ? res(ctx.json(createFinishedJobStatusResponse()))
-              : res(ctx.json(createRunningJobStatusResponse()));
-          }
-        )
+        http.get('http://tools-api-url/blast/jobs/status/:jobId', () => {
+          jobPollCount++;
+          return jobPollCount === maxJobPollCount
+            ? HttpResponse.json(createFinishedJobStatusResponse())
+            : HttpResponse.json(createRunningJobStatusResponse());
+        })
       );
 
       store.dispatch(restoreBlastSubmissions());
@@ -335,10 +326,14 @@ describe('blast epics', () => {
     it('saves the failed submission to indexed db', async () => {
       // respond with a 404 error or a network error the first time the request is received
       server.use(
-        rest.post('http://tools-api-url/blast/job', (_, res, ctx) => {
-          // one-time override, to respond with an error to a BLAST submission
-          return res.once(ctx.status(422), ctx.json({ error: 'oops' }));
-        })
+        http.post(
+          'http://tools-api-url/blast/job',
+          () => {
+            // one-time override, to respond with an error to a BLAST submission
+            return HttpResponse.json({ error: 'oops' }, { status: 422 });
+          },
+          { once: true }
+        )
       );
 
       store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));

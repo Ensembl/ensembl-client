@@ -20,7 +20,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import createRootReducer from 'src/root/rootReducer';
@@ -41,8 +41,8 @@ jest.mock('config', () => ({
 
 // BlastSettings component depends on useBlastForm hook, which fetches the config
 const mockServer = setupServer(
-  rest.get('http://tools-api/blast/config', (req, res, ctx) => {
-    return res(ctx.json(blastSettingsConfig));
+  http.get('http://tools-api/blast/config', () => {
+    return HttpResponse.json(blastSettingsConfig);
   })
 );
 
@@ -70,7 +70,7 @@ const renderBlastSettings = () => {
 beforeAll(() =>
   mockServer.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })

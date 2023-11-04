@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import type { LocationValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -29,14 +29,15 @@ export const invalidLocationInput = `${invalidRegionName}:${startCoordinate}-${e
 
 export const getMockServer = () =>
   setupServer(
-    rest.get(
+    http.get(
       'http://location-validation-api/validate_location',
-      (req, res, ctx) => {
-        const location = req.url.searchParams.get('location');
+      ({ request }) => {
+        const url = new URL(request.url);
+        const location = url.searchParams.get('location');
         if (location === validLocationInput) {
-          return res(ctx.json(validLocationResponse));
+          return HttpResponse.json(validLocationResponse);
         } else if (location === invalidLocationInput) {
-          return res(ctx.json(invalidLocationResponse));
+          return HttpResponse.json(invalidLocationResponse);
         }
       }
     )

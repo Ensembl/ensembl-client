@@ -20,7 +20,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import times from 'lodash/times';
 
 import * as browserHelperMethods from 'src/content/app/genome-browser/helpers/browserHelper';
@@ -133,7 +133,7 @@ const server = getMockServer();
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })
@@ -268,10 +268,13 @@ describe('<RegionNavigation />', () => {
 
     it('displays the wrong location error', async () => {
       server.use(
-        rest.get(
+        http.get(
           'http://location-validation-api/validate_location',
-          (_, res, ctx) => {
-            return res.once(ctx.json(invalidLocationResponse));
+          () => {
+            return HttpResponse.json(invalidLocationResponse);
+          },
+          {
+            once: true
           }
         )
       );
@@ -381,10 +384,13 @@ describe('<RegionNavigation />', () => {
 
     it('displays the wrong location error', async () => {
       server.use(
-        rest.get(
+        http.get(
           'http://location-validation-api/validate_location',
-          (_, res, ctx) => {
-            return res.once(ctx.json(invalidLocationResponse));
+          () => {
+            return HttpResponse.json(invalidLocationResponse);
+          },
+          {
+            once: true
           }
         )
       );

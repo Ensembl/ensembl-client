@@ -19,7 +19,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import set from 'lodash/fp/set';
 
@@ -58,12 +58,12 @@ const mockState = createMockBrowserState();
 const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
 const server = setupServer(
-  rest.get('http://track-api/track_categories/:genomeId', (req, res, ctx) => {
-    const genomeId = req.params.genomeId as string;
+  http.get('http://track-api/track_categories/:genomeId', ({ params }) => {
+    const genomeId = params.genomeId;
     if (genomeId === activeGenomeId) {
       const mockData = { track_categories: createGenomeCategories() };
 
-      return res(ctx.json(mockData));
+      return HttpResponse.json(mockData);
     }
   })
 );
@@ -90,7 +90,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })
