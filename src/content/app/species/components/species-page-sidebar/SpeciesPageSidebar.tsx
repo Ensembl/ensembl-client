@@ -57,7 +57,7 @@ const SpeciesPageSidebar = (props: Props) => {
           <div className={styles.assemblyName}>{data.assembly.name}</div>
           <div className={styles.assemblySource}>
             <ExternalReference
-              label={'INSDC'}
+              label="INSDC"
               linkText={data.assembly.accession_id}
               to={data.assembly.url}
             />
