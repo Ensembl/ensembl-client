@@ -59,6 +59,7 @@ export type BriefGenomeSummary = Pick<
   | 'genome_tag'
   | 'common_name'
   | 'scientific_name'
+  | 'species_taxonomy_id'
   | 'type'
   | 'is_reference'
 > & {
