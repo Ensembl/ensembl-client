@@ -34,7 +34,7 @@ import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/b
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
 export type BlastSubmissionPayload = {
-  species: Partial<Species>[];
+  species: Species[];
   sequences: SubmittedSequence[];
   preset: string;
   sequenceType: string;

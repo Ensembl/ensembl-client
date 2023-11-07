@@ -35,7 +35,11 @@ export const createBlastSubmissionPayload = (
       accession_id: 'gca_000001405',
       name: 'grch38'
     },
-    genome_tag: 'grch38'
+    genome_tag: 'grch38',
+    species_taxonomy_id: '1000',
+    is_reference: true,
+    type: null,
+    isEnabled: true
   };
 
   const submission = {
