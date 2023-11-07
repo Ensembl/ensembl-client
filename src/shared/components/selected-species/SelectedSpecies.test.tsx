@@ -22,9 +22,9 @@ import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
 
 import SelectedSpecies, {
-  Props as SelectedSpeciesProps
+  type Props as SelectedSpeciesProps
 } from './SelectedSpecies';
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const speciesData = {
   genome_id: faker.string.uuid(),

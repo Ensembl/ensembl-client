@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export const getSpeciesAnalyticsName = (species: CommittedItem) => {
   return `${species.common_name || species.scientific_name} - ${

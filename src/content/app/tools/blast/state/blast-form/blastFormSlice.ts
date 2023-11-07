@@ -26,7 +26,7 @@ import type {
   BlastProgram,
   SequenceType
 } from 'src/content/app/tools/blast/types/blastSettings';
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type BlastFormSettings = {
   submissionName: string;

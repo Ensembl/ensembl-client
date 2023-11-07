@@ -18,7 +18,7 @@ import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export enum StorageKeys {
   SELECTED_SPECIES = 'speciesSelector.selectedSpecies'

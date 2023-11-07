@@ -22,8 +22,8 @@ import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import { RootState } from 'src/store';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { RootState } from 'src/store';
 
 import geneOverviewStyles from '../overview/GeneOverview.scss';
 
