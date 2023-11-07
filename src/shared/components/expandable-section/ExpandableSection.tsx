@@ -53,10 +53,7 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
     props.classNames?.expanded
   );
 
-  const collapsedContentClassNames = classNames(
-    styles.collapsedContent,
-    props.classNames?.collapsed
-  );
+  const collapsedContentClassNames = props.classNames?.collapsed;
 
   const toggleExpanded = () => {
     props.onToggle && props.onToggle(!isExpanded);
