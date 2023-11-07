@@ -33,7 +33,7 @@ const SpeciesSelector = () => {
   const modalView = useAppSelector(getSpeciesSelectorModalView);
   const dispatch = useAppDispatch();
 
-  const isSpeciesSelectorResultsView = [
+  const shouldShowResultsView = [
     'species-search',
     'popular-species-genomes'
   ].includes(modalView || '');
@@ -45,13 +45,13 @@ const SpeciesSelector = () => {
     };
   }, []);
 
-  const appBar = isSpeciesSelectorResultsView ? (
+  const appBar = shouldShowResultsView ? (
     <SpeciesSearchResultsModalAppBar />
   ) : (
     <SpeciesSelectorAppBar />
   );
 
-  const body = isSpeciesSelectorResultsView ? (
+  const body = shouldShowResultsView ? (
     <SpeciesSelectorResultsView />
   ) : modalView === 'gene-search' ? (
     <SpeciesSelectorGeneSearchView />
