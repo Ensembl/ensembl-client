@@ -14,156 +14,193 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import classNames from 'classnames';
-
-import { useAppDispatch, useAppSelector } from 'src/store';
+import React from 'react';
+import upperFirst from 'lodash/upperFirst';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getActiveGenomeSidebarPayload } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-
-import { fetchSidebarPayload } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesPageSidebar.scss';
 
-const SpeciesPageSidebar = () => {
-  const dispatch = useAppDispatch();
-  const activeGenomeId = useAppSelector(getActiveGenomeId);
-  const sidebarPayload = useAppSelector(getActiveGenomeSidebarPayload);
-  useEffect(() => {
-    if (!sidebarPayload) {
-      dispatch(fetchSidebarPayload());
-    }
-  }, [sidebarPayload, activeGenomeId]);
+type Props = {
+  data: GenomeInfo;
+};
 
-  if (!sidebarPayload) {
-    return <div>No data to display</div>;
-  }
-
-  type AnnotationEntry = {
-    label: string;
-    value?: string | null;
-    url?: string;
-  };
-  const assemblyDate = new Date(sidebarPayload.assembly_date);
-  const formattedAssemblyDate = Intl.DateTimeFormat('en-GB', {
-    month: 'short',
-    year: 'numeric'
-  }).format(assemblyDate);
-  const annotationEntries: AnnotationEntry[][] = [
-    [
-      {
-        label: 'Provider',
-        value: sidebarPayload.annotation_provider.name,
-        url: sidebarPayload.annotation_provider.url
-      },
-      { label: 'Method', value: sidebarPayload.annotation_method }
-    ],
-    [
-      { label: 'Assembly date', value: formattedAssemblyDate },
-      { label: 'Gencode version', value: sidebarPayload.gencode_version }
-    ],
-    [
-      { label: 'Database version', value: sidebarPayload.database_version },
-      { label: 'Taxonomy ID', value: sidebarPayload.taxonomy_id }
-    ]
-  ];
+const SpeciesPageSidebar = (props: Props) => {
+  const { data } = props;
 
   return (
     <Sidebar>
-      <div className={styles.speciesDetails}>
-        {sidebarPayload.common_name && (
-          <span className={styles.commonName}>
-            {sidebarPayload.common_name}
-          </span>
-        )}
-        {sidebarPayload.scientific_name && (
-          <span className={styles.scientificName}>
-            {sidebarPayload.scientific_name}
-          </span>
-        )}
-      </div>
-
-      {sidebarPayload.strain && (
-        <div className={styles.strainDetails}>
-          <span className={styles.strainType}>
-            {sidebarPayload.strain.type}
-          </span>
-          <span className={styles.strainValue}>
-            {sidebarPayload.strain.value}
-          </span>
+      <section className={styles.section}>
+        <div className={styles.fieldsGroup}>
+          <div>
+            {data.common_name && (
+              <span className={styles.commonName}>
+                {upperFirst(data.common_name)}
+              </span>
+            )}
+            <span className={styles.scientificName}>
+              {data.scientific_name}
+            </span>
+          </div>
+          <SpeciesType {...data} />
         </div>
-      )}
+      </section>
+
+      {/*  There will be buttons to find a gene here */}
 
       <div className={styles.sectionHead}>Assembly</div>
-      <div className={styles.assemblyDetails}>
-        <div className={styles.assemblyName}>
-          {sidebarPayload.assembly_name}
-        </div>
-
-        <div className={styles.assemblySource}>
-          <ExternalReference
-            label={sidebarPayload.assembly_provider.name}
-            linkText={sidebarPayload.id}
-            to={sidebarPayload.assembly_provider.url}
-          />
-        </div>
-        <div className={styles.standardLabelValue}>
-          <div className={styles.label}>Assembly level</div>
-          <div className={styles.boldValue}>
-            {sidebarPayload.assembly_level}
+      <section className={styles.section}>
+        <div className={styles.fieldsGroup}>
+          <div className={styles.assemblyName}>{data.assembly.name}</div>
+          <div className={styles.assemblySource}>
+            <ExternalReference
+              label="INSDC"
+              linkText={data.assembly.accession_id}
+              to={data.assembly.url}
+            />
           </div>
         </div>
-      </div>
+
+        <div className={styles.field}>
+          <span className={styles.label}>Assembly level</span>
+          <span className={styles.assemblyLevel}>{data.assembly_level}</span>
+        </div>
+      </section>
 
       <div className={styles.sectionHead}>Annotation</div>
-      <div className={styles.annotationDetails}>
-        {annotationEntries.map((entries, group_index) => {
-          return (
-            <div key={group_index}>
-              {entries.map((entry, entry_index) => {
-                const labelClassNames = classNames(styles.label, {
-                  [styles.labelShort]: group_index === 0
-                });
+      <section className={styles.section}>
+        <div className={styles.fieldsGroup}>
+          <AnnotationProvider {...data} />
+          <AnnotationMethod {...data} />
+        </div>
 
-                return entry.value ? (
-                  <div key={entry_index} className={styles.standardLabelValue}>
-                    <div className={labelClassNames}>{entry.label}</div>
-                    <div className={styles.value}>
-                      {entry.url && entry.value !== 'Ensembl' ? (
-                        <ExternalReference
-                          to={entry.url}
-                          linkText={entry.value}
-                        ></ExternalReference>
-                      ) : (
-                        entry.value
-                      )}
-                    </div>
-                  </div>
-                ) : null;
-              })}
-              <br />
-            </div>
-          );
-        })}
-      </div>
+        <div className={styles.fieldsGroup}>
+          <AnnotationDate {...data} />
+          <AnnotationVersion {...data} />
+        </div>
 
-      {sidebarPayload.notes.map((note, index) => {
-        return (
-          <div key={index}>
-            <div className={styles.sectionHead}>{note.heading}</div>
-            <div className={styles.notesContent}>
-              {note.body.split('\n').map((content, key) => {
-                return <p key={key}>{content}</p>;
-              })}
-            </div>
+        <div className={styles.fieldsGroup}>
+          <div className={styles.field}>
+            <span className={styles.label}>Taxonomy ID</span>
+            <span>{data.taxonomy_id}</span>
           </div>
-        );
-      })}
+          <AssemblyDate {...data} />
+        </div>
+      </section>
     </Sidebar>
+  );
+};
+
+const SpeciesType = (props: GenomeInfo) => {
+  const { type, is_reference } = props;
+
+  if (!is_reference && !type) {
+    return null;
+  }
+
+  const referenceTextElement = is_reference ? (
+    <span className={styles.reference}>Reference</span>
+  ) : null;
+
+  const typeTextElement = type ? (
+    <span>
+      {upperFirst(type.kind)}-{type.value}
+    </span>
+  ) : null;
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Type</span>
+      <span>
+        {typeTextElement}
+        {typeTextElement ? ', ' : ''}
+        {referenceTextElement}
+      </span>
+    </div>
+  );
+};
+
+const AnnotationProvider = (props: GenomeInfo) => {
+  const { annotation_provider } = props;
+
+  if (!annotation_provider) {
+    return null;
+  }
+
+  const annotationProviderElement = annotation_provider.url ? (
+    <a href={annotation_provider.url}>{annotation_provider.name}</a>
+  ) : (
+    <span>{annotation_provider.name}</span>
+  );
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Provider</span>
+      {annotationProviderElement}
+    </div>
+  );
+};
+
+const AnnotationMethod = (props: GenomeInfo) => {
+  const { annotation_method } = props;
+
+  if (!annotation_method) {
+    return null;
+  }
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Method</span>
+      {annotation_method}
+    </div>
+  );
+};
+
+const AnnotationDate = (props: GenomeInfo) => {
+  const { annotation_date } = props;
+
+  if (!annotation_date) {
+    return null;
+  }
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Last updated</span>
+      {annotation_date}
+    </div>
+  );
+};
+
+const AnnotationVersion = (props: GenomeInfo) => {
+  const { annotation_version } = props;
+
+  if (!annotation_version) {
+    return null;
+  }
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Annotation version</span>
+      {annotation_version}
+    </div>
+  );
+};
+
+const AssemblyDate = (props: GenomeInfo) => {
+  const { assembly_date } = props;
+
+  if (!assembly_date) {
+    return null;
+  }
+
+  return (
+    <div className={styles.field}>
+      <span className={styles.label}>Assembly released</span>
+      {assembly_date}
+    </div>
   );
 };
 

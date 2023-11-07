@@ -21,46 +21,18 @@ import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type {
-  GenomeInfo,
+  BriefGenomeSummary,
   GenomeKaryotypeItem,
   ExampleFocusObject
 } from './genomeTypes';
 
-type GenomeInfoResponse = {
-  genomeId: string;
-  genomeTag: string | null;
-  genomeInfo: GenomeInfo;
-};
-
 const genomeApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    genomeInfo: builder.query<GenomeInfoResponse, string>({
-      query: (genomeId) => {
-        const url = `${config.genomeSearchBaseUrl}/genome/info?genome_id=${genomeId}`;
-        return {
-          url
-        };
-      },
-      transformResponse: (response: { genome_info: GenomeInfo[] }) => {
-        const genomeInfo = response.genome_info[0];
-        const { genome_id, genome_tag } = genomeInfo;
-        // TODO: Added this since tests were breaking. Remove optional chaining if example_objects will be returned every time.
-        const exampleObjects = genomeInfo.example_objects?.map(
-          ({ id, type }) => ({
-            id,
-            type: type === 'region' ? 'location' : type
-          })
-        );
-
-        return {
-          genomeId: genome_id,
-          genomeTag: genome_tag,
-          genomeInfo: {
-            ...genomeInfo,
-            example_objects: exampleObjects
-          }
-        };
-      }
+    // query intended to discover whether a string available to the client is a genome id or a genome tag
+    genomeSummaryByGenomeSlug: builder.query<BriefGenomeSummary, string>({
+      query: (slug) => ({
+        url: `${config.metadataApiBaseUrl}/genome/${slug}/explain`
+      })
     }),
     genomeKaryotype: builder.query<GenomeKaryotypeItem[], string>({
       query: (genomeId) => ({
@@ -76,13 +48,13 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
 });
 
 export const {
-  useGenomeInfoQuery,
+  useGenomeSummaryByGenomeSlugQuery,
   useGenomeKaryotypeQuery,
   useExampleObjectsForGenomeQuery
 } = genomeApiSlice;
 
 export const {
-  genomeInfo: fetchGenomeInfo,
+  genomeSummaryByGenomeSlug: fetchGenomeSummary,
   exampleObjectsForGenome: fetchExampleObjectsForGenome
 } = genomeApiSlice.endpoints;
 

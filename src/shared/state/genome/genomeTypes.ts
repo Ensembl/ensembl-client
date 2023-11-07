@@ -19,17 +19,51 @@ export type ExampleFocusObject = {
   type: string;
 };
 
-export type GenomeInfo = {
-  genome_id: string;
-  common_name: string;
-  assembly_name: string;
-  scientific_name: string;
-  example_objects: ExampleFocusObject[];
-  genome_tag: string | null;
+type Provider = {
+  name: string;
+  url: string | null;
 };
 
-export type GenomeInfoResponse = {
-  genome_info: GenomeInfo[];
+export type GenomeInfo = {
+  genome_id: string;
+  genome_tag: string | null;
+  common_name: string | null;
+  scientific_name: string;
+  taxonomy_id: string;
+  species_taxonomy_id: string;
+  type: {
+    kind: string; // e.g. "population"
+    value: string; // e.g. "European"
+  } | null;
+  is_reference: boolean; // whether this is a genome for an assembly that is reference for a given organism
+  assembly: {
+    accession_id: string;
+    name: string;
+    url: string;
+  };
+  assembly_provider: Provider | null;
+  assembly_level: string;
+  assembly_date: string | null;
+  annotation_provider: Provider | null;
+  annotation_method: string | null;
+  annotation_version: string | null;
+  annotation_date: string | null;
+  number_of_genomes_in_group: number;
+};
+
+// Response received by querying the api with a string that can be either a genome id
+// or a genome tag. Contains minimal necessary information about a genome used across different apps
+export type BriefGenomeSummary = Pick<
+  GenomeInfo,
+  | 'genome_id'
+  | 'genome_tag'
+  | 'common_name'
+  | 'scientific_name'
+  | 'species_taxonomy_id'
+  | 'type'
+  | 'is_reference'
+> & {
+  assembly: Pick<GenomeInfo['assembly'], 'name' | 'accession_id'>;
 };
 
 export enum GenomeKaryotypeItemType {

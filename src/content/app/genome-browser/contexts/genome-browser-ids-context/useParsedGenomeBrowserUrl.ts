@@ -26,7 +26,7 @@ import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import {
   isGenomeNotFoundError,
-  useGenomeInfoQuery
+  useGenomeSummaryByGenomeSlugQuery
 } from 'src/shared/state/genome/genomeApiSlice';
 
 const useParsedGenomeBrowserUrl = () => {
@@ -39,14 +39,14 @@ const useParsedGenomeBrowserUrl = () => {
   const locationInUrl = urlSearchParams.get('location');
 
   const {
-    currentData: genomeInfo,
+    currentData: genomeSummary,
     isFetching,
     isError,
     error
-  } = useGenomeInfoQuery(genomeIdInUrl ?? '', {
+  } = useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
     skip: !genomeIdInUrl
   });
-  const genomeId = genomeInfo?.genomeId;
+  const genomeId = genomeSummary?.genome_id;
   const isMissingGenomeId = isError && isGenomeNotFoundError(error);
 
   let focusObjectId;

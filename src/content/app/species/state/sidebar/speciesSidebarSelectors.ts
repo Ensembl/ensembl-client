@@ -26,16 +26,6 @@ export const isSpeciesSidebarOpen = (state: RootState) => {
   return state.speciesPage.sidebar[activeGenomeId]?.isSidebarOpen ?? true;
 };
 
-export const getActiveGenomeSidebarPayload = (state: RootState) => {
-  const activeGenomeId = getActiveGenomeId(state);
-
-  if (!activeGenomeId) {
-    return null;
-  }
-
-  return state.speciesPage.sidebar[activeGenomeId]?.payload || null;
-};
-
 export const getIsSpeciesSidebarModalOpened = (state: RootState) =>
   Boolean(getSpeciesSidebarModalView(state));
 

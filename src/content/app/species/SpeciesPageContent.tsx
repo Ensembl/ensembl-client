@@ -20,13 +20,13 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import {
-  useGenomeInfoQuery,
+  useGenomeSummaryByGenomeSlugQuery,
   isGenomeNotFoundError
 } from 'src/shared/state/genome/genomeApiSlice';
+import { useSpeciesDetailsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { fetchExampleFocusObjects } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 import {
   getIsSpeciesSidebarModalOpened,
   isSpeciesSidebarOpen
@@ -55,14 +55,22 @@ type SpeciesPageParams = {
 const SpeciesPageContent = () => {
   const { genomeId: genomeIdInUrl } = useParams() as SpeciesPageParams;
   const {
-    data: genomeInfo,
+    currentData: genomeSummary,
     isError,
     error
-  } = useGenomeInfoQuery(genomeIdInUrl);
+  } = useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl);
+
+  const { data: speciesDetails } = useSpeciesDetailsQuery(
+    genomeSummary?.genome_id ?? '',
+    {
+      skip: !genomeSummary?.genome_id
+    }
+  );
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const genomeId = genomeInfo?.genomeId;
+  const genomeId = genomeSummary?.genome_id;
 
   const changeGenomeId = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -80,7 +88,6 @@ const SpeciesPageContent = () => {
       return;
     }
     dispatch(setActiveGenomeId(genomeId));
-    dispatch(fetchExampleFocusObjects(genomeId));
   }, [genomeId]);
 
   if (isError && isGenomeNotFoundError(error)) {
@@ -92,7 +99,7 @@ const SpeciesPageContent = () => {
     );
   }
 
-  if (!genomeId) {
+  if (!speciesDetails) {
     return null; // TODO: consider some kind of a spinner?
   }
 
@@ -104,7 +111,7 @@ const SpeciesPageContent = () => {
     return isSpeciesSidebarModalOpened ? (
       <SpeciesSidebarModal />
     ) : (
-      <SpeciesPageSidebar />
+      <SpeciesPageSidebar data={speciesDetails} />
     );
   };
 
@@ -120,7 +127,7 @@ const SpeciesPageContent = () => {
         isSidebarOpen={sidebarStatus}
         sidebarToolstripContent={<SpeciesSidebarToolstrip />}
         onSidebarToggle={() => {
-          dispatch(toggleSidebar({ genomeId }));
+          dispatch(toggleSidebar({ genomeId: genomeId ?? '' }));
         }}
         viewportWidth={BreakpointWidth.DESKTOP}
       />
@@ -140,9 +147,6 @@ const TopBar = () => {
       <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
         <Chevron direction="left" animate={false} />
         <span className={styles.pageTitle}>Find a Species</span>
-      </div>
-      <div className={styles.dataForSpecies}>
-        {/* placeholder for future species data */}
       </div>
     </div>
   );

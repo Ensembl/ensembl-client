@@ -2,6 +2,10 @@
 
 $left-padding: 15px;
 
+.section {
+  padding-left: $left-padding;
+}
+
 .sectionHead {
   color: $dark-grey;
   font-size: 12px;
@@ -12,76 +16,49 @@ $left-padding: 15px;
   margin-top: 20px;
 }
 
-.speciesDetails {
-  padding-left: $left-padding;
-  .commonName {
-    font-weight: $bold;
-    margin-right: 10px;
-  }
-
-  .scientificName {
-    font-style: italic;
-    font-weight: $bold;
-  }
-
-  .commonName + .scientificName {
-    font-weight: $light;
-  }
+.fieldsGroup {
+  display: flex;
+  flex-direction: column;
 }
 
-.strainDetails {
-  margin-top: 10px;
-  .strainType {
-    padding-left: $left-padding;
-    font-weight: $light;
-  }
-
-  .strainValue {
-    margin-left: 10px;
-  }
+.fieldsGroup:not(:empty) {
+  margin-bottom: 16px;
 }
 
-.assemblyDetails {
-  padding-left: $left-padding;
-
-  .assemblyName {
-    padding-bottom: 15px;
-    font-weight: $bold;
-  }
-
-  .assemblySource {
-    padding-bottom: 15px;
-  }
-}
-
-.annotationDetails {
-  padding-left: $left-padding;
-}
-
-.standardLabelValue {
+.field {
   display: grid;
-  grid-template-columns: [label] max-content 10px [value] auto;
-  .label {
-    grid-column: label;
-    font-size: 13px;
-    font-weight: $light;
-    width: 100px;
-
-    &Short {
-      width: 50px;
-    }
-  }
-
-  .value {
-    grid-column: value;
-  }
-
-  .boldValue {
-    grid-column: value;
-    font-weight: $bold;
-  }
+  grid-template-columns: [label] max-content [value] 1fr;
+  column-gap: 10px;
 }
 
-.notesContent {
-  padding-left: $left-padding;
+.field .label {
+  grid-column: label;
+  font-weight: $light;
+}
+
+.commonName {
+  font-weight: $bold;
+  margin-right: 10px;
+}
+
+/* For species that only have a scientific name */
+.scientificName {
+  font-style: italic;
+  font-weight: $bold;
+}
+
+.commonName + .scientificName {
+  font-weight: $light;
+}
+
+.reference {
+  font-style: italic;
+}
+
+.assemblyName {
+  font-weight: $bold;
+}
+
+.assemblyLevel {
+  font-weight: $bold;
 }

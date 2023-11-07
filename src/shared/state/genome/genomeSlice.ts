@@ -16,13 +16,13 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
+import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
 
-import type { GenomeInfo } from './genomeTypes';
+import type { BriefGenomeSummary } from './genomeTypes';
 
 export type GenomesState = Readonly<{
   genomeTagToGenomeIdMap: Record<string, string>; // maps the id used in the url to the genome uuid
-  genomes: Record<string, GenomeInfo>;
+  genomes: Record<string, BriefGenomeSummary>;
 }>;
 
 const defaultGenomeState: GenomesState = {
@@ -35,20 +35,23 @@ const genomeSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // GenomeInfo
-    builder.addMatcher(fetchGenomeInfo.matchFulfilled, (state, { payload }) => {
-      const { genomeId, genomeTag, genomeInfo } = payload;
+    builder.addMatcher(
+      fetchGenomeSummary.matchFulfilled,
+      (state, { payload }) => {
+        const { genome_id, genome_tag } = payload;
 
-      state.genomes[genomeId] = genomeInfo;
+        state.genomes[genome_id] = payload;
 
-      if (genomeTag) {
-        // TODO: fetchGenomeInfo function is going to retrieve genome info using the id from the url.
-        // Consider what should happen if the id from the url becomes associated with a more recent genome id.
-        // We should probably check whether state.genomeTagToGenomeIdMap[genomeTag] exists before updating it
-        state.genomeTagToGenomeIdMap[genomeTag] = genomeId;
-      } else {
-        state.genomeTagToGenomeIdMap[genomeId] = genomeId;
+        if (genome_tag) {
+          // TODO: fetchGenomeSummary function is going to retrieve genome info using the id from the url.
+          // Consider what should happen if the id from the url becomes associated with a more recent genome id.
+          // We should probably check whether state.genomeTagToGenomeIdMap[genomeTag] exists before updating it
+          state.genomeTagToGenomeIdMap[genome_tag] = genome_id;
+        } else {
+          state.genomeTagToGenomeIdMap[genome_id] = genome_id;
+        }
       }
-    });
+    );
   }
 });
 

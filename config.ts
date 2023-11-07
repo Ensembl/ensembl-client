@@ -71,7 +71,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     variationApiUrl:
       process.env.SSR_VARIATION_GRAPHQL_API_URL ??
       `${defaultServerHost}${defaultApiUrls.variationApiUrl}`,
-    metadataApiBaseUrl: defaultApiUrls.metadataApiBaseUrl, // irrelevant for server-side rendering
+    metadataApiBaseUrl:
+      process.env.SSR_METADATA_API_URL ??
+      `${defaultServerHost}${defaultApiUrls.metadataApiBaseUrl}`,
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering

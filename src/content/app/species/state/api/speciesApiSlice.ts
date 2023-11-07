@@ -32,6 +32,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import type { RootState } from 'src/store';
 import type { SpeciesStatistics } from './speciesApiTypes';
 import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
+import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 export type GenomeStats = StatsSection[];
 
@@ -93,8 +94,14 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
           };
         }
       }
+    }),
+    speciesDetails: builder.query<GenomeInfo, string>({
+      query: (genomeId) => ({
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
+      })
     })
   })
 });
 
-export const { useGetSpeciesStatisticsQuery } = speciesApiSlice;
+export const { useGetSpeciesStatisticsQuery, useSpeciesDetailsQuery } =
+  speciesApiSlice;

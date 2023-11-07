@@ -36,7 +36,7 @@ import {
   updateCommittedSpecies,
   loadStoredSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { fetchGenomeInfo } from 'src/shared/state/genome/genomeApiSlice';
+import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { RootState } from 'src/store';
 import type {
@@ -104,7 +104,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
   state$
 ) =>
   action$.pipe(
-    filter(fetchGenomeInfo.matchFulfilled),
+    filter(fetchGenomeSummary.matchFulfilled),
     map((action) => {
       const state = state$.value;
       return {
@@ -114,17 +114,17 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
     }),
     filter(({ action, state }) => {
       // check that the genome is not among committed species
-      const genomeId = action.payload.genomeId;
+      const genomeId = action.payload.genome_id;
       const speciesAlreadyCommitted = getCommittedSpeciesById(state, genomeId);
       return !speciesAlreadyCommitted;
     }),
     map(({ action, state }) => {
-      const { genomeInfo } = action.payload;
+      const genomeInfo = action.payload;
       const newSpecies: CommittedItem = {
         genome_id: genomeInfo.genome_id,
         common_name: genomeInfo.common_name,
         scientific_name: genomeInfo.scientific_name,
-        assembly_name: genomeInfo.assembly_name,
+        assembly_name: genomeInfo.assembly.name,
         genome_tag: genomeInfo.genome_tag,
         isEnabled: true
       };
@@ -180,7 +180,7 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
         genome_id: genome.genome_id,
         common_name: genome.common_name,
         scientific_name: genome.scientific_name,
-        assembly_name: genome.assembly_name,
+        assembly_name: genome.assembly.name,
         genome_tag: genome.genome_tag,
         isEnabled: true
       }));
