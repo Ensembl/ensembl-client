@@ -39,12 +39,12 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getBrowserActiveFocusObjectIds } from '../state/browser-general/browserGeneralSelectors';
 import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-object/focusObjectSelectors';
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:

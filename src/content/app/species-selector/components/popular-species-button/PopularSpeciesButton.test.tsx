@@ -15,226 +15,99 @@
  */
 
 import React from 'react';
-import { Provider } from 'react-redux';
-import { MemoryRouter, Location } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
-import set from 'lodash/fp/set';
-import merge from 'lodash/merge';
 
-import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import PopularSpeciesButton from './PopularSpeciesButton';
 
-import PopularSpeciesButton, {
-  Props as PopularSpeciesButtonProps
-} from './PopularSpeciesButton';
-import RouteChecker from 'tests/router/RouteChecker';
+import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 
-import { createPopularSpecies } from 'tests/fixtures/popular-species';
-import { createSelectedSpecies } from 'tests/fixtures/selected-species';
-
-import { RootState } from 'src/store';
-
-jest.mock(
-  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
-  () =>
-    jest.fn(() => ({
-      trackPopularSpeciesSelect: jest.fn()
-    }))
-);
-
-const humanFromProps: ReturnType<typeof createPopularSpecies> = {
-  ...createPopularSpecies(),
-  genome_id: 'human'
-};
-const committedHuman: ReturnType<typeof createSelectedSpecies> = {
-  ...createSelectedSpecies(),
-  genome_id: 'human'
-};
-const committedWheat: ReturnType<typeof createSelectedSpecies> = {
-  ...createSelectedSpecies(),
-  genome_id: 'wheat'
+const humanData: PopularSpecies = {
+  species_taxonomy_id: 1,
+  name: 'Human',
+  image: 'image.svg',
+  genomes_count: 2
 };
 
-const defaultReduxState = {
-  speciesSelector: {
-    currentItem: null as RootState['speciesSelector']['currentItem'],
-    committedItems: [] as RootState['speciesSelector']['committedItems']
-  }
-};
-
-const defaultProps = {
-  species: humanFromProps
-};
-
-const mockStore = configureMockStore();
-
-type RenderComponentParams = {
-  props?: Partial<PopularSpeciesButtonProps>;
-  state?: {
-    speciesSelector: Partial<typeof defaultReduxState['speciesSelector']>;
-  };
-};
-
-const renderComponent = (params: RenderComponentParams) => {
-  const state = merge({}, defaultReduxState, params.state);
-  const routerInfo: { location: Location | null } = { location: null };
-
-  const renderResult = render(
-    <MemoryRouter initialEntries={['/species-selector']}>
-      <Provider store={mockStore(state)}>
-        <PopularSpeciesButton {...defaultProps} {...params.props} />
-        <RouteChecker setLocation={(loc) => (routerInfo.location = loc)} />
-      </Provider>
-    </MemoryRouter>
-  );
-
-  return {
-    ...renderResult,
-    routerInfo
-  };
-};
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('<PopularSpeciesButton />', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it('applies correct classes when species is not selected', () => {
+    const { container } = render(
+      <PopularSpeciesButton
+        species={humanData}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
+    );
+
+    const button = container.querySelector('button') as HTMLElement;
+    expect(button.classList.contains('popularSpeciesButton')).toBe(true);
+    expect(button.classList.contains('popularSpeciesButtonSelected')).toBe(
+      false
+    );
   });
 
-  describe('not available', () => {
-    it('has appropriate class', () => {
-      const props = set('species.is_available', false, defaultProps);
-      const { container } = renderComponent({ props });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-      expect(button.classList.contains('popularSpeciesButtonDisabled')).toBe(
-        true
-      );
-    });
+  it('applies correct classes when species is selected', () => {
+    const { container } = render(
+      <PopularSpeciesButton
+        species={humanData}
+        isSelected={true}
+        onClick={jest.fn()}
+      />
+    );
 
-    it('does not select a species when clicked', async () => {
-      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
-
-      const props = set('species.is_available', false, defaultProps);
-      const { container } = renderComponent({ props });
-
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-      await userEvent.click(button);
-
-      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
-    });
+    const button = container.querySelector('button') as HTMLElement;
+    expect(button.classList.contains('popularSpeciesButton')).toBe(true);
+    expect(button.classList.contains('popularSpeciesButtonSelected')).toBe(
+      true
+    );
   });
 
-  describe('not selected', () => {
-    it('has appropriate class', () => {
-      const { container } = renderComponent({ props: defaultProps });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-      expect(button.classList.length).toBe(1); // has only .popularSpeciesButton class
-    });
+  it('renders a pill with genomes count if it is greater than 1', () => {
+    const { container } = render(
+      <PopularSpeciesButton
+        species={humanData}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
+    );
 
-    it('selects the species received from props when clicked', async () => {
-      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
-      const { container } = renderComponent({ props: defaultProps });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-
-      await userEvent.click(button);
-
-      expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
-        defaultProps.species
-      );
-    });
+    expect(countPill).toBeTruthy();
+    expect(countPill.innerHTML).toBe(`${humanData.genomes_count}`);
   });
 
-  describe('selected', () => {
-    const reduxFragmentWithSelectedSpecies = {
-      speciesSelector: {
-        currentItem: committedHuman
-      }
-    };
+  it('does not render a genomes count pill if species only has one genome', () => {
+    const { container } = render(
+      <PopularSpeciesButton
+        species={{ ...humanData, genomes_count: 1 }}
+        isSelected={false}
+        onClick={jest.fn()}
+      />
+    );
 
-    it('has appropriate class', () => {
-      const { container } = renderComponent({
-        state: reduxFragmentWithSelectedSpecies
-      });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-      expect(button.classList.contains('popularSpeciesButtonSelected')).toBe(
-        true
-      );
-    });
+    const countPill = container.querySelector('.genomesCount') as HTMLElement;
 
-    it('clears selected species when clicked', async () => {
-      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
-      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
-
-      const { container, routerInfo } = renderComponent({
-        state: reduxFragmentWithSelectedSpecies
-      });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-
-      await userEvent.click(button);
-
-      expect(
-        speciesSelectorActions.clearSelectedSearchResult
-      ).toHaveBeenCalled();
-      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
-      expect(routerInfo.location?.pathname).toBe('/species-selector'); // the click has not caused a url change
-    });
+    expect(countPill).toBeFalsy();
   });
 
-  describe('committed', () => {
-    const reduxFragmentWithCommittedSpecies = {
-      speciesSelector: {
-        committedItems: [committedWheat, committedHuman]
-      }
-    };
+  it('calls the click handler when clicked', async () => {
+    const clickHandler = jest.fn();
+    const { container } = render(
+      <PopularSpeciesButton
+        species={{ ...humanData, genomes_count: 1 }}
+        isSelected={false}
+        onClick={clickHandler}
+      />
+    );
 
-    it('has appropriate class', () => {
-      const { container } = renderComponent({
-        state: reduxFragmentWithCommittedSpecies
-      });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-      expect(button.classList.contains('popularSpeciesButtonCommitted')).toBe(
-        true
-      );
-    });
+    const button = container.querySelector('button') as HTMLElement;
+    await userEvent.click(button);
 
-    it('opens species page when clicked', async () => {
-      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
-      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
-
-      const { container, routerInfo } = renderComponent({
-        state: reduxFragmentWithCommittedSpecies
-      });
-      const button = container.querySelector(
-        '.popularSpeciesButton'
-      ) as HTMLElement;
-
-      await userEvent.click(button);
-
-      expect(routerInfo.location?.pathname).toBe(
-        urlFor.speciesPage({
-          genomeId: defaultProps.species.genome_id
-        })
-      );
-
-      expect(
-        speciesSelectorActions.clearSelectedSearchResult
-      ).not.toHaveBeenCalled();
-      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
-    });
+    expect(clickHandler).toHaveBeenCalled();
   });
 });

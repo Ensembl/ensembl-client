@@ -28,7 +28,7 @@ import {
   getStep as getBlastFormStep,
   getModalView
 } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
@@ -41,7 +41,7 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { AppName } from 'src/global/globalConfig';
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const BlastAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
@@ -72,10 +72,17 @@ const BlastAppBar = () => {
       dispatch(
         addSelectedSpecies({
           genome_id: species.genome_id,
+          genome_tag: species.genome_tag,
           common_name: species.common_name,
           scientific_name: species.scientific_name,
-          assembly_name: species.assembly_name,
-          genome_tag: species.genome_tag
+          species_taxonomy_id: species.species_taxonomy_id,
+          assembly: {
+            accession_id: species.assembly.name,
+            name: species.assembly.name
+          },
+          is_reference: species.is_reference,
+          type: species.type,
+          isEnabled: true
         })
       );
     }

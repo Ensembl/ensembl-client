@@ -35,13 +35,15 @@ const mockState = {
     }
   },
   speciesSelector: {
-    committedItems: [
-      {
-        genome_id: 'human-grch38',
-        common_name: 'human',
-        scientific_name: 'Homo sapiens'
-      }
-    ]
+    general: {
+      committedItems: [
+        {
+          genome_id: 'human-grch38',
+          common_name: 'human',
+          scientific_name: 'Homo sapiens'
+        }
+      ]
+    }
   }
 };
 
@@ -85,7 +87,7 @@ describe('GenePublications', () => {
 
     it('contains only scientific name in the query when species does not have a common name', () => {
       const updatedState = set(
-        'speciesSelector.committedItems.0.common_name',
+        'speciesSelector.general.committedItems.0.common_name',
         null,
         mockState
       );

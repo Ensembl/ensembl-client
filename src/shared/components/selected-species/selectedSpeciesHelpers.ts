@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const SPECIES_NAME_SIZE = 15;
 const ASSEMBLY_NAME_SIZE = 11;
@@ -29,7 +29,7 @@ export const getDisplayName = (species: {
 
 export const getFullSpeciesItemWidth = (species: CommittedItem) => {
   const name = getDisplayName(species);
-  const { assembly_name } = species;
+  const assembly_name = species.assembly.name;
 
   const canvas = document.createElement('canvas');
   const canvasContext = canvas.getContext('2d') as CanvasRenderingContext2D;

@@ -29,18 +29,18 @@ import {
   getActiveGenomeId,
   getActiveGenomeUIState
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 import { setActiveGenomeExpandedSections } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
-import { RootState } from 'src/store';
-import { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { RootState } from 'src/store';
+import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import {
-  StatsSection,
   sectionGroupsMap,
-  SpeciesStatsSection
+  SpeciesStatsSection,
+  type StatsSection
 } from '../../state/general/speciesGeneralHelper';
 
 import styles from './SpeciesMainView.scss';

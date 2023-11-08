@@ -102,7 +102,9 @@ const mockState = {
     }
   },
   speciesSelector: {
-    committedItems: [committedHuman, committedWheat]
+    general: {
+      committedItems: [committedHuman, committedWheat]
+    }
   }
 };
 
@@ -262,7 +264,7 @@ describe('useBrowserRouting', () => {
         mockState
       );
       updatedState = set(
-        'speciesSelector.committedItems',
+        'speciesSelector.general.committedItems',
         [committedWheat, committedHuman],
         updatedState
       );

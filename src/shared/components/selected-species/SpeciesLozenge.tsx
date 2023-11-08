@@ -21,7 +21,7 @@ import camelCase from 'lodash/camelCase';
 
 import { getDisplayName } from './selectedSpeciesHelpers';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesLozenge.scss';
 
@@ -67,7 +67,7 @@ const SpeciesLozenge = (props: Props) => {
     >
       <div className={styles.inner}>
         <span className={styles.name}>{displayName}</span>
-        <span className={styles.assembly}>{props.species.assembly_name}</span>
+        <span className={styles.assembly}>{props.species.assembly.name}</span>
       </div>
     </div>
   );

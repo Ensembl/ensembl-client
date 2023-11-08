@@ -15,83 +15,26 @@
  */
 
 import { Epic } from 'redux-observable';
-import { map, switchMap, tap, filter, distinctUntilChanged } from 'rxjs';
-import { isAnyOf, isFulfilled, type Action } from '@reduxjs/toolkit';
+import { map, tap, filter } from 'rxjs';
+import { isFulfilled, type Action } from '@reduxjs/toolkit';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
-import * as observableApiService from 'src/services/observable-api-service';
 
 import {
   getCommittedSpecies,
   getCommittedSpeciesById
-} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getGenomes } from 'src/shared/state/genome/genomeSelectors';
 
 import {
-  fetchSpeciesSearchResults,
-  setSelectedSpecies,
-  setSearchResults,
-  clearSearch,
-  clearSearchResults,
   updateCommittedSpecies,
   loadStoredSpecies
-} from 'src/content/app/species-selector/state/speciesSelectorSlice';
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { RootState } from 'src/store';
-import type {
-  SearchMatches,
-  CommittedItem
-} from 'src/content/app/species-selector/types/species-search';
-
-export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
-  action$,
-  state$
-) =>
-  action$.pipe(
-    filter(
-      isAnyOf(
-        fetchSpeciesSearchResults,
-        setSelectedSpecies,
-        clearSearch,
-        clearSearchResults
-      )
-    ),
-    distinctUntilChanged(
-      // ignore actions that have identical queries
-      // (which may happen because of white space trimming in SpeciesSearchField,
-      // but forget the previous query every time user clears search results
-      (action1, action2) =>
-        action1.type === action2.type && action1.payload === action2.payload
-    ),
-    filter(fetchSpeciesSearchResults.match),
-    switchMap((action) => {
-      const committedSpeciesIds = getCommittedSpecies(state$.value).map(
-        (species) => species.genome_id
-      );
-      const urlSearchParams = new URLSearchParams();
-      urlSearchParams.append('query', encodeURIComponent(action.payload));
-      urlSearchParams.append('limit', '20');
-      committedSpeciesIds.forEach((id) => {
-        urlSearchParams.append('exclude', id);
-      });
-      const query = urlSearchParams.toString();
-      const url = `/api/genomesearch/genome_search?${query}`;
-      return observableApiService.fetch<{
-        genome_matches: SearchMatches[];
-        total_hits: number;
-      }>(url);
-    }),
-    map((response) => {
-      if (!('error' in response)) {
-        return setSearchResults(response.genome_matches);
-      } else {
-        // To respect redux contract, we must return a valid action from an epic.
-        // Although we aren't really handling this action anywhere downstream.
-        return { type: 'species-selector/fetchSpeciesSearchResultsError' };
-      }
-    })
-  );
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 /**
  * When information about a genome is fetched:
@@ -120,14 +63,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
     }),
     map(({ action, state }) => {
       const genomeInfo = action.payload;
-      const newSpecies: CommittedItem = {
-        genome_id: genomeInfo.genome_id,
-        common_name: genomeInfo.common_name,
-        scientific_name: genomeInfo.scientific_name,
-        assembly_name: genomeInfo.assembly.name,
-        genome_tag: genomeInfo.genome_tag,
-        isEnabled: true
-      };
+      const newSpecies = buildCommittedItemFromBriefGenomeSummary(genomeInfo);
       const allCommittedSpecies = [...getCommittedSpecies(state), newSpecies];
       return allCommittedSpecies;
     }),
@@ -176,14 +112,7 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return uncommittedGenomes.length > 0;
     }),
     map(({ state, uncommittedGenomes }) => {
-      const newSpecies: CommittedItem[] = uncommittedGenomes.map((genome) => ({
-        genome_id: genome.genome_id,
-        common_name: genome.common_name,
-        scientific_name: genome.scientific_name,
-        assembly_name: genome.assembly.name,
-        genome_tag: genome.genome_tag,
-        isEnabled: true
-      }));
+      const newSpecies = uncommittedGenomes.map(buildCommittedItemFromBriefGenomeSummary);
       const allCommittedSpecies = [
         ...getCommittedSpecies(state),
         ...newSpecies
@@ -197,3 +126,21 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return updateCommittedSpecies(allCommittedSpecies);
     })
   );
+
+
+const buildCommittedItemFromBriefGenomeSummary = (genome: BriefGenomeSummary): CommittedItem => {
+  return {
+    genome_id: genome.genome_id,
+    genome_tag: genome.genome_tag,
+    common_name: genome.common_name,
+    scientific_name: genome.scientific_name,
+    species_taxonomy_id: genome.species_taxonomy_id,
+    type: genome.type,
+    is_reference: genome.is_reference,
+    assembly: {
+      accession_id: genome.assembly.accession_id,
+      name: genome.assembly.name
+    },
+    isEnabled: true
+  };
+};

@@ -23,7 +23,7 @@ import useGenomeBrowserIds from './useGenomeBrowserIds';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { AppName } from 'src/global/globalConfig';
 import { Status } from 'src/shared/types/status';

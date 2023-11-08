@@ -29,7 +29,7 @@ import {
   getEntityViewerActiveEntityIds,
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import type { RootState } from 'src/store';
 

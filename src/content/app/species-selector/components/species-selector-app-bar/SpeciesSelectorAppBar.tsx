@@ -15,11 +15,16 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { useAppSelector, useAppDispatch } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { getSpeciesSelectorModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISelectors';
+
+import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
@@ -28,7 +33,7 @@ import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/Speci
 import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesSelectorAppBar.scss';
 
@@ -39,17 +44,12 @@ const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-type Props = {
-  onGeneSearchToggle: () => void;
-  isGeneSearchMode: boolean;
-};
-
-export const SpeciesSelectorAppBar = (props: Props) => {
-  const selectedSpecies = useSelector(getCommittedSpecies);
+export const SpeciesSelectorAppBar = () => {
+  const selectedSpecies = useAppSelector(getCommittedSpecies);
 
   const mainContent =
     selectedSpecies.length > 0 ? (
-      <SelectedSpeciesList selectedSpecies={selectedSpecies} {...props} />
+      <SelectedSpeciesList selectedSpecies={selectedSpecies} />
     ) : (
       <PlaceholderMessage />
     );
@@ -63,10 +63,19 @@ export const SpeciesSelectorAppBar = (props: Props) => {
   );
 };
 
-const SelectedSpeciesList = (
-  props: Props & { selectedSpecies: CommittedItem[] }
-) => {
+const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const isInGeneSearchMode =
+    useAppSelector(getSpeciesSelectorModalView) === 'gene-search';
+
+  const onGeneSearchOpen = () => {
+    dispatch(setModalView('gene-search'));
+  };
+
+  const onGeneSearchClose = () => {
+    dispatch(setModalView(null));
+  };
 
   const showSpeciesPage = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -77,7 +86,7 @@ const SelectedSpeciesList = (
     navigate(speciesPageUrl);
   };
 
-  const conditionalSpeciesProps = !props.isGeneSearchMode
+  const conditionalSpeciesProps = !isInGeneSearchMode
     ? ({ onClick: showSpeciesPage, theme: 'blue' } as const)
     : ({ theme: 'grey' } as const);
 
@@ -89,13 +98,10 @@ const SelectedSpeciesList = (
     />
   ));
 
-  const geneSearchButton = props.isGeneSearchMode ? (
-    <GeneSearchCloseButton
-      key="find-a-gene"
-      onClick={props.onGeneSearchToggle}
-    />
+  const geneSearchButton = isInGeneSearchMode ? (
+    <GeneSearchCloseButton key="find-a-gene" onClick={onGeneSearchClose} />
   ) : (
-    <GeneSearchButton key="find-a-gene" onClick={props.onGeneSearchToggle} />
+    <GeneSearchButton key="find-a-gene" onClick={onGeneSearchOpen} />
   );
 
   const speciesTabsWrapperContent = [...selectedSpecies, geneSearchButton];

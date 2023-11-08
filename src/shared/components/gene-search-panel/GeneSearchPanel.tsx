@@ -31,7 +31,7 @@ import { useAppSelector } from 'src/store';
 
 import { useLazySearchGenesQuery } from 'src/shared/state/api-slices/searchApiSlice';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -41,7 +41,7 @@ import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 
@@ -201,7 +201,7 @@ const GeneSearchTableRows = (props: { data: SearchMatchesWithSpecies }) => {
   const speciesElement = (
     <div className={styles.speciesCell}>
       <span>{speciesInfo.common_name ?? speciesInfo.scientific_name}</span>
-      <span className={styles.assemblyName}>{speciesInfo.assembly_name}</span>
+      <span className={styles.assemblyName}>{speciesInfo.assembly.name}</span>
     </div>
   );
 

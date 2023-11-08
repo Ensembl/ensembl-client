@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  CommittedItem,
-  PopularSpecies
-} from 'src/content/app/species-selector/types/species-search';
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { SearchMatch } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-export const getSpeciesAnalyticsName = (
-  species: CommittedItem | CurrentItem | PopularSpecies | SearchMatch
-) => {
+export const getSpeciesAnalyticsName = (species: CommittedItem) => {
   return `${species.common_name || species.scientific_name} - ${
-    species.assembly_name
+    species.assembly.name
   }`;
 };

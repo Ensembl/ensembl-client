@@ -18,7 +18,7 @@ import React from 'react';
 
 import SpeciesLozenge from './SpeciesLozenge';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export type Props = {
   species: CommittedItem;

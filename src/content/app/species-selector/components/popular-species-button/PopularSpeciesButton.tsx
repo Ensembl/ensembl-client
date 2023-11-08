@@ -15,92 +15,46 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
-import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 import useHover from 'src/shared/hooks/useHover';
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import {
-  setSelectedSpecies,
-  clearSelectedSearchResult
-} from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import {
-  getCurrentSpeciesGenomeId,
-  getCommittedSpecies
-} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
+import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 
 import styles from './PopularSpeciesButton.scss';
 
 export type Props = {
   species: PopularSpecies;
+  isSelected: boolean;
+  onClick: (species: PopularSpecies) => void;
 };
 
 const PopularSpeciesButton = (props: Props) => {
-  const { species } = props;
-  const { genome_id: genomeIdFromProps, is_available: isSpeciesAvailable } =
-    species;
-  const currentSpeciesGenomeId = useSelector(getCurrentSpeciesGenomeId);
-  const allCommittedSpecies = useSelector(getCommittedSpecies);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { trackPopularSpeciesSelect } = useSpeciesSelectorAnalytics();
-  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
-
-  // for a species to be 'selected' means that the user has pressed on the popular species button
-  // but has not yet confirmed the selection
-  const isSpeciesSelected = currentSpeciesGenomeId === genomeIdFromProps;
-  const isSpeciesCommitted = allCommittedSpecies.some(
-    (species) => species.genome_id === genomeIdFromProps
-  );
+  const { species, isSelected } = props;
+  const [hoverRef, isHovered] = useHover<HTMLButtonElement>();
 
   const handleClick = () => {
-    if (!isSpeciesAvailable) {
-      return;
-    }
-
-    if (isSpeciesSelected) {
-      dispatch(clearSelectedSearchResult());
-      trackPopularSpeciesSelect(species, 'unpreselect');
-    } else if (isSpeciesCommitted) {
-      navigate(
-        urlFor.speciesPage({
-          genomeId: species.genome_tag ?? species.genome_id
-        })
-      );
-    } else {
-      // the species is available, not selected and not committed;
-      // go ahead and select it
-      dispatch(setSelectedSpecies(species));
-      trackPopularSpeciesSelect(species, 'preselect');
-    }
+    props.onClick(species);
   };
 
-  const className = classNames(styles.popularSpeciesButton, {
-    [styles.popularSpeciesButtonDisabled]: !isSpeciesAvailable,
-    [styles.popularSpeciesButtonSelected]: isSpeciesSelected,
-    [styles.popularSpeciesButtonCommitted]: isSpeciesCommitted
+  const buttonClasses = classNames(styles.popularSpeciesButton, {
+    [styles.popularSpeciesButtonSelected]: isSelected
   });
 
-  const speciesDisplayName = species.common_name || species.scientific_name;
-
   return (
-    <div className={styles.popularSpeciesButtonWrapper}>
-      <div className={className} onClick={handleClick} ref={hoverRef}>
-        <img src={species.image} />
-      </div>
-      {isHovered && speciesDisplayName && (
+    <button className={buttonClasses} ref={hoverRef} onClick={handleClick}>
+      <img src={species.image} />
+      {species.genomes_count > 1 && (
+        <span className={styles.genomesCount}>{species.genomes_count}</span>
+      )}
+      {isHovered && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
-          {speciesDisplayName}
+          {species.name}
         </Tooltip>
       )}
-    </div>
+    </button>
   );
 };
 

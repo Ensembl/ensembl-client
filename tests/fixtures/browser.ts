@@ -239,13 +239,15 @@ export const createMockBrowserState = () => {
       scrollPosition: {}
     },
     speciesSelector: {
-      committedItems: [
-        {
-          genome_id: 'human',
-          common_name: 'human',
-          assembly_name: 'grch38'
-        }
-      ]
+      general: {
+        committedItems: [
+          {
+            genome_id: 'human',
+            common_name: 'human',
+            assembly_name: 'grch38'
+          }
+        ]
+      }
     }
   };
 };
