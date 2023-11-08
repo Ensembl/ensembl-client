@@ -68,7 +68,7 @@ const speciesPageSidebarSlice = createSlice({
       }>
     ) {
       const isSidebarOpen =
-        !state[action.payload.genomeId].isSidebarOpen ?? true;
+        !state[action.payload.genomeId]?.isSidebarOpen ?? true;
       updateStateForGenome(state, action.payload.genomeId, { isSidebarOpen });
     },
 
@@ -80,11 +80,7 @@ const speciesPageSidebarSlice = createSlice({
       }>
     ) {
       const { activeGenomeId, fragment } = action.payload;
-
-      state[activeGenomeId] = {
-        ...state[activeGenomeId],
-        ...fragment
-      };
+      updateStateForGenome(state, activeGenomeId, fragment);
     }
   }
 });
