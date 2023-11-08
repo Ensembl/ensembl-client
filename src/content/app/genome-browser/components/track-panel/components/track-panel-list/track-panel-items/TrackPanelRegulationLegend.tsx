@@ -36,12 +36,22 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
 import regulationStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/regulation-legend/RegulationLegend.scss';
+import { useGetRegulationStatsQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const dispatch = useDispatch();
   const { trackDrawerOpened, reportTrackPanelSectionToggled } =
     useGenomeBrowserAnalytics();
+  const { data: regulationStats } = useGetRegulationStatsQuery(activeGenomeId);
+
+  if (!regulationStats) {
+    return;
+  }
+  const availableRegulationLegends = regulationLegends.filter((legend) => {
+    return Object.keys(regulationStats).includes(legend.stats_api_key);
+  });
+
   const accordionHeading = 'Regulatory features';
 
   const accordionButtonClassNames = classNames(
@@ -83,7 +93,7 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
       {!props.disabled ? (
         <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
           <dl>
-            {regulationLegends.map((legend) => {
+            {availableRegulationLegends.map((legend) => {
               const groupColourMarkerClass = classNames(
                 regulationStyles.colourMarker,
                 regulationStyles[`regulationColour${legend.id}`]
