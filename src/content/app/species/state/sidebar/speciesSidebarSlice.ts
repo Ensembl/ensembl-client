@@ -15,8 +15,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import get from 'lodash/get';
-import merge from 'lodash/merge';
 
 export enum SpeciesSidebarModalView {
   SEARCH = 'search',
@@ -44,10 +42,11 @@ const initialState: SpeciesPageSidebarState = {};
 const updateStateForGenome = (
   state: SpeciesPageSidebarState,
   genomeId: string,
-  fragment: Partial<StateForGenome>
+  fragment: Partial<StateForGenome> = {}
 ) => {
-  const stateForGenome = get(state, genomeId, initialStateForGenome);
-  const updatedStateForGenome = merge({}, stateForGenome, fragment);
+  const stateForGenome =
+    state[genomeId] ?? structuredClone(initialStateForGenome);
+  const updatedStateForGenome = { ...stateForGenome, ...fragment };
   state[genomeId] = updatedStateForGenome;
 };
 
@@ -67,9 +66,10 @@ const speciesPageSidebarSlice = createSlice({
         genomeId: string;
       }>
     ) {
-      const isSidebarOpen =
-        !state[action.payload.genomeId].isSidebarOpen ?? true;
-      updateStateForGenome(state, action.payload.genomeId, { isSidebarOpen });
+      const { genomeId } = action.payload;
+      updateStateForGenome(state, genomeId); // make sure that there is a state associated with current genome id
+      state[action.payload.genomeId].isSidebarOpen =
+        !state[action.payload.genomeId].isSidebarOpen;
     },
 
     updateSpeciesSidebarModalForGenome(
@@ -80,11 +80,7 @@ const speciesPageSidebarSlice = createSlice({
       }>
     ) {
       const { activeGenomeId, fragment } = action.payload;
-
-      state[activeGenomeId] = {
-        ...state[activeGenomeId],
-        ...fragment
-      };
+      updateStateForGenome(state, activeGenomeId, fragment);
     }
   }
 });

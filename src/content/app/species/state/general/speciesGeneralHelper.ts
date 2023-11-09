@@ -661,51 +661,50 @@ const getExampleLinks = (props: {
       (object) => object.type === 'gene'
     );
 
-    const focusId = geneExample?.id
-      ? buildFocusIdForUrl({
-          type: 'gene',
-          objectId: geneExample.id
-        })
-      : undefined;
-
-    if (focusId) {
-      exampleLinks = {
-        genomeBrowser: {
-          url: urlFor.browser({
-            genomeId: genomeIdForUrl,
-            focus: focusId
-          })
-        },
-        entityViewer: {
-          url: urlFor.entityViewer({
-            genomeId: genomeIdForUrl,
-            entityId: focusId
-          })
-        }
-      };
+    if (!geneExample) {
+      return;
     }
+
+    const focusId = buildFocusIdForUrl({
+      type: 'gene',
+      objectId: geneExample.id
+    });
+
+    exampleLinks = {
+      genomeBrowser: {
+        url: urlFor.browser({
+          genomeId: genomeIdForUrl,
+          focus: focusId
+        })
+      },
+      entityViewer: {
+        url: urlFor.entityViewer({
+          genomeId: genomeIdForUrl,
+          entityId: focusId
+        })
+      }
+    };
   } else if (section === SpeciesStatsSection.ASSEMBLY) {
     const locationExample = exampleFocusObjects.find(
       (object) => object.type === 'location'
     );
-
-    const focusId = locationExample?.id
-      ? buildFocusIdForUrl({
-          type: 'location',
-          objectId: locationExample.id
-        })
-      : undefined;
-
-    if (focusId) {
-      exampleLinks = {
-        genomeBrowser: {
-          url: urlFor.browser({
-            genomeId: genomeIdForUrl,
-            focus: focusId
-          })
-        }
-      };
+    if (!locationExample) {
+      return;
     }
+
+    const focusId = buildFocusIdForUrl({
+      type: 'location',
+      objectId: locationExample.id
+    });
+
+    exampleLinks = {
+      genomeBrowser: {
+        url: urlFor.browser({
+          genomeId: genomeIdForUrl,
+          focus: focusId
+        })
+      }
+    };
   }
 
   return exampleLinks;
