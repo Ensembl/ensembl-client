@@ -19,7 +19,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -62,8 +62,8 @@ const mockTrackCategories = {
 };
 
 const server = setupServer(
-  rest.get(`${mockTrackApi}/track_categories/:genomeId`, (req, res, ctx) => {
-    return res(ctx.json(mockTrackCategories));
+  http.get(`${mockTrackApi}/track_categories/:genomeId`, () => {
+    return HttpResponse.json(mockTrackCategories);
   })
 );
 
@@ -118,7 +118,7 @@ const renderComponent = (state = initialReduxState) => {
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })

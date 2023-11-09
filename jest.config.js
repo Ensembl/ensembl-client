@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
 
 // D3, since version 7, is distributed only as ES modules,
 // which presents a problem for Jest, as it is configured for our project (uses commonjs modules)
@@ -61,7 +61,10 @@ module.exports = {
   setupFilesAfterEnv: [
     '<rootDir>/tests/setup-rtl.ts'
   ],
-  testEnvironment: 'jsdom',
+  testEnvironment: './tests/fixed-jsdom-environment',
+	testEnvironmentOptions: {
+    customExportConditions: [''], // this specific setting is to allow the use of msw/node
+  },
   transform: {
     '.+\\.tsx?$': 'babel-jest',
     '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':

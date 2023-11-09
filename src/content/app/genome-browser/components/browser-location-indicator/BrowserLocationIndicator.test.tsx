@@ -19,7 +19,7 @@ import { faker } from '@faker-js/faker';
 import { render, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import merge from 'lodash/fp/merge';
 
@@ -55,15 +55,15 @@ jest.mock(
 );
 
 const server = setupServer(
-  rest.get(
+  http.get(
     `${mockGenomeSearchApi}/genome/:genomeId/karyotype`,
-    (req, res, ctx) => {
-      const { genomeId } = req.params;
+    ({ params }) => {
+      const { genomeId } = params;
 
       if (genomeId === 'human') {
-        return res(ctx.json(mockHumanKaryotype));
+        return HttpResponse.json(mockHumanKaryotype);
       } else if (genomeId === 'ecoli') {
-        return res(ctx.json(mockBacteriumKaryotype));
+        return HttpResponse.json(mockBacteriumKaryotype);
       }
     }
   )
@@ -114,7 +114,7 @@ const renderBrowserLocationIndicator = ({
 beforeAll(() =>
   server.listen({
     onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url.href}`;
+      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
     }
   })
