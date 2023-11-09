@@ -1,4 +1,6 @@
-const JSDOMEnvironment = require('jest-environment-jsdom').default; // eslint-disable-line @typescript-eslint/no-var-requires
+ /* eslint-disable @typescript-eslint/no-var-requires */
+const JSDOMEnvironment = require('jest-environment-jsdom').default;
+const { TextEncoder, TextDecoder } = require('node:util');
 
 /**
  * NOTE:
@@ -17,6 +19,10 @@ class FixedJSDOMEnvironment extends JSDOMEnvironment {
     this.global.structuredClone = structuredClone;
     this.global.Request = Request;
     this.global.Response = Response;
+    this.global.TextEncoder = TextEncoder;
+    this.global.TextDecoder = TextDecoder;
+    this.global.Headers = Headers;
+    this.global.FormData = FormData;
     this.global.fetch = fetch;
   }
 }
