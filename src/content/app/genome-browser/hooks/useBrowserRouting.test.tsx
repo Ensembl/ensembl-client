@@ -58,13 +58,6 @@ jest.mock(
   })
 );
 
-jest.mock(
-  'src/content/app/genome-browser/state/focus-object/focusObjectSlice',
-  () => ({
-    fetchFocusObject: jest.fn(() => ({ type: 'fetch-focus-object' }))
-  })
-);
-
 type GenomeExplainerResponse = Pick<
   BriefGenomeSummary,
   'genome_id' | 'genome_tag' | 'common_name' | 'scientific_name'
@@ -207,7 +200,9 @@ const server = setupServer(
   graphql.query('TrackPanelGene', () => {
     return HttpResponse.json({
       data: {
-        gene: true // doesn't matter, as long it's a truthy value
+        gene: {
+          stable_id: 'doesnt-matter'
+        }
       }
     });
   })
