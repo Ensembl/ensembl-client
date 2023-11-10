@@ -15,12 +15,11 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import set from 'lodash/fp/set';
 
+import createRootReducer from 'src/root/rootReducer';
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserBar } from './BrowserBar';
@@ -31,8 +30,9 @@ jest.mock(
 );
 jest.mock(
   'src/content/app/genome-browser/components/browser-location-indicator/BrowserLocationIndicator',
-  () => () =>
+  () => () => (
     <div id="browserLocationIndicator">Browser Location Indicator</div>
+  )
 );
 jest.mock(
   'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
@@ -41,12 +41,12 @@ jest.mock(
 
 const mockState = createMockBrowserState();
 
-const mockStore = configureMockStore([thunk]);
+const renderComponent = (state: any = mockState) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state
+  });
 
-let store: ReturnType<typeof mockStore>;
-
-const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
   return render(
     <Provider store={store}>
       <BrowserBar />
@@ -72,9 +72,10 @@ describe('<BrowserBar />', () => {
     });
 
     it('does not contain FeatureSummaryStrip when focusObject is null', () => {
-      const { container } = renderComponent(
-        set('browser.focusObjects', null, mockState)
-      );
+      const updatedState = createMockBrowserState();
+      updatedState.browser.focusObjects = {} as any;
+
+      const { container } = renderComponent(updatedState);
       expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
   });

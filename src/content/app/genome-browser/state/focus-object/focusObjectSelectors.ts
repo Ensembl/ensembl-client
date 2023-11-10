@@ -15,7 +15,6 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import get from 'lodash/get';
 
 import { buildFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 import isGeneFocusObject from './isGeneFocusObject';
@@ -31,18 +30,13 @@ import type { RootState } from 'src/store';
 export const getFocusObjectLoadingStatus = (
   state: RootState,
   objectId: string
-): LoadingState =>
-  get(
-    state,
-    `browser.focusObjects.${objectId}.loadingStatus`,
-    LoadingState.NOT_REQUESTED
-  );
+): LoadingState => state.browser.focusObjects[objectId]?.loadingStatus ?? null;
 
 export const getFocusObjectById = (
   state: RootState,
   objectId: string
 ): FocusObject | null => {
-  return get(state, `browser.focusObjects.${objectId}.data`, null);
+  return state.browser.focusObjects[objectId]?.data ?? null;
 };
 
 export const getFocusObjectByParams = (
