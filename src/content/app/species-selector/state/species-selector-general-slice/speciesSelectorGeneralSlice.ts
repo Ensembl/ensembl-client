@@ -23,8 +23,10 @@ import {
   type Action
 } from '@reduxjs/toolkit';
 
-// FIXME
-import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+import {
+  getAllSelectedSpecies,
+  saveMultipleSelectedSpecies
+} from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
 // WHERE IS DELETION HAPPENING?
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
@@ -50,7 +52,7 @@ export const fetchSpeciesSearchResults = createAction<string>(
 export const loadStoredSpecies = createAsyncThunk(
   'species-selector/loadStoredSpecies',
   async () => {
-    return speciesSelectorStorageService.getSelectedSpecies();
+    return await getAllSelectedSpecies();
   }
 );
 
@@ -73,7 +75,7 @@ export const toggleSpeciesUseAndSave =
     });
 
     dispatch(updateCommittedSpecies(updatedCommittedSpecies));
-    speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
+    saveMultipleSelectedSpecies(updatedCommittedSpecies);
   };
 
 export const deleteSpeciesAndSave =
@@ -87,7 +89,7 @@ export const deleteSpeciesAndSave =
     dispatch(updateCommittedSpecies(updatedCommittedSpecies));
     dispatch(deleteSpeciesInGenomeBrowser(genomeId));
     dispatch(deleteSpeciesInEntityViewer(genomeId));
-    speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
+    saveMultipleSelectedSpecies(updatedCommittedSpecies);
   };
 
 const initialState: SpeciesSelectorState = {
