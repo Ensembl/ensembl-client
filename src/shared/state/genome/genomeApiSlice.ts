@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import upperFirst from 'lodash/upperFirst';
+
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import type { SerializedError } from '@reduxjs/toolkit';
 
@@ -26,13 +28,27 @@ import type {
   ExampleFocusObject
 } from './genomeTypes';
 
+type GenomeFieldsForFormatting = {
+  common_name: string | null;
+};
+export const formatGenomeData = <T extends GenomeFieldsForFormatting>(
+  genome: T
+): T => {
+  if (genome.common_name) {
+    genome.common_name = upperFirst(genome.common_name);
+  }
+  return genome;
+};
+
 const genomeApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // query intended to discover whether a string available to the client is a genome id or a genome tag
     genomeSummaryByGenomeSlug: builder.query<BriefGenomeSummary, string>({
       query: (slug) => ({
         url: `${config.metadataApiBaseUrl}/genome/${slug}/explain`
-      })
+      }),
+      transformResponse: (response: BriefGenomeSummary) =>
+        formatGenomeData(response)
     }),
     genomeKaryotype: builder.query<GenomeKaryotypeItem[], string>({
       query: (genomeId) => ({

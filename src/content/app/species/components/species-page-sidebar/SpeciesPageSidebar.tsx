@@ -107,7 +107,7 @@ const SpeciesType = (props: GenomeInfo) => {
 
   const typeTextElement = type ? (
     <span>
-      {upperFirst(type.kind)}-{type.value}
+      {upperFirst(type.kind)} - {type.value}
     </span>
   ) : null;
 

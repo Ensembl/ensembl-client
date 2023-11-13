@@ -17,6 +17,7 @@
 import upperFirst from 'lodash/upperFirst';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import { formatGenomeData } from 'src/shared/state/genome/genomeApiSlice';
 
 import config from 'config';
 
@@ -46,12 +47,7 @@ export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
 // either because of the temporal dead zone that occurs otherwise (though typescript doesn't complain)
 // or due to some bundler nonsense
 const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
-  response.matches.forEach((match) => {
-    match.common_name = match.common_name
-      ? upperFirst(match.common_name)
-      : match.common_name;
-  });
-
+  response.matches = response.matches.map(formatGenomeData);
   return response;
 };
 
