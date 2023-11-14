@@ -28,15 +28,15 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
-import regulationLegends from 'src/content/app/genome-browser/constants/regulationLegends';
+import regulationLegend from 'src/content/app/genome-browser/constants/regulationLegend';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useGetRegulationStatsQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
 import regulationStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/regulation-legend/RegulationLegend.scss';
-import { useGetRegulationStatsQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
@@ -48,8 +48,8 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   if (!regulationStats) {
     return;
   }
-  const availableRegulationLegends = regulationLegends.filter((legend) => {
-    return Object.keys(regulationStats).includes(legend.stats_api_key);
+  const availableRegulatoryFeatures = regulationLegend.filter((legend) => {
+    return Object.keys(regulationStats).includes(legend.id);
   });
 
   const accordionHeading = 'Regulatory features';
@@ -93,10 +93,10 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
       {!props.disabled ? (
         <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
           <dl>
-            {availableRegulationLegends.map((legend) => {
+            {availableRegulatoryFeatures.map((legend) => {
               const groupColourMarkerClass = classNames(
                 regulationStyles.colourMarker,
-                regulationStyles[`regulationColour${legend.id}`]
+                regulationStyles[`regulationColour${legend.colour_code}`]
               );
 
               return (

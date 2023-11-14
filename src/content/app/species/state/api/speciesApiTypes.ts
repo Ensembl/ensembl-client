@@ -96,9 +96,9 @@ type VariationStatistics = {
 export type RegulationStatistics = {
   enhancers: number;
   promoters: number;
-  ctcf_count: number;
-  tfbs_count: number;
-  open_chromatin_count: number;
+  ctcf_count: number | null;
+  tfbs_count: number | null;
+  open_chromatin_count: number | null;
 };
 
 export type SpeciesStatistics = {

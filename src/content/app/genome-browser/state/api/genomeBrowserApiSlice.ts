@@ -38,7 +38,7 @@ import {
 } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
 
-import {
+import type {
   RegulationStatistics,
   SpeciesStatsResponse
 } from 'src/content/app/species/state/api/speciesApiTypes';
