@@ -15,26 +15,11 @@
  */
 
 import config from 'config';
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
-import {
-  getStatsForSection,
-  SpeciesStatsSection,
-  speciesStatsSectionNames,
-  type StatsSection
-} from 'src/content/app/species/state/general/speciesGeneralHelper';
-
-import { getGenomeIdForUrl } from 'src/shared/state/genome/genomeSelectors';
-
-import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { RootState } from 'src/store';
 import type { SpeciesStatistics } from './speciesApiTypes';
-import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
-
-export type GenomeStats = StatsSection[];
 
 type SpeciesStatsQueryParams = {
   genomeId: string;
@@ -46,54 +31,13 @@ type SpeciesStatsResponse = {
 
 const speciesApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getSpeciesStatistics: builder.query<GenomeStats, SpeciesStatsQueryParams>({
-      queryFn: async (params, queryApi, _, baseQuery) => {
-        const { genomeId } = params;
-        const { dispatch } = queryApi;
-
-        const statsResponsePromise = baseQuery({
-          url: `${config.metadataApiBaseUrl}/genome/${genomeId}/stats`
-        });
-        const exampleObjectsResponsePromise = dispatch(
-          fetchExampleObjectsForGenome.initiate(genomeId)
-        );
-
-        const [statsReponse, exampleObjectsResponse] = await Promise.all([
-          statsResponsePromise,
-          exampleObjectsResponsePromise
-        ]);
-        exampleObjectsResponsePromise.unsubscribe();
-
-        if (statsReponse.data && exampleObjectsResponse.data) {
-          const statsResponseData = statsReponse.data as SpeciesStatsResponse;
-          const exampleFocusObjects =
-            exampleObjectsResponse.data as ExampleFocusObject[];
-
-          const state = queryApi.getState() as RootState;
-          const genomeIdForUrl = getGenomeIdForUrl(state, genomeId) ?? genomeId;
-
-          const genomeStats = speciesStatsSectionNames
-            .map((section) =>
-              getStatsForSection({
-                allStats: statsResponseData.genome_stats,
-                genomeIdForUrl,
-                section: section as SpeciesStatsSection,
-                exampleFocusObjects
-              })
-            )
-            .filter(Boolean) as GenomeStats;
-
-          return {
-            data: genomeStats
-          };
-        } else {
-          const error = (statsReponse.error ||
-            exampleObjectsResponse.error) as FetchBaseQueryError;
-          return {
-            error
-          };
-        }
-      }
+    getSpeciesStatistics: builder.query<
+      SpeciesStatsResponse,
+      SpeciesStatsQueryParams
+    >({
+      query: (params) => ({
+        url: `${config.metadataApiBaseUrl}/genome/${params.genomeId}/stats`
+      })
     }),
     speciesDetails: builder.query<GenomeInfo, string>({
       query: (genomeId) => ({
