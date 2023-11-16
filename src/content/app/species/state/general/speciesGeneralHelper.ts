@@ -25,297 +25,169 @@ import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import type { SpeciesStatistics } from 'src/content/app/species/state/api/speciesApiTypes';
 
-export enum SpeciesStatsSection {
-  CODING_STATS = 'coding_stats',
-  NON_CODING_STATS = 'non_coding_stats',
-  PSEUDOGENES = 'pseudogene_stats',
-  ASSEMBLY = 'assembly_stats',
-  HOMOLOGY = 'homology_stats',
-  VARIATION = 'variation_stats',
-  REGULATION = 'regulation_stats'
-}
+export type SpeciesStatsSection = keyof SpeciesStatistics;
 
-export const speciesStatsSectionNames = Object.values(SpeciesStatsSection);
+// get all the keys of statistics sections from SpeciesStatistics type
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+type SingleStatistic =
+  | KeysOfUnion<SpeciesStatistics[keyof SpeciesStatistics]>
+  | 'homology'
+  | 'variation'
+  | 'regulation';
 
-// SpeciesStatsSection -> Groups
-enum Groups {
-  CODING_GENES = 'coding_genes',
-  ANALYSIS = 'analysis',
-  NON_CODING_GENES = 'non_coding_genes',
-  NON_CODING_ANALYSIS = 'non_coding_analysis',
-  PSEUDOGENES = 'pseudogenes',
-  PSEUDOGENES_ANALYSIS = 'pseudogenes_analysis',
-  ASSEMBLY = 'assembly',
-  ASSEMBLY_ANALYSIS = 'assembly_analysis',
-  TRANSCRIPTS = 'transcripts',
-  HOMOLOGY = 'homology',
-  VARIATION = 'variation',
-  VARIATION_EVIDENCE = 'variation_evidence',
-  REGULATION = 'regulation'
-}
+export const speciesStatsSectionNames: Array<SpeciesStatsSection> = [
+  'coding_stats',
+  'non_coding_stats',
+  'pseudogene_stats',
+  'assembly_stats',
+  'homology_stats',
+  'variation_stats',
+  'regulation_stats'
+];
 
 const groupTitles = {
-  [Groups.CODING_GENES]: 'Coding genes',
-  [Groups.ANALYSIS]: 'Analysis',
-  [Groups.NON_CODING_GENES]: 'Non-coding genes',
-  [Groups.NON_CODING_ANALYSIS]: 'Analysis',
-  [Groups.PSEUDOGENES]: 'Pseudogenes',
-  [Groups.PSEUDOGENES_ANALYSIS]: 'Analysis',
-  [Groups.ASSEMBLY]: 'Assembly',
-  [Groups.ASSEMBLY_ANALYSIS]: 'Analysis',
-  [Groups.TRANSCRIPTS]: 'Transcripts',
-  [Groups.HOMOLOGY]: 'Homology',
-  [Groups.VARIATION]: 'Variation',
-  [Groups.VARIATION_EVIDENCE]: 'Evidence',
-  [Groups.REGULATION]: 'Regulation'
+  coding_genes: 'Coding genes',
+  analysis: 'Analysis',
+  non_coding_genes: 'Non-coding genes',
+  non_coding_analysis: 'Analysis',
+  pseudogenes: 'Pseudogenes',
+  pseudogenes_analysis: 'Analysis',
+  assembly: 'Assembly',
+  assembly_analysis: 'Analysis',
+  transcripts: 'Transcripts',
+  homology: 'Homology',
+  variation: 'Variation',
+  variation_evidence: 'Evidence',
+  regulation: 'Regulation'
 };
 
-// SpeciesStatsSection -> Groups -> Stats
-enum Stats {
-  // Coding stats
-  CODING_GENES = 'coding_genes',
-  SHORTEST_GENE_LENGTH = 'shortest_gene_length',
-  LONGEST_GENE_LENGTH = 'longest_gene_length',
-  AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
-  AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
-  AVERAGE_CDS_LENGTH = 'average_cds_length',
-  TOTAL_TRANSCRIPTS = 'total_transcripts',
-  CODING_TRANSCRIPTS = 'coding_transcripts',
-  TRANSCRIPTS_PER_GENE = 'transcripts_per_gene',
-  CODING_TRANSCRIPTS_PER_GENE = 'coding_transcripts_per_gene',
-  TOTAL_EXONS = 'total_exons',
-  TOTAL_CODING_EXONS = 'total_coding_exons',
-  AVERAGE_EXON_LENGTH = 'average_exon_length',
-  AVERAGE_CODING_EXON_LENGTH = 'average_coding_exon_length',
-  AVERAGE_EXONS_PER_TRANSCRIPT = 'average_exons_per_transcript',
-  AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT = 'average_coding_exons_per_coding_transcript',
-  TOTAL_INTRONS = 'total_introns',
-  AVERAGE_INTRON_LENGTH = 'average_intron_length',
+type SpeciesStatsSectionGroup = keyof typeof groupTitles;
 
-  // assembly
-  CHROMOSOMES = 'chromosomes',
-  TOTAL_GENOME_LENGTH = 'total_genome_length',
-  TOTAL_CODING_SEQUENCE_LENGTH = 'total_coding_sequence_length',
-  TOTAL_GAP_LENGTH = 'total_gap_length',
-  SPANNED_GAP = 'spanned_gaps',
-  TOPLEVEL_SEQUENCES = 'toplevel_sequences',
-  COMPONENT_SEQUENCES = 'component_sequences',
-  AVERAGE_GC_CONTENT = 'gc_percentage',
-  CONTIG_N50 = 'contig_n50',
-
-  // Non coding stats
-  NON_CODING_GENES = 'non_coding_genes',
-  NON_CODING_SMALL_GENES = 'small_non_coding_genes',
-  NON_CODING_LONG_GENES = 'long_non_coding_genes',
-  NON_CODING_MISC_GENES = 'misc_non_coding_genes',
-  NON_CODING_AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
-  NON_CODING_AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
-  NON_CODING_SHORTEST_GENE_LENGTH = 'shortest_gene_length',
-  NON_CODING_LONGEST_GENE_LENGTH = 'longest_gene_length',
-  NON_CODING_TOTAL_TRANSCRIPTS = 'total_transcripts',
-  NON_CODING_TRANSCRIPTS_PER_GENE = 'transcripts_per_gene',
-  NON_CODING_TOTAL_EXONS = 'total_exons',
-  NON_CODING_AVERAGE_EXON_LENGTH = 'average_exon_length',
-  NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT = 'average_exons_per_transcript',
-  NON_CODING_TOTAL_INTRONS = 'total_introns',
-  NON_CODING_AVERAGE_INTRON_LENGTH = 'average_intron_length',
-
-  // Psuedogene stats
-  PSEUDOGENES = 'pseudogenes',
-  PSEUDOGENES_AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
-  PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
-  PSEUDOGENES_SHORTEST_GENE_LENGTH = 'shortest_gene_length',
-  PSEUDOGENES_LONGEST_GENE_LENGTH = 'longest_gene_length',
-  PSEUDOGENES_TOTAL_TRANSCRIPTS = 'total_transcripts',
-  PSEUDOGENES_TRANSCRIPTS_PER_GENE = 'transcripts_per_gene',
-  PSEUDOGENES_TOTAL_EXONS = 'total_exons',
-  PSEUDOGENES_AVERAGE_EXON_LENGTH = 'average_exon_length',
-  PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT = 'average_exons_per_transcript',
-  PSEUDOGENES_TOTAL_INTRONS = 'total_introns',
-  PSEUDOGENES_AVERAGE_INTRON_LENGTH = 'average_intron_length',
-
-  // Homology stats
-  HOMOLOGY = 'homology',
-  HOMOLOGY_COVERAGE = 'coverage',
-
-  // Variation stats
-  VARIATION = 'variation',
-  SHORT_VARIANTS = 'short_variants',
-  STRUCTURAL_VARIANTS = 'structural_variants',
-  SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS = 'short_variants_with_phenotype_assertions',
-  SHORT_VARIANTS_WITH_PUBLICATIONS = 'short_variants_with_publications',
-  SHORT_VARIANTS_FREQUENCY_STUDIES = 'short_variants_frequency_studies',
-  STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS = 'structural_variants_with_phenotype_assertions',
-
-  // Regulation stats
-  REGULATION = 'regulation',
-  REGULATION_ENHANCERS = 'enhancers',
-  REGULATION_PROMOTERS = 'promoters'
-}
-
-const helpText = {
-  HOMOLOGY_COVERAGE:
-    'Proportion of coding genes with orthologues with other species in Ensembl'
+type SpeciesStatsSectionGroupData = {
+  title: string;
+  groups: SpeciesStatsSectionGroup[];
+  summaryStatsKeys?: SingleStatistic[];
+  exampleLinkText?: string;
+  helpText?: string;
 };
 
-type SpeciesStatsSectionGroups = {
-  [key in SpeciesStatsSection]: {
-    title: Stats | string;
-    groups: Groups[];
-    summaryStatsKeys?: [Stats?, Stats?];
-    exampleLinkText?: string;
-    helpText?: string;
-  };
-};
-
-// Maps the groups to it's respective section
-export const sectionGroupsMap: SpeciesStatsSectionGroups = {
-  [SpeciesStatsSection.CODING_STATS]: {
+// Maps the groups to their respective sections
+export const sectionGroupsMap: Record<
+  SpeciesStatsSection,
+  SpeciesStatsSectionGroupData
+> = {
+  coding_stats: {
     title: 'Coding genes',
     exampleLinkText: 'Example gene',
-    groups: [Groups.CODING_GENES, Groups.ANALYSIS, Groups.TRANSCRIPTS],
-    summaryStatsKeys: [Stats.CODING_GENES]
+    groups: ['coding_genes', 'analysis', 'transcripts'],
+    summaryStatsKeys: ['coding_genes']
   },
-  [SpeciesStatsSection.ASSEMBLY]: {
+  assembly_stats: {
     title: 'Assembly',
     exampleLinkText: 'Example location',
-    groups: [Groups.ASSEMBLY, Groups.ASSEMBLY_ANALYSIS],
-    summaryStatsKeys: [Stats.CHROMOSOMES]
+    groups: ['assembly', 'assembly_analysis'],
+    summaryStatsKeys: ['chromosomes']
   },
-  [SpeciesStatsSection.PSEUDOGENES]: {
+  pseudogene_stats: {
     title: 'Pseudogenes',
-    groups: [Groups.PSEUDOGENES, Groups.PSEUDOGENES_ANALYSIS],
-    summaryStatsKeys: [Stats.PSEUDOGENES]
+    groups: ['pseudogenes', 'pseudogenes_analysis'],
+    summaryStatsKeys: ['pseudogenes']
   },
-  [SpeciesStatsSection.NON_CODING_STATS]: {
+  non_coding_stats: {
     title: 'Non-coding genes',
-    groups: [Groups.NON_CODING_GENES, Groups.NON_CODING_ANALYSIS],
-    summaryStatsKeys: [Stats.NON_CODING_GENES]
+    groups: ['non_coding_genes', 'non_coding_analysis'],
+    summaryStatsKeys: ['non_coding_genes']
   },
-  [SpeciesStatsSection.HOMOLOGY]: {
+  homology_stats: {
     title: 'Homology',
-    groups: [Groups.HOMOLOGY],
-    summaryStatsKeys: [Stats.HOMOLOGY_COVERAGE],
-    helpText: helpText.HOMOLOGY_COVERAGE
+    groups: ['homology'],
+    summaryStatsKeys: ['coverage'],
+    helpText:
+      'Proportion of coding genes with orthologues with other species in Ensembl'
   },
-  [SpeciesStatsSection.VARIATION]: {
+  variation_stats: {
     title: 'Variation',
-    groups: [Groups.VARIATION, Groups.VARIATION_EVIDENCE],
-    summaryStatsKeys: [Stats.SHORT_VARIANTS, Stats.STRUCTURAL_VARIANTS]
+    exampleLinkText: 'Example variant',
+    groups: ['variation', 'variation_evidence'],
+    summaryStatsKeys: ['short_variants', 'structural_variants']
   },
-  [SpeciesStatsSection.REGULATION]: {
+  regulation_stats: {
     title: 'Regulation',
-    groups: [Groups.REGULATION],
-    summaryStatsKeys: [Stats.REGULATION_ENHANCERS, Stats.REGULATION_PROMOTERS]
+    groups: ['regulation'],
+    summaryStatsKeys: ['enhancers', 'promoters']
   }
 };
 
-// Maps the individual stats to it's respective groups
-const groupsStatsMap = {
-  [Groups.CODING_GENES]: [
-    [Stats.CODING_GENES, Stats.SHORTEST_GENE_LENGTH, Stats.LONGEST_GENE_LENGTH],
-    [Stats.TOTAL_TRANSCRIPTS, Stats.TOTAL_EXONS, Stats.TOTAL_INTRONS]
+// Maps individual stats to their respective groups
+const groupsStatsMap: Record<SpeciesStatsSectionGroup, SingleStatistic[][]> = {
+  coding_genes: [
+    ['coding_genes', 'shortest_gene_length', 'longest_gene_length'],
+    ['total_transcripts', 'total_exons', 'total_introns']
   ],
-  [Groups.ANALYSIS]: [
+  analysis: [
+    ['average_genomic_span', 'average_sequence_length', 'average_cds_length'],
+    ['transcripts_per_gene', 'average_exon_length', 'average_intron_length']
+  ],
+  transcripts: [
     [
-      Stats.AVERAGE_GENOMIC_SPAN,
-      Stats.AVERAGE_SEQUENCE_LENGTH,
-      Stats.AVERAGE_CDS_LENGTH
+      'coding_transcripts',
+      'coding_transcripts_per_gene',
+      'average_exons_per_transcript'
     ],
     [
-      Stats.TRANSCRIPTS_PER_GENE,
-      Stats.AVERAGE_EXON_LENGTH,
-      Stats.AVERAGE_INTRON_LENGTH
+      'total_coding_exons',
+      'average_coding_exons_per_coding_transcript',
+      'average_coding_exon_length'
     ]
   ],
-  [Groups.TRANSCRIPTS]: [
+  non_coding_genes: [
+    ['non_coding_genes', 'shortest_gene_length', 'longest_gene_length'],
     [
-      Stats.CODING_TRANSCRIPTS,
-      Stats.CODING_TRANSCRIPTS_PER_GENE,
-      Stats.AVERAGE_EXONS_PER_TRANSCRIPT
+      'small_non_coding_genes',
+      'long_non_coding_genes',
+      'misc_non_coding_genes'
     ],
+    ['total_transcripts', 'total_exons', 'total_introns']
+  ],
+  non_coding_analysis: [
+    ['average_genomic_span', 'average_sequence_length'],
     [
-      Stats.TOTAL_CODING_EXONS,
-      Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT,
-      Stats.AVERAGE_CODING_EXON_LENGTH
+      'transcripts_per_gene',
+      'average_exons_per_transcript',
+      'average_exon_length',
+      'average_intron_length'
     ]
   ],
-  [Groups.NON_CODING_GENES]: [
+  pseudogenes: [
+    ['pseudogenes', 'shortest_gene_length', 'longest_gene_length'],
+    ['total_transcripts', 'total_exons', 'total_introns']
+  ],
+  pseudogenes_analysis: [
+    ['average_genomic_span', 'average_sequence_length'],
     [
-      Stats.NON_CODING_GENES,
-      Stats.SHORTEST_GENE_LENGTH,
-      Stats.LONGEST_GENE_LENGTH
-    ],
-    [
-      Stats.NON_CODING_SMALL_GENES,
-      Stats.NON_CODING_LONG_GENES,
-      Stats.NON_CODING_MISC_GENES
-    ],
-    [
-      Stats.NON_CODING_TOTAL_TRANSCRIPTS,
-      Stats.NON_CODING_TOTAL_EXONS,
-      Stats.NON_CODING_TOTAL_INTRONS
+      'transcripts_per_gene',
+      'average_exons_per_transcript',
+      'average_exon_length',
+      'average_intron_length'
     ]
   ],
-  [Groups.NON_CODING_ANALYSIS]: [
-    [
-      Stats.NON_CODING_AVERAGE_GENOMIC_SPAN,
-      Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH
-    ],
-    [
-      Stats.NON_CODING_TRANSCRIPTS_PER_GENE,
-      Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT,
-      Stats.NON_CODING_AVERAGE_EXON_LENGTH,
-      Stats.NON_CODING_AVERAGE_INTRON_LENGTH
-    ]
+  assembly: [
+    ['chromosomes', 'total_genome_length', 'total_coding_sequence_length'],
+    ['toplevel_sequences', 'total_gap_length', 'spanned_gaps'],
+    ['component_sequences', 'contig_n50']
   ],
-  [Groups.PSEUDOGENES]: [
+  assembly_analysis: [['gc_percentage']],
+  homology: [['coverage']],
+  variation: [['short_variants', 'structural_variants']],
+  variation_evidence: [
     [
-      Stats.PSEUDOGENES,
-      Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH,
-      Stats.PSEUDOGENES_LONGEST_GENE_LENGTH
+      'short_variants_with_phenotype_assertions',
+      'short_variants_with_publications',
+      'short_variants_frequency_studies'
     ],
-    [
-      Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS,
-      Stats.PSEUDOGENES_TOTAL_EXONS,
-      Stats.PSEUDOGENES_TOTAL_INTRONS
-    ]
+    ['structural_variants_with_phenotype_assertions']
   ],
-  [Groups.PSEUDOGENES_ANALYSIS]: [
-    [
-      Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN,
-      Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH
-    ],
-    [
-      Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE,
-      Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT,
-      Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH,
-      Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH
-    ]
-  ],
-  [Groups.ASSEMBLY]: [
-    [
-      Stats.CHROMOSOMES,
-      Stats.TOTAL_GENOME_LENGTH,
-      Stats.TOTAL_CODING_SEQUENCE_LENGTH
-    ],
-    [Stats.TOPLEVEL_SEQUENCES, Stats.TOTAL_GAP_LENGTH, Stats.SPANNED_GAP],
-    [Stats.COMPONENT_SEQUENCES, Stats.CONTIG_N50]
-  ],
-  [Groups.ASSEMBLY_ANALYSIS]: [[Stats.AVERAGE_GC_CONTENT]],
-  [Groups.HOMOLOGY]: [[Stats.HOMOLOGY_COVERAGE]],
-  [Groups.VARIATION]: [[Stats.SHORT_VARIANTS, Stats.STRUCTURAL_VARIANTS]],
-  [Groups.VARIATION_EVIDENCE]: [
-    [
-      Stats.SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS,
-      Stats.SHORT_VARIANTS_WITH_PUBLICATIONS,
-      Stats.SHORT_VARIANTS_FREQUENCY_STUDIES
-    ],
-    [Stats.STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]
-  ],
-  [Groups.REGULATION]: [
-    [Stats.REGULATION_ENHANCERS, Stats.REGULATION_PROMOTERS]
-  ]
+  regulation: [['enhancers', 'promoters']]
 };
 
 // Individual stat formatting options.
@@ -330,235 +202,235 @@ type StatsFormattingOption = {
 };
 
 type StatsFormattingOptions = {
-  [key in string]: {
-    [key in Stats]?: StatsFormattingOption;
+  [key in SpeciesStatsSection]: {
+    [key in SingleStatistic]?: StatsFormattingOption;
   };
 };
 
 const statsFormattingOptions: StatsFormattingOptions = {
-  [SpeciesStatsSection.CODING_STATS]: {
-    [Stats.CODING_GENES]: { label: 'Coding genes' },
-    [Stats.SHORTEST_GENE_LENGTH]: {
+  coding_stats: {
+    coding_genes: { label: 'Coding genes' },
+    shortest_gene_length: {
       label: 'Shortest coding gene',
       primaryUnit: 'bp'
     },
-    [Stats.LONGEST_GENE_LENGTH]: {
+    longest_gene_length: {
       label: 'Longest coding gene',
       primaryUnit: 'bp'
     },
-    [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding genes' },
-    [Stats.TOTAL_EXONS]: { label: 'Exons in coding genes' },
-    [Stats.TOTAL_INTRONS]: { label: 'Introns in coding genes' },
+    total_transcripts: { label: 'Transcripts in coding genes' },
+    total_exons: { label: 'Exons in coding genes' },
+    total_introns: { label: 'Introns in coding genes' },
 
-    [Stats.AVERAGE_GENOMIC_SPAN]: {
+    average_genomic_span: {
       label: 'Average coding genomic span',
       primaryUnit: 'bp'
     },
-    [Stats.AVERAGE_SEQUENCE_LENGTH]: {
+    average_sequence_length: {
       label: 'Average coding sequence length',
       primaryUnit: 'bp'
     },
-    [Stats.AVERAGE_CDS_LENGTH]: {
+    average_cds_length: {
       label: 'Average CDS length',
       primaryUnit: 'bp'
     },
 
-    [Stats.TRANSCRIPTS_PER_GENE]: {
+    transcripts_per_gene: {
       label: 'Average transcripts per coding gene'
     },
 
-    [Stats.AVERAGE_EXON_LENGTH]: {
+    average_exon_length: {
       label: 'Average exon length per coding gene',
       primaryUnit: 'bp'
     },
-    [Stats.AVERAGE_INTRON_LENGTH]: {
+    average_intron_length: {
       label: 'Average intron length per coding gene',
       primaryUnit: 'bp'
     },
 
-    [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
-    [Stats.CODING_TRANSCRIPTS_PER_GENE]: {
+    coding_transcripts: { label: 'Coding transcripts' },
+    coding_transcripts_per_gene: {
       label: 'Average coding transcripts per gene'
     },
-    [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    average_exons_per_transcript: {
       label: 'Average exons per coding transcript'
     },
 
-    [Stats.TOTAL_CODING_EXONS]: { label: 'Coding exons' },
-    [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
+    total_coding_exons: { label: 'Coding exons' },
+    average_coding_exons_per_coding_transcript: {
       label: 'Average coding exons per transcript'
     },
-    [Stats.AVERAGE_CODING_EXON_LENGTH]: {
+    average_coding_exon_length: {
       label: 'Average coding exon length',
       primaryUnit: 'bp'
     }
   },
-  [SpeciesStatsSection.NON_CODING_STATS]: {
-    [Stats.NON_CODING_GENES]: { label: 'Non-coding genes' },
-    [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
+  non_coding_stats: {
+    non_coding_genes: { label: 'Non-coding genes' },
+    shortest_gene_length: {
       label: 'Shortest non-coding gene',
       primaryUnit: 'bp'
     },
-    [Stats.NON_CODING_LONGEST_GENE_LENGTH]: {
+    longest_gene_length: {
       label: 'Longest non-coding gene',
       primaryUnit: 'bp'
     },
 
-    [Stats.NON_CODING_SMALL_GENES]: {
+    small_non_coding_genes: {
       label: 'Small non-coding genes'
     },
-    [Stats.NON_CODING_LONG_GENES]: {
+    long_non_coding_genes: {
       label: 'Long non-coding genes'
     },
-    [Stats.NON_CODING_MISC_GENES]: {
+    misc_non_coding_genes: {
       label: 'Misc. non-coding genes'
     },
 
-    [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
+    total_transcripts: {
       label: 'Transcripts in non-coding genes'
     },
-    [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Exons in non-coding genes' },
-    [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Introns in non-coding genes' },
+    total_exons: { label: 'Exons in non-coding genes' },
+    total_introns: { label: 'Introns in non-coding genes' },
 
-    [Stats.NON_CODING_AVERAGE_GENOMIC_SPAN]: {
+    average_genomic_span: {
       label: 'Average non-coding genomic span',
       primaryUnit: 'bp'
     },
-    [Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH]: {
+    average_sequence_length: {
       label: 'Average non-coding sequence length',
       primaryUnit: 'bp'
     },
 
-    [Stats.NON_CODING_TRANSCRIPTS_PER_GENE]: {
+    transcripts_per_gene: {
       label: 'Average transcripts per non-coding gene'
     },
-    [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: {
+    average_exon_length: {
       label: 'Average exon length per non-coding transcript',
       primaryUnit: 'bp'
     },
-    [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    average_exons_per_transcript: {
       label: 'Average exons per non-coding transcript'
     },
-    [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: {
+    average_intron_length: {
       label: 'Average intron length per non-coding transcript',
       primaryUnit: 'bp'
     }
   },
-  [SpeciesStatsSection.PSEUDOGENES]: {
-    [Stats.PSEUDOGENES]: { label: 'Pseudogenes' },
-    [Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH]: {
+  pseudogene_stats: {
+    pseudogenes: { label: 'Pseudogenes' },
+    shortest_gene_length: {
       label: 'Shortest pseudogene',
       primaryUnit: 'bp'
     },
-    [Stats.PSEUDOGENES_LONGEST_GENE_LENGTH]: {
+    longest_gene_length: {
       label: 'Longest pseudogene',
       primaryUnit: 'bp'
     },
 
-    [Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS]: {
+    total_transcripts: {
       label: 'Transcripts in pseudogenes'
     },
-    [Stats.PSEUDOGENES_TOTAL_EXONS]: { label: 'Exons in pseudogenes' },
-    [Stats.PSEUDOGENES_TOTAL_INTRONS]: { label: 'Introns in pseudogenes' },
+    total_exons: { label: 'Exons in pseudogenes' },
+    total_introns: { label: 'Introns in pseudogenes' },
 
-    [Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN]: {
+    average_genomic_span: {
       label: 'Average pseudogene genomic span',
       primaryUnit: 'bp'
     },
-    [Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH]: {
+    average_sequence_length: {
       label: 'Average pseudogene sequence length',
       primaryUnit: 'bp'
     },
 
-    [Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE]: {
+    transcripts_per_gene: {
       label: 'Average transcripts per pseudogene'
     },
-    [Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH]: {
+    average_exon_length: {
       label: 'Average exon length per pseudogene',
       primaryUnit: 'bp'
     },
-    [Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    average_exons_per_transcript: {
       label: 'Average exons per pseudogene transcript'
     },
-    [Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH]: {
+    average_intron_length: {
       label: 'Average intron length per pseudogene',
       primaryUnit: 'bp'
     }
   },
-  [SpeciesStatsSection.ASSEMBLY]: {
-    [Stats.CHROMOSOMES]: {
+  assembly_stats: {
+    chromosomes: {
       label: 'Chromosomes or plasmids',
       headerUnit: 'chromosomes or plasmids'
     },
-    [Stats.TOTAL_GENOME_LENGTH]: {
+    total_genome_length: {
       primaryUnit: 'bp',
       label: 'Total genome length'
     },
-    [Stats.TOTAL_CODING_SEQUENCE_LENGTH]: {
+    total_coding_sequence_length: {
       primaryUnit: 'bp',
       label: 'Total coding sequence length'
     },
 
-    [Stats.TOPLEVEL_SEQUENCES]: { label: 'Top level sequences' },
-    [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length', primaryUnit: 'bp' },
-    [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
+    toplevel_sequences: { label: 'Top level sequences' },
+    total_gap_length: { label: 'Total gap length', primaryUnit: 'bp' },
+    spanned_gaps: { label: 'Spanned gaps' },
 
-    [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
-    [Stats.CONTIG_N50]: { label: 'Contig N50', primaryUnit: 'bp' },
+    component_sequences: { label: 'Component sequences' },
+    contig_n50: { label: 'Contig N50', primaryUnit: 'bp' },
 
-    [Stats.AVERAGE_GC_CONTENT]: {
+    gc_percentage: {
       primaryValuePostfix: '%',
       label: 'Average GC content'
     }
   },
-  [SpeciesStatsSection.HOMOLOGY]: {
-    [Stats.HOMOLOGY]: {
+  homology_stats: {
+    homology: {
       label: 'Homology'
     },
-    [Stats.HOMOLOGY_COVERAGE]: {
+    coverage: {
       label: 'Coverage',
       headerUnit: 'coverage',
       primaryValuePostfix: '%'
     }
   },
-  [SpeciesStatsSection.VARIATION]: {
-    [Stats.VARIATION]: {
+  variation_stats: {
+    variation: {
       label: 'Variation'
     },
-    [Stats.SHORT_VARIANTS]: {
+    short_variants: {
       label: 'Short variants',
       headerUnit: 'short variants'
     },
-    [Stats.STRUCTURAL_VARIANTS]: {
+    structural_variants: {
       label: 'Structural variants',
       headerUnit: 'structural variants'
     },
-    [Stats.SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
+    short_variants_with_phenotype_assertions: {
       preLabel: 'Short variants',
       label: 'With phenotype assertions'
     },
-    [Stats.SHORT_VARIANTS_WITH_PUBLICATIONS]: {
+    short_variants_with_publications: {
       preLabel: 'Short variants',
       label: 'With publications'
     },
-    [Stats.SHORT_VARIANTS_FREQUENCY_STUDIES]: {
+    short_variants_frequency_studies: {
       preLabel: 'Short variants',
       label: 'Frequency studies'
     },
-    [Stats.STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
+    structural_variants_with_phenotype_assertions: {
       preLabel: 'Structural variants',
       label: 'With phenotype assertions'
     }
   },
-  [SpeciesStatsSection.REGULATION]: {
-    [Stats.REGULATION]: {
+  regulation_stats: {
+    regulation: {
       label: 'Regulation'
     },
-    [Stats.REGULATION_ENHANCERS]: {
+    enhancers: {
       headerUnit: 'enhancers',
       label: 'Enhancers'
     },
-    [Stats.REGULATION_PROMOTERS]: {
+    promoters: {
       headerUnit: 'promoters',
       label: 'Promoters'
     }
@@ -579,8 +451,8 @@ export type StatsSection = {
 
 type BuildStatProps = Partial<IndividualStat> & {
   primaryValue: string | number;
-  primaryKey: Stats;
-  secondaryKey?: Stats;
+  primaryKey: SingleStatistic;
+  secondaryKey?: SingleStatistic;
   section: SpeciesStatsSection;
 };
 
@@ -619,7 +491,7 @@ const buildIndividualStat = (
 
 type BuildHeaderStatProps = {
   primaryValue: string | number;
-  primaryKey: Stats;
+  primaryKey: SingleStatistic;
   section: SpeciesStatsSection;
 };
 
@@ -656,7 +528,7 @@ const getExampleLinks = (props: {
 
   let exampleLinks: LinksConfig = {};
 
-  if (section === SpeciesStatsSection.CODING_STATS) {
+  if (section === 'coding_stats') {
     const geneExample = exampleFocusObjects.find(
       (object) => object.type === 'gene'
     );
@@ -684,7 +556,7 @@ const getExampleLinks = (props: {
         })
       }
     };
-  } else if (section === SpeciesStatsSection.ASSEMBLY) {
+  } else if (section === 'assembly_stats') {
     const locationExample = exampleFocusObjects.find(
       (object) => object.type === 'location'
     );
@@ -695,6 +567,28 @@ const getExampleLinks = (props: {
     const focusId = buildFocusIdForUrl({
       type: 'location',
       objectId: locationExample.id
+    });
+
+    exampleLinks = {
+      genomeBrowser: {
+        url: urlFor.browser({
+          genomeId: genomeIdForUrl,
+          focus: focusId
+        })
+      }
+    };
+  } else if (section === 'variation_stats') {
+    const exampleVariant = exampleFocusObjects.find(
+      (object) => object.type === 'variant'
+    );
+
+    if (!exampleVariant) {
+      return;
+    }
+
+    const focusId = buildFocusIdForUrl({
+      type: 'variant',
+      objectId: exampleVariant.id
     });
 
     exampleLinks = {

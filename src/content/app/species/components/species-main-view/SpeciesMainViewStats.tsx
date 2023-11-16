@@ -19,11 +19,7 @@ import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
-
-import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
-import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
-import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import {
   getActiveGenomeId,
@@ -31,17 +27,29 @@ import {
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
+import {
+  getStatsForSection,
+  sectionGroupsMap,
+  speciesStatsSectionNames,
+  type SpeciesStatsSection,
+  type StatsSection
+} from '../../state/general/speciesGeneralHelper';
+
 import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 import { setActiveGenomeExpandedSections } from 'src/content/app/species/state/general/speciesGeneralSlice';
+import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
+
+import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
+import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
+import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { RootState } from 'src/store';
 import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import {
-  sectionGroupsMap,
-  SpeciesStatsSection,
-  type StatsSection
-} from '../../state/general/speciesGeneralHelper';
+import type { SpeciesStatistics } from 'src/content/app/species/state/api/speciesApiTypes';
+import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesMainView.scss';
 
@@ -170,14 +178,24 @@ const SpeciesMainViewStats = () => {
   const dispatch = useAppDispatch();
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const genomeUIState = useAppSelector(getActiveGenomeUIState);
+  const { genomeId: genomeIdForUrl } = useUrlParams<'genomeId'>(
+    '/species/:genomeId'
+  ) as { genomeId: string };
   const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
 
-  const { currentData: genomeStats } = useGetSpeciesStatisticsQuery(
-    {
-      genomeId: activeGenomeId ?? ''
-    },
+  const { currentData: statisticsResponse, isFetching: isFetchingStatistics } =
+    useGetSpeciesStatisticsQuery(
+      {
+        genomeId: activeGenomeId ?? ''
+      },
+      {
+        skip: !activeGenomeId
+      }
+    );
+  const { currentData: exampleObjects } = useExampleObjectsForGenomeQuery(
+    activeGenomeId ?? '',
     {
       skip: !activeGenomeId
     }
@@ -188,9 +206,24 @@ const SpeciesMainViewStats = () => {
 
   const expandedSections = genomeUIState ? genomeUIState.expandedSections : [];
 
-  if (!genomeStats || !species) {
+  if (isFetchingStatistics) {
+    return (
+      <div className={styles.statsWrapper}>
+        <CircleLoader />
+      </div>
+    );
+  }
+  if (!statisticsResponse || !species) {
     return null;
   }
+
+  const { genome_stats: rawGenomeStats } = statisticsResponse;
+
+  const genomeStats = prepareStatistics({
+    statistics: rawGenomeStats,
+    genomeIdForUrl: genomeIdForUrl,
+    exampleFocusObjects: exampleObjects ?? []
+  });
 
   const onSectionToggle = (
     section: SpeciesStatsSection,
@@ -235,6 +268,27 @@ const SpeciesMainViewStats = () => {
       })}
     </div>
   );
+};
+
+const prepareStatistics = ({
+  statistics,
+  genomeIdForUrl,
+  exampleFocusObjects
+}: {
+  statistics: SpeciesStatistics;
+  genomeIdForUrl: string;
+  exampleFocusObjects: ExampleFocusObject[];
+}) => {
+  return speciesStatsSectionNames
+    .map((section) =>
+      getStatsForSection({
+        allStats: statistics,
+        genomeIdForUrl,
+        section: section as SpeciesStatsSection,
+        exampleFocusObjects
+      })
+    )
+    .filter(Boolean) as StatsSection[];
 };
 
 export default SpeciesMainViewStats;
