@@ -44,7 +44,6 @@ export const BrowserLocationIndicator = () => {
 
   return (
     <div className={styles.browserLocationIndicator}>
-      <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView}>
         {activeChromosome?.is_circular ? (
           <CircularChromosomeIndicator />
