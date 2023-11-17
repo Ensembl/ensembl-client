@@ -20,7 +20,7 @@ import {
   type PayloadAction
 } from '@reduxjs/toolkit';
 
-import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+import { saveMultipleSelectedSpecies } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -77,7 +77,7 @@ export const commitSelectedSpeciesAndSave = createAsyncThunk(
     dispatch(updateCommittedSpecies(newCommittedSpecies));
     dispatch(setModalView(null));
 
-    speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
+    saveMultipleSelectedSpecies(newCommittedSpecies);
   }
 );
 

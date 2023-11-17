@@ -18,7 +18,7 @@ import { Epic } from 'redux-observable';
 import { map, tap, filter } from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
 
-import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+import { saveMultipleSelectedSpecies } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
 import {
   getCommittedSpecies,
@@ -68,7 +68,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
       return allCommittedSpecies;
     }),
     tap((allCommittedSpecies) => {
-      speciesSelectorStorageService.saveSelectedSpecies(allCommittedSpecies);
+      saveMultipleSelectedSpecies(allCommittedSpecies);
     }),
     map((allCommittedSpecies) => {
       return updateCommittedSpecies(allCommittedSpecies);
@@ -112,7 +112,9 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return uncommittedGenomes.length > 0;
     }),
     map(({ state, uncommittedGenomes }) => {
-      const newSpecies = uncommittedGenomes.map(buildCommittedItemFromBriefGenomeSummary);
+      const newSpecies = uncommittedGenomes.map(
+        buildCommittedItemFromBriefGenomeSummary
+      );
       const allCommittedSpecies = [
         ...getCommittedSpecies(state),
         ...newSpecies
@@ -120,15 +122,16 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return allCommittedSpecies;
     }),
     tap((allCommittedSpecies) => {
-      speciesSelectorStorageService.saveSelectedSpecies(allCommittedSpecies);
+      saveMultipleSelectedSpecies(allCommittedSpecies);
     }),
     map((allCommittedSpecies) => {
       return updateCommittedSpecies(allCommittedSpecies);
     })
   );
 
-
-const buildCommittedItemFromBriefGenomeSummary = (genome: BriefGenomeSummary): CommittedItem => {
+const buildCommittedItemFromBriefGenomeSummary = (
+  genome: BriefGenomeSummary
+): CommittedItem => {
   return {
     genome_id: genome.genome_id,
     genome_tag: genome.genome_tag,
