@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
@@ -37,11 +36,6 @@ import {
   type VariantQueryResult
 } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
-
-import type {
-  RegulationStatistics,
-  SpeciesStatsResponse
-} from 'src/content/app/species/state/api/speciesApiTypes';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
@@ -138,30 +132,6 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
           }))
         }));
       }
-    }),
-
-    getRegulationStats: builder.query<RegulationStatistics, string>({
-      queryFn: async (genomeId, queryApi, _, baseQuery) => {
-        const statsResponsePromise = baseQuery({
-          url: `${config.metadataApiBaseUrl}/genome/${genomeId}/stats`
-        });
-
-        const [statsReponse] = await Promise.all([statsResponsePromise]);
-
-        if (statsReponse.data) {
-          const statsResponseData = statsReponse.data as SpeciesStatsResponse;
-          const genomeStats = statsResponseData.genome_stats;
-
-          return {
-            data: genomeStats.regulation_stats
-          };
-        } else {
-          const error = statsReponse.error as FetchBaseQueryError;
-          return {
-            error
-          };
-        }
-      }
     })
   })
 });
@@ -177,5 +147,4 @@ export const {
   useGbVariantQuery
 } = genomeBrowserApiSlice;
 
-export const { useGenomeTracksQuery, useGetRegulationStatsQuery } =
-  genomeBrowserRestApiSlice;
+export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;

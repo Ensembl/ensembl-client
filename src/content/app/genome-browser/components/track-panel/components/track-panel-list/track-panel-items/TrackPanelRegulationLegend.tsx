@@ -32,7 +32,7 @@ import regulationLegend from 'src/content/app/genome-browser/constants/regulatio
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { useGetRegulationStatsQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
@@ -43,7 +43,14 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const dispatch = useDispatch();
   const { trackDrawerOpened, reportTrackPanelSectionToggled } =
     useGenomeBrowserAnalytics();
-  const { data: regulationStats } = useGetRegulationStatsQuery(activeGenomeId);
+  const { data: regulationStats } = useGetSpeciesStatisticsQuery(
+    {
+      genomeId: activeGenomeId ?? ''
+    },
+    {
+      skip: !activeGenomeId
+    }
+  );
 
   if (!regulationStats) {
     return;
