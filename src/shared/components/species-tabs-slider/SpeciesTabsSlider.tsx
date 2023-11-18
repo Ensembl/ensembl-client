@@ -26,7 +26,6 @@ import classNames from 'classnames';
 import useSliderGestures from './useSliderGestures';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
-import PillButton from 'src/shared/components/pill-button/PillButton';
 
 import styles from './SpeciesTabsSlider.scss';
 
@@ -145,11 +144,11 @@ const SpeciesTabsSlider = (props: Props) => {
     });
   };
 
-  const leftArrowClasses = classNames(styles.arrow, styles.arrowLeft, {
+  const leftArrowClasses = classNames(styles.arrow, {
     [styles.arrowDisabled]: !canScrollLeft
   });
 
-  const rightArrowClasses = classNames(styles.arrow, styles.arrowRight, {
+  const rightArrowClasses = classNames(styles.arrow, {
     [styles.arrowDisabled]: !canScrollRight
   });
 
@@ -215,33 +214,34 @@ const SpeciesTabsSlider = (props: Props) => {
 
   return (
     <div className={styles.speciesTabsSlider}>
-      <Chevron
-        direction="left"
-        className={leftArrowClasses}
-        onClick={scrollLeft}
-      />
+      <div className={styles.leftCorner}>
+        <button
+          className={styles.arrowButton}
+          onClick={scrollLeft}
+          disabled={!canScrollLeft}
+        >
+          <Chevron direction="left" className={leftArrowClasses} />
+        </button>
+      </div>
+
       <div ref={tabsContainerRef} className={styles.tabsContainer}>
         {props.children}
       </div>
-      <HiddenTabsCount count={hiddenTabsCount} />
-      <Chevron
-        direction="right"
-        className={rightArrowClasses}
-        onClick={scrollRight}
-      />
+
+      <div className={styles.rightCorner}>
+        <button
+          className={styles.arrowButton}
+          onClick={scrollRight}
+          disabled={!canScrollRight}
+        >
+          <Chevron
+            direction="right"
+            className={rightArrowClasses}
+            onClick={scrollRight}
+          />
+        </button>
+      </div>
     </div>
-  );
-};
-
-const HiddenTabsCount = (props: { count: number }) => {
-  if (!props.count) {
-    return null;
-  }
-
-  return (
-    <PillButton className={styles.hiddenTabsCountPill} disabled={true}>
-      + {props.count}
-    </PillButton>
   );
 };
 

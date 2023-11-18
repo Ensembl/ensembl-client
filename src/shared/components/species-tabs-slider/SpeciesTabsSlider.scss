@@ -3,14 +3,12 @@
 .speciesTabsSlider {
   display: flex;
   align-items: center;
-  padding: 0 0.4rem;
 }
 
 .tabsContainer {
   display: flex;
   column-gap: 15px;
   width: 100%;
-  // overflow: hidden;
   overflow-x: auto;
   scrollbar-width: none; // hides the scrollbar, but only on Firefox
 }
@@ -23,6 +21,27 @@
   flex: 0 0 auto;
 }
 
+.leftCorner {
+  margin-right: 8px;
+}
+
+.rightCorner {
+  margin-left: 8px;
+}
+
+.arrowButton {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.leftCorner .arrowButton {
+  padding-right: 6px;
+}
+
+.rightCorner .arrowButton {
+  padding-left: 6px;
+}
+
 .arrow {
   background-color: white;
   cursor: pointer;
@@ -32,17 +51,4 @@
   --chevron-fill: #{$grey};
   cursor: default;
   pointer-events: none;
-}
-
-.arrowLeft {
-  margin-right: 15px;
-}
-
-.arrowRight {
-  margin-left: 15px;
-}
-
-.hiddenTabsCountPill {
-  --pill-button-color: #{$black};
-  margin-left: 15px;
 }
