@@ -16,6 +16,15 @@
 
 import { useEffect, useRef, type RefObject } from 'react';
 
+/**
+ * The purpose of this hook is to enable interaction with the species tabs slider
+ * using the mouse.
+ * Specifically:
+ * - user should be able to scroll through species tabs by pressing the mouse button
+ *   and dragging the mouse left or right
+ * - user should be able to scroll trough species tabs by using the mouse wheel
+ */
+
 const useSliderGestures = (ref: RefObject<Element>) => {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);

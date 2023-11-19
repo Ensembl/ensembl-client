@@ -32,6 +32,7 @@ import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozeng
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -87,26 +88,37 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   };
 
   const conditionalSpeciesProps = !isInGeneSearchMode
-    ? ({ onClick: showSpeciesPage, theme: 'blue' } as const)
-    : ({ theme: 'grey' } as const);
+    ? ({ theme: 'blue' } as const)
+    : ({ theme: 'grey', disabled: true } as const);
 
   const selectedSpecies = props.selectedSpecies.map((species) => (
     <SpeciesLozenge
       key={species.genome_id}
       species={species}
+      onClick={() => showSpeciesPage(species)}
       {...conditionalSpeciesProps}
     />
   ));
 
-  const geneSearchButton = isInGeneSearchMode ? (
-    <GeneSearchCloseButton key="find-a-gene" onClick={onGeneSearchClose} />
-  ) : (
-    <GeneSearchButton key="find-a-gene" onClick={onGeneSearchOpen} />
+
+
+  // FIXME: add a wrapper
+
+  // const geneSearchButton = isInGeneSearchMode ? (
+  //   <GeneSearchCloseButton key="find-a-gene" onClick={onGeneSearchClose} />
+  // ) : (
+  //   <GeneSearchButton key="find-a-gene" onClick={onGeneSearchOpen} />
+  // );
+
+  // const speciesTabsWrapperContent = [...selectedSpecies, geneSearchButton];
+
+  // return <SpeciesTabsWrapper speciesTabs={speciesTabsWrapperContent} />;
+
+  return (
+    <SpeciesTabsSlider>
+      { selectedSpecies }
+    </SpeciesTabsSlider>
   );
-
-  const speciesTabsWrapperContent = [...selectedSpecies, geneSearchButton];
-
-  return <SpeciesTabsWrapper speciesTabs={speciesTabsWrapperContent} />;
 };
 
 export default SpeciesSelectorAppBar;

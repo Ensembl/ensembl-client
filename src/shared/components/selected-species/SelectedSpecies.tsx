@@ -30,12 +30,15 @@ export type Props = {
 };
 
 const SelectedSpecies = (props: Props) => {
+  const onClick = () => {
+    props.onClick(props.species);
+  };
+
   return (
     <SpeciesLozenge
       species={props.species}
       className={props.className}
-      onMouseEnter={props.onMouseEnter}
-      onMouseLeave={props.onMouseLeave}
+      onClick={onClick}
       {...getSpeciesLozengeProps(props)}
     />
   );
@@ -44,29 +47,30 @@ const SelectedSpecies = (props: Props) => {
 const getSpeciesLozengeProps = (props: Props) => {
   const {
     isActive = false,
-    species: { isEnabled },
-    onClick
+    species: { isEnabled }
   } = props;
 
   // TODO: add invalid (red) species when we start having them
 
   if (isActive && isEnabled) {
     return {
-      theme: 'black'
+      theme: 'black',
+      disabled: true,
+      'data-active': true
     } as const;
   } else if (isActive && !isEnabled) {
     return {
-      theme: 'grey'
+      theme: 'grey',
+      disabled: true,
+      'data-active': true
     } as const;
   } else if (!isActive && isEnabled) {
     return {
       theme: 'blue',
-      onClick
     } as const;
   } else {
     return {
       theme: 'ice-blue',
-      onClick
     } as const;
   }
 };
