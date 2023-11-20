@@ -43,7 +43,7 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const dispatch = useDispatch();
   const { trackDrawerOpened, reportTrackPanelSectionToggled } =
     useGenomeBrowserAnalytics();
-  const { data: regulationStats } = useGetSpeciesStatisticsQuery(
+  const { data } = useGetSpeciesStatisticsQuery(
     {
       genomeId: activeGenomeId ?? ''
     },
@@ -52,11 +52,15 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
     }
   );
 
+  const regulationStats = data?.genome_stats.regulation_stats;
+
   if (!regulationStats) {
     return;
   }
+
+  const regulationStatKeys = Object.keys(regulationStats);
   const availableRegulatoryFeatures = regulationLegend.filter((legend) => {
-    return Object.keys(regulationStats).includes(legend.id);
+    return regulationStatKeys.includes(legend.id);
   });
 
   const accordionHeading = 'Regulatory features';
