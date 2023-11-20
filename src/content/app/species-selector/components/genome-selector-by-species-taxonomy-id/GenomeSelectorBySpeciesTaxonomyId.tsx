@@ -121,7 +121,7 @@ const TopSection = (props: TopSectionProps) => {
         <InfoPill>
           {selectedGenomesCount} / {totalGenomesCount}
         </InfoPill>
-        alternative assemblies selected
+        assemblies selected
       </span>
       <PrimaryButton
         className={styles.addButton}

@@ -26,10 +26,7 @@ import {
 
 import { getGenomeIdForUrl } from 'src/shared/state/genome/genomeSelectors';
 
-import {
-  fetchExampleObjectsForGenome,
-  formatGenomeData
-} from 'src/shared/state/genome/genomeApiSlice';
+import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { RootState } from 'src/store';
@@ -101,8 +98,7 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
     speciesDetails: builder.query<GenomeInfo, string>({
       query: (genomeId) => ({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
-      }),
-      transformResponse: (response: GenomeInfo) => formatGenomeData(response)
+      })
     })
   })
 });
