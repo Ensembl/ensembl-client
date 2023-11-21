@@ -50,6 +50,6 @@ const regulationLegend = [
     definition:
       'These sites are enriched for Transcription Factor binding, but they lack epigenomic evidence to be classified as an enhancer or promoter'
   }
-];
+] as const;
 
 export default regulationLegend;
