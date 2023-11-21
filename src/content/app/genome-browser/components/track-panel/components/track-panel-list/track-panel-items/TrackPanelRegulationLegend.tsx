@@ -58,7 +58,6 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
     return;
   }
 
-  // const regulationStatKeys = Object.keys(regulationStats);
   const availableRegulatoryFeatures = regulationLegend.filter((item) => {
     return !!regulationStats[item.id];
   });
