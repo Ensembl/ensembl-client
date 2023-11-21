@@ -37,9 +37,7 @@ const SpeciesPageSidebar = (props: Props) => {
         <div className={styles.fieldsGroup}>
           <div>
             {data.common_name && (
-              <span className={styles.commonName}>
-                {upperFirst(data.common_name)}
-              </span>
+              <span className={styles.commonName}>{data.common_name}</span>
             )}
             <span className={styles.scientificName}>
               {data.scientific_name}
@@ -107,7 +105,7 @@ const SpeciesType = (props: GenomeInfo) => {
 
   const typeTextElement = type ? (
     <span>
-      {upperFirst(type.kind)}-{type.value}
+      {upperFirst(type.kind)} - {type.value}
     </span>
   ) : null;
 

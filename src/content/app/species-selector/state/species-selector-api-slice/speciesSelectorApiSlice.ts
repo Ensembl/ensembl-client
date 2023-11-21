@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import upperFirst from 'lodash/upperFirst';
-
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import config from 'config';
@@ -42,35 +40,12 @@ export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
   speciesTaxonomyId: string | number;
 };
 
-// NOTE: needs to be defined before speciesSelectorApiSlice;
-// either because of the temporal dead zone that occurs otherwise (though typescript doesn't complain)
-// or due to some bundler nonsense
-const transformGenomesSearchResponse = (response: SpeciesSearchResponse) => {
-  response.matches.forEach((match) => {
-    match.common_name = match.common_name
-      ? upperFirst(match.common_name)
-      : match.common_name;
-  });
-
-  return response;
-};
-
-const transformPopularSpeciesResponse = (response: PopularSpeciesResponse) => {
-  const popularSpecies = response.popular_species.map((species) => ({
-    ...species,
-    name: upperFirst(species.name)
-  }));
-
-  return { ...response, popular_species: popularSpecies };
-};
-
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPopularSpecies: builder.query<PopularSpeciesResponse, void>({
       query: () => ({
         url: `${config.metadataApiBaseUrl}/popular_species`
-      }),
-      transformResponse: transformPopularSpeciesResponse
+      })
     }),
     getSpeciesSearchResults: builder.query<
       SpeciesSearchResponse,
@@ -78,8 +53,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     >({
       query: ({ query }) => ({
         url: `${config.searchApiBaseUrl}/genomes?query=${query}`
-      }),
-      transformResponse: transformGenomesSearchResponse
+      })
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
       SpeciesSearchResponse,
@@ -87,8 +61,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     >({
       query: ({ speciesTaxonomyId }) => ({
         url: `${config.searchApiBaseUrl}/genomes?species_taxonomy_id=${speciesTaxonomyId}`
-      }),
-      transformResponse: transformGenomesSearchResponse
+      })
     })
   })
 });
