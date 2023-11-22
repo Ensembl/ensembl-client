@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-const regulationLegends = [
+const regulationLegend = [
   {
-    id: 1,
+    colour_code: 1,
+    id: 'promoters',
     label: 'Promoter',
     definition:
       'Promoters and enhancers in human and mouse are identified by their epigenomic activity across different cell types. The Ensembl Regulatory build is more likely to classify a regulatory feature as a promoter if it is near the 5’ end of an annotated transcript'
   },
   {
-    id: 2,
+    colour_code: 2,
+    id: 'enhancers',
     label: 'Enhancer',
     definition:
       'Promoters and enhancers in human and mouse are identified by their epigenomic activity across different cell types. Enhancers tend to be further from known transcripts than promoters'
   },
   {
-    id: 3,
+    colour_code: 3,
+    id: 'open_chromatin_count',
     label: 'Open chromatin',
     definition:
       'Open chromatin regions in human and mouse are identified as having epigenomic activity, but without the marks typically associated with enhancers or promoters'
   },
   {
-    id: 4,
+    colour_code: 4,
+    id: 'ctcf_count',
     label: 'CTCF',
     definition:
       'CTCF-binding regions are identified after segmenting the genome according to epigenomic activity. Specifically, they correspond to segmentation states where there is a high degree of CTCF binding'
   },
   {
-    id: 5,
+    colour_code: 5,
+    id: 'tfbs_count',
     label: 'TF binding',
     definition:
       'These sites are enriched for Transcription Factor binding, but they lack epigenomic evidence to be classified as an enhancer or promoter'
   }
-];
+] as const;
 
-export default regulationLegends;
+export default regulationLegend;

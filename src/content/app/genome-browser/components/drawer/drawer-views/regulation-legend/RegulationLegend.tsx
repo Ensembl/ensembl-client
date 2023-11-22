@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import regulationLegends from 'src/content/app/genome-browser/constants/regulationLegends';
+import regulationLegend from 'src/content/app/genome-browser/constants/regulationLegend';
 
 import type { RegulationLegendView } from 'src/content/app/genome-browser/state/drawer/types';
 
@@ -28,13 +28,13 @@ type Props = {
 };
 
 const RegulationLegend = (props: Props) => {
-  const activeLegend = regulationLegends.find(
+  const activeLegend = regulationLegend.find(
     ({ label }) => label === props.drawerView.group
   );
 
   const groupColorMarkerClass = classNames(
     styles.colourMarker,
-    styles[`regulationColour${activeLegend?.id}`]
+    styles[`regulationColour${activeLegend?.colour_code}`]
   );
 
   if (!activeLegend) {

@@ -93,9 +93,12 @@ type VariationStatistics = {
   structural_variants_with_phenotype_assertions: number;
 };
 
-type RegulationStatistics = {
+export type RegulationStatistics = {
   enhancers: number;
   promoters: number;
+  ctcf_count: number | null;
+  tfbs_count: number | null;
+  open_chromatin_count: number | null;
 };
 
 export type SpeciesStatistics = {
@@ -106,4 +109,12 @@ export type SpeciesStatistics = {
   homology_stats: HomologyStatistics;
   variation_stats: VariationStatistics;
   regulation_stats: RegulationStatistics;
+};
+
+export type SpeciesStatsQueryParams = {
+  genomeId: string;
+};
+
+export type SpeciesStatsResponse = {
+  genome_stats: SpeciesStatistics;
 };

@@ -28,10 +28,11 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
-import regulationLegends from 'src/content/app/genome-browser/constants/regulationLegends';
+import regulationLegend from 'src/content/app/genome-browser/constants/regulationLegend';
 
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import styles from '../TrackPanelList.scss';
 import trackPanelItemStyles from './TrackPanelItem.scss';
@@ -42,6 +43,25 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const dispatch = useDispatch();
   const { trackDrawerOpened, reportTrackPanelSectionToggled } =
     useGenomeBrowserAnalytics();
+  const { data } = useGetSpeciesStatisticsQuery(
+    {
+      genomeId: activeGenomeId ?? ''
+    },
+    {
+      skip: !activeGenomeId
+    }
+  );
+
+  const regulationStats = data?.genome_stats.regulation_stats;
+
+  if (!regulationStats) {
+    return;
+  }
+
+  const availableRegulatoryFeatures = regulationLegend.filter((item) => {
+    return !!regulationStats[item.id];
+  });
+
   const accordionHeading = 'Regulatory features';
 
   const accordionButtonClassNames = classNames(
@@ -83,10 +103,10 @@ const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
       {!props.disabled ? (
         <AccordionItemPanel className={styles.trackPanelAccordionItemContent}>
           <dl>
-            {regulationLegends.map((legend) => {
+            {availableRegulatoryFeatures.map((legend) => {
               const groupColourMarkerClass = classNames(
                 regulationStyles.colourMarker,
-                regulationStyles[`regulationColour${legend.id}`]
+                regulationStyles[`regulationColour${legend.colour_code}`]
               );
 
               return (
