@@ -25,7 +25,8 @@ import {
 
 import {
   getAllSelectedSpecies,
-  saveMultipleSelectedSpecies
+  saveMultipleSelectedSpecies,
+  deleteSelectedSpeciesById
 } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
 // WHERE IS DELETION HAPPENING?
@@ -89,7 +90,7 @@ export const deleteSpeciesAndSave =
     dispatch(updateCommittedSpecies(updatedCommittedSpecies));
     dispatch(deleteSpeciesInGenomeBrowser(genomeId));
     dispatch(deleteSpeciesInEntityViewer(genomeId));
-    saveMultipleSelectedSpecies(updatedCommittedSpecies);
+    deleteSelectedSpeciesById(genomeId);
   };
 
 const initialState: SpeciesSelectorState = {
