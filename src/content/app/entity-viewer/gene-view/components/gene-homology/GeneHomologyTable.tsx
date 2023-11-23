@@ -59,8 +59,6 @@ const prepareTableData = (homologies: GeneHomology[]) => {
     return [
       homology.target_genome.common_name ?? '-',
       homology.target_genome.scientific_name,
-      homology.target_genome.assembly.name,
-      homology.target_genome.assembly.accession_id,
       homology.stats.query_percent_id, // using query instead of the target here is intentional
       homology.stats.query_percent_coverage, // using query instead of the target here is intentional
       homology.target_gene.symbol ?? '-',
@@ -70,7 +68,9 @@ const prepareTableData = (homologies: GeneHomology[]) => {
           geneId: homology.target_gene.stable_id
         }
       },
-      homology.subtype.label
+      homology.subtype.label,
+      homology.target_genome.assembly.name,
+      homology.target_genome.assembly.accession_id
     ];
   });
 };
@@ -89,22 +89,6 @@ const tableColumns: DataTableColumns = [
       return (
         <span className={styles.scientificName}>{cellData as string}</span>
       );
-    }
-  },
-  {
-    columnId: 'assembly_name',
-    title: 'Assembly',
-    isSortable: true,
-    renderer: ({ cellData }) => {
-      return <span className={styles.assembly}>{cellData as string}</span>;
-    }
-  },
-  {
-    columnId: 'assembly_id',
-    title: 'Assembly accession',
-    isSortable: true,
-    renderer: ({ cellData }) => {
-      return <span className={styles.assembly}>{cellData as string}</span>;
     }
   },
   {
@@ -161,6 +145,22 @@ const tableColumns: DataTableColumns = [
     title: 'Hit type',
     helpText:
       'The type of homology: RBBH - reciprocal best blast hit, BBH - best blast hit'
+  },
+  {
+    columnId: 'assembly_name',
+    title: 'Assembly',
+    isSortable: true,
+    renderer: ({ cellData }) => {
+      return <span className={styles.assembly}>{cellData as string}</span>;
+    }
+  },
+  {
+    columnId: 'assembly_id',
+    title: 'Assembly accession',
+    isSortable: true,
+    renderer: ({ cellData }) => {
+      return <span className={styles.assembly}>{cellData as string}</span>;
+    }
   }
 ];
 
