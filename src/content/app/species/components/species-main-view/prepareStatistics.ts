@@ -53,9 +53,7 @@ const curateSpeciesStatistics = (
     pseudogene_stats: curatePseudogeneStatistics(speciesStats.pseudogene_stats),
     homology_stats: curateHomologyStats(speciesStats.homology_stats),
     variation_stats: curateVariationStats(speciesStats.variation_stats),
-    regulation_stats: curateRegulationStats(
-      speciesStats.regulation_stats
-    ) as SpeciesStatistics['regulation_stats'] // this is a white lie; we are excluding unnecessary fields from regulation stats here
+    regulation_stats: speciesStats.regulation_stats // no need to update regulation stats
   };
 };
 
@@ -195,18 +193,6 @@ const curateVariationStats = (
   }
 
   return emptyStats;
-};
-
-/**
- * Only leave the fields that are intended for display on the species page
- */
-const curateRegulationStats = (
-  regulationStats: SpeciesStatistics['regulation_stats']
-) => {
-  return {
-    enhancers: regulationStats.enhancers,
-    promoters: regulationStats.promoters
-  };
 };
 
 const prepareStatistics = ({

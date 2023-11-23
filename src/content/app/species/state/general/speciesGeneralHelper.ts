@@ -663,6 +663,7 @@ export const getStatsForSection = (props: {
     : undefined;
 
   const isExpandedContentSame =
+    ['regulation_stats', 'homology_stats'].includes(section) ||
     Object.keys(filteredData).length === availableSummaryStatsKeys?.length;
 
   if (isExpandedContentSame) {
