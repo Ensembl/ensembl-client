@@ -28,12 +28,11 @@ import {
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import {
-  getStatsForSection,
   sectionGroupsMap,
-  speciesStatsSectionNames,
   type SpeciesStatsSection,
   type StatsSection
 } from '../../state/general/speciesGeneralHelper';
+import prepareStatistics from './prepareStatistics';
 
 import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 import { setActiveGenomeExpandedSections } from 'src/content/app/species/state/general/speciesGeneralSlice';
@@ -48,8 +47,6 @@ import { CircleLoader } from 'src/shared/components/loader';
 import type { RootState } from 'src/store';
 import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import type { SpeciesStatistics } from 'src/content/app/species/state/api/speciesApiTypes';
-import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesMainView.scss';
 
@@ -268,27 +265,6 @@ const SpeciesMainViewStats = () => {
       })}
     </div>
   );
-};
-
-const prepareStatistics = ({
-  statistics,
-  genomeIdForUrl,
-  exampleFocusObjects
-}: {
-  statistics: SpeciesStatistics;
-  genomeIdForUrl: string;
-  exampleFocusObjects: ExampleFocusObject[];
-}) => {
-  return speciesStatsSectionNames
-    .map((section) =>
-      getStatsForSection({
-        allStats: statistics,
-        genomeIdForUrl,
-        section: section as SpeciesStatsSection,
-        exampleFocusObjects
-      })
-    )
-    .filter(Boolean) as StatsSection[];
 };
 
 export default SpeciesMainViewStats;

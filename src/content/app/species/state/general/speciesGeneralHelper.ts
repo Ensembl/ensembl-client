@@ -616,8 +616,9 @@ export const getStatsForSection = (props: {
 
   if (!data) {
     return {
-      section
-    } as StatsSection;
+      section,
+      groups: []
+    };
   }
 
   const filteredData: {
@@ -651,7 +652,7 @@ export const getStatsForSection = (props: {
           })
         : undefined;
     })
-    .filter(Boolean);
+    .filter(Boolean) as IndividualStat[] | undefined;
 
   const exampleLinks = exampleLinkText
     ? getExampleLinks({
@@ -668,8 +669,9 @@ export const getStatsForSection = (props: {
     return {
       section,
       summaryStats,
-      exampleLinks
-    } as StatsSection;
+      exampleLinks,
+      groups: []
+    };
   }
 
   const processedGroups = groups.map((group) => {

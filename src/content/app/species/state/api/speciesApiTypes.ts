@@ -15,87 +15,88 @@
  */
 
 type AssemblyStatistics = {
-  contig_n50: number;
-  total_genome_length: number;
-  total_coding_sequence_length: number;
-  total_gap_length: number;
-  spanned_gaps: number;
-  chromosomes: number;
-  toplevel_sequences: number;
-  component_sequences: number;
-  gc_percentage: number;
+  contig_n50: number | null;
+  total_genome_length: number | null;
+  total_coding_sequence_length: number | null;
+  total_gap_length: number | null;
+  spanned_gaps: number | null;
+  chromosomes: number | null;
+  toplevel_sequences: number | null;
+  component_sequences: number | null;
+  gc_percentage: number | null;
 };
 
 type CodingGeneStatistics = {
-  coding_genes: number;
-  average_genomic_span: number;
-  average_sequence_length: number;
-  average_cds_length: number;
-  shortest_gene_length: number;
-  longest_gene_length: number;
-  total_transcripts: number;
-  coding_transcripts: number;
-  transcripts_per_gene: number;
-  coding_transcripts_per_gene: number;
-  total_exons: number;
-  total_coding_exons: number;
-  average_exon_length: number;
-  average_coding_exon_length: number;
-  average_exons_per_transcript: number;
-  average_coding_exons_per_coding_transcript: number;
-  total_introns: number;
-  average_intron_length: number;
+  coding_genes: number | null;
+  average_genomic_span: number | null;
+  average_sequence_length: number | null;
+  average_cds_length: number | null;
+  shortest_gene_length: number | null;
+  longest_gene_length: number | null;
+  total_transcripts: number | null;
+  coding_transcripts: number | null;
+  transcripts_per_gene: number | null;
+  coding_transcripts_per_gene: number | null;
+  total_exons: number | null;
+  total_coding_exons: number | null;
+  average_exon_length: number | null;
+  average_coding_exon_length: number | null;
+  average_exons_per_transcript: number | null;
+  average_coding_exons_per_coding_transcript: number | null;
+  total_introns: number | null;
+  average_intron_length: number | null;
 };
 
 type NonCodingGeneStatistics = {
-  non_coding_genes: number;
-  small_non_coding_genes: number;
-  long_non_coding_genes: number;
-  misc_non_coding_genes: number;
-  average_genomic_span: number;
-  average_sequence_length: number;
-  shortest_gene_length: number;
-  longest_gene_length: number;
-  total_transcripts: number;
-  transcripts_per_gene: number;
-  total_exons: number;
-  average_exon_length: number;
-  average_exons_per_transcript: number;
-  total_introns: number;
-  average_intron_length: number;
+  non_coding_genes: number | null;
+  small_non_coding_genes: number | null;
+  long_non_coding_genes: number | null;
+  misc_non_coding_genes: number | null;
+  average_genomic_span: number | null;
+  average_sequence_length: number | null;
+  shortest_gene_length: number | null;
+  longest_gene_length: number | null;
+  total_transcripts: number | null;
+  transcripts_per_gene: number | null;
+  total_exons: number | null;
+  average_exon_length: number | null;
+  average_exons_per_transcript: number | null;
+  total_introns: number | null;
+  average_intron_length: number | null;
 };
 
 type PseudogeneStatistics = {
-  pseudogenes: number;
-  average_genomic_span: number;
-  average_sequence_length: number;
-  shortest_gene_length: number;
-  longest_gene_length: number;
-  total_transcripts: number;
-  transcripts_per_gene: number;
-  total_exons: number;
-  average_exon_length: number;
-  average_exons_per_transcript: number;
-  total_introns: number;
-  average_intron_length: number;
+  pseudogenes: number | null;
+  average_genomic_span: number | null;
+  average_sequence_length: number | null;
+  shortest_gene_length: number | null;
+  longest_gene_length: number | null;
+  total_transcripts: number | null;
+  transcripts_per_gene: number | null;
+  total_exons: number | null;
+  average_exon_length: number | null;
+  average_exons_per_transcript: number | null;
+  total_introns: number | null;
+  average_intron_length: number | null;
 };
 
 type HomologyStatistics = {
-  coverage: number;
+  coverage: number | null;
+  reference_species_name: string | null;
 };
 
 type VariationStatistics = {
-  short_variants: number;
-  structural_variants: number;
-  short_variants_with_phenotype_assertions: number;
-  short_variants_with_publications: number;
-  short_variants_frequency_studies: number;
-  structural_variants_with_phenotype_assertions: number;
+  short_variants: number | null;
+  structural_variants: number | null;
+  short_variants_with_phenotype_assertions: number | null;
+  short_variants_with_publications: number | null;
+  short_variants_frequency_studies: number | null;
+  structural_variants_with_phenotype_assertions: number | null;
 };
 
 export type RegulationStatistics = {
-  enhancers: number;
-  promoters: number;
+  enhancers: number | null;
+  promoters: number | null;
   ctcf_count: number | null;
   tfbs_count: number | null;
   open_chromatin_count: number | null;
