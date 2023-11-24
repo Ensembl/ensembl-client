@@ -41,16 +41,14 @@ import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
  *   should at the same time be either null or non-null
  * - For regulation_stats, anything can be null
  */
-const curateSpeciesStatistics = (
+const curateSpeciesStats = (
   speciesStats: SpeciesStatistics
 ): SpeciesStatistics => {
   return {
-    assembly_stats: curateAssemblyStatistics(speciesStats.assembly_stats),
-    coding_stats: curateCodingGeneStatistics(speciesStats.coding_stats),
-    non_coding_stats: curateNonCodingGeneStatistics(
-      speciesStats.non_coding_stats
-    ),
-    pseudogene_stats: curatePseudogeneStatistics(speciesStats.pseudogene_stats),
+    assembly_stats: curateAssemblyStats(speciesStats.assembly_stats),
+    coding_stats: curateCodingGeneStats(speciesStats.coding_stats),
+    non_coding_stats: curateNonCodingGeneStats(speciesStats.non_coding_stats),
+    pseudogene_stats: curatePseudogeneStats(speciesStats.pseudogene_stats),
     homology_stats: curateHomologyStats(speciesStats.homology_stats),
     variation_stats: curateVariationStats(speciesStats.variation_stats),
     regulation_stats: speciesStats.regulation_stats // no need to update regulation stats
@@ -61,7 +59,7 @@ const curateSpeciesStatistics = (
  * Make sure that if the chromosomes field happens to be set to null,
  * then there is no other field in the assembly statistics section that has data
  */
-const curateAssemblyStatistics = (
+const curateAssemblyStats = (
   assemblyStats: SpeciesStatistics['assembly_stats']
 ) => {
   const chromosomeStats = assemblyStats.chromosomes;
@@ -83,7 +81,7 @@ const curateAssemblyStatistics = (
  * Make sure that if the coding_genes field happens to be set to null,
  * then there is no other field in the coding_stats section that has data
  */
-const curateCodingGeneStatistics = (
+const curateCodingGeneStats = (
   codingStats: SpeciesStatistics['coding_stats']
 ) => {
   const codingGenesCount = codingStats['coding_genes'];
@@ -105,7 +103,7 @@ const curateCodingGeneStatistics = (
  * Make sure that if the non_coding_genes field happens to be set to null,
  * then there is no other field in the non_coding_stats section that has data
  */
-const curateNonCodingGeneStatistics = (
+const curateNonCodingGeneStats = (
   nonCodingStats: SpeciesStatistics['non_coding_stats']
 ) => {
   const nonCodingGenesCount = nonCodingStats['non_coding_genes'];
@@ -127,7 +125,7 @@ const curateNonCodingGeneStatistics = (
  * Make sure that if the non_coding_genes field happens to be set to null,
  * then there is no other field in the non_coding_stats section that has data
  */
-const curatePseudogeneStatistics = (
+const curatePseudogeneStats = (
   pseudogeneStats: SpeciesStatistics['pseudogene_stats']
 ) => {
   const pseudogenesCount = pseudogeneStats['pseudogenes'];
@@ -195,7 +193,7 @@ const curateVariationStats = (
   return emptyStats;
 };
 
-const prepareStatistics = ({
+const prepareSpeciesStats = ({
   statistics,
   genomeIdForUrl,
   exampleFocusObjects
@@ -204,7 +202,7 @@ const prepareStatistics = ({
   genomeIdForUrl: string;
   exampleFocusObjects: ExampleFocusObject[];
 }) => {
-  statistics = curateSpeciesStatistics(statistics);
+  statistics = curateSpeciesStats(statistics);
 
   return speciesStatsSectionNames
     .map((section) =>
@@ -218,4 +216,4 @@ const prepareStatistics = ({
     .filter(Boolean) as StatsSection[];
 };
 
-export default prepareStatistics;
+export default prepareSpeciesStats;

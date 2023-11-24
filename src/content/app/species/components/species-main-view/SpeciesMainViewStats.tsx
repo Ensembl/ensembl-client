@@ -32,7 +32,7 @@ import {
   type SpeciesStatsSection,
   type StatsSection
 } from '../../state/general/speciesGeneralHelper';
-import prepareStatistics from './prepareStatistics';
+import prepareSpeciesStats from './prepareStatistics';
 
 import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 import { setActiveGenomeExpandedSections } from 'src/content/app/species/state/general/speciesGeneralSlice';
@@ -216,7 +216,7 @@ const SpeciesMainViewStats = () => {
 
   const { genome_stats: rawGenomeStats } = statisticsResponse;
 
-  const genomeStats = prepareStatistics({
+  const genomeStats = prepareSpeciesStats({
     statistics: rawGenomeStats,
     genomeIdForUrl: genomeIdForUrl,
     exampleFocusObjects: exampleObjects ?? []
