@@ -616,8 +616,9 @@ export const getStatsForSection = (props: {
 
   if (!data) {
     return {
-      section
-    } as StatsSection;
+      section,
+      groups: []
+    };
   }
 
   const filteredData: {
@@ -651,7 +652,7 @@ export const getStatsForSection = (props: {
           })
         : undefined;
     })
-    .filter(Boolean);
+    .filter(Boolean) as IndividualStat[] | undefined;
 
   const exampleLinks = exampleLinkText
     ? getExampleLinks({
@@ -662,14 +663,16 @@ export const getStatsForSection = (props: {
     : undefined;
 
   const isExpandedContentSame =
+    ['regulation_stats', 'homology_stats'].includes(section) ||
     Object.keys(filteredData).length === availableSummaryStatsKeys?.length;
 
   if (isExpandedContentSame) {
     return {
       section,
       summaryStats,
-      exampleLinks
-    } as StatsSection;
+      exampleLinks,
+      groups: []
+    };
   }
 
   const processedGroups = groups.map((group) => {
