@@ -77,7 +77,7 @@ type ContentProps = {
 const getCollapsedContent = (props: ContentProps) => {
   const { species, statsSection } = props;
   const { summaryStats, section, exampleLinks } = statsSection;
-  const { title, helpText, exampleLinkText } = sectionGroupsMap[section];
+  const { title, exampleLinkText } = sectionGroupsMap[section];
 
   const onExampleLinkClick = () => {
     props.trackSpeciesPageExampleLink(species, exampleLinkText as string);
@@ -97,9 +97,9 @@ const getCollapsedContent = (props: ContentProps) => {
                     {summaryStat.primaryValue}
                   </span>
                   <span className={styles.unit}>{summaryStat.primaryUnit}</span>
-                  {helpText && (
+                  {summaryStat.helpText && (
                     <span className={styles.questionButton}>
-                      <QuestionButton helpText={helpText} />
+                      <QuestionButton helpText={summaryStat.helpText} />
                     </span>
                   )}
                 </div>

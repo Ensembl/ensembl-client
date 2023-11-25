@@ -101,9 +101,7 @@ export const sectionGroupsMap: Record<
   homology_stats: {
     title: 'Homology',
     groups: ['homology'],
-    summaryStatsKeys: ['coverage'],
-    helpText:
-      'Proportion of coding genes with orthologues with other species in Ensembl'
+    summaryStatsKeys: ['coverage']
   },
   variation_stats: {
     title: 'Variation',
@@ -199,6 +197,15 @@ type StatsFormattingOption = {
   secondaryUnit?: string;
   primaryValuePostfix?: string;
   helpText?: string;
+  getHelpText?: (allStats: SpeciesStatistics) => string;
+};
+
+const getComparaCoverageHelpText = (allStats: SpeciesStatistics) => {
+  const referenceSpeciesName = allStats.homology_stats.reference_species_name;
+  if (!referenceSpeciesName) {
+    return '';
+  }
+  return `Proportion of genes with orthologs with ${referenceSpeciesName}`;
 };
 
 type StatsFormattingOptions = {
@@ -390,7 +397,8 @@ const statsFormattingOptions: StatsFormattingOptions = {
     coverage: {
       label: 'Coverage',
       headerUnit: 'coverage',
-      primaryValuePostfix: '%'
+      primaryValuePostfix: '%',
+      getHelpText: getComparaCoverageHelpText
     }
   },
   variation_stats: {
@@ -454,6 +462,7 @@ type BuildStatProps = Partial<IndividualStat> & {
   primaryKey: SingleStatistic;
   secondaryKey?: SingleStatistic;
   section: SpeciesStatsSection;
+  allStats: SpeciesStatistics;
 };
 
 const buildIndividualStat = (
@@ -461,7 +470,7 @@ const buildIndividualStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const { section, primaryKey } = props;
+  const { section, primaryKey, allStats } = props;
 
   if (!statsFormattingOptions[section][primaryKey]) {
     return;
@@ -471,7 +480,8 @@ const buildIndividualStat = (
     label,
     primaryUnit,
     preLabel,
-    helpText
+    helpText,
+    getHelpText
   } = statsFormattingOptions[section][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
@@ -480,12 +490,14 @@ const buildIndividualStat = (
       primaryValuePostfix;
   }
 
+  const preparedHelpText = helpText ?? getHelpText?.(allStats);
+
   return {
     preLabel,
     label: label || primaryKey,
     primaryValue,
     primaryUnit,
-    helpText
+    helpText: preparedHelpText
   };
 };
 
@@ -493,6 +505,7 @@ type BuildHeaderStatProps = {
   primaryValue: string | number;
   primaryKey: SingleStatistic;
   section: SpeciesStatsSection;
+  allStats: SpeciesStatistics;
 };
 
 const buildHeaderStat = (
@@ -500,11 +513,16 @@ const buildHeaderStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const { section, primaryKey } = props;
+  const { section, primaryKey, allStats } = props;
 
-  const { primaryValuePostfix = '', headerUnit } = statsFormattingOptions[
-    section
-  ][primaryKey] as StatsFormattingOption;
+  const {
+    primaryValuePostfix = '',
+    headerUnit,
+    helpText,
+    getHelpText
+  } = statsFormattingOptions[section][primaryKey] as StatsFormattingOption;
+
+  const preparedHelpText = helpText ?? getHelpText?.(allStats);
 
   if (typeof primaryValue === 'number') {
     primaryValue =
@@ -515,7 +533,8 @@ const buildHeaderStat = (
   return {
     label: primaryKey,
     primaryValue: primaryValue,
-    primaryUnit: headerUnit
+    primaryUnit: headerUnit,
+    helpText: preparedHelpText
   };
 };
 
@@ -648,7 +667,8 @@ export const getStatsForSection = (props: {
         ? buildHeaderStat({
             primaryKey: key,
             primaryValue: filteredData[key],
-            section
+            section,
+            allStats
           })
         : undefined;
     })
@@ -686,7 +706,8 @@ export const getStatsForSection = (props: {
             const individualStat = buildIndividualStat({
               primaryKey: stat,
               primaryValue: filteredData[stat],
-              section
+              section,
+              allStats
             });
             individualStat && processedSubGroupStats.push(individualStat);
           }
