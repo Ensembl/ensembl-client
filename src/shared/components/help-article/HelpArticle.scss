@@ -6,6 +6,8 @@ $indexItemsHorizontalGap: 100px;
 $pageLeftPadding: 88px;
 $asideLeftPadding: 12px;
 $textColumnWidth: 450px;
+$listItemIndent: 34px;
+$topListItemMarginBottom: 1ch;
 
 .textArticle {
   height: 100%;
@@ -44,10 +46,49 @@ $textColumnWidth: 450px;
     width: $textColumnWidth;
   }
 
-  p,
-  ul {
+  p {
     margin: $line-height 0;
   }
+
+  /* ==== LISTS ==== */
+
+  ul, ol {
+    padding-left: $listItemIndent;
+  }
+
+  /* items of the top-level and second-level unordered list have black solid disks as list markers */
+  ul li {
+    padding-left: 5px;
+    list-style-type: disc;
+  }
+
+  /* top-level list items have a margin-bottom, if not immediately followed by a nested list */
+  ul li:not(:has(+ ul, + ol)),
+  ol li:not(:has(+ ul, + ol)) {
+    margin-bottom: $line-height;
+  }
+
+  /* in nested lists, list items do not have a margin-bottom */
+  ul ul li,
+  ul ol li,
+  ol ol li,
+  ol ul li {
+    margin-bottom: unset;
+  }
+
+  /* list items of third-level lists have hyphens as list item markers */
+  ul > ul > ul li {
+    list-style-type: '-';
+  }
+
+  /* numbering of nested ordered lists goes like: 1, 1.1, 1.1.1 */
+  ol > li::marker {
+    content: counters(list-item, '.') '. ';
+  }
+
+  /* ==== END OF LISTS ==== */
+
+
 
   figure {
     margin: 1em 0;
