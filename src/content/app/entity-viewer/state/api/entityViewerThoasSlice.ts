@@ -47,7 +47,10 @@ import {
   proteinDomainsQuery,
   type ProteinDomainsQueryResult
 } from './queries/proteinDomainsQuery';
-import type { MockHomologiesResponse } from 'src/content/app/entity-viewer/state/api/fixtures/mockHomologyData'; // Update the type after switch to real data
+import {
+  geneHomologiesQuery,
+  type EntityViewerGeneHomologiesQueryResult
+} from './queries/geneHomologiesQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
@@ -126,16 +129,15 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       })
     }),
-    evGeneHomology: builder.query<MockHomologiesResponse, GeneQueryParams>({
-      // eslint-disable-next-line
-      queryFn: async (params) => {
-        const { default: geneHomologies } = await import(
-          'src/content/app/entity-viewer/state/api/fixtures/mockHomologyData'
-        );
-        return {
-          data: geneHomologies
-        };
-      }
+    evGeneHomology: builder.query<
+      EntityViewerGeneHomologiesQueryResult,
+      GeneQueryParams
+    >({
+      query: (params) => ({
+        url: config.comparaApiBaseUrl,
+        body: geneHomologiesQuery,
+        variables: params
+      })
     })
   })
 });

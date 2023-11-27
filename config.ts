@@ -22,6 +22,7 @@ export type BaseApiUrls = {
   coreApiUrl: string;
   genomeSearchBaseUrl: string;
   metadataApiBaseUrl: string;
+  comparaApiBaseUrl: string;
   docsBaseUrl: string;
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
@@ -39,6 +40,7 @@ const defaultApiUrls: BaseApiUrls = {
   coreApiUrl: '/api/graphql/core',
   genomeSearchBaseUrl: '/api/genomesearch',
   metadataApiBaseUrl: '/api/metadata',
+  comparaApiBaseUrl: '/api/graphql/compara',
   docsBaseUrl: '/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
@@ -74,6 +76,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     metadataApiBaseUrl:
       process.env.SSR_METADATA_API_URL ??
       `${defaultServerHost}${defaultApiUrls.metadataApiBaseUrl}`,
+    comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
