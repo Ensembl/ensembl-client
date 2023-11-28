@@ -16,16 +16,41 @@
 
 import React from 'react';
 
-import { useEvGeneHomologyQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import {
+  useGeneSummaryQuery,
+  useEvGeneHomologyQuery
+} from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import GeneHomologyTable from './GeneHomologyTable';
 import { CircleLoader } from 'src/shared/components/loader';
 
 const GeneHomology = () => {
-  const { currentData, isFetching, isError } = useEvGeneHomologyQuery({
-    genomeId: '',
-    geneId: ''
-  });
+  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+
+  const geneUnversionedStableId = parsedEntityId?.objectId;
+
+  const { currentData: geneSummaryData } = useGeneSummaryQuery(
+    {
+      genomeId: activeGenomeId || '',
+      geneId: geneUnversionedStableId ?? ''
+    },
+    {
+      skip: !activeGenomeId || !geneUnversionedStableId
+    }
+  );
+
+  const geneStableId = geneSummaryData?.gene.stable_id;
+
+  const { currentData, isFetching, isError } = useEvGeneHomologyQuery(
+    {
+      genomeId: activeGenomeId || '',
+      geneId: geneStableId ?? ''
+    },
+    {
+      skip: !activeGenomeId || !geneStableId
+    }
+  );
 
   if (isFetching) {
     return <CircleLoader />;

@@ -31,7 +31,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     toolsApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/tools',
     searchApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/search',
     variationApiUrl:
-      process.env.VARIATION_GRAPHQL_API_URL ?? '/api/graphql/variation'
+      process.env.VARIATION_GRAPHQL_API_URL ?? '/api/graphql/variation',
+    comparaApiBaseUrl: '/api/graphql/compara'
   };
 };
 
