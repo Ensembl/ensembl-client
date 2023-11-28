@@ -28,15 +28,15 @@ import { CircleLoader } from 'src/shared/components/loader';
 const GeneHomology = () => {
   const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
 
-  const geneUnverstionedStableId = parsedEntityId?.objectId;
+  const geneUnversionedStableId = parsedEntityId?.objectId;
 
   const { currentData: geneSummaryData } = useGeneSummaryQuery(
     {
       genomeId: activeGenomeId || '',
-      geneId: geneUnverstionedStableId ?? ''
+      geneId: geneUnversionedStableId ?? ''
     },
     {
-      skip: !activeGenomeId || !geneUnverstionedStableId
+      skip: !activeGenomeId || !geneUnversionedStableId
     }
   );
 
