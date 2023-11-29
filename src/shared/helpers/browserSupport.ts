@@ -19,18 +19,16 @@
   so no need to check for ES6 support
 */
 
-// Safari versions older than 14 don't have addEventListener on MediaQueryList
-const hasOutdatedMediaQueryList = () => {
-  return (
-    !('MediaQueryList' in window) || !EventTarget.isPrototypeOf(MediaQueryList)
-  );
+// BigInt64Array was added to Safari in version 15 (released in Sep 2021); it is required by genome browser code
+const lacksBigInt64Array = () => {
+  return !('BigInt64Array' in window);
 };
 
 const hasNoAbortController = () => {
   return !('AbortController' in window);
 };
 
-const browserChecks = [hasOutdatedMediaQueryList, hasNoAbortController];
+const browserChecks = [lacksBigInt64Array, hasNoAbortController];
 
 const ensureBrowserSupport = () => {
   if (browserChecks.some((check) => check())) {
