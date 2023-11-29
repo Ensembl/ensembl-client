@@ -20,8 +20,6 @@ import type { BaseApiUrls } from 'config';
 const getBaseApiUrls = (): BaseApiUrls => {
   return {
     coreApiUrl: process.env.BROWSER_CORE_API_BASE_URL ?? '/api/graphql/core',
-    genomeSearchBaseUrl:
-      process.env.BROWSER_GENOME_SEARCH_BASE_URL ?? '/api/genomesearch',
     metadataApiBaseUrl: process.env.METADATA_API_BASE_URL ?? '/api/metadata',
     docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',
     refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget',
