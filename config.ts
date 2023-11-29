@@ -20,7 +20,6 @@ import { hostWithProtocol as defaultServerHost } from 'src/server/constants';
 
 export type BaseApiUrls = {
   coreApiUrl: string;
-  genomeSearchBaseUrl: string;
   metadataApiBaseUrl: string;
   comparaApiBaseUrl: string;
   docsBaseUrl: string;
@@ -38,7 +37,6 @@ export type PublicKeys = {
 
 const defaultApiUrls: BaseApiUrls = {
   coreApiUrl: '/api/graphql/core',
-  genomeSearchBaseUrl: '/api/genomesearch',
   metadataApiBaseUrl: '/api/metadata',
   comparaApiBaseUrl: '/api/graphql/compara',
   docsBaseUrl: '/api/docs',
@@ -64,9 +62,6 @@ const getBaseApiUrls = (): BaseApiUrls => {
     coreApiUrl:
       process.env.SSR_CORE_API_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.coreApiUrl}`,
-    genomeSearchBaseUrl:
-      process.env.SSR_GENOME_SEARCH_BASE_URL ??
-      `${defaultServerHost}${defaultApiUrls.genomeSearchBaseUrl}`,
     docsBaseUrl:
       process.env.SSR_DOCS_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.docsBaseUrl}`,
