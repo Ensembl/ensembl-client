@@ -65,7 +65,8 @@ const prepareTableData = (homologies: GeneHomology[]) => {
       {
         data: {
           genomeId: homology.target_genome.genome_id,
-          geneId: homology.target_gene.stable_id
+          geneId: homology.target_gene.stable_id,
+          unversionedGeneId: homology.target_gene.unversioned_stable_id
         }
       },
       homology.subtype.label,
@@ -130,12 +131,16 @@ const tableColumns: DataTableColumns = [
     title: 'Gene ID',
     renderer: (params) => {
       const cellData = params.cellData as {
-        data: { genomeId: string; geneId: string };
+        data: {
+          genomeId: string;
+          geneId: string;
+          unversionedGeneId: string;
+        };
       };
-      const { genomeId, geneId } = cellData.data;
+      const { genomeId, geneId, unversionedGeneId } = cellData.data;
       const entityViewerLink = urlFor.entityViewer({
         genomeId,
-        entityId: `gene:${geneId}`
+        entityId: `gene:${unversionedGeneId}`
       });
       return <Link to={entityViewerLink}>{geneId}</Link>;
     }
