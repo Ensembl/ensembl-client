@@ -24,7 +24,7 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -46,12 +46,12 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     />
   ));
 
-  const wrappedSpecies = <SpeciesTabsWrapper speciesTabs={speciesTabs} />;
+  const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 
   return (
     <AppBar
       appName={AppName.SPECIES_SELECTOR}
-      mainContent={wrappedSpecies}
+      mainContent={tabsSlider}
       aside={<HelpPopupButton slug="species-homepage" />}
     />
   );

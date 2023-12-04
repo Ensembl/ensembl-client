@@ -1,3 +1,22 @@
+@import 'src/styles/common';
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  align-items: center;
+  column-gap: 46px;
+}
+
+.aside {
+  display: flex;
+  align-items: center;
+  column-gap: 30px;
+}
+
 .placeholderMessage {
   font-size: 14px;
+}
+
+.selectTabMessage {
+  font-weight: $light;
 }
