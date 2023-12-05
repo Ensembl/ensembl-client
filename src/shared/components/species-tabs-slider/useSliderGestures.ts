@@ -36,7 +36,8 @@ const useSliderGestures = (ref: RefObject<Element>) => {
     if (!ref.current) {
       return; // should not happen
     }
-    ref.current.addEventListener('mousedown', onMouseDown);
+
+    ref.current.addEventListener('mousedown', onMouseDown, { capture: true });
     ref.current.addEventListener('wheel', handleWheel);
     ref.current.addEventListener('click', onClick, { capture: true }); // to control whether to pass the click to the species lozenge
 
@@ -83,6 +84,9 @@ const useSliderGestures = (ref: RefObject<Element>) => {
   };
 
   const onClick = (event: Event) => {
+    // If the user tries a "drag" gesture (mouse down followed by mouse move) while over a species lozenge,
+    // this will be interpreted as a click on the lozenge, and the species will change.
+    // This function prevents this from happening.
     if (isDraggingRef.current) {
       event.stopPropagation();
       isDraggingRef.current = false;

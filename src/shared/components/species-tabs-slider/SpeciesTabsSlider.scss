@@ -22,6 +22,15 @@
   flex: 0 0 auto;
 }
 
+.tabsContainer button[disabled] {
+  /* Species tabs (lozenges) are implemented as buttons
+     When a button is disabled, it swallows all mouse events,
+     which interferes with event listeners on the slider itself.
+     The rule below prevents disabled buttons from doing so
+  */
+  pointer-events: none;
+}
+
 .leftCorner {
   margin-right: 8px;
 }
