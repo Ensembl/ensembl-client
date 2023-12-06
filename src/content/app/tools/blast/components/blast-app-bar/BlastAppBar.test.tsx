@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
@@ -38,6 +38,11 @@ jest.mock(
 jest.mock(
   'src/shared/hooks/useMediaQuery',
   () => () => false // no match
+);
+
+jest.mock(
+  'src/shared/components/species-tabs-slider/SpeciesTabsSlider',
+  () => (props: { children: ReactNode }) => <div>{props.children}</div>
 );
 
 const mockCommittedItems = [
