@@ -26,8 +26,35 @@ import { useEffect, type RefObject } from 'react';
 
 const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement>) => {
   useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    // set up a mutation observer to react to any of the species lozenges
+    // becoming active when user clicks on it
+    const mutationObserverConfig = { attributes: true, subtree: true };
+    const mutationObserver = new MutationObserver(mutationObserverCallback);
+    mutationObserver.observe(ref.current, mutationObserverConfig);
+
     updatePositionWhenFontsAreReady();
+
+    return () => {
+      mutationObserver.disconnect();
+    };
   }, []);
+
+  const mutationObserverCallback: MutationCallback = (mutationList) => {
+    const attributeChangeMutation = mutationList.find((mutation) => {
+      return (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-active' &&
+        (mutation.target as HTMLElement).dataset.active
+      );
+    });
+    if (attributeChangeMutation) {
+      scrollToActiveSpeciesTab({ behavior: 'smooth' });
+    }
+  };
 
   // for proper calculation of tab positions, wait until fonts are ready
   const updatePositionWhenFontsAreReady = async () => {
@@ -35,7 +62,9 @@ const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement>) => {
     scrollToActiveSpeciesTab();
   };
 
-  const scrollToActiveSpeciesTab = () => {
+  const scrollToActiveSpeciesTab = (
+    scrollOptions: ScrollIntoViewOptions = {}
+  ) => {
     const container = ref.current;
     const activeSpeciesLozenge = container?.querySelector(
       'button[data-active="true"]'
@@ -45,22 +74,7 @@ const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement>) => {
       return;
     }
 
-    const containerBoundingRect = container.getBoundingClientRect();
-    const lozengeBoundingRect = activeSpeciesLozenge.getBoundingClientRect();
-
-    if (lozengeBoundingRect.x < containerBoundingRect.x) {
-      // lozenge hidden towards container start
-      // (almost certainly impossible when container has just mounted)
-      container.scrollLeft = 0;
-    } else if (
-      lozengeBoundingRect.x + lozengeBoundingRect.width >
-      containerBoundingRect.x + containerBoundingRect.width
-    ) {
-      // lozenge hidden towards container end
-      // const distance = Math.ceil(lozengeBoundingRect.x + lozengeBoundingRect.width - containerBoundingRect.x - containerBoundingRect.width);
-      // container.scrollTo({ left: distance });
-      activeSpeciesLozenge.scrollIntoView();
-    }
+    activeSpeciesLozenge.scrollIntoView(scrollOptions);
   };
 };
 
