@@ -141,7 +141,7 @@ const useSpeciesTabsSlider = (params: Params) => {
     const tabsContainer = containerRef.current as HTMLDivElement;
     const speciesTabs = [...tabsContainer.children];
     const tabsContainerBoundingRect = tabsContainer.getBoundingClientRect();
-    let targetLozenge = speciesTabs[0] as HTMLElement;
+    let targetLozenge = speciesTabs.at(-1) as HTMLElement;
 
     // find the fully or partly hidden lozenge that is the closest
     // to the right corner of the container
