@@ -68,13 +68,45 @@ const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement>) => {
     const container = ref.current;
     const activeSpeciesLozenge = container?.querySelector(
       'button[data-active="true"]'
-    );
+    ) as HTMLElement | null;
 
     if (!container || !activeSpeciesLozenge) {
       return;
     }
 
-    activeSpeciesLozenge.scrollIntoView(scrollOptions);
+    const elementBoundingClientRect =
+      activeSpeciesLozenge.getBoundingClientRect();
+    const containerBoundingClientRect = container.getBoundingClientRect();
+    const { x: elementX, width: elementWidth } = elementBoundingClientRect;
+    const { x: containerX, width: containerWidth } =
+      containerBoundingClientRect;
+
+    if (
+      elementX >= containerX &&
+      elementX + elementWidth <= containerX + containerWidth
+    ) {
+      // species lozenge is visible inside of the container
+      return;
+    }
+    let scrollTo: number;
+
+    if (elementX < containerX) {
+      // species lozenge is at least partly hidden behind the left corner
+      // of the container
+      scrollTo = Math.floor(
+        activeSpeciesLozenge.offsetLeft - container.offsetLeft
+      );
+    } else {
+      // species lozenge is at least partly hidden behind the right corner
+      // of the container
+      scrollTo = Math.ceil(
+        activeSpeciesLozenge.offsetLeft +
+          activeSpeciesLozenge.offsetWidth -
+          container.offsetWidth -
+          container.offsetLeft
+      );
+    }
+    container.scrollTo({ ...scrollOptions, left: scrollTo });
   };
 };
 
