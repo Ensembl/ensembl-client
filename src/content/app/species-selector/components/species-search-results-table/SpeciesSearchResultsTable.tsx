@@ -193,10 +193,10 @@ const SpeciesSearchResultsTable = (props: Props) => {
                     ? formatNumber(searchMatch.contig_n50)
                     : '-'}
                 </td>
-                <td>
+                <td className={styles.centered}>
                   {searchMatch.has_variation ? <SolidDot /> : <EmptyDot />}
                 </td>
-                <td>
+                <td className={styles.centered}>
                   {searchMatch.has_regulation ? <SolidDot /> : <EmptyDot />}
                 </td>
                 <td>{searchMatch.annotation_provider}</td>
