@@ -27,7 +27,9 @@ const BlastGenomicHitsDiagramLegend = () => {
   return (
     <div className={styles.diagramLegend}>
       <Image />
-      <span className={styles.diagramLegendLabel}>Top 5 hits by E-value</span>
+      <span className={styles.diagramLegendLabel}>
+        Top 5 hits by E-value - chromosomes only
+      </span>
     </div>
   );
 };
