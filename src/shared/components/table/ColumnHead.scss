@@ -22,12 +22,12 @@
   align-items: baseline;
   justify-content: start;
   column-gap: var( --_sort-arrow-right-margin);
-  font-weight: $light;
+  font-weight: inherit;
   text-align: left;
 }
 
 .columnHeadSortingApplied {
-  font-weight: $bold;
+  --table-head-font-weight: #{$normal};
 }
 
 .sortArrow {
