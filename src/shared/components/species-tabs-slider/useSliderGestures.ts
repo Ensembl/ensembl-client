@@ -38,12 +38,10 @@ const useSliderGestures = (ref: RefObject<Element>) => {
     }
 
     ref.current.addEventListener('mousedown', onMouseDown, { capture: true });
-    ref.current.addEventListener('wheel', handleWheel);
     ref.current.addEventListener('click', onClick, { capture: true }); // to control whether to pass the click to the species lozenge
 
     return () => {
       ref.current?.removeEventListener('mousedown', onMouseDown);
-      ref.current?.removeEventListener('wheel', handleWheel);
       ref.current?.removeEventListener('click', onClick);
     };
   }, []);
@@ -91,19 +89,6 @@ const useSliderGestures = (ref: RefObject<Element>) => {
       event.stopPropagation();
       isDraggingRef.current = false;
     }
-  };
-
-  // see https://greensock.com/forums/topic/32453-convert-vertical-scroll-to-horizontal-scroll-with-observer/
-  // this may be a bad idea in general
-  const handleWheel = (event: Event) => {
-    const wheelEvent = event as WheelEvent;
-    if (Math.abs(wheelEvent.deltaY) > Math.abs(wheelEvent.deltaX)) {
-      handleWheelVertical(wheelEvent);
-    }
-  };
-
-  const handleWheelVertical = (event: WheelEvent) => {
-    (ref.current as HTMLElement).scrollLeft -= event.deltaY / 2;
   };
 };
 
