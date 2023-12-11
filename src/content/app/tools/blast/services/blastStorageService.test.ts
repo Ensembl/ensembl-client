@@ -15,7 +15,7 @@
  */
 
 import 'fake-indexeddb/auto';
-import { openDB } from 'idb/with-async-ittr';
+import { openDB } from 'idb';
 import times from 'lodash/times';
 
 import IndexedDB from 'src/services/indexeddb-service';
