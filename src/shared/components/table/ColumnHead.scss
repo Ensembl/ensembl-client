@@ -27,7 +27,7 @@
 }
 
 .columnHeadSortingApplied {
-  --table-head-font-weight: $normal;
+  --table-head-font-weight: #{$normal};
 }
 
 .sortArrow {
