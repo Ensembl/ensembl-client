@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  useRef,
-  type ReactNode
-} from 'react';
+import React, { useRef, memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import useSpeciesTabsSlider from './useSpeciesTabsSlider';
@@ -32,29 +29,22 @@ type Props = {
   children: ReactNode;
 };
 
-
 const SpeciesTabsSlider = (props: Props) => {
   const tabsContainerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    canScrollLeft,
-    canScrollRight,
-    scrollLeft,
-    scrollRight
-  } = useSpeciesTabsSlider({
-    containerRef: tabsContainerRef,
-    children: props.children
-  });
+  const { canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
+    useSpeciesTabsSlider({
+      containerRef: tabsContainerRef,
+      children: props.children
+    });
   useSliderGestures(tabsContainerRef);
   useVisibleActiveSpecies(tabsContainerRef);
 
   const areAllTabsInViewport = !canScrollLeft && !canScrollRight;
 
-  const arrowButtonClasses = classNames(
-    styles.arrowButton, {
-      [styles.hidden]: areAllTabsInViewport
-    }
-  );
+  const arrowButtonClasses = classNames(styles.arrowButton, {
+    [styles.hidden]: areAllTabsInViewport
+  });
 
   const leftArrowClasses = classNames(styles.arrow, {
     [styles.arrowDisabled]: !canScrollLeft
@@ -86,14 +76,11 @@ const SpeciesTabsSlider = (props: Props) => {
           onClick={scrollRight}
           disabled={!canScrollRight}
         >
-          <Chevron
-            direction="right"
-            className={rightArrowClasses}
-          />
+          <Chevron direction="right" className={rightArrowClasses} />
         </button>
       </div>
     </div>
   );
 };
 
-export default SpeciesTabsSlider;
+export default memo(SpeciesTabsSlider);
