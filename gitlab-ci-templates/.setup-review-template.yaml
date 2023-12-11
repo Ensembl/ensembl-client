@@ -74,9 +74,6 @@
     # ensembl-refget-proxy
     - kubectl apply -f ensembl_refget_proxy_service.yaml
     - kubectl apply -f ensembl_refget_proxy_ingress.yaml
-    # ensembl-thoas
-    - kubectl apply -f ensembl_thoas_service.yaml
-    - kubectl apply -f ensembl_thoas_ingress.yaml
     # ensembl-new-genome-browser
     - kubectl apply -f ensembl_new_gb_hi_service.yaml
     - kubectl apply -f ensembl_new_gb_lo_service.yaml
