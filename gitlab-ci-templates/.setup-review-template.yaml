@@ -41,10 +41,6 @@
     - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_ingress.yaml
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_genome_search_ingress.yaml     
-    # ensembl-thoas
-    - sed -i "s#<DEPLOYMENT_ENV>#${THOAS_SERVICE_SLUG}#g" ensembl_thoas_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${THOAS_SERVICE_SLUG}#g" ensembl_thoas_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_thoas_ingress.yaml 
     # ensembl-refget-proxy
     - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_ingress.yaml
