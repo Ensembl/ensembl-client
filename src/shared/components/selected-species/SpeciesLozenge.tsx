@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type DetailedHTMLProps, type ButtonHTMLAttributes } from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
@@ -27,49 +27,39 @@ import styles from './SpeciesLozenge.scss';
 
 type SpeciesLozengeTheme = 'blue' | 'black' | 'ice-blue' | 'grey' | 'red';
 
-export type Props = {
+export type Props = DetailedHTMLProps<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & {
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
-  className?: string;
-  onClick?: (species: CommittedItem) => void;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 };
 
 const SpeciesLozenge = (props: Props) => {
-  const handleMouseEnter = () => {
-    props?.onMouseEnter?.();
-  };
-
-  const handleMouseLeave = () => {
-    props?.onMouseLeave?.();
-  };
-
-  const handleClick = () => {
-    props?.onClick?.(props.species);
-  };
-
-  const displayName = getDisplayName(props.species);
+  const {
+    species,
+    theme,
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
+  const displayName = getDisplayName(species);
 
   const componentClasses = classNames(
     styles.species,
-    styles[`theme${upperFirst(camelCase(props.theme))}`],
-    { [styles.clickable]: Boolean(props.onClick) },
-    props.className
+    styles[`theme${upperFirst(camelCase(theme))}`],
+    classNameFromProps
   );
 
   return (
-    <div
+    <button
       className={componentClasses}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+      {...otherProps}
     >
       <div className={styles.inner}>
         <span className={styles.name}>{displayName}</span>
         <span className={styles.assembly}>{props.species.assembly.name}</span>
       </div>
-    </div>
+    </button>
   );
 };
 

@@ -29,6 +29,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -61,24 +62,17 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     ));
   }, [enabledCommittedSpecies.length, activeGenomeId]);
 
-  const speciesSelectorLink = useMemo(() => {
-    return (
+  const tabsSlider = (
+    <SpeciesTabsWrapper>
+      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
       <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
         Change
       </Link>
-    );
-  }, []);
-
-  const wrappedSpecies = (
-    <SpeciesTabsWrapper
-      isWrappable={false}
-      speciesTabs={speciesTabs}
-      link={speciesSelectorLink}
-    />
+    </SpeciesTabsWrapper>
   );
 
   const mainContent = enabledCommittedSpecies.length
-    ? wrappedSpecies
+    ? tabsSlider
     : 'To start using this app...';
 
   return (

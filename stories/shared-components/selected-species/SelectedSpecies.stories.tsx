@@ -18,7 +18,7 @@ import React from 'react';
 
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
-import speciesData from '../species-tabs-wrapper/speciesData';
+import speciesData from './speciesData';
 
 import styles from './SelectedSpecies.stories.scss';
 

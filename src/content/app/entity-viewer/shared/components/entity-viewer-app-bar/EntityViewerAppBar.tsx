@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
@@ -37,6 +37,7 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
@@ -81,24 +82,18 @@ const EntityViewerAppBar = () => {
       onClick={onSpeciesTabClick}
     />
   ));
-  const speciesSelectorLink = useMemo(() => {
-    return (
+
+  const speciesTabsSlider = (
+    <SpeciesTabsWrapper>
+      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
       <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
         Change
       </Link>
-    );
-  }, []);
-
-  const wrappedSpecies = (
-    <SpeciesTabsWrapper
-      isWrappable={false}
-      speciesTabs={speciesTabs}
-      link={speciesSelectorLink}
-    />
+    </SpeciesTabsWrapper>
   );
 
   const mainContent = activeGenomeId
-    ? wrappedSpecies
+    ? speciesTabsSlider
     : 'To start using this app...';
 
   return (

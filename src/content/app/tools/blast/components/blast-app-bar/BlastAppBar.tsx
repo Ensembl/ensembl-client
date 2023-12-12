@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -37,6 +37,7 @@ import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGen
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
@@ -53,10 +54,6 @@ const BlastAppBar = () => {
   const dispatch = useAppDispatch();
 
   const isSmallViewport = useMediaQuery(smallViewportMediaQuery);
-
-  const speciesSelectorLink = useMemo(() => {
-    return <Link to={urlFor.speciesSelector()}>Change</Link>;
-  }, []);
 
   const appBarProps = {
     appName: AppName.TOOLS,
@@ -108,11 +105,14 @@ const BlastAppBar = () => {
         <SpeciesLozenge key={index} theme="grey" species={species} />
       ));
 
-  const wrappedSpecies = (
-    <SpeciesTabsWrapper speciesTabs={speciesTabs} link={speciesSelectorLink} />
+  const speciesTabsSlider = (
+    <SpeciesTabsWrapper>
+      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
+      <Link to={urlFor.speciesSelector()}>Change</Link>
+    </SpeciesTabsWrapper>
   );
 
-  return <AppBar mainContent={wrappedSpecies} {...appBarProps} />;
+  return <AppBar mainContent={speciesTabsSlider} {...appBarProps} />;
 };
 
 const shouldEnableSpecies = (params: {

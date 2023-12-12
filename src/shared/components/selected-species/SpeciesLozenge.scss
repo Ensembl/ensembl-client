@@ -1,5 +1,4 @@
 @import 'src/styles/common';
-@import 'src/styles/mixins';
 
 .species {
   display: inline-flex;
@@ -41,10 +40,6 @@
   border-color: var(--species-lozenge-bg-color, #{$red});
   background-color: var(--species-lozenge-bg-color, #{$red});
   color: var(--species-lozenge-text-color, #{$white});
-}
-
-.clickable {
-  cursor: pointer;
 }
 
 .inner {

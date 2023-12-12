@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type ReactNode } from 'react';
 
-import SingleLineSpeciesWrapper, {
-  Props as SingleLineSpeciesWrapperProps
-} from './SingleLineSpeciesWrapper';
-import MultiLineSpeciesWrapper, {
-  Props as MultiLineSpeciesWrapperProps
-} from './MultiLineSpeciesWrapper';
+import styles from './SpeciesTabsWrapper.scss';
 
-type Props = (SingleLineSpeciesWrapperProps | MultiLineSpeciesWrapperProps) & {
-  isWrappable?: boolean;
+type Props = {
+  children: ReactNode;
 };
 
-const SpeciesTabsWrapper = (props: Props) => {
-  const { isWrappable = true } = props;
+/**
+ * NOTE:
+ * This is a temporary component, to position species tabs slider
+ * next to the "Change" link that opens Species Selector.
+ * The "Change" link is expected to go away
+ */
 
-  return isWrappable ? (
-    <MultiLineSpeciesWrapper {...props} />
-  ) : (
-    <SingleLineSpeciesWrapper {...props} />
-  );
+const SpeciesTabsWrapper = (props: Props) => {
+  return <div className={styles.grid}>{props.children}</div>;
 };
 
 export default SpeciesTabsWrapper;

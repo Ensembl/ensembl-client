@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
 export default [
   {
     genome_id: 'homo_sapiens38',
@@ -169,4 +171,4 @@ export default [
     genome_tag: null,
     isEnabled: true
   }
-];
+] satisfies CommittedItem[];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type SVGProps } from 'react';
 import classNames from 'classnames';
 
 import ChevronDown from 'static/icons/icon_chevron.svg';
@@ -23,22 +23,27 @@ import styles from './Chevron.scss';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
-export type Props = {
+export type Props = SVGProps<SVGSVGElement> & {
   direction: Direction;
   animate?: boolean;
-  className?: string;
 };
 
 const Chevron = (props: Props) => {
-  const isNonDefaultDirection = props.direction !== 'down';
+  const {
+    direction,
+    animate,
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
+  const isNonDefaultDirection = direction !== 'down';
 
   const chevronClasses = classNames(
     styles.chevron,
-    { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animate },
-    props.className
+    { [styles[`chevron_${direction}`]]: isNonDefaultDirection },
+    { [styles.chevron_animated]: animate },
+    classNameFromProps
   );
-  return <ChevronDown className={chevronClasses} />;
+  return <ChevronDown className={chevronClasses} {...otherProps} />;
 };
 
 export default Chevron;
