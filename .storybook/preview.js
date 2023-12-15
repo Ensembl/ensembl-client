@@ -1,4 +1,12 @@
+// import 'src/styles/globalStyles.ts';
+
+import 'src/styles/design-tokens.css';
+import 'src/styles/fonts.css';
+import 'src/styles/main.css';
+
 import 'src/styles/main.scss';
+// import 'src/styles/globalStyles';
+
 
 export const parameters = {
   options: {

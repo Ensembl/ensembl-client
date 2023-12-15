@@ -12,6 +12,39 @@ export default (config) => {
   const defaultSvgRule = config.module.rules.find(rule => rule.test.test('.svg'));
   defaultSvgRule.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
+  // remove the webpack rule for CSS files pre-defined in @storybook/react; we are going to use our own
+  config.module.rules = config.module.rules.filter(rule => !rule.test?.test('file.css'));
+
+  config.module.rules.push({
+    test: /\.css$/,
+    include: [
+      path.resolve(__dirname, '../src'),
+      path.resolve(__dirname, '../stories'),
+    ],
+    use: [
+      'style-loader',
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: true,
+          modules: {
+            auto: true, // will match all files with a pattern /\.module\.\w+$/
+            localIdentName: '[local]__[name]__[hash:base64:5]'
+          }
+        }
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          postcssOptions: {
+            plugins: [
+              ['postcss-preset-env']
+            ]
+          }
+        }
+      }
+    ]
+  });
   config.module.rules.push({
     test: /.scss$/,
     include: [
