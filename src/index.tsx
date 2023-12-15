@@ -32,7 +32,8 @@ import { registerSW } from './registerServiceWorker';
 
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 
-import './styles/main';
+import './styles/main.scss';
+import './styles/globalStyles';
 
 ensureBrowserSupport();
 

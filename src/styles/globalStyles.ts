@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
-
-import styles from './ColourCard.module.css';
-
-type Props = {
-  name: string;
-  variableName: string;
-};
-
-const ColourCard: FunctionComponent<Props> = (props) => {
-  return (
-    <div className={styles.colourCard}>
-      <div
-        className={styles.colourArea}
-        style={{ backgroundColor: `var(${props.variableName})` }}
-      />
-      <div className={styles.colourInfo}>
-        <div className={styles.colourName}>{props.name}</div>
-        <div>{props.variableName}</div>
-      </div>
-    </div>
-  );
-};
-
-export default ColourCard;
+import './design-tokens.css';
+import './fonts.css';
+import './main.css';
+import './scrollbars.css';
