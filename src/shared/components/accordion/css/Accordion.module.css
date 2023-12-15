@@ -1,12 +1,10 @@
-@import 'src/styles/common';
-
 .accordionDefault {
-  border: 2px solid $medium-light-grey;
+  border: 2px solid var(--color-medium-light-grey);
   border-radius: 2px;
 }
 
 .accordionItemDefault:not(:first-child) {
-  border-top: 2px solid $medium-light-grey;
+  border-top: 2px solid var(--color-medium-light-grey);
 }
 
 .accordionButtonDefault {
@@ -24,8 +22,8 @@
 
 .accordionButtonDisabled {
   display: block;
-  background-color: $light-grey;
-  color: $grey;
+  background-color: var(--color-light-grey);
+  color: var(--color-grey);
   cursor: default;
 }
 
@@ -42,7 +40,7 @@
 }
 
 .accordionPanelDefault {
-  background: $light-grey;
+  background: var(--color-light-grey);
   animation: fadein 0.2s ease-in;
 }
 

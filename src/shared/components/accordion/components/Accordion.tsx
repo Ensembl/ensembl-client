@@ -18,7 +18,7 @@ import React from 'react';
 import { DivAttributes } from '../helpers/types';
 import { Consumer, Provider } from './AccordionContext';
 import { UUID } from './ItemContext';
-import defaultStyles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.module.css';
 import classNames from 'classnames';
 
 type AccordionProps = Pick<

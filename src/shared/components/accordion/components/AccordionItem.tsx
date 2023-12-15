@@ -22,7 +22,7 @@ import { generateId } from 'src/shared/helpers/generateId';
 
 import type { DivAttributes } from '../helpers/types';
 
-import defaultStyles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.module.css';
 
 type Props = DivAttributes & {
   extendDefaultStyles?: boolean;

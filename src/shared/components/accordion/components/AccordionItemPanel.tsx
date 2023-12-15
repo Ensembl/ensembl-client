@@ -17,7 +17,7 @@
 import React from 'react';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
-import defaultStyles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.module.css';
 import classNames from 'classnames';
 
 type Props = DivAttributes & {
