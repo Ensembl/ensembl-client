@@ -40,6 +40,37 @@ export default (): Configuration => {
           exclude: /node_modules/
         },
 
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                emit: false
+              }
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                modules: {
+                  auto: true, // will match all files with a pattern /\.module\.\w+$/
+                  localIdentName: '[local]__[name]__[hash:base64:5]'
+                }
+              }
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [['postcss-preset-env']]
+                }
+              }
+            }
+          ]
+        },
+
+        // TODO: REMOVE SCSS BLOCK WHEN REFACTORING IS COMPLETED
         // the loaders for styling
         // a scss file will first be loaded via sass loader and transpiled
         // afterwards it will be processed by postcss loader to make the css cross-browser compatible
