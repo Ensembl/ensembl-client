@@ -120,7 +120,7 @@ const BlastSpeciesSelector = (
         onClose={onClose}
       />
 
-      {currentData?.matches.length && (
+      {currentData?.matches.length ? (
         <div className={styles.tableContainer}>
           <SpeciesSearchResultsTable
             results={deferredGenomes}
@@ -134,7 +134,7 @@ const BlastSpeciesSelector = (
             onSpeciesSelectToggle={onGenomeStageToggle}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
