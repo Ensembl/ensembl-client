@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import LinkIcon from 'static/icons/icon_xlink.svg';
 
-import styles from './DisabledExternalLink.scss';
+import styles from './DisabledExternalLink.module.css';
 
 /**
  * It's very rare that one would need to use this component.

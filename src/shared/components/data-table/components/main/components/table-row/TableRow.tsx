@@ -16,13 +16,14 @@
 
 import React, { ReactNode } from 'react';
 
-import type { TableRowData } from 'src/shared/components/data-table/dataTableTypes';
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 import { RowFooter } from 'src/shared/components/table';
 import RowSelector from './components/row-selector/RowSelector';
 
-import styles from 'src/shared/components/data-table/DataTable.scss';
-import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+import type { TableRowData } from 'src/shared/components/data-table/dataTableTypes';
+
+import styles from 'src/shared/components/data-table/DataTable.module.css';
 
 const TableRow = (props: { rowData: TableRowData; rowId: string | number }) => {
   const {

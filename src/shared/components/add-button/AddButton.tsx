@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import PlusIcon from 'static/icons/icon_plus_circle.svg';
 
-import styles from './AddButton.scss';
+import styles from './AddButton.module.css';
 
 // same props as for a button; but children are required
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {

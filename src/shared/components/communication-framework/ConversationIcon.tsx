@@ -23,7 +23,7 @@ import CommunicationPanel from 'src/shared/components/communication-framework/Co
 
 import ConversationImageIcon from 'static/icons/icon_conversation.svg';
 
-import styles from './ConversationIcon.scss';
+import styles from './ConversationIcon.module.css';
 
 type Props = {
   withLabel?: boolean;

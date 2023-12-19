@@ -1,0 +1,22 @@
+.button {
+  display: inline-grid;
+  grid-template-columns: [label] auto [icon] auto;
+  align-items: center;
+  column-gap: 14px;
+  color: var(--color-blue);
+}
+
+.button svg {
+  height: var(--plus-icon-size, 22px);
+  width: var(--plus-icon-size, 22px);
+  fill: var(--color-blue);
+}
+
+.button:disabled {
+  color: initial;
+  font-weight: var(--font-weight-light);
+}
+
+.button:disabled svg {
+  fill: var(--color-grey);
+}

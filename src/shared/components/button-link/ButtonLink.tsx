@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import classNames from 'classnames';
 
-import styles from './ButtonLink.scss';
+import styles from './ButtonLink.module.css';
 
 /**
  * This is a link that looks like a button.

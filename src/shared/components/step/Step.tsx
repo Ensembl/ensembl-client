@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './Step.scss';
+import styles from './Step.module.css';
 
 type StepProps = {
   count: number;

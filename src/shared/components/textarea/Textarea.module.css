@@ -1,0 +1,29 @@
+.textarea {
+  border-color: var(--textarea-border-color, var(--color-grey));
+  border-width: var(--textarea-border-width, 1px);
+  border-style: var(--textarea-border-style, solid);
+  padding: 7px;
+  width: 100%;
+  height: var(--textarea-height, 85px); /* To display 5 lines of text */
+}
+
+.textarea:focus,
+.textarea:active {
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}
+
+.disableResize {
+  resize: none;
+}
+
+.shadedTextarea {
+  --textarea-border-style: none;
+  box-shadow: var(--form-field-shadow);
+  padding: 7px 15px;
+  border: none;
+}

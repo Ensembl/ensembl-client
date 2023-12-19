@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-import styles from './Copy.scss';
+import styles from './Copy.module.css';
 
 type Props = {
   value: string;

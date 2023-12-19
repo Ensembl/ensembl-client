@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import defaultStyles from './BadgedButton.scss';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
+import defaultStyles from './BadgedButton.module.css';
+
 export type Props = {
-  children: React.ReactChild;
+  children: ReactNode;
   badgeContent?: string | number | undefined;
   className?: string;
 };

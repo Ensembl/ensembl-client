@@ -1,0 +1,9 @@
+.visibilityIcon {
+  --image-button-unselected-svg-color: var(--color-grey);
+  --image-button-selected-bg-color: transparent;
+  --image-button-selected-svg-color: var(--color-blue);
+}
+
+.visibilityIconPartiallySelected svg [class*='leftHalf'] {
+  fill: var(--color-grey);
+}

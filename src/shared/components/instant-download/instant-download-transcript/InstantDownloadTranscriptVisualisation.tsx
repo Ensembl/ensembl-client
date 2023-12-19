@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import times from 'lodash/times';
 
-import styles from './InstantDownloadTranscriptVisualisation.scss';
+import styles from './InstantDownloadTranscriptVisualisation.module.css';
 
 /*
 

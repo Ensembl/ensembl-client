@@ -1,0 +1,36 @@
+.featureSummaryStripWrapper {
+  flex-grow: 1;
+}
+
+.featureSummaryStrip {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.featureSummaryStrip > div:not(:last-child) {
+  margin-right: 30px;
+}
+
+.featureSummaryStripGhosted {
+  color: var(--color-dark-grey);
+}
+
+.featureSummaryStripLabel,
+.featureNameEmphasized {
+  display: inline-block;
+  margin-right: 18px;
+}
+
+.featureSummaryStripLabel {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.featureNameEmphasized {
+  font-weight: var(--font-weight-bold);
+}

@@ -31,7 +31,7 @@ import {
   type TableRows
 } from './dataTableTypes';
 
-import styles from './DataTable.scss';
+import styles from './DataTable.module.css';
 
 export type TableContextType = DataTableState & {
   dispatch: React.Dispatch<AllTableActions>;

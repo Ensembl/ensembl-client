@@ -23,7 +23,7 @@ import useDataTable from '../../hooks/useDataTable';
 
 import TableActions from './components/table-actions/TableActions';
 
-import styles from './TableControls.scss';
+import styles from './TableControls.module.css';
 
 const TableControls = () => {
   const {

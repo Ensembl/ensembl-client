@@ -45,7 +45,7 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import layoutStyles from 'src/shared/components/layout/StandardAppLayout.scss';
+import layoutStyles from 'src/shared/components/layout/StandardAppLayout.module.css';
 
 const BrowserSidebarToolstrip = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);

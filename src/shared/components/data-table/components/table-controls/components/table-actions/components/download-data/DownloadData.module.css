@@ -1,0 +1,12 @@
+.downloadData {
+  display: flex;
+  column-gap: 10px;
+  margin-left: 10px;
+  align-items: center;
+}
+
+.cancel {
+  color: var(--color-blue);
+  cursor: pointer;
+  margin-left: 10px;
+}

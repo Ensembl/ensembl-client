@@ -1,0 +1,17 @@
+.showHide {
+  cursor: pointer;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.label {
+  color: var(--show-hide-label-color, var(--color-blue));
+}
+
+.chevron {
+  --chevron-height: var(--show-hide-chevron-height, 6px);
+}
+
+.label + .chevron {
+  margin-left: 10px;
+}

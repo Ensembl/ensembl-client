@@ -17,7 +17,7 @@
 import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './TextButton.scss';
+import styles from './TextButton.module.css';
 
 // same props as for a button; but children are required
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {

@@ -40,7 +40,7 @@ import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { InAppSearchMode } from './InAppSearch';
 
-import styles from './InAppSearch.scss';
+import styles from './InAppSearch.module.css';
 
 type InAppSearchMatchesProps = SearchResults & {
   app: AppName;

@@ -18,7 +18,7 @@ import React, { type ReactNode } from 'react';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './ModalView.scss';
+import styles from './ModalView.module.css';
 
 type Props = {
   children: ReactNode;

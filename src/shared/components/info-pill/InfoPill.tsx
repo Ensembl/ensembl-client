@@ -16,7 +16,7 @@
 
 import React, { type ReactNode } from 'react';
 
-import styles from './InfoPill.scss';
+import styles from './InfoPill.module.css';
 
 type Props = {
   children: ReactNode;

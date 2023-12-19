@@ -1,0 +1,53 @@
+.spinnerContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid,
+.wrapper {
+  height: 100%;
+}
+
+.relatedArticlesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.relatedArticle,
+.relatedVideo {
+  color: var(--color-blue);
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+
+.relatedCurrent {
+  cursor: inherit;
+  color: inherit;
+}
+
+.relatedVideo {
+  position: relative;
+}
+
+.historyButton {
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  user-select: none;
+}
+
+.historyButton:first-child {
+  margin-right: 1.6rem;
+}
+
+.historyButtonActive {
+  fill: var(--color-blue);
+  cursor: pointer;
+}
+
+.historyButtonInactive {
+  fill: var(--color-grey);
+}

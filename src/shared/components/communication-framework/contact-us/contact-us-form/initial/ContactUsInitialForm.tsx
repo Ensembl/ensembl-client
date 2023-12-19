@@ -37,7 +37,7 @@ import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
-import commonStyles from '../ContactUsForm.scss';
+import commonStyles from '../ContactUsForm.module.css';
 
 type State = {
   name: string;

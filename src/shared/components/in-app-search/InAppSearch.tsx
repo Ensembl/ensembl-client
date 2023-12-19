@@ -44,7 +44,7 @@ import InAppSearchMatches from './InAppSearchMatches';
 import type { RootState } from 'src/store';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
-import styles from './InAppSearch.scss';
+import styles from './InAppSearch.module.css';
 
 export type InAppSearchMode = 'interstitial' | 'sidebar';
 

@@ -25,7 +25,7 @@ import Cross from 'static/icons/icon_cross.svg';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
-import styles from './LoadingButton.scss';
+import styles from './LoadingButton.module.css';
 
 type Props = {
   onClick?: () => unknown;

@@ -1,0 +1,18 @@
+.externalLinkContainer {
+  display: inline-grid;
+  grid-template-columns:  [icon] auto [link] auto;
+  column-gap: 5px;
+  align-items: baseline;
+}
+
+.icon {
+  display: inline-block;
+  fill: var(--color-orange);
+  grid-column: icon;
+  height: 12px;
+  width: 12px;
+}
+
+.link {
+  display: inline-block;
+}

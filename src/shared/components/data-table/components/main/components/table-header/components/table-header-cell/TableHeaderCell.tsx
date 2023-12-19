@@ -26,7 +26,7 @@ import {
 
 import SortIcon from 'static/icons/icon_arrow.svg';
 
-import styles from '../../TableHeader.scss';
+import styles from '../../TableHeader.module.css';
 
 const TableHeaderCell = (props: IndividualColumn) => {
   const { title, helpText, isSortable, columnId, width, headerCellClassName } =

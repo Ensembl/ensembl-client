@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import ChevronDown from 'static/icons/icon_chevron.svg';
 
-import styles from './Chevron.scss';
+import styles from './Chevron.module.css';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 

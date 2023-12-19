@@ -24,7 +24,7 @@ import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import styles from './StandardAppLayout.scss';
+import styles from './StandardAppLayout.module.css';
 
 enum SidebarModeToggleAction {
   OPEN = 'open',

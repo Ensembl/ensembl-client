@@ -1,0 +1,18 @@
+.containerSvg {
+  overflow: visible;
+}
+
+.axis,
+.tick {
+  fill: var(--sequence-ruler-color, var(--color-orange));
+}
+
+.rulerName {
+  fill: var(--sequence-ruler-name-color, var(--color-black));
+}
+
+.label {
+  fill: var(--sequence-ruler-label-color, var(--color-black));
+  font-size: 10px;
+  font-family: var(--font-family-monospace);
+}

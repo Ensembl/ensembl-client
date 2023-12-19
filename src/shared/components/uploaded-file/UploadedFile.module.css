@@ -1,0 +1,25 @@
+.uploadedFile {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.name {
+  flex-shrink: 1;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.size {
+  flex: 0 0 auto;
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: var(--font-weight-light);
+  margin: 0 20px 0 10px;
+}
+
+.delete {
+  flex: 0 0 auto;
+}

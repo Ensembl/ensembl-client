@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useRef, type HTMLProps } from 'react';
 import classNames from 'classnames';
 
-import styles from './Table.scss';
+import styles from './Table.module.css';
 
 /**
  * The purpose of this component is to render a table row

@@ -39,7 +39,7 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 import { Status } from 'src/shared/types/status';
 import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
-import styles from 'src/shared/components/layout/StandardAppLayout.scss';
+import styles from 'src/shared/components/layout/StandardAppLayout.module.css';
 
 export const SpeciesSidebarToolstrip = () => {
   const dispatch = useAppDispatch();

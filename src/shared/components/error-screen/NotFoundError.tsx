@@ -21,7 +21,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { PrimaryButton } from '../button/Button';
 
-import styles from './ErrorScreen.scss';
+import styles from './ErrorScreen.module.css';
 
 const NotFoundErrorScreen = () => {
   // TODO: 404s should be logged in the service monitoring system being developed by BE.

@@ -23,7 +23,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import QuestionIcon from 'static/icons/icon_question_circle.svg';
 
-import defaultStyles from './QuestionButton.scss';
+import defaultStyles from './QuestionButton.module.css';
 
 // Extra styling options based on where the button is located
 type QuestionButtonStyleOption = 'inline' | 'in-input-field';

@@ -1,0 +1,41 @@
+.table {
+  --_table-background: var(--table-background, var(--color-white));
+  border-collapse: collapse;
+  background-color: var(--_table-background);
+}
+
+.tableWithStickyHeader thead tr {
+  position: sticky;
+  top: 0;
+  background-color: var(--table-head-background, var(--_table-background));
+}
+
+.table th {
+  font-size: var(--table-head-font-size, 12px);
+  font-weight: var(--table-head-font-weight, var(--font-weight-light));
+  box-shadow: inset 0 -1px 0 var(--table-head-border-color, var(--color-blue));
+  background-clip: padding-box;
+}
+
+.table td {
+  padding-left: var(--table-cell-padding-left, 24px);
+  padding-right: var(--table-cell-padding-right, 32px);
+  padding-top: var(--table-cell-padding-top, 9px);
+  padding-bottom: var(--table-cell-padding-bottom, 9px);
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.table tr + tr:not(.rowFooter) {
+  border-top: 1px solid var(--table-row-border-color, var(--color-grey));
+}
+
+.table tr:last-of-type:not(thead tr) {
+  border-bottom: 1px solid var(--table-row-border-color, var(--color-grey));
+}
+
+.rowFooter td {
+  padding-top: 0;
+}

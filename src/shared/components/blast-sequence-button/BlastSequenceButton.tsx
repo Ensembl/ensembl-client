@@ -29,7 +29,7 @@ import { Status } from 'src/shared/types/status';
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastSequenceButton.scss';
+import styles from './BlastSequenceButton.module.css';
 
 type Props = {
   label?: string;

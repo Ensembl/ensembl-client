@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import Textarea, { Props as TextareaProps } from './Textarea';
 
-import styles from './Textarea.scss';
+import styles from './Textarea.module.css';
 
 const ShadedTextarea = (
   props: TextareaProps,

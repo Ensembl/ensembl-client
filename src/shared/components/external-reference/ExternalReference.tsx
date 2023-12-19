@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import ExternalLink from '../external-link/ExternalLink';
 
-import styles from './ExternalReference.scss';
+import styles from './ExternalReference.module.css';
 
 export type ExternalReferenceProps = {
   label?: string | null;

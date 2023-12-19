@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import styles from './SidebarLoader.scss';
+import styles from './SidebarLoader.module.css';
 
 type Props = {
   className?: string;

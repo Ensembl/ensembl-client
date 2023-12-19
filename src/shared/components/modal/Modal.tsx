@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './Modal.scss';
+import styles from './Modal.module.css';
 
 type Props = {
   onClose: () => void;

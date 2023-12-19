@@ -1,0 +1,43 @@
+.columnHead {
+  text-align: var(--table-column-head-text-align, left);
+  --_left-padding: var(--table-column-head-padding-left, 24px);
+  padding-left: var(--_left-padding);
+  padding-right: var(--table-column-head-padding-right, 32px);
+  padding-top: var(--table-column-head-padding-top, 6px);
+  padding-bottom: var(--table-column-head-padding-bottom, 6px);
+  font-weight: var(--font-weight-light);
+}
+
+.columnHeadSortable {
+  --_sort-arrow-width: 8px;
+  --_sort-arrow-right-margin: 7px;
+  padding-left: calc(var(--_left-padding) - var(--_sort-arrow-width) - var(--_sort-arrow-right-margin));
+}
+
+.columnHeadSortable button {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  align-items: baseline;
+  justify-content: start;
+  column-gap: var( --_sort-arrow-right-margin);
+  font-weight: inherit;
+  text-align: left;
+}
+
+.columnHeadSortingApplied {
+  --table-head-font-weight: var(--font-weight-normal);
+}
+
+.sortArrow {
+  width: var(--_sort-arrow-width);
+  transform: rotate(180deg);
+  fill: var(--color-grey);
+}
+
+.sortArrowUp {
+  transform: unset;
+}
+
+.sortArrowActive {
+  fill: var(--color-blue);
+}

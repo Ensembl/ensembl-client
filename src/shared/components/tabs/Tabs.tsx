@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
-import styles from './Tabs.scss';
+import styles from './Tabs.module.css';
 
 export type Tab = {
   title: string;

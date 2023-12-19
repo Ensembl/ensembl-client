@@ -20,7 +20,7 @@ import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 
-import styles from './Toolbox.scss';
+import styles from './Toolbox.module.css';
 
 export enum ToolboxPosition {
   LEFT = 'left',

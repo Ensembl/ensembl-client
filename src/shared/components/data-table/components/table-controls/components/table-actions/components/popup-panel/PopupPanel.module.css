@@ -1,0 +1,9 @@
+.popupPanel {
+  display: flex;
+  background-color: var(--color-light-grey);
+  position: absolute;
+  z-index: 2;
+  top: 30px;
+  box-shadow: 2px 3px 6px var(--global-box-shadow-color);
+  overflow: scroll;
+}

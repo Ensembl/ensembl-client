@@ -18,7 +18,7 @@ import React from 'react';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
-import styles from './AppBar.scss';
+import styles from './AppBar.module.css';
 
 type AppBarProps = {
   appName?: string;

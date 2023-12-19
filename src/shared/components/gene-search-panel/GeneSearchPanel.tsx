@@ -45,8 +45,8 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 
-import styles from './GeneSearchPanel.scss';
-import radioStyles from 'src/shared/components/radio-group/RadioGroup.scss';
+import styles from './GeneSearchPanel.module.css';
+import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
 
 type Props = {
   onClose: () => void;

@@ -25,7 +25,7 @@ import BlogIcon from 'static/icons/icon_blog.svg';
 import FacebookIcon from 'static/icons/icon_facebook.svg';
 import TwitterIcon from 'static/icons/icon_twitter.svg';
 
-import styles from './ContactUs.scss';
+import styles from './ContactUs.module.css';
 
 const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);

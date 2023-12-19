@@ -1,0 +1,28 @@
+.primaryButton {
+  --button-border: var(--primary-button-color, 1px solid var(--color-green));
+  --button-color: var(--primary-button-color, var(--color-green));
+  --button-text-color: var(--primary-button-text-color, var(--color-white));
+  font-weight: var(--font-weight-bold);
+}
+
+.primaryButton:disabled {
+  --button-border: var(--primary-button-disabled-border, 1px solid var(--color-grey));
+  --button-color: var(--primary-button-disabled-color, transparent);
+  --button-text-color: var(--primary-button-disabled-text-color, var(--color-grey));
+}
+
+.secondaryButton {
+  --button-border: var(--secondary-button-color, 1px solid var(--color-blue));
+  --button-color: var(--secondary-button-color, var(--color-blue));
+  --button-text-color: var(--secondary-button-text-color, var(--color-white));
+  font-weight: var(--font-weight-bold);
+}
+
+.button {
+  border: var(--button-border);
+  background-color: var(--button-color);
+  color: var(--button-text-color);
+  padding: 7px 18px;
+  border-radius: 4px;
+  user-select: none;
+}

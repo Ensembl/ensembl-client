@@ -19,7 +19,7 @@ import Input from 'src/shared/components/input/Input';
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
 
-import styles from './FindInTable.scss';
+import styles from './FindInTable.module.css';
 
 const FindInTable = () => {
   const { dispatch, searchText } = useContext(TableContext) || {};

@@ -23,7 +23,7 @@ import classNames from 'classnames';
 
 import TrashcanIcon from 'static/icons/icon_delete.svg';
 
-import styles from './DeleteButton.scss';
+import styles from './DeleteButton.module.css';
 
 type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'> & {
   disabled?: boolean;

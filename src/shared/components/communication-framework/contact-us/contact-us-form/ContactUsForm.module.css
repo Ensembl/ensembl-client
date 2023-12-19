@@ -1,0 +1,105 @@
+.container {
+  background: var(--color-light-grey);
+  padding: 12px 0 52px 30px;
+  min-height: 570px;
+  --max-form-width: 520px;
+  --upload-label-width: var(--upload-button-one-line-label-width);
+  --drop-zone-height: var(--upload-button-shorter-height);
+}
+
+.containerFileOver {
+  --drop-zone-bg-color: var(--highlighted-upload-button-background);
+}
+
+.grid {
+  --left-column-width: 135px;
+  --column-gap-width: 12px;
+  display: grid;
+  grid-template-columns: [left] var(--left-column-width) [right] 1fr;
+  column-gap: var(--column-gap-width);
+  row-gap: 6px;
+  width: 100%;
+  max-width: var(--max-form-width);
+}
+
+.advisory {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  grid-column: right;
+}
+
+.advisory span {
+  display: block;
+}
+
+.label {
+  justify-self: right;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.textarea {
+  height: 150px;
+}
+
+.emailField:invalid:not(:focus) {
+  color: var(--color-red);
+}
+
+.upload {
+  grid-column: right;
+  margin-top: 18px;
+  max-width: calc(var(--max-form-width) - var(--left-column-width) - var(--column-gap-width));
+}
+
+.uploadedFile {
+  margin-bottom: 12px;
+}
+
+.submit {
+  display: grid;
+  grid-template-areas:
+    'form-errors form-errors'
+    'submit-left submit-right';
+  grid-template-columns: 1fr auto;
+  column-gap: 1.5rem;
+  align-items: center;
+  grid-column: right;
+  margin-top: 30px;
+
+  .submitSlider {
+    grid-area: submit-right;
+  }
+}
+
+.submit .formErrors {
+  grid-area: form-errors;
+}
+
+.submit .formErrors:not(:empty) {
+  margin-bottom: 12px;
+}
+
+.submit .sliderLabel {
+  grid-area: submit-left;
+  justify-self: end;
+}
+
+.submit .sliderLabelDisabled {
+  color: var(--color-grey);
+}
+
+.submitButton {
+  grid-column: submit-right;
+  justify-self: end;
+}
+
+.submitButton button {
+  height: 30px;
+  width: 90px;
+}
+
+.errorText {
+  color: var(--color-red);
+}

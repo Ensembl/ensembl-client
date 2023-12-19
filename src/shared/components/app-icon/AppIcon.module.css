@@ -1,0 +1,57 @@
+.appIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--app-icon-size, 32px);
+  width: var(--app-icon-size, 32px);
+  background-color: var(--app-icon-bg-color, transparent);
+}
+
+.appIcon svg {
+  fill: white;
+}
+
+/* The image-button-svg-width and image-button-svg-height variables below
+get used when AppIcon is placed inside of the ImageButton component */
+
+.globalSearch svg {
+  --image-button-svg-width: 62.5%;
+  --image-button-svg-height: 62.5%;
+  width: 62.5%;
+  height: 62.5%;
+}
+
+.genomeBrowser svg {
+  --image-button-svg-width: 59.375%;
+  --image-button-svg-height: 59.375%;
+  width: 59.375%;
+  height: 59.375%;
+}
+
+.speciesSelector svg {
+  --image-button-svg-width: 70%;
+  --image-button-svg-height: 70%;
+  width: 70%;
+  height: 70%;
+}
+
+.entityViewer svg {
+  --image-button-svg-width: 75%;
+  --image-button-svg-height: 75%;
+  width: 75%;
+  height: 75%;
+}
+
+.blast svg {
+  --image-button-svg-width: 75%;
+  --image-button-svg-height: 75%;
+  width: 75%;
+  height: 75%;
+}
+
+.help svg {
+  --image-button-svg-width: 70%;
+  --image-button-svg-height: 70%;
+  width: 70%;
+  height: 70%;
+}

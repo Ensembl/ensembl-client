@@ -31,7 +31,7 @@ import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './UrlError.scss';
+import styles from './UrlError.module.css';
 
 /**
  * Consider possible scenarios why a genome may be "missing":

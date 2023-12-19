@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import BackIcon from 'static/icons/navigate-left.svg';
 import ForwardIcon from 'static/icons/navigate-right.svg';
 
-import styles from '../help-popup/HelpPopupBody.scss';
+import styles from '../help-popup/HelpPopupBody.module.css';
 
 type HistoryButtonsProps = {
   onHistoryBack: () => void;

@@ -1,0 +1,24 @@
+.alertButton {
+  display: inline-block;
+  font-size: 0; /* to prevent extra space in the bottom of the button element */
+  padding: 2px;
+  user-select: none;
+}
+
+.alertButton > svg {
+  width: var(--alert-icon-diameter, 18px);
+  height: var(--alert-icon-diameter, 18px);
+  cursor: pointer;
+}
+
+.alertButtonRed svg {
+  fill: var(--color-red);
+}
+
+.alertButtonAmber svg {
+  fill: var(--color-orange);
+}
+
+.noTooltip svg {
+  cursor: auto;
+}

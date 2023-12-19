@@ -17,7 +17,7 @@
 import React, { type HTMLProps } from 'react';
 import classNames from 'classnames';
 
-import styles from './Table.scss';
+import styles from './Table.module.css';
 
 type Props = HTMLProps<HTMLTableElement> & {
   stickyHeader?: boolean;

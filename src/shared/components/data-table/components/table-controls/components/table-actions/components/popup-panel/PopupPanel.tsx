@@ -21,7 +21,7 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './PopupPanel.scss';
+import styles from './PopupPanel.module.css';
 
 const PopupPanel = (props: {
   children: React.ReactNode;

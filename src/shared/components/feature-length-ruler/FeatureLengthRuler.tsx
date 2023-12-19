@@ -36,7 +36,7 @@ import { getTicks } from './featureLengthRulerHelper';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import styles from './FeatureLengthRuler.scss';
+import styles from './FeatureLengthRuler.module.css';
 
 type Ticks = {
   ticks: number[];

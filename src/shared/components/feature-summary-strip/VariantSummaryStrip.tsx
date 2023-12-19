@@ -27,7 +27,7 @@ import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/geno
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './FeatureSummaryStrip.scss';
+import styles from './FeatureSummaryStrip.module.css';
 
 const MEDIUM_WIDTH = 720;
 

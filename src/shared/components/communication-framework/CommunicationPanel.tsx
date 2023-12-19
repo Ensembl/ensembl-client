@@ -27,7 +27,7 @@ import ConversationIcon from 'static/icons/icon_conversation.svg';
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';
 
-import styles from './CommunicationPanel.scss';
+import styles from './CommunicationPanel.module.css';
 
 const CommunicationPanel = () => {
   const showCommunicationPanel = useSelector(isCommunicationPanelOpen);

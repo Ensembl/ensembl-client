@@ -1,0 +1,24 @@
+.rowVisibilityControls {
+  color: var(--color-blue);
+  display: inline-flex;
+  column-gap: 30px;
+  margin-left: 20px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.showAll {
+  cursor: pointer;
+}
+
+.showAllDisabled {
+  color: var(--color-grey);
+  cursor: default;
+}
+
+.selectAll,
+.deselectAll,
+.apply,
+.cancel {
+  cursor: pointer;
+}

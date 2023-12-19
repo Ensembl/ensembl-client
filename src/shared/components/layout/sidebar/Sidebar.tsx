@@ -16,7 +16,7 @@
 
 import React, { ReactNode } from 'react';
 
-import styles from './Sidebar.scss';
+import styles from './Sidebar.module.css';
 
 export type SidebarProps = {
   children: ReactNode;

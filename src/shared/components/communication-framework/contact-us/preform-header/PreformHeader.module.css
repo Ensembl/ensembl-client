@@ -1,0 +1,13 @@
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-weight: var(--font-weight-bold);
+  margin: 0 30px 0 40px;
+}
+
+.control {
+  cursor: pointer;
+  color: var(--color-blue);
+}

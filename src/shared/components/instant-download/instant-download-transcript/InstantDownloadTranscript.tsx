@@ -25,7 +25,7 @@ import InstantDownloadTranscriptVisualisation from './InstantDownloadTranscriptV
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
-import styles from './InstantDownloadTranscript.scss';
+import styles from './InstantDownloadTranscript.module.css';
 
 type Layout = 'horizontal' | 'vertical';
 type Theme = 'light' | 'dark';
@@ -198,9 +198,7 @@ const InstantDownloadTranscript = (props: Props) => {
         disabled={isButtonDisabled}
         onClick={onSubmit}
         theme={theme}
-        classNames={{
-          wrapper: styles.downloadButtonWrapper
-        }}
+        className={styles.downloadButton}
       />
     </div>
   );

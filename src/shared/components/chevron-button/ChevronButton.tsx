@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import Chevron, { type Direction } from '../chevron/Chevron';
 
-import styles from './ChevronButton.scss';
+import styles from './ChevronButton.module.css';
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   direction: Direction;

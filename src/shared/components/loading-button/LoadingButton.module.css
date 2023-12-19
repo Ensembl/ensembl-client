@@ -1,0 +1,54 @@
+.buttonWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.loadingIndicator,
+.successIndicator,
+.errorIndicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 4px;
+  border: 1px solid var(--color-grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.spinner {
+  --circle-loader-diameter: 20px;
+  --circle-loader-border-width: 2px;
+}
+
+.checkmark {
+  fill: var(--color-green);
+  height: 80%;
+  animation: checkmark-pulse 0.5s ease-in;
+}
+
+.cross {
+  fill: var(--color-red);
+  height: 55%;
+}
+
+@keyframes checkmark-pulse {
+  0% {
+    transform: scale(0.6);
+  }
+
+  70% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

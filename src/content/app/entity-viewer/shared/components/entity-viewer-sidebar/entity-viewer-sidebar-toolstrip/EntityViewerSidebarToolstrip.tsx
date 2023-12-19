@@ -39,7 +39,7 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from 'src/shared/components/layout/StandardAppLayout.scss';
+import styles from 'src/shared/components/layout/StandardAppLayout.module.css';
 
 export const EntityViewerSidebarToolstrip = () => {
   const dispatch = useAppDispatch();

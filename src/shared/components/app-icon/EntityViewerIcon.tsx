@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import SVGIcon from 'static/icons/icon_launchbar_entity_viewer.svg';
 
-import styles from './AppIcon.scss';
+import styles from './AppIcon.module.css';
 
 const EntityViewerIcon = () => {
   const elementClasses = classNames(styles.appIcon, styles.entityViewer);

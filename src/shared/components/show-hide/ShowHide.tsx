@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import Chevron from '../chevron/Chevron';
 
-import styles from './ShowHide.scss';
+import styles from './ShowHide.module.css';
 
 /**
  * A ShowHide component is a text with a chevron next to it.

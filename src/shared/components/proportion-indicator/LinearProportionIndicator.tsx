@@ -18,7 +18,7 @@ import React, { type ReactNode } from 'react';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import styles from './LinearProportionIndicator.scss';
+import styles from './LinearProportionIndicator.module.css';
 
 type Props = {
   value: number;

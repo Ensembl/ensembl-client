@@ -1,0 +1,25 @@
+.tabsContainer {
+  display: flex;
+  overflow-y: hidden;
+  height: 40px;
+  scrollbar-width: none;
+}
+
+.tab {
+  padding: 3px 18px;
+  color: var(--color-blue);
+  cursor: pointer;
+  margin-right: 3px;
+  white-space: nowrap;
+}
+
+.disabled {
+  color: var(--color-medium-dark-grey);
+  cursor: default;
+}
+
+.selected {
+  color: var(--color-black);
+  position: relative;
+  cursor: default;
+}

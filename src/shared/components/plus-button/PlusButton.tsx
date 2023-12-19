@@ -18,7 +18,7 @@ import React, { type ButtonHTMLAttributes } from 'react';
 
 import PlusIcon from 'static/icons/icon_plus_circle.svg';
 
-import styles from './PlusButton.scss';
+import styles from './PlusButton.module.css';
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>;
 

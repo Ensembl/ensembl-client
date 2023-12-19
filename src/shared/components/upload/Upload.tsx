@@ -24,7 +24,7 @@ import UploadIcon from 'static/icons/icon_upload.svg';
 
 import type { FileUploadParams, Options, Result } from './types';
 
-import styles from './Upload.scss';
+import styles from './Upload.module.css';
 
 export type UploadProps<T extends Options> = FileUploadParams<T> & {
   name?: string; // FIXME: do we really need this?

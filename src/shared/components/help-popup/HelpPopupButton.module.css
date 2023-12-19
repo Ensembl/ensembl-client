@@ -1,0 +1,25 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.label {
+  font-weight: 300;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  width: 26px;
+  background: var(--color-blue);
+  font-size: 0;
+  border-radius: 5px;
+  margin-left: 0.6rem;
+}
+
+.icon {
+  height: 13px;
+  fill: white;
+}

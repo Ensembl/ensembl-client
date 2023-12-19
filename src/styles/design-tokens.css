@@ -55,4 +55,12 @@
   /* FONT SIZES */
   --body-font-size: 13px;
   --body-line-height: 1.5;
+
+  /* UPLOAD BUTTON */
+  --highlighted-upload-button-background: var(--color-ice-blue);
+  --upload-button-taller-height: 102px;
+  --upload-button-shorter-height: 90px;
+  --upload-button-width: 200px;
+  --upload-button-two-line-label-width: 94px;
+  --upload-button-one-line-label-width: 172px;
 }
