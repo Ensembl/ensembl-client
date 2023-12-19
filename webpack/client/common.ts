@@ -15,6 +15,7 @@
  */
 
 import path from 'path';
+import { createHash } from 'node:crypto';
 import { ProgressPlugin, Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
@@ -54,7 +55,25 @@ export default (env: Record<string, unknown>): Configuration => {
                 sourceMap: true,
                 modules: {
                   auto: true, // will match all files with a pattern /\.module\.\w+$/
-                  localIdentName: '[local]__[name]__[hash:base64:5]'
+                  localIdentName: '[local]__[name]__[hash:base64:5]',
+                  getLocalIdent: (
+                    context: any,
+                    _: string,
+                    localName: string,
+                    options: any
+                  ) => {
+                    const moduleName = path
+                      .basename(context.resourcePath)
+                      .split('.')[0];
+                    const relativeResourcePath = path.relative(
+                      options.context,
+                      context.resourcePath
+                    );
+                    const hash = createHash('sha1');
+                    hash.update(relativeResourcePath);
+                    const hashDigest = hash.digest('base64').slice(0, 5);
+                    return `${localName}__${moduleName}__${hashDigest}`;
+                  }
                 }
               }
             },
