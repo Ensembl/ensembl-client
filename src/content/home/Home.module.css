@@ -1,0 +1,215 @@
+.home {
+  display: grid;
+  grid-template-rows: minmax(550px, auto) 85px;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background-image: linear-gradient(var(--color-black), var(--color-blue));
+  padding-top: 40px;
+}
+
+.mainTop {
+  position: relative;
+}
+
+.mainTopMiddle {
+  display: grid;
+  grid-template-rows: auto 110px auto;
+  justify-content: center;
+}
+
+.mainTopMiddle .logotype {
+  height: 36px;
+  fill: var(--color-white);
+  justify-self: center;
+}
+
+.mainTopMiddle .text {
+  text-align: center;
+  font-size: 18px;
+  font-weight: var(--color-light);
+  color: var(--color-white);
+  margin-top: 15px;
+}
+
+.appList {
+  display: grid;
+  grid-template-columns: repeat(3, 270px);
+}
+
+.appListItem {
+  display: grid;
+  grid-template-rows: 56px auto;
+  justify-content: center;
+}
+.appListItem .button {
+  display: block;
+  position: relative;
+  width: 221px;
+  height: 40px;
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  border-radius: 6px;
+  text-align: center;
+  padding: 5px;
+  font-size: 18px;
+  font-weight: var(--color-bold);
+}
+
+.appListItem .button span {
+  margin-left: -20px;
+}
+
+.appListItem .button .appIconWrapper {
+  font-size: 0;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.appListItem .bottomText {
+  font-size: 14px;
+  color: var(--color-white);
+  padding: 10px;
+  width: 190px;
+  text-align: center;
+  margin-left: 20px;
+}
+
+.homeTopRight {
+  position: absolute;
+  top: 2px;
+  right: var(--standard-gutter);
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  align-items: start;
+}
+
+.homeTopRight .helpLabel {
+  color: var(--color-blue);
+  font-weight: var(--font-weight-bold);
+}
+
+.homeTopRight .howToUse {
+  display: grid;
+  grid-template-columns: 130px auto;
+}
+
+.homeTopRight .text {
+  font-weight: var(--font-weight-bold);
+  align-self: center;
+}
+
+.homeTopRight .helpIcon {
+  width: 25px;
+  height: 22px;
+  border-radius: 5px;
+  fill: var(--color-white);
+  background-color: var(--color-blue);
+}
+
+.homeTopRight .conversationIcon {
+  width: 40px;
+  margin-left: 20px;
+  height: 25px;
+}
+
+.speciesContainer {
+  overflow-x: hidden;
+  position: relative;
+}
+.speciesContainer .speciesStrip {
+  max-width: none;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  transform: translateX(calc(-1 * (100% - 100vw) / 2));
+}
+
+.speciesContainer .platform {
+  position: absolute;
+  bottom: 0;
+  background-color: var(--color-dark-grey);
+  background-image: linear-gradient(var(--color-dark-grey), var(--color-black));
+  height: 9%;
+  width: 100%;
+}
+
+@media (orientation: portrait) {
+  .speciesContainer .speciesStrip {
+    max-height: 60%;
+    transform: translateX(calc(-1 * (100% - 100vw) / 2));
+  }
+
+  .speciesContainer .platform {
+    height: 6%;
+  }
+}
+
+footer {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1.5rem;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+.footerLeft {
+  grid-column: 1/2;
+  display: flex;
+  align-items: center;
+}
+
+.footerLeft .logotype {
+  width: 92px;
+  height: 34px;
+  margin-right: 10px;
+  fill: var(--color-dark-grey);
+}
+
+.footerLeft .ebiLogo {
+  margin-right: 20px;
+  width: 110px;
+  height: 34px;
+}
+
+.footerLeft .text {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--color-dark-grey);
+  margin-right: 10px;
+}
+
+.footerRight {
+  grid-column: 2/2;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.footerRight .link {
+  margin-right: 12px;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  color: var(--color-blue);
+}
+
+.footerRight .mediaIcon {
+  width: 24px;
+  height: 24px;
+  margin: 0 12px 10px 12px;
+}
+
+.footerRight .gbcLogo {
+  height: 40px;
+  margin-left: clamp(30px, 3vw, 90px);
+}
+
+.footerRight .elixirLogo {
+  width: 71px;
+  height: 52px;
+  margin-left: 40px;
+}

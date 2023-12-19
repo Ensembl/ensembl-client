@@ -45,7 +45,7 @@ import ConversationIcon from 'src/shared/components/communication-framework/Conv
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import helpStyles from '../help/Help.module.css';
-import styles from './About.scss';
+import styles from './About.module.css';
 
 const About = () => {
   const { pathname } = useLocation();
