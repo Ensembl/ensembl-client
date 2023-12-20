@@ -1,28 +1,24 @@
-@import 'src/styles/common';
-
 .containerSvg {
   overflow: visible;
 }
 
 .domain {
-  fill: $blue;
+  fill: var(--color-blue);
   opacity: 20%;
   cursor: pointer;
 }
 
-.track {
-  rect {
-    fill: $light-grey;
-  }
+.track rect {
+  fill: var(--color-light-grey);
 }
 
 .container {
   display: flex;
   flex-direction: column;
+}
 
-  svg {
-    overflow: visible;
-  }
+.container svg {
+  overflow: visible;
 }
 
 .resourceGroup {
@@ -30,17 +26,17 @@
   grid-template-columns: [type] 178px [images] 902px;
   margin-bottom: 10px;
   font-size: 12px;
+}
 
-  & .resourceName {
-    grid-column: type;
-    text-align: right;
-    padding-right: 1em;
-    color: $black;
-  }
+.resourceName {
+  grid-column: type;
+  text-align: right;
+  padding-right: 1em;
+  color: var(--color-black);
+}
 
-  & .resourceImages {
-    grid-column: images;
-  }
+.resourceImages {
+  grid-column: images;
 }
 
 .resourceImage {
@@ -48,16 +44,16 @@
   display: grid;
   grid-template-columns: [image] min-content [description] max-content;
   margin-bottom: 6px;
+}
 
-  & .containerSvg {
-    grid-column: image;
-  }
+.resourceImage .containerSvg {
+  grid-column: image;
+}
 
-  & .resourceDescription {
-    grid-column: description;
-    padding-left: 27px;
-    color: $black;
-  }
+.resourceDescription {
+  grid-column: description;
+  padding-left: 27px;
+  color: var(--color-black);
 }
 
 .tooltipAnchor {
@@ -65,7 +61,7 @@
 }
 
 .tooltipRow {
-  font-weight: $normal;
+  font-weight: var(--font-weight-normal);
   display: grid;
   grid-template-columns: auto 1fr;
   justify-items: start;
@@ -79,5 +75,5 @@
 }
 
 .tooltipFieldLabel {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }

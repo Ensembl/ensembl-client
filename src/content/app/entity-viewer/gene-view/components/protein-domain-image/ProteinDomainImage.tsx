@@ -23,7 +23,7 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import type { FamilyMatchInProduct } from 'src/content/app/entity-viewer/state/api/queries/proteinDomainsQuery';
 
-import styles from './ProteinDomainImage.scss';
+import styles from './ProteinDomainImage.module.css';
 
 const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;

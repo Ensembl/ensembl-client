@@ -33,7 +33,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 import GeneHomology from 'src/content/app/entity-viewer/gene-view/components/gene-homology/GeneHomology';
 
-import styles from './GeneRelationships.scss';
+import styles from './GeneRelationships.module.css';
 
 const shouldDisableTab = (tabName: View) => {
   return tabName !== View.HOMOLOGY;

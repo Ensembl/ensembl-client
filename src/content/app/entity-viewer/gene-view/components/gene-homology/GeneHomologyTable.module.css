@@ -1,0 +1,11 @@
+.table {
+  margin-left: var(--standard-gutter);
+}
+
+.scientificName {
+  font-style: italic;
+}
+
+.assembly {
+  font-weight: var(--font-weight-light);
+}

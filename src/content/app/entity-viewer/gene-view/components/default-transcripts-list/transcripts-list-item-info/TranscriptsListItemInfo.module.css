@@ -1,8 +1,6 @@
-@import 'src/styles/common';
-
 .listItemInfo {
-  color: $white;
-  font-weight: $light;
+  color: var(--color-white);
+  font-weight: var(--font-weight-light);
   padding: 0 0 20px 0;
 }
 
@@ -15,13 +13,13 @@
     'downloadLink . .'
     'download download download';
   column-gap: 10px;
-  background: $soft-black;
+  background: var(--color-soft-black);
   padding: 15px 30px;
+}
 
-  strong {
-    color: $white;
-    font-weight: normal;
-  }
+.middle strong {
+  color: var(--color-white);
+  font-weight: normal;
 }
 
 .transcriptName {
@@ -33,28 +31,28 @@
   grid-area: left;
   width: 190px;
   margin-bottom: 12px;
+}
 
-  div {
-    padding-bottom: 6px;
-  }
+.topLeft div {
+  padding-bottom: 6px;
 }
 
 .topMiddle {
   grid-area: middle;
   width: 150px;
+}
 
-  div {
-    padding-bottom: 6px;
-  }
+.topMiddle div {
+  padding-bottom: 6px;
 }
 
 .topRight {
   grid-area: right;
   width: 210px;
+}
 
-  div {
-    padding-bottom: 6px;
-  }
+.topRight div {
+  padding-bottom: 6px;
 }
 
 .moreInformationLink,
@@ -64,11 +62,11 @@
 
 .moreInformationLink {
   padding-top: 6px;
-  font-weight: $normal;
+  font-weight: var(--font-weight-normal);
 }
 
 .normalText {
-  font-weight: $normal;
+  font-weight: var(--font-weight-normal);
 }
 
 .moreInformation {
@@ -83,21 +81,21 @@
 
 .moreInfoColumn {
   width: 190px;
+}
 
-  div {
-    padding-bottom: 6px;
-  }
+.moreInfoColumn div {
+  padding-bottom: 6px;
 }
 
 .externalRefLink {
-  font-weight: $normal;
+  font-weight: var(--font-weight-normal);
   font-size: 12px;
 }
 
 .downloadLink {
   grid-area: downloadLink;
   padding-top: 6px;
-  font-weight: $normal;
+  font-weight: var(--font-weight-normal);
 }
 
 .download {

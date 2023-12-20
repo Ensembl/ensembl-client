@@ -28,7 +28,7 @@ import {
 
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './EntityViewerInterstitialInstructions.scss';
+import styles from './EntityViewerInterstitialInstructions.module.css';
 
 const EntityViewerInterstitialInstructions = () => {
   const navigate = useNavigate();

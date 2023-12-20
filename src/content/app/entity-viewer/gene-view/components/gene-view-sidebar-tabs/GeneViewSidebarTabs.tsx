@@ -36,7 +36,7 @@ import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/enti
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
-import styles from './GeneViewSidebarTabs.scss';
+import styles from './GeneViewSidebarTabs.module.css';
 
 const tabsData: Tab[] = [];
 

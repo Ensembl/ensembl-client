@@ -51,8 +51,8 @@ import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import transcriptsListStyles from '../DefaultTranscriptsList.scss';
-import styles from './TranscriptsListItemInfo.scss';
+import transcriptsListStyles from '../DefaultTranscriptsList.module.css';
+import styles from './TranscriptsListItemInfo.module.css';
 
 export type TranscriptsListItemInfoProps = {
   gene: DefaultEntityViewerGeneQueryResult['gene'];

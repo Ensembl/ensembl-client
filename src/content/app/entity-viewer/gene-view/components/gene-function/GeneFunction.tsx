@@ -36,7 +36,7 @@ import ProteinsList from '../proteins-list/ProteinsList';
 
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
-import styles from './GeneFunction.scss';
+import styles from './GeneFunction.module.css';
 
 // TODO: the isDisabled flags are hardcoded here since we do not have any data available.
 // We need to update this logic once we have the data available

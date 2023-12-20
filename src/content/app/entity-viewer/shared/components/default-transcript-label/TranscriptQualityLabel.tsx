@@ -20,7 +20,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
-import styles from './TranscriptQualityLabel.scss';
+import styles from './TranscriptQualityLabel.module.css';
 
 export type Props = {
   metadata: {

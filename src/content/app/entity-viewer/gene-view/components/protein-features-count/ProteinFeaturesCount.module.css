@@ -8,12 +8,12 @@
 
 .featureImg {
   margin-bottom: 10px;
+}
 
-  img {
-    width: 30px;
-  }
+.featureImg img {
+  width: 30px;
 }
 
 .featureCount {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }

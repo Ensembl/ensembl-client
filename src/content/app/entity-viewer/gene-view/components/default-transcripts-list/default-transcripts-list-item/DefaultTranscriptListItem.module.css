@@ -1,7 +1,5 @@
-@import 'src/styles/settings';
-
 .transcriptId {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
 }
 
@@ -13,9 +11,9 @@
 
 .transcriptWrapper {
   display: inline-block;
-  svg rect {
-    stroke: white;
-    fill: white;
-  }
 }
 
+.transcriptWrapper svg rect {
+  stroke: white;
+  fill: white;
+}

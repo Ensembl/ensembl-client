@@ -1,0 +1,53 @@
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.tab {
+  cursor: default;
+}
+
+.tabUnselected {
+  cursor: pointer;
+  color: var(--color-blue);
+}
+
+.defaultTab {
+  background-color: transparent;
+  color: var(--color-blue);
+  border-radius: 3px;
+  margin-right: 3px;
+  height: 30px;
+  border: none;
+}
+
+.disabledTab {
+  color: var(--color-grey);
+}
+
+.selectedTab {
+  background-color: transparent;
+  color: var(--color-black);
+}
+
+.selectedTab::after {
+  border: 6px solid var(--color-grey);
+  border-color: transparent transparent var(--color-light-grey) var(--color-light-grey);
+  box-shadow: -2px 2px 2px 0 var(--color-grey);
+
+  content: '';
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
+  position: absolute;
+  left: calc(50% - 8px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 29px;
+}
+
+.tabsContainer {
+  height: 23px;
+  overflow: unset;
+  padding-bottom: 23px;
+}

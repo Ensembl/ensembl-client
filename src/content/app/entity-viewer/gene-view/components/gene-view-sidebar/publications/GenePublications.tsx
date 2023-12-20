@@ -25,7 +25,7 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { RootState } from 'src/store';
 
-import geneOverviewStyles from '../overview/GeneOverview.scss';
+import geneOverviewStyles from '../overview/GeneOverview.module.css';
 
 type Props = {
   gene: {

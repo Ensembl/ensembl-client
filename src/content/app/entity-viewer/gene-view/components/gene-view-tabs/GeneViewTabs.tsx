@@ -33,7 +33,7 @@ import {
   View
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
-import styles from './GeneViewTabs.scss';
+import styles from './GeneViewTabs.module.css';
 
 const tabsData: Tab[] = [
   { title: 'Transcripts' },

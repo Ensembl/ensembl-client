@@ -1,0 +1,35 @@
+/* TODO: notice how the styles in this file are almost the same as in GeneFunction.module.css.
+   Can/should they be extracted into a single component?
+*/
+
+.panel {
+  width: initial;
+  min-height: 100%;
+}
+
+.panelBody {
+  color: var(--color-black);
+  min-height: 300px;
+  margin-right: 30px;
+  padding-bottom: 100px;
+}
+
+.selectedTabName {
+  background-color: transparent;
+  color: var(--color-black);
+}
+
+.selectedTabName::after {
+  content: '';
+  border: 6px solid var(--color-grey);
+  border-color: transparent transparent var(--color-light-grey) var(--color-light-grey);
+  box-shadow: -2px 2px 2px 0 var(--color-medium-light-grey);
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
+  position: absolute;
+  left: calc(50% - 8px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 28px;
+}

@@ -1,9 +1,5 @@
-@import 'src/styles/common';
-
-$backgroundColor: $black;
-
 .geneViewLoadingContainer {
-  background-color: $backgroundColor;
+  background-color: var(--color-black);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -12,9 +8,16 @@ $backgroundColor: $black;
 }
 
 .geneView {
-  color: $white;
+  --gene-image-width: 695px; /* Note that there is a GENE_IMAGE_WIDTH js constant that this value should be in agreement with */
+  --gene-view-left-column-width: 160px;
+  --gene-view-middle-column-left-gap: 18px;
+  --gene-view-middle-column-width: var(--gene-image-width);
+  --gene-view-middle-column-right-gap: 27px;
+  --gene-view-right-column-width: 180px;
+
+  color: var(--color-white);
   display: grid;
-  background-color: $backgroundColor;
+  background-color: var(--color-black);
 
   grid-template-areas:
     'feature-image feature-image view-in'
@@ -23,8 +26,8 @@ $backgroundColor: $black;
 
   grid-template-columns: 178px 902px 1fr;
   grid-template-rows: min-content minmax(76px, auto) minmax(0, 1fr);
-  padding: 60px $standard-gutter 0;
-  height: 100%; // may need to change this later
+  padding: 60px var(--standard-gutter) 0;
+  height: 100%; /* may need to change this later */
   width: 100%;
   overflow: auto;
 }
@@ -61,7 +64,7 @@ $backgroundColor: $black;
   display: flex;
   align-items: flex-end;
   padding: 4px;
-  background-color: $backgroundColor;
+  background-color: var(--color-black);
 }
 
 .filtersWrapper {
@@ -73,7 +76,7 @@ $backgroundColor: $black;
 }
 
 .filterLabelContainer {
-  background-color: $backgroundColor;
+  background-color: var(--color-black);
   grid-area: filter-toggle;
   display: flex;
   flex-direction: column;
@@ -91,31 +94,31 @@ $backgroundColor: $black;
 }
 
 .openFilterLabelContainer {
-  background-color: $backgroundColor;
+  background-color: var(--color-black);
   top: -80px;
+}
 
-  .filterLabelWrapper {
-    background-color: $soft-black;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-  }
+.openFilterLabelContainer .filterLabelWrapper {
+  background-color: var(--color-soft-black);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
 }
 
 .showHide {
-  --show-hide-label-color: $white;
+  --show-hide-label-color: var(--color-white);
 }
 
 .labelWithActivityIndicator {
   position: relative;
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    border-radius: 100%;
-    height: 8px;
-    width: 8px;
-    background: $red;
-    right: -10px;
-    top: -2px;
-  }
+.labelWithActivityIndicator::after {
+  content: '';
+  position: absolute;
+  border-radius: 100%;
+  height: 8px;
+  width: 8px;
+  background: var(--color-red);
+  right: -10px;
+  top: -2px;
 }

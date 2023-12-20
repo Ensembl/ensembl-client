@@ -1,0 +1,17 @@
+.containerSvg {
+  overflow: visible;
+}
+
+.track {
+  fill: var(--color-light-grey);
+}
+
+.protein {
+  fill: var(--color-mustard);
+}
+
+.label {
+  font-size: 13px; /* to override the 12px font-size coming from DefaultTranscriptList.row */
+  font-weight: var(--font-weight-light);
+  color: var(--color-black);
+}

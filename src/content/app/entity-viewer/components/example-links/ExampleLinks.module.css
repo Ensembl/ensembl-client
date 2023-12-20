@@ -1,0 +1,9 @@
+.exampleLinks {
+  margin-top: 50px;
+  padding-left: 120px;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+.exampleLinks a {
+  margin-bottom: 30px;
+}

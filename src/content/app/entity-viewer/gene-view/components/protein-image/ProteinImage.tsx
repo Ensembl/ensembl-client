@@ -18,8 +18,8 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 
-import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
-import styles from './ProteinImage.scss';
+import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.module.css';
+import styles from './ProteinImage.module.css';
 
 const TRACK_HEIGHT = 24;
 const PROTEIN_HEIGHT = 10;

@@ -23,7 +23,7 @@ import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
 import type { GeneSummary } from 'src/content/app/entity-viewer/state/api/queries/geneSummaryQuery';
 
-import styles from './EntityViewerTopbar.scss';
+import styles from './EntityViewerTopbar.module.css';
 
 export const EntityViewerTopbar = () => {
   const { genomeId, geneId = '' } = useGeneViewIds();

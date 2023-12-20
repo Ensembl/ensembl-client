@@ -1,9 +1,7 @@
-@import 'src/styles/common';
-
 .sectionHead {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   font-size: 12px;
-  border-bottom: 1px solid $grey;
+  border-bottom: 1px solid var(--color-grey);
   margin-bottom: 15px;
   position: relative;
   margin-top: 20px;
@@ -15,7 +13,7 @@
 }
 
 .geneSymbol {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
   margin-right: 10px;
 }
 

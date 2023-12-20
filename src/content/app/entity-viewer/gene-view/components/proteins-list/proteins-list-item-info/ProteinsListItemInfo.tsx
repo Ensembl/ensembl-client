@@ -43,6 +43,7 @@ import {
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
+import { GENE_IMAGE_WIDTH } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
 import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
 import { LoadingState } from 'src/shared/types/loading-state';
@@ -50,16 +51,13 @@ import type { ExternalReference as ExternalReferenceType } from 'src/shared/type
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 
-import styles from './ProteinsListItemInfo.scss';
-import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
+import styles from './ProteinsListItemInfo.module.css';
 
 export type Props = {
   gene: DefaultEntityViewerGeneQueryResult['gene'];
   transcript: ProteinCodingTranscript;
   trackLength: number;
 };
-
-const gene_image_width = Number(settings.gene_image_width);
 
 const ProteinsListItemInfo = (props: Props) => {
   const { gene, transcript, trackLength } = props;
@@ -138,12 +136,12 @@ const ProteinsListItemInfo = (props: Props) => {
           <ProteinDomainImage
             proteinDomains={currentData.product.family_matches}
             trackLength={trackLength}
-            width={gene_image_width}
+            width={GENE_IMAGE_WIDTH}
           />
           <ProteinImage
             proteinLength={currentData.product.length}
             trackLength={trackLength}
-            width={gene_image_width}
+            width={GENE_IMAGE_WIDTH}
           />
         </>
       )}

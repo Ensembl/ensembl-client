@@ -25,7 +25,7 @@ import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityVie
 
 import { CircleLoader } from 'src/shared/components/loader';
 
-import styles from './ExampleLinks.scss';
+import styles from './ExampleLinks.module.css';
 
 // NOTE: the component currently handles only example gene
 const ExampleLinks = () => {

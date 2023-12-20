@@ -25,6 +25,8 @@ import {
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
+import { GENE_IMAGE_WIDTH } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
+
 import UnsplicedTranscript, {
   UnsplicedTranscriptProps
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
@@ -34,8 +36,7 @@ import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
-import styles from './GeneOverviewImage.scss';
-import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
+import styles from './GeneOverviewImage.module.css';
 
 type Gene = Pick<FullGene, 'stable_id'> &
   Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
@@ -51,8 +52,6 @@ export type GeneOverviewImageProps = {
   onTicksCalculated: (payload: TicksAndScale) => void;
 };
 
-const gene_image_width = Number(settings.gene_image_width);
-
 const GeneOverviewImage = (props: GeneOverviewImageProps) => {
   const length = getFeatureLength(props.gene);
 
@@ -66,7 +65,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
       <div className={styles.ruler}>
         <FeatureLengthRuler
           length={length}
-          width={gene_image_width}
+          width={GENE_IMAGE_WIDTH}
           rulerLabel="bp"
           onTicksCalculated={props.onTicksCalculated}
           standalone={true}
@@ -83,7 +82,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   // (it will help with drawing genes of circular chromosomes)
   const scale = scaleLinear()
     .domain([geneStart, geneEnd])
-    .rangeRound([0, gene_image_width]);
+    .rangeRound([0, GENE_IMAGE_WIDTH]);
 
   const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
@@ -108,7 +107,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   );
 
   return (
-    <svg className={styles.containerSVG} width={gene_image_width}>
+    <svg className={styles.containerSVG} width={GENE_IMAGE_WIDTH}>
       {renderedTranscripts}
     </svg>
   );

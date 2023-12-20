@@ -1,24 +1,25 @@
-@import 'src/styles/common';
-@import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
 .container {
   color: white;
   display: grid;
-  grid-template-columns: $left_column $middle_column_left_gap $middle_column $middle_column_right_gap $right_column;
+  grid-template-columns:
+    var(--gene-view-left-column-width)
+    var(--gene-view-middle-column-left-gap)
+    var(--gene-view-middle-column-width)
+    var(--gene-view-middle-column-right-gap)
+    var(--gene-view-right-column-width)
 }
 
 .containerSVG {
   grid-column: 3/4;
-  background-color: $light-grey;
+  background-color: var(--color-light-grey);
   height: 18px;
 }
 
-.transcript {
-  rect {
-    stroke: $dark-grey;
-    fill: $dark-grey;
-    opacity: 0.3;
-  }
+.transcript rect {
+  stroke: var(--color-dark-grey);
+  fill: var(--color-dark-grey);
+  opacity: 0.3;
 }
 
 .geneId {
@@ -26,7 +27,7 @@
   grid-row: 2/3;
   text-align: right;
   font-size: 13px;
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .directionIndicator {
@@ -46,11 +47,11 @@
 .numberOfTranscripts {
   grid-column: 5/6;
   grid-row: 2/3;
+}
 
-  .transcriptsCount {
-    font-weight: $bold;
-    margin-right: 0.4em;
-  }
+.transcriptsCount {
+  font-weight: var(--font-weight-bold);
+  margin-right: 0.4em;
 }
 
 .ruler {
