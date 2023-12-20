@@ -1,16 +1,12 @@
-@import 'src/styles/common';
-
-$left-padding: 15px;
-
 .section {
-  padding-left: $left-padding;
+  padding-left: 15px;
 }
 
 .sectionHead {
-  color: $dark-grey;
+  color: var(--color-dark-grey);
   font-size: 12px;
-  font-weight: $light;
-  border-bottom: 1px solid $grey;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-grey);
   margin-bottom: 15px;
   position: relative;
   margin-top: 20px;
@@ -33,22 +29,22 @@ $left-padding: 15px;
 
 .field .label {
   grid-column: label;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .commonName {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
   margin-right: 10px;
 }
 
 /* For species that only have a scientific name */
 .scientificName {
   font-style: italic;
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .commonName + .scientificName {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .reference {
@@ -56,9 +52,9 @@ $left-padding: 15px;
 }
 
 .assemblyName {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .assemblyLevel {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }

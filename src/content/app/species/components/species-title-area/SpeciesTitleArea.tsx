@@ -44,7 +44,7 @@ import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 
 import { RootState } from 'src/store';
 
-import styles from './SpeciesTitleArea.scss';
+import styles from './SpeciesTitleArea.module.css';
 
 const useSpecies = () => {
   const { currentData } = useGetPopularSpeciesQuery();
@@ -60,9 +60,8 @@ const useSpecies = () => {
   const { popular_species } = currentData;
 
   const iconUrl = popular_species.find(
-    // eslint-disable-next-line eqeqeq
     (species) =>
-      species.species_taxonomy_id == committedSpecies?.species_taxonomy_id
+      species.species_taxonomy_id == committedSpecies?.species_taxonomy_id // eslint-disable-line eqeqeq
   )?.image;
 
   return committedSpecies

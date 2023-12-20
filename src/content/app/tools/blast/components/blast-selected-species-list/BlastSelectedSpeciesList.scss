@@ -3,8 +3,8 @@
 .container {
   width: 860px;
   flex-grow: 1;
-  background-color: $light-grey;
-  border: 1px solid $grey;
+  background-color: var(--color-light-grey);
+  border: 1px solid var(--color-grey);
   padding: 10px; 
 
 
@@ -16,7 +16,7 @@
 
 .container table {
   width: 100%;
-  --table-background: $light-grey;
+  --table-background: var(--color-light-grey);
 }
 
 .container th:first-child {

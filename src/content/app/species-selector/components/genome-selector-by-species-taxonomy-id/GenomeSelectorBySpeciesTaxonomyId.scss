@@ -9,7 +9,7 @@
     "top top"
     ". table";
   row-gap: 30px;
-  padding-left: $double-standard-gutter;
+  padding-left: var(--double-standard-gutter);
 }
 
 .top {
@@ -18,14 +18,14 @@
   align-items: center;
   justify-self: start;
   grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] max-content [filter] max-content;
-  column-gap: $standard-gutter;
+  column-gap: var(--standard-gutter);
   white-space: nowrap;
 }
 
 .speciesImage {
   grid-column: species-image;
-  background-color: $white;
-  border: 1px solid $blue;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-blue);
   padding: 2px;
 }
 
@@ -45,7 +45,7 @@
 
 .filterWrapper {
   grid-column: filter;
-  margin-left: $double-standard-gutter;
+  margin-left: var(--double-standard-gutter);
 }
 
 .loader {
@@ -55,5 +55,5 @@
 .tableContainer {
   grid-area: table;
   overflow: auto;
-  padding-bottom: $global-padding-bottom;
+  padding-bottom: var(--global-padding-bottom);
 }

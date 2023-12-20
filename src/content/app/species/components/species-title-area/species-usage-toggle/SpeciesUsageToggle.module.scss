@@ -1,17 +1,15 @@
-@import 'src/styles/common';
-
 .speciesUsageToggle {
   display: flex;
   align-items: center;
   line-height: 1;
+}
 
-  span {
-    white-space: nowrap;
-  }
+.speciesUsageToggle span {
+  white-space: nowrap;
+}
 
-  span:last-of-type {
-    margin-right: 15px;
-  }
+.speciesUsageToggle span:last-of-type {
+  margin-right: 15px;
 }
 
 .toggle {
@@ -19,6 +17,6 @@
 }
 
 .clickable {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
 }

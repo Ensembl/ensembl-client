@@ -19,7 +19,7 @@ import React from 'react';
 import SpeciesMainViewStats from './SpeciesMainViewStats';
 import SpeciesTitleArea from 'src/content/app/species/components/species-title-area/SpeciesTitleArea';
 
-import styles from './SpeciesMainView.scss';
+import styles from './SpeciesMainView.module.css';
 
 const SpeciesMainView = () => {
   return (

@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .speciesContainer {
   max-width: 1380px;
 }
@@ -16,27 +14,27 @@
 }
 
 .statsWrapper {
-  padding: 5px 20px $global-padding-bottom 140px;
+  padding: 5px 20px var(--global-padding-bottom) 140px;
 }
 
 .exampleLinkText {
   cursor: pointer;
-  color: $blue;
+  color: var(--color-blue);
   position: relative;
 }
 
 .pointerBox {
   padding: 6px 12px;
-  background: $black;
-  color: white;
+  background: var(--color-black);
+  color: var(--color-white);
+}
 
-  p {
-    max-width: 200px;
-  }
+.pointerBox p {
+  max-width: 200px;
 }
 
 .pointerBoxPointer {
-  fill: $black;
+  fill: var(--color-black);
 }
 
 .collapsedContent {
@@ -46,51 +44,51 @@
   align-items: center;
   padding: 6px 20px;
   min-height: 50px;
+}
 
-  .collapsedContentGrid {
-    display: grid;
-    grid-template-columns:
-    [title] 120px [statistics] 1fr
-    [example-link] 150px;
-    align-items: center;
-    width: 100%;
-  }
+.collapsedContent .title {
+  grid-column: title;
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}
 
-  .title {
-    grid-column: title;
-    color: $black;
-    font-weight: $light;
-  }
+.collapsedContent .statisticsContainer {
+  grid-column: statistics;
+  display: flex;
+  flex-wrap: wrap;
+}
 
-  .statisticsContainer {
-    grid-column: statistics;
-    display: flex;
-    flex-wrap: wrap;
-  }
+.collapsedContent .summaryStat {
+  width: 250px;
+  white-space: nowrap;
+}
 
-  .summaryStat {
-    width: 250px;
-    white-space: nowrap;
+.collapsedContent .summaryStat .value {
+  font-size: 24px;
+}
 
-    .value {
-      font-size: 24px;
-    }
+.collapsedContent .summaryStat .unit {
+  color: var(--color-black);
+  padding: 0 6px;
+  font-weight: var(--font-weight-light);
+}
 
-    .unit {
-      color: $black;
-      padding: 0 6px;
-      font-weight: $light;
-    }
-  }
+.collapsedContent .exampleLink {
+  grid-column: example-link;
+}
 
-  .exampleLink {
-    grid-column: example-link;
-  }
+.collapsedContent .questionButton {
+  top: 2px;
+  position: relative;
+}
 
-  .questionButton {
-    top: 2px;
-    position: relative;
-  }
+.collapsedContentGrid {
+  display: grid;
+  grid-template-columns:
+  [title] 120px [statistics] 1fr
+  [example-link] 150px;
+  align-items: center;
+  width: 100%;
 }
 
 @container species-statistics-section-collapsed (max-width: 549px) {
@@ -119,24 +117,24 @@
   padding: 16px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto;
+}
 
-  .title {
-    grid-column: title;
-    color: $black;
-    font-weight: $light;
-  }
+.statsGroup .title {
+  grid-column: title;
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}
 
-  .stats {
-    grid-column: stats;
-  }
+.statsGroup .stats {
+  grid-column: stats;
+}
 
-  &WithExampleLink {
-    grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
-  }
+.statsGroupWithExampleLink {
+  grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
+}
 
-  .exampleLink {
-    grid-column: example-link;
-  }
+.statsGroup .exampleLink {
+  grid-column: example-link;
 }
 
 @container species-statistics-section-expanded (max-width: 549px) {
@@ -162,6 +160,6 @@
 }
 
 .noData {
-  color: $black;
-  font-weight: $light;
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
 }

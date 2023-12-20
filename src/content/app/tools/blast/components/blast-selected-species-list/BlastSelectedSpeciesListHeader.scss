@@ -10,7 +10,7 @@
   position: sticky;
   top: 0px;
   z-index: 1;
-  background-color: $white;
+  background-color: var(--color-white);
 }
 
 .containerSmallScreen {
@@ -23,7 +23,7 @@
 
 .title {
   font-size: 15px;
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .speciesCounter {
@@ -32,19 +32,19 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  color: $white;
-  background-color: $dark-grey;
-  font-weight: $bold;
+  color: var(--color-white);
+  background-color: var(--color-dark-grey);
+  font-weight: var(--font-weight-bold);
   border-radius: 100%;
   font-size: 15px;
   margin: 0 0.6rem 0 0.6rem;
 }
 
 .maxSpecies {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .addButton {
   justify-self: end;
-  margin-right: $standard-gutter;
+  margin-right: var(--standard-gutter);
 }

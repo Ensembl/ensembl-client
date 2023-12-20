@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .table {
-  --table-background: #{$light-grey};
+  --table-background: var(--color-light-grey);
 }
 
 .table thead {
@@ -20,11 +20,11 @@
 }
 
 .assemblyName {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .showMore {
-  color: $blue;
+  color: var(--color-blue);
 }
 
 .referenceGenome {
@@ -32,8 +32,8 @@
 }
 
 .disabled {
-  color: $medium-dark-grey;
-  --dot-solid-color: #{$medium-light-grey};
+  color: var(--color-medium-dark-grey);
+  --dot-solid-color: var(--color-medium-light-grey);
 }
 
 .centered {

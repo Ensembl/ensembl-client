@@ -1,7 +1,3 @@
-@import 'src/styles/common';
-
-$secondary-text-color: $dark-grey;
-
 .wrapper {
   width: 250px;
   margin-bottom: 30px;
@@ -10,9 +6,9 @@ $secondary-text-color: $dark-grey;
 }
 
 .preLabel {
-  color: $black;
+  color: var(--color-black);
   padding-right: 4px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .preLabel + .label {
@@ -28,22 +24,26 @@ $secondary-text-color: $dark-grey;
   font-size: 24px;
   padding-left: 30px;
 }
+
 .primaryUnit {
-  color: $black;
+  color: var(--color-black);
   padding-left: 5px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
+
 .secondaryValue {
   padding-left: 30px;
 }
+
 .secondaryUnit {
-  color: $black;
+  color: var(--color-black);
   padding-left: 3px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
+
 .link {
   text-align: center;
   padding-left: 30px;
-  color: $secondary-text-color;
+  color: var(--color-dark-grey);
   font-size: 11px;
 }

@@ -9,16 +9,16 @@
 
 .searchPanel {
   height: 270px;
-  padding-left: $global-padding-left;
+  padding-left: var(--global-padding-left);
   padding-top: 38px;
-  background-color: $light-grey;
+  background-color: var(--color-light-grey);
 }
 
 .popularSpecies {
   height: 100%;
   padding-top: 26px;
-  padding-left: $global-padding-left;
-  padding-right: $standard-gutter;
-  padding-bottom: $global-padding-bottom;
+  padding-left: var(--global-padding-left);
+  padding-right: var(--standard-gutter);
+  padding-bottom: var(--global-padding-bottom);
   overflow: auto;
 }

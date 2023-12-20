@@ -23,7 +23,7 @@
 }
 
 .pageTitle {
-  color: $blue;
-  font-weight: $bold;
+  color: var(--color-blue);
+  font-weight: var(--font-weight-bold);
   margin-left: 17px;
 }

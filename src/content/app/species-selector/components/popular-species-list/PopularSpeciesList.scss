@@ -2,7 +2,7 @@
 
 .sectionHeading {
   font-size: 13px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin: 0 0 20px 0;
   display: block;
 }

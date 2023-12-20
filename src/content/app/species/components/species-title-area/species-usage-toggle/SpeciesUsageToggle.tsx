@@ -29,7 +29,7 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 
 import { RootState } from 'src/store';
 
-import styles from './SpeciesUsageToggle.scss';
+import styles from './SpeciesUsageToggle.module.scss';
 
 type LabelProps = {
   className?: string;
