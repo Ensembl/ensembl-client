@@ -20,7 +20,7 @@ import classNames from 'classnames';
 // QUESTION: should variantGroups be moved to a different directory? E.g. to genome-browser/constants?
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
-import styles from './VariantColour.scss';
+import styles from './VariantColour.module.css';
 
 type Props = {
   variantType: string;

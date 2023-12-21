@@ -37,7 +37,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import styles from './NavigateModal.scss';
+import styles from './NavigateModal.module.css';
 
 const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this region.';

@@ -32,7 +32,7 @@ import {
   getRegionFieldActive
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from './BrowserImage.scss';
+import styles from './BrowserImage.module.css';
 
 export const BrowserImage = () => {
   const browserViewportRef = useRef<HTMLDivElement>(null);

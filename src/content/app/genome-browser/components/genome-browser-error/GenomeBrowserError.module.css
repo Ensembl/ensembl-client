@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .container {
   --alert-icon-diameter: 24px;
   display: flex;
@@ -19,5 +17,5 @@
 }
 
 .errorText {
-  color: $red;
+  color: var(--color-red);
 }

@@ -1,0 +1,54 @@
+.container {
+  margin: 10px 0 0 80px;
+  max-width: 950px;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  margin-left: 10px;
+}
+
+.legendTable {
+  padding-top: 50px;
+}
+
+.legendTable table {
+  width: 100%;
+}
+.legendTable thead {
+  text-align: left;
+}
+.legendTable thead th,
+.legendTable tbody td {
+  padding-left: var(--table-cell-padding-left, 24px);
+  padding-right: var(--table-cell-padding-left, 32px);
+  padding-top: var(--table-cell-padding-top, 6px);
+  padding-bottom: var(--table-cell-padding-bottom, 6px);
+}
+
+.variantTypeLabel {
+  width: 350px;
+}
+
+.variantColour1 {
+  background-color: var(--color-dark-pink);
+}
+.variantColour2 {
+  background-color: var(--color-dark-yellow);
+}
+.variantColour3 {
+  background-color: var(--color-lime);
+}
+.variantColour4 {
+  background-color: var(--color-teal);
+}
+.variantColour5 {
+  background-color: var(--color-duckegg-blue);
+}
+
+.colourMarker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}

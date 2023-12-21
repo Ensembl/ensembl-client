@@ -29,8 +29,8 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './TrackPanelVariant.scss';
-import trackPanelItemStyles from '../TrackPanelItem.scss';
+import styles from './TrackPanelVariant.module.css';
+import trackPanelItemStyles from '../TrackPanelItem.module.css';
 
 const TrackPanelVariant = (props: { focusVariant: FocusVariant }) => {
   const { focusVariant } = props;

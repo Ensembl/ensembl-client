@@ -37,7 +37,7 @@ import { getIsBrowserSidebarModalOpened } from 'src/content/app/genome-browser/s
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
-import styles from './TrackPanelTabs.scss';
+import styles from './TrackPanelTabs.module.css';
 
 export const TrackPanelTabs = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);

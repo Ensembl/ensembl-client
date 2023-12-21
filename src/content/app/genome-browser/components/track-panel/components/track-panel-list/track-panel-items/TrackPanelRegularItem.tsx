@@ -32,7 +32,7 @@ import { Status } from 'src/shared/types/status';
 import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
 import type { RootState } from 'src/store';
 
-import styles from './TrackPanelItem.scss';
+import styles from './TrackPanelItem.module.css';
 
 /**
  * This component is for otherwise unremarkable tracks that are returned

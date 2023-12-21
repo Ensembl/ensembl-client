@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
@@ -23,8 +24,7 @@ import { Table, ColumnHead } from 'src/shared/components/table';
 
 import type { VariantLegendView } from 'src/content/app/genome-browser/state/drawer/types';
 
-import styles from './VariantGroupLegend.scss';
-import classNames from 'classnames';
+import styles from './VariantGroupLegend.module.css';
 
 type Props = {
   drawerView: VariantLegendView;

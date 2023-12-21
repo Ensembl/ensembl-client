@@ -27,7 +27,7 @@ import CogIcon from 'static/icons/icon_settings.svg';
 
 import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-import styles from './BrowserCogList.scss';
+import styles from './BrowserCogList.module.css';
 
 export type BrowserCogProps = {
   trackId: string;

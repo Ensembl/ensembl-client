@@ -36,7 +36,7 @@ import SimpleSelect, {
   type SimpleSelectMethods
 } from 'src/shared/components/simple-select/SimpleSelect';
 
-import styles from './NavigateModal.scss';
+import styles from './NavigateModal.module.css';
 
 const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this species.';

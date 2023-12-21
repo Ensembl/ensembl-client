@@ -27,7 +27,7 @@ import type { RegularTrackSettings as RegularTrackSettingsType } from 'src/conte
 
 import ReorderTrack from 'static/icons/icon_move_tracks.svg';
 
-import styles from '../TrackSettingsPanel.scss';
+import styles from '../TrackSettingsPanel.module.css';
 
 type Props = {
   trackId: string;
