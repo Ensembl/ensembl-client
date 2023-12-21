@@ -1,4 +1,4 @@
-@import 'src/styles/common';
+/* Avoiding the newer CSS features, such as flexbox or grid, or CSS variables, for maximum browser compatibility */
 
 .container {
   display: inline-block;
@@ -13,6 +13,6 @@
 
 .label {
   display: block;
-  color: $dark-grey;
+  color: #6f8190; /* --color-dark-grey */
   text-transform: capitalize;
 }

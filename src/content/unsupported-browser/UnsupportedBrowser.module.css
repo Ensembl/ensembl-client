@@ -1,11 +1,9 @@
-@import 'src/styles/common';
-
-// Avoiding modern CSS features like flexbox and CSS grid for wider browser support of this page
+/* Avoiding the newer CSS features, such as flexbox or grid, or CSS variables, for maximum browser compatibility */
 
 html,
 body,
 [class='ens-app'] {
-  min-width: initial !important; // !important seems to be the only way to override the min-width set in styles/main.scss
+  min-width: initial !important; /* !important seems to be the only way to override the min-width set in styles/main.scss */
 }
 
 .container {
@@ -23,14 +21,14 @@ body,
 
 .section3 {
   padding-bottom: 100px;
+}
 
-  span {
-    display: block;
-  }
+.section3 span {
+  display: block;
 }
 
 .diagramTitle {
-  font-weight: $bold;
+  font-weight: bold;
   margin-bottom: 0.6rem;
 }
 
