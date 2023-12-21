@@ -28,7 +28,7 @@ import PopularSpeciesButton from 'src/content/app/species-selector/components/po
 
 import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 
-import styles from './PopularSpeciesList.scss';
+import styles from './PopularSpeciesList.module.css';
 
 const PopularSpeciesList = () => {
   const dispatch = useAppDispatch();

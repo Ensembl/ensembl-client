@@ -1,40 +1,37 @@
-@import 'src/styles/common';
-
-$button-size: 57px;
-
 .popularSpeciesButton {
+  --button-size: 57px;
   position: relative;
   font-size: 0;
   user-select: none;
-  width: $button-size;
-  height: $button-size;
+  width: var(--button-size);
+  height: var(--button-size);
+}
 
-  img {
-    width: 100%;
-    height: 100%;
-  }
+.popularSpeciesButton img {
+  width: 100%;
+  height: 100%;
+}
 
-  *[class*='tooltip'] {
-    user-select: none;
-  }
+.popularSpeciesButton *[class*='tooltip'] {
+  user-select: none;
 }
 
 .popularSpeciesButton:not(.popularSpeciesButtonSelected) {
   background: var(--color-blue);
   border: 1px solid var(--color-blue);
+}
 
-  img {
-    filter: #{"invert()"};  // <-- unfortunate consequence of CSS and SCSS keyword collision
-  }
+.popularSpeciesButton:not(.popularSpeciesButtonSelected) img {
+  filter: invert(1)
 }
 
 .popularSpeciesButtonSelected {
   background: var(--color-white);
   border: 1px solid var(--color-blue);
+}
 
-  img {
-    filter: var(--black-to-grey-species-icon-filter);
-  }
+.popularSpeciesButtonSelected img {
+  filter: var(--black-to-grey-species-icon-filter);
 }
 
 .genomesCount {
@@ -45,7 +42,7 @@ $button-size: 57px;
   transform: translateY(50%);
   font-size: 11px;
   font-weight: var(--font-weight-bold);
-  font-family: $font-family-monospace;
+  font-family: var(--font-family-monospace);
   color: var(--color-white);
   background-color: var(--color-black);
   min-width: 27px;

@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .grid {
   display: grid;
   grid-template-columns: 1fr max-content;

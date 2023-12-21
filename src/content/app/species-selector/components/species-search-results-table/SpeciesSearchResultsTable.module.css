@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .table {
   --table-background: var(--color-light-grey);
 }
@@ -8,12 +6,12 @@
   white-space: nowrap;
 }
 
-// heading of the column of checkboxes
+/* heading of the column of checkboxes */
 .table th:first-of-type {
   --table-column-head-padding-left: 0;
 }
 
-// the column of checkboxes
+/* the column of checkboxes */
 .table td:first-of-type {
   --table-cell-padding-left: 0;
   text-align: center;

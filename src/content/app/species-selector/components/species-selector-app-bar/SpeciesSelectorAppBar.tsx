@@ -35,7 +35,7 @@ import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/Species
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './SpeciesSelectorAppBar.scss';
+import styles from './SpeciesSelectorAppBar.module.css';
 
 export const placeholderMessage =
   'Find and add your favourite species to use them across the site';

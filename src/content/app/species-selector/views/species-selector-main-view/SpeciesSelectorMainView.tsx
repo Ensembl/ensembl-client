@@ -24,7 +24,7 @@ import { setPopularSpecies } from 'src/content/app/species-selector/state/specie
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
 
-import styles from './SpeciesSelectorMainView.scss';
+import styles from './SpeciesSelectorMainView.module.css';
 
 const SpeciesSelectorMainView = () => {
   const dispatch = useAppDispatch();

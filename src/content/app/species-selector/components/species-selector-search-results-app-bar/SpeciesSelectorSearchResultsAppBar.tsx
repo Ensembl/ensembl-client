@@ -24,7 +24,7 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './SpeciesSelectorSearchResultsAppBar.scss';
+import styles from './SpeciesSelectorSearchResultsAppBar.module.css';
 
 const SpeciesSearchResultsModalAppBar = () => {
   return (

@@ -27,7 +27,7 @@ import SpeciesSelectorResultsView from './views/species-selector-results-view/Sp
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
 import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
 
-import styles from './SpeciesSelector.scss';
+import styles from './SpeciesSelector.module.css';
 
 const SpeciesSelector = () => {
   const modalView = useAppSelector(getSpeciesSelectorModalView);

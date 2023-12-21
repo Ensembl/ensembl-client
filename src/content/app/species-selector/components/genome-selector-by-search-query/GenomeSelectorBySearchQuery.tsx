@@ -34,7 +34,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
-import styles from './GenomeSelectorBySearchQuery.scss';
+import styles from './GenomeSelectorBySearchQuery.module.css';
 
 type Props = {
   query: string;

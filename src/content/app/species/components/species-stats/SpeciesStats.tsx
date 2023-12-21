@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import defaultStyles from './SpeciesStats.module.scss';
+import defaultStyles from './SpeciesStats.module.css';
 
 type PrimaryDataProps = {
   primaryValue: string | number;
