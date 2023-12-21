@@ -1,0 +1,8 @@
+.topBar {
+  min-height: 74px;
+  background-color: var(--color-light-grey);
+  padding: 24px 30px 20px 30px;
+  box-shadow: 0 3px 5px var(--global-box-shadow-color);
+  position: relative;
+  z-index: 2;
+}

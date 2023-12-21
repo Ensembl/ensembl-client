@@ -30,7 +30,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
-import styles from './BlastSelectedSpeciesList.scss';
+import styles from './BlastSelectedSpeciesList.module.css';
 
 /**
  * NOTE:

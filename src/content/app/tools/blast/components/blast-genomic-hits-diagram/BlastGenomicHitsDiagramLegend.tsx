@@ -21,7 +21,7 @@ import {
   HIT_MARK_RADIUS
 } from './blastGenomicHitsDiagramConstants';
 
-import styles from './BlastGenomicHitsDiagram.scss';
+import styles from './BlastGenomicHitsDiagram.module.css';
 
 const BlastGenomicHitsDiagramLegend = () => {
   return (

@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .listedBlastSubmission {
   /*
     The max-width of 1770px is a result of the following calculation:
@@ -8,7 +6,7 @@
     Thus, 1800 - 60 + 30 = 1770px
   */
   max-width: calc(
-    var(--blast-container-max-width) - ($standard-gutter * 2) + $standard-gutter
+    var(--blast-container-max-width) - (var(--standard-gutter) * 2) + var(--standard-gutter)
   );
 }
 
@@ -22,8 +20,8 @@ and also that it can be of variable width
 */
 .sequenceBox {
   display: grid;
-  padding: 24px 26px; // TODO: the 26px padding looks like a constant asking to be extracted
-  border: 1px solid $grey;
+  padding: 24px 26px; /* TODO: the 26px padding looks like a constant asking to be extracted */
+  border: 1px solid var(--color-grey);
   grid-template-columns:
     11ch minmax(48%, 1050px) [species-count] minmax(20%, 1fr)
     minmax(10px, auto);
@@ -35,7 +33,7 @@ and also that it can be of variable width
 }
 
 .sequenceHeader {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .speciesCount {
@@ -43,16 +41,16 @@ and also that it can be of variable width
 }
 
 .againstText {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .submissionIdLabel {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-right: 1ch;
 }
 
 .editSubmission {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
   margin: 0 32px;
 }
@@ -62,7 +60,7 @@ and also that it can be of variable width
 }
 
 .timeZone {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-left: 1ch;
 }
 
@@ -86,5 +84,5 @@ and also that it can be of variable width
 }
 
 .jobStatusProminent {
-  color: $red;
+  color: var(--color-red);
 }

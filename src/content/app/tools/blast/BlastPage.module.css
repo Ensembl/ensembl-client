@@ -1,0 +1,8 @@
+.blastPage {
+  --blast-container-max-width: 1800px;
+  --blast-page-standard-padding: 0
+    calc(var(--standard-gutter) - var(--scrollbar-width))
+    var(--global-padding-bottom)
+    var(--double-standard-gutter);
+  height: 100%;
+}

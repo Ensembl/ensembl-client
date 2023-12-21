@@ -31,7 +31,7 @@ import type {
   BlastJobResult
 } from 'src/content/app/tools/blast/types/blastJob';
 
-import styles from './BlastGenomicHitsDiagram.scss';
+import styles from './BlastGenomicHitsDiagram.module.css';
 
 type HitLocation = {
   start: number;

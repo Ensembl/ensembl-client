@@ -1,11 +1,9 @@
-@import 'src/styles/common';
-
 .grid {
   display: grid;
   grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [controls-section] 20%;
   column-gap: 20px;
   align-items: center;
-  padding-left: 26px; // TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss)
+  padding-left: 26px; /* TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss) */
   padding-top: 20px;
   margin-bottom: 14px;
   white-space: nowrap;
@@ -33,12 +31,12 @@
 
 .submissionNameLabel,
 .submissionIdLabel {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-right: 1ch;
 }
 
 .editSubmission {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
   margin: 0 32px;
 }
@@ -48,7 +46,7 @@
 }
 
 .timeZone {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-left: 1ch;
 }
 
@@ -68,7 +66,7 @@
   display: flex;
   align-items: center;
   column-gap: 0.6rem;
-  color: $red;
+  color: var(--color-red);
   margin-right: 16px;
 }
 
@@ -77,15 +75,15 @@
 }
 
 .deleteMessage {
-  color: $red;
+  color: var(--color-red);
 }
 
 .clickable {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
 }
 
-// Leave media queries at the bottom of the file to make sure they override CSS rules defined above
+/* Leave media queries at the bottom of the file to make sure they override CSS rules defined above */
 @media screen and (max-width: 1439px) {
   .grid {
     grid-template-columns: auto [submission-name] auto [submission-details] 1fr [controls-section] auto;

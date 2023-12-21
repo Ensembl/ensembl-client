@@ -42,7 +42,7 @@ import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/blastSequence';
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastInputSequence.scss';
+import styles from './BlastInputSequence.module.css';
 
 type Props = {
   index?: number; // 0...n if there are many input elements

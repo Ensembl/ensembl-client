@@ -50,7 +50,7 @@ import DeletionConfirmation from 'src/shared/components/deletion-confirmation/De
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastSubmissionHeader.scss';
+import styles from './BlastSubmissionHeader.module.css';
 
 export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
 export const FAILED_SUBMISSION_WARNING = 'Submission failed';

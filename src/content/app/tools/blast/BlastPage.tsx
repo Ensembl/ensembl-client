@@ -26,7 +26,7 @@ import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-import styles from './BlastPage.scss';
+import styles from './BlastPage.module.css';
 
 const BlastForm = React.lazy(() => import('./views/blast-form/BlastForm'));
 const BlastSubmissions = React.lazy(

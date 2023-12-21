@@ -27,7 +27,7 @@ import {
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './MissingBlastSubmissionError.scss';
+import styles from './MissingBlastSubmissionError.module.css';
 
 type Props = {
   hasSubmissionParameters: boolean;

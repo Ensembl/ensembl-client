@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .container {
   display: grid;
   grid-template-columns: [species-counter] max-content [add-species] 1fr;

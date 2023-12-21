@@ -47,7 +47,7 @@ import type {
   Option
 } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastSettings.scss';
+import styles from './BlastSettings.module.css';
 
 const getPresetsList = (config: BlastSettingsConfig, program: BlastProgram) => {
   const { label, options, settings } = config.presets;

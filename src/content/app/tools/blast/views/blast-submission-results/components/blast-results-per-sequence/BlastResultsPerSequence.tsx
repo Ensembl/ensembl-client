@@ -32,7 +32,7 @@ import type {
 import type { Species } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 
-import styles from './BlastResultsPerSequence.scss';
+import styles from './BlastResultsPerSequence.module.css';
 
 type BlastResultsPerSequenceProps = {
   sequence: SubmittedSequence;

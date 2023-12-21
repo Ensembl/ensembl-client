@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .resultsSummaryRow {
   display: grid;
   grid-template-columns:
@@ -12,20 +10,20 @@
 
   gap: 20px;
   padding-bottom: 20px;
+}
 
-  &:first-of-type {
-    padding-top: 24px;
-  }
+.resultsSummaryRow:first-of-type {
+  padding-top: 24px;
+}
 
-  &:last-of-type {
-    padding-bottom: 46px;
-  }
+.resultsSummaryRow:last-of-type {
+  padding-bottom: 46px;
+}
 
-  .tableWrapper {
-    grid-area: table;
-    margin-left: -20px;
-    margin-right: -20px;
-  }
+.tableWrapper {
+  grid-area: table;
+  margin-left: -20px;
+  margin-right: -20px;
 }
 
 .failedJobSummaryRow {
@@ -34,12 +32,7 @@
     [species] minmax(20%, 1fr);
 
   grid-template-areas: 'empty failed-status species';
-
   padding-bottom: 40px;
-
-  .blastSpecies {
-    color: $dark-grey;
-  }
 }
 
 .hitLabel {
@@ -58,11 +51,15 @@
   justify-self: start;
   align-self: start;
   column-gap: 20px;
-  color: $dark-grey;
+  color: var(--color-dark-grey);
+}
+
+.failedJobSummaryRow .blastSpecies {
+  color: var(--color-dark-grey);
 }
 
 .blastSpeciesActive {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
 }
 
@@ -72,23 +69,23 @@
 
 .speciesAssemblyName {
   font-size: 11px;
-  white-space: nowrap; // this span contains a chevron which shouldn't get detached from the text and end up on a new line
+  white-space: nowrap; /* this span contains a chevron which shouldn't get detached from the text and end up on a new line */
 }
 
 .blastSpeciesChevron {
-  margin-left: 10px; // same as in ShowHide component
-  --chevron-height: 6px; // same as in ShowHide component
+  margin-left: 10px; /* same as in ShowHide component */
+  --chevron-height: 6px; /* same as in ShowHide component */
 }
 
 .hitsTable {
   padding: 20px;
-  border-top: 1px solid $grey;
-  border-bottom: 1px solid $grey;
+  border-top: 1px solid var(--color-grey);
+  border-bottom: 1px solid var(--color-grey);
   width: 100%;
+}
 
-  + .resultsSummaryRow {
-    padding-top: 24px;
-  }
+.hitsTable + .resultsSummaryRow {
+  padding-top: 24px;
 }
 
 .sequenceAlignment {
@@ -100,11 +97,11 @@
 }
 
 .hitOrientation {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .failedJobStatus {
   grid-column: failed-status;
   justify-self: end;
-  color: $red;
+  color: var(--color-red);
 }

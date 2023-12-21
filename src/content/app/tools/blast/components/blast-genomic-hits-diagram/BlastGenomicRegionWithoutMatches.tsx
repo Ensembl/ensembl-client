@@ -22,7 +22,7 @@ import {
   ELEMENT_HEIGHT
 } from './blastGenomicHitsDiagramConstants';
 
-import styles from './BlastGenomicHitsDiagram.scss';
+import styles from './BlastGenomicHitsDiagram.module.css';
 
 type Props = {
   width: number;

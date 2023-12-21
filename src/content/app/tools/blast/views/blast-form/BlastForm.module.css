@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .container {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
@@ -46,13 +44,13 @@
   display: flex;
   gap: 10px;
   padding-top: 20px;
-  background-color: $white;
+  background-color: var(--color-white);
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
 .buttonActive {
-  background-color: $black;
-  border-color: $black;
+  background-color: var(--color-black);
+  border-color: var(--color-black);
 }

@@ -1,14 +1,11 @@
-@import 'src/styles/common';
-
-$border: 1px solid $grey;
-
 .inputSequenceBox {
   width: 860px;
-  --textarea-height: 102px; // same as upload button's height
+  --border: 1px solid var(--color-grey);
+  --textarea-height: 102px; /* same as upload button's height */
 }
 
 .inputSequenceBoxFileOver {
-  --drop-zone-bg-color: #{$ice-blue};
+  --drop-zone-bg-color: var(--color-ice-blue);
 }
 
 .header {
@@ -17,7 +14,7 @@ $border: 1px solid $grey;
   justify-content: space-between;
   padding: 0 28px 0 30px;
   min-height: 50px;
-  border: $border;
+  border: var(--border);
   border-bottom: none;
 }
 
@@ -26,31 +23,29 @@ $border: 1px solid $grey;
   grid-template-columns: 1fr auto;
   column-gap: 20px;
   padding: 10px 65px 12px 28px;
-  background-color: $light-grey;
-  border: $border;
+  background-color: var(--color-light-grey);
+  border: var(--border);
+}
 
-  // FIXME: this is a hack
-  [class*='defaultUpload'] {
-    width: 112px;
-    margin-left: 18px;
-  }
+/* FIXME: this is a hack */
+.body [class*='defaultUpload'] {
+  width: 112px;
+  margin-left: 18px;
 }
 
 .textarea {
-  font-family: $font-family-monospace;
+  font-family: var(--font-family-monospace);
   font-size: 12px;
   letter-spacing: 0.1rem;
   white-space: nowrap;
 }
 
-.textarea:not(.textareaInvalid) {
-  &:focus {
-    --textarea-border-color: #{$blue};
-  }
+.textarea:not(.textareaInvalid):focus {
+  --textarea-border-color: var(--color-blue);
 }
 
 .textareaInvalid {
-  --textarea-border-color: #{$red};
+  --textarea-border-color: var(--color-red);
 }
 
 .deleteButtonWrapper {

@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .container {
   width: 860px;
   flex-grow: 1;

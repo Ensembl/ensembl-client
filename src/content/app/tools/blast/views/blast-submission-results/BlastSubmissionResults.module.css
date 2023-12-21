@@ -1,10 +1,7 @@
-@import 'src/styles/common';
-
-$blast_container_max_width: calc(
-  var(--blast-container-max-width) - $standard-gutter
-);
-
 .resultsContainer {
+  --blast-results-container-max-width: calc(
+    var(--blast-container-max-width) - var(--standard-gutter)
+  );
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
   height: 100%;
@@ -18,12 +15,12 @@ $blast_container_max_width: calc(
 }
 
 .blastSubmissionResultsContainer {
-  max-width: $blast_container_max_width;
+  max-width: var(--blast-results-container-max-width);
 }
 
 .loaderContainer {
   display: flex;
   justify-content: center;
-  max-width: $blast_container_max_width;
+  max-width: var(--blast-results-container-max-width);
   padding: 1rem 0 2rem;
 }

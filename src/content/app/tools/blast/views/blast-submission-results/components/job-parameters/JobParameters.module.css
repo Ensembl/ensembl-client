@@ -1,0 +1,55 @@
+.submissionParameters {
+  display: grid;
+  grid-template-areas:
+    'main-top aside-top'
+    'main-bottom aside-bottom';
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: 20px auto;
+  align-items: start;
+  column-gap: 70px;
+}
+
+.copySequence {
+  justify-self: flex-end;
+  grid-area: main-top;
+}
+
+.sequence {
+  width: calc(60ch + 14px);
+  grid-area: main-bottom;
+  margin-top: 10px;
+  min-height: 170px;
+  max-height: 430px;
+  font-family: var(--font-family-monospace);
+  color: var(--color-dark-grey);
+  overflow-y: auto;
+  overflow-wrap: break-word;
+}
+
+.parameters {
+  grid-area: aside-bottom;
+}
+
+.parameters tr {
+  height: 25px;
+}
+
+.parameters td:first-of-type {
+  text-align: right;
+  font-weight: var(--font-weight-light);
+  padding-right: 10px;
+}
+
+.parameterCheckbox {
+  height: 12px;
+  width: 12px;
+  background-color: var(--color-green);
+  border: 1px solid var(--color-grey);
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.parameterCheckbox + span {
+  font-weight: var(--font-weight-light);
+}

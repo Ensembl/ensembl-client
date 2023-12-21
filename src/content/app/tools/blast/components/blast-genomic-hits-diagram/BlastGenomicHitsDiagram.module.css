@@ -1,21 +1,19 @@
-@import 'src/styles/common';
-
 .regionName {
-  fill: $black;
+  fill: var(--color-black);
   font-size: 10px;
 }
 
 .backbone {
-  fill: $medium-dark-grey;
+  fill: var(--color-medium-dark-grey);
 }
 
 .hit {
-  fill: $black;
+  fill: var(--color-black);
   opacity: 0.3;
 }
 
 .topHit {
-  stroke: red;
+  stroke: var(--color-red);
   fill: none;
 }
 
@@ -28,7 +26,7 @@
 
 .diagramLegendLabel {
   font-size: 12px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .diagramLegend > svg {
@@ -44,6 +42,6 @@
 
 .regionsExpandToggle > span {
   font-size: 12px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-right: 10px;
 }

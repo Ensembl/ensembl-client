@@ -15,7 +15,7 @@
   position: sticky;
   top: 0px;
   z-index: 1;
-  background-color: $white;
+  background-color: var(--color-white);
 }
 
 .smallScreenHeader {
@@ -33,7 +33,7 @@
 
 .headerTitle {
   font-size: 15px;
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .sequenceCounter {
@@ -42,25 +42,25 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  color: $white;
-  background-color: $dark-grey;
-  font-weight: $bold;
+  color: var(--color-white);
+  background-color: var(--color-dark-grey);
+  font-weight: var(--font-weight-bold);
   border-radius: 100%;
   font-size: 15px;
   margin: 0 0.6rem 0 0.6rem;
 
   &Error {
-    background-color: $red;
+    background-color: var(--color-red);
   }
 }
 
 .maxSequences {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .clearAll {
   margin-right: 30px;
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
   user-select: none;
 }
@@ -83,7 +83,7 @@
 }
 
 .addSequenceLabel {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   margin-right: 14px;
 }
 

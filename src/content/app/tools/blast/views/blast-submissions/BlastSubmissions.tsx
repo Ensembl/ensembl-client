@@ -34,7 +34,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
-import styles from './BlastSubmissions.scss';
+import styles from './BlastSubmissions.module.css';
 
 type Props = {
   unviewed: boolean;

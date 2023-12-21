@@ -26,7 +26,7 @@ import {
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './BlastJobListsNavigation.scss';
+import styles from './BlastJobListsNavigation.module.css';
 
 const BlastJobListsNavigation = () => {
   const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);

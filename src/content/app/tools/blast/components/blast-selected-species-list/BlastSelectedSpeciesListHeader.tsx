@@ -25,7 +25,7 @@ import AddButton from 'src/shared/components/add-button/AddButton';
 
 import { BLAST_MAX_SPECIES_COUNT } from 'src/content/app/tools/blast/constants/blastFormConstants';
 
-import styles from './BlastSelectedSpeciesListHeader.scss';
+import styles from './BlastSelectedSpeciesListHeader.module.css';
 
 export type Props = {
   compact: boolean;

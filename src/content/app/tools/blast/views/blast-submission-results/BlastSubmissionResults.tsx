@@ -45,7 +45,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { BlastJobResultResponse } from 'src/content/app/tools/blast/types/blastJob';
 
-import styles from './BlastSubmissionResults.scss';
+import styles from './BlastSubmissionResults.module.css';
 
 const BlastSubmissionResults = () => {
   const dispatch = useAppDispatch();
