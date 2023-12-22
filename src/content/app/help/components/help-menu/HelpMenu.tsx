@@ -29,7 +29,7 @@ import {
   MenuItem
 } from 'src/shared/types/help-and-docs/menu';
 
-import styles from './HelpMenu.scss';
+import styles from './HelpMenu.module.css';
 
 export type Props = {
   menu: MenuType;

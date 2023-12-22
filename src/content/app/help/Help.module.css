@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .help {
   display: grid;
   grid-template-rows: [appBar] auto [menu] auto [article-grid] minmax(0, 1fr);
@@ -11,37 +9,36 @@
   align-items: center;
   height: 80px;
   padding-left: 44px;
-
   grid-template-columns: 100px auto;
+}
 
-  .conversationIcon {
-    justify-self: end;
-    height: 24px;
-    margin-right: $standard-gutter;
-    margin-top: 30px;
-  }
+.conversationIcon {
+  justify-self: end;
+  height: 24px;
+  margin-right: var(--standard-gutter);
+  margin-top: 30px;
 }
 
 .main {
   height: 100%;
   display: grid;
-  padding-left: $double-standard-gutter;
+  padding-left: var(--double-standard-gutter);
   padding-top: 25px;
   grid-template-areas:
     'breadcrumbs breadcrumbs navigation'
     '.  article  article';
   grid-template-rows: 40px auto;
-  grid-template-columns: $standard-gutter 1fr;
+  grid-template-columns: var(--standard-gutter) 1fr;
+}
 
-  .breadcrumbsContainer {
-    grid-area: breadcrumbs;
-  }
+.breadcrumbsContainer {
+  grid-area: breadcrumbs;
+}
 
-  .articleContainer {
-    grid-area: article;
-    height: 100%;
-    overflow-y: auto;
-  }
+.articleContainer {
+  grid-area: article;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .articleGrid {

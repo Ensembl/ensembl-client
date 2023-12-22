@@ -24,7 +24,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './HelpLanding.scss';
+import styles from './HelpLanding.module.css';
 
 const HelpLanding = () => {
   return (

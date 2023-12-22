@@ -52,7 +52,7 @@ import {
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
 
-import styles from './Help.scss';
+import styles from './Help.module.css';
 
 type ArticleData = TextArticleData | VideoArticleData;
 

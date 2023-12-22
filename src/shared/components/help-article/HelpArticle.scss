@@ -18,7 +18,7 @@ $topListItemMarginBottom: 1ch;
   h1 {
     font-size: 17px;
     line-height: 18px;
-    font-weight: $normal;
+    font-weight: var(--font-weight-normal);
     margin: 0 0 $heading-margin-bottom -#{$heading-outdent};
   }
 
@@ -97,7 +97,7 @@ $topListItemMarginBottom: 1ch;
   figcaption {
     margin-top: 10px;
     font-size: 11px;
-    font-weight: $light;
+    font-weight: var(--font-weight-light);
     width: $textColumnWidth;
   }
 
@@ -135,9 +135,9 @@ $topListItemMarginBottom: 1ch;
   }
 
   pre {
-    background-color: $light-grey; // Add a background color to code snippets
+    background-color: var(--color-light-grey); // Add a background color to code snippets
     padding: 15px;
-    font-family: $font-family-monospace;
+    font-family: var(--font-family-monospace);
   }
 }
 
@@ -155,7 +155,7 @@ $topListItemMarginBottom: 1ch;
 
   h2 {
     font-size: 16px;
-    font-weight: $bold;
+    font-weight: var(--font-weight-bold);
   }
 }
 
@@ -198,7 +198,7 @@ $topListItemMarginBottom: 1ch;
 
   h2 {
     font-size: 13px;
-    font-weight: $light;
+    font-weight: var(--font-weight-light);
     margin: 1.5rem 0;
   }
 }
@@ -211,7 +211,7 @@ $topListItemMarginBottom: 1ch;
 
 .relatedArticle,
 .relatedVideo {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
   margin-bottom: 0.4rem;
 }
@@ -227,7 +227,7 @@ $topListItemMarginBottom: 1ch;
   justify-content: center;
   top: 50%;
   transform: translate(-100%, -50%);
-  background-color: $blue;
+  background-color: var(--color-blue);
   height: 10px;
   width: 16px;
   margin-left: -#{$asideLeftPadding};
@@ -239,5 +239,5 @@ $topListItemMarginBottom: 1ch;
 }
 
 .relatedArticleActive {
-  color: $black;
+  color: var(--color-black);
 }
