@@ -18,7 +18,7 @@ import React from 'react';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
-import styles from './Drawer.scss';
+import styles from './Drawer.module.css';
 
 export const Spinner = () => (
   <div className={styles.spinnerContainer}>

@@ -19,7 +19,7 @@ import React from 'react';
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './GenomeBrowserError.scss';
+import styles from './GenomeBrowserError.module.css';
 
 type Props = {
   error: { type: string; payload: unknown };

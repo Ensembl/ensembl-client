@@ -1,7 +1,7 @@
-@import 'src/styles/common';
-
-// Many of the styles are identical between GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss
-// TODO: go through GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss, and extract common styles
+/*
+Many of the styles are identical between GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss
+TODO: go through GeneSummary.scss, TranscriptSummary.scss, and VariantSummary.scss, and extract common styles
+*/
 
 /*
 For the reference (from Andrea)
@@ -26,7 +26,7 @@ For the reference (from Andrea)
 .row .label {
   line-height: 1.2;
   grid-column: label;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
   text-align: right;
   font-size: 12px;
 }
@@ -40,11 +40,11 @@ For the reference (from Andrea)
 }
 
 .strong {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .light {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .withSpaceLeft {
@@ -58,16 +58,16 @@ For the reference (from Andrea)
 .phenotypeAssociations {
   margin-top: 15px;
   margin-bottom: 30px;
+}
 
-  .value {
-    display: flex;
-    column-gap: 10px;
-  }
+.phenotypeAssociations .value {
+  display: flex;
+  column-gap: 10px;
+}
 
-  svg {
-    fill: $green;
-    width: 12px;
-  }
+.phenotypeAssociations svg {
+  fill: var(--color-green);
+  width: 12px;
 }
 
 .questionButton {

@@ -49,7 +49,7 @@ import { Spinner } from 'src/content/app/genome-browser/components/drawer/Drawer
 import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
-import styles from './TranscriptSummary.scss';
+import styles from './TranscriptSummary.module.css';
 
 type Props = {
   drawerView: TranscriptDrawerView;

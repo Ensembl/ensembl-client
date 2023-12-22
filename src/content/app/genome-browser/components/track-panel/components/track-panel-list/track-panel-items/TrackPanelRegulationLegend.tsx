@@ -34,9 +34,9 @@ import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { useGetSpeciesStatisticsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
-import styles from '../TrackPanelList.scss';
-import trackPanelItemStyles from './TrackPanelItem.scss';
-import regulationStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/regulation-legend/RegulationLegend.scss';
+import styles from '../TrackPanelList.module.css';
+import trackPanelItemStyles from './TrackPanelItem.module.css';
+import regulationStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/regulation-legend/RegulationLegend.module.css';
 
 const TrackPanelRegulationLegend = (props: { disabled: boolean }) => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;

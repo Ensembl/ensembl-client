@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .zmenuAnchor {
   position: absolute;
 }
@@ -13,18 +11,16 @@
   display: block;
 }
 
-.zmenuContentBlock {
-  &:not(:last-child) {
-    margin-right: 1.1em;
-  }
+.zmenuContentBlock:not(:last-child) {
+  margin-right: 1.1em;
 }
 
 .markupStrong {
-  font-weight: $bold;
+  font-weight: var(--font-weight-bold);
 }
 
 .markupLight {
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
 }
 
 .markupEmphasis {
@@ -33,7 +29,7 @@
 
 .markupFocus {
   cursor: pointer;
-  color: $blue;
+  color: var(--color-blue);
 }
 
 .zmenuLinksGrid {
@@ -49,21 +45,19 @@
 
 .zmenuToggleFooter {
   margin-left: auto;
-  color: $blue;
+  color: var(--color-blue);
 }
 
 .zmenuFooterContent {
   margin-top: 19px;
-  border-top: 1px solid rgba($grey, 0.3);
+  border-top: 1px solid rgba(var(--color-grey), 0.3);
   padding-top: 12px;
 }
 
-.zmenuInstantDowload {
-  &Loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.zmenuInstantDowloadLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .toolBox {

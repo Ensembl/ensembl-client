@@ -26,7 +26,7 @@ import { Position as TooltipPosition } from 'src/shared/components/pointer-box/P
 import type { HotspotMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 import type { TrackLegendHotspotPayload } from 'src/content/app/genome-browser/services/genome-browser-service/types/hotspot';
 
-import styles from './BrowserTrackLegend.scss';
+import styles from './BrowserTrackLegend.module.css';
 
 type Props = {
   containerRef: React.RefObject<HTMLDivElement>;

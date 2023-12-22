@@ -29,7 +29,7 @@ import BrowserNavButton from 'src/content/app/genome-browser/components/browser-
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import styles from './NavigationButtons.scss';
+import styles from './NavigationButtons.module.css';
 
 type BrowserLocation = {
   regionLength: number;

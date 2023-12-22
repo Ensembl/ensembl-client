@@ -24,7 +24,7 @@ import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice'
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from './BrowserLocationIndicator.scss';
+import styles from './BrowserLocationIndicator.module.css';
 
 export const BrowserLocationIndicator = () => {
   const actualChrLocation = useAppSelector(getActualChrLocation);

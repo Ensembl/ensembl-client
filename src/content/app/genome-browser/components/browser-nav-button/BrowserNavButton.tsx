@@ -25,7 +25,7 @@ import ZoomOutIcon from 'static/icons/icon_minus_circle.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './BrowserNavButton.scss';
+import styles from './BrowserNavButton.module.css';
 
 const buttonNameToIconMap = {
   moveLeft: NavigateLeftIcon,

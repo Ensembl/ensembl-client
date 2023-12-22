@@ -30,7 +30,7 @@ import {
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
-import styles from '../TrackSettingsPanel.scss';
+import styles from '../TrackSettingsPanel.module.css';
 
 type Props = {
   trackId: string;

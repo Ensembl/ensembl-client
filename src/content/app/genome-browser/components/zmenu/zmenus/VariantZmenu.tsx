@@ -30,7 +30,7 @@ import type {
   ZmenuContentVariantMetadata
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
-import styles from '../Zmenu.scss';
+import styles from '../Zmenu.module.css';
 
 type Props = {
   payload: ZmenuPayload;

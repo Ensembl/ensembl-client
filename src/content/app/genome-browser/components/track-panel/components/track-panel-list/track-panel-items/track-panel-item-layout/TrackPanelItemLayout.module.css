@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .grid {
   display: grid;
   grid-template-columns: [main] minmax(0, 1fr) [show-more] 16px [visibility-switch] 16px;
@@ -25,5 +23,5 @@
 
 .highlightableOnHover:hover,
 .highlighted {
-  background: $ice-blue;
+  background: var(--color-ice-blue);
 }

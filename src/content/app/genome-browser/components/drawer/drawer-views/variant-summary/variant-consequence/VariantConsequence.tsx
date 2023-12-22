@@ -21,7 +21,7 @@ import VariantColour from 'src/content/app/genome-browser/components/drawer/comp
 
 import type { Variant } from 'src/shared/types/variation-api/variant';
 
-import styles from './VariantConsequence.scss';
+import styles from './VariantConsequence.module.css';
 
 type MinimumPredictionResultData = Pick<
   Variant['prediction_results'][number],

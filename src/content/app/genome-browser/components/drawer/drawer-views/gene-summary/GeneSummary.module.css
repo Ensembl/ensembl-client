@@ -1,44 +1,43 @@
-@import 'src/styles/common';
-
 .row {
   display: grid;
   grid-template-columns: [label] 130px [value] auto;
   grid-column-gap: 10px;
   margin-bottom: 3px;
+}
 
-  .label {
-    grid-column: label;
-    font-weight: $light;
-    text-align: right;
-    font-size: 12px;
-  }
+.label {
+  grid-column: label;
+  font-weight: var(--font-weight-light);
+  text-align: right;
+  font-size: 12px;
+}
 
-  .value {
-    grid-column: value;
-    & > span + span {
-      margin-left: 10px;
-    }
+.value {
+  grid-column: value;
+}
 
-    & > div + div {
-      margin-top: 3px;
-    }
-  }
+.value > span + span {
+  margin-left: 10px;
+}
 
-  .labelWithPadding {
-    font-size: 12px;
-    font-weight: $light;
-    padding-right: 10px;
-  }
+.value > div + div {
+  margin-top: 3px;
+}
 
-  .questionButton {
-    padding-left: 10px;
-    position: relative;
-    top: 2px;
-  }
+.labelWithPadding {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  padding-right: 10px;
+}
 
-  .geneName {
-    width: 60ch;
-  }
+.questionButton {
+  padding-left: 10px;
+  position: relative;
+  top: 2px;
+}
+
+.geneName {
+  width: 60ch;
 }
 
 .spaceAbove {
@@ -65,24 +64,24 @@
 }
 
 .featureSymbol {
-  font-weight: $bold;
-}
-.stableId {
-  font-weight: $bold;
-}
-.featureSymbol + .stableId {
-  margin-left: 12px;
-  font-weight: $normal;
+  font-weight: var(--font-weight-bold);
 }
 
-.downloadRow {
-  > .value {
-    display: flex;
-  }
+.stableId {
+  font-weight: var(--font-weight-bold);
+}
+
+.featureSymbol + .stableId {
+  margin-left: 12px;
+  font-weight: var(--font-weight-normal);
+}
+
+.downloadRow > .value {
+  display: flex;
 }
 
 .downloadLink {
-  color: $blue;
+  color: var(--color-blue);
   cursor: pointer;
 }
 

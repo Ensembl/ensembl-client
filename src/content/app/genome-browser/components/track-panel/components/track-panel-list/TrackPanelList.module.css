@@ -1,0 +1,83 @@
+.trackPanelList {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--color-white);
+}
+
+.trackPanelList h4 {
+  border-bottom: 1px solid var(--color-grey);
+  color: var(--color-grey);
+  font-size: 10px;
+  padding-bottom: 2px;
+}
+
+.mainTrackItem {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.emptyListMsg {
+  font-size: 12px;
+  margin-left: 0;
+  padding: 4px 10px;
+}
+
+.accordionContainer {
+  width: 100%;
+}
+
+.trackPanelAccordion {
+  border: none;
+}
+
+.trackPanelAccordionHeader {
+  background-color: var(--color-light-grey);
+  border-radius: 5px;
+}
+
+.trackPanelAccordionButton {
+  color: var(--color-blue);
+  padding: 5px 15px 5px 17px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.trackPanelAccordionButton::before,
+.trackPanelAccordionButton::after {
+  margin-top: -3px;
+}
+
+.trackPanelAccordionButtonDisabled {
+  color: var(--color-grey);
+}
+
+.trackPanelAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.trackPanelAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 10px 0 20px;
+}
+
+.modalLinksWrapper {
+  margin: 0 0 20px 10px;
+  display: flex;
+  column-gap: 30px;
+}
+
+.modalLinksWrapper svg {
+  fill: var(--color-blue);
+  width: 13px;
+  margin-left: 10px;
+}
+
+.modalLink {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-blue);
+  cursor: pointer;
+}

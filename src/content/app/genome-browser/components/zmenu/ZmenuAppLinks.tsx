@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -25,8 +26,7 @@ import ViewInApp, {
   type LinksConfig
 } from 'src/shared/components/view-in-app/ViewInApp';
 
-import styles from './Zmenu.scss';
-import { useNavigate } from 'react-router';
+import styles from './Zmenu.module.css';
 
 type Props = {
   featureId: string;

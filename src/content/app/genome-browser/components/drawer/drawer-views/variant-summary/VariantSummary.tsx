@@ -39,7 +39,7 @@ import type { VariantQueryResult } from 'src/content/app/genome-browser/state/ap
 
 import TickCircleIcon from 'static/icons/icon_tick_circle.svg';
 
-import styles from './VariantSummary.scss';
+import styles from './VariantSummary.module.css';
 
 type Props = {
   drawerView: VariantDrawerView;

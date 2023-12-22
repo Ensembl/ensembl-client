@@ -31,7 +31,7 @@ import { getPreviouslyViewedObjects } from 'src/content/app/genome-browser/state
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import styles from './DrawerBookmarks.scss';
+import styles from './DrawerBookmarks.module.css';
 
 const DrawerBookmarks = () => {
   const previouslyViewedObjects = useAppSelector(

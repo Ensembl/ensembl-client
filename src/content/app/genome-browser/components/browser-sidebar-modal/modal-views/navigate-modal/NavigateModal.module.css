@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .navigateAccordion {
   border: none;
 }
@@ -8,12 +6,12 @@
 }
 
 .helpText {
-  font-weight: $light;
-  background-color: $white;
+  font-weight: var(--font-weight-light);
+  background-color: var(--color-white);
   padding: 0 14px 14px 14px;
 }
 .navigateAccordionItem {
-  border: 1px solid $medium-light-grey;
+  border: 1px solid var(--color-medium-light-grey);
 }
 .navigateAccordionItem + .navigateAccordionItem {
   border-top: none;
@@ -21,26 +19,24 @@
 
 .navigateAccordionItemButton {
   padding: 14px;
-  color: $blue;
+  color: var(--color-blue);
 }
 
 .navigateSection {
-  background-color: $light-grey;
+  background-color: var(--color-light-grey);
   padding: 14px;
 }
 
 .inputField {
   margin-top: 10px;
-  font-weight: $light;
+  font-weight: var(--font-weight-light);
+}
 
-  label {
-    & > span {
-      display: inline-block;
-      margin-right: 10px;
-      text-align: right;
-      width: 32px;
-    }
-  }
+.inputField label > span {
+  display: inline-block;
+  margin-right: 10px;
+  text-align: right;
+  width: 32px;
 }
 
 .segmentedInput {
@@ -49,9 +45,9 @@
 }
 
 .segmentedInputDisabled {
-  --simple-select-border: 1px solid #{$grey};
-  --simple-select-arrowhead-color: #{$grey};
-  --select-background-color: #{$light-grey};
+  --simple-select-border: 1px solid var(--color-grey);
+  --simple-select-arrowhead-color: var(--color-grey);
+  --select-background-color: var(--color-light-grey);
 }
 
 .singleInput {
@@ -60,20 +56,20 @@
 }
 
 .errorMessage {
-  color: $red;
+  color: var(--color-red);
   margin: 20px 0 0 42px;
 }
 
 .formButtons {
   margin-top: 30px;
   text-align: right;
+}
 
-  .cancel {
-    margin-right: 20px;
-  }
+.cancel {
+  margin-right: 20px;
 }
 
 .clickableText {
-  color: $light-blue;
+  color: var(--color-light-blue);
   cursor: pointer;
 }

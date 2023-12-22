@@ -51,7 +51,7 @@ import MissingFeatureError from 'src/shared/components/error-screen/url-errors/M
 import { GenomeBrowserProvider } from './contexts/GenomeBrowserContext';
 import { GenomeBrowserIdsProvider } from './contexts/genome-browser-ids-context/GenomeBrowserIdsContext';
 
-import styles from './Browser.scss';
+import styles from './Browser.module.css';
 
 export const Browser = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);

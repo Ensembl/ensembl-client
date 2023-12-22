@@ -56,7 +56,7 @@ import type {
   FocusVariant as FocusVariantType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './TrackPanelList.scss';
+import styles from './TrackPanelList.module.css';
 
 export const TrackPanelList = () => {
   // by the time this component renders, genome id should be available

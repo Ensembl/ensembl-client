@@ -26,7 +26,7 @@ import {
 import NavigateRegionModal from './navigate-modal/RegionNavigation';
 import NavigateLocationModal from './navigate-modal/LocationNavigation';
 
-import styles from './navigate-modal/NavigateModal.scss';
+import styles from './navigate-modal/NavigateModal.module.css';
 
 const NavigateModal = () => {
   return (

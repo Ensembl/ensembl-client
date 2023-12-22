@@ -25,7 +25,7 @@ import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocat
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from './BrowserBar.scss';
+import styles from './BrowserBar.module.css';
 
 export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);

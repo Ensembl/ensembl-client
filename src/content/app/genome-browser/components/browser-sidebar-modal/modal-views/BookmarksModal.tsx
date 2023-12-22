@@ -31,7 +31,7 @@ import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/dr
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import styles from './BookmarksModal.scss';
+import styles from './BookmarksModal.module.css';
 
 export const PreviouslyViewedLinks = () => {
   const { genomeIdForUrl, focusObjectId } = useGenomeBrowserIds();
