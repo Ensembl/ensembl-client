@@ -1,26 +1,16 @@
-@import 'src/styles/common';
-
 .launchbar {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid $grey;
-  border-top: 1px solid $grey;
-  padding: 0 $standard-gutter;
+  border-bottom: 1px solid var(--color-grey);
+  border-top: 1px solid var(--color-grey);
+  padding: 0 var(--standard-gutter);
   height: 60px;
   align-items: center;
-
-  @media screen and (max-width: 700px) {
-    overflow-x: auto;
-  }
 }
 
 .categoriesWrapper {
   display: flex;
   flex-wrap: nowrap;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .categories {
@@ -36,22 +26,22 @@
   display: inline-block;
   height: 32px;
   width: 32px;
-  background-color: $blue;
-  fill: $white;
+  background-color: var(--color-blue);
+  fill: var(--color-white);
 }
 
 .launchbarButtonSelected {
-  background-color: $black;
+  background-color: var(--color-black);
 }
 
 .launchbarButtonDisabled {
-  background-color: $grey;
+  background-color: var(--color-grey);
 }
 
 .category {
   display: flex;
   column-gap: 20px;
-  padding: 0 $standard-gutter;
+  padding: 0 var(--standard-gutter);
 
   &:first-child {
     padding-left: 0px;
@@ -64,19 +54,19 @@
   }
 
   &:not(:last-child) {
-    border-right: 1px solid $grey;
+    border-right: 1px solid var(--color-grey);
   }
 }
 
 .aboutEnsembl {
   display: flex;
   align-items: center;
-  color: $blue;
+  color: var(--color-blue);
 }
 
 .logotype {
   height: 10px;
-  fill: $blue;
+  fill: var(--color-blue);
   margin-left: 0.35rem;
   margin-right: 0.25rem;
 }
@@ -93,12 +83,12 @@
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
+}
 
-  &Red {
-    background-color: $red;
-  }
+.notificationRed {
+  background-color: var(--color-red);
+}
 
-  &Green {
-    background-color: $green;
-  }
+.notificationGreen {
+  background-color: var(--color-green);
 }

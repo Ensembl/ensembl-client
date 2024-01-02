@@ -56,6 +56,12 @@
   --body-font-size: 13px;
   --body-line-height: 1.5;
 
+  /* 
+    A filter that transforms our black svg species icons to the required grey colour
+    The magic numbers are from a generator at https://codepen.io/sosuke/pen/Pjoqqp
+  */
+  --black-to-grey-species-icon-filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%);
+
   /* UPLOAD BUTTON */
   --highlighted-upload-button-background: var(--color-ice-blue);
   --upload-button-taller-height: 102px;

@@ -1,9 +1,8 @@
 /* Avoiding the newer CSS features, such as flexbox or grid, or CSS variables, for maximum browser compatibility */
 
 html,
-body,
-[class='ens-app'] {
-  min-width: initial !important; /* !important seems to be the only way to override the min-width set in styles/main.scss */
+body {
+  min-width: initial !important; /* override the min-width set in styles/main.css */
 }
 
 .container {

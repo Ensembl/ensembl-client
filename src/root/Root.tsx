@@ -33,7 +33,7 @@ import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 import { setScrollbarWidth } from 'src/shared/helpers/scrollbarWidth';
 
-import styles from './Root.scss';
+import styles from './Root.module.css';
 
 export const Root = () => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);

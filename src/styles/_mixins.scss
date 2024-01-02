@@ -1,8 +1,0 @@
-@mixin lozenge($lineHeight: 1, $borderRadius: 20px) {
-  display: inline-block;
-  padding: 6px 20px;
-  border-radius: $borderRadius;
-  line-height: $lineHeight;
-  user-select: none;
-  margin-bottom: 4px;
-}

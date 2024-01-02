@@ -46,6 +46,7 @@ const AppContainer = () => {
   }, [location.pathname]);
 
   useEffect(() => {
+    // TODO: update this; we are no longer using an element with the "ens-app" id
     const reactRootElement = document.getElementById('ens-app') as HTMLElement;
     callbackRef(reactRootElement);
   }, []);

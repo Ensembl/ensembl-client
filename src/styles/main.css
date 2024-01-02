@@ -31,8 +31,7 @@ body {
 }
 
 html,
-body,
-.ens-app {
+body {
   height: 100%;
   width: 100%;
   min-width: 980px; /* when mobile phones in portrait mode scale the page down to fill the screen, they usually go to 980px */
@@ -78,6 +77,11 @@ button {
   border-radius: 0;
   background: transparent;
   line-height: 1;
+  cursor: pointer;
+}
+
+button[disabled] {
+  cursor: default;
 }
 
 pre {
@@ -134,15 +138,6 @@ sup {
   top: -0.5em;
 }
 
-/*
-button {
-  cursor: pointer;
-
-  &[disabled] {
-    cursor: default;
-  }
-}
-*/
 
 @media print {
   body {
