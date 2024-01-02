@@ -37,7 +37,7 @@ import { MAX_BLAST_SEQUENCE_COUNT } from 'src/content/app/tools/blast/utils/blas
 
 import type { SequenceType } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastInputSequences.scss';
+import styles from './BlastInputSequences.module.css';
 import sequenceBoxStyles from './BlastInputSequence.module.css';
 
 export type Props = {

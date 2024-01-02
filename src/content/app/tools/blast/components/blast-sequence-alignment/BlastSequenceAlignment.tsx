@@ -22,7 +22,7 @@ import { simpleStringBlastAlignmentFormatter } from './formatters/simpleStringFo
 import type { BlastSequenceAlignmentInput } from './blastSequenceAlignmentTypes';
 import type { DatabaseType } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './BlastSequenceAlignment.scss';
+import styles from './BlastSequenceAlignment.module.css';
 
 type Props = {
   alignment: BlastSequenceAlignmentInput & { hitId: string };

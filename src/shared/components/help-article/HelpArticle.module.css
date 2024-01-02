@@ -1,40 +1,35 @@
-@import 'src/styles/common';
-@import 'helpArticleConstants';
-
-$indexItemWidth: 364px;
-$indexItemsHorizontalGap: 100px;
-$pageLeftPadding: 88px;
-$asideLeftPadding: 12px;
-$textColumnWidth: 450px;
-$listItemIndent: 34px;
-$topListItemMarginBottom: 1ch;
+/* NOTE:
+  the text article class requires access to variables
+  defined in helpArticleVariables.module.css
+*/
 
 .textArticle {
+  --text-column-width: 450px;
   height: 100%;
   overflow-y: auto;
-  padding-left: $heading-outdent;
+  padding-left: var(--heading-outdent);
   padding-bottom: 3rem;
 
   h1 {
     font-size: 17px;
     line-height: 18px;
     font-weight: var(--font-weight-normal);
-    margin: 0 0 $heading-margin-bottom -#{$heading-outdent};
+    margin: 0 0 var(--heading-margin-bottom) calc(-1 * var(--heading-outdent));
   }
 
   h2,
   h3 {
     font-size: 13px;
-    margin-bottom: $line-height;
+    margin-bottom: var(--line-height);
   }
 
   h2 {
-    margin-top: calc(2 * #{$line-height});
-    margin-left: -#{$heading-outdent};
+    margin-top: calc(2 * var(--line-height));
+    margin-left: calc(-1 * var(--heading-outdent));
   }
 
   h3 {
-    margin-top: $line-height;
+    margin-top: var(--line-height);
   }
 
   h1,
@@ -43,17 +38,17 @@ $topListItemMarginBottom: 1ch;
   p,
   ul,
   ol {
-    width: $textColumnWidth;
+    width: var(--text-column-width);
   }
 
   p {
-    margin: $line-height 0;
+    margin: var(--line-height) 0;
   }
 
   /* ==== LISTS ==== */
 
   ul, ol {
-    padding-left: $listItemIndent;
+    padding-left: 34px;
   }
 
   /* items of the top-level and second-level unordered list have black solid disks as list markers */
@@ -65,7 +60,7 @@ $topListItemMarginBottom: 1ch;
   /* top-level list items have a margin-bottom, if not immediately followed by a nested list */
   ul li:not(:has(+ ul, + ol)),
   ol li:not(:has(+ ul, + ol)) {
-    margin-bottom: $line-height;
+    margin-bottom: var(--line-height);
   }
 
   /* in nested lists, list items do not have a margin-bottom */
@@ -98,7 +93,7 @@ $topListItemMarginBottom: 1ch;
     margin-top: 10px;
     font-size: 11px;
     font-weight: var(--font-weight-light);
-    width: $textColumnWidth;
+    width: var(--text-column-width);
   }
 
   /* if anyone decides to split caption text into paragraphs */
@@ -118,11 +113,12 @@ $topListItemMarginBottom: 1ch;
 
   hr {
     display: inline-block;
-    width: $textColumnWidth;
+    width: var(--text-column-width);
   }
 
-  // Notice that the external-link svg has the same shape as in the static/img/shared folder
-  // But the version copied here has the fill color set inline, because it is being accessed as an external image via url
+  /* Notice that the external-link svg has the same shape as in the static/img/shared folder
+     But the version copied here has the fill color set inline, because it is being accessed as an external image via url
+  */
   a[href^='http'] {
     &::before {
       content: '';
@@ -135,33 +131,9 @@ $topListItemMarginBottom: 1ch;
   }
 
   pre {
-    background-color: var(--color-light-grey); // Add a background color to code snippets
+    background-color: var(--color-light-grey); /* Add a background color to code snippets */
     padding: 15px;
     font-family: var(--font-family-monospace);
-  }
-}
-
-.indexArticle {
-  display: grid;
-  grid-template-columns: repeat(3, #{$indexItemWidth});
-  grid-column-gap: $indexItemsHorizontalGap;
-  grid-row-gap: 52px;
-  max-width: calc(3 * #{$indexItemWidth} + 2 * #{$indexItemsHorizontalGap});
-
-  .indexItem {
-    width: $indexItemWidth;
-    flex: 0 0 auto;
-  }
-
-  h2 {
-    font-size: 16px;
-    font-weight: var(--font-weight-bold);
-  }
-}
-
-@media (max-width: #{$pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap}) {
-  .indexArticle {
-    grid-template-columns: repeat(2, #{$indexItemWidth});
   }
 }
 
@@ -170,10 +142,12 @@ $topListItemMarginBottom: 1ch;
 }
 
 .videoWrapper {
-  // the position of the wrapper is set to relative and the position of the iframe to absolute
-  // because the wrapper needs to change its dimensions when its parent does
-  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
-  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
+  /*
+    the position of the wrapper is set to relative and the position of the iframe to absolute
+    because the wrapper needs to change its dimensions when its parent does
+    while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+    TODO: change this to aspect-ratio CSS rule when it gets better browser support
+  */
   position: relative;
   height: 100%;
   display: flex;
@@ -230,7 +204,7 @@ $topListItemMarginBottom: 1ch;
   background-color: var(--color-blue);
   height: 10px;
   width: 16px;
-  margin-left: -#{$asideLeftPadding};
+  margin-left: -12px;
 
   svg {
     height: 80%;

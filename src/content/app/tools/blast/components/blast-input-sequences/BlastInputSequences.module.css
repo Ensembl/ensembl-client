@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .blastInputSequences {
   width: 860px;
 }
@@ -9,7 +7,7 @@
   grid-template-columns: auto auto 1fr;
   column-gap: 52px;
   width: 862px;
-  margin-left: -1px; //increasing the width by 2px and adding a left margin so that we dont see the borders shadows from the box below when scrolling
+  margin-left: -1px; /* increasing the width by 2px and adding a left margin so that we dont see the borders shadows from the box below when scrolling */
   align-items: center;
   padding: 20px 0 12px 28px;
   position: sticky;
@@ -48,10 +46,10 @@
   border-radius: 100%;
   font-size: 15px;
   margin: 0 0.6rem 0 0.6rem;
+}
 
-  &Error {
-    background-color: var(--color-red);
-  }
+.sequenceCounterError {
+  background-color: var(--color-red);
 }
 
 .maxSequences {
@@ -69,11 +67,9 @@
   margin-left: 18px;
 }
 
-.inputBoxesContainer {
-  // hide top border for the input boxes stacked under the top one
-  & > div:not(:first-child) [class*='header'] {
-    border-top: none;
-  }
+/* hide top border for the input boxes stacked under the top one */
+.inputBoxesContainer > div:not(:first-child) [class*='header'] {
+  border-top: none;
 }
 
 .addSequence {

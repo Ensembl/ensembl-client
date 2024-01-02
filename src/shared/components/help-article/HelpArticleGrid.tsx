@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './HelpArticleGrid.scss';
+import styles from './HelpArticleGrid.module.css';
 
 type Props = {
   children: ReactNode;

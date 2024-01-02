@@ -1,0 +1,6 @@
+.variablesContainer {
+  --heading-outdent: var(--standard-gutter);
+  --heading-margin-bottom: 27px;
+  --aside-title-margin-bottom: var(--heading-margin-bottom);
+  --line-height: 17px;
+}

@@ -22,7 +22,7 @@ import VideoIcon from 'static/icons/icon_video.svg';
 
 import { RelatedArticleData } from 'src/shared/types/help-and-docs/article';
 
-import styles from './HelpArticle.scss';
+import styles from './HelpArticle.module.css';
 
 type Props = {
   articles: RelatedArticleData[];
