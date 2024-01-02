@@ -93,11 +93,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.howToUse {
-  display: grid;
-  grid-template-columns: 130px auto;
-}
-
 .homeTopRight .text {
   font-weight: var(--font-weight-bold);
   align-self: center;
