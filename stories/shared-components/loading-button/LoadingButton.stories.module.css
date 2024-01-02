@@ -1,12 +1,9 @@
-@import 'src/styles/common';
-
 .wrapper {
   height: 95vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
 }
 
 .backgroundComparisonGrid {
@@ -34,7 +31,7 @@
 }
 
 .darkContainer {
-  background: $soft-black;
+  background: var(--color-soft-black);
 }
 
 .note {
@@ -43,23 +40,23 @@
 
 .controls {
   margin-top: 4em;
+}
 
-  input {
-    margin-left: 1rem;
-  }
+.controls input {
+  margin-left: 1rem;
+}
 
-  & > div {
-    display: flex;
-    align-items: center;
-  }
+.controls > div {
+  display: flex;
+  align-items: center;
 }
 
 .responseDurationControl {
   margin-bottom: 1rem;
+}
 
-  input {
-    margin-right: 0.6rem;
-  }
+.responseDurationControl input {
+  margin-right: 0.6rem;
 }
 
 .buttonDisableControlWrapper {

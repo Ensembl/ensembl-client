@@ -18,7 +18,7 @@ import React from 'react';
 
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
-import styles from './Breadcrumbs.stories.scss';
+import styles from './Breadcrumbs.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Breadcrumbs'

@@ -1,7 +1,5 @@
-@import 'src/styles/common';
-
 .greyStage {
-  background-color: $light-grey;
+  background-color: var(--color-light-grey);
 }
 
 .customizedInput {

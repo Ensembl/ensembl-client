@@ -1,13 +1,11 @@
-@import 'src/styles/common';
-
 .pointerBox {
   padding: 6px 12px;
   background: black;
   color: white;
+}
 
-  p {
-    max-width: 200px;
-  }
+.pointerBox p {
+  max-width: 200px;
 }
 
 .pointerBoxPointer {
@@ -20,11 +18,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
 
-  h1 {
-    position: absolute;
-    top: 2em;
-  }
+.variantsStoryLayout h1 {
+  position: absolute;
+  top: 2em;
 }
 
 .variantsStoryContainer {
@@ -40,9 +38,10 @@
   background: black;
   border-radius: 50%;
   cursor: pointer;
-  &:hover {
-    background: green;
-  }
+}
+
+.variantsStoryAnchor:hover {
+  background: green;
 }
 
 .variantsStoryTopLeft {
@@ -99,13 +98,13 @@
   position: relative;
   height: 600px;
   width: 600px;
-  background: $light-grey;
+  background: var(--color-light-grey);
 }
 
 .positioningStoryItem {
   position: absolute;
   padding: 1.5em;
-  background: $grey;
+  background: var(--color-grey);
 }
 
 .positioningStoryItemTopLeft {
@@ -175,7 +174,7 @@
 .scrollingStoryButton {
   position: relative;
   padding: 1.5em;
-  background: $grey;
+  background: var(--color-grey);
 }
 
 .renderSwitch {
@@ -183,14 +182,14 @@
 }
 
 .renderSwitchItem {
-  color: $blue;
+  color: var(--color-blue);
   text-decoration: underline;
   text-decoration-style: dotted;
   cursor: pointer;
+}
 
-  &:first-child {
-    margin-right: 1em;
-  }
+.renderSwitchItem:first-child {
+  margin-right: 1em;
 }
 
 .renderSwitchItemActive {

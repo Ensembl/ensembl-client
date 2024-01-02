@@ -18,7 +18,7 @@ import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import styles from './QuestionButton.stories.scss';
+import styles from './QuestionButton.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Question button'

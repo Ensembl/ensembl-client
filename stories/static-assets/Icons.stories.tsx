@@ -18,7 +18,7 @@ import React from 'react';
 
 import IconCard from './IconCard';
 
-import storyStyles from '../common.scss';
+import storyStyles from '../common.module.css';
 
 function importAllIcons() {
   const iconsContextModule: any = require.context(

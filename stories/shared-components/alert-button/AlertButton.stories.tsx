@@ -18,7 +18,7 @@ import React from 'react';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
-import styles from './AlertButton.stories.scss';
+import styles from './AlertButton.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Alert button'

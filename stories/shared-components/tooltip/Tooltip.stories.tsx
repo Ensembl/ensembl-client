@@ -21,7 +21,7 @@ import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import styles from './Tooltip.stories.scss';
+import styles from './Tooltip.stories.module.css';
 
 const canonicalTranscriptDefinition = `
 	The canonical transcript is used in the gene tree analysis in Ensembl

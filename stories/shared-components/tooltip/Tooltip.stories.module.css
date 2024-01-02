@@ -1,0 +1,55 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.containerTall {
+  height: 150vh;
+  justify-content: flex-start;
+}
+
+.containerInner {
+  max-width: 600px;
+  margin: auto;
+}
+
+.tooltipAnchor {
+  display: inline-block;
+  background-color: cadetblue;
+  color: white;
+  padding: 10px 16px;
+  cursor: default;
+}
+
+.containerTall .containerInner {
+  margin: 100px auto;
+}
+
+.containerOverflow .containerInner {
+  overflow: hidden;
+  border: 1px dashed black;
+}
+
+.containerOverflow .tooltipAnchor {
+  float: right;
+}
+
+.tooltipContent {
+  max-width: 400px;
+}
+
+.contentSwitch {
+  margin: 1em 0;
+}
+
+.contentSwitchItem {
+  margin-right: 1em;
+}
+
+.contentSwitchItemActive {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  cursor: pointer;
+}

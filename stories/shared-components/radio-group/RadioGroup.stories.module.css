@@ -1,11 +1,9 @@
-@import 'src/styles/common';
-
 .lightThemeWrapper {
   padding: 0.6rem;
 }
 
 .darkThemeWrapper {
-  background-color: $black;
+  background-color: var(--color-black);
   padding: 0.6rem;
 }
 

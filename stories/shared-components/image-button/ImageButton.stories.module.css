@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .defaultStoryContainer {
   display: grid;
   grid-template-columns: min-content 1fr;
@@ -16,5 +14,5 @@
 
 .styledDefaultStoryButton {
   border: 1px solid black;
-  --image-button-default-svg-color: #{$green};
+  --image-button-default-svg-color: var(--color-green);
 }

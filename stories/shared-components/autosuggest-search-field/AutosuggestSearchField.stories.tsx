@@ -23,7 +23,7 @@ import notes from './autosuggestSearchField.md';
 
 import * as matches from 'tests/data/species-selector/species-search';
 
-import styles from './AutosuggestSearchField.stories.scss';
+import styles from './AutosuggestSearchField.stories.module.css';
 
 type DefaultArgs = {
   onSelect: (...args: any) => void;

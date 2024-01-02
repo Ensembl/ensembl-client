@@ -25,7 +25,7 @@ import {
   HelpIcon
 } from 'src/shared/components/app-icon';
 
-import styles from './AppIcon.stories.scss';
+import styles from './AppIcon.stories.module.css';
 
 export const AppIconStory = () => (
   <div className={styles.column}>

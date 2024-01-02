@@ -20,7 +20,7 @@ import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozeng
 
 import speciesData from './speciesData';
 
-import styles from './SelectedSpecies.stories.scss';
+import styles from './SelectedSpecies.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Selected Species',

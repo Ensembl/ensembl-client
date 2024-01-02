@@ -23,7 +23,7 @@ import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 
-import styles from './InstantDownload.stories.scss';
+import styles from './InstantDownload.stories.module.css';
 
 const genomeId = 'a7335667-93e7-11ec-a39d-005056b38ce3';
 

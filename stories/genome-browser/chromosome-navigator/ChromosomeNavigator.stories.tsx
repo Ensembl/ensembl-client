@@ -20,7 +20,7 @@ import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { ChromosomeNavigator } from 'src/content/app/genome-browser/components/chromosome-navigator/ChromosomeNavigator';
 
-import styles from './ChromosomeNavigator.stories.scss';
+import styles from './ChromosomeNavigator.stories.module.css';
 
 export const ChromosomeNavigatorStory = () => {
   const length = 1000000;

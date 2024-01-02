@@ -1,13 +1,11 @@
-@import 'src/styles/common';
-
 .wrapper {
   padding: 40px;
 }
 
 .active {
   border: none;
-  background-color: $dark-grey;
-  color: $white;
+  background-color: var(--color-dark-grey);
+  color: var(--color-white);
 }
 
 .imageButtonWrapper {
@@ -17,5 +15,5 @@
 }
 
 .badge {
-  background-color: $red;
+  background-color: var(--color-red);
 }

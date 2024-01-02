@@ -24,7 +24,7 @@ import DataTable from 'src/shared/components/data-table/DataTable';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import { createDataTableSampleData } from 'src/shared/components/data-table/DataTable.test';
 
-import styles from './DataTable.stories.scss';
+import styles from './DataTable.stories.module.css';
 
 const tableThemeOptions = [
   { value: 'light', label: 'Light' },

@@ -19,7 +19,7 @@ import React from 'react';
 import Textarea from 'src/shared/components/textarea/Textarea';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 
-import styles from './Textarea.stories.scss';
+import styles from './Textarea.stories.module.css';
 
 type DefaultArgs = {
   onFocus: (...args: any) => void;

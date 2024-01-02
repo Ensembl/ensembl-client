@@ -19,7 +19,7 @@ import { MemoryRouter } from 'react-router';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './ButtonLink.stories.scss';
+import styles from './ButtonLink.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/ButtonLink'

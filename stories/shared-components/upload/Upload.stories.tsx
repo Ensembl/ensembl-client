@@ -31,7 +31,7 @@ import type {
   TransformTo
 } from 'src/shared/components/upload/types';
 
-import styles from './Upload.stories.scss';
+import styles from './Upload.stories.module.css';
 
 type DefaultArgs = {
   onChange: (...args: any) => void;

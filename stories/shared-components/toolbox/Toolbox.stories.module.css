@@ -1,5 +1,3 @@
-@import 'src/styles/common';
-
 .container {
   height: 100vh;
   display: flex;
@@ -13,11 +11,9 @@
   background: pink;
 }
 
-.mainToolboxContent {
-  .toggleButton {
-    margin-left: 1em;
-    float: right;
-  }
+.toggleButton {
+  margin-left: 1em;
+  float: right;
 }
 
 .mainToolboxContent,

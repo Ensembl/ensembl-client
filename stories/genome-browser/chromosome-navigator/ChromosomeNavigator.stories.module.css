@@ -1,10 +1,8 @@
-@import 'src/styles/common';
-
 .chromosomeNavigatorContainer {
   height: 100px;
   display: flex;
   align-items: center;
-  background-color: $light-grey;
+  background-color: var(--color-light-grey);
   padding: 0 100px;
 
   [class*='chromosomeNavigator'] {

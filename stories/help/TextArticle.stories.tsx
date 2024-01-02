@@ -22,8 +22,8 @@ import imagesExample from './example-content/images';
 import listsExample from './example-content/lists';
 import codeExample from './example-content/code-block';
 
-import storyStyles from './TextArticle.stories.scss';
-import styles from 'src/shared/components/help-article/HelpArticle.scss';
+import storyStyles from './TextArticle.stories.module.css';
+import styles from 'src/shared/components/help-article/HelpArticle.module.css';
 
 export const HeadingsAndBodyStory = {
   name: 'Headings and body',

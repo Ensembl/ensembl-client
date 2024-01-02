@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import Checkbox, {
   CheckboxProps
 } from 'src/shared/components/checkbox/Checkbox';
-import styles from './Checkbox.stories.scss';
+import styles from './Checkbox.stories.module.css';
 
 type DefaultArgs = {
   onChange: (...args: any) => void;

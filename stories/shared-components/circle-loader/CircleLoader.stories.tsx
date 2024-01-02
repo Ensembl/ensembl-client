@@ -18,7 +18,7 @@ import React from 'react';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
-import styles from './CircleLoader.stories.scss';
+import styles from './CircleLoader.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/CircleLoader'

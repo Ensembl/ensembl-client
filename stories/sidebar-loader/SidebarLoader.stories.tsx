@@ -18,7 +18,7 @@ import React from 'react';
 
 import { SidebarLoader } from 'src/shared/components/loader';
 
-import styles from './SidebarLoader.stories.scss';
+import styles from './SidebarLoader.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/SidebarLoader'

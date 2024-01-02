@@ -17,7 +17,7 @@
 import React, { useState, useRef } from 'react';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
-import styles from './useOutsideClick.stories.scss';
+import styles from './useOutsideClick.stories.module.css';
 
 // this function returns either a div or a span,
 // depending on the number of clicks on the element

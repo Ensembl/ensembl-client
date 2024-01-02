@@ -21,7 +21,7 @@ import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 
-import styles from './PointerBox.stories.scss';
+import styles from './PointerBox.stories.module.css';
 
 const ScrollingStory = () => {
   const [showPointerBox, setShowPointerBox] = useState(false);

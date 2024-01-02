@@ -1,0 +1,24 @@
+.customizedTextarea {
+  color: var(--color-blue);
+  font-size: 30px;
+  font-weight: bold;
+  padding: 16px;
+  border: 1px solid var(--color-blue);
+}
+
+.defaultWrapper {
+  padding: 40px;
+  background: var(--color-light-grey);
+}
+
+.stage {
+  padding: 30px;
+}
+
+.stage + .stage {
+  margin-top: 3ch;
+}
+
+.greyStage {
+  background: var(--color-light-grey);
+}

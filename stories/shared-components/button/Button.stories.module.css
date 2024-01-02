@@ -1,0 +1,7 @@
+.wrapper {
+  padding: 40px;
+}
+
+.lightGreyWrapper {
+  background: var(--color-light-grey);
+}

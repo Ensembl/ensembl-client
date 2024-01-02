@@ -1,0 +1,9 @@
+.wrapper {
+  padding: 40px;
+}
+
+.active {
+  border: none;
+  background-color: var(--color-dark-grey);
+  color: var(--color-white);
+}
