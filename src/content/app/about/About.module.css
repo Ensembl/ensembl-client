@@ -29,6 +29,6 @@
 }
 
 .asideTitle {
-  font-weight: var(--color-light);
+  font-weight: var(--font-weight-light);
   margin-bottom: 1rem;
 }

@@ -29,7 +29,7 @@
 .mainTopMiddle .text {
   text-align: center;
   font-size: 18px;
-  font-weight: var(--color-light);
+  font-weight: var(--font-weight-light);
   color: var(--color-white);
   margin-top: 15px;
 }
@@ -55,14 +55,14 @@
   text-align: center;
   padding: 5px;
   font-size: 18px;
-  font-weight: var(--color-bold);
+  font-weight: var(--font-weight-bold);
 }
 
 .appListItem .button span {
   margin-left: -20px;
 }
 
-.appListItem .button .appIconWrapper {
+.appIconWrapper {
   font-size: 0;
   position: absolute;
   right: 20px;
@@ -88,12 +88,12 @@
   align-items: start;
 }
 
-.homeTopRight .helpLabel {
+.helpLabel {
   color: var(--color-blue);
   font-weight: var(--font-weight-bold);
 }
 
-.homeTopRight .howToUse {
+.howToUse {
   display: grid;
   grid-template-columns: 130px auto;
 }
@@ -103,7 +103,7 @@
   align-self: center;
 }
 
-.homeTopRight .helpIcon {
+.helpIcon {
   width: 25px;
   height: 22px;
   border-radius: 5px;
@@ -111,7 +111,7 @@
   background-color: var(--color-blue);
 }
 
-.homeTopRight .conversationIcon {
+.conversationIcon {
   width: 40px;
   margin-left: 20px;
   height: 25px;
@@ -121,7 +121,8 @@
   overflow-x: hidden;
   position: relative;
 }
-.speciesContainer .speciesStrip {
+
+.speciesStrip {
   max-width: none;
   height: 100%;
   position: absolute;
@@ -129,7 +130,7 @@
   transform: translateX(calc(-1 * (100% - 100vw) / 2));
 }
 
-.speciesContainer .platform {
+.platform {
   position: absolute;
   bottom: 0;
   background-color: var(--color-dark-grey);
@@ -139,17 +140,17 @@
 }
 
 @media (orientation: portrait) {
-  .speciesContainer .speciesStrip {
+  .speciesStrip {
     max-height: 60%;
     transform: translateX(calc(-1 * (100% - 100vw) / 2));
   }
 
-  .speciesContainer .platform {
+  .platform {
     height: 6%;
   }
 }
 
-footer {
+.home footer {
   display: grid;
   grid-template-columns: auto auto;
   column-gap: 1.5rem;
@@ -178,7 +179,7 @@ footer {
 
 .footerLeft .text {
   font-size: 15px;
-  font-weight: 300;
+  font-weight: var(--font-weight-light);
   color: var(--color-dark-grey);
   margin-right: 10px;
 }
