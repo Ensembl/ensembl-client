@@ -13,8 +13,8 @@
 }
 
 .container table {
-  width: 100%;
   --table-background: var(--color-light-grey);
+  width: 100%;
 }
 
 .container th:first-child {

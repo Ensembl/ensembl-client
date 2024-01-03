@@ -20,8 +20,8 @@
 
 .section {
   display: flex;
-  margin: 5px 0px;
-  padding: 0px 18px;
+  margin: 5px 0;
+  padding: 0 18px;
 }
 
 .section:first-child {

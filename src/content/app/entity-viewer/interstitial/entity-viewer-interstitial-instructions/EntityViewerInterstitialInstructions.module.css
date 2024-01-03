@@ -18,9 +18,9 @@
 }
 
 .description {
+  --app-icon-bg-color: var(--color-dark-grey);
   display: flex;
   align-items: center;
-  --app-icon-bg-color: var(--color-dark-grey);
 }
 
 .iconLabel {
@@ -49,7 +49,7 @@
 /*
 So far, CSS variables cannot be used in media queries
 */
-@media (max-width: calc(
+@media (width <= calc(
   2 * 120px /* two times global-padding-left */
   + 4 * 230px /* four times column-width */
   + 3 * 60px /* three times column-gap */
@@ -57,9 +57,11 @@ So far, CSS variables cannot be used in media queries
   .instructionsWrapper {
     grid-template-columns: repeat(2, var(--column-width));
   }
+  
   .instructionsPanel {
     height: auto;
   }
+
   .speciesSelectorButton {
     margin-left: 0;
   }

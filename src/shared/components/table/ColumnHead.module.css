@@ -1,6 +1,6 @@
 .columnHead {
-  text-align: var(--table-column-head-text-align, left);
   --_left-padding: var(--table-column-head-padding-left, 24px);
+  text-align: var(--table-column-head-text-align, left);
   padding-left: var(--_left-padding);
   padding-right: var(--table-column-head-padding-right, 32px);
   padding-top: var(--table-column-head-padding-top, 6px);

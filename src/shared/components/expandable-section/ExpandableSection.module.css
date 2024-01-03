@@ -17,8 +17,8 @@
 
 .toggle {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 0;
+  right: 0;
   width: 85px;
   height: 45px;
   text-align: center;

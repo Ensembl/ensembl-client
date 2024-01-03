@@ -1,7 +1,7 @@
 .listItemInfo {
   color: var(--color-white);
   font-weight: var(--font-weight-light);
-  padding: 0 0 20px 0;
+  padding: 0 0 20px;
 }
 
 .middle {

@@ -40,11 +40,6 @@ declare module '*.svg?url' {
   export default src;
 }
 
-declare module '*.scss' {
-  const content: { [className: string]: string };
-  export = content;
-}
-
 declare module '*.module.css' {
   const content: { [className: string]: string };
   export = content;

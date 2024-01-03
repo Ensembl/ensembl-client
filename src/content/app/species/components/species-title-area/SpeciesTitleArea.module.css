@@ -143,7 +143,6 @@
 }
 
 @container species-page-title-area (max-width: 640px) {
-
   .grid {
     grid-template-areas:
       'icon species-name .'
@@ -151,7 +150,7 @@
       '. remove-message remove-message'
       '. search .';
     grid-template-columns: 60px 150px 1fr;
-    grid-template-rows: 80px 0px auto 40px;
+    grid-template-rows: 80px 0 auto 40px;
     grid-row-gap: 10px;
     margin-bottom: 20px;
   }

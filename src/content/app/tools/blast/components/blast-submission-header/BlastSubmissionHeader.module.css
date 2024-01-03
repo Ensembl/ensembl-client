@@ -3,7 +3,7 @@
   grid-template-columns: 11ch [submission-name] auto [submission-details] 1fr [controls-section] 20%;
   column-gap: 20px;
   align-items: center;
-  padding-left: 26px; /* TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.scss) */
+  padding-left: 26px; /* TODO: seems to be a constant shared with sequence boxes (see ListedBlastSubmission.module.css) */
   padding-top: 20px;
   margin-bottom: 14px;
   white-space: nowrap;
@@ -24,8 +24,8 @@
 }
 
 .showHide {
-  position: absolute;
   --show-hide-chevron-height: 8px;
+  position: absolute;
   margin-left: 15px;
 }
 
@@ -84,16 +84,17 @@
 }
 
 /* Leave media queries at the bottom of the file to make sure they override CSS rules defined above */
-@media screen and (max-width: 1439px) {
+@media screen and (width <= 1439px) {
   .grid {
     grid-template-columns: auto [submission-name] auto [submission-details] 1fr [controls-section] auto;
   }
+
   .controlButtons {
     padding-left: 20px;
   }
 }
 
-@media screen and (max-width: 1279px) {
+@media screen and (width <= 1279px) {
   .grid {
     grid-template-columns: auto [submission-details] 1fr [controls-section] auto;
   }

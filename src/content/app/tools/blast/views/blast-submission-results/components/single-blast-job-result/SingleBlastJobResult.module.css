@@ -73,8 +73,8 @@
 }
 
 .blastSpeciesChevron {
-  margin-left: 10px; /* same as in ShowHide component */
   --chevron-height: 6px; /* same as in ShowHide component */
+  margin-left: 10px; /* same as in ShowHide component */
 }
 
 .hitsTable {

@@ -33,6 +33,6 @@
 .closeButton {
   grid-area: close;
   position: relative;
-  right: 0px;
+  right: 0;
   top: 3px;
 }

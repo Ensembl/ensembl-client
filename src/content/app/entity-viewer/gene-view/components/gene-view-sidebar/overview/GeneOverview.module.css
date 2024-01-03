@@ -66,12 +66,12 @@
 
 .entityViewerAccordion .entityViewerAccordionButton {
   color: var(--color-blue);
-  padding: 5px 15px 5px 15px;
+  padding: 5px 15px;
   border-radius: 5px;
 }
 
-.entityViewerAccordion .entityViewerAccordionButton:before,
-.entityViewerAccordion .entityViewerAccordionButton:after {
+.entityViewerAccordion .entityViewerAccordionButton::before,
+.entityViewerAccordion .entityViewerAccordionButton::after {
   margin-top: -3px;
 }
 
@@ -93,7 +93,7 @@
 .findAGene {
   color: var(--color-blue);
   cursor: pointer;
-  margin: 30px 0 20px 0;
+  margin: 30px 0 20px;
   display: inline-flex;
   align-items: center;
   column-gap: 12px;

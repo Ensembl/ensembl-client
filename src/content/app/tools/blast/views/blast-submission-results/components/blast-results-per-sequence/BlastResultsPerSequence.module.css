@@ -22,12 +22,12 @@
 }
 
 .rulerContainer {
-  grid-column: ruler;
   --sequence-ruler-name-color: var(--color-dark-grey);
+  grid-column: ruler;
 }
 
 .wrapper {
-  padding: 24px 26px 0px 26px;
+  padding: 24px 26px 0;
   border: 1px solid var(--color-grey);
 }
 

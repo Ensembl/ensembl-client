@@ -3,6 +3,7 @@
   appearance: none;
   position: relative;
   z-index: 1;
+  
   /* Additional resets for further consistency */
   background-color: transparent;
   border: none;

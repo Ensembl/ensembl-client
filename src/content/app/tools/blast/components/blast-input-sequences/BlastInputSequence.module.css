@@ -1,7 +1,7 @@
 .inputSequenceBox {
-  width: 860px;
   --border: 1px solid var(--color-grey);
   --textarea-height: 102px; /* same as upload button's height */
+  width: 860px;
 }
 
 .inputSequenceBoxFileOver {

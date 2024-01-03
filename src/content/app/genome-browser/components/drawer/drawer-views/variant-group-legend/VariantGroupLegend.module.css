@@ -10,6 +10,10 @@
 }
 
 .legendTable {
+  --table-cell-padding-left: 24px;
+  --table-cell-padding-right: 32px;
+  --table-cell-padding-top: 6px;
+  --table-cell-padding-bottom: 6px;
   padding-top: 50px;
 }
 
@@ -19,14 +23,6 @@
 
 .legendTable thead {
   text-align: left;
-}
-
-.legendTable thead th,
-.legendTable tbody td {
-  --table-cell-padding-left: 24px;
-  --table-cell-padding-left: 32px;
-  --table-cell-padding-top: 6px;
-  --table-cell-padding-bottom: 6px;
 }
 
 .variantTypeLabel {

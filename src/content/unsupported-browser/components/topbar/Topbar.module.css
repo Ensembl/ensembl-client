@@ -49,7 +49,7 @@
   padding-top: 7px;
 }
 
-@media screen and (max-width: 559px) {
+@media screen and (width < 600px) {
   .topbarRight {
     display: none;
   }

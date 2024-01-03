@@ -22,9 +22,6 @@
   padding-right: var(--table-cell-padding-right, 32px);
   padding-top: var(--table-cell-padding-top, 9px);
   padding-bottom: var(--table-cell-padding-bottom, 9px);
-}
-
-.table td {
   vertical-align: middle;
 }
 

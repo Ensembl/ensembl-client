@@ -12,7 +12,7 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: var(--color-light-grey);
-  box-shadow: 0px 1px 3px var(--color-medium-light-grey);
+  box-shadow: 0 1px 3px var(--color-medium-light-grey);
   height: 34px;
   padding: 4px 10px;
   width: 100%;

@@ -30,8 +30,8 @@
 }
 
 .disabled {
-  color: var(--color-medium-dark-grey);
   --dot-solid-color: var(--color-medium-light-grey);
+  color: var(--color-medium-dark-grey);
 }
 
 .centered {

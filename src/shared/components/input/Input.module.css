@@ -50,12 +50,12 @@
 }
 
 .flatInputWrapper {
+  --question-button-size: 12px;
+  --close-button-size: 12px;
   background-color: var(--flat-input-background-colour, var(--color-white));
   padding: 0 15px;
   height: 25px;
   width: var(--flat-input-width, 100%);
-  --question-button-size: 12px;
-  --close-button-size: 12px;
 }
 
 .flatInputWrapperDisabled {

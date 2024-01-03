@@ -83,7 +83,7 @@
 
 .optionsPanelHeader,
 .option {
-  margin: 0 1px 0 1px;
+  margin: 0 1px;
   padding: 0 calc(var(--options-panel-right-padding) - 1px) 0
     calc(var(--options-panel-left-padding) - 1px);
 }
@@ -98,7 +98,7 @@
 }
 
 .optionsGroup:not(:first-child) {
-  margin: 1em 0 0 0;
+  margin: 1em 0 0;
 }
 
 .option {

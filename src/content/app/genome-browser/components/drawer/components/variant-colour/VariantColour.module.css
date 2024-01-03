@@ -9,15 +9,19 @@
 .colour1 {
   background-color: var(--color-dark-pink);
 }
+
 .colour2 {
   background-color: var(--color-dark-yellow);
 }
+
 .colour3 {
   background-color: var(--color-lime);
 }
+
 .colour4 {
   background-color: var(--color-teal);
 }
+
 .colour5 {
   background-color: var(--color-duckegg-blue);
 }

@@ -44,7 +44,7 @@
   padding: 0 var(--standard-gutter);
 
   &:first-child {
-    padding-left: 0px;
+    padding-left: 0;
 
     .launchbarButton {
       &:first-child {

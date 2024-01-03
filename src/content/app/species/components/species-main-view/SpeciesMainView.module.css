@@ -96,6 +96,7 @@
     grid-template-columns:
     [title] 120px [statistics] 1fr;
   }
+
   .collapsedContent .exampleLink {
     grid-column: statistics;
   }

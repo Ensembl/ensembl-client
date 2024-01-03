@@ -1,10 +1,10 @@
 .container {
-  background: var(--color-light-grey);
-  padding: 12px 0 52px 30px;
-  min-height: 570px;
   --max-form-width: 520px;
   --upload-label-width: var(--upload-button-one-line-label-width);
   --drop-zone-height: var(--upload-button-shorter-height);
+  background: var(--color-light-grey);
+  padding: 12px 0 52px 30px;
+  min-height: 570px;
 }
 
 .containerFileOver {

@@ -8,8 +8,8 @@ html {
 
 /* inherit the natural box layout from html; allow box-sizing to easily change if necessary */
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: inherit;
   -webkit-tap-highlight-color: transparent; /* disable blue highlight colour that can otherwise be seen upon tapping an element with cursor: pointer in mobile browser */
 }
@@ -17,15 +17,12 @@ html {
 body {
   margin: 0;
   padding: 0;
-
   background: var(--color-off-white);
-
   font-family: var(--font-family-body);
   font-weight: normal;
   line-height: var(--body-line-height);
   text-size-adjust: none; /* prevent automatic text size inflation on smartphones running Chromium-based browsers */
   color: var(--color-black);
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -47,7 +44,6 @@ img {
   vertical-align: middle;
   max-width: 100%;
   height: auto;
-  -ms-interpolation-mode: bicubic;
 }
 
 /* Make sure textarea takes on height automatically */

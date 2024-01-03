@@ -18,8 +18,8 @@
 }
 
 .downloadButtonLoading {
-  background-color: var(--download-button-loading-background, transparent);
   --circle-loader-diameter: var(--_download-button-size);
+  background-color: var(--download-button-loading-background, transparent);
   transform: scale(1.2);
 }
 

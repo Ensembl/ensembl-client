@@ -18,9 +18,9 @@
 }
 
 .viewInAppLink {
-  margin-left: 20px;
   --app-icon-size: 25px;
   --app-icon-bg-color: var(--color-blue);
+  margin-left: 20px;
 }
 
 .viewInAppLink:first-of-type {

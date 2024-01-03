@@ -1,3 +1,6 @@
+/* stylelint-disable custom-property-empty-line-before */
+/* stylelint-disable value-keyword-case */
+
 :root {
   /* COLORS */
   --color-black: #1b2c39;
@@ -30,7 +33,7 @@
   --color-lime: #84fa3a;
 
   /* SHADOWS */
-  --shadow-color: rgba(0, 0, 0, 0.4);
+  --shadow-color: rgb(0 0 0 / 0.4);
   --global-box-shadow-color: var(--color-medium-light-grey);
   --form-field-shadow: inset 2px 2px 4px -2px var(--color-medium-dark-grey),
     inset -2px -2px 1px -2px var(--color-dark-grey);

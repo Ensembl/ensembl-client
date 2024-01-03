@@ -3,7 +3,7 @@
   text-overflow: ellipsis;
 }
 
-.label > *:not(:last-child):not(.itemsCount) {
+.label > *:not(:last-child, .itemsCount) {
   margin-right: 10px;
 }
 

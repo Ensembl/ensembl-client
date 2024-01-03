@@ -11,7 +11,7 @@
   background: var(--color-grey);
   display: inline-block;
   margin: 0 0.5em;
-  padding: 5px 5px;
+  padding: 5px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -28,7 +28,7 @@
   display: inline-block;
   font-weight: var(--font-weight-bold);
   margin: 0 0.5em;
-  padding: 5px 5px;
+  padding: 5px;
   text-align: center;
 }
 

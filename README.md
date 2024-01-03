@@ -58,7 +58,7 @@ You can BLAST against a range of databases (proteins, transcripts, and genomic s
 ### Development and testing
 - `npm run lint` - Runs both `lint:scripts` and `lint:style`.
 - `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
-- `npm run lint:styles` - Runs `stylelint` against SCSS files to make sure they conform to the style guide.
+- `npm run lint:styles` - Runs `stylelint` against CSS files to make sure they conform to the style guide.
 - `npm run check-types` – Runs typescript compiler to check for type correctness.
 - `npm test` - Runs the suite of unit tests with `jest`.
 - `npm test:watch` - Runs `jest` in watch mode.
@@ -81,7 +81,6 @@ The default setup of VS Code is sufficient for development, but its functionalit
 
 - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens): Extends the existing support for `git`.
 - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode): Automated code formatting. Prettier is built into `webpack`, however it is not fit for formatting the code on the fly. It is currently disabled in `webpack`, so using this extension is recommended.
-- [SCSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-scss): The support for SCSS, the alternate syntax of SASS, is not great in VS Code. This extension adds this support.
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint): Adds ESLint support to VS Code.
 - [stylelint](https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint): Adds `stylelint` support to VS Code.
 - [SVG Viewer](https://marketplace.visualstudio.com/items?itemName=cssho.vscode-svgviewer): By default, VS Code will show SVG images only as a code file. This extension will add functionality, to let you view the SVG files as images.

@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgb(0 0 0 / 0.2);
   z-index: 1000;
 }
 
@@ -17,11 +17,12 @@
   height: 80vh;
   background: white;
   padding: 30px 45px;
+
   /* this box-shadow is so dark because the modal body is set against a gray background */
-  box-shadow: 0px 3px 6px #0000004D; /* TODO: resolve box-shadow colour globally w/Andrea */
+  box-shadow: 0 3px 6px #0000004D; /* TODO: resolve box-shadow colour globally w/Andrea */
 }
 
-@media (max-width: 980px) {
+@media (width <= 980px) {
   .body {
     width: 95vw;
   }

@@ -71,42 +71,11 @@ export default (env: Record<string, unknown>): Configuration => {
           ]
         },
 
-        // TODO: REMOVE SCSS BLOCK WHEN REFACTORING IS COMPLETED
-        // the loaders for styling
-        // a scss file will first be loaded via sass loader and transpiled
-        // afterwards it will be processed by postcss loader to make the css cross-browser compatible
-        // add the processed css into the html document during runtime for dev
-        // and extract the css for prod and minify it as external stylesheets
-        {
-          test: /.scss$/,
-          use: [
-            isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-            {
-              loader: 'css-loader',
-              options: {
-                sourceMap: true,
-                modules: {
-                  localIdentName: '[local]__[name]__[hash:base64:5]'
-                }
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                postcssOptions: {
-                  plugins: [['postcss-preset-env']]
-                }
-              }
-            },
-            'sass-loader'
-          ]
-        },
-
         {
           test: /\.svg$/i,
           oneOf: [
             {
-              issuer: /\.scss$/,
+              issuer: /\.css$/,
               type: 'asset/resource',
               generator: {
                 filename: 'images/[name].[hash][ext]'
@@ -153,7 +122,7 @@ export default (env: Record<string, unknown>): Configuration => {
 
     // add aliases for more convenient imports
     resolve: {
-      extensions: ['.tsx', '.ts', '.js', '.scss'],
+      extensions: ['.tsx', '.ts', '.js'],
       alias: {
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),

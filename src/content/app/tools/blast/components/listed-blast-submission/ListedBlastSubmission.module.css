@@ -65,8 +65,8 @@ and also that it can be of variable width
 }
 
 .showHide {
-  position: absolute;
   --show-hide-chevron-height: 8px;
+  position: absolute;
   margin-left: 15px;
 }
 

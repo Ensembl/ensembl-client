@@ -6,7 +6,7 @@
   align-items: center;
   padding: 20px 0 12px 28px;
   position: sticky;
-  top: 0px;
+  top: 0;
   z-index: 1;
   background-color: var(--color-white);
 }
@@ -35,7 +35,7 @@
   font-weight: var(--font-weight-bold);
   border-radius: 100%;
   font-size: 15px;
-  margin: 0 0.6rem 0 0.6rem;
+  margin: 0 0.6rem;
 }
 
 .maxSpecies {

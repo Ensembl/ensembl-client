@@ -18,9 +18,9 @@
 }
 
 .iconWrapperSmall {
+  --app-icon-size: 26px;
   height: 26px;
   width: 26px;
-  --app-icon-size: 26px;
 }
 
 .label {

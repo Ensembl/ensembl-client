@@ -46,14 +46,14 @@
 }
 
 .sequenceTypeSelection {
-  margin-top: 50px;
   --radio-label-font-weight: var(--font-weight-light);
+  margin-top: 50px;
 }
 
 .reverseComplement {
+  --checkbox-label-font-weight: var(--font-weight-light);
   margin-top: 43px;
   white-space: nowrap;
-  --checkbox-label-font-weight: var(--font-weight-light);
 }
 
 .showHide {

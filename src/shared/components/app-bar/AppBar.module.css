@@ -12,9 +12,9 @@
 }
 
 .chevron {
-  margin-left: 5px;
   --chevron-height: 6px;
   --chevron-fill: var(--color-grey);
+  margin-left: 5px;
 }
 
 .appBarTop {

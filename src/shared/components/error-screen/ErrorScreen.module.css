@@ -50,7 +50,7 @@
 }
 
 .moreOptions {
-  padding: 50px 0 20px 0;
+  padding: 50px 0 20px;
 }
 
 .resetOption {
@@ -72,7 +72,7 @@
   height: 195px;
   align-items: center;
   border-radius: 50%;
-  background-color: rgba(183, 192, 200, 0.24);
+  background-color: rgb(183 192 200 / 0.24);
   position: relative;
 }
 

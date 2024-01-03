@@ -46,36 +46,6 @@ export default (config) => {
     ]
   });
   config.module.rules.push({
-    test: /.scss$/,
-    include: [
-      path.resolve(__dirname, '../src'),
-      path.resolve(__dirname, '../stories'),
-    ],
-    use: [
-      'style-loader',
-      {
-        loader: 'css-loader',
-        options: {
-          sourceMap: true,
-          modules: {
-            localIdentName: '[local]__[name]__[hash:base64:5]'
-          }
-        }
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          postcssOptions: {
-            plugins: [
-              ['postcss-preset-env']
-            ]
-          }
-        }
-      },
-      'sass-loader'
-    ]
-  });
-  config.module.rules.push({
     test: /\.svg$/,
     oneOf: [
       {

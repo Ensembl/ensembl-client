@@ -45,7 +45,7 @@
     var(--gene-view-middle-column-width)
     var(--gene-view-middle-column-right-gap)
     var(--gene-view-right-column-width);
-  padding: 9px 0px;
+  padding: 9px 0;
   font-size: 12px;
   position: relative;
 }
