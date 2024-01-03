@@ -37,7 +37,7 @@ import facebookIconUrl from 'static/icons/icon_facebook.svg?url';
 import twitterIconUrl from 'static/icons/icon_twitter.svg?url';
 import blogIconUrl from 'static/icons/icon_blog.svg?url';
 
-import styles from './Home.scss';
+import styles from './Home.module.css';
 
 const Home = () => {
   const { trackHomePageEntryButtons } = useHomeAnalytics();
