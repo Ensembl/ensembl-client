@@ -1,0 +1,32 @@
+.viewInApp {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+  font-size: 12px;
+}
+
+.viewInAppLight .label {
+  color: var(--color-black);
+}
+
+.viewInAppDark .label {
+  color: var(--color-white);
+}
+
+.viewInAppLink {
+  --app-icon-size: 25px;
+  --app-icon-bg-color: var(--color-blue);
+  margin-left: 20px;
+}
+
+.viewInAppLink:first-of-type {
+  margin-left: 15px;
+}
+
+.viewInAppLink svg {
+  fill: var(--color-white);
+}

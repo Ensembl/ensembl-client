@@ -1,0 +1,31 @@
+.sectionHead {
+  font-weight: var(--font-weight-light);
+  font-size: 12px;
+  border-bottom: 1px solid var(--color-grey);
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.sectionContent,
+.listContainer {
+  margin-left: 15px;
+}
+
+.geneSymbol {
+  font-weight: var(--font-weight-bold);
+  margin-right: 10px;
+}
+
+.transcriptExternalReferences {
+  margin: 10px 0 20px;
+}
+
+.showHide,
+.externalReferenceContainer {
+  margin-bottom: 10px;
+}
+
+.externalReferenceLink {
+  font-size: 12px;
+}

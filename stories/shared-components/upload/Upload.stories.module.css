@@ -1,0 +1,53 @@
+.wrapper {
+  padding: 40px;
+}
+
+.wrapperGrey {
+  padding: 40px;
+  background-color: var(--color-light-grey);
+}
+
+.storyDescription {
+  width: 60ch;
+  padding-bottom: 1rem;
+}
+
+.customizedUpload {
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+.customizedUploadActive {
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.inputBox {
+  display: flex;
+  gap: 1rem;
+  width: 800px;
+  padding: 20px;
+  background-color: var(--color-light-grey);
+  --textarea-height: 102px;
+}
+
+.dropZone {
+  --drop-zone-bg-color: var(--color-ice-blue);
+}
+
+.textareaContainer {
+  width: 500px;
+  height: 100px;
+}
+
+.dropZoneContainer {
+  background-color: var(--color-grey);
+}
+
+.fileContent {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--color-grey);
+  padding: 10px;
+  word-wrap: break-word;
+}

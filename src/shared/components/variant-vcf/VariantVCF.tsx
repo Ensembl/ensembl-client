@@ -21,7 +21,7 @@ import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
 
 import Copy from 'src/shared/components/copy/Copy';
 
-import styles from './VariantVCF.scss';
+import styles from './VariantVCF.module.css';
 
 type MinimumVariantData = {
   name: string;

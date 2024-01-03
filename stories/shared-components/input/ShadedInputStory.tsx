@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 
-import styles from './Input.stories.scss';
+import styles from './Input.stories.module.css';
 
 const placeholderText = 'Type here....';
 const helpText = 'Shows some text when hovered over';

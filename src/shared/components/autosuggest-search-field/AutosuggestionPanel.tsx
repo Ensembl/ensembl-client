@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './AutosuggestSearchField.scss';
+import styles from './AutosuggestSearchField.module.css';
 
 type MatchType = {
   data: any;

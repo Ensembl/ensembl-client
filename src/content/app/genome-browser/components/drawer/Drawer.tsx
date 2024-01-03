@@ -27,7 +27,7 @@ import RegulationLegend from './drawer-views/regulation-legend/RegulationLegend'
 
 import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
-import styles from './Drawer.scss';
+import styles from './Drawer.module.css';
 
 export const Drawer = () => {
   const drawerView = useSelector(getActiveDrawerView);

@@ -1,0 +1,26 @@
+.variantDetais {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding: 4px 10px; /* same as in TrackPanelItemLayout */
+}
+
+.variantType {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  margin-left: 0.6rem;
+}
+
+.labelText {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.rowField .labelText {
+  display: inline-block;
+  margin-right: 0.6rem;
+}
+
+.labelFullLength {
+  display: block;
+}

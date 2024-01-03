@@ -1,0 +1,39 @@
+.fullPageWrapper {
+  display: flex;
+  padding: 20px;
+  align-items: flex-start;
+  height: 100vh;
+}
+
+.fullPagePanel {
+  width: 100%;
+  height: 100%;
+}
+
+.defaultTab:first-of-type {
+  margin-left: 30px;
+}
+
+.defaultTab:last-of-type {
+  margin-right: 30px;
+}
+
+.selectedTab {
+  background-color: transparent;
+  color: var(--color-black);
+}
+
+.selectedTab::after {
+  content: '';
+  border: 6px solid var(--color-grey);
+  border-color: transparent transparent var(--color-light-grey) var(--color-light-grey);
+  box-shadow: -2px 2px 2px 0 var(--color-medium-light-grey);
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
+  position: absolute;
+  left: calc(50% - 8px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 28px;
+}

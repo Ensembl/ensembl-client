@@ -31,7 +31,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 
-import styles from './GenomeSelectorBySpeciesTaxonomyId.scss';
+import styles from './GenomeSelectorBySpeciesTaxonomyId.module.css';
 
 type Props = {
   speciesTaxonomyId: string | number;

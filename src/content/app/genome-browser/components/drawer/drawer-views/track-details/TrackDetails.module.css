@@ -1,0 +1,30 @@
+.trackName {
+  font-weight: var(--font-weight-bold);
+  display: inline-block;
+}
+
+.strand {
+  margin-left: 50px;
+  color: var(--color-dark-grey);
+}
+
+.standardLabelValue {
+  display: grid;
+  grid-template-columns: [label] 120px 10px [value] auto;
+  margin-bottom: 15px;
+}
+
+.label {
+  grid-column: label;
+  color: var(--color-dark-grey);
+  text-align: right;
+}
+
+.value {
+  grid-column: value;
+}
+
+.trackDescription {
+  max-width: 60ch;
+  white-space: pre-line;
+}

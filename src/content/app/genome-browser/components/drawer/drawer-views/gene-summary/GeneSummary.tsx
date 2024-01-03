@@ -48,7 +48,7 @@ import { Spinner } from 'src/content/app/genome-browser/components/drawer/Drawer
 
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './GeneSummary.scss';
+import styles from './GeneSummary.module.css';
 
 const GeneSummary = () => {
   const { genomeIdForUrl } = useGenomeBrowserIds();

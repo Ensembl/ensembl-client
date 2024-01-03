@@ -19,7 +19,7 @@ import classNamesMerger from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './Panel.scss';
+import styles from './Panel.module.css';
 
 export type PanelProps = {
   header?: ReactNode;

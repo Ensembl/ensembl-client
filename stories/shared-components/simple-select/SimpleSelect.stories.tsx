@@ -23,7 +23,7 @@ import SimpleSelect, {
 } from 'src/shared/components/simple-select/SimpleSelect';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SimpleSelect.stories.scss';
+import styles from './SimpleSelect.stories.module.css';
 
 const createSimpleOption = (value: string): Option => ({
   value,

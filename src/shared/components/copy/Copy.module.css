@@ -1,0 +1,17 @@
+.copyLozenge {
+  display: inline-flex;
+  height: 18px;
+  padding: 0 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy {
+  color: var(--color-blue);
+}
+
+.copyLozengeCopied {
+  color: var(--color-white);
+  background-color: var(--color-black);
+  border-radius: 30px;
+}

@@ -25,7 +25,7 @@ import {
   type TableSelectedRowIds
 } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './RowVisibilityController.scss';
+import styles from './RowVisibilityController.module.css';
 
 const RowVisibilityController = () => {
   const {

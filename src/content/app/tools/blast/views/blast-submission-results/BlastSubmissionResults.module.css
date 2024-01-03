@@ -1,0 +1,26 @@
+.resultsContainer {
+  --blast-results-container-max-width: calc(
+    var(--blast-container-max-width) - var(--standard-gutter)
+  );
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+}
+
+.mainContainer {
+  overflow: auto;
+  scrollbar-gutter: stable;
+  padding: var(--blast-page-standard-padding);
+  height: 100%;
+}
+
+.blastSubmissionResultsContainer {
+  max-width: var(--blast-results-container-max-width);
+}
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  max-width: var(--blast-results-container-max-width);
+  padding: 1rem 0 2rem;
+}

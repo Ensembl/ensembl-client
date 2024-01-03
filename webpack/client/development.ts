@@ -38,10 +38,10 @@ export default (): Configuration => ({
     // enable hot module replacement
     new webpack.HotModuleReplacementPlugin(),
 
-    // lint SASS files
+    // lint style files
     new StylelintWebpackPlugin({
       context: path.join(paths.rootPath, 'src'),
-      files: '**/*.scss'
+      files: '**/*.css'
     })
   ],
   // speed up build times for dev

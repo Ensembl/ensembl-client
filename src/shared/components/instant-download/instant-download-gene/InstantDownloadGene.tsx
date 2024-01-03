@@ -24,7 +24,7 @@ import { filterTranscriptOptions } from '../instant-download-transcript/InstantD
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
-import styles from './InstantDownloadGene.scss';
+import styles from './InstantDownloadGene.module.css';
 
 type Theme = 'light' | 'dark';
 
@@ -168,9 +168,7 @@ const InstantDownloadGene = (props: Props) => {
         disabled={isButtonDisabled}
         onClick={onSubmit}
         theme={theme}
-        classNames={{
-          wrapper: styles.downloadButtonWrapper
-        }}
+        className={styles.downloadButton}
       />
     </div>
   );

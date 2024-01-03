@@ -1,0 +1,10 @@
+.conversationIcon {
+  width: 40px;
+}
+
+.communicationPanelToggle {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  color: var(--color-blue);
+}

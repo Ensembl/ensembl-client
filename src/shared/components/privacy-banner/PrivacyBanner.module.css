@@ -1,0 +1,25 @@
+.privacyBanner {
+  position: fixed;
+  bottom: 0;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-size: 13px;
+  line-height: 2;
+  padding: 5px;
+  text-align: center;
+  width: 100%;
+  z-index: 10000;
+}
+
+.privacyBanner button {
+  background-color: var(--color-green);
+  border-radius: 2px;
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  margin-left: 30px;
+  padding: 6px 18px;
+}
+
+.privacyBanner a {
+  font-weight: var(--font-weight-bold);
+}

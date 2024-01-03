@@ -20,7 +20,7 @@ import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import styles from './VariantAllelesSequences.scss';
+import styles from './VariantAllelesSequences.module.css';
 
 const COMPACT_MAX_LENGTH = 18;
 

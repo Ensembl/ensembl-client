@@ -39,7 +39,7 @@ import SelectArrowhead, {
 
 import { Option, OptionGroup, GroupedOptionIndex } from './Select';
 
-import styles from './Select.scss';
+import styles from './Select.module.css';
 
 enum HighlightActionType {
   NEXT = 'next',

@@ -40,8 +40,8 @@ import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneVie
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 
-import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
-import styles from './ProteinsListItem.scss';
+import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.module.css';
+import styles from './ProteinsListItem.module.css';
 
 export type Props = {
   gene: DefaultEntityViewerGeneQueryResult['gene'];

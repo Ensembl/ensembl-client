@@ -35,7 +35,7 @@ import type {
   ChangeSortRule
 } from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
 
-import styles from './SpeciesSearchResultsTable.scss';
+import styles from './SpeciesSearchResultsTable.module.css';
 
 type Props = {
   isExpanded: boolean;

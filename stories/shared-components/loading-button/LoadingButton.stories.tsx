@@ -26,7 +26,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
-import styles from './LoadingButton.stories.scss';
+import styles from './LoadingButton.stories.module.css';
 
 type DefaultArgs = {
   onClick: (...args: any) => void;

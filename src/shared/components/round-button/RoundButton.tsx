@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import defaultStyles from './RoundButton.scss';
+import defaultStyles from './RoundButton.module.css';
 
 export enum RoundButtonStatus {
   ACTIVE = 'active',

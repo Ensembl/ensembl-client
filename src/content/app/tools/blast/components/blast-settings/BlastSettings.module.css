@@ -1,0 +1,99 @@
+/* stylelint-disable no-descending-specificity */
+
+.topLevelContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 20px;
+  max-width: var(--blast-container-max-width);
+}
+
+.topLevel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.title {
+  margin: 0 25px 3px 0;
+  font-size: 16px;
+}
+
+.runJob {
+  font-weight: var(--font-weight-bold);
+  margin-right: 35px;
+}
+
+.select label {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 10px;
+}
+
+.blastSubmissionName label {
+  display: inline-flex;
+  column-gap: 11px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.blastSubmissionName label span,
+.select label span {
+  font-weight: var(--font-weight-light);
+  line-height: 27px;
+  justify-self: end;
+}
+
+.matrixSetting.select label,
+.wordSize.select label,
+.matchScores.select label {
+  grid-template-columns: max-content 110px;
+}
+
+.bottomLevel {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  padding-top: 20px;
+  margin-left: 104px;
+}
+
+@media (width <= 1686px) {
+  .bottomLevel {
+    margin-left: 0;
+  }
+}
+
+.bottomLevel > * {
+  flex-basis: auto;
+  white-space: nowrap;
+}
+
+.parametersColumn {
+  display: grid;
+  grid-template-rows: 40px 40px;
+}
+
+.parametersColumn .select label {
+  grid-template-columns: max-content 90px;
+  justify-content: end;
+  text-align: right;
+}
+
+.blastJobBlock {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 30px;
+  margin-left: 20px;
+}
+
+/* TODO: remove below when our target browsers support the margin-trim property */
+@media (width <= 1676px) {
+  .blastJobBlock {
+    margin-left: 0;
+  }
+}
+
+.checkboxesColumn {
+  margin-left: 10px;
+}

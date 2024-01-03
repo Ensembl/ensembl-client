@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import styles from './PreformHeader.scss';
+import styles from './PreformHeader.module.css';
 
 export const Invitation = () => (
   <p>Please contact us if you have a problem with the website or need help</p>

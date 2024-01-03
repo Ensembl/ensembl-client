@@ -18,7 +18,7 @@ import React from 'react';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import styles from './ExternalReference.stories.scss';
+import styles from './ExternalReference.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/ExternalReference'

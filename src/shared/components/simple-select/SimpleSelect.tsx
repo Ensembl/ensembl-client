@@ -25,7 +25,7 @@ import React, {
 import classNames from 'classnames';
 import pickBy from 'lodash/pickBy';
 
-import styles from './SimpleSelect.scss';
+import styles from './SimpleSelect.module.css';
 
 type HTMLSelectProps = SelectHTMLAttributes<HTMLSelectElement>;
 

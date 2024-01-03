@@ -1,0 +1,78 @@
+.helpMenu {
+  --submenu-side-padding: var(--standard-gutter);
+  grid-row: menu;
+  position: relative;
+}
+
+.chevronVertical {
+  --chevron-height: 6px;
+  margin-left: 10px;
+}
+
+.chevronHorizontal {
+  --chevron-height: 7px;
+}
+
+.menuBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding-left: var(--double-standard-gutter);
+  background: var(--color-light-grey);
+  box-shadow: 0 2px 3px var(--color-grey);
+  z-index: 5;
+}
+
+.expandedMenuPanel {
+  display: flex;
+  position: absolute;
+  background-color: var(--color-off-white);
+  top: 100%;
+  height: 360px;
+  max-height: 50vh;
+  width: 100%;
+  z-index: 4;
+  padding: 0 calc(44px - var(--submenu-side-padding)); /* FIXME: 44px is a magic number */
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: rgb(0 0 0 / 0.3);
+}
+
+.topMenuItem,
+.submenuItem {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.topMenuItem + .topMenuItem {
+  margin-left: 46px;
+}
+
+.topMenuItemActive {
+  color: var(--color-black);
+}
+
+.submenu {
+  border-right: 2px solid var(--color-light-grey);
+  padding: 18px 10px;
+  min-width: 326px;
+  flex-grow: 0;
+}
+
+.submenuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4em var(--submenu-side-padding);
+}
+
+.submenuItem:hover {
+  background: var(--color-ice-blue);
+}

@@ -53,7 +53,7 @@ module.exports = {
     '(src/.*)$': '<rootDir>/$1',
     '(static/.*)$': '<rootDir>/$1',
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
-    '\\.(css|scss)$': 'identity-obj-proxy',
+    '\\.(css)$': 'identity-obj-proxy',
     ...d3ModuleNameMapper
   },
   roots: ['<rootDir>/src'],
@@ -67,7 +67,7 @@ module.exports = {
   },
   transform: {
     '.+\\.tsx?$': 'babel-jest',
-    '.+\\.(css|scss|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':
+    '.+\\.(css|png|jpg|svg|gif|eot|ttf|otf|woff|woff2)$':
       'jest-transform-stub'
   }
 };

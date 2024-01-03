@@ -1,0 +1,79 @@
+.containerSvg {
+  overflow: visible;
+}
+
+.domain {
+  fill: var(--color-blue);
+  opacity: 20%;
+  cursor: pointer;
+}
+
+.track rect {
+  fill: var(--color-light-grey);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.container svg {
+  overflow: visible;
+}
+
+.resourceGroup {
+  display: grid;
+  grid-template-columns: [type] 178px [images] 902px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.resourceName {
+  grid-column: type;
+  text-align: right;
+  padding-right: 1em;
+  color: var(--color-black);
+}
+
+.resourceImages {
+  grid-column: images;
+}
+
+.resourceImage {
+  position: relative;
+  display: grid;
+  grid-template-columns: [image] min-content [description] max-content;
+  margin-bottom: 6px;
+}
+
+.resourceImage .containerSvg {
+  grid-column: image;
+}
+
+.resourceDescription {
+  grid-column: description;
+  padding-left: 27px;
+  color: var(--color-black);
+}
+
+.tooltipAnchor {
+  position: absolute;
+}
+
+.tooltipRow {
+  font-weight: var(--font-weight-normal);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-items: start;
+  align-items: start;
+  column-gap: 1rem;
+  max-width: 280px;
+}
+
+.tooltipRow:not(:last-child) {
+  margin-bottom: 3px;
+}
+
+.tooltipFieldLabel {
+  font-weight: var(--font-weight-light);
+}

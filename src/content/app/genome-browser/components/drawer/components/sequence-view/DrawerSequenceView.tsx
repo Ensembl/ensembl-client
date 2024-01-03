@@ -34,7 +34,7 @@ import Copy from 'src/shared/components/copy/Copy';
 import type { SequenceType } from 'src/content/app/genome-browser/state/drawer/drawer-sequence/drawerSequenceSlice';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './DrawerSequenceView.scss';
+import styles from './DrawerSequenceView.module.css';
 
 const sequenceLabelsMap: Record<SequenceType, string> = {
   genomic: 'Genomic sequence',

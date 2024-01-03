@@ -18,7 +18,7 @@ import React from 'react';
 
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 
-import styles from './SpeciesStats.stories.scss';
+import styles from './SpeciesStats.stories.module.css';
 
 export const SpeciesStatsDefaultStory = () => (
   <div className={styles.wrapper}>

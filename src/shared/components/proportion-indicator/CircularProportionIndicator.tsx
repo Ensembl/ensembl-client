@@ -18,7 +18,7 @@ import React, { type ReactNode } from 'react';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import styles from './CircularProportionIndicator.scss';
+import styles from './CircularProportionIndicator.module.css';
 
 type Props = {
   value: number;

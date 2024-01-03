@@ -1,0 +1,53 @@
+.imageButton {
+  font-size: 0;
+  line-height: 0;
+  position: relative;
+  display: inline-block; /* buttons are normally inline-block elements */
+  vertical-align: middle;
+}
+
+.imageButton button {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.imageButton svg {
+  width: var(--image-button-svg-width, 100%);
+  height: var(--image-button-svg-height, 100%);
+}
+
+.default {
+  background-color: var(--image-button-default-bg-color);
+}
+
+.default svg {
+  fill: var(--image-button-default-svg-color, var(--color-blue));
+}
+
+.selected {
+  background-color: var(--image-button-selected-bg-color, var(--color-blue));
+}
+
+.selected svg {
+  fill: var(--image-button-selected-svg-color, var(--color-white));
+}
+
+.unselected {
+  background-color: var(--image-button-unselected-bg-color);
+}
+
+.unselected svg {
+  fill: var(--image-button-unselected-svg-color, var(--color-blue));
+}
+
+.disabled {
+  background-color: var(--image-button-disabled-bg-color);
+}
+
+.disabled svg {
+  fill: var(--image-button-disabled-svg-color, var(--color-grey));
+  opacity: 1;
+}

@@ -1,0 +1,41 @@
+.chromosomeNavigator svg {
+  width: 100%;
+  overflow: visible;
+}
+
+.stick {
+  height: 4px;
+  fill: var(--color-light-grey);
+  stroke: var(--color-grey);
+}
+
+.viewport {
+  fill: white;
+}
+
+.viewportBorder {
+  fill: none;
+  stroke: var(--color-dark-grey);
+}
+
+.focusPointer {
+  fill: var(--color-orange);
+}
+
+.focusPointer line {
+  stroke: var(--color-orange);
+}
+
+.centromereRegion {
+  fill: var(--color-light-grey);
+  stroke: var(--color-light-grey);
+}
+
+.centromereCentre {
+  fill: var(--color-dark-grey);
+}
+
+.label {
+  font-family: var(--font-family-monospace);
+  font-size: 11px;
+}

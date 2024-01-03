@@ -1,0 +1,37 @@
+.panel {
+  position: relative;
+  min-height: 100px;
+  border-radius: 5px;
+  width: 600px;
+  max-width: 100%;
+  background: var(--color-white);
+  box-shadow: 1px 1px 4px var(--shadow-color);
+}
+
+.header {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: var(--color-light-grey);
+  box-shadow: 0 1px 3px var(--color-medium-light-grey);
+  height: 34px;
+  padding: 4px 10px;
+  width: 100%;
+  line-height: 24px;
+}
+
+.body { 
+  position: relative;
+  padding: 0 20px 10px 10px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  overflow: auto;
+  height: calc(100% - 54px);
+  margin-top: 15px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 10px;
+  top: 45px;
+  z-index: 1;
+}

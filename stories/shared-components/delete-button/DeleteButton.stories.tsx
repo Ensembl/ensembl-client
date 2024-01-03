@@ -22,6 +22,12 @@ export default {
   title: 'Components/Shared Components/Delete button'
 };
 
-export const DefaultDeleteButton = () => <DeleteButton />;
+export const DefaultDeleteButtonStory = {
+  name: 'default',
+  render: () => <DeleteButton />
+};
 
-DefaultDeleteButton.storyName = 'default';
+export const DisabledDeleteButtonStory = {
+  name: 'disabled',
+  render: () => <DeleteButton disabled={true} />
+};

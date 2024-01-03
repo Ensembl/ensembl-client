@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import styles from './Select.scss';
+import styles from './Select.module.css';
 
 export enum Direction {
   UP = 'up',

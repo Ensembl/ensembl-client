@@ -1,0 +1,17 @@
+.wrapper {
+  position: relative;
+}
+
+.pointerBox {
+  padding: 6px 12px;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.pointerBox p {
+  max-width: 200px;
+}
+
+.pointerBoxPointer {
+  fill: var(--color-black);
+}

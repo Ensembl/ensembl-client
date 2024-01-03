@@ -34,7 +34,7 @@ import BrowserCog from './BrowserCog';
 import type { TrackSummaryMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 import type { TrackSummary } from 'src/content/app/genome-browser/services/genome-browser-service/types/trackSummary';
 
-import styles from './BrowserCogList.scss';
+import styles from './BrowserCogList.module.css';
 
 export const BrowserCogList = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;

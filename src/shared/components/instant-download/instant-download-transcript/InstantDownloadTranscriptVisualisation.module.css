@@ -1,0 +1,86 @@
+/* Duplicating class selectors below to increase specificity
+* and overwrite styles that can be added by the combination of
+* parentClass > rect
+*
+* TODO: whem more browsers support @scope rule, replace this hack with @scope
+*/
+
+.outerExon.outerExon {
+  stroke: var(--color-dark-grey);
+  fill: none;
+}
+
+.outerExon.outerExon.highlighted {
+  stroke: var(--color-white);
+}
+
+.innerExon.innerExon {
+  stroke: var(--color-dark-grey);
+  fill: var(--color-dark-grey);
+}
+
+.innerExon.innerExon.highlighted {
+  stroke: var(--color-white);
+  fill: var(--color-white);
+}
+
+.halfOuterExon.halfOuterExon {
+  stroke: var(--color-dark-grey);
+  fill: var(--color-dark-grey);
+}
+
+.halfOuterExon.halfOuterExon.highlighted {
+  stroke: var(--color-white);
+  fill: var(--color-white);
+}
+
+.intron.intron {
+  stroke: var(--color-dark-grey);
+}
+
+.intron.intron.highlighted {
+  stroke: var(--color-white);
+}
+
+
+.protein {
+  fill: var(--color-green);
+}
+
+
+.themeLight .outerExon.outerExon {
+  stroke: var(--color-grey);
+  fill: none;
+}
+
+.themeLight .outerExon.outerExon.highlighted {
+  stroke: var(--color-grey);
+}
+
+.themeLight .innerExon.innerExon {
+  stroke: var(--color-grey);
+  fill: var(--color-grey);
+}
+
+.themeLight .innerExon.innerExon.highlighted {
+  stroke: var(--color-dark-grey);
+  fill: var(--color-dark-grey);
+}
+
+.themeLight .halfOuterExon.halfOuterExon {
+  stroke: var(--color-grey);
+  fill: var(--color-grey);
+}
+
+.themeLight .halfOuterExon.halfOuterExon.highlighted {
+  stroke: var(--color-dark-grey);
+  fill: var(--color-dark-grey);
+}
+
+.themeLight .intron.intron {
+  stroke: var(--color-grey);
+}
+
+.themeLight .intron.intron.highlighted {
+  stroke: var(--color-dark-grey);
+}

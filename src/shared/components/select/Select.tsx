@@ -22,7 +22,7 @@ import { splitFromSelected } from './helpers/select-helpers';
 import SelectOptionsPanel from './SelectOptionsPanel';
 import SelectArrowhead from './SelectArrowhead';
 
-import styles from './Select.scss';
+import styles from './Select.module.css';
 
 export type Option = {
   value: any;

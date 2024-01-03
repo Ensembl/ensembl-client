@@ -21,7 +21,7 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
-import styles from './TrackPanelItem.scss';
+import styles from './TrackPanelItem.module.css';
 
 type Props = {
   count: number;

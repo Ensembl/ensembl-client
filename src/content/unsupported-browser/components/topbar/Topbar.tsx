@@ -19,7 +19,7 @@ import React from 'react';
 import Logotype from 'static/img/brand/logotype.svg';
 import HomeIcon from 'static/icons/icon_home.svg';
 
-import styles from './Topbar.scss';
+import styles from './Topbar.module.css';
 
 // A version of the Topbar, styled somewhat differently from the Topbar in the Header component
 // Shows a bit less, does not use React Router, and should support small screens

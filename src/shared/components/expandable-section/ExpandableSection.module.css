@@ -1,0 +1,26 @@
+.expandableSection {
+  border: 1px solid var(--color-medium-light-grey);
+  position: relative;
+  min-height: 45px;
+  padding-right: 55px;
+}
+
+.chevron {
+  position: absolute;
+  top: 20px;
+  left: 35px;
+}
+
+.expandableSection + .expandableSection {
+  border-top: none;
+}
+
+.toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 85px;
+  height: 45px;
+  text-align: center;
+  cursor: pointer;
+}

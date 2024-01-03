@@ -23,7 +23,7 @@ import { toggleCommunicationPanel } from 'src/shared/state/communication/communi
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SubmissionSuccess.scss';
+import styles from './SubmissionSuccess.module.css';
 
 const SubmissionSuccess = () => {
   const dispatch = useDispatch();

@@ -21,7 +21,7 @@ import edgeIconPath from './icons/edge.svg?url';
 import firefoxIconPath from './icons/firefox.svg?url';
 import safariIconPath from './icons/safari.svg?url';
 
-import styles from './SupportedWebBrowser.scss';
+import styles from './SupportedWebBrowser.module.css';
 
 type BrowserName = 'chrome' | 'edge' | 'firefox' | 'safari';
 

@@ -1,0 +1,108 @@
+.listItemInfo {
+  color: var(--color-white);
+  font-weight: var(--font-weight-light);
+  padding: 0 0 20px;
+}
+
+.middle {
+  display: grid;
+  grid-template-areas:
+    'left middle right'
+    'moreinformationLink . .'
+    'moreInformation moreInformation moreInformation'
+    'downloadLink . .'
+    'download download download';
+  column-gap: 10px;
+  background: var(--color-soft-black);
+  padding: 15px 30px;
+}
+
+.middle strong {
+  color: var(--color-white);
+  font-weight: normal;
+}
+
+.transcriptName {
+  top: -8px;
+  position: relative;
+}
+
+.topLeft {
+  grid-area: left;
+  width: 190px;
+  margin-bottom: 12px;
+}
+
+.topLeft div {
+  padding-bottom: 6px;
+}
+
+.topMiddle {
+  grid-area: middle;
+  width: 150px;
+}
+
+.topMiddle div {
+  padding-bottom: 6px;
+}
+
+.topRight {
+  grid-area: right;
+  width: 210px;
+}
+
+.topRight div {
+  padding-bottom: 6px;
+}
+
+.moreInformationLink,
+.downloadLink {
+  justify-self: start;
+}
+
+.moreInformationLink {
+  padding-top: 6px;
+  font-weight: var(--font-weight-normal);
+}
+
+.normalText {
+  font-weight: var(--font-weight-normal);
+}
+
+.moreInformation {
+  grid-area: moreInformation;
+  display: grid;
+  grid-template-columns: 190px auto;
+  column-gap: 20px;
+  padding-top: 6px;
+  padding-left: 12px;
+  margin-bottom: 6px;
+}
+
+.moreInfoColumn {
+  width: 190px;
+}
+
+.moreInfoColumn div {
+  padding-bottom: 6px;
+}
+
+.externalRefLink {
+  font-weight: var(--font-weight-normal);
+  font-size: 12px;
+}
+
+.downloadLink {
+  grid-area: downloadLink;
+  padding-top: 6px;
+  font-weight: var(--font-weight-normal);
+}
+
+.download {
+  grid-area: download;
+  padding-top: 6px;
+}
+
+.viewInApp {
+  padding-top: 12px;
+}

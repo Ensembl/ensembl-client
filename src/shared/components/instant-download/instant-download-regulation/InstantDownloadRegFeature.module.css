@@ -1,0 +1,23 @@
+.container {
+  margin-top: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.checkboxContainer {
+  padding-left: 18px; /* same as for transcript download */
+}
+
+.feature {
+  display: flex;
+  column-gap: 0.6rem;
+}
+
+.featureType {
+  font-weight: var(--font-weight-light);
+}
+
+.download {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}

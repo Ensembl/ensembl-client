@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
-import styles from './Tabs.stories.scss';
+import styles from './Tabs.stories.module.css';
 
 type DefaultArgs = {
   onTabChange: (...args: any) => void;

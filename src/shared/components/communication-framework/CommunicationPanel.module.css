@@ -1,0 +1,97 @@
+.wrapper {
+  position: fixed;
+  top: 1px;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+  z-index: 11; /* Need to go above the top bar */
+}
+
+.panelWrapper {
+  position: fixed;
+  right: 0;
+  top: 110px; /* the distance between the top of the window and the top border of the panel */
+  z-index: 11; /* Need to go above the top bar */
+  min-height: 100px;
+  animation: .3s ease-out 0s 1 slide-in-from-right;
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+          'conversation tabs close'
+          '. main main';
+  grid-template-columns: 67px 1fr 46px;
+  grid-template-rows: auto 1fr;
+  max-height: calc(100vh - 110px - 5vh);
+  height: auto;
+  padding-top: 17px;
+  color: var(--color-black);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background: var(--color-white);
+  box-shadow: 1px 1px 4px var(--shadow-color);
+  padding-bottom: 90px;
+  z-index: 2;
+  width: 750px;
+}
+
+.panelHeader {
+  margin-bottom: 20px;
+}
+
+.panelTabs {
+  grid-area: tabs;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-left: 28px;
+}
+
+.panelTabs .tab {
+  font-size: 12px;
+}
+
+.panelTabs .tabDisabled {
+  color: var(--color-medium-light-grey);
+}
+
+.panelBody {
+  grid-area: main;
+  padding-top: 30px;
+  padding-left: 28px;
+  overflow: auto;
+  height: 100%;
+}
+
+.panelCloseButton {
+  grid-area: close;
+  align-self: center;
+  margin-bottom: 3px;
+}
+
+.conversationIcon {
+  grid-area: conversation;
+  width: 40px;
+  align-self: center;
+  justify-self: right;
+  cursor: pointer;
+}
+
+.overlay {
+  background-color: rgb(0 0 0 / 0.1);
+  position: fixed;
+}
+
+@keyframes slide-in-from-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

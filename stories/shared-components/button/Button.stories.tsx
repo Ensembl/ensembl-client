@@ -24,7 +24,7 @@ import {
 import primaryButtonNotes from './primaryButtonNotes.md';
 import secondaryButtonNotes from './secondaryButtonNotes.md';
 
-import styles from './Button.stories.scss';
+import styles from './Button.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Button',

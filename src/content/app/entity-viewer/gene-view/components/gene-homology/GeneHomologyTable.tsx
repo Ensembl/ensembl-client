@@ -29,7 +29,7 @@ import {
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './GeneHomologyTable.scss';
+import styles from './GeneHomologyTable.module.css';
 
 type Props = {
   homologies: GeneHomology[];

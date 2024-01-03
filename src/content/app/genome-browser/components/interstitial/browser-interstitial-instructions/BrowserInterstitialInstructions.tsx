@@ -30,7 +30,7 @@ import {
 
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './BrowserInterstitialInstructions.scss';
+import styles from './BrowserInterstitialInstructions.module.css';
 
 const BrowserInterstitialInstructions = () => {
   const navigate = useNavigate();

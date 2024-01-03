@@ -1,0 +1,23 @@
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  position: relative;
+  padding: 1em;
+  background: pink;
+}
+
+.toggleButton {
+  margin-left: 1em;
+  float: right;
+}
+
+.mainToolboxContent,
+.footerToolboxContent {
+  width: 250px;
+  text-align: left;
+}

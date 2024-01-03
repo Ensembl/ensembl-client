@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import CloseIcon from 'static/icons/icon_close.svg';
 
-import styles from './CloseButton.scss';
+import styles from './CloseButton.module.css';
 
 type Props = {
   onClick?: () => void;

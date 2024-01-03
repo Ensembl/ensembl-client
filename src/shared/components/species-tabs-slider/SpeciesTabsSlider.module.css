@@ -1,0 +1,66 @@
+.speciesTabsSlider {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.tabsContainer {
+  display: flex;
+  column-gap: 15px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* hides the scrollbar, but only on Firefox */
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none; /* hide the scrollbar in all webkit-based browsers */
+}
+
+.tabsContainer > * {
+  flex: 0 0 auto;
+}
+
+.tabsContainer button[disabled] {
+  /* Species tabs (lozenges) are implemented as buttons
+     When a button is disabled, it swallows all mouse events,
+     which interferes with event listeners on the slider itself.
+     The rule below prevents disabled buttons from doing so
+  */
+  pointer-events: none;
+}
+
+.leftCorner {
+  margin-right: 8px;
+}
+
+.rightCorner {
+  margin-left: 8px;
+}
+
+.arrowButton {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.leftCorner .arrowButton {
+  padding-right: 6px;
+}
+
+.rightCorner .arrowButton {
+  padding-left: 6px;
+}
+
+.arrow {
+  background-color: white;
+  cursor: pointer;
+}
+
+.arrowDisabled {
+  --chevron-fill: var(--color-grey);
+  cursor: default;
+  pointer-events: none;
+}
+
+.hidden {
+  visibility: hidden;
+}

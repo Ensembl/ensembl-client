@@ -24,7 +24,7 @@ import Launchbar from './launchbar/Launchbar';
 import Logotype from 'static/img/brand/logotype.svg';
 import HomeIcon from 'static/icons/icon_home.svg';
 
-import styles from './Header.scss';
+import styles from './Header.module.css';
 
 export const ReleaseVersion = () => <div className={styles.release}>Beta</div>;
 

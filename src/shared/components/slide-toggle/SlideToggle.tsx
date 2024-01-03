@@ -17,7 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
-import styles from './SlideToggle.scss';
+import styles from './SlideToggle.module.css';
 
 type Props = {
   isOn: boolean;

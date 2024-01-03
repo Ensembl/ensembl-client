@@ -46,7 +46,7 @@ import BlastSpeciesSelectorModal from 'src/content/app/tools/blast/components/bl
 import BlastSelectedSpeciesListHeader from 'src/content/app/tools/blast/components/blast-selected-species-list/BlastSelectedSpeciesListHeader';
 import BlastSelectedSpeciesList from 'src/content/app/tools/blast/components/blast-selected-species-list/BlastSelectedSpeciesList';
 
-import styles from './BlastForm.scss';
+import styles from './BlastForm.module.css';
 
 const BlastForm = () => {
   const { data: config } = useBlastConfigQuery();

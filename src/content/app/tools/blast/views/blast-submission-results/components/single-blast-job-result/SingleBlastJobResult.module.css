@@ -1,0 +1,107 @@
+.resultsSummaryRow {
+  display: grid;
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr);
+
+  grid-template-areas:
+    'sequence-label hits-diagram species'
+    'table table table';
+
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.resultsSummaryRow:first-of-type {
+  padding-top: 24px;
+}
+
+.resultsSummaryRow:last-of-type {
+  padding-bottom: 46px;
+}
+
+.tableWrapper {
+  grid-area: table;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.failedJobSummaryRow {
+  grid-template-columns:
+    [empty] 11ch [failed-status] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr);
+
+  grid-template-areas: 'empty failed-status species';
+  padding-bottom: 40px;
+}
+
+.hitLabel {
+  text-align: right;
+  padding-right: 20px;
+}
+
+.summaryPlot {
+  grid-column: hits-diagram;
+}
+
+.blastSpecies {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-self: start;
+  align-self: start;
+  column-gap: 20px;
+  color: var(--color-dark-grey);
+}
+
+.failedJobSummaryRow .blastSpecies {
+  color: var(--color-dark-grey);
+}
+
+.blastSpeciesActive {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.speciesScientificName {
+  font-style: italic;
+}
+
+.speciesAssemblyName {
+  font-size: 11px;
+  white-space: nowrap; /* this span contains a chevron which shouldn't get detached from the text and end up on a new line */
+}
+
+.blastSpeciesChevron {
+  --chevron-height: 6px; /* same as in ShowHide component */
+  margin-left: 10px; /* same as in ShowHide component */
+}
+
+.hitsTable {
+  padding: 20px;
+  border-top: 1px solid var(--color-grey);
+  border-bottom: 1px solid var(--color-grey);
+  width: 100%;
+}
+
+.hitsTable + .resultsSummaryRow {
+  padding-top: 24px;
+}
+
+.sequenceAlignment {
+  margin-left: 200px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.hitOrientation {
+  font-weight: var(--font-weight-light);
+}
+
+.failedJobStatus {
+  grid-column: failed-status;
+  justify-self: end;
+  color: var(--color-red);
+}

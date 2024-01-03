@@ -1,0 +1,20 @@
+/*
+TODO: this panel is the same as in SpeciesSelector, and in EntityViewer.
+We should extract it in a component (or at least reuse the same CSS classes)
+*/
+.topPanel {
+  background-color: var(--color-light-grey);
+  min-height: 235px;
+  padding: 40px;
+  padding-left: var(--global-padding-left);
+  box-shadow: 0 3px 5px var(--global-box-shadow-color);
+}
+
+.exampleLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 40px;
+  padding-left: var(--global-padding-left);
+  padding-bottom: var(--global-padding-bottom);
+}

@@ -69,6 +69,7 @@ export const TableStory = () => {
                 if (index === 2) {
                   return (
                     <ExpandCell
+                      key={index}
                       isExpanded={rowIndex === expandedRowIndex}
                       onChange={() => onExpandRow(rowIndex)}
                     />

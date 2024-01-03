@@ -18,7 +18,7 @@ import React from 'react';
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import Input from 'src/shared/components/input/Input';
 
-import styles from './Pagination.scss';
+import styles from './Pagination.module.css';
 
 export type PaginationProps = {
   currentPageNumber: number;

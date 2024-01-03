@@ -23,7 +23,7 @@ import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { SplicedExon } from 'src/shared/types/core-api/exon';
 import type { FullCDS } from 'src/shared/types/core-api/cds';
 
-import styles from './UnsplicedTranscript.scss';
+import styles from './UnsplicedTranscript.module.css';
 
 const BLOCK_HEIGHT = 7;
 

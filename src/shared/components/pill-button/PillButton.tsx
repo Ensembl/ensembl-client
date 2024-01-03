@@ -21,7 +21,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
-import styles from './PillButton.scss';
+import styles from './PillButton.module.css';
 
 type Props = ComponentProps<'button'>;
 

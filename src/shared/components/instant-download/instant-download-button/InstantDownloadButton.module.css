@@ -1,0 +1,8 @@
+.themeDark {
+  color: var(--color-white);
+}
+
+.themeDark.disabled {
+  border-color: var(--color-dark-grey);
+  color: var(--color-dark-grey);
+}

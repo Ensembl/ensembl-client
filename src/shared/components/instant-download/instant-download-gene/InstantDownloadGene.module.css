@@ -1,0 +1,37 @@
+.label {
+  margin-bottom: 0.5em;
+  font-weight: var(--font-weight-light);
+  word-break: break-all;
+}
+
+.featureId {
+  margin-left: 0.5em;
+  font-weight: var(--font-weight-normal);
+}
+
+.container {
+  position: relative;
+}
+
+.geneSection .label {
+  margin-bottom: 8px;
+}
+
+.transcriptSection {
+  margin-top: 25px;
+}
+
+.transcriptSection .label {
+  margin-bottom: 8px;
+}
+
+.downloadButton {
+  margin: 35px 20px 0 0;
+  float: right;
+  font-size: 12px;
+}
+
+.checkbox {
+  display: block;
+  margin-left: 15px;
+}

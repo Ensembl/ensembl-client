@@ -23,7 +23,7 @@ import TableHeaderCell from './components/table-header-cell/TableHeaderCell';
 
 import type { TableSelectedRowIds } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './TableHeader.scss';
+import styles from './TableHeader.module.css';
 
 const TableHeader = () => {
   const {

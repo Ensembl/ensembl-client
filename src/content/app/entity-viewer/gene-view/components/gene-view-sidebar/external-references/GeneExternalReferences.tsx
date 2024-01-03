@@ -33,7 +33,7 @@ import type {
   QueriedTranscript
 } from 'src/content/app/entity-viewer/state/api/queries/geneExternalReferencesQuery';
 
-import styles from './GeneExternalReferences.scss';
+import styles from './GeneExternalReferences.module.css';
 
 type ExternalReferencesGroupType = {
   source: QueriedExternalReference['source'];

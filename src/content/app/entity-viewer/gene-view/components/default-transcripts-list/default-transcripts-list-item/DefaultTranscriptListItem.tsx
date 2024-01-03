@@ -32,8 +32,8 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
-import transcriptsListStyles from '../DefaultTranscriptsList.scss';
-import styles from './DefaultTranscriptListItem.scss';
+import transcriptsListStyles from '../DefaultTranscriptsList.module.css';
+import styles from './DefaultTranscriptListItem.module.css';
 
 export type DefaultTranscriptListItemProps = {
   transcriptPosition: number;

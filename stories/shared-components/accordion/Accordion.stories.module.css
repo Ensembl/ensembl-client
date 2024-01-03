@@ -1,0 +1,42 @@
+.accordionContainer {
+  width: 50%;
+  margin: 10px;
+}
+
+.accordionPermanentBlock {
+  background: #eee;
+  padding: 20px;
+}
+
+.accordionBottomRight {
+  width: 50%;
+  margin: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  height: 350px;
+  overflow-y: auto;
+}
+
+.entityViewerAccordion {
+  border-color: transparent;
+}
+
+.entityViewerAccordionHeader {
+  background-color: var(--color-light-grey);
+}
+
+.entityViewerAccordionButton {
+  color: var(--color-blue);
+}
+
+.entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: 1px solid var(--color-light-grey);
+  border-top: none;
+  padding: 20px;
+}

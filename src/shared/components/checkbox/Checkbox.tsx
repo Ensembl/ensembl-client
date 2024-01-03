@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import styles from './Checkbox.scss';
+import styles from './Checkbox.module.css';
 
 type Theme = 'lighter' | 'light' | 'dark';
 

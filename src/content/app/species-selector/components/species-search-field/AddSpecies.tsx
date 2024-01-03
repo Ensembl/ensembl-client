@@ -21,7 +21,7 @@ import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
-import styles from './SpeciesSearchField.scss';
+import styles from './SpeciesSearchField.module.css';
 
 export type Props = {
   query: string;

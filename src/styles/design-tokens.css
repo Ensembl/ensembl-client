@@ -1,0 +1,75 @@
+/* stylelint-disable custom-property-empty-line-before */
+/* stylelint-disable value-keyword-case */
+
+:root {
+  /* COLORS */
+  --color-black: #1b2c39;
+  --color-soft-black: #374148;
+  --color-white: #fff;
+  --color-off-white: #fefefe;
+
+  --color-blue: #0099ff;
+  --color-light-blue: #33adff;
+  --color-ice-blue: #e5f5ff;
+  --color-teal: #327C89;
+  --color-duckegg-blue: #96D0C9;
+  --color-neon-blue: #8ef4f8;
+
+  --color-light-grey: #f1f2f4;
+  --color-medium-light-grey: #d4d9de;
+  --color-grey: #b7c0c8;
+  --color-medium-dark-grey: #9aa7b1;
+  --color-dark-grey: #6f8190;
+
+  --color-red: #d90000;
+  --color-dark-pink: #e685ae;
+  --color-purple: #ca81ff;
+
+  --color-orange: #ff9900;
+  --color-mustard: #cc9933;
+  --color-dark-yellow: #f8c041;
+
+  --color-green: #47d147;
+  --color-lime: #84fa3a;
+
+  /* SHADOWS */
+  --shadow-color: rgb(0 0 0 / 0.4);
+  --global-box-shadow-color: var(--color-medium-light-grey);
+  --form-field-shadow: inset 2px 2px 4px -2px var(--color-medium-dark-grey),
+    inset -2px -2px 1px -2px var(--color-dark-grey);
+  
+  /* FONT WEIGHTS */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --font-weight-dark: 900;
+
+  /* FONT FAMILY SETTINGS */
+  --font-family-body: Lato, 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;
+  --font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
+
+  /* WHITE SPACE */
+  --standard-gutter: 30px;
+  --half-gutter: calc(var(--standard-gutter) / 2);
+  --double-standard-gutter: calc(var(--standard-gutter) * 2); /* 60px */
+  --global-padding-left: calc(var(--standard-gutter) * 4); /* 120px */
+  --global-padding-bottom: 90px;
+
+  /* FONT SIZES */
+  --body-font-size: 13px;
+  --body-line-height: 1.5;
+
+  /* 
+    A filter that transforms our black svg species icons to the required grey colour
+    The magic numbers are from a generator at https://codepen.io/sosuke/pen/Pjoqqp
+  */
+  --black-to-grey-species-icon-filter: invert(78%) sepia(19%) saturate(200%) hue-rotate(164deg) brightness(84%) contrast(82%);
+
+  /* UPLOAD BUTTON */
+  --highlighted-upload-button-background: var(--color-ice-blue);
+  --upload-button-taller-height: 102px;
+  --upload-button-shorter-height: 90px;
+  --upload-button-width: 200px;
+  --upload-button-two-line-label-width: 94px;
+  --upload-button-one-line-label-width: 172px;
+}

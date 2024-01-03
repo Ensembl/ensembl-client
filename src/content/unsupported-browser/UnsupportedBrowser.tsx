@@ -21,7 +21,7 @@ import SupportedWebBrowser from './components/supported-web-browser/SupportedWeb
 
 import unsupportedBrowsersDiagramPath from 'src/content/unsupported-browser/images/unsupported_browsers_diagram.svg?url';
 
-import styles from './UnsupportedBrowser.scss';
+import styles from './UnsupportedBrowser.module.css';
 
 const UnsupportedBrowser = () => {
   return (

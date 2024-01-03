@@ -16,7 +16,7 @@
 
 import React, { type ReactNode } from 'react';
 
-import styles from './ToolsTopBar.scss';
+import styles from './ToolsTopBar.module.css';
 
 type Props = {
   children: ReactNode;

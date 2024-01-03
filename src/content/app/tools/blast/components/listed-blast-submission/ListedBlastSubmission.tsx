@@ -24,15 +24,16 @@ import BlastSubmissionHeader from '../blast-submission-header/BlastSubmissionHea
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
+import { getBlastSubmissionsUi } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+
 import type { SubmittedSequence } from 'src/content/app/tools/blast/types/blastSequence';
 import {
   type BlastSubmission,
   type BlastJob,
   updateSubmissionUi
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import { getBlastSubmissionsUi } from '../../state/blast-results/blastResultsSelectors';
 
-import styles from './ListedBlastSubmission.scss';
+import styles from './ListedBlastSubmission.module.css';
 
 export type Props = {
   submission: BlastSubmission;

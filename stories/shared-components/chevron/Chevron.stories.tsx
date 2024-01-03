@@ -21,7 +21,7 @@ import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
 import type { Direction as ChevronDirection } from 'src/shared/components/chevron/Chevron';
 
-import styles from './Chevron.stories.scss';
+import styles from './Chevron.stories.module.css';
 
 export const ChevronStory = () => {
   const [direction, setDirection] = useState<ChevronDirection>('down');

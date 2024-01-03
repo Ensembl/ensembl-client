@@ -23,7 +23,7 @@ import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import styles from './Launchbar.scss';
+import styles from './Launchbar.module.css';
 
 export type LaunchbarButtonProps = {
   path: string;

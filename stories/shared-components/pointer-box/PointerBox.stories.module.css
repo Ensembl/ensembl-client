@@ -1,0 +1,198 @@
+.pointerBox {
+  padding: 6px 12px;
+  background: black;
+  color: white;
+}
+
+.pointerBox p {
+  max-width: 200px;
+}
+
+.pointerBoxPointer {
+  fill: black;
+}
+
+.variantsStoryLayout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.variantsStoryLayout h1 {
+  position: absolute;
+  top: 2em;
+}
+
+.variantsStoryContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.variantsStoryAnchor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.variantsStoryAnchor:hover {
+  background: green;
+}
+
+.variantsStoryTopLeft {
+  left: 10%;
+  top: 0;
+}
+
+.variantsStoryTopRight {
+  right: 10%;
+  top: 0;
+}
+
+.variantsStoryRightTop {
+  right: 0%;
+  top: 10%;
+}
+
+.variantsStoryRightBottom {
+  right: 0;
+  bottom: 10%;
+}
+
+.variantsStoryBottomLeft {
+  bottom: 0;
+  left: 10%;
+}
+
+.variantsStoryBottomRight {
+  bottom: 0;
+  right: 10%;
+}
+
+.variantsStoryLeftTop {
+  left: 0;
+  top: 10%;
+}
+
+.variantsStoryLeftBottom {
+  left: 0;
+  bottom: 10%;
+}
+
+.positioningStoryLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  max-width: 900px;
+  margin: auto;
+  padding-bottom: 70px;
+}
+
+.positioningStoryContainer {
+  position: relative;
+  height: 600px;
+  width: 600px;
+  background: var(--color-light-grey);
+}
+
+.positioningStoryItem {
+  position: absolute;
+  padding: 1.5em;
+  background: var(--color-grey);
+}
+
+.positioningStoryItemTopLeft {
+  left: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemTopRight {
+  right: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemBottomLeft {
+  left: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemBottomRight {
+  right: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.positioningStorySelector {
+  display: inline-block;
+  margin-top: 1em;
+}
+
+.scrollingStoryContainer {
+  display: flex;
+  padding-top: 10vh;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 150vh;
+}
+
+.scrollingStoryAnchorContainer {
+  height: 40vh;
+  width: 30vw;
+  overflow: auto;
+  border: 1px black dashed;
+}
+
+.scrollingStoryHeader {
+  padding-bottom: 1em;
+}
+
+.scrollingStoryAnchorContainerInner {
+  height: 150%;
+  width: 150%;
+  padding: 2em;
+}
+
+.scrollingStoryInfo {
+  width: 600px;
+  margin: auto;
+  padding-top: 0.6em;
+  font-size: 16px;
+}
+
+.scrollingStoryButton {
+  position: relative;
+  padding: 1.5em;
+  background: var(--color-grey);
+}
+
+.renderSwitch {
+  text-align: center;
+}
+
+.renderSwitchItem {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+}
+
+.renderSwitchItem:first-child {
+  margin-right: 1em;
+}
+
+.renderSwitchItemActive {
+  color: black;
+  text-decoration: none;
+}

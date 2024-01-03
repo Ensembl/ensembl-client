@@ -30,7 +30,7 @@ import Cross from 'static/icons/icon_cross.svg';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
-import styles from './DownloadButton.scss';
+import styles from './DownloadButton.module.css';
 
 type Props = Omit<ComponentProps<'button'>, 'children' | 'onClick'> & {
   onClick: () => unknown;

@@ -1,0 +1,7 @@
+.backbone {
+  fill: var(--color-medium-dark-grey);
+}
+
+.hit {
+  fill: var(--color-black);
+}

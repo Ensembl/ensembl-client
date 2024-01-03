@@ -1,0 +1,53 @@
+.downloadButton {
+  --_download-button-size: var(--download-button-size, 18px);
+  background-color: var(--download-button-background, var(--color-blue));
+  border: none;
+  outline: none;
+  height: var(--_download-button-size);
+  width: var(--_download-button-size);
+}
+
+.downloadButton svg {
+  width: 56%; /* about 10px for a 18px-wide button */
+  fill: var(--color-white);
+}
+
+.downloadButtonDisabled {
+  --download-button-background: var(--color-grey);
+  cursor: default;
+}
+
+.downloadButtonLoading {
+  --circle-loader-diameter: var(--_download-button-size);
+  background-color: var(--download-button-loading-background, transparent);
+  transform: scale(1.2);
+}
+
+.downloadButtonLoading,
+.downloadButtonSuccess,
+.downloadButtonError {
+  cursor: default;
+}
+
+.downloadButtonSuccess,
+.downloadButtonError {
+  background-color: var(--download-button-success-background, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.downloadButtonSuccess svg {
+  width: 100%;
+  transform: scale(1.1);
+  fill: var(--color-green);
+}
+
+.downloadButtonError {
+  background-color: var(--download-button-error-background, transparent);
+}
+
+.downloadButtonError svg {
+  fill: var(--color-red);
+  width: 75%;
+}

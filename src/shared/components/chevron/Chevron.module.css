@@ -1,0 +1,23 @@
+.chevron {
+  fill: var(--chevron-fill, var(--color-blue));
+  height: var(--chevron-height, 8px);
+  user-select: none;
+  display: inline-block;
+  font-size: 0; /* to prevent line-height's impact on the height of the element */
+}
+
+.chevron_animated {
+  transition: transform 0.3s ease-in-out;
+}
+
+.chevron_up {
+  transform: rotate(-180deg);
+}
+
+.chevron_left {
+  transform: rotate(90deg);
+}
+
+.chevron_right {
+  transform: rotate(-90deg);
+}

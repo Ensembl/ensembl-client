@@ -26,7 +26,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from './Zmenu.scss';
+import styles from './Zmenu.module.css';
 
 type Props = {
   id: string;

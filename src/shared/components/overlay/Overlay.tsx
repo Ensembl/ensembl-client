@@ -16,7 +16,8 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import styles from './Overlay.scss';
+
+import styles from './Overlay.module.css';
 
 type OverlayProps = {
   className?: string;

@@ -25,7 +25,7 @@ import { setQuery } from 'src/content/app/species-selector/state/species-selecto
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SpeciesSearchField.scss';
+import styles from './SpeciesSearchField.module.css';
 
 export type Props = {
   query: string;

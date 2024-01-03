@@ -1,0 +1,3 @@
+.textButton {
+  color: var(--text-button-color, var(--color-blue));
+}

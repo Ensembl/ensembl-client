@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import SVGIcon from 'static/icons/icon_question.svg';
 
-import styles from './AppIcon.scss';
+import styles from './AppIcon.module.css';
 
 const HelpIcon = () => {
   const elementClasses = classNames(styles.appIcon, styles.help);

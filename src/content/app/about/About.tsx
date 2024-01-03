@@ -44,8 +44,8 @@ import { CircleLoader } from 'src/shared/components/loader';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
-import helpStyles from '../help/Help.scss';
-import styles from './About.scss';
+import helpStyles from '../help/Help.module.css';
+import styles from './About.module.css';
 
 const About = () => {
   const { pathname } = useLocation();

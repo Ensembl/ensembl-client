@@ -20,7 +20,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
-import styles from './HelpArticle.scss';
+import styles from './HelpArticle.module.css';
+import cssVariables from './helpArticleVariables.module.css';
 
 type Props = {
   article: TextArticleData;
@@ -31,7 +32,11 @@ type Props = {
 const TextArticle = (props: Props) => {
   const articleRef = useRef<HTMLElement | null>(null);
   useRoutingRules(articleRef, props.onInternalLinkClick);
-  const articleClasses = classNames(styles.textArticle, props.className);
+  const articleClasses = classNames(
+    styles.textArticle,
+    cssVariables.variablesContainer,
+    props.className
+  );
 
   return (
     <article

@@ -1,0 +1,35 @@
+.topBar {
+  height: 40px;
+  background-color: var(--color-light-grey);
+  box-shadow: 0 3px 5px var(--global-box-shadow-color);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.alertButton {
+  --alert-icon-diameter: 30px;
+  font-size: 0;
+}
+
+.errorMessage {
+  color: var(--color-red);
+  font-weight: var(--font-weight-bold);
+  margin-top: 15px;
+}
+
+.suggestion {
+  margin-top: 5px;
+}
+
+.continueButton {
+  --button-link-color: var(--color-green);
+}
+
+.continueButtonWrapper {
+  margin-top: 40px;
+}

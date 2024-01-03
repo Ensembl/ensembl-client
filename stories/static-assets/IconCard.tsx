@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import styles from './Icons.stories.scss';
+import styles from './Icons.stories.module.css';
 
 type Props = {
   iconPath: string;

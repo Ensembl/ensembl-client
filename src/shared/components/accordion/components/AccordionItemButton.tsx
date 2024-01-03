@@ -25,7 +25,7 @@ import Chevron from 'src/shared/components/chevron/Chevron';
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
 
-import defaultStyles from '../css/Accordion.scss';
+import defaultStyles from '../css/Accordion.module.css';
 
 type Props = DivAttributes & {
   extendDefaultStyles?: boolean;

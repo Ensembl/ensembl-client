@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  align-items: center;
+  column-gap: var(--blast-sequence-button-label-distance, 24px);
+  white-space: nowrap;
+}
+
+.label {
+  font-weight: var(--blast-sequence-button-label-font-weight, var(--font-weight-light));
+}
+
+.button {
+  --app-icon-size: var(--blast-sequence-button-size, 24px);
+}
+
+.button svg {
+  fill: var(--color-white);
+}
+
+.buttonEnabled {
+  background: var(--color-blue);
+}
+
+.buttonDisabled {
+  background: var(--color-grey);
+}

@@ -1,0 +1,36 @@
+.slideToggle {
+  --transition-time: 0.15s;
+  cursor: pointer;
+  user-select: none;
+  height: 12px;
+}
+
+.slideToggleTrack {
+  transition: fill var(--transition-time) ease-in-out,
+    stroke var(--transition-time) ease-in-out;
+}
+
+.slideToggleThumb {
+  transition: transform var(--transition-time) ease-in-out,
+    fill var(--transition-time) ease-in-out;
+}
+
+.slideToggleOn .slideToggleTrack {
+  fill: var(--color-blue);
+  stroke: var(--color-blue);
+}
+
+.slideToggleOn .slideToggleThumb {
+  transform: translateX(9px);
+  fill: var(--color-white);
+}
+
+.slideToggleOff .slideToggleTrack {
+  fill: var(--color-white);
+  stroke: var(--color-grey);
+}
+
+.slideToggleOff  .slideToggleThumb {
+  fill: var(--color-blue);
+  transform: translateX(0);
+}

@@ -34,7 +34,7 @@ import Ellipsis from 'static/icons/icon_ellipsis.svg';
 import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 
-import styles from './TrackPanelItemLayout.scss';
+import styles from './TrackPanelItemLayout.module.css';
 
 export type Props = {
   visibilityStatus?: TrackActivityStatus | Status.PARTIALLY_SELECTED;

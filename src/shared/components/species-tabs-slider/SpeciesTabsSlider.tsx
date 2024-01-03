@@ -23,7 +23,7 @@ import useVisibleActiveSpecies from './useVisibleActiveSpecies';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 
-import styles from './SpeciesTabsSlider.scss';
+import styles from './SpeciesTabsSlider.module.css';
 
 type Props = {
   children: ReactNode;

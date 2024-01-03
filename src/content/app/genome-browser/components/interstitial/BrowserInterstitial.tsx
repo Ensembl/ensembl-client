@@ -29,7 +29,7 @@ import BrowserInterstitialInstructions from './browser-interstitial-instructions
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import styles from './BrowserInterstitial.scss';
+import styles from './BrowserInterstitial.module.css';
 
 const BrowserInterstitial = () => {
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();

@@ -1,0 +1,68 @@
+.resultsSummaryRow {
+  display: grid;
+  grid-template-columns:
+    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
+    [species] minmax(20%, 1fr) minmax(10px, auto);
+  column-gap: 20px;
+  padding-bottom: 20px;
+}
+
+.headerWithLegend {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1.5rem;
+}
+
+/* The distances in this grid are mostly repeating the distances of the grid for SingleBlastJobResult */
+.rulerPlacementGrid {
+  display: grid;
+  grid-template-columns: 11ch [ruler] minmax(48%, 1050px) minmax(20%, 1fr);
+  column-gap: 20px;
+  padding-bottom: 10px;
+}
+
+.rulerContainer {
+  --sequence-ruler-name-color: var(--color-dark-grey);
+  grid-column: ruler;
+}
+
+.wrapper {
+  padding: 24px 26px 0;
+  border: 1px solid var(--color-grey);
+}
+
+.wrapper + .wrapper {
+  border-top: none;
+}
+
+.sequenceHeader {
+  display: flex;
+  flex-direction: column;
+}
+
+.sequenceHeader .content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.againstText {
+  font-weight: var(--font-weight-light);
+}
+
+.showHideWrapper {
+  --show-hide-chevron-height: 8px;
+}
+
+.summaryPlot {
+  grid-column: hits-diagram;
+}
+
+.collapsedJobStatus {
+  justify-self: end;
+  padding-right: 20px;
+}
+
+.failedJob {
+  color: var(--color-red);
+}

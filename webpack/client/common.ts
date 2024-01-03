@@ -21,6 +21,7 @@ import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 
 import { getPaths } from '../paths';
+import { buildClassName } from '../utils/cssModules';
 
 export default (env: Record<string, unknown>): Configuration => {
   const isDev = env.dev;
@@ -44,13 +45,8 @@ export default (env: Record<string, unknown>): Configuration => {
           exclude: /node_modules/
         },
 
-        // the loaders for styling
-        // a scss file will first be loaded via sass loader and transpiled
-        // afterwards it will be processed by postcss loader to make the css cross-browser compatible
-        // add the processed css into the html document during runtime for dev
-        // and extract the css for prod and minify it as external stylesheets
         {
-          test: /.scss$/,
+          test: /\.css$/,
           use: [
             isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
@@ -58,7 +54,9 @@ export default (env: Record<string, unknown>): Configuration => {
               options: {
                 sourceMap: true,
                 modules: {
-                  localIdentName: '[local]__[name]__[hash:base64:5]'
+                  auto: true, // will match all files with a pattern /\.module\.\w+$/
+                  localIdentName: '[local]__[name]__[hash:base64:5]',
+                  getLocalIdent: buildClassName
                 }
               }
             },
@@ -69,8 +67,7 @@ export default (env: Record<string, unknown>): Configuration => {
                   plugins: [['postcss-preset-env']]
                 }
               }
-            },
-            'sass-loader'
+            }
           ]
         },
 
@@ -78,7 +75,7 @@ export default (env: Record<string, unknown>): Configuration => {
           test: /\.svg$/i,
           oneOf: [
             {
-              issuer: /\.scss$/,
+              issuer: /\.css$/,
               type: 'asset/resource',
               generator: {
                 filename: 'images/[name].[hash][ext]'
@@ -125,7 +122,7 @@ export default (env: Record<string, unknown>): Configuration => {
 
     // add aliases for more convenient imports
     resolve: {
-      extensions: ['.tsx', '.ts', '.js', '.scss'],
+      extensions: ['.tsx', '.ts', '.js'],
       alias: {
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),

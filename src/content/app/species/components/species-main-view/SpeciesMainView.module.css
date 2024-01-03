@@ -1,0 +1,166 @@
+.speciesContainer {
+  max-width: 1380px;
+}
+
+.speciesMainViewTop {
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.speciesLabelBlock {
+  padding: 0 75px 0 45px;
+}
+
+.statsWrapper {
+  padding: 5px 20px var(--global-padding-bottom) 140px;
+}
+
+.exampleLinkText {
+  cursor: pointer;
+  color: var(--color-blue);
+  position: relative;
+}
+
+.pointerBox {
+  padding: 6px 12px;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.pointerBox p {
+  max-width: 200px;
+}
+
+.pointerBoxPointer {
+  fill: var(--color-black);
+}
+
+.collapsedContent {
+  container-name: species-statistics-section-collapsed;
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  padding: 6px 20px;
+  min-height: 50px;
+}
+
+.collapsedContent .title {
+  grid-column: title;
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}
+
+.collapsedContent .statisticsContainer {
+  grid-column: statistics;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.collapsedContent .summaryStat {
+  width: 250px;
+  white-space: nowrap;
+}
+
+.collapsedContent .summaryStat .value {
+  font-size: 24px;
+}
+
+.collapsedContent .summaryStat .unit {
+  color: var(--color-black);
+  padding: 0 6px;
+  font-weight: var(--font-weight-light);
+}
+
+.collapsedContent .exampleLink {
+  grid-column: example-link;
+}
+
+.collapsedContent .questionButton {
+  top: 2px;
+  position: relative;
+}
+
+.collapsedContentGrid {
+  display: grid;
+  grid-template-columns:
+  [title] 120px [statistics] 1fr
+  [example-link] 150px;
+  align-items: center;
+  width: 100%;
+}
+
+@container species-statistics-section-collapsed (max-width: 549px) {
+  .collapsedContent .collapsedContentGrid {
+    grid-template-columns:
+    [title] 120px [statistics] 1fr;
+  }
+
+  .collapsedContent .exampleLink {
+    grid-column: statistics;
+  }
+}
+
+@container species-statistics-section-collapsed (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .collapsedContent .summaryStat {
+    width: 220px;
+  }
+}
+
+.expandedContent {
+  container-name: species-statistics-section-expanded;
+  container-type: inline-size;
+}
+
+.statsGroup {
+  padding: 16px 20px 0;
+  display: grid;
+  grid-template-columns: [title] 120px [stats] auto;
+}
+
+.statsGroup .title {
+  grid-column: title;
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}
+
+.statsGroup .stats {
+  grid-column: stats;
+}
+
+.statsGroupWithExampleLink {
+  grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
+}
+
+.statsGroup .exampleLink {
+  grid-column: example-link;
+}
+
+@container species-statistics-section-expanded (max-width: 549px) {
+  .statsGroupWithExampleLink {
+    grid-template-areas:
+      "title stats"
+      ". example-link";
+    grid-template-columns: 120px 1fr;
+  }
+
+  .statsGroupWithExampleLink .exampleLink {
+    grid-area: example-link;
+    display: inline-block;
+    margin-bottom: 30px;
+  }
+}
+
+@container species-statistics-section-expanded (max-width: 395px) {
+  /* reduce the width of stats elements */
+  .stats > * {
+    width: 220px;
+  }
+}
+
+.noData {
+  color: var(--color-black);
+  font-weight: var(--font-weight-light);
+}

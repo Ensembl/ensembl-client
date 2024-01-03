@@ -1,0 +1,21 @@
+.scrollRef{
+  scroll-margin-top: 90px;
+}
+
+
+.middle {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 75px 450px 150px;
+  grid-column-gap: 10px;
+}
+
+.transcriptId {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.middle,
+.transcriptId {
+  font-weight: var(--font-weight-normal);
+}

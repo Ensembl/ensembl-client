@@ -18,7 +18,7 @@ import React from 'react';
 
 import Input from 'src/shared/components/input/Input';
 
-import styles from './Input.stories.scss';
+import styles from './Input.stories.module.css';
 
 export const DefaultInputStory = () => (
   <div className={styles.wrapper}>

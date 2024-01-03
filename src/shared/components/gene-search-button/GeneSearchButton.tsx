@@ -18,7 +18,7 @@ import React from 'react';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './GeneSearchButton.scss';
+import styles from './GeneSearchButton.module.css';
 
 type Props = {
   onClick: () => void;

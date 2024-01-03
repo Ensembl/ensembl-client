@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import LaunchbarButton, { LaunchbarButtonProps } from './LaunchbarButton';
 
-import styles from './Launchbar.scss';
+import styles from './Launchbar.module.css';
 
 type Notification = 'red' | 'green';
 

@@ -1,0 +1,27 @@
+.grid {
+  display: grid;
+  grid-template-columns: [main] minmax(0, 1fr) [show-more] 16px [visibility-switch] 16px;
+  column-gap: 15px;
+  padding: 4px 10px;
+  align-items: center;
+}
+
+.content {
+  grid-column: main;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.showMore {
+  grid-column: show-more;
+}
+
+.visibilitySwitch {
+  grid-column: visibility-switch;
+}
+
+.highlightableOnHover:hover,
+.highlighted {
+  background: var(--color-ice-blue);
+}

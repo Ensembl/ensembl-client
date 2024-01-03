@@ -1,0 +1,77 @@
+/*
+Many of the styles are identical between GeneSummary.module.css, TranscriptSummary.module.css, and VariantSummary.module.css
+TODO: go through GeneSummary.module.css, TranscriptSummary.module.css, and VariantSummary.module.css, and extract common styles
+*/
+
+/*
+For the reference (from Andrea)
+
+- smallest vertical white space (row to row) should be 12px
+- larget vertical space (between groups) — 30px
+- line height for row labels — 1.2
+*/
+
+.row {
+  display: grid;
+  align-items: baseline;
+  grid-template-columns: [label] 130px [value] auto;
+  grid-column-gap: 10px;
+  margin-bottom: 3px;
+}
+
+.newRowGroup {
+  margin-top: 30px;
+}
+
+.row .label {
+  line-height: 1.2;
+  grid-column: label;
+  font-weight: var(--font-weight-light);
+  text-align: right;
+  font-size: 12px;
+}
+
+.row .value {
+  grid-column: value;
+}
+
+.row .value.alignBottom {
+  align-self: end;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.withSpaceLeft {
+  margin-left: 12px;
+}
+
+.variantSequenceBlock {
+  max-width: 60ch;
+}
+
+.phenotypeAssociations {
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.phenotypeAssociations .value {
+  display: flex;
+  column-gap: 10px;
+}
+
+.phenotypeAssociations svg {
+  fill: var(--color-green);
+  width: 12px;
+}
+
+.questionButton {
+  padding-left: 10px;
+  position: relative;
+  top: 2px;
+}

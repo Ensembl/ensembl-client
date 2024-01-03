@@ -17,83 +17,99 @@
 import React from 'react';
 
 import ColourCard from './ColourCard';
-import variables from 'src/styles/_settings.scss';
 
 const colours = [
   {
     name: 'Black',
-    variableName: '$black',
-    value: variables['black']
+    variableName: '--color-black'
   },
   {
     name: 'Soft black',
-    variableName: '$soft-black',
-    value: variables['soft-black']
+    variableName: '--color-soft-black'
   },
   {
     name: 'Blue',
-    variableName: '$blue',
-    value: variables['blue']
+    variableName: '--color-blue'
   },
   {
     name: 'Light blue',
-    variableName: '$light-blue',
-    value: variables['light-blue']
+    variableName: '--color-light-blue'
   },
   {
     name: 'Ice blue',
-    variableName: '$ice-blue',
-    value: variables['ice-blue']
+    variableName: '--color-ice-blue'
   },
   {
-    name: 'Red',
-    variableName: '$red',
-    value: variables['red']
+    name: 'Teal',
+    variableName: '--color-teal'
   },
   {
-    name: 'Orange',
-    variableName: '$orange',
-    value: variables['orange']
+    name: 'Duck-egg blue',
+    variableName: '--color-duckegg-blue'
   },
   {
-    name: 'Mustard',
-    variableName: '$mustard',
-    value: variables['mustard']
+    name: 'Neon blue',
+    variableName: '--color-neon-blue'
   },
   {
     name: 'Grey',
-    variableName: '$grey',
-    value: variables['grey']
+    variableName: '--color-grey'
   },
   {
     name: 'Medium-dark grey',
-    variableName: '$medium-dark-grey',
-    value: variables['medium-dark-grey']
+    variableName: '--color-medium-dark-grey'
   },
   {
     name: 'Dark grey',
-    variableName: '$dark-grey',
-    value: variables['dark-grey']
+    variableName: '--color-dark-grey'
   },
   {
     name: 'Medium-light grey',
-    variableName: '$medium-light-grey',
-    value: variables['medium-light-grey']
+    variableName: '--color-medium-light-grey'
   },
   {
     name: 'Light grey',
-    variableName: '$light-grey',
-    value: variables['light-grey']
+    variableName: '--color-light-grey'
+  },
+  {
+    name: 'Red',
+    variableName: '--color-red'
+  },
+  {
+    name: 'Dark pink',
+    variableName: '--color-dark-pink'
+  },
+  {
+    name: 'Purple',
+    variableName: '--color-purple'
+  },
+  {
+    name: 'Orange',
+    variableName: '--color-orange'
+  },
+  {
+    name: 'Mustard',
+    variableName: '--color-mustard'
+  },
+  {
+    name: 'Dark yellow',
+    variableName: '--color-dark-yellow'
   },
   {
     name: 'Green',
-    variableName: '$green',
-    value: variables['green']
+    variableName: '--color-green'
+  },
+  {
+    name: 'Lime',
+    variableName: '--color-lime'
   },
   {
     name: 'White',
-    variableName: '$white',
-    value: variables['white']
+    variableName: '--color-white'
+  },
+  {
+    name: 'Off white',
+    variableName: '--color-off-white'
   }
 ];
 

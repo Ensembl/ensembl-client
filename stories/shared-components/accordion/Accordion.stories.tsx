@@ -24,7 +24,7 @@ import {
   AccordionItemButton,
   AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
-import styles from './Accordion.stories.scss';
+import styles from './Accordion.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/Accordion'

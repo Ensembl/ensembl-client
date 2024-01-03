@@ -1,0 +1,38 @@
+.sidebarModal {
+  display: grid;
+  grid-template-areas:
+    'title close'
+    'content content';
+  grid-template-columns: 1fr 20px;
+  grid-template-rows: 38px 1fr;
+  min-height: 100%;
+  overflow: auto;
+  padding: 21px calc(18px - var(--scrollbar-width)) 90px 20px;
+  scrollbar-gutter: stable;
+}
+
+.lightTheme {
+  background: var(--color-white);
+}
+
+.darkTheme {
+  background: var(--color-light-grey);
+}
+
+.title {
+  grid-area: title;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+.content {
+  grid-area: content;
+  overflow: auto;
+}
+
+.closeButton {
+  grid-area: close;
+  position: relative;
+  right: 0;
+  top: 3px;
+}

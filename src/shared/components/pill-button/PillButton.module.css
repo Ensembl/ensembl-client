@@ -1,0 +1,9 @@
+.pillButton {
+  background: var(--pill-button-color, var(--color-blue));
+  color: var(--pill-button-text-color, var(--color-white));
+  font-size: var(--pill-button-font-size, 12px);
+  font-weight: var(--pill-button-font-weight, var(--font-weight-bold));
+  padding: var(--pill-button-padding, 2px 8px);
+  border-radius: var(--pill-button-border-radius, 14px);
+  white-space: nowrap;
+}

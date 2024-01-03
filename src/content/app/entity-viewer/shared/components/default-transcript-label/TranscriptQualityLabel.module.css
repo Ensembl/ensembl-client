@@ -1,0 +1,10 @@
+.transcriptQualityLabel {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  line-height: 1;
+}
+
+.transcriptQualityLabel > span {
+  margin-right: 10px;
+}

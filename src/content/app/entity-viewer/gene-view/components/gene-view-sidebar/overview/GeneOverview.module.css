@@ -1,0 +1,105 @@
+.overviewContainer {
+  font-size: 13px;
+}
+
+.externalRefContainer {
+  margin-top: 6px;
+}
+
+.externalRefLink {
+  font-size: 12px;
+}
+
+.sectionHead {
+  color: var(--color-black);
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-grey);
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.sectionContent {
+  margin-left: 15px;
+}
+
+.geneSymbol {
+  font-weight: var(--font-weight-bold);
+  margin-right: 10px;
+}
+
+.attributeRow {
+  line-height: 1;
+}
+
+.attributeRow > span {
+  display: inline-block;
+}
+
+.attributeLabel {
+  font-size: 12px;
+  font-weight: 300;
+  margin-right: 10px;
+}
+
+.biotypeValue {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  top: 2px;
+  width: 240px;
+}
+
+/* NOTE: the styles below require the extra specificity in order to overwrite Accordion styles
+  We should update the Accordion to use CSS variables.
+*/
+.accordionContainer .entityViewerAccordion {
+  border: none;
+}
+
+.entityViewerAccordion .entityViewerAccordionHeader {
+  background-color: var(--color-light-grey);
+  border-radius: 5px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButton {
+  color: var(--color-blue);
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButton::before,
+.entityViewerAccordion .entityViewerAccordionButton::after {
+  margin-top: -3px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButtonDisabled {
+  color: var(--color-grey);
+}
+
+.entityViewerAccordion .entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+}
+
+
+.findAGene {
+  color: var(--color-blue);
+  cursor: pointer;
+  margin: 30px 0 20px;
+  display: inline-flex;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.findAGene svg {
+  fill: var(--color-blue);
+  width: 13px;
+}

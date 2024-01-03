@@ -1,0 +1,18 @@
+/* Avoiding the newer CSS features, such as flexbox or grid, or CSS variables, for maximum browser compatibility */
+
+.container {
+  display: inline-block;
+  padding: 0 25px 1rem;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+
+.label {
+  display: block;
+  color: #6f8190; /* --color-dark-grey */
+  text-transform: capitalize;
+}

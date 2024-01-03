@@ -1,0 +1,65 @@
+.transcriptsList {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+.header {
+  border-bottom: 1px solid var(--color-orange);
+  padding: 0;
+  position: sticky;
+  top: -5px;
+  background-color: var(--color-black);
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.content {
+  position: relative;
+  padding-top: 36px;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+.stripedBackground {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--gene-view-left-column-width) + var(--gene-view-middle-column-left-gap));
+}
+
+.stripe {
+  position: absolute;
+  width: 1px;
+  top: 0;
+  bottom: 0;
+  background: var(--color-orange);
+  opacity: 0.4;
+}
+
+.row {
+  display: grid;
+  grid-template-columns:
+    var(--gene-view-left-column-width)
+    var(--gene-view-middle-column-left-gap)
+    var(--gene-view-middle-column-width)
+    var(--gene-view-middle-column-right-gap)
+    var(--gene-view-right-column-width);
+  padding: 9px 0;
+  font-size: 12px;
+  position: relative;
+}
+
+.left {
+  grid-column: 1/2;
+  text-align: right;
+}
+
+.middle {
+  grid-column: 3/4;
+  position: relative;
+}
+
+.right {
+  grid-column: 5/6;
+}

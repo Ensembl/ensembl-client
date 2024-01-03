@@ -21,7 +21,7 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 import PillButton from 'src/shared/components/pill-button/PillButton';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './TrackPanelItem.scss';
+import styles from './TrackPanelItem.module.css';
 
 type Props = {
   count: number;

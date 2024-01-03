@@ -1,0 +1,18 @@
+.dotSolid {
+  display: inline-block;
+  width: var(--dot-solid-size, 8px);
+  height: var(--dot-solid-size, 8px);
+  border-radius: 50%;
+  background-color: var(--dot-solid-color, var(--color-black));
+}
+
+.dotEmpty {
+  display: inline-block;
+  width: var(--dot-empty-size, 8px);
+  height: var(--dot-empty-size, 8px);
+  border-radius: 50%;
+  border-color: var(--dot-empty-border-color, var(--color-grey));
+  border-width: var(--dot-empty-border-width, 1px);
+  border-style: solid;
+  background-color: var(--dot-empty-background-color, transparent);
+}

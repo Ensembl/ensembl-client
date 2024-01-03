@@ -16,7 +16,8 @@
 
 import React, { FunctionComponent } from 'react';
 import privacyConfig from './privacyConfig';
-import styles from './PrivacyBanner.scss';
+
+import styles from './PrivacyBanner.module.css';
 
 type PrivacyBannerProps = {
   closeBanner: () => void;

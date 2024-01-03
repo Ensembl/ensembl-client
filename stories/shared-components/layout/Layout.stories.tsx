@@ -21,7 +21,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
-import styles from './Layout.stories.scss';
+import styles from './Layout.stories.module.css';
 
 const TopbarContent = () => (
   <div className={styles.topbarContent}>This is top bar content</div>

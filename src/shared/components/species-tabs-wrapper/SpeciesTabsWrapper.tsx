@@ -16,7 +16,7 @@
 
 import React, { type ReactNode } from 'react';
 
-import styles from './SpeciesTabsWrapper.scss';
+import styles from './SpeciesTabsWrapper.module.css';
 
 type Props = {
   children: ReactNode;

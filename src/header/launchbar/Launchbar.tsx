@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
+
 import {
   GenomeBrowserIcon,
   GlobalSearchIcon,
@@ -29,8 +31,7 @@ import BlastLaunchbarButton from './BlastLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
-import styles from './Launchbar.scss';
-import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
+import styles from './Launchbar.module.css';
 
 export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';

@@ -20,7 +20,7 @@ import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './UploadedFile.scss';
+import styles from './UploadedFile.module.css';
 
 type Props = {
   file: File;

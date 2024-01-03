@@ -1,0 +1,61 @@
+.trackSettingsPanel {
+  display: flex;
+  width: max-content;
+  background: var(--color-light-grey);
+  box-shadow: 1px 1px 10px var(--color-dark-grey);
+  position: absolute;
+  right: 25px;
+  top: -12px;
+  min-height: 72px;
+}
+
+.toggleWrapper {
+  margin: 0 6px;
+  line-height: 30px;
+}
+
+.toggleWrapper svg {
+  margin: 0 10px;
+}
+
+.section {
+  display: flex;
+  margin: 5px 0;
+  padding: 0 18px;
+}
+
+.section:first-child {
+  padding-left: 30px;
+}
+
+.section:not(:last-child) {
+  border-right: 1px solid var(--color-grey);
+}
+
+.trackSettingsPanel label {
+  font-size: 12px;
+}
+
+/* button styling */
+
+.slideToggle {
+  height: 10px;
+  margin-left: 2px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.subLabel {
+  line-height: 30px;
+  font-size: 12px;
+  font-weight: 300;
+  padding-right: 10px;
+}
+
+.reorderTrack {
+  margin: 0 4px;
+  display: flex;
+  justify-content: center;
+  width: 30px;
+  fill: var(--color-grey);
+}

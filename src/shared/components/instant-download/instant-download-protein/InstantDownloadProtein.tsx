@@ -23,7 +23,7 @@ import { fetchForProtein } from '../instant-download-fetch/fetchForProtein';
 
 import { TranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 
-import styles from './InstantDownloadProtein.scss';
+import styles from './InstantDownloadProtein.module.css';
 
 export type InstantDownloadProteinProps = {
   genomeId: string;

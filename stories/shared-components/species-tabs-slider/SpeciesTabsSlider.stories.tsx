@@ -21,7 +21,7 @@ import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpec
 
 import speciesData from './speciesData';
 
-import styles from './SpeciesTabsSlider.stories.scss';
+import styles from './SpeciesTabsSlider.stories.module.css';
 
 const SpeciesTabsSliderStory = () => {
   const [selectedSpeciesIndex, setSelectedSpeciesIndex] = useState<

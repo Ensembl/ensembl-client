@@ -1,0 +1,67 @@
+.zmenuAnchor {
+  position: absolute;
+}
+
+.zmenuContentFeature {
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+.zmenuContentLine {
+  display: block;
+}
+
+.zmenuContentBlock:not(:last-child) {
+  margin-right: 1.1em;
+}
+
+.markupStrong {
+  font-weight: var(--font-weight-bold);
+}
+
+.markupLight {
+  font-weight: var(--font-weight-light);
+}
+
+.markupEmphasis {
+  font-style: italic;
+}
+
+.markupFocus {
+  cursor: pointer;
+  color: var(--color-blue);
+}
+
+.zmenuLinksGrid {
+  display: grid;
+  grid-template-columns: auto [app-links] 1fr;
+  align-items: center;
+}
+
+.zmenuAppLinks {
+  grid-column: app-links;
+  justify-self: end;
+}
+
+.zmenuToggleFooter {
+  margin-left: auto;
+  color: var(--color-blue);
+}
+
+.zmenuFooterContent {
+  --border-top-color: color-mix(in srgb, var(--color-grey) 30%, transparent);
+  margin-top: 19px;
+  border-top: 1px solid var(--border-top-color);
+  padding-top: 12px;
+}
+
+.zmenuInstantDowloadLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolBox {
+  max-width: 450px;
+  min-width: 250px;
+}

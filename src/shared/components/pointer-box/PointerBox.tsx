@@ -36,7 +36,7 @@ import {
 
 import { Position } from './pointer-box-types';
 
-import styles from './PointerBox.scss';
+import styles from './PointerBox.module.css';
 
 type InlineStyles = { [key: string]: string | number | undefined };
 export type InlineStylesState = {

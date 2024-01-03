@@ -1,0 +1,38 @@
+.greyStage {
+  background-color: var(--color-light-grey);
+}
+
+.customizedInput {
+  color: rosybrown;
+  font-size: 36px;
+  font-weight: bold;
+  padding: 16px;
+}
+
+.shadedInputWrapper {
+  max-width: 450px;
+  padding: 2rem;
+  padding-bottom: 3rem;
+}
+
+.shadedInputOptions {
+  display: flex;
+  flex-direction: column;
+}
+
+.shadedInputOptions input[type="number"] {
+  width: 6ch;
+}
+
+.shadedInputOptions label {
+  display: flex;
+  align-items: center;
+  column-gap: 0.4rem;
+  user-select: none;
+}
+
+.flatInputWrapper {
+  max-width: 320px;
+  padding: 2rem;
+  padding-bottom: 3rem;
+}

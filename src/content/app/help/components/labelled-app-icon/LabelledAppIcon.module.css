@@ -1,0 +1,32 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  background-color: var(--color-dark-grey);
+}
+
+.iconWrapper svg {
+  fill: white;
+}
+
+.iconWrapperSmall {
+  --app-icon-size: 26px;
+  height: 26px;
+  width: 26px;
+}
+
+.label {
+  margin-left: 18px;
+}
+
+.labelSmall {
+  margin-left: 12px;
+}

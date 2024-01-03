@@ -22,7 +22,7 @@ import ViewInApp, {
   LinksConfig
 } from 'src/shared/components/view-in-app/ViewInApp';
 
-import styles from './ViewInAppPopup.scss';
+import styles from './ViewInAppPopup.module.css';
 
 export type ViewInAppPopupProps = {
   links: LinksConfig;

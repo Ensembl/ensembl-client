@@ -1,0 +1,58 @@
+.species {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 20px;
+  border-width: 1px;
+  border-radius: 20px;
+  border-style: solid;
+  overflow: hidden;
+  user-select: none;
+}
+
+.themeBlue {
+  border-color: var(--species-lozenge-bg-color, var(--color-blue));
+  background-color: var(--species-lozenge-bg-color, var(--color-blue));
+  color: var(--species-lozenge-text-color, var(--color-white));
+}
+
+.themeBlack {
+  border-color: var(--species-lozenge-bg-color, var(--color-black));
+  background-color: var(--species-lozenge-bg-color, var(--color-black));
+  color: var(--species-lozenge-text-color, var(--color-white));
+}
+
+.themeIceBlue {
+  border-color: var(--species-lozenge-bg-color, var(--color-ice-blue));
+  background-color: var(--species-lozenge-bg-color, var(--color-ice-blue));
+  color: var(--species-lozenge-text-color, var(--color-blue));
+}
+
+.themeGrey {
+  border-color: var(--species-lozenge-bg-color, var(--color-grey));
+  background-color: var(--species-lozenge-bg-color, var(--color-grey));
+  color: var(--species-lozenge-text-color, var(--color-white));
+}
+
+.themeRed {
+  border-color: var(--species-lozenge-bg-color, var(--color-red));
+  background-color: var(--species-lozenge-bg-color, var(--color-red));
+  color: var(--species-lozenge-text-color, var(--color-white));
+}
+
+.inner {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  margin-right: 10px;
+}
+
+.assembly {
+  font-size: 11px;
+}

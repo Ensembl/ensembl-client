@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import styles from './RadioGroup.scss';
+import styles from './RadioGroup.module.css';
 
 export type OptionValue = string | number | boolean;
 export type RadioOption = {

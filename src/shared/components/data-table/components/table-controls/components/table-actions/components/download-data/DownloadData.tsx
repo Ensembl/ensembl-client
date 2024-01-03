@@ -26,7 +26,7 @@ import { ControlledLoadingButton } from 'src/shared/components/loading-button';
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 import { LoadingState } from 'src/shared/types/loading-state';
 
-import styles from './DownloadData.scss';
+import styles from './DownloadData.module.css';
 
 const DownloadData = () => {
   const {

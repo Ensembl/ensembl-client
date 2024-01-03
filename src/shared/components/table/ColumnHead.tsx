@@ -21,7 +21,7 @@ import SortIcon from 'static/icons/icon_arrow.svg';
 
 import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
-import styles from './ColumnHead.scss';
+import styles from './ColumnHead.module.css';
 
 type RegularColumnHeadProps = DetailedHTMLProps<
   ThHTMLAttributes<HTMLTableCellElement>,

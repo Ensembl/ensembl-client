@@ -15,6 +15,8 @@
  */
 import React from 'react';
 
+import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
@@ -22,8 +24,7 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './RowSelector.scss';
-import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+import styles from './RowSelector.module.css';
 
 export type RowSelectorProps = {
   rowId: string | number;

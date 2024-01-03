@@ -23,7 +23,7 @@ import { useShowTooltip } from 'src/shared/hooks/useShowTooltip';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import styles from './AlertButton.scss';
+import styles from './AlertButton.module.css';
 
 type Props = {
   tooltipContent?: React.ReactNode;

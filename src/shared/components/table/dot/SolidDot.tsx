@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import styles from './Dot.scss';
+import styles from './Dot.module.css';
 
 /**
  * Draws a circle filled with colour.

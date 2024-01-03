@@ -32,7 +32,7 @@ import HistoryButtons from './HistoryButtons';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { SlugReference } from './types';
 
-import styles from './HelpPopupBody.scss';
+import styles from './HelpPopupBody.module.css';
 
 type Props = SlugReference;
 

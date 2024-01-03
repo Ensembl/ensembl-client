@@ -1,0 +1,42 @@
+.container {
+  margin: 10px 0 0 80px;
+  max-width: 950px;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  margin-left: 10px;
+}
+
+.regulationColour1 {
+  background-color: var(--color-red);
+}
+
+.regulationColour2 {
+  background-color: var(--color-dark-yellow);
+}
+
+.regulationColour3 {
+  background-color: var(--color-grey);
+}
+
+.regulationColour4 {
+  background-color: var(--color-neon-blue);
+}
+
+.regulationColour5 {
+  background-color: var(--color-purple);
+}
+
+.colourMarker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+.labelDefinition {
+  font-size: 12px;
+  margin-left: 20px;
+  margin-top: 20px;
+}

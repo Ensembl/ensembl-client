@@ -31,7 +31,7 @@ import {
   getDefaultChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from './ChromosomeNavigator.scss';
+import styles from './ChromosomeNavigator.module.css';
 
 export type ChromosomeNavigatorProps = {
   length: number; // total number of nucleotides

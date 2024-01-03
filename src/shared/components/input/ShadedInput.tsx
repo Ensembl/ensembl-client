@@ -30,7 +30,7 @@ import Input from './Input';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import styles from './Input.scss';
+import styles from './Input.module.css';
 
 export type InputSize = 'large' | 'small';
 

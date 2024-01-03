@@ -62,7 +62,7 @@ import {
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './SingleBlastJobResult.scss';
+import styles from './SingleBlastJobResult.module.css';
 
 type SingleBlastJobResultProps = {
   jobResult: BlastJobWithResults;

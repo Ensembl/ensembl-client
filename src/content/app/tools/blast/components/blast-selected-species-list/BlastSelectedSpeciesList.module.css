@@ -1,0 +1,26 @@
+.container {
+  width: 860px;
+  flex-grow: 1;
+  background-color: var(--color-light-grey);
+  border: 1px solid var(--color-grey);
+  padding: 10px; 
+
+
+  /**
+  TODO: for small screens
+  min-height: calc(100% - 80px);
+  */
+}
+
+.container table {
+  --table-background: var(--color-light-grey);
+  width: 100%;
+}
+
+.container th:first-child {
+  width: 30%;
+}
+
+.container th:last-child {
+  width: 100px;
+}

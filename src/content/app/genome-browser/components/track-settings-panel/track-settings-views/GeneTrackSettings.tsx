@@ -27,7 +27,7 @@ import { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/geno
 
 import ReorderTrack from 'static/icons/icon_move_tracks.svg';
 
-import styles from '../TrackSettingsPanel.scss';
+import styles from '../TrackSettingsPanel.module.css';
 
 type Props = {
   trackId: string;

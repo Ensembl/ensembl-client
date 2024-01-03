@@ -34,7 +34,7 @@ import {
   SidebarTabName
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import styles from './GeneOverview.scss';
+import styles from './GeneOverview.module.css';
 
 const GeneOverview = () => {
   const { genomeId, geneId } = useGeneViewIds();

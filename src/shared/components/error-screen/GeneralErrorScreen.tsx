@@ -28,7 +28,7 @@ import { PrimaryButton } from '../button/Button';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
-import styles from './ErrorScreen.scss';
+import styles from './ErrorScreen.module.css';
 
 const GeneralErrorScreen = () => {
   const [moreOptionExpanded, setMoreOptionExpanded] = useState(false);

@@ -23,7 +23,7 @@ import Copy from 'src/shared/components/copy/Copy';
 import type { BlastSubmissionParameters } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import type { Option } from 'src/content/app/tools/blast/types/blastSettings';
 
-import styles from './JobParameters.scss';
+import styles from './JobParameters.module.css';
 
 type JobParametersProps = {
   sequenceValue: string;

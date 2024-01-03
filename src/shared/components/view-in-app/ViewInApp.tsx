@@ -27,7 +27,7 @@ import {
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './ViewInApp.scss';
+import styles from './ViewInApp.module.css';
 
 export const Apps = {
   genomeBrowser: {

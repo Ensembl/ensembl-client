@@ -18,7 +18,7 @@ import React, { useState, useRef } from 'react';
 
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
-import styles from './FeatureLengthRuler.stories.scss';
+import styles from './FeatureLengthRuler.stories.module.css';
 
 type ContainerProps = {
   value: number;

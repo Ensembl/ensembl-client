@@ -25,7 +25,7 @@ import {
   AccordionItemButton
 } from 'src/shared/components/accordion';
 
-import styles from './GeneOverview.scss';
+import styles from './GeneOverview.module.css';
 
 /*  
   FIXME: 

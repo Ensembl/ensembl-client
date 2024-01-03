@@ -18,7 +18,7 @@ import React from 'react';
 
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
-import styles from './DeletionConfirmation.scss';
+import styles from './DeletionConfirmation.module.css';
 
 type DefaultArgs = {
   onClick: (...args: any) => void;

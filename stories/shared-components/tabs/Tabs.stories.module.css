@@ -1,0 +1,86 @@
+.fullPageWrapper {
+  display: flex;
+  padding: 20px;
+  align-items: flex-start;
+  height: 100vh;
+}
+
+.fullPageWrapperDark {
+  background-color: var(--color-black);
+}
+
+.defaultTabDark {
+  background-color: #33adff;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 3px;
+  margin-right: 3px;
+  height: 30px;
+}
+
+.disabledTabDark {
+  background-color: var(--color-grey);
+}
+
+.selectedTabDark {
+  background-color: transparent;
+  border: 1px solid var(--color-blue);
+}
+
+.selectedTabDark::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-black);
+  border: 1px solid var(--color-blue);
+  border-color: transparent transparent var(--color-blue) var(--color-blue);
+  box-shadow: none;
+  box-sizing: border-box;
+  position: absolute;
+  left: calc(50% - 8px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 28px;
+}
+
+.defaultTabPanel {
+  background-color: transparent;
+  color: var(--color-blue);
+  font-weight: 700;
+  border-radius: 3px;
+  margin-right: 3px;
+  height: 30px;
+  border: none;
+}
+
+.disabledTabPanel {
+  color: var(--color-grey);
+}
+
+.selectedTabPanel {
+  background-color: transparent;
+  color: var(--color-black);
+}
+
+.selectedTabPanel::after {
+  content: '';
+  border: 6px solid var(--color-grey);
+  border-color: transparent transparent var(--color-light-grey) var(--color-light-grey);
+  box-shadow: -2px 2px 2px 0 var(--color-medium-light-grey);
+
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
+  position: absolute;
+  left: calc(50% - 8px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 28px;
+}
+
+.panelTabsContainer {
+  height: auto;
+  overflow: unset;
+  background-color: var(--color-light-grey);
+  box-shadow: 0 2px 2px 0 var(--color-medium-light-grey);
+}

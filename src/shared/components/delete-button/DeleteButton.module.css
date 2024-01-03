@@ -1,0 +1,14 @@
+.deleteButton {
+  background: transparent;
+  border: none;
+  height: var(--delete-button-size, 18px);
+  width: var(--delete-button-size, 18px);
+}
+
+.deleteButton svg {
+  fill: var(--delete-button-background, var(--color-blue));
+}
+
+.deleteButtonDisabled {
+  --delete-button-background: var(--color-grey);
+}

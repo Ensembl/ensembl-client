@@ -1,0 +1,127 @@
+.inAppSearchTopInterstitial {
+  display: inline-grid;
+  grid-template-areas:
+    'label label'
+    'search-field search-button'
+    'hits-count .';
+  grid-template-columns: 485px auto;
+  column-gap: 48px;
+}
+
+.inAppSearchTopSidebar {
+  display: grid;
+  grid-template-areas:
+    'label label'
+    'search-field search-field'
+    'hits-count search-button';
+  grid-template-columns: 1fr min-content;
+}
+
+.searchField {
+  grid-area: search-field;
+  background: white;
+  width: 100%;
+}
+
+.label {
+  grid-area: label;
+  color: var(--color-dark-grey);
+  margin-bottom: 15px;
+}
+
+.searchButton {
+  grid-area: search-button;
+}
+
+.inAppSearchTopSidebar .searchButton {
+  margin-top: 18px;
+  padding: 6px 18px;
+}
+
+.spinner {
+  --circle-loader-display: block;
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.hitsCount {
+  grid-area: hits-count;
+  padding: 20px 0 0 20px;
+}
+
+.hitsNumber {
+  font-weight: var(--font-weight-bold);
+}
+
+.searchMatches {
+  display: flex;
+  padding-left: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 30px;
+}
+
+.searchMatch {
+  position: relative;
+  display: inline-block;
+  color: var(--color-blue);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.searchMatch:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.searchMatch > span:nth-child(2) {
+  margin-left: 0.6rem;
+}
+
+.searchMatchAnchor {
+  position: absolute;
+  height: 100%;
+}
+
+.searchMatchAnchorInterstitial {
+  right: -1.5ch;
+}
+
+.searchMatchAnchorSidebar {
+  left: 3ch;
+}
+
+.tooltip {
+  background: var(--color-black);
+  padding: 12px 20px;
+  filter: drop-shadow(2px 2px 3px var(--shadow-color));
+  color: var(--color-white);
+}
+
+.tooltipTip {
+  fill: var(--color-black);
+}
+
+.tooltipContent {
+  font-weight: var(--font-weight-light);
+  max-width: 260px;
+}
+
+.tooltipContent > div:first-child span:first-child {
+  margin-right: 28px;
+}
+
+.tooltipContent > div:nth-child(3) span:first-child {
+  font-weight: var(--font-weight-bold);
+}
+
+.tooltipContent > div:not(:last-child) {
+  margin-bottom: 6px;
+}
+
+.tooltipContent > div:last-child {
+  margin-top: 28px;
+}
+
+.transcriptsCount {
+  margin-right: 1ch;
+}

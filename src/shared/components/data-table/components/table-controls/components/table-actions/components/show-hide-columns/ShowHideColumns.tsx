@@ -19,7 +19,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import PopupPanel from '../popup-panel/PopupPanel';
 
-import styles from './ShowHideColumns.scss';
+import styles from './ShowHideColumns.module.css';
 
 const ShowHideColumns = () => {
   const { hiddenColumnIds, dispatch, columns } = useDataTable();

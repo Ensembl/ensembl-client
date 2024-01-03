@@ -1,0 +1,173 @@
+.speciesTitleArea {
+  container-name: species-page-title-area;
+  container-type: inline-size;
+  margin-left: var(--double-standard-gutter);
+}
+
+.grid {
+  display: grid;
+  align-items: center;
+  grid-column-gap: 20px;
+  padding-right: 20px;
+}
+
+.speciesIcon {
+  grid-area: icon;
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--color-blue);
+  padding: 6px;
+}
+
+.speciesIcon img {
+  filter: var(--black-to-grey-species-icon-filter);
+}
+
+.speciesNameWrapper {
+  grid-area: species-name;
+}
+
+.speciesName {
+  display: inline;
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  margin: 0 8px 0 0;
+}
+
+.assemblyName {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.speciesToggle {
+  grid-area: usage-toggle;
+}
+
+.speciesRemove {
+  grid-area: remove;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.disabledRemoveButton {
+  background-color: var(--color-grey);
+  color: var(--color-white);
+  border: 1px solid var(--color-grey);
+  cursor: default;
+}
+
+.speciesRemoveMessage {
+  grid-area: remove-message;
+  justify-content: end;
+  margin-bottom: 20px;
+}
+
+.geneSearchWrapper {
+  grid-area: search;
+  color: var(--color-blue);
+  cursor: pointer;
+  display: inline-flex;
+  column-gap: 12px;
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.geneSearchWrapper svg {
+  fill: var(--color-blue);
+  width: 13px;
+}
+
+.remove {
+  grid-area: remove;
+  align-self: start;
+  white-space: nowrap;
+}
+
+@container species-page-title-area (min-width: 761px) {
+  .grid {
+    display: grid;
+    grid-template-areas:
+      'icon species-name usage-toggle search remove'
+      '. remove-message remove-message remove-message remove-message';
+    grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
+    grid-template-rows: 80px auto;
+  }
+
+  .speciesToggle {
+    padding-left: 25px;
+  }
+}
+
+
+@container species-page-title-area (min-width: 641px) and (max-width: 760px) {
+  .grid {
+    grid-template-areas:
+      'icon species-name usage-toggle remove'
+      '. remove-message remove-message remove-message'
+      '. search . .';
+    grid-template-columns: 60px min-content auto 1fr;
+    grid-template-rows: 80px auto auto;
+    margin-bottom: 20px;
+  }
+
+  .speciesNameWrapper {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  .assemblyName {
+    padding-top: 3px;
+    white-space: nowrap;
+  }
+
+  .speciesToggle {
+    padding: 0;
+  }
+
+  .speciesRemove {
+    white-space: normal;
+  }
+
+  .speciesRemoveMessage {
+    grid-area: remove-message;
+    justify-content: start;
+  }
+
+  .geneSearchWrapper {
+    grid-area: search;
+    margin: 0;
+  }
+
+}
+
+@container species-page-title-area (max-width: 640px) {
+  .grid {
+    grid-template-areas:
+      'icon species-name .'
+      '. usage-toggle remove'
+      '. remove-message remove-message'
+      '. search .';
+    grid-template-columns: 60px 150px 1fr;
+    grid-template-rows: 80px 0 auto 40px;
+    grid-row-gap: 10px;
+    margin-bottom: 20px;
+  }
+
+
+  .speciesRemoveMessage {
+    margin-top: 20px;
+    justify-content: start;
+  }
+
+  .speciesToggle {
+    padding: 0;
+  }
+
+}
+
+
+.speciesTitleAreaEmpty {
+  height: 80px;
+}

@@ -1,4 +1,4 @@
-import 'src/styles/main.scss';
+import 'src/styles/globalStyles.ts';
 
 export const parameters = {
   options: {

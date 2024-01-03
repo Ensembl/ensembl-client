@@ -20,7 +20,7 @@ import { faker } from '@faker-js/faker';
 import Panel from 'src/shared/components/panel/Panel';
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
-import styles from './Panel.stories.scss';
+import styles from './Panel.stories.module.css';
 
 type DefaultArgs = {
   onClose: (...args: any) => void;

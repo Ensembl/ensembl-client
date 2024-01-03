@@ -1,0 +1,22 @@
+.speciesUsageToggle {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.speciesUsageToggle span {
+  white-space: nowrap;
+}
+
+.speciesUsageToggle span:last-of-type {
+  margin-right: 15px;
+}
+
+.toggle {
+  margin: 0 12px;
+}
+
+.clickable {
+  color: var(--color-blue);
+  cursor: pointer;
+}

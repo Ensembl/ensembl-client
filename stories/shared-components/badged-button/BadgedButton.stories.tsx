@@ -26,7 +26,7 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './BadgedButton.stories.scss';
+import styles from './BadgedButton.stories.module.css';
 
 const onClick = noop;
 

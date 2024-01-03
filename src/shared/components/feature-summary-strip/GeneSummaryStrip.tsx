@@ -25,7 +25,7 @@ import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormat
 
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './FeatureSummaryStrip.scss';
+import styles from './FeatureSummaryStrip.module.css';
 
 const MEDIUM_WIDTH = 800;
 const SMALL_WIDTH = 500;

@@ -28,7 +28,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './ImageButton.scss';
+import styles from './ImageButton.module.css';
 
 export type ImageButtonStatus =
   | Status.DEFAULT

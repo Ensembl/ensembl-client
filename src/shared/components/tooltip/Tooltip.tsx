@@ -24,7 +24,7 @@ import PointerBox, {
 
 import { TooltipPosition } from './tooltip-types';
 
-import styles from './Tooltip.scss';
+import styles from './Tooltip.module.css';
 
 type Props = {
   anchor: HTMLElement;

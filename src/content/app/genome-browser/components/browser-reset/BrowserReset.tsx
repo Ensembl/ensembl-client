@@ -30,7 +30,7 @@ import ResetIcon from 'static/icons/icon_reset.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './BrowserReset.scss';
+import styles from './BrowserReset.module.css';
 
 type Props = {
   className?: string;

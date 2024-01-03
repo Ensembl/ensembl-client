@@ -1,0 +1,63 @@
+.instructionsPanel {
+  --column-width: 230px;
+  --column-gap: 60px;
+  --row-gap: 60px;
+
+  display: flex;
+  background-color: var(--color-light-grey);
+  min-height: 235px;
+  padding: 29px var(--global-padding-left);
+  box-shadow: 0 3px 5px var(--global-box-shadow-color);
+}
+
+.instructionsWrapper {
+  display: grid;
+  grid-template-columns: repeat(4, var(--column-width));
+  grid-column-gap: var(--column-gap);
+  grid-row-gap: var(--row-gap);
+  max-width: calc(4 * var(--column-width) + 3 * var(--column-gap));
+}
+
+.description {
+  --app-icon-bg-color: var(--color-dark-grey);
+  display: flex;
+  align-items: center;
+}
+
+.iconLabel {
+  margin-left: 12px;
+}
+
+.searchIcon {
+  width: 30px;
+  height: 30px;
+  fill: var(--color-dark-grey);
+}
+
+.searchDescription {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  color: var(--color-dark-grey);
+}
+
+.speciesSelectorButton {
+  margin-left: 40px;
+  align-self: start;
+  justify-self: start;
+}
+
+@media (width <= calc(
+  2 * 120px /* two times global-padding-left */ + 
+  4 * 230px /* four times column-width */ + 
+  3 * 60px /* three times column-gap */
+)) {
+  .instructionsWrapper {
+    grid-template-columns: repeat(2, var(--column-width));
+  }
+
+  .speciesSelectorButton {
+    margin-left: 0;
+  }
+}

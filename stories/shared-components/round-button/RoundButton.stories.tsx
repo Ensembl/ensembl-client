@@ -21,7 +21,7 @@ import RoundButton, {
 } from 'src/shared/components/round-button/RoundButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
-import styles from './RoundButton.stories.scss';
+import styles from './RoundButton.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/RoundButton',

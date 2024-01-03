@@ -16,12 +16,11 @@
 
 import React, { FunctionComponent } from 'react';
 
-import styles from './ColourCard.scss';
+import styles from './ColourCard.module.css';
 
 type Props = {
   name: string;
   variableName: string;
-  value: string;
 };
 
 const ColourCard: FunctionComponent<Props> = (props) => {
@@ -29,12 +28,11 @@ const ColourCard: FunctionComponent<Props> = (props) => {
     <div className={styles.colourCard}>
       <div
         className={styles.colourArea}
-        style={{ backgroundColor: props.value }}
+        style={{ backgroundColor: `var(${props.variableName})` }}
       />
       <div className={styles.colourInfo}>
         <div className={styles.colourName}>{props.name}</div>
         <div>{props.variableName}</div>
-        <div>{props.value}</div>
       </div>
     </div>
   );

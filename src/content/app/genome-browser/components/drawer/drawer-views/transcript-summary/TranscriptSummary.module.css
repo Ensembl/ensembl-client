@@ -1,0 +1,119 @@
+.row {
+  display: grid;
+  grid-template-columns: [label] 130px [value] auto;
+  grid-column-gap: 10px;
+  margin-bottom: 3px;
+}
+
+.label {
+  grid-column: label;
+  font-weight: var(--font-weight-light);
+  text-align: right;
+  font-size: 12px;
+}
+
+.labelWithPadding {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  padding-right: 10px;
+}
+
+.questionButton {
+  padding-left: 10px;
+  position: relative;
+  top: 2px;
+}
+
+.value {
+  grid-column: value;
+}
+
+.value > span + span {
+  margin-left: 10px;
+}
+
+.value > div + div {
+  margin-top: 3px;
+}
+
+.geneName {
+  width: 60ch;
+}
+
+.downloadRow > .value {
+  display: flex;
+}
+
+.spaceAbove {
+  margin-top: 30px;
+}
+
+.lightText {
+  font-weight: var(--font-weight-light);
+}
+
+.unit {
+  font-weight: var(--font-weight-light);
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.transcriptQuality {
+  margin-left: 10px;
+  font-weight: var(--font-weight-light);
+}
+
+.featureDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 30px;
+  row-gap: 10px;
+}
+
+.featureDetail {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.featureSymbol {
+  font-weight: var(--font-weight-bold);
+}
+
+.stableId {
+  font-weight: var(--font-weight-bold);
+}
+
+.featureSymbol + .stableId {
+  margin-left: 12px;
+  color: var(--color-dark-grey);
+  font-weight: var(--font-weight-normal);
+}
+
+.geneSymbol {
+  margin-right: 12px;
+}
+
+.downloadLink {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.downloadWrapper {
+  display: inline-block;
+  margin-left: 40px;
+  min-width: 300px;
+  position: relative;
+}
+
+.sequenceWrapper {
+  margin-top: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+}

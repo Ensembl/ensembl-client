@@ -22,7 +22,7 @@ import {
   ToggleButton as ToolboxToggleButton
 } from 'src/shared/components/toolbox';
 
-import styles from './Toolbox.stories.scss';
+import styles from './Toolbox.stories.module.css';
 
 export const DefaultStory = () => {
   const [isShowing, setIsShowing] = useState(false);

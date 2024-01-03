@@ -24,7 +24,7 @@ import {
   EntityViewerIcon
 } from 'src/shared/components/app-icon';
 
-import styles from './LabelledAppIcon.scss';
+import styles from './LabelledAppIcon.module.css';
 
 type AppName = 'speciesSelector' | 'genomeBrowser' | 'entityViewer';
 

@@ -16,8 +16,8 @@
 
 import React from 'react';
 
-import storyStyles from '../../common.scss';
-import styles from './Typography.stories.scss';
+import storyStyles from '../../common.module.css';
+import styles from './Typography.stories.module.css';
 import dummyText from 'tests/data/json/LoremIpsum.json';
 
 export default {
@@ -32,10 +32,12 @@ export const Fonts = () => {
         that may not be the font rendered by your browser.
       </p>
       <h2>Body font</h2>
-      <p>
-        <b>Preferred</b>: Lato Regular
-      </p>
-      <p>{dummyText.medium}</p>
+      <div className={styles.regular}>
+        <p>
+          <b>Preferred</b>: Lato Regular
+        </p>
+        <p>{dummyText.medium}</p>
+      </div>
       <h2>Monospace</h2>
       <p>
         <b>Preferred</b>: IBM Plex Mono

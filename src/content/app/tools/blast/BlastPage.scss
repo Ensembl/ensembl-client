@@ -1,9 +1,0 @@
-@import 'src/styles/common';
-
-.blastPage {
-  --blast-container-max-width: 1800px;
-  --blast-page-standard-padding: 0
-    calc(#{$standard-gutter} - var(--scrollbar-width)) #{$global-padding-bottom}
-    #{$double-standard-gutter};
-  height: 100%;
-}

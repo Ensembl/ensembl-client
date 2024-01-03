@@ -20,7 +20,7 @@ import { TableContext } from 'src/shared/components/data-table/DataTable';
 
 import type { RowsPerPage } from 'src/shared/components/data-table/dataTableTypes';
 
-import styles from './RowsPerPageSelector.scss';
+import styles from './RowsPerPageSelector.module.css';
 
 const rowsPerPageOptions = [
   {

@@ -1,0 +1,72 @@
+.helpLanding {
+  height: 100%;
+  overflow: auto;
+  padding: 0 var(--standard-gutter) var(--global-padding-bottom) 0;
+}
+
+.helpLanding section h1 {
+  margin-top: 0;
+}
+
+.helpLanding section + section {
+  margin-top: 40px;
+}
+
+.showHide {
+  margin-left: 3ch;
+}
+
+.appsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 324px);
+  column-gap: 96px;
+  row-gap: 30px;
+  margin-left: var(--standard-gutter);
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 218px);
+  column-gap: 200px;
+  max-width: 1200px;
+  background-color: var(--color-light-grey);
+  margin-top: 1ch;
+  padding: 20px var(--standard-gutter) 40px var(--standard-gutter);
+}
+
+.appBlock ul {
+  margin-top: 1ch;
+  list-style-type: disc;
+  padding-left: 15px;
+  font-size: 12px;
+  color: var(--color-dark-grey);
+}
+
+.appLabel {
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.searchIcon {
+  width: 30px;
+  height: 30px;
+  fill: var(--color-dark-grey);
+}
+
+.stepChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  line-height: 1;
+}
+
+.lastSectionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 324px);
+  column-gap: calc(96px + var(--standard-gutter));
+  row-gap: 30px;
+}
+
+.lastSectionGrid p {
+  padding-left: var(--standard-gutter);
+}

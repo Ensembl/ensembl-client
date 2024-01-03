@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import styles from './SidebarModal.scss';
+import styles from './SidebarModal.module.css';
 
 export type SidebarModalProps = {
   title: string;

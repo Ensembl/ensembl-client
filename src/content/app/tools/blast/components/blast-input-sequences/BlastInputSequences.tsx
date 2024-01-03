@@ -29,7 +29,7 @@ import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputPar
 
 import BlastInputSequence from './BlastInputSequence';
 
-import styles from './BlastInputSequences.scss';
+import styles from './BlastInputSequences.module.css';
 
 const BlastInputSequences = () => {
   const {

@@ -30,7 +30,7 @@ import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPan
 import type { TrackPanelTranscript as TrackPanelTranscriptType } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import { Status } from 'src/shared/types/status';
 
-import styles from './TrackPanelItem.scss';
+import styles from './TrackPanelItem.module.css';
 
 type Props = {
   transcript: TrackPanelTranscriptType;

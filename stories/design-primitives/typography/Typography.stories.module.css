@@ -1,0 +1,7 @@
+.regular {
+  font-family: var(--font-family-body);
+}
+
+.monospace {
+  font-family: var(--font-family-monospace);
+}

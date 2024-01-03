@@ -60,7 +60,7 @@ import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/trans
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
-import styles from './GeneView.scss';
+import styles from './GeneView.module.css';
 
 type GeneViewWithDataProps = {
   gene: DefaultEntityViewerGeneQueryResult['gene'];

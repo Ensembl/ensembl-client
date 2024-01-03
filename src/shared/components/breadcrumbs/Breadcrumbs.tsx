@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import styles from './Breadcrumbs.scss';
+import styles from './Breadcrumbs.module.css';
 
 type Props = {
   breadcrumbs: string[];

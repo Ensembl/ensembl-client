@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import LinkIcon from 'static/icons/icon_xlink.svg';
 
-import styles from './ExternalLink.scss';
+import styles from './ExternalLink.module.css';
 
 export type ExternalLinkProps = {
   to: string;

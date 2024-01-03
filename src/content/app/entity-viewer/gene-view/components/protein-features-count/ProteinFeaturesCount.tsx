@@ -24,7 +24,7 @@ import interactionsUrl from 'static/icons/icon_protein_interactions.svg?url';
 import annotationsUrl from 'static/icons/icon_protein_annotations.svg?url';
 import similarProteinsUrl from 'static/icons/icon_protein_similar.svg?url';
 
-import styles from './ProteinFeaturesCount.scss';
+import styles from './ProteinFeaturesCount.module.css';
 
 type ProteinFeaturesCountProps = {
   proteinStats: ProteinStats;

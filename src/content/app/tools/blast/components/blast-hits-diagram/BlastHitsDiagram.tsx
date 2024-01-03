@@ -19,7 +19,7 @@ import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
-import styles from './BlastHitsDiagram.scss';
+import styles from './BlastHitsDiagram.module.css';
 
 const BACKBONE_HEIGHT = 1;
 const BLOCK_HEIGHT = 6;

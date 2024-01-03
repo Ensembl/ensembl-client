@@ -22,7 +22,7 @@ import HelpPopupBody from './HelpPopupBody';
 
 import HelpIcon from 'static/icons/icon_question.svg';
 
-import styles from './HelpPopupButton.scss';
+import styles from './HelpPopupButton.module.css';
 
 type Props = {
   labelClass?: string;

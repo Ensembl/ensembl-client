@@ -1,0 +1,78 @@
+.navigateAccordion {
+  border: none;
+}
+
+.expandableSection + .expandableSection {
+  border-top: none;
+}
+
+.helpText {
+  font-weight: var(--font-weight-light);
+  background-color: var(--color-white);
+  padding: 0 14px 14px;
+}
+
+.navigateAccordionItem {
+  border: 1px solid var(--color-medium-light-grey);
+}
+
+.navigateAccordionItem + .navigateAccordionItem {
+  border-top: none;
+}
+
+.navigateAccordionItemButton {
+  padding: 14px;
+  color: var(--color-blue);
+}
+
+.navigateSection {
+  background-color: var(--color-light-grey);
+  padding: 14px;
+}
+
+.inputField {
+  margin-top: 10px;
+  font-weight: var(--font-weight-light);
+}
+
+.inputField label > span {
+  display: inline-block;
+  margin-right: 10px;
+  text-align: right;
+  width: 32px;
+}
+
+.segmentedInput {
+  --flat-input-width: 140px;
+  margin-top: 20px;
+}
+
+.segmentedInputDisabled {
+  --simple-select-border: 1px solid var(--color-grey);
+  --simple-select-arrowhead-color: var(--color-grey);
+  --select-background-color: var(--color-light-grey);
+}
+
+.singleInput {
+  --flat-input-width: 216px;
+  margin-top: 30px;
+}
+
+.errorMessage {
+  color: var(--color-red);
+  margin: 20px 0 0 42px;
+}
+
+.formButtons {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.cancel {
+  margin-right: 20px;
+}
+
+.clickableText {
+  color: var(--color-light-blue);
+  cursor: pointer;
+}

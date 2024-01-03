@@ -25,7 +25,7 @@ import EntityViewerInterstitialInstructions from './entity-viewer-interstitial-i
 import ExampleLinks from 'src/content/app/entity-viewer/components/example-links/ExampleLinks';
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
-import styles from './EntityViewerInterstitial.scss';
+import styles from './EntityViewerInterstitial.module.css';
 
 const EntityViewerInterstitial = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);

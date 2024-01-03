@@ -22,8 +22,7 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import UnsupportedBrowserHTML from './UnsupportedBrowserHtml';
 import UnsupportedBrowser from './UnsupportedBrowser';
 
-import './UnsupportedBrowser.scss';
-import 'src/styles/main';
+import 'src/styles/globalStyles';
 
 const assetManifest = (globalThis as any).assetManifest || {};
 const serverSideConfig = (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};

@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import regulationLegend from 'src/content/app/genome-browser/constants/regulationLegend';
 
 import type { RegulationLegendView } from 'src/content/app/genome-browser/state/drawer/types';
 
-import styles from './RegulationLegend.scss';
-import classNames from 'classnames';
+import styles from './RegulationLegend.module.css';
 
 type Props = {
   drawerView: RegulationLegendView;

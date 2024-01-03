@@ -22,7 +22,7 @@ import ExternalReference from 'src/shared/components/external-reference/External
 
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
-import styles from './SpeciesPageSidebar.scss';
+import styles from './SpeciesPageSidebar.module.css';
 
 type Props = {
   data: GenomeInfo;

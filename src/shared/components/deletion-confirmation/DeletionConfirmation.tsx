@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './DeletionConfirmation.scss';
+import styles from './DeletionConfirmation.module.css';
 
 export type DeletionConfirmationProps = {
   warningText: string;

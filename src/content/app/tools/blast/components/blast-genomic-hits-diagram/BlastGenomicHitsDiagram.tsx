@@ -26,7 +26,7 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
 
-import styles from './BlastGenomicHitsDiagram.scss';
+import styles from './BlastGenomicHitsDiagram.module.css';
 
 type Props = {
   genomeId: string;

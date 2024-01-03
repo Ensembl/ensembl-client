@@ -19,28 +19,28 @@ import classNames from 'classnames';
 
 import LoadingButton from '../../loading-button';
 
-import styles from './InstantDownloadButton.scss';
+import styles from './InstantDownloadButton.module.css';
 
 type Theme = 'light' | 'dark';
 
 type Props = {
   disabled?: boolean;
   theme: Theme;
-  classNames?: {
-    wrapper: string;
-  };
+  className?: string;
   onClick: () => Promise<unknown>;
 };
 
 const InstantDownloadButton = (props: Props) => {
-  const buttonClass = classNames({
+  const buttonClass = classNames(props.className, {
     [styles.themeDark]: props.theme === 'dark',
     [styles.disabled]: props.disabled
   });
-  const allClassNames = { ...props.classNames, button: buttonClass };
-  const propsToPass = { ...props, classNames: allClassNames };
 
-  return <LoadingButton {...propsToPass}>Download</LoadingButton>;
+  return (
+    <LoadingButton {...props} className={buttonClass}>
+      Download
+    </LoadingButton>
+  );
 };
 
 export default InstantDownloadButton;

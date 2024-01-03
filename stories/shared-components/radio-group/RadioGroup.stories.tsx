@@ -22,7 +22,7 @@ import RadioGroup, {
   OptionValue
 } from 'src/shared/components/radio-group/RadioGroup';
 
-import styles from './RadioGroup.stories.scss';
+import styles from './RadioGroup.stories.module.css';
 
 type DefaultArgs = {
   onChange: (...args: any) => void;

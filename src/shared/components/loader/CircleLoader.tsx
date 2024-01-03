@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
-import styles from './CircleLoader.scss';
+import styles from './CircleLoader.module.css';
 
 type Size = 'default' | 'small';
 

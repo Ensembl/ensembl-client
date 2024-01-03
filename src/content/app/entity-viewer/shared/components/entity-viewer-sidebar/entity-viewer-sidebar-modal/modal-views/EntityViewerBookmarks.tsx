@@ -34,7 +34,7 @@ import TextLine from 'src/shared/components/text-line/TextLine';
 
 import { RootState } from 'src/store';
 
-import styles from './EntityViewerBookmarks.scss';
+import styles from './EntityViewerBookmarks.module.css';
 
 type PreviouslyViewedLinksProps = {
   previouslyViewedEntities: ReturnType<typeof getPreviouslyViewedEntities>;

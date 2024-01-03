@@ -1,0 +1,110 @@
+.select {
+  --options-panel-top-padding: 12px;
+  --options-panel-right-padding: 22px;
+  --options-panel-left-padding: 14px;
+  position: relative;
+  display: inline-block;
+}
+
+.select:focus {
+  outline: auto;
+  outline-style: dotted;
+  outline-width: 2px;
+}
+
+.selectOpen:focus {
+  outline: none;
+}
+
+.selectArrowhead {
+  margin-left: 0.8em;
+  height: 8px;
+  width: 8px;
+  fill: var(--color-blue);
+}
+
+.selectControl {
+  cursor: pointer;
+}
+
+.selectControlInvisible {
+  visibility: hidden;
+}
+
+.optionsPanel {
+  position: absolute;
+  background-color: var(--color-white);
+  left: calc(-1 * var(--options-panel-left-padding));
+  top: calc(-1 * var(--options-panel-top-padding));
+  display: inline-block;
+  min-width: 100%;
+  padding: var(--options-panel-top-padding) 0 34px 0;
+  box-shadow: 2px 2px 6px 0 var(--color-grey);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.optionsPanel ul {
+  padding: 0;
+}
+
+.optionsListContainer {
+  height: calc(100% - 35px);
+  position: relative;
+}
+
+.optionsList {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* hide the vertical scrollbar for Firefox v64 and above; will probably become the standard */
+}
+
+.optionsList::-webkit-scrollbar {
+  display: none; /* hide scrollbar in Webkit-based browsers */
+}
+
+.scrollButtonTop,
+.scrollButtonBottom {
+  position: absolute;
+  left: 0;
+  background: var(--color-white);
+  width: 100%;
+  text-align: center;
+}
+
+.scrollButtonTop {
+  top: 0;
+}
+
+.scrollButtonBottom {
+  bottom: 0;
+}
+
+.optionsPanelHeader,
+.option {
+  margin: 0 1px;
+  padding: 0 calc(var(--options-panel-right-padding) - 1px) 0
+    calc(var(--options-panel-left-padding) - 1px);
+}
+
+.optionsPanelHeader {
+  color: var(--color-grey);
+  margin-bottom: 1em;
+}
+
+.optionsGroup:first-child {
+  margin: 0;
+}
+
+.optionsGroup:not(:first-child) {
+  margin: 1em 0 0;
+}
+
+.option {
+  cursor: pointer;
+}
+
+.optionHighlighted {
+  background-color: var(--color-ice-blue);
+}

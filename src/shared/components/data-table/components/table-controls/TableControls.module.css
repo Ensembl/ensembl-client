@@ -1,0 +1,10 @@
+.tableControls {
+  display: flex;
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.themeDark {
+  background-color: var(--color-light-grey);
+}

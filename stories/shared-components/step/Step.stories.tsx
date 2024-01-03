@@ -18,7 +18,7 @@ import React from 'react';
 
 import { Step } from 'src/shared/components/step/Step';
 
-import styles from './Step.stories.scss';
+import styles from './Step.stories.module.css';
 
 const steps = [
   'Go to BurgerKing',

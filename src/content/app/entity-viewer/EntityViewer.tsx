@@ -51,7 +51,7 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
-import styles from './EntityViewer.scss';
+import styles from './EntityViewer.module.css';
 
 const EntityViewer = () => {
   const {

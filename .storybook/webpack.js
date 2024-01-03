@@ -12,8 +12,11 @@ export default (config) => {
   const defaultSvgRule = config.module.rules.find(rule => rule.test.test('.svg'));
   defaultSvgRule.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
+  // remove the webpack rule for CSS files pre-defined in @storybook/react; we are going to use our own
+  config.module.rules = config.module.rules.filter(rule => !rule.test?.test('file.css'));
+
   config.module.rules.push({
-    test: /.scss$/,
+    test: /\.css$/,
     include: [
       path.resolve(__dirname, '../src'),
       path.resolve(__dirname, '../stories'),
@@ -25,6 +28,7 @@ export default (config) => {
         options: {
           sourceMap: true,
           modules: {
+            auto: true, // will match all files with a pattern /\.module\.\w+$/
             localIdentName: '[local]__[name]__[hash:base64:5]'
           }
         }
@@ -38,8 +42,7 @@ export default (config) => {
             ]
           }
         }
-      },
-      'sass-loader'
+      }
     ]
   });
   config.module.rules.push({

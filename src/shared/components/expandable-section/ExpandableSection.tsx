@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 
-import styles from './ExpandableSection.scss';
+import styles from './ExpandableSection.module.css';
 
 export type ExpandableSectionProps = {
   collapsedContent: ReactNode;

@@ -36,7 +36,7 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
-import styles from './DefaultTranscriptsList.scss';
+import styles from './DefaultTranscriptsList.module.css';
 
 type Transcript =
   DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];

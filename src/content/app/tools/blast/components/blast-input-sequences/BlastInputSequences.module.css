@@ -1,0 +1,90 @@
+.blastInputSequences {
+  width: 860px;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  column-gap: 52px;
+  width: 862px;
+  margin-left: -1px; /* increasing the width by 2px and adding a left margin so that we dont see the borders shadows from the box below when scrolling */
+  align-items: center;
+  padding: 20px 0 12px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-white);
+}
+
+.smallScreenHeader {
+  top: 49px;
+}
+
+.headerGroup {
+  display: flex;
+  align-items: center;
+}
+
+.headerGroup:last-child {
+  justify-self: end;
+}
+
+.headerTitle {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+}
+
+.sequenceCounter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--color-white);
+  background-color: var(--color-dark-grey);
+  font-weight: var(--font-weight-bold);
+  border-radius: 100%;
+  font-size: 15px;
+  margin: 0 0.6rem;
+}
+
+.sequenceCounterError {
+  background-color: var(--color-red);
+}
+
+.maxSequences {
+  font-weight: var(--font-weight-light);
+}
+
+.clearAll {
+  margin-right: 30px;
+  color: var(--color-blue);
+  cursor: pointer;
+  user-select: none;
+}
+
+.blastAgainstButton {
+  margin-left: 18px;
+}
+
+/* hide top border for the input boxes stacked under the top one */
+.inputBoxesContainer > div:not(:first-child) [class*='header'] {
+  border-top: none;
+}
+
+.addSequence {
+  display: flex;
+  align-items: center;
+  margin-right: 28px;
+}
+
+.addSequenceLabel {
+  font-weight: var(--font-weight-light);
+  margin-right: 14px;
+}
+
+.alertButton {
+  position: relative;
+  top: 2px;
+  margin-left: 20px;
+}

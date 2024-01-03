@@ -1,0 +1,6 @@
+.grid {
+  display: grid;
+  height: 100%;
+  grid-template-columns: [main] minmax(auto, 980px) [aside] 250px;
+  column-gap: 87px;
+}

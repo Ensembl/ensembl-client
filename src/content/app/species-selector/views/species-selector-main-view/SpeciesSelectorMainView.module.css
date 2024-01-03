@@ -1,0 +1,22 @@
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: auto;
+}
+
+.searchPanel {
+  height: 270px;
+  padding-left: var(--global-padding-left);
+  padding-top: 38px;
+  background-color: var(--color-light-grey);
+}
+
+.popularSpecies {
+  height: 100%;
+  padding-top: 26px;
+  padding-left: var(--global-padding-left);
+  padding-right: var(--standard-gutter);
+  padding-bottom: var(--global-padding-bottom);
+  overflow: auto;
+}

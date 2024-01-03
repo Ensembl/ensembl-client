@@ -33,9 +33,9 @@ import variantGroups from 'src/content/app/genome-browser/constants/variantGroup
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import styles from '../TrackPanelList.scss';
-import trackPanelItemStyles from './TrackPanelItem.scss';
-import variantStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/VariantGroupLegend.scss';
+import styles from '../TrackPanelList.module.css';
+import trackPanelItemStyles from './TrackPanelItem.module.css';
+import variantStyles from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-group-legend/VariantGroupLegend.module.css';
 
 const TrackPanelVariantGroupLegend = (props: { disabled: boolean }) => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;

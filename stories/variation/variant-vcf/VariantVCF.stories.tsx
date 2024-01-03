@@ -20,7 +20,7 @@ import VariantVCF from 'src/shared/components/variant-vcf/VariantVCF';
 
 import * as variants from './variantVCFSampleData';
 
-import styles from './VariantVCF.stories.scss';
+import styles from './VariantVCF.stories.module.css';
 
 const VariantVCFStory = () => {
   const [variantName, setVariantName] = useState('rs699');

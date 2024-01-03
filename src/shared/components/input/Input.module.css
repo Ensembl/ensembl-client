@@ -1,0 +1,64 @@
+.input::placeholder {
+  font-weight: var(--font-weight-light);
+}
+
+.input:focus,
+.input:active {
+  outline: none;
+}
+
+.rightCorner {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.flatInputWrapper, .shadedInputWrapper {
+  display: inline-flex;
+}
+
+.flatInputWrapper input,
+.shadedInputWrapper input {
+  background-color: transparent;
+  flex-grow: 1;
+  border: none;
+}
+
+.shadedInputWrapper {
+  border: none;
+  box-shadow: var(--form-field-shadow);
+  background-color: var(--shaded-input-background-colour, var(--color-white));
+  padding: var(--shaded-input-padding, 0 15px);
+  height: var(--shaded-input-height, 30px);
+  width: var(--shaded-input-width, 100%);
+}
+
+.shadedInputWrapperLarge {
+  --shaded-input-padding: 0 20px;
+  --shaded-input-height: 40px;
+  --question-button-size: 16px;
+  --close-button-size: 16px;
+}
+
+.shadedInputWrapperSmall {
+  --question-button-size: 12px;
+  --close-button-size: 12px;
+}
+
+.shadedInputDisabled {
+  background-color: var(--color-light-grey);
+}
+
+.flatInputWrapper {
+  --question-button-size: 12px;
+  --close-button-size: 12px;
+  background-color: var(--flat-input-background-colour, var(--color-white));
+  padding: 0 15px;
+  height: 25px;
+  width: var(--flat-input-width, 100%);
+}
+
+.flatInputWrapperDisabled {
+  border: 1px solid var(--color-grey);
+  background-color: transparent;
+}

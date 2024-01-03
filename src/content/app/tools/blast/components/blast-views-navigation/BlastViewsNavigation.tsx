@@ -21,7 +21,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
 
-import styles from './BlastViewsNavigation.scss';
+import styles from './BlastViewsNavigation.module.css';
 
 const BlastViewsNavigation = () => {
   return (

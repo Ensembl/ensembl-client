@@ -1,0 +1,11 @@
+.drawer {
+  height: 100%;
+  overflow: auto;
+  font-size: 13px;
+}
+
+.spinnerContainer {
+  padding-top: 90px;
+  display: flex;
+  justify-content: center;
+}

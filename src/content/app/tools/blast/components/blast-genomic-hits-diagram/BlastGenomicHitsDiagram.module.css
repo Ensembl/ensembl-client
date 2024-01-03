@@ -1,0 +1,47 @@
+.regionName {
+  fill: var(--color-black);
+  font-size: 10px;
+}
+
+.backbone {
+  fill: var(--color-medium-dark-grey);
+}
+
+.hit {
+  fill: var(--color-black);
+  opacity: 0.3;
+}
+
+.topHit {
+  stroke: var(--color-red);
+  fill: none;
+}
+
+.diagramLegend {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 14px;
+  align-items: center;
+}
+
+.diagramLegendLabel {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.diagramLegend > svg {
+  width: 13px;
+  overflow: visible;
+}
+
+.regionsExpandToggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.regionsExpandToggle > span {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  margin-right: 10px;
+}

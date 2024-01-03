@@ -21,7 +21,7 @@ import { getDisplayName } from 'src/shared/components/selected-species/selectedS
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './UrlError.scss';
+import styles from './UrlError.module.css';
 
 type GenomeFields = {
   common_name: string | null;

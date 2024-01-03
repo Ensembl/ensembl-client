@@ -21,7 +21,7 @@ import clamp from 'lodash/clamp';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 
-import styles from './SubmitSlider.scss';
+import styles from './SubmitSlider.module.css';
 
 type Props = {
   isDisabled: boolean;

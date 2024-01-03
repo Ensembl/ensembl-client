@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
-import styles from './FeatureSummaryStrip.scss';
+import styles from './FeatureSummaryStrip.module.css';
 
 import { FocusLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 

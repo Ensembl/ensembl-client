@@ -36,7 +36,7 @@ import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
 import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
-import styles from './ProteinsList.scss';
+import styles from './ProteinsList.module.css';
 
 type Transcript =
   DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];

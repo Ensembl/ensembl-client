@@ -1,0 +1,26 @@
+.deleteConfirmationContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 30px;
+  row-gap: 10px;
+}
+
+.contentAlignRight {
+  justify-content: flex-end;
+}
+
+.warningText {
+  color: var(--deletion-confirmation-warning-color, var(--color-red));
+}
+
+.controlsContainer {
+  display: flex;
+  align-items: center;
+  column-gap: 30px;
+}
+
+.cancel {
+  color: var(--deletion-confirmation-cancel-color, var(--color-blue));
+  cursor: pointer;
+}

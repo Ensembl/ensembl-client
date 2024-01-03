@@ -1,0 +1,124 @@
+.geneViewLoadingContainer {
+  background-color: var(--color-black);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.geneView {
+  --gene-image-width: 695px; /* Note that there is a GENE_IMAGE_WIDTH js constant that this value should be in agreement with */
+  --gene-view-left-column-width: 160px;
+  --gene-view-middle-column-left-gap: 18px;
+  --gene-view-middle-column-width: var(--gene-image-width);
+  --gene-view-middle-column-right-gap: 27px;
+  --gene-view-right-column-width: 180px;
+
+  color: var(--color-white);
+  display: grid;
+  background-color: var(--color-black);
+
+  grid-template-areas:
+    'feature-image feature-image view-in'
+    'tabs-and-filters tabs-and-filters tabs-and-filters'
+    'tab-content tab-content tab-content';
+
+  grid-template-columns: 178px 902px 1fr;
+  grid-template-rows: min-content minmax(76px, auto) minmax(0, 1fr);
+  padding: 60px var(--standard-gutter) 0;
+  height: 100%; /* may need to change this later */
+  width: 100%;
+  overflow: auto;
+}
+
+.featureImage {
+  grid-area: feature-image;
+}
+
+.viewInLinks {
+  grid-area: view-in;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  align-items: end;
+  padding-right: 30px;
+}
+
+.geneViewTabs {
+  grid-area: tabs-and-filters;
+  display: grid;
+  grid-template-areas:
+    'filter-toggle tabs'
+    'filters filters';
+  grid-template-columns: 170px auto;
+  grid-template-rows: auto auto;
+  z-index: 2;
+  position: sticky;
+  top: -80px;
+  height: 100%;
+}
+
+.tabWrapper {
+  grid-area: tabs;
+  height: 76px;
+  display: flex;
+  align-items: flex-end;
+  padding: 4px;
+  background-color: var(--color-black);
+}
+
+.filtersWrapper {
+  grid-area: filters;
+}
+
+.geneViewTabContent {
+  grid-area: tab-content;
+}
+
+.filterLabelContainer {
+  background-color: var(--color-black);
+  grid-area: filter-toggle;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: sticky;
+  top: 0;
+}
+
+.filterLabelWrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px;
+  padding-bottom: 9px;
+  padding-top: 6px;
+}
+
+.openFilterLabelContainer {
+  background-color: var(--color-black);
+  top: -80px;
+}
+
+.openFilterLabelContainer .filterLabelWrapper {
+  background-color: var(--color-soft-black);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.showHide {
+  --show-hide-label-color: var(--color-white);
+}
+
+.labelWithActivityIndicator {
+  position: relative;
+}
+
+.labelWithActivityIndicator::after {
+  content: '';
+  position: absolute;
+  border-radius: 100%;
+  height: 8px;
+  width: 8px;
+  background: var(--color-red);
+  right: -10px;
+  top: -2px;
+}

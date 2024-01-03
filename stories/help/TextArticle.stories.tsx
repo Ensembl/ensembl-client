@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 // import exampleContent from './exampleContent';
 import headingsAndBodyExample from './example-content/headings-and-body';
@@ -22,15 +23,21 @@ import imagesExample from './example-content/images';
 import listsExample from './example-content/lists';
 import codeExample from './example-content/code-block';
 
-import storyStyles from './TextArticle.stories.scss';
-import styles from 'src/shared/components/help-article/HelpArticle.scss';
+import storyStyles from './TextArticle.stories.module.css';
+import styles from 'src/shared/components/help-article/HelpArticle.module.css';
+import cssVariables from 'src/shared/components/help-article/helpArticleVariables.module.css';
+
+const textArticleClassName = classNames(
+  styles.textArticle,
+  cssVariables.variablesContainer
+);
 
 export const HeadingsAndBodyStory = {
   name: 'Headings and body',
   render: () => (
     <div className={storyStyles.container}>
       <div
-        className={styles.textArticle}
+        className={textArticleClassName}
         dangerouslySetInnerHTML={{ __html: headingsAndBodyExample }}
       />
     </div>
@@ -42,7 +49,7 @@ export const ImagesStory = {
   render: () => (
     <div className={storyStyles.container}>
       <div
-        className={styles.textArticle}
+        className={textArticleClassName}
         dangerouslySetInnerHTML={{ __html: imagesExample }}
       />
     </div>
@@ -54,7 +61,7 @@ export const ListsStory = {
   render: () => (
     <div className={storyStyles.container}>
       <div
-        className={styles.textArticle}
+        className={textArticleClassName}
         dangerouslySetInnerHTML={{ __html: listsExample }}
       />
     </div>
@@ -66,7 +73,7 @@ export const CodeBlockStory = {
   render: () => (
     <div className={storyStyles.container}>
       <div
-        className={styles.textArticle}
+        className={textArticleClassName}
         dangerouslySetInnerHTML={{ __html: codeExample }}
       />
     </div>

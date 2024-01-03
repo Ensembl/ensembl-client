@@ -1,0 +1,23 @@
+.pointerBox {
+  position: absolute;
+  z-index: 1000;
+  width: max-content;
+  box-sizing: content-box; /* Safari doesn't seem to respect "width: max-content" if box-sizing is border-box */
+  padding: 6px;
+}
+
+/* Class applied to pointer box while the code is finding appropriate position for it.
+Pointer box should be invisible, but have width and height required for calculations.
+It should also not change dimensions of the page (and cause sliders to appear);
+hence it is placed in top left corner of the screen with position: fixed */
+.invisible {
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.pointer {
+  position: absolute;
+  mix-blend-mode: lighten;
+}

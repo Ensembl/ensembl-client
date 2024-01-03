@@ -19,7 +19,7 @@ import SpeciesStats from 'src/content/app/species/components/species-stats/Speci
 
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
 
-import styles from './ExpandableSection.stories.scss';
+import styles from './ExpandableSection.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/ExpandableSection'

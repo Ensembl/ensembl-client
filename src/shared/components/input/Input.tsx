@@ -21,7 +21,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 
-import styles from './Input.scss';
+import styles from './Input.module.css';
 
 export type Props = InputHTMLAttributes<HTMLInputElement>;
 

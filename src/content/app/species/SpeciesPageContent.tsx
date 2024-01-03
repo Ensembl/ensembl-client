@@ -46,7 +46,7 @@ import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/Spec
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './SpeciesPage.scss';
+import styles from './SpeciesPage.module.css';
 
 type SpeciesPageParams = {
   genomeId: string;

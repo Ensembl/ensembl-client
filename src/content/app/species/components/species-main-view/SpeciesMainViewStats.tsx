@@ -48,7 +48,7 @@ import type { RootState } from 'src/store';
 import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './SpeciesMainView.scss';
+import styles from './SpeciesMainView.module.css';
 
 type ExampleLinkPopupProps = {
   links: LinksConfig;

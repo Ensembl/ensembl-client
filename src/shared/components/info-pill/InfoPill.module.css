@@ -1,0 +1,9 @@
+.infoPill {
+  background: var(--info-pill-color, var(--color-black));
+  color: var(--info-pill-text-color, var(--color-white));
+  font-size: var(--info-pill-font-size, 12px);
+  font-weight: var(--info-pill-font-weight, var(--font-weight-bold));
+  padding: var(--info-pill-padding, 2px 8px);
+  border-radius: var(--info-pill-border-radius, 14px);
+  white-space: nowrap;
+}

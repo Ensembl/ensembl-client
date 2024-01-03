@@ -25,7 +25,7 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import type { GenericTrackView } from 'src/content/app/genome-browser/state/drawer/types';
 
-import styles from './TrackDetails.scss';
+import styles from './TrackDetails.module.css';
 
 type Props = {
   drawerView: GenericTrackView;

@@ -1,0 +1,18 @@
+.browserCogListOuter {
+  width: 38px;
+  right: 0;
+  top: 23px;
+  bottom: 16px;
+  position: absolute;
+}
+
+.browserCogOuter {
+  position: absolute;
+}
+
+.browserCog {
+  border: 1px solid var(--color-blue);
+  width: 18px;
+  height: 18px;
+  padding: 1px;
+}

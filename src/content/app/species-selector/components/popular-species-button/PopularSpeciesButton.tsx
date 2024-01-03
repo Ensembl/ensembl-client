@@ -23,7 +23,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 
-import styles from './PopularSpeciesButton.scss';
+import styles from './PopularSpeciesButton.module.css';
 
 export type Props = {
   species: PopularSpecies;

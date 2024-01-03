@@ -24,7 +24,7 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './ImageButton.stories.scss';
+import styles from './ImageButton.stories.module.css';
 
 export const ImageButtonStory = () => {
   const [status, setStatus] = useState(Status.DEFAULT);

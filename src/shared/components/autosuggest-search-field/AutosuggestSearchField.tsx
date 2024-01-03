@@ -23,7 +23,7 @@ import AutosuggestionPanel, {
   type MatchIndex
 } from './AutosuggestionPanel';
 
-import styles from './AutosuggestSearchField.scss';
+import styles from './AutosuggestSearchField.module.css';
 
 export const defaultNotFoundText = 'No results found';
 

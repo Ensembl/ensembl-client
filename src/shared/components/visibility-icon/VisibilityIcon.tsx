@@ -26,7 +26,7 @@ import EyePartial from 'static/icons/icon_eye_slashed.svg';
 
 import { Status } from 'src/shared/types/status';
 
-import styles from './VisibilityIcon.scss';
+import styles from './VisibilityIcon.module.css';
 
 type VisibilityIconStatus =
   | Status.SELECTED

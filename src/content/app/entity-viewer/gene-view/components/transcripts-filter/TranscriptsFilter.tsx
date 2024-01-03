@@ -44,7 +44,7 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
-import styles from './TranscriptsFilter.scss';
+import styles from './TranscriptsFilter.module.css';
 
 type Transcript = {
   metadata: {

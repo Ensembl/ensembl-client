@@ -24,7 +24,7 @@ import Select, {
 
 import selectNotes from './select.md';
 
-import styles from './Select.stories.scss';
+import styles from './Select.stories.module.css';
 
 type DefaultArgs = {
   onSelect: (...args: any) => void;

@@ -1,0 +1,90 @@
+.proteinListItem {
+  --content-width: var(--gene-image-width);
+}
+
+.proteinSummary {
+  margin-left: 178px;
+  width: var(--content-width);
+  padding-top: 10px;
+}
+
+.keyline {
+  border-bottom: 1px solid var(--color-orange);
+  width: var(--content-width);
+  padding: 0;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.proteinSummaryTop {
+  display: grid;
+  grid-template-columns: [references] 350px [download] 345px;
+  align-items: start;
+}
+
+.downloadWrapper {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: download;
+}
+
+.externalRefContainer {
+  font-weight: var(--font-weight-normal);
+  margin-right: 16px;
+}
+
+.externalRefLink {
+  font-size: 12px;
+}
+
+.proteinFeaturesCountWrapper {
+  display: inline-block;
+}
+
+.proteinStatsWrapper {
+  display: flex;
+}
+
+.imageLoadingContainer {
+  width: var(--content-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 177px;
+}
+
+.statusContainer {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.xrefWithChevron {
+  display: flex;
+}
+
+.xrefGroupChevron {
+  text-align: right;
+  padding-right: 2px;
+  cursor: pointer;
+  font-weight: var(--font-weight-normal);
+  min-width: 50px;
+}
+
+.chevron {
+  margin-left: 6px;
+}
+
+.xrefCountChevronOpen {
+  color: var(--color-medium-dark-grey);
+}
+
+.xrefsWrapper {
+  padding-bottom: 10px;
+}
+
+.xrefsWrapper:first-child {
+  padding-top: 6px;
+}

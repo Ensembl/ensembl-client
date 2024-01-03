@@ -1,0 +1,42 @@
+.browserLocationIndicator {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.circularIndicator {
+  background: var(--color-grey);
+  display: inline-block;
+  margin: 0 0.5em;
+  padding: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.chrLocationView {
+  display: flex;
+  align-items: center;
+}
+
+.chrCode {
+  background: var(--color-dark-grey);
+  color: var(--color-white);
+  display: inline-block;
+  font-weight: var(--font-weight-bold);
+  margin: 0 0.5em;
+  padding: 5px;
+  text-align: center;
+}
+
+.chrSeparator {
+  margin: 0 2px;
+}
+
+.chrRegion {
+  color: var(--color-dark-grey);
+  display: inline-block;
+}
