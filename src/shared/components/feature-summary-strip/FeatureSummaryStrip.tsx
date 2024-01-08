@@ -16,11 +16,9 @@
 
 import React, { forwardRef, type ForwardedRef } from 'react';
 
-import {
-  GeneSummaryStrip,
-  LocationSummaryStrip,
-  VariantSummaryStrip
-} from '../feature-summary-strip';
+import GeneSummaryStrip from './GeneSummaryStrip';
+import LocationSummaryStrip from './LocationSummaryStrip';
+import VariantSummaryStrip from './VariantSummaryStrip';
 
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
 

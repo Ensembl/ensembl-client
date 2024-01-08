@@ -24,10 +24,14 @@ import {
 
 import { createFocusObject } from 'tests/fixtures/focus-object';
 
-jest.mock('../feature-summary-strip', () => ({
-  GeneSummaryStrip: () => <div>Gene Summary Strip</div>,
-  LocationSummaryStrip: () => <div>Location Summary Strip</div>
-}));
+jest.mock('./GeneSummaryStrip', () => {
+  const { forwardRef } = jest.requireActual('react');
+  return forwardRef(() => <div>Gene Summary Strip</div>);
+});
+jest.mock('./LocationSummaryStrip', () => {
+  const { forwardRef } = jest.requireActual('react');
+  return forwardRef(() => <div>Location Summary Strip</div>);
+});
 
 describe('<FeatureSummaryStrip />', () => {
   const defaultProps = {

@@ -34,7 +34,10 @@ type Props = {
 };
 
 export const BrowserLocationIndicator = (props: Props) => {
-  const [shouldShowRegionName, setShouldShowRegionName] = useState(false);
+  const shouldCheckProximity = props.containerRef && props.nonOverlapElementRef;
+  const [shouldShowRegionName, setShouldShowRegionName] = useState(
+    !shouldCheckProximity
+  ); // start with false if component needs to figure out how close it is to its neightbor on the left
   const actualChrLocation = useAppSelector(getActualChrLocation);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
 
@@ -70,7 +73,7 @@ export const BrowserLocationIndicator = (props: Props) => {
               <span className={styles.regionName}>{regionName}</span>
             )}
             {props.nonOverlapElementRef && props.containerRef && (
-              <ElementWidthSensor
+              <ProximitySensor
                 regionName={regionName}
                 containerRef={props.containerRef}
                 nonOverlapElementRef={props.nonOverlapElementRef}
@@ -90,7 +93,7 @@ export const BrowserLocationIndicator = (props: Props) => {
   );
 };
 
-const ElementWidthSensor = ({
+const ProximitySensor = ({
   regionName,
   containerRef,
   nonOverlapElementRef,
