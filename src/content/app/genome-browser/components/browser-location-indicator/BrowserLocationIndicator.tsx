@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState, useEffect, useRef, type RefObject } from 'react';
+import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -26,29 +27,58 @@ import { getActualChrLocation } from 'src/content/app/genome-browser/state/brows
 
 import styles from './BrowserLocationIndicator.module.css';
 
-export const BrowserLocationIndicator = () => {
+type Props = {
+  className?: string;
+  containerRef?: RefObject<HTMLElement>;
+  nonOverlapElementRef?: RefObject<HTMLElement>;
+};
+
+export const BrowserLocationIndicator = (props: Props) => {
+  const [shouldShowRegionName, setShouldShowRegionName] = useState(false);
   const actualChrLocation = useAppSelector(getActualChrLocation);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
 
   const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
 
-  const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
+  const [regionName, chrStart, chrEnd] = actualChrLocation || [];
 
-  if (!chrCode || !chrStart || !chrEnd || !activeGenomeId) {
+  if (!regionName || !chrStart || !chrEnd || !activeGenomeId) {
     return null;
   }
 
   const activeChromosome = genomeKaryotype?.find((karyotype) => {
-    return karyotype.name === chrCode;
+    return karyotype.name === regionName;
   });
 
+  const componentClasses = classNames(
+    styles.browserLocationIndicator,
+    props.className
+  );
+
+  const onRegionNameVisibilityChange = (shouldShowRegionName: boolean) => {
+    setShouldShowRegionName(shouldShowRegionName);
+  };
+
   return (
-    <div className={styles.browserLocationIndicator}>
+    <div className={componentClasses}>
       <div className={styles.chrLocationView}>
         {activeChromosome?.is_circular ? (
           <CircularChromosomeIndicator />
         ) : (
-          <div className={styles.chrCode}>{chrCode}</div>
+          <div className={styles.regionNameContainer}>
+            {shouldShowRegionName && (
+              <span className={styles.regionName}>{regionName}</span>
+            )}
+            {props.nonOverlapElementRef && props.containerRef && (
+              <ElementWidthSensor
+                regionName={regionName}
+                containerRef={props.containerRef}
+                nonOverlapElementRef={props.nonOverlapElementRef}
+                isRegionNameVisible={shouldShowRegionName}
+                onRegionNameVisibilityChange={onRegionNameVisibilityChange}
+              />
+            )}
+          </div>
         )}
         <div className={styles.chrRegion}>
           <span>{formatNumber(chrStart as number)}</span>
@@ -56,6 +86,72 @@ export const BrowserLocationIndicator = () => {
           <span>{formatNumber(chrEnd as number)}</span>
         </div>
       </div>
+    </div>
+  );
+};
+
+const ElementWidthSensor = ({
+  regionName,
+  containerRef,
+  nonOverlapElementRef,
+  isRegionNameVisible,
+  onRegionNameVisibilityChange
+}: {
+  regionName: string;
+  containerRef: RefObject<HTMLElement>;
+  nonOverlapElementRef: RefObject<HTMLElement>;
+  isRegionNameVisible: boolean;
+  onRegionNameVisibilityChange: (x: boolean) => void;
+}) => {
+  const probeRef = useRef<HTMLSpanElement>(null);
+  const isRegionNameVisibleRef = useRef(isRegionNameVisible);
+  const minDistanceToLeft = 60;
+
+  useEffect(() => {
+    if (!probeRef.current) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(onContainerResize);
+    resizeObserver.observe(containerRef.current as HTMLElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [probeRef.current, nonOverlapElementRef.current]);
+
+  useEffect(() => {
+    isRegionNameVisibleRef.current = isRegionNameVisible;
+  }, [isRegionNameVisible]);
+
+  const onContainerResize = () => {
+    const isTooClose = isTooCloseToLeft();
+    const isRegionNameVisible = isRegionNameVisibleRef.current;
+    if (isTooClose && isRegionNameVisible) {
+      onRegionNameVisibilityChange(false);
+    } else if (!isTooClose && !isRegionNameVisible) {
+      onRegionNameVisibilityChange(true);
+    }
+  };
+
+  const isTooCloseToLeft = () => {
+    const featureSummaryStrip = nonOverlapElementRef.current as HTMLElement;
+    const probe = probeRef.current as HTMLElement;
+    const featureSummaryStripRightCoord =
+      featureSummaryStrip.getBoundingClientRect().right;
+    const isfeatureSummaryStripOverflowing =
+      featureSummaryStrip.scrollWidth > featureSummaryStrip.clientWidth;
+    const probeLeftCoord = probe.getBoundingClientRect().left;
+    const distance = probeLeftCoord - featureSummaryStripRightCoord;
+
+    return distance < minDistanceToLeft || isfeatureSummaryStripOverflowing;
+  };
+
+  return (
+    <div className={styles.probeAnchor}>
+      <span className={styles.probe} ref={probeRef}>
+        {regionName}
+      </span>
     </div>
   );
 };

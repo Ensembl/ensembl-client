@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, type ComponentProps } from 'react';
+import React, {
+  forwardRef,
+  type ComponentProps,
+  type ForwardedRef
+} from 'react';
 import classNames from 'classnames';
-
-import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
@@ -29,50 +31,6 @@ import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectType
 
 import styles from './FeatureSummaryStrip.module.css';
 
-const MEDIUM_WIDTH = 720;
-
-enum Display {
-  FULL = 'full',
-  MINIMAL = 'minimal'
-}
-
-const VariantSummaryWrapper = (props: {
-  variant: FocusVariant;
-  isGhosted?: boolean;
-}) => {
-  const [display, setDisplay] = useState(Display.MINIMAL);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
-
-  const { genome_id: genomeId, variant_id: variantId } = props.variant;
-  const { currentData: variantData } = useGbVariantQuery({
-    genomeId,
-    variantId
-  });
-
-  useEffect(() => {
-    if (containerWidth < MEDIUM_WIDTH) {
-      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
-    } else {
-      display !== Display.FULL && setDisplay(Display.FULL);
-    }
-  }, [containerWidth]);
-
-  if (!variantData) {
-    return null;
-  }
-
-  return (
-    <div className={styles.featureSummaryStripWrapper} ref={containerRef}>
-      <VariantSummaryStrip
-        {...props}
-        display={display}
-        variant={variantData.variant}
-      />
-    </div>
-  );
-};
-
 export type VariantForSummaryStrip = ComponentProps<
   typeof VariantConsequence
 >['variant'] &
@@ -81,25 +39,34 @@ export type VariantForSummaryStrip = ComponentProps<
     alleles: ComponentProps<typeof VariantAllelesSequences>['alleles'];
   };
 
-const VariantSummaryStrip = (props: {
-  variant: VariantForSummaryStrip;
-  isGhosted?: boolean;
-  display: Display;
-}) => {
-  const { variant, isGhosted, display } = props;
-  const stripClasses = classNames(styles.featureSummaryStrip, {
+const VariantSummaryStrip = (
+  props: {
+    variant: FocusVariant;
+    isGhosted?: boolean;
+    className?: string;
+  },
+  ref: ForwardedRef<HTMLDivElement>
+) => {
+  const { variant, isGhosted } = props;
+  const { genome_id: genomeId, variant_id: variantId } = variant;
+  const { currentData: variantData } = useGbVariantQuery({
+    genomeId,
+    variantId
+  });
+
+  if (!variantData) {
+    return null;
+  }
+
+  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
     [styles.featureSummaryStripGhosted]: isGhosted
   });
 
-  let content;
-
-  if (display === Display.MINIMAL) {
-    content = <MinimalContent variant={variant} />;
-  } else {
-    content = <FullContent variant={variant} />;
-  }
-
-  return <div className={stripClasses}>{content}</div>;
+  return (
+    <div className={stripClasses} ref={ref}>
+      <FullContent variant={variantData?.variant} />
+    </div>
+  );
 };
 
 const MinimalContent = ({ variant }: { variant: VariantForSummaryStrip }) => (
@@ -135,4 +102,4 @@ const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
   );
 };
 
-export default VariantSummaryWrapper;
+export default forwardRef(VariantSummaryStrip);

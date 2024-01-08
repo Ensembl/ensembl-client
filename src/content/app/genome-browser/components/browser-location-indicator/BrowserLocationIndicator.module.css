@@ -3,7 +3,6 @@
   align-items: center;
   white-space: nowrap;
   flex-wrap: nowrap;
-  line-height: 1;
   font-size: 14px;
 }
 
@@ -22,14 +21,14 @@
   align-items: center;
 }
 
-.chrCode {
-  background: var(--color-dark-grey);
-  color: var(--color-white);
+.regionNameContainer {
   display: inline-block;
-  font-weight: var(--font-weight-bold);
-  margin: 0 0.5em;
-  padding: 5px;
-  text-align: center;
+  position: relative;
+  margin-right: 0.5em;
+}
+
+.regionName {
+  color: var(--color-grey);
 }
 
 .chrSeparator {
@@ -39,4 +38,19 @@
 .chrRegion {
   color: var(--color-dark-grey);
   display: inline-block;
+}
+
+.probeAnchor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: calc(14px * 1.5); /* font size of the element times the line height */
+}
+
+.probe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: red;
+  visibility: hidden;
 }

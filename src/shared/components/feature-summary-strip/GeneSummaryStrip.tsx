@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
-
-import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -26,15 +24,6 @@ import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormat
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './FeatureSummaryStrip.module.css';
-
-const MEDIUM_WIDTH = 800;
-const SMALL_WIDTH = 500;
-
-enum Display {
-  FULL = 'full',
-  COMPACT = 'compact',
-  MINIMAL = 'minimal'
-}
 
 type GeneFields =
   | 'bio_type'
@@ -48,68 +37,37 @@ type Gene = Pick<FocusGene, GeneFields>;
 type Props = {
   gene: Gene;
   isGhosted?: boolean;
+  className?: string;
 };
 
-type WidthAwareProps = Props & {
-  display: Display;
-};
+const GeneSummaryStrip = (props: Props, ref: ForwardedRef<HTMLDivElement>) => {
+  const { gene, isGhosted } = props;
 
-const GeneSummaryWrapper = (props: Props) => {
-  const [display, setDisplay] = useState(Display.MINIMAL);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
-
-  useEffect(() => {
-    if (containerWidth < SMALL_WIDTH) {
-      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
-    } else if (containerWidth < MEDIUM_WIDTH) {
-      display !== Display.COMPACT && setDisplay(Display.COMPACT);
-    } else {
-      display !== Display.FULL && setDisplay(Display.FULL);
-    }
-  }, [containerWidth]);
+  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
+    [styles.featureSummaryStripGhosted]: isGhosted
+  });
 
   return (
-    <div className={styles.featureSummaryStripWrapper} ref={containerRef}>
-      <GeneSummaryStrip {...props} display={display} />
+    <div className={stripClasses} ref={ref}>
+      <GeneName {...props} />
+      <Biotype {...props} />
+      {gene.strand && (
+        <div className={styles.section}>
+          {getStrandDisplayName(gene.strand)}
+        </div>
+      )}
+      <div className={styles.section}>
+        {getFormattedLocation(gene.location)}
+      </div>
     </div>
   );
 };
 
-const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
-  const stripClasses = classNames(styles.featureSummaryStrip, {
-    [styles.featureSummaryStripGhosted]: isGhosted
-  });
-
-  let content;
-
-  if (display === Display.MINIMAL) {
-    content = <MinimalContent gene={gene} />;
-  } else if (display === Display.COMPACT) {
-    content = <CompactContent gene={gene} />;
-  } else {
-    content = <FullContent gene={gene} />;
-  }
-
-  return <div className={stripClasses}>{content}</div>;
-};
-
-const MinimalContent = ({ gene }: { gene: Gene }) => (
-  <>
-    <span className={styles.featureSummaryStripLabel}>Gene</span>
-    {gene.label ? (
-      <span className={styles.featureNameEmphasized}>{gene.label}</span>
-    ) : (
-      <span>{getDisplayStableId(gene)}</span>
-    )}
-  </>
-);
-
-const CompactContent = ({ gene }: { gene: Gene }) => {
+const GeneName = ({ gene }: Props) => {
   const stableId = getDisplayStableId(gene);
 
   return (
-    <div>
+    <div className={styles.section}>
       <span className={styles.featureSummaryStripLabel}>Gene</span>
       {gene.label && (
         <span className={styles.featureNameEmphasized}>{gene.label}</span>
@@ -119,18 +77,15 @@ const CompactContent = ({ gene }: { gene: Gene }) => {
   );
 };
 
-const FullContent = ({ gene }: { gene: Gene }) => (
-  <>
-    <CompactContent gene={gene} />
-    {gene.bio_type && (
-      <div>
+const Biotype = ({ gene }: Props) => {
+  return (
+    gene.bio_type && (
+      <div className={styles.section}>
         <span className={styles.featureSummaryStripLabel}>Biotype</span>
         {gene.bio_type}
       </div>
-    )}
-    {gene.strand && <div>{getStrandDisplayName(gene.strand)}</div>}
-    <div>{getFormattedLocation(gene.location)}</div>
-  </>
-);
+    )
+  );
+};
 
-export default GeneSummaryWrapper;
+export default forwardRef(GeneSummaryStrip);

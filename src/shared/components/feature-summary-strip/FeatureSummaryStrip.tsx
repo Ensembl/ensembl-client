@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, type ForwardedRef } from 'react';
 
 import {
   GeneSummaryStrip,
@@ -26,26 +26,47 @@ import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes
 
 export type FeatureSummaryStripProps = {
   focusObject: FocusObject;
+  className?: string;
   isGhosted?: boolean;
 };
 
-export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
+export const FeatureSummaryStrip = (
+  props: FeatureSummaryStripProps,
+  ref: ForwardedRef<HTMLDivElement>
+) => {
   const { focusObject, isGhosted } = props;
 
   switch (focusObject.type) {
     case 'gene':
-      return <GeneSummaryStrip gene={focusObject} isGhosted={isGhosted} />;
+      return (
+        <GeneSummaryStrip
+          gene={focusObject}
+          isGhosted={isGhosted}
+          ref={ref}
+          className={props.className}
+        />
+      );
     case 'location':
       return (
-        <LocationSummaryStrip location={focusObject} isGhosted={isGhosted} />
+        <LocationSummaryStrip
+          location={focusObject}
+          isGhosted={isGhosted}
+          ref={ref}
+          className={props.className}
+        />
       );
     case 'variant':
       return (
-        <VariantSummaryStrip variant={focusObject} isGhosted={isGhosted} />
+        <VariantSummaryStrip
+          variant={focusObject}
+          isGhosted={isGhosted}
+          ref={ref}
+          className={props.className}
+        />
       );
     default:
       return null;
   }
 };
 
-export default FeatureSummaryStrip;
+export default forwardRef(FeatureSummaryStrip);

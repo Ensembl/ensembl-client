@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -31,6 +31,9 @@ export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);
   const isDrawerOpened = useAppSelector(getIsDrawerOpened);
 
+  const browserBarRef = useRef<HTMLDivElement>(null);
+  const featureSummaryRef = useRef<HTMLDivElement>(null);
+
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
   if (!focusObject) {
@@ -38,19 +41,21 @@ export const BrowserBar = () => {
   }
 
   return (
-    <div className={styles.browserBar}>
-      <div className={styles.browserResetWrapper}>
-        <BrowserReset />
-      </div>
+    <div className={styles.browserBar} ref={browserBarRef}>
+      <BrowserReset />
       {focusObject && (
         <FeatureSummaryStrip
           focusObject={focusObject}
           isGhosted={isDrawerOpened}
+          ref={featureSummaryRef}
+          className={styles.featureSummaryStrip}
         />
       )}
-      <div className={styles.browserLocationIndicatorWrapper}>
-        <BrowserLocationIndicator />
-      </div>
+      <BrowserLocationIndicator
+        className={styles.browserLocationIndicator}
+        containerRef={browserBarRef}
+        nonOverlapElementRef={featureSummaryRef}
+      />
     </div>
   );
 };

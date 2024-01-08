@@ -1,19 +1,17 @@
-.featureSummaryStripWrapper {
-  flex-grow: 1;
-}
-
 .featureSummaryStrip {
   font-size: 14px;
-  display: flex;
-  align-items: center;
   white-space: nowrap;
   flex-wrap: nowrap;
-  line-height: 1;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.featureSummaryStrip > div:not(:last-child) {
-  margin-right: 30px;
+.section {
+  display: inline;
+}
+
+.section:not(:first-child) {
+  margin-left: 30px;
 }
 
 .featureSummaryStripGhosted {
