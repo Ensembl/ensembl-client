@@ -148,14 +148,7 @@ const Submenu = (props: SubmenuProps) => {
   useEffect(() => {
     // make sure that the newly opened submenu is always in user's view
     const submenuElement = submenuElementRef.current as HTMLElement;
-    const menuPanel = submenuElement.parentElement;
-
-    const menuPanelRect = menuPanel!.getBoundingClientRect();
-    const submenuRect = submenuElement.getBoundingClientRect();
-
-    if (submenuRect.right > menuPanelRect.left + menuPanelRect.width) {
-      menuPanel!.scrollTo({ left: submenuRect.left, behavior: 'smooth' });
-    }
+    submenuElement.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   const onLinkClick = (item: MenuArticleItem) => {

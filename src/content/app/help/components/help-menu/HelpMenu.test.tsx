@@ -23,6 +23,8 @@ import HelpMenu, { Props as HelpMenuProps } from './HelpMenu';
 
 import menuData from './helpMenuFixture';
 
+const jsdomScrollIntoView = Element.prototype.scrollIntoView; // probably undefined in jsdom; see https://github.com/jsdom/jsdom/issues/1695
+
 const defaultProps: HelpMenuProps = {
   menu: menuData,
   currentUrl: '/help'
@@ -34,6 +36,14 @@ const renderMenu = (props: Partial<HelpMenuProps> = {}) =>
       <HelpMenu {...defaultProps} {...props} />
     </MemoryRouter>
   );
+
+beforeAll(() => {
+  Element.prototype.scrollIntoView = jest.fn();
+});
+
+afterAll(() => {
+  Element.prototype.scrollIntoView = jsdomScrollIntoView;
+});
 
 describe('<HelpMenu>', () => {
   describe('collapsed menu', () => {
