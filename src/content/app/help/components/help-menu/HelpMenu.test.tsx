@@ -81,9 +81,9 @@ describe('<HelpMenu>', () => {
       expect(expandedMenuPanel.querySelectorAll('.submenu').length).toBe(1);
 
       const submenuItem = getByText('Viewing Ensembl data'); // this item corresponds to a collection of other menu items
-      await userEvent.hover(submenuItem);
+      await userEvent.click(submenuItem);
 
-      // hovering over a submenu collection item should expand another submenu
+      // clicking on a submenu collection item should expand another submenu
       expect(expandedMenuPanel.querySelectorAll('.submenu').length).toBe(2);
     });
   });
