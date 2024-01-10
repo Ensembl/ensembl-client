@@ -138,7 +138,10 @@ const ProximitySensor = ({
   };
 
   const isTooCloseToLeft = () => {
-    const featureSummaryStrip = nonOverlapElementRef.current as HTMLElement;
+    const featureSummaryStrip = nonOverlapElementRef.current;
+    if (!featureSummaryStrip) {
+      return true; // to be on the safe side
+    }
     const probe = probeRef.current as HTMLElement;
     const featureSummaryStripRightCoord =
       featureSummaryStrip.getBoundingClientRect().right;
