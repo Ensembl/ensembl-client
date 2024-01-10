@@ -136,6 +136,7 @@ type SubmenuProps = {
 };
 const Submenu = (props: SubmenuProps) => {
   const [childItems, setChildItems] = useState<MenuItem[] | null>(null);
+  const submenuElementRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
 
   const { trackMegaNavItemClick } = useHelpAppAnalytics();
@@ -143,6 +144,12 @@ const Submenu = (props: SubmenuProps) => {
   useEffect(() => {
     setChildItems(null);
   }, [props.items]);
+
+  useEffect(() => {
+    // make sure that the newly opened submenu is always in user's view
+    const submenuElement = submenuElementRef.current as HTMLElement;
+    submenuElement.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
   const onLinkClick = (item: MenuArticleItem) => {
     // hopefully, the url is an internal one;
@@ -157,10 +164,12 @@ const Submenu = (props: SubmenuProps) => {
     const menuItemProps: Record<string, unknown> = {};
 
     if (item.type === 'collection') {
-      menuItemProps.onMouseOver = () => setChildItems(item.items);
+      menuItemProps.onClick = () => setChildItems(item.items);
     } else {
-      menuItemProps.onMouseOver = () => setChildItems(null);
-      menuItemProps.onClick = () => onLinkClick(item);
+      menuItemProps.onClick = () => {
+        setChildItems(null);
+        onLinkClick(item);
+      };
     }
     return (
       <li key={index} {...menuItemProps} className={className}>
@@ -177,7 +186,9 @@ const Submenu = (props: SubmenuProps) => {
   });
 
   const renderedSubmenu = (
-    <ul className={styles.submenu}>{renderedMenuItems}</ul>
+    <ul className={styles.submenu} ref={submenuElementRef}>
+      {renderedMenuItems}
+    </ul>
   );
 
   return childItems ? (

@@ -27,6 +27,7 @@
 .expandedMenuPanel {
   display: flex;
   position: absolute;
+  overflow: auto;
   background-color: var(--color-off-white);
   top: 100%;
   height: 360px;
