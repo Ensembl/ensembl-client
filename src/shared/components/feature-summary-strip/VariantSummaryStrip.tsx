@@ -69,13 +69,6 @@ const VariantSummaryStrip = (
   );
 };
 
-const MinimalContent = ({ variant }: { variant: VariantForSummaryStrip }) => (
-  <>
-    <span className={styles.featureSummaryStripLabel}>Variant</span>
-    <span className={styles.featureNameEmphasized}>{variant.name}</span>
-  </>
-);
-
 const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
   const mostSevereConsequence = (
     <VariantConsequence variant={variant} withColour={false} />
@@ -83,19 +76,22 @@ const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
 
   return (
     <>
-      <MinimalContent variant={variant} />
+      <div className={styles.section}>
+        <span className={styles.featureSummaryStripLabel}>Variant</span>
+        <span className={styles.featureNameEmphasized}>{variant.name}</span>
+      </div>
       {mostSevereConsequence && (
-        <div>
+        <div className={styles.section}>
           <span className={styles.featureSummaryStripLabel}>
             Most severe consequence
           </span>
           {mostSevereConsequence}
         </div>
       )}
-      <div>
+      <div className={styles.section}>
         <VariantAllelesSequences alleles={variant.alleles} />
       </div>
-      <div>
+      <div className={styles.section}>
         <VariantLocation variant={variant} />
       </div>
     </>

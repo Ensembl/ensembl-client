@@ -21,6 +21,9 @@
 .featureSummaryStripLabel,
 .featureNameEmphasized {
   display: inline-block;
+}
+
+.featureSummaryStripLabel {
   margin-right: 18px;
 }
 
