@@ -1,15 +1,18 @@
 .browserBar {
-  display: flex;
+  display: grid;
+  grid-template-columns: [browser-reset] auto [feature-summary] 1fr [empty] 20px [location-indicator] auto; /* "empty" column plus two gaps around it should produce 60px of white space */
+  column-gap: 20px;
   width: 100%;
   align-items: center;
   position: relative;
   padding-left: 18px;
 }
 
-.browserResetWrapper {
-  margin-right: 20px;
+.featureSummaryStrip {
+  justify-self: start;
+  max-width: 100%;
 }
 
-.browserLocationIndicatorWrapper {
-  margin-left: auto;
+.browserLocationIndicator {
+  grid-column: location-indicator;
 }

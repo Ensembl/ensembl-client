@@ -127,7 +127,7 @@ describe('BrowserLocationIndicator', () => {
     it('displays chromosome name', async () => {
       const { container } = renderBrowserLocationIndicator();
       await waitFor(() => {
-        const renderedName = container.querySelector('.chrCode');
+        const renderedName = container.querySelector('.regionName');
         expect(renderedName?.textContent).toBe(humanChromosomeName);
       });
     });
