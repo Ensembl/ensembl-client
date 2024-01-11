@@ -52,6 +52,11 @@ import {
   type EntityViewerGeneHomologiesQueryResult
 } from './queries/geneHomologiesQuery';
 import {
+  variantPageMetaQuery,
+  type VariantPageMetaQueryResult,
+  type VariantPageMeta
+} from './queries/variantPageMetaQuery';
+import {
   variantDefaultQuery,
   type EntityViewerVariantDefaultQueryResult
 } from './queries/variantDefaultQuery';
@@ -144,6 +149,24 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       })
     }),
+    variantPageMeta: builder.query<VariantPageMeta, VariantQueryParams>({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantPageMetaQuery,
+        variables: params
+      }),
+      transformResponse(response: VariantPageMetaQueryResult) {
+        const {
+          variant: { name: variantName }
+        } = response;
+
+        const title = `Variant: ${variantName} — Ensembl`;
+
+        return {
+          title
+        };
+      }
+    }),
     defaultEntityViewerVariant: builder.query<
       EntityViewerVariantDefaultQueryResult,
       VariantQueryParams
@@ -166,8 +189,11 @@ export const {
   useGeneForSequenceDownloadQuery,
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
+  useVariantPageMetaQuery,
   useDefaultEntityViewerVariantQuery
 } = entityViewerThoasSlice;
 
-export const { genePageMeta: fetchGenePageMeta } =
-  entityViewerThoasSlice.endpoints;
+export const {
+  genePageMeta: fetchGenePageMeta,
+  variantPageMeta: fetchVariantPageMeta
+} = entityViewerThoasSlice.endpoints;
