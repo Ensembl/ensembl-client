@@ -13,3 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React from 'react';
+
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
+
+import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+
+import styles from './VariantView.module.css';
+
+const VariantView = () => {
+  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+
+  const { objectId: variantId } = parsedEntityId ?? {};
+
+  const { currentData } = useDefaultEntityViewerVariantQuery(
+    {
+      genomeId: activeGenomeId ?? '',
+      variantId: variantId ?? ''
+    },
+    {
+      skip: !activeGenomeId || !variantId
+    }
+  );
+
+  const variantData = currentData?.variant;
+
+  return (
+    <div className={styles.container}>
+      {variantData && (
+        <>
+          <div style={{ height: '200px', textAlign: 'center' }}>
+            Placeholder for navigation panel for variant {variantData.name}
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            Placeholder for the image for variant {variantData.name}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default VariantView;

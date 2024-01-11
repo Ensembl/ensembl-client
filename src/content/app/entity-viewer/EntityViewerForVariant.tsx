@@ -16,8 +16,53 @@
 
 import React from 'react';
 
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import {
+  isEntityViewerSidebarOpen,
+  getEntityViewerSidebarModalView
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+
+import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+
+import { StandardAppLayout } from 'src/shared/components/layout';
+import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
+import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
+import VariantView from './variant-view/VariantView';
+
 const EntityViewerForVariant = () => {
-  return <div>ENTITY VIEWER FOR VARIANT!</div>;
+  const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
+  const isSidebarModalOpen = Boolean(
+    useAppSelector(getEntityViewerSidebarModalView)
+  );
+
+  const viewportWidth = useAppSelector(getBreakpointWidth);
+  const dispatch = useAppDispatch();
+
+  return (
+    <StandardAppLayout
+      mainContent={<VariantView />}
+      topbarContent={<div>Variant summary for top bar goes here</div>}
+      sidebarContent={
+        <SidebarContent isSidebarModalOpen={isSidebarModalOpen} />
+      }
+      sidebarNavigation={null}
+      sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+      isSidebarOpen={isSidebarOpen}
+      onSidebarToggle={() => dispatch(toggleSidebar())}
+      isDrawerOpen={false}
+      viewportWidth={viewportWidth}
+    />
+  );
+};
+
+const SidebarContent = (props: { isSidebarModalOpen: boolean }) => {
+  return props.isSidebarModalOpen ? (
+    <EntityViewerSidebarModal />
+  ) : (
+    <div>Variant information for sidebar goes here</div>
+  );
 };
 
 export default EntityViewerForVariant;

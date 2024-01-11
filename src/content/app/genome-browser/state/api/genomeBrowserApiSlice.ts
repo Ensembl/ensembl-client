@@ -43,7 +43,7 @@ import type { TrackPanelGene } from '../types/track-panel-gene';
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 type RegionQueryParams = { genomeId: string; regionName: string };
-type VariantQueryParams = { genomeId: string; variantId: string }; // it isn't quite clear yet what exactly the variant id should be; just an rsID is insufficient
+type VariantQueryParams = { genomeId: string; variantId: string };
 
 const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
