@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
+
 import styles from './VariantView.module.css';
 
 const VariantView = () => {
-  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+  const { activeGenomeId, genomeIdForUrl, entityIdForUrl, parsedEntityId } =
+    useEntityViewerIds();
 
   const { objectId: variantId } = parsedEntityId ?? {};
 
@@ -39,6 +43,12 @@ const VariantView = () => {
 
   const variantData = currentData?.variant;
 
+  useDefaultAlternativeAllele({
+    genomeId: genomeIdForUrl,
+    variantId: entityIdForUrl,
+    variant: variantData
+  });
+
   return (
     <div className={styles.container}>
       {variantData && (
@@ -53,6 +63,38 @@ const VariantView = () => {
       )}
     </div>
   );
+};
+
+const useDefaultAlternativeAllele = (params: {
+  genomeId?: string;
+  variantId?: string;
+  variant?: {
+    alleles: Pick<VariantAllele, 'reference_sequence' | 'allele_sequence'>[];
+  };
+}) => {
+  const { genomeId, variantId, variant } = params;
+  const { search: urlQuery } = useLocation();
+  const navigate = useNavigate();
+  const alleleIndexInUrl = new URLSearchParams(urlQuery).get('allele');
+
+  useEffect(() => {
+    if (!genomeId || !variantId || !variant) {
+      return;
+    }
+
+    // temporary solution for identifying alleles
+    const parsedAlleleIndex = (alleleIndexInUrl &&
+      parseInt(alleleIndexInUrl, 10)) as number;
+
+    if (!alleleIndexInUrl || !variant?.alleles[parsedAlleleIndex]) {
+      const firstAlternativeAlleleIndex = variant.alleles.findIndex(
+        (allele) => allele.reference_sequence !== allele.allele_sequence
+      );
+
+      const url = `/entity-viewer/${genomeId}/${variantId}?allele=${firstAlternativeAlleleIndex}`;
+      navigate(url, { replace: true });
+    }
+  }, [variant]);
 };
 
 export default VariantView;
