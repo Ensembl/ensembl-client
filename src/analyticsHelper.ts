@@ -34,7 +34,7 @@ export type AnalyticsOptions = CustomDimensionsOptions & {
   category: string;
   action: string;
   label?: string;
-  value?: number;
+  value?: string | number;
 };
 
 export type AnalyticsType = {

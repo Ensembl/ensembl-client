@@ -17,7 +17,9 @@
 import React from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import {
   getSpeciesSearchQuery,
   getSelectedPopularSpecies
@@ -55,10 +57,22 @@ const Content = (props: { onClose: () => void }) => {
   const modalView = useAppSelector(getSpeciesSelectorModalView);
   const query = useAppSelector(getSpeciesSearchQuery);
   const selectedPopularSpecies = useAppSelector(getSelectedPopularSpecies);
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+
   const dispatch = useAppDispatch();
+  const { trackAddedGenome, trackTotalSelectedGenomesCount } =
+    useSpeciesSelectorAnalytics();
 
   const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
     dispatch(commitSelectedSpeciesAndSave(genomes));
+
+    // track which genomes were added and how many selected genomes user has as a result
+    const totalGenomesCount = committedSpecies.length + genomes.length;
+    trackTotalSelectedGenomesCount(totalGenomesCount);
+
+    for (const addedGenome of genomes) {
+      trackAddedGenome(addedGenome);
+    }
   };
 
   return modalView === 'species-search' ? (
@@ -69,6 +83,7 @@ const Content = (props: { onClose: () => void }) => {
     />
   ) : selectedPopularSpecies ? (
     <GenomeSelectorBySpeciesTaxonomyId
+      onSpeciesAdd={onSpeciesAdd}
       speciesTaxonomyId={selectedPopularSpecies.species_taxonomy_id}
       speciesImageUrl={selectedPopularSpecies.image}
     />

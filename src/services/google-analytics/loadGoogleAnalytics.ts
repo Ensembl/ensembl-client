@@ -58,7 +58,9 @@ const createGAShim = (trackerId: string) => {
   window.gtag('js', new Date()); // Google uses this for timing hits
 
   // It is better to disable sending pageviews automatically as it will trigger too many calls in genome browser
-  window.gtag('config', trackerId, { send_page_view: false });
+  if (trackerId) {
+    window.gtag('config', trackerId, { send_page_view: false });
+  }
 };
 
 const loadScript = (trackerId: string) => {

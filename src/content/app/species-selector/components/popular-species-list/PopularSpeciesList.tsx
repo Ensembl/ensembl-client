@@ -17,6 +17,7 @@
 import React, { useMemo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -34,6 +35,7 @@ const PopularSpeciesList = () => {
   const dispatch = useAppDispatch();
   const committedItems = useAppSelector(getCommittedSpecies);
   const { currentData } = useGetPopularSpeciesQuery();
+  const { trackPopularSpeciesClick } = useSpeciesSelectorAnalytics();
 
   const committedItemsSet = useMemo(() => {
     return new Set(committedItems.map((item) => item.species_taxonomy_id));
@@ -42,6 +44,7 @@ const PopularSpeciesList = () => {
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
     dispatch(setPopularSpecies(species));
     dispatch(setModalView('popular-species-genomes'));
+    trackPopularSpeciesClick(species);
   };
 
   return (
