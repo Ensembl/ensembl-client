@@ -17,6 +17,7 @@
 import React from 'react';
 
 import { useAppDispatch } from 'src/store';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
@@ -28,10 +29,12 @@ import styles from './SpeciesSelectorMainView.module.css';
 
 const SpeciesSelectorMainView = () => {
   const dispatch = useAppDispatch();
+  const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
 
-  const onSearchSubmit = () => {
+  const onSearchSubmit = (query: string) => {
     dispatch(setPopularSpecies(null));
     dispatch(setModalView('species-search'));
+    trackSpeciesSearchQuery(query);
   };
 
   return (

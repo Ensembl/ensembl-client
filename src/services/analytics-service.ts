@@ -66,7 +66,7 @@ class AnalyticsTracking {
     }
 
     if (options.value) {
-      eventParams.event_value = options.value;
+      eventParams.value = options.value;
     }
 
     if (options.species) {

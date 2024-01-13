@@ -16,12 +16,11 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { useLazyGetGenomesBySpeciesTaxonomyIdQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -31,11 +30,14 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 
+import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+
 import styles from './GenomeSelectorBySpeciesTaxonomyId.module.css';
 
 type Props = {
   speciesTaxonomyId: string | number;
   speciesImageUrl: string | null;
+  onSpeciesAdd: (genomes: SpeciesSearchMatch[]) => void;
 };
 
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
@@ -99,10 +101,9 @@ type TopSectionProps = Props & {
 
 const TopSection = (props: TopSectionProps) => {
   const { speciesImageUrl, genomes, stagedGenomes } = props;
-  const dispatch = useAppDispatch();
 
   const onSpeciesAdd = () => {
-    dispatch(commitSelectedSpeciesAndSave(stagedGenomes));
+    props.onSpeciesAdd(stagedGenomes);
   };
 
   const selectedGenomesCount = genomes.filter(

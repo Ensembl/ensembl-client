@@ -29,7 +29,7 @@ import styles from './SpeciesSearchField.module.css';
 
 export type Props = {
   query: string;
-  onSearchSubmit: () => void;
+  onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
 };
@@ -39,7 +39,7 @@ export const SpeciesSearchField = (props: Props) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    props.onSearchSubmit();
+    props.onSearchSubmit(query);
   };
 
   return (
