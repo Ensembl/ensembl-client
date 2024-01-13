@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-import { useSelector } from 'react-redux';
-
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { AppName } from 'src/global/globalConfig';
 import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 import type { AnalyticsOptions } from 'src/analyticsHelper';
 
 const useSpeciesSelectorAnalytics = () => {
-  const committedSpecies = useSelector(getCommittedSpecies);
-
   const trackEvent = (params: AnalyticsOptions) => {
     analyticsTracking.trackEvent({
       ...params,
@@ -54,14 +49,13 @@ const useSpeciesSelectorAnalytics = () => {
     });
   };
 
-  const trackTotalSelectedGenomesCount = (numSpeciesToCommit: number) => {
-    const alreadyCommittedSpeciesCount = committedSpecies.length;
-    const newCount = alreadyCommittedSpeciesCount + numSpeciesToCommit;
+  const trackTotalSelectedGenomesCount = (genomesCount: number) => {
+    // NOTE: genomesCount includes both already committed genomes and the newly added genomes
 
     trackEvent({
       category: 'species_selector',
       action: 'total_species_count',
-      value: newCount
+      value: genomesCount
     });
   };
 
