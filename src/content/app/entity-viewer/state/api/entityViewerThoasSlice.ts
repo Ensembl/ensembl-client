@@ -51,9 +51,19 @@ import {
   geneHomologiesQuery,
   type EntityViewerGeneHomologiesQueryResult
 } from './queries/geneHomologiesQuery';
+import {
+  variantPageMetaQuery,
+  type VariantPageMetaQueryResult,
+  type VariantPageMeta
+} from './queries/variantPageMetaQuery';
+import {
+  variantDefaultQuery,
+  type EntityViewerVariantDefaultQueryResult
+} from './queries/variantDefaultQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
+type VariantQueryParams = { genomeId: string; variantId: string };
 
 const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -138,6 +148,34 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: geneHomologiesQuery,
         variables: params
       })
+    }),
+    variantPageMeta: builder.query<VariantPageMeta, VariantQueryParams>({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantPageMetaQuery,
+        variables: params
+      }),
+      transformResponse(response: VariantPageMetaQueryResult) {
+        const {
+          variant: { name: variantName }
+        } = response;
+
+        const title = `Variant: ${variantName} — Ensembl`;
+
+        return {
+          title
+        };
+      }
+    }),
+    defaultEntityViewerVariant: builder.query<
+      EntityViewerVariantDefaultQueryResult,
+      VariantQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantDefaultQuery,
+        variables: params
+      })
     })
   })
 });
@@ -150,8 +188,12 @@ export const {
   useGeneExternalReferencesQuery,
   useGeneForSequenceDownloadQuery,
   useProteinDomainsQuery,
-  useEvGeneHomologyQuery
+  useEvGeneHomologyQuery,
+  useVariantPageMetaQuery,
+  useDefaultEntityViewerVariantQuery
 } = entityViewerThoasSlice;
 
-export const { genePageMeta: fetchGenePageMeta } =
-  entityViewerThoasSlice.endpoints;
+export const {
+  genePageMeta: fetchGenePageMeta,
+  variantPageMeta: fetchVariantPageMeta
+} = entityViewerThoasSlice.endpoints;

@@ -18,48 +18,60 @@ import React, { useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
-import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
+import { buildPageMeta } from './shared/page-meta/buildPageMeta';
 
-import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
-import { getPathParameters } from 'src/shared/hooks/useUrlParams';
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-import {
-  fetchGenomeSummary,
-  isGenomeNotFoundError
-} from 'src/shared/state/genome/genomeApiSlice';
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 import {
   useGenePageMetaQuery,
-  fetchGenePageMeta
+  useVariantPageMetaQuery
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contexts/entity-viewer-ids-context/EntityViewerIdsContextProvider';
 
-import type { ServerFetch } from 'src/routes/routesConfig';
-import type { AppDispatch } from 'src/store';
+export { serverFetch } from 'src/content/app/entity-viewer/shared/server-fetch/entityViewerServerFetch';
 
 const LazilyLoadedEntityViewer = React.lazy(() => import('./EntityViewer'));
 
-const defaultPageTitle = 'Entity viewer — Ensembl';
-
 const EntityViewerPage = () => {
   const hasMounted = useHasMounted();
+
+  useEntityViewerPageMeta();
+
+  return hasMounted ? <LazilyLoadedEntityViewer /> : null;
+};
+
+const useEntityViewerPageMeta = () => {
   const dispatch = useAppDispatch();
+  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+  const { type: entityType, objectId: entityId } = parsedEntityId ?? {};
 
-  // TODO: eventually, EntityViewerPage should not use a hook that is explicitly about gene,
-  // because we will have entities other than gene
-  const { genomeId, geneId, entityId } = useGeneViewIds();
+  const { currentData: genePageMeta, isLoading: isGenePageMetaLoading } =
+    useGenePageMetaQuery(
+      {
+        genomeId: activeGenomeId ?? '',
+        geneId: entityId ?? ''
+      },
+      {
+        skip: entityType !== 'gene' || !activeGenomeId || !entityId
+      }
+    );
 
-  const { data: pageMeta, isLoading } = useGenePageMetaQuery(
-    {
-      genomeId: genomeId ?? '',
-      geneId: geneId ?? ''
-    },
-    {
-      skip: !genomeId || !geneId
-    }
-  );
+  const { currentData: variantPageMeta, isLoading: isVariantPageMetaLoading } =
+    useVariantPageMetaQuery(
+      {
+        genomeId: activeGenomeId ?? '',
+        variantId: entityId ?? ''
+      },
+      {
+        skip: entityType !== 'variant' || !activeGenomeId || !entityId
+      }
+    );
+
+  const pageMeta = genePageMeta || variantPageMeta;
+  const isLoading = isGenePageMetaLoading || isVariantPageMetaLoading;
 
   useEffect(() => {
     if (isLoading) {
@@ -68,98 +80,12 @@ const EntityViewerPage = () => {
 
     const preparedPageMeta = entityId
       ? buildPageMeta({
-          title: pageMeta?.title ?? defaultPageTitle
+          title: pageMeta?.title
         })
       : buildPageMeta();
 
     dispatch(updatePageMeta(preparedPageMeta));
   }, [isLoading]);
-
-  return hasMounted ? <LazilyLoadedEntityViewer /> : null;
-};
-
-export const serverFetch: ServerFetch = async (params) => {
-  const { path, store } = params;
-  const dispatch: AppDispatch = store.dispatch;
-  const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
-    'genomeId' | 'entityId'
-  >(['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'], path);
-
-  // If the url is just /entity-viewer, update page meta and exit
-  if (!genomeIdFromUrl) {
-    dispatch(updatePageMeta(buildPageMeta()));
-    return;
-  }
-
-  const genomeInfoResponsePromise = dispatch(
-    fetchGenomeSummary.initiate(genomeIdFromUrl)
-  );
-  const { data: genomeInfoData, error: genomeInfoError } =
-    await genomeInfoResponsePromise;
-
-  if (isGenomeNotFoundError(genomeInfoError)) {
-    return {
-      status: 404
-    };
-  }
-
-  const genomeId = genomeInfoData?.genome_id as string; // by this point, genomeId clearly exists
-
-  // If the url is just /entity-viewer/:genomeId, update page meta and exit
-  if (!entityId) {
-    dispatch(updatePageMeta(buildPageMeta()));
-    return;
-  }
-
-  // NOTE: we will have to be smarter here when entities are no longer just genes
-  let geneStableId;
-
-  try {
-    geneStableId = parseFocusIdFromUrl(entityId).objectId;
-  } catch {
-    // something wrong with the entity id
-    return {
-      status: 404
-    };
-  }
-
-  const pageMetaPromise = dispatch(
-    fetchGenePageMeta.initiate({
-      genomeId,
-      geneId: geneStableId
-    })
-  );
-  const pageMetaQueryResult = await pageMetaPromise;
-
-  if ((pageMetaQueryResult?.error as any)?.meta?.data?.gene === null) {
-    // this is graphql's way of telling us that there is no such gene
-    return {
-      status: 404
-    };
-  } else {
-    const title = pageMetaQueryResult.data?.title ?? '';
-    dispatch(
-      updatePageMeta(
-        buildPageMeta({
-          title
-        })
-      )
-    );
-  }
-};
-
-const buildPageMeta = (
-  params: {
-    title?: string;
-    description?: string;
-  } = {}
-) => {
-  // TODO: eventually, decide on page description
-  const { title = defaultPageTitle, description = '' } = params;
-  return {
-    title,
-    description
-  };
 };
 
 const WrappedEntityViewerPage = () => {
