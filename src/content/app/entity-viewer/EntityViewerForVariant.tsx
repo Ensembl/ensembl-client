@@ -30,6 +30,7 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 import VariantView from './variant-view/VariantView';
+import VariantViewSidebar from './variant-view/variant-view-sidebar/VariantViewSideBar';
 
 const EntityViewerForVariant = () => {
   const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
@@ -61,7 +62,7 @@ const SidebarContent = (props: { isSidebarModalOpen: boolean }) => {
   return props.isSidebarModalOpen ? (
     <EntityViewerSidebarModal />
   ) : (
-    <div>Variant information for sidebar goes here</div>
+    <VariantViewSidebar />
   );
 };
 

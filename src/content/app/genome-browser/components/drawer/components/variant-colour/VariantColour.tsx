@@ -17,7 +17,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-// QUESTION: should variantGroups be moved to a different directory? E.g. to genome-browser/constants?
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
 import styles from './VariantColour.module.css';

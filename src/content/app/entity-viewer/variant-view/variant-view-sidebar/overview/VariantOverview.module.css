@@ -1,0 +1,84 @@
+.overviewContainer {
+  font-size: 13px;
+}
+
+.defaultContent {
+  margin: 15px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+}
+
+.newRowGroup {
+  margin-top: 16px;
+}
+
+.label {
+  line-height: 1.2;
+  font-weight: var(--font-weight-light);
+  text-align: right;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.externalLink {
+  padding-top: 8px;
+}
+
+.labelText {
+  font-size: 13px;
+  font-weight: var(--font-weight-light);
+  line-height: 1.5;
+}
+
+.variantType {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  margin-left: 0.6rem;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+
+
+/* NOTE: the styles below require the extra specificity in order to overwrite Accordion styles
+  We should update the Accordion to use CSS variables.
+*/
+.accordionContainer .entityViewerAccordion {
+  border: none;
+}
+
+.entityViewerAccordion .entityViewerAccordionHeader {
+  background-color: var(--color-light-grey);
+  border-radius: 5px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButton {
+  color: var(--color-blue);
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButton::before,
+.entityViewerAccordion .entityViewerAccordionButton::after {
+  margin-top: -3px;
+}
+
+.entityViewerAccordion .entityViewerAccordionButtonDisabled {
+  color: var(--color-grey);
+}
+
+.entityViewerAccordion .entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+}
