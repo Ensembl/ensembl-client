@@ -30,13 +30,6 @@ import { EntityViewerVariantDefaultQueryResult } from 'src/content/app/entity-vi
 
 import styles from './VariantOverview.module.css';
 
-/*  
-  FIXME: 
-  We started using real data from Thoas, and are not yet getting anything that can be rendered in this accordion. 
-  When more data becomes available, please refer to the PR https://github.com/Ensembl/ensembl-client/pull/433
-  and check if some of the deleted code segments can be reused to display the new data.
-*/
-
 export type AccordionSectionID = 'function' | 'other_data_sets';
 
 const MainAccordion = (props: EntityViewerVariantDefaultQueryResult) => {
