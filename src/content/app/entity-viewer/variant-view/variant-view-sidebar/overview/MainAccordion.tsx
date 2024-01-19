@@ -46,10 +46,11 @@ const MainAccordion = (props: EntityViewerVariantDefaultQueryResult) => {
       <Accordion
         className={styles.entityViewerAccordion}
         allowMultipleExpanded={true}
+        preExpanded={['alleles']}
       >
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'function'}
+          uuid={'alleles'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton className={styles.entityViewerAccordionButton}>
@@ -65,7 +66,7 @@ const MainAccordion = (props: EntityViewerVariantDefaultQueryResult) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'other_data_sets'}
+          uuid={'in_this_region'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
@@ -131,7 +132,9 @@ const Alleles = (props: AlleleProps) => {
         <div className={styles.label}>Alt</div>
         <div className={styles.value}>
           {alternativeAlleles.map((allele, index) => (
-            <div key={index}>{allele.allele_sequence}</div>
+            <div key={index} className={styles.alleleSequence}>
+              {allele.allele_sequence}
+            </div>
           ))}
         </div>
       </div>

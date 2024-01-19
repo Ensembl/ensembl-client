@@ -17,6 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
@@ -49,7 +50,10 @@ const VariantGroupLegend = (props: Props) => {
       <div>
         <span className={groupColorMarkerClass} />
         <span className={styles.labelTextStrong}>
-          {currentVariantGroup.label}
+          {` ${pluralise(
+            currentVariantGroup.label,
+            currentVariantGroup.variant_types.length
+          )}`}
         </span>
       </div>
 

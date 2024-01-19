@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from 'src/store';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 import {
   AccordionItem,
@@ -98,7 +99,10 @@ const TrackPanelVariantGroupLegend = (props: { disabled: boolean }) => {
                     <div className={trackPanelItemStyles.label}>
                       <span className={groupColourMarkerClass} />
                       <span className={trackPanelItemStyles.labelText}>
-                        {group.label}
+                        {` ${pluralise(
+                          group.label,
+                          group.variant_types.length
+                        )}`}
                       </span>
                     </div>
                   </SimpleTrackPanelItemLayout>

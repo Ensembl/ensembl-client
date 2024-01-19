@@ -110,17 +110,6 @@ const VariantOverview = () => {
         </div>
       </section>
 
-      <section></section>
-
-      {/* <section>
-        <div className={styles.sectionContent}>
-          <div className={styles.findAVariant} onClick={openSearch}>
-            <span>Find a variant</span>
-            <SearchIcon />
-          </div>
-        </div>
-      </section> */}
-
       <MainAccordion variant={variant} />
     </div>
   );

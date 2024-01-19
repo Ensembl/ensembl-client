@@ -44,6 +44,12 @@
   font-weight: var(--font-weight-bold);
 }
 
+.alleleSequence {
+  max-width: 18ch;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
 
 
 /* NOTE: the styles below require the extra specificity in order to overwrite Accordion styles
