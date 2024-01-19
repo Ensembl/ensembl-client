@@ -24,12 +24,9 @@
 }
 
 .featureSummaryStripLabel {
-  margin-right: 18px;
-}
-
-.featureSummaryStripLabel {
   font-size: 12px;
   font-weight: var(--font-weight-light);
+  margin-right: 18px;
 }
 
 .featureNameEmphasized {

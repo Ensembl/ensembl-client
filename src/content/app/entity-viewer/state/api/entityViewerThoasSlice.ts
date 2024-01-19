@@ -195,5 +195,6 @@ export const {
 
 export const {
   genePageMeta: fetchGenePageMeta,
-  variantPageMeta: fetchVariantPageMeta
+  variantPageMeta: fetchVariantPageMeta,
+  defaultEntityViewerVariant: fetchDefaultEntityViewerVariant
 } = entityViewerThoasSlice.endpoints;

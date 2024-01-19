@@ -4,4 +4,6 @@
   display: grid;
   grid-template-rows: [navigation-panel] auto [view-specific-content] 1fr;
   height: 100%;
+  padding-left: var(--double-standard-gutter);
+  overflow: auto;
 }

@@ -21,6 +21,8 @@ import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityVie
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import VariantImage from './variant-image/VariantImage';
+
 import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
 
 import styles from './VariantView.module.css';
@@ -51,13 +53,21 @@ const VariantView = () => {
 
   return (
     <div className={styles.container}>
-      {variantData && (
+      {activeGenomeId && variantId && variantData && (
         <>
-          <div style={{ height: '200px', textAlign: 'center' }}>
+          <div
+            style={{
+              height: '200px',
+              position: 'sticky',
+              top: '0',
+              backgroundColor: 'var(--color-black)',
+              textAlign: 'center'
+            }}
+          >
             Placeholder for navigation panel for variant {variantData.name}
           </div>
-          <div style={{ textAlign: 'center' }}>
-            Placeholder for the image for variant {variantData.name}
+          <div>
+            <VariantImage genomeId={activeGenomeId} variantId={variantId} />
           </div>
         </>
       )}
@@ -65,6 +75,7 @@ const VariantView = () => {
   );
 };
 
+// A hook for choosing an allele
 const useDefaultAlternativeAllele = (params: {
   genomeId?: string;
   variantId?: string;

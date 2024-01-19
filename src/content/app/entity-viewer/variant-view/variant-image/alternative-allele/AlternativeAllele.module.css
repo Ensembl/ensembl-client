@@ -1,0 +1,8 @@
+.allele {
+  --sequence-block-letter-color: var(--color-black);
+  justify-self: start;
+}
+
+.letterBlock + .letterBlock {
+  margin-left: 1px;
+}
