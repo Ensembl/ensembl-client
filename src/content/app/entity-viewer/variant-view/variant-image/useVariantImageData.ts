@@ -16,6 +16,8 @@
 
 import type { Pick2 } from 'ts-multipick';
 
+import { DISPLAYED_REFERENCE_SEQUENCE_LENGTH } from './variantImageConstants';
+
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { useRegionChecksumQuery } from 'src/shared/state/region/regionApiSlice';
 import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
@@ -206,11 +208,12 @@ export const calculateSliceStart = (params: {
   variantLength: number;
 }) => {
   const { variantStart, variantLength } = params;
-  const maxDisplayedSequenceLength = 41;
-  const displaySequenceMidpoint = Math.ceil(maxDisplayedSequenceLength / 2);
+  const displaySequenceMidpoint = Math.ceil(
+    DISPLAYED_REFERENCE_SEQUENCE_LENGTH / 2
+  );
   const minFlankingSequenceLength = 10;
   const maxDisplayedVariantLength =
-    maxDisplayedSequenceLength - 2 * minFlankingSequenceLength;
+    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - 2 * minFlankingSequenceLength;
 
   if (variantLength > maxDisplayedVariantLength) {
     return Math.max(variantStart - minFlankingSequenceLength, 1);
@@ -231,10 +234,9 @@ export const calculateSliceEnd = (params: {
 }) => {
   const { variantEnd, variantLength, regionLength } = params;
 
-  const maxDisplayedSequenceLength = 41;
   const minFlankingSequenceLength = 10; // NOTE: think of ellipses
   const maxDisplayedVariantLength =
-    maxDisplayedSequenceLength - 2 * minFlankingSequenceLength;
+    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - 2 * minFlankingSequenceLength;
 
   if (variantLength > maxDisplayedVariantLength) {
     return Math.min(variantEnd + minFlankingSequenceLength, regionLength);

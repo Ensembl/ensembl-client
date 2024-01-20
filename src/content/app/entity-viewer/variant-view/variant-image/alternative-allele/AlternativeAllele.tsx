@@ -16,6 +16,11 @@
 
 import React from 'react';
 
+import {
+  DISPLAYED_REFERENCE_SEQUENCE_LENGTH,
+  MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
+} from '../variantImageConstants';
+
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
@@ -48,14 +53,12 @@ const AlternativeAllele = (props: Props) => {
     sequence = sequence.slice(1); // exclude the first (anchor) base of the allele
   }
 
-  const maxReferenceSequenceLength = 41; // FIXME: import this as a constant from another file
-
   // Maximum alt allele display length is dynamic, and depends on where the variant starts
-  // Alt alleles are allowed to exceed the length of the remaining reference sequence (after variant start)
-  // by five nucleotides
+  // Alt alleles are allowed to exceed the length of the remaining reference sequence
+  // (to the right of variant start) by five nucleotides
   const distanceToVariantStart = variantStart - regionSliceStart;
   const maxAlternativeAlleleLength =
-    maxReferenceSequenceLength - distanceToVariantStart + 5;
+    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - distanceToVariantStart + 5;
 
   const sequenceLetters = sequence
     .split('')
@@ -84,7 +87,6 @@ const AlternativeAllele = (props: Props) => {
     : sequenceLetterStyle;
 
   if (alleleType === 'deletion') {
-    // for deletion, do not count the first (anchor) base of the reference sequence
     return (
       <Deletion
         variantLength={variantLength}
@@ -116,9 +118,8 @@ const Deletion = (props: {
   letterStyle: Record<string, string>;
 }) => {
   const { variantLength, letterStyle } = props;
-  const maxReferenceAlleleDisplayLength = 21; // FIXME: use imported constant
 
-  if (variantLength <= maxReferenceAlleleDisplayLength) {
+  if (variantLength <= MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
     const letterBlocks = [...Array(variantLength)].map((_, index) => (
       <SequenceLetterBlock
         key={index}

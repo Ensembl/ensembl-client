@@ -17,6 +17,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import { MAX_REFERENCE_ALLELE_DISPLAY_LENGTH } from '../variantImageConstants';
+
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
 import styles from './ReferenceSequenceAllele.module.css';
@@ -45,9 +47,7 @@ const ReferenceSequenceAllele = (props: Props) => {
     return null;
   }
 
-  const maxVariantDisplayLength = 21; // FIXME: use imported constant
-
-  const shouldDisplayGap = variantLength > maxVariantDisplayLength;
+  const shouldDisplayGap = variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH;
 
   const letterBlockClasses = classNames(styles.letter);
 
