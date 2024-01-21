@@ -26,7 +26,7 @@ import {
 } from 'src/shared/components/accordion';
 
 import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
-import { EntityViewerVariantDefaultQueryResult } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
+import { type EntityViewerVariantDefaultQueryResult } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
 
 import styles from './VariantOverview.module.css';
 
