@@ -19,6 +19,8 @@ import classNames from 'classnames';
 
 import { MAX_REFERENCE_ALLELE_DISPLAY_LENGTH } from '../variantImageConstants';
 
+import { getVariantGroupCSSColour } from 'src/shared/helpers/variantHelpers';
+
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
 import styles from './ReferenceSequenceAllele.module.css';
@@ -29,9 +31,10 @@ type Props = {
   variantStart: number; // accounts for anchor base in appropriate variant types
   variantLength: number; // accounts for anchor base in appropriate variant types
   variantType: string;
+  mostSevereConsequence: string;
   hasAnchorBase: boolean;
-  // onClick
-  // isActiveAllele
+  isSelectedAllele: boolean;
+  onClick: () => void;
 };
 
 const ReferenceSequenceAllele = (props: Props) => {
@@ -40,7 +43,10 @@ const ReferenceSequenceAllele = (props: Props) => {
     regionSliceStart,
     variantStart,
     variantLength,
-    variantType
+    variantType,
+    mostSevereConsequence,
+    isSelectedAllele,
+    onClick
   } = props;
 
   if (variantType === 'insertion') {
@@ -56,14 +62,27 @@ const ReferenceSequenceAllele = (props: Props) => {
     .slice(sequenceSliceStart, sequenceSliceStart + variantLength)
     .split('');
 
+  const defaultLetterColour = 'var(--color-grey)'; // this is a fallback colour that should never be displayed if everything is working correctly
+  const letterBlockColour = isSelectedAllele
+    ? getVariantGroupCSSColour(mostSevereConsequence) ?? defaultLetterColour
+    : 'var(--color-blue)';
+  const letterColour = isSelectedAllele
+    ? 'var(--color-black)'
+    : 'var(--color-white)';
+  const sequenceLetterStyle: Record<string, string> = {
+    '--sequence-block-color': letterBlockColour,
+    '--sequence-block-letter-color': letterColour
+  };
+
   if (!shouldDisplayGap) {
     return (
-      <button>
+      <button onClick={onClick} disabled={isSelectedAllele}>
         {letters.map((letter, index) => (
           <SequenceLetterBlock
             key={index}
             letter={letter}
             className={letterBlockClasses}
+            style={sequenceLetterStyle}
           />
         ))}
       </button>
@@ -77,6 +96,7 @@ const ReferenceSequenceAllele = (props: Props) => {
           key={index}
           letter={letter}
           className={letterBlockClasses}
+          style={sequenceLetterStyle}
         />
       ));
     const lettersRight = letters
@@ -86,6 +106,7 @@ const ReferenceSequenceAllele = (props: Props) => {
           key={index}
           letter={letter}
           className={letterBlockClasses}
+          style={sequenceLetterStyle}
         />
       ));
     const twoDotBlocks = [...Array(2)].map((_, index) => (
@@ -99,7 +120,7 @@ const ReferenceSequenceAllele = (props: Props) => {
     const gap = <ReferenceSequenceGap gapLength={missingSequenceLength} />;
 
     return (
-      <button>
+      <button onClick={onClick} disabled={isSelectedAllele}>
         {lettersLeft}
         {twoDotBlocks}
         {gap}

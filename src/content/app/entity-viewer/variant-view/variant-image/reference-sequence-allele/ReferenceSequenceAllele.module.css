@@ -1,6 +1,4 @@
 .letter {
-  --sequence-block-color: var(--color-blue);
-  --sequence-block-letter-color: var(--color-white);
   font-size: 11px;
 }
 

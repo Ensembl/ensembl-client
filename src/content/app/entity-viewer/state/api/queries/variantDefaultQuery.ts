@@ -97,6 +97,8 @@ type VariantDetailsAllele = Pick<
     population_frequencies: VariantDetailsAllelePopulationFrequency[];
     prediction_results: VariantDetailsAllelePredictionResult[];
     phenotype_assertions: VariantDetailsAllelePhenotypeAssertion[];
+  } & {
+    urlId: string; // a provisional field that is added during api response transformation; might be replaced by something better from Variation team later
   };
 
 type VariantDetailsAllelePopulationFrequency = Pick<

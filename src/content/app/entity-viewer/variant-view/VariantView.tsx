@@ -17,6 +17,8 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
@@ -30,8 +32,11 @@ import styles from './VariantView.module.css';
 const VariantView = () => {
   const { activeGenomeId, genomeIdForUrl, entityIdForUrl, parsedEntityId } =
     useEntityViewerIds();
+  const navigate = useNavigate();
+  const { search: urlQuery } = useLocation();
 
   const { objectId: variantId } = parsedEntityId ?? {};
+  const alleleIdInUrl = new URLSearchParams(urlQuery).get('allele');
 
   const { currentData } = useDefaultEntityViewerVariantQuery(
     {
@@ -48,8 +53,18 @@ const VariantView = () => {
   useDefaultAlternativeAllele({
     genomeId: genomeIdForUrl,
     variantId: entityIdForUrl,
+    alleleIdInUrl,
     variant: variantData
   });
+
+  const onAlleleChange = (alleleId: string) => {
+    const url = urlFor.entityViewerVariant({
+      genomeId: genomeIdForUrl,
+      variantId,
+      alleleId
+    });
+    navigate(url);
+  };
 
   return (
     <div className={styles.container}>
@@ -67,7 +82,12 @@ const VariantView = () => {
             Placeholder for navigation panel for variant {variantData.name}
           </div>
           <div>
-            <VariantImage genomeId={activeGenomeId} variantId={variantId} />
+            <VariantImage
+              genomeId={activeGenomeId}
+              variantId={variantId}
+              activeAlleleId={alleleIdInUrl || ''}
+              onAlleleChange={onAlleleChange}
+            />
           </div>
         </>
       )}
@@ -79,14 +99,14 @@ const VariantView = () => {
 const useDefaultAlternativeAllele = (params: {
   genomeId?: string;
   variantId?: string;
+  alleleIdInUrl: string | null;
   variant?: {
     alleles: Pick<VariantAllele, 'reference_sequence' | 'allele_sequence'>[];
   };
 }) => {
-  const { genomeId, variantId, variant } = params;
-  const { search: urlQuery } = useLocation();
+  const { genomeId, variantId, alleleIdInUrl, variant } = params;
+
   const navigate = useNavigate();
-  const alleleIndexInUrl = new URLSearchParams(urlQuery).get('allele');
 
   useEffect(() => {
     if (!genomeId || !variantId || !variant) {
@@ -94,15 +114,22 @@ const useDefaultAlternativeAllele = (params: {
     }
 
     // temporary solution for identifying alleles
-    const parsedAlleleIndex = (alleleIndexInUrl &&
-      parseInt(alleleIndexInUrl, 10)) as number;
+    const parsedAlleleIndex = (alleleIdInUrl &&
+      parseInt(alleleIdInUrl, 10)) as number;
 
-    if (!alleleIndexInUrl || !variant?.alleles[parsedAlleleIndex]) {
+    if (
+      typeof parsedAlleleIndex !== 'number' ||
+      !variant?.alleles[parsedAlleleIndex]
+    ) {
       const firstAlternativeAlleleIndex = variant.alleles.findIndex(
         (allele) => allele.reference_sequence !== allele.allele_sequence
       );
 
-      const url = `/entity-viewer/${genomeId}/${variantId}?allele=${firstAlternativeAlleleIndex}`;
+      const url = urlFor.entityViewerVariant({
+        genomeId,
+        variantId,
+        alleleId: `${firstAlternativeAlleleIndex}`
+      });
       navigate(url, { replace: true });
     }
   }, [variant]);

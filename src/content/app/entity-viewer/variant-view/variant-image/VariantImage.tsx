@@ -16,6 +16,11 @@
 
 import React from 'react';
 
+import {
+  getReferenceAndAltAlleles,
+  getMostSevereVariantConsequence
+} from 'src/shared/helpers/variantHelpers';
+
 import useVariantImageData from './useVariantImageData';
 
 import FlankingSequence from './flanking-sequence/FlankingSequence';
@@ -30,10 +35,13 @@ import styles from './VariantImage.module.css';
 type Props = {
   genomeId: string;
   variantId: string;
+  activeAlleleId: string;
+  onAlleleChange: (alleleId: string) => void;
 };
 
 const VariantImage = (props: Props) => {
-  const { genomeId, variantId } = props;
+  const { genomeId, variantId, activeAlleleId, onAlleleChange } = props;
+
   const { currentData } = useVariantImageData({
     genomeId,
     variantId
@@ -56,6 +64,11 @@ const VariantImage = (props: Props) => {
     hasAnchorBase
   } = currentData;
 
+  const { referenceAllele, alternativeAlleles } = getReferenceAndAltAlleles(
+    variant.alleles
+  );
+  const mostSevereConsequence = getMostSevereVariantConsequence(variant);
+
   const distanceToVariantStart = variantStart - regionSliceStart;
 
   const containerStyles = {
@@ -75,13 +88,20 @@ const VariantImage = (props: Props) => {
         regionName={regionName}
         regionLength={regionLength}
         variant={variant}
+        referenceAllele={referenceAllele as VariantDetails['alleles'][number]}
+        activeAlleleId={activeAlleleId}
+        mostSevereConsequence={mostSevereConsequence}
+        onAlleleClick={() => onAlleleChange(referenceAllele?.urlId || '')}
       />
       <AlternativeAlleles
-        variant={variant}
+        alleles={alternativeAlleles}
         variantLength={variantLength}
         regionSliceStart={regionSliceStart}
         hasAnchorBase={hasAnchorBase}
         variantStart={variantStart}
+        activeAlleleId={activeAlleleId}
+        mostSevereConsequence={mostSevereConsequence}
+        onAlleleClick={onAlleleChange}
       />
     </div>
   );
@@ -98,6 +118,10 @@ const ReferenceSequence = (props: {
   regionName: string;
   regionLength: number;
   variant: VariantDetails;
+  referenceAllele: VariantDetails['alleles'][number];
+  activeAlleleId: string;
+  mostSevereConsequence: string;
+  onAlleleClick: () => void;
 }) => {
   const {
     referenceSequence,
@@ -108,7 +132,11 @@ const ReferenceSequence = (props: {
     regionName,
     regionLength,
     hasAnchorBase,
-    variant
+    variant,
+    referenceAllele,
+    activeAlleleId,
+    mostSevereConsequence,
+    onAlleleClick
   } = props;
 
   const {
@@ -118,6 +146,8 @@ const ReferenceSequence = (props: {
       location: { start: variantLocationStart }
     }
   } = variant;
+
+  const isSelectedAllele = referenceAllele.urlId === activeAlleleId;
 
   const distanceToVariantStart = variantStart - regionSliceStart;
   const leftFlankingSequence = referenceSequence.slice(
@@ -156,7 +186,10 @@ const ReferenceSequence = (props: {
           variantStart={variantStart}
           variantLength={variantLength}
           variantType={variantType}
+          mostSevereConsequence={mostSevereConsequence}
           hasAnchorBase={hasAnchorBase}
+          isSelectedAllele={isSelectedAllele}
+          onClick={onAlleleClick}
         />
         <FlankingSequence
           sequence={rightFlankingSequence}

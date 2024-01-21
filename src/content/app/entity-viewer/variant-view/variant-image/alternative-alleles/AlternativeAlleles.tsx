@@ -16,8 +16,6 @@
 
 import React, { type ReactNode } from 'react';
 
-import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
-
 import AlternativeAllele from '../alternative-allele/AlternativeAllele';
 
 import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
@@ -25,31 +23,29 @@ import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/que
 import styles from './AlternativeAlleles.module.css';
 
 type Props = {
-  variant: VariantDetails;
+  alleles: VariantDetails['alleles']; // a list of alternative alleles to render
   regionSliceStart: number;
   variantStart: number; // accounts for anchor base in appropriate variant types
   variantLength: number; // accounts for anchor base in appropriate variant types
   hasAnchorBase: boolean;
-  // onClick: () => void;
+  activeAlleleId: string;
+  mostSevereConsequence: string;
+  onAlleleClick: (alleleId: string) => void;
 };
 
 const AlternativeAlleles = (props: Props) => {
   const {
-    variant,
+    alleles,
     regionSliceStart,
     variantStart,
     variantLength,
-    hasAnchorBase
+    hasAnchorBase,
+    activeAlleleId,
+    mostSevereConsequence,
+    onAlleleClick
   } = props;
 
-  const { alternativeAlleles } = getReferenceAndAltAlleles(variant.alleles);
-
   const offsetInNucleotides = variantStart - regionSliceStart;
-
-  // there should always be a valid most severe consequence;
-  // but in case there isn't, fall back to a bogus string
-  const mostSevereConsequence =
-    getMostSevereVariantConsequence(variant) || 'unknown';
 
   const getAlleleLength = (sequenceLength: number, alleleType: string) => {
     if (alleleType === 'deletion') {
@@ -68,7 +64,7 @@ const AlternativeAlleles = (props: Props) => {
 
   return (
     <div className={styles.grid} style={gridStyles}>
-      {alternativeAlleles.map((allele, index) => (
+      {alleles.map((allele, index) => (
         <Row
           key={index}
           index={index}
@@ -79,13 +75,14 @@ const AlternativeAlleles = (props: Props) => {
         >
           <AlternativeAllele
             key={index}
-            alleleType={allele.allele_type.value}
-            sequence={allele.allele_sequence}
+            allele={allele}
             regionSliceStart={regionSliceStart}
             variantStart={variantStart}
             variantLength={variantLength}
             hasAnchorBase={hasAnchorBase}
             mostSevereConsequence={mostSevereConsequence}
+            activeAlleleId={activeAlleleId}
+            onClick={onAlleleClick}
           />
         </Row>
       ))}
@@ -110,26 +107,6 @@ const Row = (props: {
       {children}
     </>
   );
-};
-
-// FIXME: this is copied from VariantConsequence file; should move into a common file
-const getMostSevereVariantConsequence = <
-  T extends {
-    analysis_method: {
-      tool: string;
-    };
-    result: string | null;
-  }
->({
-  prediction_results: predictionResults
-}: {
-  prediction_results: T[];
-}) => {
-  const consequencePrediction = predictionResults.find(
-    ({ analysis_method }) => analysis_method.tool === 'Ensembl VEP'
-  );
-
-  return consequencePrediction?.result;
 };
 
 export default AlternativeAlleles;

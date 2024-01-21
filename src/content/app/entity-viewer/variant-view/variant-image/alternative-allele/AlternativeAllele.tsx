@@ -21,33 +21,51 @@ import {
   MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
 } from '../variantImageConstants';
 
+import { getVariantGroupCSSColour } from 'src/shared/helpers/variantHelpers';
+
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
-import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
-
 import styles from './AlternativeAllele.module.css';
+
+type AlleleData = {
+  allele_type: {
+    value: string;
+  };
+  allele_sequence: string;
+  urlId: string;
+};
 
 type Props = {
   regionSliceStart: number;
   variantStart: number; // accounts for anchor base in appropriate variant types
   variantLength: number; // length of reference allele; accounts for anchor base in appropriate variant types
-  alleleType: string;
-  sequence: string;
+  allele: AlleleData;
   mostSevereConsequence: string;
   hasAnchorBase: boolean;
-  // onClick: () => void;
+  activeAlleleId: string;
+  onClick: (alleleId: string) => void;
 };
 
 const AlternativeAllele = (props: Props) => {
   const {
     variantStart,
     regionSliceStart,
-    alleleType,
+    allele,
     variantLength,
     hasAnchorBase,
+    activeAlleleId,
     mostSevereConsequence
   } = props;
-  let { sequence } = props;
+  const {
+    allele_type: { value: alleleType },
+    urlId: alleleId
+  } = allele;
+  const isSelectedAllele = alleleId === activeAlleleId;
+  let { allele_sequence: sequence } = allele;
+
+  const onClick = () => {
+    props.onClick(alleleId);
+  };
 
   if (hasAnchorBase) {
     sequence = sequence.slice(1); // exclude the first (anchor) base of the allele
@@ -69,11 +87,9 @@ const AlternativeAllele = (props: Props) => {
     sequenceLetters[sequenceLetters.length - 1] = '…';
   }
 
-  const colourId = colourToIdMap.get(mostSevereConsequence);
   const defaultLetterColour = 'var(--color-grey)'; // this is a fallback colour that should never be displayed if everything is working correctly
-  const letterColour = colourId
-    ? colours.get(colourId) ?? defaultLetterColour
-    : defaultLetterColour;
+  const letterColour =
+    getVariantGroupCSSColour(mostSevereConsequence) ?? defaultLetterColour;
 
   const sequenceLetterStyle = {
     ['--sequence-block-color' as string]: letterColour
@@ -86,16 +102,27 @@ const AlternativeAllele = (props: Props) => {
       }
     : sequenceLetterStyle;
 
+  if (!isSelectedAllele) {
+    sequenceLetterStyle.opacity = '50%';
+    lastSequenceLetterStyle.opacity = '50%';
+  }
+
   if (alleleType === 'deletion') {
     return (
       <Deletion
         variantLength={variantLength}
         letterStyle={sequenceLetterStyle}
+        disabled={isSelectedAllele}
+        onClick={onClick}
       />
     );
   } else {
     return (
-      <button className={styles.allele}>
+      <button
+        className={styles.allele}
+        onClick={onClick}
+        disabled={isSelectedAllele}
+      >
         {sequenceLetters.map((letter, index) => (
           <SequenceLetterBlock
             key={index}
@@ -116,8 +143,10 @@ const AlternativeAllele = (props: Props) => {
 const Deletion = (props: {
   variantLength: number; // length of the reference allele, including the "anchor" nucleotide
   letterStyle: Record<string, string>;
+  disabled: boolean;
+  onClick: () => void;
 }) => {
-  const { variantLength, letterStyle } = props;
+  const { variantLength, letterStyle, disabled, onClick } = props;
 
   if (variantLength <= MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
     const letterBlocks = [...Array(variantLength)].map((_, index) => (
@@ -128,7 +157,11 @@ const Deletion = (props: {
         className={styles.letterBlock}
       />
     ));
-    return <button className={styles.allele}>{letterBlocks}</button>;
+    return (
+      <button className={styles.allele} onClick={onClick} disabled={disabled}>
+        {letterBlocks}
+      </button>
+    );
   } else {
     const flankingBlocksCount = 8;
     const blocksGapCount = 5;
@@ -143,7 +176,7 @@ const Deletion = (props: {
     const sequenceRight = Array(flankingBlocksCount).fill('-').join('');
 
     return (
-      <button className={styles.allele}>
+      <button className={styles.allele} onClick={onClick} disabled={disabled}>
         <Sequence sequence={sequenceLeft} letterStyle={letterStyle} />
         <Sequence sequence={sequenceMid} letterStyle={gapLetterStyle} />
         <Sequence sequence={sequenceRight} letterStyle={letterStyle} />
@@ -167,29 +200,5 @@ const Sequence = (props: {
       />
     ));
 };
-
-const colours = new Map([
-  [1, 'var(--color-dark-pink)'],
-  [2, 'var(--color-dark-yellow)'],
-  [3, 'var(--color-lime)'],
-  [4, 'var(--color-teal)'],
-  [5, 'var(--color-duckegg-blue)']
-]);
-
-// FIXME: copied the lines below from VariantColour component.
-// Should move this to a common file
-const buildColourToIdMap = () => {
-  const colourMap = new Map<string, number>();
-
-  for (const group of variantGroups) {
-    for (const variantType of group.variant_types) {
-      colourMap.set(variantType.label, group.id);
-    }
-  }
-
-  return colourMap;
-};
-
-const colourToIdMap = buildColourToIdMap();
 
 export default AlternativeAllele;
