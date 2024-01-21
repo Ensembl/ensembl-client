@@ -61,7 +61,7 @@ const VariantConsequence = (props: Props) => {
 
 export default VariantConsequence;
 
-const getMostSevereVariantConsequence = ({
+export const getMostSevereVariantConsequence = ({
   prediction_results: predictionResults
 }: Props['variant']) => {
   const consequencePrediction = predictionResults.find(

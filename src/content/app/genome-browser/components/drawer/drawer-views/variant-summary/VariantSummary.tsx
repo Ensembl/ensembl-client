@@ -196,7 +196,9 @@ const VariantSummary = (props: Props) => {
   );
 };
 
-const VariantDB = (props: { variant: VariantQueryResult['variant'] }) => {
+export const VariantDB = (props: {
+  variant: VariantQueryResult['variant'];
+}) => {
   const { primary_source } = props.variant;
 
   let dbElement;

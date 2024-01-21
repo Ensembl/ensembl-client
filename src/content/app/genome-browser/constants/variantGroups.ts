@@ -17,7 +17,7 @@
 const variantGroups = [
   {
     id: 1,
-    label: 'Protein altering variants',
+    label: 'Protein altering variant',
     variant_types: [
       {
         label: 'frameshift_variant',
@@ -63,7 +63,7 @@ const variantGroups = [
   },
   {
     id: 2,
-    label: 'Splicing variants',
+    label: 'Splicing variant',
     variant_types: [
       {
         label: 'splice_acceptor_variant',
@@ -99,7 +99,7 @@ const variantGroups = [
   },
   {
     id: 3,
-    label: 'Transcript variants',
+    label: 'Transcript variant',
     variant_types: [
       {
         label: '3_prime_UTR_variant',
@@ -165,7 +165,7 @@ const variantGroups = [
   },
   {
     id: 4,
-    label: 'Regulatory region variants',
+    label: 'Regulatory region variant',
     variant_types: [
       {
         label: 'regulatory_region_variant',
@@ -181,7 +181,7 @@ const variantGroups = [
   },
   {
     id: 5,
-    label: 'Intergenic variants',
+    label: 'Intergenic variant',
     variant_types: [
       {
         label: 'downstream_gene_variant',
