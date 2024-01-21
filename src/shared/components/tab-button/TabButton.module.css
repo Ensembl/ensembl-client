@@ -1,0 +1,24 @@
+.button {
+  --_button-bg-color: var(--tab-button-color, var(--color-blue));
+  --_button-border-color: var(--tab-button-border-color, var(--_button-bg-color));
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--_button-bg-color);
+  border-color: var(--_button-border-color);
+  border-width: 1px;
+  border-style: solid;
+  color: var(--tab-button-text-color, var(--color-white));
+  padding: var(--tab-button-padding, 0 10px);
+  font-weight: var(--font-weight-bold);
+  min-height: 28px;
+}
+
+.pressed {
+  --_button-bg-color: var(--tab-button-color, transparent);
+  --_button-border-color: var(--tab-button-border-color, var(--color-blue));
+}
+
+.button:disabled:not(.pressed) {
+  --_button-bg-color: var(--tab-button-color, #485967);
+  color: var(--tab-button-text-color, var(--color-grey));
+}

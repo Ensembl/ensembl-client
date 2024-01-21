@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tab {
+  width: 210px;
+}
+
+.unavailable {
+  --tab-button-color: #374148;
+  --tab-button-text-color: var(--color-dark-grey);
+}
+
+.bottomRow {
+  padding-left: 10px; /* same as TabButton default */
+  display: flex;
+  gap: 10px;
+}

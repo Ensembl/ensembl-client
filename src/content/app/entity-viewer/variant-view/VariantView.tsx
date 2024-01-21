@@ -23,6 +23,7 @@ import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityVie
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import VariantViewNavigationPanel from './variant-view-navigation-panel/VariantViewNavigationPanel';
 import VariantImage from './variant-image/VariantImage';
 
 import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
@@ -30,7 +31,7 @@ import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele
 import styles from './VariantView.module.css';
 
 const VariantView = () => {
-  const { activeGenomeId, genomeIdForUrl, entityIdForUrl, parsedEntityId } =
+  const { activeGenomeId, genomeIdForUrl, parsedEntityId } =
     useEntityViewerIds();
   const navigate = useNavigate();
   const { search: urlQuery } = useLocation();
@@ -52,7 +53,7 @@ const VariantView = () => {
 
   useDefaultAlternativeAllele({
     genomeId: genomeIdForUrl,
-    variantId: entityIdForUrl,
+    variantId,
     alleleIdInUrl,
     variant: variantData
   });
@@ -70,25 +71,13 @@ const VariantView = () => {
     <div className={styles.container}>
       {activeGenomeId && variantId && variantData && (
         <>
-          <div
-            style={{
-              height: '200px',
-              position: 'sticky',
-              top: '0',
-              backgroundColor: 'var(--color-black)',
-              textAlign: 'center'
-            }}
-          >
-            Placeholder for navigation panel for variant {variantData.name}
-          </div>
-          <div>
-            <VariantImage
-              genomeId={activeGenomeId}
-              variantId={variantId}
-              activeAlleleId={alleleIdInUrl || ''}
-              onAlleleChange={onAlleleChange}
-            />
-          </div>
+          <VariantViewNavigationPanel />
+          <VariantImage
+            genomeId={activeGenomeId}
+            variantId={variantId}
+            activeAlleleId={alleleIdInUrl || ''}
+            onAlleleChange={onAlleleChange}
+          />
         </>
       )}
     </div>

@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import React, { type HTMLAttributes } from 'react';
+import classNames from 'classnames';
 
 import styles from './InfoPill.module.css';
 
-type Props = {
-  children: ReactNode;
-};
+type Props = HTMLAttributes<HTMLSpanElement>;
 
 const InfoPill = (props: Props) => {
-  return <span className={styles.infoPill}>{props.children}</span>;
+  const { className: classNameFromProps, children, ...otherProps } = props;
+
+  const componentClasses = classNames(styles.infoPill, classNameFromProps);
+
+  return (
+    <span className={componentClasses} {...otherProps}>
+      {children}
+    </span>
+  );
 };
 
 export default InfoPill;
