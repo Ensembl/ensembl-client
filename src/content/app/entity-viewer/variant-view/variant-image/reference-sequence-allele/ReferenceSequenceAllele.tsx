@@ -17,7 +17,10 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { MAX_REFERENCE_ALLELE_DISPLAY_LENGTH } from '../variantImageConstants';
+import {
+  MAX_REFERENCE_ALLELE_DISPLAY_LENGTH,
+  MIN_FLANKING_SEQUENCE_LENGTH
+} from '../variantImageConstants';
 
 import { getVariantGroupCSSColour } from 'src/shared/helpers/variantHelpers';
 
@@ -112,11 +115,17 @@ const ReferenceSequenceAllele = (props: Props) => {
     const twoDotBlocks = [...Array(2)].map((_, index) => (
       <SequenceLetterBlock
         key={index}
-        letter={'.'}
+        letter="."
         className={letterBlockClasses}
+        style={sequenceLetterStyle}
       />
     ));
-    const missingSequenceLength = sequence.length - 20;
+
+    const visibleLetterBlocksCount = 16; // for the reference allele, image shows 8 letter blocks on either side of the gap
+    const missingSequenceLength =
+      sequence.length -
+      2 * MIN_FLANKING_SEQUENCE_LENGTH -
+      visibleLetterBlocksCount;
     const gap = <ReferenceSequenceGap gapLength={missingSequenceLength} />;
 
     return (
@@ -132,11 +141,14 @@ const ReferenceSequenceAllele = (props: Props) => {
 };
 
 const ReferenceSequenceGap = (props: { gapLength: number }) => {
+  const dotsCount = 4;
+  const remainingGap = props.gapLength - dotsCount;
+
   return (
     <div className={styles.referenceSequenceGap}>
       <span>.</span>
       <span>.</span>
-      <span>{props.gapLength}</span>
+      <span>{remainingGap}</span>
       <span>.</span>
       <span>.</span>
     </div>

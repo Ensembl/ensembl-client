@@ -16,7 +16,11 @@
 
 import type { Pick2 } from 'ts-multipick';
 
-import { DISPLAYED_REFERENCE_SEQUENCE_LENGTH } from './variantImageConstants';
+import {
+  DISPLAYED_REFERENCE_SEQUENCE_LENGTH,
+  MAX_REFERENCE_ALLELE_DISPLAY_LENGTH,
+  MIN_FLANKING_SEQUENCE_LENGTH
+} from './variantImageConstants';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { useRegionChecksumQuery } from 'src/shared/state/region/regionApiSlice';
@@ -211,12 +215,9 @@ export const calculateSliceStart = (params: {
   const displaySequenceMidpoint = Math.ceil(
     DISPLAYED_REFERENCE_SEQUENCE_LENGTH / 2
   );
-  const minFlankingSequenceLength = 10;
-  const maxDisplayedVariantLength =
-    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - 2 * minFlankingSequenceLength;
 
-  if (variantLength > maxDisplayedVariantLength) {
-    return Math.max(variantStart - minFlankingSequenceLength, 1);
+  if (variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return Math.max(variantStart - MIN_FLANKING_SEQUENCE_LENGTH, 1);
   } else {
     const distanceToStart =
       variantLength % 2
@@ -234,17 +235,14 @@ export const calculateSliceEnd = (params: {
 }) => {
   const { variantEnd, variantLength, regionLength } = params;
 
-  const minFlankingSequenceLength = 10; // NOTE: think of ellipses
-  const maxDisplayedVariantLength =
-    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - 2 * minFlankingSequenceLength;
-
-  if (variantLength > maxDisplayedVariantLength) {
-    return Math.min(variantEnd + minFlankingSequenceLength, regionLength);
+  if (variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return Math.min(variantEnd + MIN_FLANKING_SEQUENCE_LENGTH, regionLength);
   } else {
     const distanceToFlankingSequence =
-      Math.floor(maxDisplayedVariantLength / 2) - Math.floor(variantLength / 2);
+      Math.floor(MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2) -
+      Math.floor(variantLength / 2);
     return Math.min(
-      variantEnd + distanceToFlankingSequence + minFlankingSequenceLength,
+      variantEnd + distanceToFlankingSequence + MIN_FLANKING_SEQUENCE_LENGTH,
       regionLength
     );
   }

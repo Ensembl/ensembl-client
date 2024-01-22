@@ -18,3 +18,8 @@ export const DISPLAYED_REFERENCE_SEQUENCE_LENGTH = 41;
 
 // the maximum number of letter blocks allocated to reference allele
 export const MAX_REFERENCE_ALLELE_DISPLAY_LENGTH = 21;
+
+// min 10 nucleotides should be visible on either side of the reference allele
+export const MIN_FLANKING_SEQUENCE_LENGTH =
+  (DISPLAYED_REFERENCE_SEQUENCE_LENGTH - MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) /
+  2;
