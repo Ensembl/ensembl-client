@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tab {
+  width: 210px;
+}
+
+.unavailable {
+  --tab-button-color: #374148;
+  --tab-button-text-color: var(--color-dark-grey);
+}
+
+.bottomRow {
+  padding-left: 10px; /* same as TabButton default */
+  display: flex;
+  gap: 10px;
+}
+
+.disabled .label {
+  font-weight: var(--font-weight-light);
+  color: var(--color-grey);
+}
+
+.pill {
+  --info-pill-color: transparent;
+  --info-pill-border-color: var(--color-dark-grey);
+  --info-pill-padding: 0 10px;
+  --info-pill-font-size: 11px;
+}
+
+.disabled .pill {
+  --info-pill-text-color: var(--color-medium-dark-grey);
+}

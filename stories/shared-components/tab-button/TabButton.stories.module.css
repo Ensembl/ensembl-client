@@ -1,0 +1,14 @@
+.container {
+  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.containerDark {
+  background-color: var(--color-black);
+}
+
+.button {
+  width: 210px;
+}

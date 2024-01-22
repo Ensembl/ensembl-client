@@ -99,11 +99,16 @@ export const entityViewerVariant = (params?: {
   const genomeId = params?.genomeId || '';
   const variantId = params?.variantId || '';
   let path = '/entity-viewer';
+
+  const variantIdForUrl = variantId.startsWith('variant:')
+    ? variantId
+    : `variant:${variantId}`;
+
   if (genomeId) {
     path += `/${genomeId}`;
   }
   if (variantId) {
-    path += `/variant:${variantId}`;
+    path += `/${variantIdForUrl}`;
   }
   const urlSearchParams = new URLSearchParams('');
   if (params?.alleleId) {
