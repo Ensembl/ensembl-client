@@ -19,6 +19,7 @@ import React from 'react';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { buildFocusVariantId } from 'src/shared/helpers/focusObjectHelpers';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -68,6 +69,11 @@ const VariantZmenu = (props: Props) => {
     location: locationForVariant
   });
 
+  const linkToVariantInEntityViewer = urlFor.entityViewerVariant({
+    genomeId: genomeIdForUrl,
+    variantId: variantId
+  });
+
   return (
     <>
       <ZmenuContent
@@ -78,7 +84,12 @@ const VariantZmenu = (props: Props) => {
       <div className={styles.zmenuLinksGrid}>
         <ViewInApp
           theme="dark"
-          links={{ genomeBrowser: { url: linkToVariantInGenomeBrowser } }}
+          links={{
+            genomeBrowser: { url: linkToVariantInGenomeBrowser },
+            entityViewer: !isEnvironment([Environment.PRODUCTION])
+              ? { url: linkToVariantInEntityViewer }
+              : undefined
+          }}
           onAnyAppClick={props.onDestroy}
           className={styles.zmenuAppLinks}
         />
