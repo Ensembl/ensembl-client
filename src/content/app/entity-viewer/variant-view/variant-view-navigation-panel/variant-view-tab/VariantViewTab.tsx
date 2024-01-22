@@ -50,8 +50,12 @@ const VariantViewTab = (props: Props) => {
     );
   }
 
+  const componentClasses = classNames(styles.container, {
+    [styles.disabled]: disabled
+  });
+
   return (
-    <div className={styles.container}>
+    <div className={componentClasses}>
       <TabButton
         className={styles.tab}
         pressed={pressed}
@@ -74,8 +78,10 @@ const BottomRow = (props: Props) => {
 
   return (
     <div className={styles.bottomRow}>
-      {labelText && <span>{labelText}</span>}
-      {pillContent && <InfoPill>{pillContent}</InfoPill>}
+      {labelText && <span className={styles.label}>{labelText}</span>}
+      {pillContent && (
+        <InfoPill className={styles.pill}>{pillContent}</InfoPill>
+      )}
     </div>
   );
 };

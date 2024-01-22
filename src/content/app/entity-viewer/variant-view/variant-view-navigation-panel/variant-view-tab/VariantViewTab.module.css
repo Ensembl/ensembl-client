@@ -18,3 +18,21 @@
   display: flex;
   gap: 10px;
 }
+
+.disabled .label {
+  font-weight: var(--font-weight-light);
+  color: var(--color-grey);
+}
+
+.pill {
+  --info-pill-color: transparent;
+  --info-pill-border-color: var(--color-dark-grey);
+  --info-pill-padding: 0 10px;
+  --info-pill-font-size: 11px;
+  /* color: var(--info-pill-text-color, var(--color-white)); */
+  /* font-size: var(--info-pill-font-size, 12px); */
+}
+
+.disabled .pill {
+  --info-pill-text-color: var(--color-medium-dark-grey);
+}

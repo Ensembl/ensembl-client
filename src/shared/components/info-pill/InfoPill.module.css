@@ -1,9 +1,17 @@
 .infoPill {
-  background: var(--info-pill-color, var(--color-black));
+  --_pill-bg-color:  var(--info-pill-color, var(--color-black));
+  --_pill-border-color: var(--info-pill-border-color, var(--_pill-bg-color));
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--_pill-bg-color);
+  border-color: var(--_pill-border-color);
   color: var(--info-pill-text-color, var(--color-white));
   font-size: var(--info-pill-font-size, 12px);
   font-weight: var(--info-pill-font-weight, var(--font-weight-bold));
-  padding: var(--info-pill-padding, 2px 8px);
+  padding: var(--info-pill-padding, 0 8px);
   border-radius: var(--info-pill-border-radius, 14px);
+  border-width: 1px;
+  border-style: solid;
+  line-height: 1;
   white-space: nowrap;
 }

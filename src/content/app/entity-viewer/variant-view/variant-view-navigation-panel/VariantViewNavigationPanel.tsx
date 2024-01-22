@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+
 import VariantViewTab from './variant-view-tab/VariantViewTab';
 
 import styles from './VariantViewNavigationPanel.module.css';
@@ -27,7 +29,21 @@ import styles from './VariantViewNavigationPanel.module.css';
  * - Use alt allele data for allele frequency
  */
 
-const VariantViewNavigationPanel = () => {
+type Props = {
+  genomeId: string;
+  variantId: string;
+  activeAlleleId: string;
+};
+
+const VariantViewNavigationPanel = (props: Props) => {
+  const { currentData } = useVariantViewNavigationData(props);
+
+  if (!currentData) {
+    return null;
+  }
+
+  const { alleleSequence } = currentData;
+
   return (
     <div className={styles.grid}>
       <VariantViewTab
@@ -42,6 +58,7 @@ const VariantViewNavigationPanel = () => {
         labelText="Features"
         pillContent="0"
         pressed={false}
+        disabled={true}
       />
       <VariantViewTab
         viewId="regulatory-consequences"
@@ -54,7 +71,7 @@ const VariantViewNavigationPanel = () => {
       <VariantViewTab
         viewId="allele-frequencies"
         tabText="Allele frequency"
-        labelText="Features"
+        labelText={alleleSequence}
         pillContent="0"
         pressed={false}
       />
@@ -64,6 +81,7 @@ const VariantViewNavigationPanel = () => {
         labelText="Features"
         pillContent="0"
         pressed={false}
+        disabled={true}
       />
       <VariantViewTab
         viewId="variant-phenotypes"
@@ -71,6 +89,7 @@ const VariantViewNavigationPanel = () => {
         labelText="Associations"
         pillContent="0"
         pressed={false}
+        disabled={true}
       />
       <VariantViewTab
         viewId="gene-phenotypes"
@@ -78,6 +97,7 @@ const VariantViewNavigationPanel = () => {
         labelText="Associations"
         pillContent="0"
         pressed={false}
+        disabled={true}
       />
       <VariantViewTab
         viewId="publications"
@@ -85,6 +105,7 @@ const VariantViewNavigationPanel = () => {
         labelText="Publications"
         pillContent="0"
         pressed={false}
+        disabled={true}
       />
       <VariantViewTab
         viewId="compara"
@@ -94,6 +115,45 @@ const VariantViewNavigationPanel = () => {
       />
     </div>
   );
+};
+
+const useVariantViewNavigationData = (params: Props) => {
+  const { genomeId, variantId, activeAlleleId } = params;
+
+  const { currentData, isLoading, isError } =
+    useDefaultEntityViewerVariantQuery({
+      genomeId,
+      variantId
+    });
+
+  if (!currentData) {
+    return {
+      currentData: null,
+      isLoading,
+      isError
+    };
+  }
+
+  const variant = currentData.variant;
+  const activeAllele = variant.alleles.find(
+    (allele) => allele.urlId === activeAlleleId
+  );
+
+  let alleleSequence = activeAllele?.allele_sequence ?? '';
+  if (alleleSequence.length > 18) {
+    const truncatedSequence = alleleSequence.slice(0, 17);
+    const ellipsis = '…';
+
+    alleleSequence = `${truncatedSequence}${ellipsis}`;
+  }
+
+  return {
+    currentData: {
+      alleleSequence
+    },
+    isLoading,
+    isError
+  };
 };
 
 export default VariantViewNavigationPanel;

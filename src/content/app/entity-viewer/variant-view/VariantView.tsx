@@ -71,7 +71,11 @@ const VariantView = () => {
     <div className={styles.container}>
       {activeGenomeId && variantId && variantData && (
         <>
-          <VariantViewNavigationPanel />
+          <VariantViewNavigationPanel
+            genomeId={activeGenomeId}
+            variantId={variantId}
+            activeAlleleId={alleleIdInUrl || ''}
+          />
           <VariantImage
             genomeId={activeGenomeId}
             variantId={variantId}
