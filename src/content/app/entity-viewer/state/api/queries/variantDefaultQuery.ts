@@ -32,6 +32,7 @@ export const variantDefaultQuery = gql`
         location {
           start
           end
+          length
         }
         region {
           name
@@ -96,6 +97,8 @@ type VariantDetailsAllele = Pick<
     population_frequencies: VariantDetailsAllelePopulationFrequency[];
     prediction_results: VariantDetailsAllelePredictionResult[];
     phenotype_assertions: VariantDetailsAllelePhenotypeAssertion[];
+  } & {
+    urlId: string; // a provisional field that is added during api response transformation; might be replaced by something better from Variation team later
   };
 
 type VariantDetailsAllelePopulationFrequency = Pick<
@@ -121,7 +124,7 @@ type VariantDetailsAllelePredictionResult = Pick<
   Pick2<VariantAllele['prediction_results'][number], 'analysis_method', 'tool'>;
 
 export type VariantDetails = Pick<Variant, 'name'> &
-  Pick3<Variant, 'slice', 'location', 'start' | 'end'> &
+  Pick3<Variant, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<Variant, 'slice', 'region', 'name'> &
   Pick2<Variant, 'allele_type', 'value'> &
   Pick2<Variant, 'primary_source', 'url'> &

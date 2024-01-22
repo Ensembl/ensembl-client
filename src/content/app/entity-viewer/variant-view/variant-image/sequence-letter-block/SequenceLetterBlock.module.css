@@ -1,0 +1,10 @@
+.block {
+  display: inline-flex;
+  height: 16px;
+  width: 16px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sequence-block-color, black);
+  color: var(--sequence-block-letter-color, white);
+  font-family: var(--font-family-monospace);
+}

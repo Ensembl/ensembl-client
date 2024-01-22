@@ -1,9 +1,8 @@
 .exampleLinks {
-  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 40px;
   padding-left: 120px;
   padding-bottom: var(--global-padding-bottom);
-}
-
-.exampleLinks a {
-  margin-bottom: 30px;
 }

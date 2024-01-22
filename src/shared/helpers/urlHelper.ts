@@ -87,6 +87,39 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   return query ? `${path}?${query}` : path;
 };
 
+export const entityViewerVariant = (params?: {
+  genomeId?: string | null;
+  variantId?: string | null;
+  alleleId?: string | null;
+}) => {
+  if (!params?.genomeId && params?.variantId) {
+    // this should never happen
+    throw 'Invalid parameters combination for Entity Viewer variant url';
+  }
+  const genomeId = params?.genomeId || '';
+  const variantId = params?.variantId || '';
+  let path = '/entity-viewer';
+
+  const variantIdForUrl = variantId.startsWith('variant:')
+    ? variantId
+    : `variant:${variantId}`;
+
+  if (genomeId) {
+    path += `/${genomeId}`;
+  }
+  if (variantId) {
+    path += `/${variantIdForUrl}`;
+  }
+  const urlSearchParams = new URLSearchParams('');
+  if (params?.alleleId) {
+    urlSearchParams.append('allele', params.alleleId);
+  }
+
+  const query = urlSearchParams.toString();
+
+  return query ? `${path}?${query}` : path;
+};
+
 export const blastForm = () => '/blast';
 
 export const blastUnviewedSubmissions = () => '/blast/unviewed-submissions';

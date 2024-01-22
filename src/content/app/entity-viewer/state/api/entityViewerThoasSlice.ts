@@ -175,7 +175,17 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         url: config.variationApiUrl,
         body: variantDefaultQuery,
         variables: params
-      })
+      }),
+      transformResponse: (response: EntityViewerVariantDefaultQueryResult) => {
+        response.variant.alleles = response.variant.alleles.map(
+          (allele, index) => ({
+            ...allele,
+            urlId: `${index}`
+          })
+        );
+
+        return response;
+      }
     })
   })
 });
@@ -195,5 +205,6 @@ export const {
 
 export const {
   genePageMeta: fetchGenePageMeta,
-  variantPageMeta: fetchVariantPageMeta
+  variantPageMeta: fetchVariantPageMeta,
+  defaultEntityViewerVariant: fetchDefaultEntityViewerVariant
 } = entityViewerThoasSlice.endpoints;

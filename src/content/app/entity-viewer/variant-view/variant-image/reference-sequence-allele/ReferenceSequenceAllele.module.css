@@ -1,0 +1,15 @@
+.letter {
+  font-size: 11px;
+}
+
+.letter + .letter {
+  margin-left: 1px;
+}
+
+.referenceSequenceGap {
+  display: inline-flex;
+  justify-content: space-around;
+  color: var(--color-white);
+  width: calc(5 * 16px + 5 * 1px); /* where 16px is width of a sequence letter block, and 1px is the gap width */
+  font-size: 11px;
+}

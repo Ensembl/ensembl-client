@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
-import classNames from 'classnames';
+import { gql } from 'graphql-request';
+import type { Pick2 } from 'ts-multipick';
 
-import styles from './InfoPill.module.css';
+import type { Region } from 'src/shared/types/core-api/slice';
 
-type Props = HTMLAttributes<HTMLSpanElement>;
+export const regionChecksumQuery = gql`
+  query RegionChecksum($genomeId: String!, $regionName: String!) {
+    region(by_name: { genome_id: $genomeId, name: $regionName }) {
+      name
+      length
+      topology
+      sequence {
+        checksum
+      }
+    }
+  }
+`;
 
-const InfoPill = (props: Props) => {
-  const { className: classNameFromProps, children, ...otherProps } = props;
+type RegionInResponse = Pick<Region, 'name' | 'length' | 'topology'> &
+  Pick2<Region, 'sequence', 'checksum'>;
 
-  const componentClasses = classNames(styles.infoPill, classNameFromProps);
-
-  return (
-    <span className={componentClasses} {...otherProps}>
-      {children}
-    </span>
-  );
+export type RegionChecksumQueryResult = {
+  region: RegionInResponse;
 };
-
-export default InfoPill;

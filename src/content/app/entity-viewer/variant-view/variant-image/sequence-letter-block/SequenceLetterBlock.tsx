@@ -17,20 +17,23 @@
 import React, { type HTMLAttributes } from 'react';
 import classNames from 'classnames';
 
-import styles from './InfoPill.module.css';
+import styles from './SequenceLetterBlock.module.css';
 
-type Props = HTMLAttributes<HTMLSpanElement>;
+type Props = HTMLAttributes<HTMLSpanElement> & {
+  letter: string;
+  className?: string;
+};
 
-const InfoPill = (props: Props) => {
-  const { className: classNameFromProps, children, ...otherProps } = props;
+const SequenceLetterBlock = (props: Props) => {
+  const { letter, className, ...otherProps } = props;
 
-  const componentClasses = classNames(styles.infoPill, classNameFromProps);
+  const componentClasses = classNames(styles.block, className);
 
   return (
     <span className={componentClasses} {...otherProps}>
-      {children}
+      {letter}
     </span>
   );
 };
 
-export default InfoPill;
+export default SequenceLetterBlock;

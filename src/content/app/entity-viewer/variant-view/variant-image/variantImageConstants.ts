@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
-import classNames from 'classnames';
+export const DISPLAYED_REFERENCE_SEQUENCE_LENGTH = 41;
 
-import styles from './InfoPill.module.css';
+// the maximum number of letter blocks allocated to reference allele
+export const MAX_REFERENCE_ALLELE_DISPLAY_LENGTH = 21;
 
-type Props = HTMLAttributes<HTMLSpanElement>;
-
-const InfoPill = (props: Props) => {
-  const { className: classNameFromProps, children, ...otherProps } = props;
-
-  const componentClasses = classNames(styles.infoPill, classNameFromProps);
-
-  return (
-    <span className={componentClasses} {...otherProps}>
-      {children}
-    </span>
-  );
-};
-
-export default InfoPill;
+// min 10 nucleotides should be visible on either side of the reference allele
+export const MIN_FLANKING_SEQUENCE_LENGTH =
+  (DISPLAYED_REFERENCE_SEQUENCE_LENGTH - MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) /
+  2;

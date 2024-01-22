@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// FIXME: should move this to a file in the shared directory (probably a shared constant?)
+import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
+
 export const getReferenceAndAltAlleles = <
   T extends {
     allele_type: {
@@ -39,3 +42,64 @@ export const getReferenceAndAltAlleles = <
     alternativeAlleles
   };
 };
+
+export const getMostSevereVariantConsequence = <
+  T extends {
+    analysis_method: {
+      tool: string;
+    };
+    result: string | null;
+  }
+>(variant: {
+  prediction_results: T[];
+}) => {
+  const { prediction_results: predictionResults } = variant;
+  const consequencePrediction = predictionResults.find(
+    ({ analysis_method }) => analysis_method.tool === 'Ensembl VEP'
+  );
+
+  // There should always be a valid most severe consequence in the variant data;
+  // but in case there isn't, return a bogus fallback string.
+  return consequencePrediction?.result || 'unknown';
+};
+
+/**
+ * Given variant consequence (predicted by VEP),
+ * return the id of the group that the variant belongs to
+ */
+export const getVariantGroupIdByConsequence = (variantConsequence: string) => {
+  return variantConsequenceToGroupIdMap.get(variantConsequence);
+};
+
+/**
+ * Given variant consequence (predicted by VEP),
+ * return the CSS colour variable used to display this variant
+ */
+export const getVariantGroupCSSColour = (variantType: string) => {
+  const variantGroupId = getVariantGroupIdByConsequence(variantType);
+  return typeof variantGroupId === 'number'
+    ? variantGroupIdToCSSColourMap.get(variantGroupId)
+    : undefined;
+};
+
+const buildVariantConsequenceToGroupIdMap = () => {
+  const colourMap = new Map<string, number>();
+
+  for (const group of variantGroups) {
+    for (const variantType of group.variant_types) {
+      colourMap.set(variantType.label, group.id);
+    }
+  }
+
+  return colourMap;
+};
+
+const variantConsequenceToGroupIdMap = buildVariantConsequenceToGroupIdMap();
+
+const variantGroupIdToCSSColourMap = new Map([
+  [1, 'var(--color-dark-pink)'],
+  [2, 'var(--color-dark-yellow)'],
+  [3, 'var(--color-lime)'],
+  [4, 'var(--color-teal)'],
+  [5, 'var(--color-duckegg-blue)']
+]);
