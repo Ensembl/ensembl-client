@@ -30,7 +30,7 @@ import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele
 import styles from './VariantView.module.css';
 
 const VariantView = () => {
-  const { activeGenomeId, genomeIdForUrl, entityIdForUrl, parsedEntityId } =
+  const { activeGenomeId, genomeIdForUrl, parsedEntityId } =
     useEntityViewerIds();
   const navigate = useNavigate();
   const { search: urlQuery } = useLocation();
@@ -52,7 +52,7 @@ const VariantView = () => {
 
   useDefaultAlternativeAllele({
     genomeId: genomeIdForUrl,
-    variantId: entityIdForUrl,
+    variantId,
     alleleIdInUrl,
     variant: variantData
   });
