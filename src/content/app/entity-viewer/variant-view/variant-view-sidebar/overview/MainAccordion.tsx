@@ -34,7 +34,6 @@ import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/que
 
 import styles from './VariantOverview.module.css';
 
-export type AccordionSectionID = 'function' | 'other_data_sets';
 
 type Props = {
   genomeId: string;
