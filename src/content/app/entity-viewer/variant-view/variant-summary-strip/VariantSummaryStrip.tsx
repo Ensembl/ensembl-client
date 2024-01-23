@@ -90,7 +90,7 @@ export const VariantSummaryStrip = (props: VariantSummaryStripProps) => {
       <div className={styles.section}>
         <span className={styles.label}>Variant</span>
         <span className={styles.emphasized}>{variant.name}</span>
-        <span>{variant.allele_type.value}</span>
+        <span className={styles.variantType}>{variant.allele_type.value}</span>
       </div>
       {mostSevereConsequence && (
         <div className={styles.section}>
