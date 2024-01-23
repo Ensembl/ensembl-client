@@ -113,9 +113,11 @@ export const ViewInApp = (props: ViewInAppProps) => {
     [styles.viewInAppDark]: theme === 'dark'
   });
 
-  const enabledApps = Object.keys({
+  const enabledApps = Object.entries({
     ...props.links
-  }) as AppName[];
+  })
+    .filter(([, value]) => Boolean(value))
+    .map(([key]) => key) as AppName[];
 
   return (
     <div className={componentClasses}>
