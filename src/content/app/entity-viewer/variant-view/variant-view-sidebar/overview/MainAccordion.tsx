@@ -100,7 +100,7 @@ const MainAccordion = (props: Props) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'other_data_sets'}
+          uuid={'synonyms'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
