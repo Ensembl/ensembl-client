@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
@@ -31,7 +32,11 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import styles from './VariantOverview.module.css';
 
 const VariantOverview = () => {
-  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+  const { activeGenomeId, genomeIdForUrl, parsedEntityId } =
+    useEntityViewerIds();
+  const { search: urlQuery } = useLocation();
+
+  const alleleIdInUrl = new URLSearchParams(urlQuery).get('allele');
 
   const { objectId: variantId } = parsedEntityId ?? {};
 
@@ -49,7 +54,7 @@ const VariantOverview = () => {
     return <div>Loading...</div>;
   }
 
-  if (!currentData?.variant) {
+  if (!genomeIdForUrl || !variantId || !currentData?.variant) {
     return <div>No data to display</div>;
   }
 
@@ -110,7 +115,12 @@ const VariantOverview = () => {
         </div>
       </section>
 
-      <MainAccordion variant={variant} />
+      <MainAccordion
+        genomeId={genomeIdForUrl}
+        variantId={variantId}
+        variant={variant}
+        activeAlleleId={alleleIdInUrl}
+      />
     </div>
   );
 };

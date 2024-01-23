@@ -1,0 +1,33 @@
+.outer {
+  margin-left: var(--double-standard-gutter);
+}
+
+.strip {
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.section {
+  display: inline;
+}
+
+.section:not(:first-child) {
+  margin-left: 30px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  margin-right: 18px;
+}
+
+.emphasized {
+  font-weight: var(--font-weight-bold);
+}
+
+.variantType {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  margin-left: 18px;
+}
