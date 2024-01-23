@@ -31,6 +31,7 @@ import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-side
 import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 import VariantView from './variant-view/VariantView';
 import VariantViewSidebar from './variant-view/variant-view-sidebar/VariantViewSideBar';
+import VariantSummaryStrip from 'src/content/app/entity-viewer/variant-view/variant-summary-strip/VariantSummaryStrip';
 
 const EntityViewerForVariant = () => {
   const isSidebarOpen = useAppSelector(isEntityViewerSidebarOpen);
@@ -44,7 +45,7 @@ const EntityViewerForVariant = () => {
   return (
     <StandardAppLayout
       mainContent={<VariantView />}
-      topbarContent={<div>Variant summary for top bar goes here</div>}
+      topbarContent={<VariantSummaryStrip />}
       sidebarContent={
         <SidebarContent isSidebarModalOpen={isSidebarModalOpen} />
       }
