@@ -16,7 +16,12 @@
 .bottomRow {
   padding-left: 10px; /* same as TabButton default */
   display: flex;
+  align-items: baseline;
   gap: 10px;
+}
+
+.label {
+  font-size: 12px;
 }
 
 .disabled .label {

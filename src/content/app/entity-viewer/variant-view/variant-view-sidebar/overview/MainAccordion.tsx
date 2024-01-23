@@ -34,7 +34,6 @@ import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/que
 
 import styles from './VariantOverview.module.css';
 
-
 type Props = {
   genomeId: string;
   variantId: string;
@@ -138,7 +137,7 @@ const Alleles = (props: AllelesProps) => {
       {referenceAllele && (
         <div className={styles.row}>
           <div className={styles.label}>Ref</div>
-          <div className={styles.value}>
+          <div>
             <Allele
               genomeId={genomeId}
               variantId={variantId}
