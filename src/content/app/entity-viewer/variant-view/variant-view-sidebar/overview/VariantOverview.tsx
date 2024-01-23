@@ -32,7 +32,8 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import styles from './VariantOverview.module.css';
 
 const VariantOverview = () => {
-  const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
+  const { activeGenomeId, genomeIdForUrl, parsedEntityId } =
+    useEntityViewerIds();
   const { search: urlQuery } = useLocation();
 
   const alleleIdInUrl = new URLSearchParams(urlQuery).get('allele');
@@ -53,7 +54,7 @@ const VariantOverview = () => {
     return <div>Loading...</div>;
   }
 
-  if (!activeGenomeId || !variantId || !currentData?.variant) {
+  if (!genomeIdForUrl || !variantId || !currentData?.variant) {
     return <div>No data to display</div>;
   }
 
@@ -115,7 +116,7 @@ const VariantOverview = () => {
       </section>
 
       <MainAccordion
-        genomeId={activeGenomeId}
+        genomeId={genomeIdForUrl}
         variantId={variantId}
         variant={variant}
         activeAlleleId={alleleIdInUrl}
