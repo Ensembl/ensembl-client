@@ -3,3 +3,7 @@
   --sequence-block-letter-color: var(--color-medium-light-grey);
   font-size: 11px;
 }
+
+.letter + .letter {
+  margin-left: 1px;
+}

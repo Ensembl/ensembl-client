@@ -4,7 +4,10 @@
   background:
     repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
   background-size: 1px 100%;
-  background-position: calc(var(--chevrons-block-width) + var(--nucleotides-offset) * 16px - 1px);
+  background-position: calc(
+    var(--chevrons-block-width) +
+    calc(var(--nucleotides-offset)) * calc(16px + 1px)
+    - 2px); /* chevron block width plus total width of letter block and spaces between them, minus a couple of pixels */
   background-repeat: no-repeat;
   padding-bottom: var(--global-padding-bottom);
 }
@@ -52,7 +55,7 @@
   grid-area: variant-name;
   margin-left: 8px; /* half the letter block width */
   display: inline-flex;
-  height: 36px;
+  height: 28px;
   align-items: flex-start;
 }
 
@@ -76,5 +79,5 @@
   font-weight: var(--font-weight-light);
   font-size: 11px;
   justify-self: end;
-  margin-top: 14px;
+  margin-top: 11px;
 }

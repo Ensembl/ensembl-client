@@ -100,6 +100,7 @@ const VariantImage = (props: Props) => {
         hasAnchorBase={hasAnchorBase}
         variantStart={variantStart}
         activeAlleleId={activeAlleleId}
+        isReferenceAlleleSelected={referenceAllele?.urlId === activeAlleleId}
         mostSevereConsequence={mostSevereConsequence}
         onAlleleClick={onAlleleChange}
       />
