@@ -19,7 +19,7 @@
     '. reference-sequence-label variant-name view-in'
     'chevrons sequence sequence .'
     '. . strand-label .';
-  grid-template-columns: var(--chevrons-block-width) calc(var(--nucleotides-offset) * 16px) max-content auto;
+  grid-template-columns: var(--chevrons-block-width) calc(var(--nucleotides-offset) * calc(16px + 1px)) max-content auto;
 }
 
 
