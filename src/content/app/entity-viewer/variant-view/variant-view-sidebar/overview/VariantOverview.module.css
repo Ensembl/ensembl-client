@@ -2,10 +2,6 @@
   font-size: 13px;
 }
 
-.defaultContent {
-  margin: 15px;
-}
-
 .row {
   display: flex;
   align-items: baseline;
@@ -13,16 +9,19 @@
 
 .newRowGroup {
   margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .label {
-  line-height: 1.2;
   font-weight: var(--font-weight-light);
-  text-align: right;
   font-size: 12px;
   margin-right: 10px;
 }
 
+.labelValueWrapper {
+  display: flex;
+  margin-top: 10px;
+}
 .externalLink {
   padding-top: 8px;
 }
@@ -49,6 +48,26 @@
   flex-direction: column;
 }
 
+.sectionHead {
+  color: var(--color-black);
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-grey);
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.sectionContent {
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
+.featureDetails {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+  margin-left: 12px;
+}
 
 /* NOTE: the styles below require the extra specificity in order to overwrite Accordion styles
   We should update the Accordion to use CSS variables.

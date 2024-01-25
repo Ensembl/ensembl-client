@@ -78,7 +78,7 @@ const VariantOverview = () => {
 
   return (
     <div className={styles.overviewContainer}>
-      <section className={styles.defaultContent}>
+      <section className={styles.sectionContent}>
         <div>
           <span className={styles.labelTextStrong}>{variant.name}</span>
           <span className={styles.variantType}>
