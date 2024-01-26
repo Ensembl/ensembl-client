@@ -1,15 +1,25 @@
 .container {
   --chevrons-block-width: 165px; /* the block of right-pointing chevrons to the left of reference sequence, indicating forward strand */
   height: 100%;
-  background:
-    repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
+  padding-bottom: var(--global-padding-bottom);
+  position: relative;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
   background-size: 1px 100%;
-  background-position: calc(
+  background-repeat: no-repeat;
+  /* background-position: 0; */
+  left: calc(
     var(--chevrons-block-width) +
     calc(var(--nucleotides-offset)) * calc(16px + 1px)
-    - 2px); /* chevron block width plus total width of letter block and spaces between them, minus a couple of pixels */
-  background-repeat: no-repeat;
-  padding-bottom: var(--global-padding-bottom);
+    - 2px);
+  z-index: 1;
 }
 
 .referenceSequenceBlock {
@@ -20,6 +30,10 @@
     'chevrons sequence sequence .'
     '. . strand-label .';
   grid-template-columns: var(--chevrons-block-width) calc(var(--nucleotides-offset) * calc(16px + 1px)) max-content auto;
+  position: sticky;
+  top: 220px;
+  background-color: var(--color-black);
+  z-index: 1;
 }
 
 
@@ -80,4 +94,9 @@
   font-size: 11px;
   justify-self: end;
   margin-top: 11px;
+}
+
+.viewIn {
+  grid-area: view-in;
+  margin-left: 32px;
 }

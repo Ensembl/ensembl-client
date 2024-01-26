@@ -5,4 +5,9 @@
   row-gap: 32px;
   align-items: start;
   padding: 34px 0;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-black);
+  border-bottom: 1px solid var(--color-orange); /* NOTE: this will only need to be enabled for the default view that shows variant image */
+  z-index: 2;
 }

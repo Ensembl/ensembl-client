@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
@@ -22,12 +23,17 @@ import styles from './FlankingSequence.module.css';
 
 type Props = {
   sequence: string;
-  hasEllipsisAtStart?: boolean;
-  hasEllipsisAtEnd?: boolean;
+  position: 'left' | 'right';
+  hasEllipsis?: boolean;
+  // hasEllipsisAtStart?: boolean;
+  // hasEllipsisAtEnd?: boolean;
 };
 
 const FlankingSequence = (props: Props) => {
-  const { sequence, hasEllipsisAtStart, hasEllipsisAtEnd } = props;
+  const { sequence, position, hasEllipsis } = props;
+
+  const hasEllipsisAtStart = hasEllipsis && position === 'left';
+  const hasEllipsisAtEnd = hasEllipsis && position === 'right';
 
   const letters = sequence.split('');
 
@@ -38,13 +44,20 @@ const FlankingSequence = (props: Props) => {
     letters[letters.length - 1] = '…';
   }
 
+  const getLetterClasses = (letterIndex: number) => {
+    return classNames(styles.letter, {
+      [styles.firstRightSequenceLetter]:
+        position === 'right' && letterIndex === 0
+    });
+  };
+
   return (
     <>
       {letters.map((letter, index) => (
         <SequenceLetterBlock
           key={index}
           letter={letter}
-          className={styles.letter}
+          className={getLetterClasses(index)}
         />
       ))}
     </>

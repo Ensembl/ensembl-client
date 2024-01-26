@@ -1,10 +1,11 @@
 .letter {
   font-size: 11px;
-}
-
-.letter + .letter {
   margin-left: 1px;
 }
+
+/* .letter + .letter {
+  margin-left: 1px;
+} */
 
 .referenceSequenceGap {
   display: inline-flex;

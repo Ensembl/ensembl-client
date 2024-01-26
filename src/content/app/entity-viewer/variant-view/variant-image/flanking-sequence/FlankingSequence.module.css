@@ -7,3 +7,7 @@
 .letter + .letter {
   margin-left: 1px;
 }
+
+.firstRightSequenceLetter {
+  margin-left: 1px;
+}
