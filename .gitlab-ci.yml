@@ -205,7 +205,7 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev" ||  || $CI_COMMIT_BRANCH == "review-on-newk8s"
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -245,7 +245,7 @@ Node:Live:
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "review-on-newk8s"
   needs:
     - Test_N_Build
 
