@@ -394,6 +394,31 @@ Pub:Internal::WP40:HL:
     - Test_N_Build:internal
     - Node:Internal
 
+# Job to deploy to live environment in the new kubernetes cluster (wp40)
+Live:wp51:HL:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+  environment:
+    name: wp51-hl-development
+  rules:
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "review-on-newk8s"'
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+Pub:Live-HL:wp51:
+  extends: .publish_assets-newcluster
+  environment:
+    name: wp51-hl-development
+    kubernetes:
+      namespace: ensembl-dev
+  rules:
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "review-on-newk8s"'
+  needs:
+    - Test_N_Build
+    - Node:Live
+
 # Job to deploy review deployments to development environment in Hinxton
 Review:HX:
   extends: .deploy-review
