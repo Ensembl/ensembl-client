@@ -441,6 +441,25 @@ Review:HX:
     - Node:review
 
 # Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
+Review:WP51:HL:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  environment:
+    name: wp51-hl-development
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ${CI_COMMIT_REF_SLUG}
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+  needs:
+    - Test_N_Build:review
+    - Nginx:review
+    - Node:review
+
+# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
 Review:WP40:HL:
   extends: .deploy-newcluster
   variables:
