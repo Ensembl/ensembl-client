@@ -449,7 +449,6 @@ Review:WP51:HL:
   environment:
     name: wp51-hl-development
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
   rules:
