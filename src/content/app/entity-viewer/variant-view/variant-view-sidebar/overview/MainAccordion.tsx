@@ -116,7 +116,7 @@ const MainAccordion = (props: Props) => {
           uuid={'in_this_region'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton className={disabledAccordionButtonClass}>
+            <AccordionItemButton className={styles.entityViewerAccordionButton}>
               In this region
             </AccordionItemButton>
           </AccordionItemHeading>
