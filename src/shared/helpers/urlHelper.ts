@@ -22,7 +22,6 @@ export const speciesSelector = () => '/species-selector';
 type BrowserUrlParams = {
   genomeId?: string | null;
   focus?: string | null;
-  variantId?: string | null;
   location?: string | null;
 };
 
@@ -86,32 +85,6 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   const query = decodeURIComponent(urlSearchParams.toString());
 
   return query ? `${path}?${query}` : path;
-};
-
-export const genomeBrowserVariant = (params?: BrowserUrlParams) => {
-  if (!params?.genomeId && params?.variantId) {
-    // this should never happen
-    throw 'Invalid parameters combination for Entity Viewer variant url';
-  }
-  let browserRootPath = '/genome-browser';
-  const genomeId = params?.genomeId || '';
-  const variantId = params?.variantId || '';
-
-  const variantIdForUrl = variantId.startsWith('variant:')
-    ? variantId
-    : `variant:${variantId}`;
-
-  if (genomeId) {
-    browserRootPath += `/${genomeId}`;
-  }
-  if (variantId) {
-    browserRootPath += `/${variantIdForUrl}`;
-  }
-
-  const urlSearchParams = new URLSearchParams('');
-  const query = urlSearchParams.toString();
-
-  return query ? `${browserRootPath}?${query}` : browserRootPath;
 };
 
 export const entityViewerVariant = (params?: {

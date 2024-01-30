@@ -9,7 +9,6 @@
 
 .newRowGroup {
   margin-top: 16px;
-  margin-bottom: 16px;
 }
 
 .label {
@@ -49,12 +48,10 @@
 }
 
 .sectionHead {
-  color: var(--color-black);
   font-size: 12px;
   font-weight: var(--font-weight-light);
   border-bottom: 1px solid var(--color-grey);
   margin-bottom: 15px;
-  position: relative;
   margin-top: 20px;
 }
 

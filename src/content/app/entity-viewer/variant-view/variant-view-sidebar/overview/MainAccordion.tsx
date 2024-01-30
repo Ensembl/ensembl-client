@@ -32,6 +32,7 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
 
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
@@ -50,9 +51,12 @@ type Props = {
 const MainAccordion = (props: Props) => {
   const { genomeId, variantId, variant, activeAlleleId } = props;
 
-  const gbVariantUrl = urlFor.genomeBrowserVariant({
+  const gbVariantUrl = urlFor.browser({
     genomeId: genomeId,
-    variantId: variantId
+    focus: buildFocusIdForUrl({
+      type: 'variant',
+      objectId: variantId
+    })
   });
 
   const disabledAccordionButtonClass = classNames(
