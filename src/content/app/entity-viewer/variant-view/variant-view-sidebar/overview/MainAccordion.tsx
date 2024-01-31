@@ -27,10 +27,17 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
+import VariantVCF from 'src/shared/components/variant-vcf/VariantVCF';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
+import VariantLocation from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-location/VariantLocation';
+
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 import styles from './VariantOverview.module.css';
 
@@ -43,6 +50,15 @@ type Props = {
 
 const MainAccordion = (props: Props) => {
   const { genomeId, variantId, variant, activeAlleleId } = props;
+
+  const gbVariantUrl = urlFor.browser({
+    genomeId: genomeId,
+    focus: buildFocusIdForUrl({
+      type: 'variant',
+      objectId: variantId
+    })
+  });
+
   const disabledAccordionButtonClass = classNames(
     styles.entityViewerAccordionButton,
     {
@@ -55,7 +71,7 @@ const MainAccordion = (props: Props) => {
       <Accordion
         className={styles.entityViewerAccordion}
         allowMultipleExpanded={true}
-        preExpanded={['alleles']}
+        preExpanded={['alleles', 'in_this_region']}
       >
         <AccordionItem
           className={styles.entityViewerAccordionItem}
@@ -78,22 +94,44 @@ const MainAccordion = (props: Props) => {
           </AccordionItemPanel>
         </AccordionItem>
 
+        <section>
+          <div className={styles.sectionHead}>Location</div>
+          <div className={styles.sectionContent}>
+            <div>
+              <VariantLocation variant={variant} />
+              <span className={styles.featureDetails}>
+                {getStrandDisplayName(Strand.FORWARD)}
+              </span>
+            </div>
+
+            <div className={styles.labelValueWrapper}>
+              <div className={styles.label}>VCF</div>
+              <VariantVCF variant={variant} withCopy={true} />
+            </div>
+          </div>
+        </section>
+
         <AccordionItem
           className={styles.entityViewerAccordionItem}
           uuid={'in_this_region'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton
-              className={disabledAccordionButtonClass}
-              disabled={true}
-            >
+            <AccordionItemButton className={styles.entityViewerAccordionButton}>
               In this region
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            <div>No data available</div>
+            <section>
+              <div>
+                See other variants, structural variants, genes and regulatory
+                features in their genomic context
+              </div>
+              <div className={styles.newRowGroup}>
+                <ViewInApp links={{ genomeBrowser: { url: gbVariantUrl } }} />
+              </div>
+            </section>
           </AccordionItemPanel>
         </AccordionItem>
 

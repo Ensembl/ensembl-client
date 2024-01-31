@@ -48,7 +48,6 @@ type Props = {
 
 const VariantVCF = (props: Props) => {
   const vcfSequenceParts = getVCFStringParts(props.variant);
-
   const componentClasses = classNames(styles.container, props.className);
 
   return (
