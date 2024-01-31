@@ -151,16 +151,17 @@ variables:
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   script:
   - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-  - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - git -C ensembl-k8s-manifests/ checkout k8s123-migration
+  - cd ensembl-k8s-manifests/ensembl-client/nginx
+  - mv deployment_review.yaml deployment.yaml
+  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+  - kubectl apply -k ./
+  - cd ../node
+  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+  - kubectl apply -k ./
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
@@ -422,7 +423,7 @@ Pub:Live-HL:wp51:
 
 # Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
 Review:WP51:HL:
-  extends: .deploy-newcluster
+  extends: .deploy-review
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
