@@ -109,8 +109,8 @@
     - kustomize build ./ #| kubectl apply -f -
     
     # Deploy nginx & node
-    - echo "GENOME-BROWSER NGINX & NODE"
-    - cp kustomization-ensembl-client.yaml kustomization.yaml
+    - echo "NGINX & NODE"
+    - mv kustomization-ensembl-client.yaml kustomization.yaml
     - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
     - kustomize build ./ # | kubectl apply -f -
 
