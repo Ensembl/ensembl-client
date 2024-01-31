@@ -16,7 +16,11 @@
 
 import React from 'react';
 
-import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+import {
+  getReferenceAndAltAlleles,
+  getMostSevereVariantConsequence,
+  getVariantGroupLabel
+} from 'src/shared/helpers/variantHelpers';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
@@ -44,14 +48,17 @@ const VariantViewNavigationPanel = (props: Props) => {
     return null;
   }
 
-  const { alleleSequence, isReferenceAlleleActive } = currentData;
+  const { variant, alleleSequence, isReferenceAlleleActive } = currentData;
+
+  const mostSevereVariantConsequence = getMostSevereVariantConsequence(variant);
+  const variantGroupLabel = getVariantGroupLabel(mostSevereVariantConsequence);
 
   return (
     <div className={styles.grid}>
       <VariantViewTab
         viewId="default"
-        tabText="Variant name"
-        labelText="Protein altering variant"
+        tabText={variant.name}
+        labelText={variantGroupLabel}
         pressed={true}
       />
       <VariantViewTab
@@ -153,6 +160,7 @@ const useVariantViewNavigationData = (params: Props) => {
 
   return {
     currentData: {
+      variant: currentData.variant,
       alleleSequence,
       isReferenceAlleleActive
     },

@@ -82,6 +82,15 @@ export const getVariantGroupCSSColour = (variantType: string) => {
     : undefined;
 };
 
+/**
+ * Given variant consequence (predicted by VEP),
+ * return the name of the group to which it belongs
+ */
+export const getVariantGroupLabel = (variantConsequence: string) => {
+  const variantGroupId = getVariantGroupIdByConsequence(variantConsequence);
+  return variantGroups.find((group) => group.id === variantGroupId)?.label;
+};
+
 const buildVariantConsequenceToGroupIdMap = () => {
   const colourMap = new Map<string, number>();
 
