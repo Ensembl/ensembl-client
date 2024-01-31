@@ -108,17 +108,11 @@
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
     - kustomize build ./ #| kubectl apply -f -
     
-    #- cd ensembl-k8s-manifests/ensembl-client
-    # Deploy nginx 
-    #- sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" nginx/ingress.yaml
-    #- kubectl apply -f nginx/service.yaml
-    #- kubectl apply -f nginx/ingress.yaml
-
-    # Deploy node
-    #- sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" node/ingress.yaml
-    #- kubectl apply -f node/configmap.yaml
-    #- kubectl apply -f node/service.yaml
-    #- kubectl apply -f node/ingress.yaml
+    # Deploy nginx & node
+    - echo "GENOME-BROWSER NGINX & NODE"
+    - cp kustomization-ensembl-client.yaml kustomization.yaml
+    - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ # | kubectl apply -f -
 
     # Setup Ingress for Genome Browser
     - echo "GENOME-BROWSER HI"
