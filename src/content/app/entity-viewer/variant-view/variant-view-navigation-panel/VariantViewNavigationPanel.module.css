@@ -7,7 +7,14 @@
   padding: 34px 0;
   position: sticky;
   top: 0;
+  color: var(--color-white);
   background-color: var(--color-black);
-  border-bottom: 1px solid var(--color-orange); /* NOTE: this will only need to be enabled for the default view that shows variant image */
   z-index: 2;
+}
+
+/* The orange bottom border shown in the default view,
+   which displays variant image.
+*/
+.withBottomBorder {
+  border-bottom: 1px solid var(--color-orange);
 }

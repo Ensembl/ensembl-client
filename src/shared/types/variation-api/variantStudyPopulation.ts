@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import type { ValueSetMetadata } from '../core-api/metadata';
-
-export type VariantAllelePopulationFrequency = {
-  population_name: string;
-  allele_count: number | null; // Number of individuals/samples in the population where variant allele is found
-  allele_number: number | null; // Total number of alleles in called genotypes
-  allele_frequency: number;
-  dataset: FrequencyDataset;
-  qc_filter: ValueSetMetadata;
-  is_minor_allele: boolean;
-  is_hpmaf: boolean;
-};
-
-type FrequencyDataset = {
-  version: string;
-  release_date: string; // ISO date string yyyy-mm-dd
-  source: unknown; // FIXME
+export type VariantStudyPopulation = {
+  name: string;
+  description: string;
+  is_global: boolean;
+  display_group_name: string;
+  super_population: VariantStudyPopulation | null;
+  sub_populations: VariantStudyPopulation[];
 };

@@ -25,6 +25,7 @@ import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewe
 
 import VariantViewNavigationPanel from './variant-view-navigation-panel/VariantViewNavigationPanel';
 import VariantImage from './variant-image/VariantImage';
+import PopulationAlleleFrequencies from './population-allele-frequencies/PopulationAlleleFrequencies';
 
 import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
 
@@ -37,7 +38,9 @@ const VariantView = () => {
   const { search: urlQuery } = useLocation();
 
   const { objectId: variantId } = parsedEntityId ?? {};
-  const alleleIdInUrl = new URLSearchParams(urlQuery).get('allele');
+  const urlSearchParams = new URLSearchParams(urlQuery);
+  const alleleIdInUrl = urlSearchParams.get('allele');
+  const view = urlSearchParams.get('view');
 
   const { currentData } = useDefaultEntityViewerVariantQuery(
     {
@@ -73,10 +76,13 @@ const VariantView = () => {
         <>
           <VariantViewNavigationPanel
             genomeId={activeGenomeId}
+            genomeIdForUrl={genomeIdForUrl as string}
             variantId={variantId}
             activeAlleleId={alleleIdInUrl || ''}
+            view={view}
           />
-          <VariantImage
+          <MainContent
+            view={view}
             genomeId={activeGenomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             variantId={variantId}
@@ -87,6 +93,23 @@ const VariantView = () => {
       )}
     </div>
   );
+};
+
+const MainContent = (props: {
+  view: string | null;
+  genomeId: string;
+  genomeIdForUrl: string;
+  variantId: string;
+  activeAlleleId: string;
+  onAlleleChange: (id: string) => void;
+}) => {
+  const { view, ...otherProps } = props;
+
+  if (!view) {
+    return <VariantImage {...otherProps} />;
+  } else if (view === 'allele-freq') {
+    return <PopulationAlleleFrequencies {...otherProps} />;
+  }
 };
 
 // A hook for choosing an allele

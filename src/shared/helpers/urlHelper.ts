@@ -91,6 +91,7 @@ export const entityViewerVariant = (params?: {
   genomeId?: string | null;
   variantId?: string | null;
   alleleId?: string | null;
+  view?: string | null;
 }) => {
   if (!params?.genomeId && params?.variantId) {
     // this should never happen
@@ -113,6 +114,9 @@ export const entityViewerVariant = (params?: {
   const urlSearchParams = new URLSearchParams('');
   if (params?.alleleId) {
     urlSearchParams.append('allele', params.alleleId);
+  }
+  if (params?.view) {
+    urlSearchParams.append('view', params.view);
   }
 
   const query = urlSearchParams.toString();

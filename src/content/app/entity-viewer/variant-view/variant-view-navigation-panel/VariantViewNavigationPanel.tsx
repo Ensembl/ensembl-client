@@ -15,6 +15,10 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
   getReferenceAndAltAlleles,
@@ -28,21 +32,18 @@ import VariantViewTab from './variant-view-tab/VariantViewTab';
 
 import styles from './VariantViewNavigationPanel.module.css';
 
-/**
- * TODO:
- * - Update styles of tab elements
- * - Update styles of info pill
- * - Use alt allele data for allele frequency
- */
-
 type Props = {
   genomeId: string;
+  genomeIdForUrl: string;
   variantId: string;
   activeAlleleId: string;
+  view: string | null;
 };
 
 const VariantViewNavigationPanel = (props: Props) => {
+  const { genomeIdForUrl, variantId, activeAlleleId, view } = props;
   const { currentData } = useVariantViewNavigationData(props);
+  const navigate = useNavigate();
 
   if (!currentData) {
     return null;
@@ -53,13 +54,37 @@ const VariantViewNavigationPanel = (props: Props) => {
   const mostSevereVariantConsequence = getMostSevereVariantConsequence(variant);
   const variantGroupLabel = getVariantGroupLabel(mostSevereVariantConsequence);
 
+  const commonUrlParams = {
+    genomeId: genomeIdForUrl,
+    variantId,
+    alleleId: activeAlleleId
+  };
+
+  const onVariantDefaultTabClick = () => {
+    const url = urlFor.entityViewerVariant(commonUrlParams);
+    navigate(url);
+  };
+
+  const onAlleleFrequenciesClick = () => {
+    const url = urlFor.entityViewerVariant({
+      ...commonUrlParams,
+      view: 'allele-freq'
+    });
+    navigate(url);
+  };
+
+  const componentClasses = classNames(styles.grid, {
+    [styles.withBottomBorder]: !props.view
+  });
+
   return (
-    <div className={styles.grid}>
+    <div className={componentClasses}>
       <VariantViewTab
         viewId="default"
         tabText={variant.name}
         labelText={variantGroupLabel}
-        pressed={true}
+        onClick={onVariantDefaultTabClick}
+        pressed={view === null}
       />
       <VariantViewTab
         viewId="transcript-consequences"
@@ -82,7 +107,8 @@ const VariantViewNavigationPanel = (props: Props) => {
         tabText="Allele frequency"
         labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
         pillContent="0"
-        pressed={false}
+        onClick={onAlleleFrequenciesClick}
+        pressed={view === 'allele-freq'}
       />
       <VariantViewTab
         viewId="genes"

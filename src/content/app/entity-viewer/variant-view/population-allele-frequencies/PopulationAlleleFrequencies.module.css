@@ -1,0 +1,70 @@
+.container {
+  margin-left: var(--global-padding-left);
+  margin-top: 40px;
+}
+
+.variantName {
+  font-weight: var(--font-weight-bold);
+}
+
+.variantType {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+  margin: 0 10px;
+}
+
+.alleleFreqTitle {
+  margin-left: 20px;
+}
+
+.colonSeparator {
+  font-weight: var(--font-weight-bold);
+}
+
+.populationGroups {
+  display: inline-flex;
+  gap: 20px;
+  margin-left: 30px;
+}
+
+.populationGroup:not(:disabled) {
+  color: var(--color-blue);
+}
+
+.populationGroup:disabled {
+  color: var(--color-black); /* overrides user agent styles */
+  font-weight: var(--font-weight-bold);
+}
+
+
+.table {
+  font-size: 12px;
+}
+
+.table tbody td:nth-child(1) {
+  width: 190px;
+}
+
+.table tbody td:nth-child(2) {
+  width: 140px;
+}
+
+.table tbody td:nth-child(3) {
+  width: 124px;
+}
+
+.table tbody td:nth-child(4) {
+  width: 265px;
+}
+
+.tablePlain {
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-weight: var(--font-weight-bold);
+}
+
+.tablePlain th,
+.tablePlain td {
+  padding-left: 24px;
+  padding-right: 32px;
+}

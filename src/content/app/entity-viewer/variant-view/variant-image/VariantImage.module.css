@@ -3,6 +3,7 @@
   height: 100%;
   padding-bottom: var(--global-padding-bottom);
   position: relative;
+  color: var(--color-white);
 }
 
 .container::after {
