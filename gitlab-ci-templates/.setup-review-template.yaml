@@ -92,3 +92,46 @@
     - kubectl apply -f ensembl_search_hub_ingress.yaml
     # metadata api ingress
     - kubectl apply -f metadata_api_ingress.yaml
+
+.setup-review-newk8s:
+  stage: setup
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
+  before_script:
+    - git clone --depth 1 --branch review-on-newk8s https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - kubectl create namespace $CI_COMMIT_REF_SLUG 
+    
+  script:
+    # Setup Ingress for default backend
+    - cd ensembl-k8s-manifests
+    - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
+    - cp review-setup/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ #| kubectl apply -f -
+    
+    #- cd ensembl-k8s-manifests/ensembl-client
+    # Deploy nginx 
+    #- sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" nginx/ingress.yaml
+    #- kubectl apply -f nginx/service.yaml
+    #- kubectl apply -f nginx/ingress.yaml
+
+    # Deploy node
+    #- sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" node/ingress.yaml
+    #- kubectl apply -f node/configmap.yaml
+    #- kubectl apply -f node/service.yaml
+    #- kubectl apply -f node/ingress.yaml
+
+    # Setup Ingress for Genome Browser
+    - echo "GENOME-BROWSER HI"
+    - cp genome-browser/review/hi/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ #| kubectl apply -f -
+
+    - echo "GENOME-BROWSER LO"
+    - cp genome-browser/review/lo/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ #| kubectl apply -f -
+
+
+  after_script:
+    - cd ../../
+    - rm -rf ensembl-k8s-manifests
