@@ -518,3 +518,13 @@ SetupReview:HX:
           $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
           $CI_COMMIT_REF_NAME !~  "/^nodeploy\/.*$/"
       when: always
+
+SetupReview:HL51:
+  extends: .setup-review-newk8s
+  environment:
+    name: wp51-hl-development
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && 
+          $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
+          $CI_COMMIT_REF_NAME !~  "/^nodeploy\/.*$/"
+      when: always
