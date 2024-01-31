@@ -14,7 +14,6 @@
   background: repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
   background-size: 1px 100%;
   background-repeat: no-repeat;
-  /* background-position: 0; */
   left: calc(
     var(--chevrons-block-width) +
     calc(var(--nucleotides-offset)) * calc(16px + 1px)

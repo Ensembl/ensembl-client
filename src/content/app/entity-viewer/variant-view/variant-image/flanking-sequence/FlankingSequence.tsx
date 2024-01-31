@@ -25,8 +25,6 @@ type Props = {
   sequence: string;
   position: 'left' | 'right';
   hasEllipsis?: boolean;
-  // hasEllipsisAtStart?: boolean;
-  // hasEllipsisAtEnd?: boolean;
 };
 
 const FlankingSequence = (props: Props) => {
