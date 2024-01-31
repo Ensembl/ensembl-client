@@ -157,7 +157,7 @@ variables:
   - git -C ensembl-k8s-manifests/ checkout k8s123-migration
   - cd ensembl-k8s-manifests/ensembl-client/nginx
   - mv deployment_review.yaml deployment.yaml
-  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_IMAGE}
   - kubectl apply -k ./
   - cd ../node
   - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
