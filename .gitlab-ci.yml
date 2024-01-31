@@ -419,26 +419,6 @@ Pub:Live-HL:wp51:
     - Test_N_Build
     - Node:Live
 
-# Job to deploy review deployments to development environment in Hinxton
-Review:HX:
-  extends: .deploy-review
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
 
 # Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
 Review:WP51:HL:
@@ -458,45 +438,6 @@ Review:WP51:HL:
     - Nginx:review
     - Node:review
 
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
-Review:WP40:HL:
-  extends: .deploy-newcluster
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
-  rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
-
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
-Review:WP41:HX:
-  extends: .deploy-newcluster
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
-  rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
-
-
 stop_review:
   extends: .stop-review
   environment:
@@ -508,16 +449,6 @@ stop_review:
   - dev
   - master
   - /^nodeploy\/.*$/
-
-SetupReview:HX:
-  extends: .setup-review
-  environment:
-    name: wp-hx-dev-ing
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && 
-          $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
-          $CI_COMMIT_REF_NAME !~  "/^nodeploy\/.*$/"
-      when: always
 
 SetupReview:HL51:
   extends: .setup-review-newk8s
