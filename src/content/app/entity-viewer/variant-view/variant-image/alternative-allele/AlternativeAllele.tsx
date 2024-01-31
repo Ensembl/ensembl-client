@@ -43,6 +43,7 @@ type Props = {
   mostSevereConsequence: string;
   hasAnchorBase: boolean;
   activeAlleleId: string;
+  isReferenceAlleleSelected: boolean;
   onClick: (alleleId: string) => void;
 };
 
@@ -54,6 +55,7 @@ const AlternativeAllele = (props: Props) => {
     variantLength,
     hasAnchorBase,
     activeAlleleId,
+    isReferenceAlleleSelected,
     mostSevereConsequence
   } = props;
   const {
@@ -88,8 +90,9 @@ const AlternativeAllele = (props: Props) => {
   }
 
   const defaultLetterColour = 'var(--color-grey)'; // this is a fallback colour that should never be displayed if everything is working correctly
-  const letterColour =
-    getVariantGroupCSSColour(mostSevereConsequence) ?? defaultLetterColour;
+  const letterColour = isReferenceAlleleSelected
+    ? 'var(--color-blue)'
+    : getVariantGroupCSSColour(mostSevereConsequence) ?? defaultLetterColour;
 
   const sequenceLetterStyle = {
     ['--sequence-block-color' as string]: letterColour
@@ -102,7 +105,9 @@ const AlternativeAllele = (props: Props) => {
       }
     : sequenceLetterStyle;
 
-  if (!isSelectedAllele) {
+  if (isReferenceAlleleSelected) {
+    sequenceLetterStyle['--sequence-block-letter-color'] = 'var(--color-white)';
+  } else if (!isSelectedAllele) {
     sequenceLetterStyle.opacity = '50%';
     lastSequenceLetterStyle.opacity = '50%';
   }

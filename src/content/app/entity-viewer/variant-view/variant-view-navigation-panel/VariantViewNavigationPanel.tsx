@@ -16,6 +16,8 @@
 
 import React from 'react';
 
+import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import VariantViewTab from './variant-view-tab/VariantViewTab';
@@ -42,7 +44,7 @@ const VariantViewNavigationPanel = (props: Props) => {
     return null;
   }
 
-  const { alleleSequence } = currentData;
+  const { alleleSequence, isReferenceAlleleActive } = currentData;
 
   return (
     <div className={styles.grid}>
@@ -71,7 +73,7 @@ const VariantViewNavigationPanel = (props: Props) => {
       <VariantViewTab
         viewId="allele-frequencies"
         tabText="Allele frequency"
-        labelText={alleleSequence}
+        labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
         pillContent="0"
         pressed={false}
       />
@@ -135,6 +137,7 @@ const useVariantViewNavigationData = (params: Props) => {
   }
 
   const variant = currentData.variant;
+  const { referenceAllele } = getReferenceAndAltAlleles(variant.alleles);
   const activeAllele = variant.alleles.find(
     (allele) => allele.urlId === activeAlleleId
   );
@@ -146,10 +149,12 @@ const useVariantViewNavigationData = (params: Props) => {
 
     alleleSequence = `${truncatedSequence}${ellipsis}`;
   }
+  const isReferenceAlleleActive = referenceAllele?.urlId === activeAlleleId;
 
   return {
     currentData: {
-      alleleSequence
+      alleleSequence,
+      isReferenceAlleleActive
     },
     isLoading,
     isError

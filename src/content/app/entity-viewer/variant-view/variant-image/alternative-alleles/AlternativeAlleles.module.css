@@ -1,6 +1,6 @@
 .grid {
   display: grid;
-  grid-template-columns: [left] calc(var(--nucleotides-offset) * 16px) [right] max-content;
+  grid-template-columns: [left] calc(var(--nucleotides-offset) * 16px + var(--nucleotides-offset) * 1px) [right] max-content;
   row-gap: 6px;
   margin-top: 40px;
   margin-left: var(--chevrons-block-width);

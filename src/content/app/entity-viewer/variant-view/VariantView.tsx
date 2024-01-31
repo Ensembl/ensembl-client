@@ -78,6 +78,7 @@ const VariantView = () => {
           />
           <VariantImage
             genomeId={activeGenomeId}
+            genomeIdForUrl={genomeIdForUrl as string}
             variantId={variantId}
             activeAlleleId={alleleIdInUrl || ''}
             onAlleleChange={onAlleleChange}

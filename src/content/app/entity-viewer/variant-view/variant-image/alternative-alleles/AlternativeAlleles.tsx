@@ -29,6 +29,7 @@ type Props = {
   variantLength: number; // accounts for anchor base in appropriate variant types
   hasAnchorBase: boolean;
   activeAlleleId: string;
+  isReferenceAlleleSelected: boolean;
   mostSevereConsequence: string;
   onAlleleClick: (alleleId: string) => void;
 };
@@ -41,6 +42,7 @@ const AlternativeAlleles = (props: Props) => {
     variantLength,
     hasAnchorBase,
     activeAlleleId,
+    isReferenceAlleleSelected,
     mostSevereConsequence,
     onAlleleClick
   } = props;
@@ -82,6 +84,7 @@ const AlternativeAlleles = (props: Props) => {
             hasAnchorBase={hasAnchorBase}
             mostSevereConsequence={mostSevereConsequence}
             activeAlleleId={activeAlleleId}
+            isReferenceAlleleSelected={isReferenceAlleleSelected}
             onClick={onAlleleClick}
           />
         </Row>
