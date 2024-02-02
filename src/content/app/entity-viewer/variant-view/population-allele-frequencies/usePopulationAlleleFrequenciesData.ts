@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
-
 import {
   useDefaultEntityViewerVariantQuery,
   useVariantStudyPopulationsQuery,
@@ -73,9 +71,6 @@ const usePopulationAlleleFrequenciesData = (params: Params) => {
     studyPopulationsData.populations
   );
 
-  const { referenceAllele } = getReferenceAndAltAlleles(
-    defaultVariantData.variant.alleles
-  );
   const currentAllele = defaultVariantData.variant.alleles.find(
     (allele) => allele.urlId === activeAlleleId
   ) as VariantDetailsAllele;
@@ -89,51 +84,25 @@ const usePopulationAlleleFrequenciesData = (params: Params) => {
     populationsMap.set(population.name, population);
   }
 
-  const referenceAlleleFreqData = alleleFrequenciesData.variant.alleles.find(
-    (allele) => allele.urlId === referenceAllele?.urlId
+  const alleleFreqData = alleleFrequenciesData.variant.alleles.find(
+    (allele) => allele.urlId === activeAlleleId
   );
 
-  const referenceAlleleData = prepareAlleleData({
+  const alleleData = prepareAlleleData({
     populationsMap,
-    allele: referenceAllele as VariantDetailsAllele,
-    alleleFrequenciesData:
-      referenceAlleleFreqData as VariantAlleleInFrequenciesResponse
+    allele: currentAllele as VariantDetailsAllele,
+    alleleFrequenciesData: alleleFreqData as VariantAlleleInFrequenciesResponse
   });
 
-  if (referenceAllele?.urlId === currentAllele.urlId) {
-    return {
-      currentData: {
-        variant: defaultVariantData.variant,
-        referenceAllele: referenceAlleleData,
-        altAllele: null,
-        populationGroups
-      },
-      isLoading: false,
-      isError: false
-    };
-  } else {
-    const altAllelFreqeData = alleleFrequenciesData.variant.alleles.find(
-      (allele) => allele.urlId === activeAlleleId
-    );
-
-    const altAlleleData = prepareAlleleData({
-      populationsMap,
-      allele: currentAllele as VariantDetailsAllele,
-      alleleFrequenciesData:
-        altAllelFreqeData as VariantAlleleInFrequenciesResponse
-    });
-
-    return {
-      currentData: {
-        variant: defaultVariantData.variant,
-        referenceAllele: referenceAlleleData,
-        altAllele: altAlleleData,
-        populationGroups
-      },
-      isLoading: false,
-      isError: false
-    };
-  }
+  return {
+    currentData: {
+      variant: defaultVariantData.variant,
+      allele: alleleData,
+      populationGroups
+    },
+    isLoading: false,
+    isError: false
+  };
 };
 
 const prepareAlleleData = ({

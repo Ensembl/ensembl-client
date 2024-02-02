@@ -75,14 +75,7 @@ const PopulationAlleleFrequencies = (props: Props) => {
     return null;
   }
 
-  const { variant, referenceAllele, altAllele, populationGroups } = currentData;
-
-  const currentAllele =
-    altAllele?.alleleId === activeAlleleId
-      ? altAllele
-      : referenceAllele.alleleId === activeAlleleId
-      ? referenceAllele
-      : null;
+  const { variant, allele: currentAllele, populationGroups } = currentData;
 
   const panelHeader = (
     <PanelHeader
@@ -153,7 +146,7 @@ const PanelHeader = (props: {
 };
 
 const GlobalFrequenciesTable = (props: {
-  allele: NonNullable<PopulationFrequencyData['altAllele']>;
+  allele: NonNullable<PopulationFrequencyData['allele']>;
   currentPopulationGroup: string;
 }) => {
   const { allele, currentPopulationGroup } = props;
@@ -184,7 +177,7 @@ const GlobalFrequenciesTable = (props: {
 };
 
 const PopulationFrequenciesTable = (props: {
-  allele: NonNullable<PopulationFrequencyData['altAllele']>;
+  allele: NonNullable<PopulationFrequencyData['allele']>;
   currentPopulationGroup: string;
 }) => {
   const { allele, currentPopulationGroup } = props;
