@@ -36,7 +36,7 @@ const FlankingSequence = (props: Props) => {
   const letters = sequence.split('');
 
   if (hasEllipsisAtStart) {
-    letters[0] = '…';
+    letters[0] = '...';
   }
   if (hasEllipsisAtEnd) {
     letters[letters.length - 1] = '…';

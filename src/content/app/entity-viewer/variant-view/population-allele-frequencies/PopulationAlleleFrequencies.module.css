@@ -1,8 +1,14 @@
 .container {
-  margin-left: var(--global-padding-left);
+  padding-left: var(--global-padding-left);
   margin-top: 40px;
+  padding-bottom: var(--global-padding-bottom);
 }
 
+.panelHeader {
+  padding-left: calc(var(--standard-gutter) - 10px);
+}
+
+/* Note: probably will need to go after Panel is refactored */
 .variantName {
   font-weight: var(--font-weight-bold);
 }
@@ -36,6 +42,11 @@
   font-weight: var(--font-weight-bold);
 }
 
+.tablePlain th,
+.tablePlain td {
+  padding-left: 24px;
+  padding-right: 32px;
+}
 
 .table {
   font-size: 12px;
@@ -50,11 +61,7 @@
 }
 
 .table tbody td:nth-child(3) {
-  width: 124px;
-}
-
-.table tbody td:nth-child(4) {
-  width: 265px;
+  width: 270px;
 }
 
 .tablePlain {
@@ -63,8 +70,17 @@
   font-weight: var(--font-weight-bold);
 }
 
-.tablePlain th,
-.tablePlain td {
-  padding-left: 24px;
-  padding-right: 32px;
+.alleleColumnTitle {
+  position: relative;
+}
+
+.alleleColumnTitle::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -7px;
+  transform: translate(-100%, -25%);
+  height: 10px;
+  width: 10px;
+  background-color: var(--color-grey);
 }

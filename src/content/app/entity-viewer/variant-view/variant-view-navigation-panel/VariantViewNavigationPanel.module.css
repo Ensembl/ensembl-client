@@ -2,9 +2,10 @@
   display: grid;
   grid-template-columns: repeat(5, 210px);
   column-gap: 10px;
-  row-gap: 32px;
+  row-gap: 30px;
   align-items: start;
-  padding: 34px 0;
+  padding-top: 34px;
+  padding-bottom: 46px;
   position: sticky;
   top: 0;
   color: var(--color-white);
