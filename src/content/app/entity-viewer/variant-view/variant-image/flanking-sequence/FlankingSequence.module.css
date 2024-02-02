@@ -11,3 +11,7 @@
 .firstRightSequenceLetter {
   margin-left: 1px;
 }
+
+.ellipsis {
+  letter-spacing: -3px;
+}

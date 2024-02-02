@@ -4,11 +4,11 @@
   padding-bottom: var(--global-padding-bottom);
 }
 
+/* Note: might need changing after Panel is refactored */
 .panelHeader {
   padding-left: calc(var(--standard-gutter) - 10px);
 }
 
-/* Note: probably will need to go after Panel is refactored */
 .variantName {
   font-weight: var(--font-weight-bold);
 }
