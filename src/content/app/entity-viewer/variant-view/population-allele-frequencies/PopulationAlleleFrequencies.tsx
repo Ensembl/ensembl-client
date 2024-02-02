@@ -17,13 +17,12 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
-import usePopulationAlleleFrequenciesData, {
-  type PreparedPopulationFrequencyData
-} from './usePopulationAlleleFrequenciesData';
+import usePopulationAlleleFrequenciesData from './usePopulationAlleleFrequenciesData';
 
 import Panel from 'src/shared/components/panel/Panel';
 import { CircularProportionIndicator } from 'src/shared/components/proportion-indicator/CircularProportionIndicator';
 import { Table, ColumnHead } from 'src/shared/components/table';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './PopulationAlleleFrequencies.module.css';
 
@@ -46,7 +45,7 @@ const PopulationAlleleFrequencies = (props: Props) => {
   const { genomeId, variantId, activeAlleleId } = props;
   const [populationGroup, setPopulationGroup] = useState('');
 
-  const { currentData } = usePopulationAlleleFrequenciesData({
+  const { currentData, isLoading } = usePopulationAlleleFrequenciesData({
     genomeId,
     variantId,
     activeAlleleId
@@ -58,11 +57,32 @@ const PopulationAlleleFrequencies = (props: Props) => {
     }
   }, [currentData?.populationGroups]);
 
-  if (!currentData) {
+  if (isLoading) {
+    const panelHeader = (
+      <div className={styles.panelHeader}>
+        <span className={styles.alleleFreqTitle}>Allele frequency</span>
+      </div>
+    );
+
+    return (
+      <Panel header={panelHeader}>
+        <div className={styles.container}>
+          <CircleLoader />
+        </div>
+      </Panel>
+    );
+  } else if (!currentData) {
     return null;
   }
 
   const { variant, referenceAllele, altAllele, populationGroups } = currentData;
+
+  const currentAllele =
+    altAllele?.alleleId === activeAlleleId
+      ? altAllele
+      : referenceAllele.alleleId === activeAlleleId
+      ? referenceAllele
+      : null;
 
   const panelHeader = (
     <PanelHeader
@@ -73,17 +93,23 @@ const PopulationAlleleFrequencies = (props: Props) => {
     />
   );
 
+  if (!currentAllele || !currentAllele.populationFrequencies.length) {
+    return (
+      <Panel header={panelHeader}>
+        <div className={styles.container}>No data</div>
+      </Panel>
+    );
+  }
+
   return (
     <Panel header={panelHeader}>
       <div className={styles.container}>
         <GlobalFrequenciesTable
-          referenceAllele={referenceAllele}
-          altAllele={altAllele}
+          allele={currentAllele}
           currentPopulationGroup={populationGroup}
         />
         <PopulationFrequenciesTable
-          referenceAllele={referenceAllele}
-          altAllele={altAllele}
+          allele={currentAllele}
           currentPopulationGroup={populationGroup}
         />
       </div>
@@ -127,42 +153,29 @@ const PanelHeader = (props: {
 };
 
 const GlobalFrequenciesTable = (props: {
-  referenceAllele: PopulationFrequencyData['referenceAllele'];
-  altAllele: PopulationFrequencyData['altAllele'];
+  allele: NonNullable<PopulationFrequencyData['altAllele']>;
   currentPopulationGroup: string;
 }) => {
-  const { referenceAllele, altAllele, currentPopulationGroup } = props;
+  const { allele, currentPopulationGroup } = props;
 
-  const refAlleleGlobalFreqs = referenceAllele.globalAlleleFrequencies;
-  const altAlleleGlobalFreqs = altAllele?.globalAlleleFrequencies ?? [];
+  const alleleGlobalFreqs = allele.globalAlleleFrequencies;
 
-  const refAlleleGlobalFreq = refAlleleGlobalFreqs.find(
-    (popFreq) => popFreq.display_group_name === currentPopulationGroup
-  );
-  const altAlleleGlobalFreq = altAlleleGlobalFreqs.find(
+  const alleleGlobalFreq = alleleGlobalFreqs.find(
     (popFreq) => popFreq.display_group_name === currentPopulationGroup
   );
 
   const tableClasses = classNames(styles.table, styles.tablePlain);
 
-  const diagram =
-    refAlleleGlobalFreq && altAlleleGlobalFreq ? (
-      <CircleForAltToRefRatio
-        refAlleleFrequency={refAlleleGlobalFreq.allele_frequency}
-        altAlleleFrequency={altAlleleGlobalFreq.allele_frequency}
-      />
-    ) : refAlleleGlobalFreq ? (
-      <CircleForRefToAllRatio
-        refAlleleFrequency={refAlleleGlobalFreq.allele_frequency}
-      />
-    ) : null;
+  const diagram = alleleGlobalFreq ? (
+    <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
+  ) : null;
 
   return (
     <table className={tableClasses}>
       <tbody>
         <tr>
           <td>Global</td>
-          <td>{refAlleleGlobalFreq?.allele_frequency}</td>
+          <td>{alleleGlobalFreq?.allele_frequency}</td>
           <td>{diagram}</td>
         </tr>
       </tbody>
@@ -171,84 +184,14 @@ const GlobalFrequenciesTable = (props: {
 };
 
 const PopulationFrequenciesTable = (props: {
-  referenceAllele: PopulationFrequencyData['referenceAllele'];
-  altAllele: PopulationFrequencyData['altAllele'];
+  allele: NonNullable<PopulationFrequencyData['altAllele']>;
   currentPopulationGroup: string;
 }) => {
-  const { referenceAllele, altAllele, currentPopulationGroup } = props;
+  const { allele, currentPopulationGroup } = props;
 
-  if (!altAllele) {
-    // this must be the reference allele
-    return (
-      <ReferenceAlleleFrequenciesTable
-        referenceAllele={referenceAllele}
-        currentPopulationGroup={currentPopulationGroup}
-      />
-    );
-  }
+  const allelePopFreqs = allele.populationFrequencies;
 
-  const refAllelePopFreqs = referenceAllele.populationFrequencies;
-  const altAllelePopFreqs = altAllele?.populationFrequencies ?? [];
-
-  const pairs: Array<{
-    refAlleleFreq: PreparedPopulationFrequencyData | null;
-    altAlleleFreq: PreparedPopulationFrequencyData;
-  }> = [];
-
-  const filteredAltAllelePopFreqs = altAllelePopFreqs.filter(
-    (popFreq) => popFreq.display_group_name === currentPopulationGroup
-  );
-
-  for (const altAllelePopFreq of filteredAltAllelePopFreqs) {
-    const populationName = altAllelePopFreq.name;
-    const refAllelePopFreq =
-      refAllelePopFreqs.find((popFreq) => popFreq.name === populationName) ??
-      null;
-
-    const pair = {
-      refAlleleFreq: refAllelePopFreq,
-      altAlleleFreq: altAllelePopFreq
-    };
-
-    pairs.push(pair);
-  }
-
-  return (
-    <Table className={styles.table}>
-      <thead>
-        <tr>
-          <ColumnHead>Population</ColumnHead>
-          <ColumnHead>
-            <span className={styles.alleleColumnTitle}>Allele</span>
-          </ColumnHead>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {pairs.map(({ refAlleleFreq, altAlleleFreq }, index) => (
-          <tr key={index}>
-            <td>{altAlleleFreq.description}</td>
-            <td>{altAlleleFreq?.allele_frequency}</td>
-            <td>
-              {refAlleleFreq && (
-                <CircleDiagram
-                  alleleFrequency={altAlleleFreq.allele_frequency}
-                />
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  );
-};
-
-const ReferenceAlleleFrequenciesTable = (props: {
-  referenceAllele: PopulationFrequencyData['referenceAllele'];
-  currentPopulationGroup: string;
-}) => {
-  const { referenceAllele, currentPopulationGroup } = props;
-  const populationFrequencies = referenceAllele.populationFrequencies.filter(
+  const filteredAllelePopFreqs = allelePopFreqs.filter(
     (popFreq) => popFreq.display_group_name === currentPopulationGroup
   );
 
@@ -264,38 +207,18 @@ const ReferenceAlleleFrequenciesTable = (props: {
         </tr>
       </thead>
       <tbody>
-        {populationFrequencies.map((popFreq, index) => (
+        {filteredAllelePopFreqs.map((popFreq, index) => (
           <tr key={index}>
             <td>{popFreq.description}</td>
-            <td>{popFreq?.allele_frequency}</td>
+            <td>{popFreq.allele_frequency}</td>
             <td>
-              {popFreq && (
-                <CircleDiagram alleleFrequency={popFreq.allele_frequency} />
-              )}
+              <CircleDiagram alleleFrequency={popFreq.allele_frequency} />
             </td>
           </tr>
         ))}
       </tbody>
     </Table>
   );
-};
-
-const CircleForAltToRefRatio = (props: {
-  altAlleleFrequency: number;
-  refAlleleFrequency: number;
-}) => {
-  const { altAlleleFrequency, refAlleleFrequency } = props;
-
-  const total = altAlleleFrequency + refAlleleFrequency;
-  const altToRefRatio = (altAlleleFrequency / total) * 100; // expressed as percentage
-
-  return <CircularProportionIndicator value={altToRefRatio} />;
-};
-
-const CircleForRefToAllRatio = (props: { refAlleleFrequency: number }) => {
-  const percentage = props.refAlleleFrequency * 100;
-
-  return <CircularProportionIndicator value={percentage} />;
 };
 
 const CircleDiagram = (props: { alleleFrequency: number }) => {

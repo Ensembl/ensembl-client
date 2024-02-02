@@ -39,20 +39,33 @@ export type PreparedPopulationFrequencyData =
 
 const usePopulationAlleleFrequenciesData = (params: Params) => {
   const { genomeId, activeAlleleId } = params;
-  const { currentData: defaultVariantData } =
-    useDefaultEntityViewerVariantQuery({
-      genomeId: params.genomeId,
-      variantId: params.variantId
-    });
-  const { currentData: studyPopulationsData } = useVariantStudyPopulationsQuery(
-    { genomeId }
-  );
-  const { currentData: alleleFrequenciesData } =
-    useVariantAllelePopulationFrequenciesQuery(params);
+  const {
+    currentData: defaultVariantData,
+    isFetching: isVariantLoading,
+    isError: isVariantError
+  } = useDefaultEntityViewerVariantQuery({
+    genomeId: params.genomeId,
+    variantId: params.variantId
+  });
+  const {
+    currentData: studyPopulationsData,
+    isFetching: arePopulationsLoading,
+    isError: isPopulationsError
+  } = useVariantStudyPopulationsQuery({ genomeId });
+  const {
+    currentData: alleleFrequenciesData,
+    isFetching: areAlleleFrequenciesLoading,
+    isError: isAlleleFrequenciesError
+  } = useVariantAllelePopulationFrequenciesQuery(params);
 
   if (!defaultVariantData || !studyPopulationsData || !alleleFrequenciesData) {
     return {
-      currentData: null
+      currentData: null,
+      isLoading:
+        isVariantLoading ||
+        arePopulationsLoading ||
+        areAlleleFrequenciesLoading,
+      isError: isVariantError || isPopulationsError || isAlleleFrequenciesError
     };
   }
 
