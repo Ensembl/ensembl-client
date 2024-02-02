@@ -152,15 +152,6 @@ const prepareAlleleData = ({
   const { globalFrequencies, regionalFrequencies } =
     separatePopulationFrequencies(populationFrequencies);
 
-  // const globalFrequencyIndex = populationFrequencies.findIndex(
-  //   (popFreq) => popFreq.is_global
-  // );
-
-  // const globalAlleleFrequency =
-  //   globalFrequencyIndex > -1
-  //     ? populationFrequencies.splice(globalFrequencyIndex, 1).pop()
-  //     : null; // in practice, there should never be null
-
   return {
     alleleId: allele.urlId,
     sequence: allele.allele_sequence,

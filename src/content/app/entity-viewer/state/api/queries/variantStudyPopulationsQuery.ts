@@ -29,19 +29,10 @@ export const variantStudyPopulationsQuery = gql`
   }
 `;
 
-// type PopulationNameOnly = Pick<VariantStudyPopulation, 'name'>;
-
 type PopulationInResponse = Omit<
   VariantStudyPopulation,
   'super_population' | 'sub_populations'
 >;
-
-/**
-  & {
-    super_population: PopulationNameOnly | null;
-    sub_populations: PopulationNameOnly[];
-  }
- */
 
 export type VariantStudyPopulationsQueryResult = {
   populations: PopulationInResponse[];

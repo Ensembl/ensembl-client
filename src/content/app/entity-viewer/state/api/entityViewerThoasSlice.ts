@@ -198,17 +198,6 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: variantStudyPopulationsQuery,
         variables: params
       })
-      // queryFn: async (params) => {
-      //   // eslint-disable-line
-      //   // while this endpoint returns mock data, params aren't used for anything
-      //   const { populations } = await import('./fixtures/mockPopulationsData');
-
-      //   return {
-      //     data: {
-      //       populations
-      //     }
-      //   };
-      // }
     }),
     variantAllelePopulationFrequencies: builder.query<
       VariantAlleleFrequenciesQueryResult,

@@ -35,10 +35,7 @@ type Props = {
 
 /**
  * TODO:
- *
  * - Figure out how to store the current view in redux
- *
- * 190px - 180px - 100px - 265px
  */
 
 type PopulationFrequencyData = NonNullable<
