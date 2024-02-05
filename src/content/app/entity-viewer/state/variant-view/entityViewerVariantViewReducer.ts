@@ -16,8 +16,8 @@
 
 import { combineReducers } from 'redux';
 
-import variantViewViewReducer from './view/variantViewViewSlice';
+import variantViewGeneralReducer from './general/variantViewGeneralSlice';
 
 export default combineReducers({
-  view: variantViewViewReducer
+  general: variantViewGeneralReducer
 });

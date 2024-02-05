@@ -68,7 +68,7 @@ const VariantViewNavigationPanel = (props: Props) => {
   const onAlleleFrequenciesClick = () => {
     const url = urlFor.entityViewerVariant({
       ...commonUrlParams,
-      view: 'allele-freq'
+      view: 'allele-frequencies'
     });
     navigate(url);
   };
@@ -108,7 +108,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
         pillContent="0"
         onClick={onAlleleFrequenciesClick}
-        pressed={view === 'allele-freq'}
+        pressed={view === 'allele-frequencies'}
       />
       <VariantViewTab
         viewId="genes"

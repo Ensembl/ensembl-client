@@ -13,3 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import type { RootState } from 'src/store';
+
+const getSliceForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  return state.entityViewer.variantView.general[genomeId]?.[variantId];
+};
+
+export const getViewForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  const slice = getSliceForVariant(state, genomeId, variantId);
+  return slice?.view;
+};
+
+export const getAlleleIdForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  const slice = getSliceForVariant(state, genomeId, variantId);
+  return slice?.alleleId;
+};

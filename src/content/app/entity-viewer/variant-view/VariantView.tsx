@@ -19,8 +19,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import {
+  getViewForVariant,
+  getAlleleIdForVariant
+} from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSelectors';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
+import {
+  setView,
+  setAllele,
+  views as variantViews,
+  type ViewName as VariantViewName
+} from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import VariantViewNavigationPanel from './variant-view-navigation-panel/VariantViewNavigationPanel';
@@ -32,8 +44,7 @@ import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele
 import styles from './VariantView.module.css';
 
 const VariantView = () => {
-  const { activeGenomeId, genomeIdForUrl, parsedEntityId } =
-    useEntityViewerIds();
+  const { genomeId, genomeIdForUrl, parsedEntityId } = useEntityViewerIds();
   const navigate = useNavigate();
   const { search: urlQuery } = useLocation();
 
@@ -44,20 +55,22 @@ const VariantView = () => {
 
   const { currentData } = useDefaultEntityViewerVariantQuery(
     {
-      genomeId: activeGenomeId ?? '',
+      genomeId: genomeId ?? '',
       variantId: variantId ?? ''
     },
     {
-      skip: !activeGenomeId || !variantId
+      skip: !genomeId || !variantId
     }
   );
 
   const variantData = currentData?.variant;
 
-  useDefaultAlternativeAllele({
-    genomeId: genomeIdForUrl,
+  useVariantViewRouting({
+    genomeId,
+    genomeIdForUrl,
     variantId,
     alleleIdInUrl,
+    viewInUrl: view,
     variant: variantData
   });
 
@@ -72,10 +85,10 @@ const VariantView = () => {
 
   return (
     <div className={styles.container}>
-      {activeGenomeId && variantId && variantData && (
+      {genomeId && variantId && variantData && (
         <>
           <VariantViewNavigationPanel
-            genomeId={activeGenomeId}
+            genomeId={genomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             variantId={variantId}
             activeAlleleId={alleleIdInUrl || ''}
@@ -83,7 +96,7 @@ const VariantView = () => {
           />
           <MainContent
             view={view}
-            genomeId={activeGenomeId}
+            genomeId={genomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             variantId={variantId}
             activeAlleleId={alleleIdInUrl || ''}
@@ -107,49 +120,159 @@ const MainContent = (props: {
 
   if (!view) {
     return <VariantImage {...otherProps} />;
-  } else if (view === 'allele-freq') {
+  } else if (view === 'allele-frequencies') {
     return <PopulationAlleleFrequencies {...otherProps} />;
   }
 };
 
-// A hook for choosing an allele
-const useDefaultAlternativeAllele = (params: {
-  genomeId?: string;
+/**
+ * The intention of the hook below is such that when user switches between genomes within Entity Viewer,
+ * or between Entity Viewer and other pages on the site, we could reconstruct the allele
+ * that the user was viewing, and the view that they used to inspect that allele.
+ */
+const useVariantViewRouting = (params: {
+  genomeId: string | undefined;
+  genomeIdForUrl?: string;
   variantId?: string;
+  viewInUrl: string | null;
   alleleIdInUrl: string | null;
   variant?: {
     alleles: Pick<VariantAllele, 'reference_sequence' | 'allele_sequence'>[];
   };
 }) => {
-  const { genomeId, variantId, alleleIdInUrl, variant } = params;
-
+  const {
+    genomeId,
+    genomeIdForUrl,
+    variantId,
+    viewInUrl,
+    alleleIdInUrl,
+    variant
+  } = params;
+  const viewInRedux = useAppSelector((state) =>
+    getViewForVariant(state, genomeId ?? '', variantId ?? '')
+  );
+  const alleleIdInRedux = useAppSelector((state) =>
+    getAlleleIdForVariant(state, genomeId ?? '', variantId ?? '')
+  );
+  const currentView = viewInUrl || 'default';
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!genomeId || !variantId || !variant) {
+    if (!genomeId || !genomeIdForUrl || !variantId || !variant) {
+      // this shouldn't really be the case in this component; but will make typescript happy
       return;
     }
 
-    // temporary solution for identifying alleles
-    const parsedAlleleIndex = (alleleIdInUrl &&
-      parseInt(alleleIdInUrl, 10)) as number;
+    const isValidAlleleId = checkAlleleValidity(alleleIdInUrl, variant);
 
-    if (
-      typeof parsedAlleleIndex !== 'number' ||
-      !variant?.alleles[parsedAlleleIndex]
-    ) {
-      const firstAlternativeAlleleIndex = variant.alleles.findIndex(
-        (allele) => allele.reference_sequence !== allele.allele_sequence
-      );
+    const shouldChangeUrl =
+      !isValidAlleleId || !isValidVariantView(currentView);
+
+    if (shouldChangeUrl) {
+      const alleleId = isValidAlleleId
+        ? alleleIdInUrl
+        : alleleIdInRedux || chooseActiveAllele(variant);
+      const view =
+        viewInUrl && isValidVariantView(viewInUrl)
+          ? viewInUrl
+          : viewInRedux !== 'default'
+          ? viewInRedux
+          : null;
 
       const url = urlFor.entityViewerVariant({
-        genomeId,
+        genomeId: genomeIdForUrl,
         variantId,
-        alleleId: `${firstAlternativeAlleleIndex}`
+        alleleId,
+        view
       });
       navigate(url, { replace: true });
+
+      updateReduxData({
+        alleleId: alleleId as string,
+        view: view || 'default'
+      });
+    } else {
+      if (alleleIdInUrl && alleleIdInUrl !== alleleIdInRedux) {
+        updateReduxData({ alleleId: alleleIdInUrl });
+      }
+      if (currentView !== viewInRedux) {
+        updateReduxData({ view: currentView });
+      }
     }
-  }, [variant]);
+  }, [
+    genomeId,
+    genomeIdForUrl,
+    variantId,
+    variant,
+    alleleIdInUrl,
+    currentView,
+    viewInRedux,
+    alleleIdInRedux
+  ]);
+
+  const updateReduxData = ({
+    alleleId,
+    view
+  }: {
+    alleleId?: string;
+    view?: string;
+  }) => {
+    if (!genomeId || !variantId) {
+      return;
+    }
+
+    if (alleleId) {
+      dispatch(
+        setAllele({
+          genomeId,
+          variantId,
+          alleleId
+        })
+      );
+    }
+    if (view) {
+      dispatch(
+        setView({
+          genomeId,
+          variantId,
+          view: view as VariantViewName
+        })
+      );
+    }
+  };
+
+  const isValidVariantView = (view: string) => {
+    return variantViews.includes(view as VariantViewName);
+  };
+
+  const checkAlleleValidity = (
+    alleleIdString: string | null,
+    variant: {
+      alleles: Pick<VariantAllele, 'reference_sequence' | 'allele_sequence'>[];
+    }
+  ) => {
+    if (alleleIdString === null) {
+      return false;
+    }
+
+    // temporary solution for identifying alleles
+    const parsedAlleleIndex = parseInt(alleleIdString, 10) as number;
+
+    return (
+      typeof parsedAlleleIndex === 'number' &&
+      Boolean(variant?.alleles[parsedAlleleIndex])
+    );
+  };
+
+  const chooseActiveAllele = (variant: {
+    alleles: Pick<VariantAllele, 'reference_sequence' | 'allele_sequence'>[];
+  }) => {
+    const firstAlternativeAlleleIndex = variant.alleles.findIndex(
+      (allele) => allele.reference_sequence !== allele.allele_sequence
+    );
+    return `${firstAlternativeAlleleIndex}`;
+  };
 };
 
 export default VariantView;
