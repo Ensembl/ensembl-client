@@ -71,10 +71,9 @@ const VariantGroupLegend = (props: Props) => {
                 <td className={styles.variantTypeLabel}>{variantType.label}</td>
                 <td className={styles.value}>
                   {variantType.url ? (
-                    <ExternalLink
-                      to={variantType.url}
-                      linkText={variantType.so_accession_id}
-                    />
+                    <ExternalLink to={variantType.url}>
+                      {variantType.so_accession_id}
+                    </ExternalLink>
                   ) : (
                     <span>{variantType.so_accession_id}</span>
                   )}

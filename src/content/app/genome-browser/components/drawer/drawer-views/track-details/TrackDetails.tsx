@@ -85,7 +85,7 @@ const TrackDetails = (props: Props) => {
         <div key={source.name} className={styles.standardLabelValue}>
           <div className={styles.value}>
             {source.url ? (
-              <ExternalLink to={source.url} linkText={source.name} />
+              <ExternalLink to={source.url}>{source.name}</ExternalLink>
             ) : (
               <span>{source.name}</span>
             )}

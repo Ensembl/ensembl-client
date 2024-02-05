@@ -316,7 +316,7 @@ const ProteinDomainInfoTooltip = (props: {
               <span className={styles.tooltipFieldLabel}>
                 {domainInfo.resourceName}
               </span>
-              <ExternalLink linkText={domainInfo.name} to={domainInfo.url} />
+              <ExternalLink to={domainInfo.url}>{domainInfo.name}</ExternalLink>
             </div>
           )}
           {domainInfo.closestDataProviderName &&
@@ -326,10 +326,9 @@ const ProteinDomainInfoTooltip = (props: {
                 <span className={styles.tooltipFieldLabel}>
                   {domainInfo.closestDataProviderName}
                 </span>
-                <ExternalLink
-                  linkText={domainInfo.accessionIdInClosestDataProvider}
-                  to={domainInfo.urlForClosestDataProvider}
-                />
+                <ExternalLink to={domainInfo.urlForClosestDataProvider}>
+                  {domainInfo.accessionIdInClosestDataProvider}
+                </ExternalLink>
               </div>
             )}
           <div className={styles.tooltipRow}>

@@ -116,19 +116,17 @@ const ContactUs = () => {
         <p> We have two public mailing lists: </p>
         <dl>
           <dt>
-            <ExternalLink
-              linkText="announce"
-              to="https://lists.ensembl.org/mailman/listinfo/announce_ensembl.org"
-            />
+            <ExternalLink to="https://lists.ensembl.org/mailman/listinfo/announce_ensembl.org">
+              announce
+            </ExternalLink>
           </dt>
           <dd>
             a low-traffic list for release announcements and web status updates
           </dd>
           <dt>
-            <ExternalLink
-              linkText="dev"
-              to="https://lists.ensembl.org/mailman/listinfo/dev_ensembl.org"
-            />
+            <ExternalLink to="https://lists.ensembl.org/mailman/listinfo/dev_ensembl.org">
+              dev
+            </ExternalLink>
           </dt>
           <dd>
             programming help from the Ensembl development team and other Ensembl

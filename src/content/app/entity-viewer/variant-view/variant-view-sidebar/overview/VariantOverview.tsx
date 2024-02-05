@@ -102,10 +102,9 @@ const VariantOverview = () => {
         <div className={styles.externalLink}>
           {currentVariantType &&
             (currentVariantType.url ? (
-              <ExternalLink
-                to={currentVariantType.url}
-                linkText={currentVariantType.so_accession_id}
-              />
+              <ExternalLink to={currentVariantType.url}>
+                {currentVariantType.so_accession_id}
+              </ExternalLink>
             ) : (
               <span>{currentVariantType.so_accession_id}</span>
             ))}
