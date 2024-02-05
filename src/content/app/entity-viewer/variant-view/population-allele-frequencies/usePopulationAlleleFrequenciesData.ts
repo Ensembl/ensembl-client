@@ -67,10 +67,6 @@ const usePopulationAlleleFrequenciesData = (params: Params) => {
     };
   }
 
-  const populationGroups = getPopulationGroups(
-    studyPopulationsData.populations
-  );
-
   const currentAllele = defaultVariantData.variant.alleles.find(
     (allele) => allele.urlId === activeAlleleId
   ) as VariantDetailsAllele;
@@ -86,6 +82,11 @@ const usePopulationAlleleFrequenciesData = (params: Params) => {
 
   const alleleFreqData = alleleFrequenciesData.variant.alleles.find(
     (allele) => allele.urlId === activeAlleleId
+  );
+
+  const populationGroups = getPopulationGroups(
+    studyPopulationsData.populations,
+    alleleFreqData as VariantAlleleInFrequenciesResponse
   );
 
   const alleleData = prepareAlleleData({
@@ -180,11 +181,21 @@ const separatePopulationFrequencies = <
 };
 
 const getPopulationGroups = (
-  populations: VariantStudyPopulationsQueryResult['populations']
+  populations: VariantStudyPopulationsQueryResult['populations'],
+  alleleFreqData: VariantAlleleInFrequenciesResponse
 ) => {
+  const studiedPopulationNames = new Set(
+    alleleFreqData.population_frequencies.map(
+      (popFreq) => popFreq.population_name
+    )
+  );
   const populationGroups = new Set<string>();
 
-  for (const population of populations) {
+  const studiedPopulations = populations.filter((population) =>
+    studiedPopulationNames.has(population.name)
+  );
+
+  for (const population of studiedPopulations) {
     if (!populationGroups.has(population.display_group_name)) {
       populationGroups.add(population.display_group_name);
     }

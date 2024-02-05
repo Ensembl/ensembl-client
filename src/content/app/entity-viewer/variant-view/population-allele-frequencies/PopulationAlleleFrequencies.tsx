@@ -32,11 +32,6 @@ type Props = {
   activeAlleleId: string;
 };
 
-/**
- * TODO:
- * - Figure out how to store the current view in redux
- */
-
 type PopulationFrequencyData = NonNullable<
   ReturnType<typeof usePopulationAlleleFrequenciesData>['currentData']
 >;
