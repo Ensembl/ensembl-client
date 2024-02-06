@@ -15,4 +15,5 @@
 
 .link {
   display: inline-block;
+  font-size: 12px; /* seems to be Andrea's default for external links; can be overridden by child styles */
 }
