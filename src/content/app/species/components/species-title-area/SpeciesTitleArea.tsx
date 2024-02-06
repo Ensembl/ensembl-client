@@ -72,7 +72,7 @@ const useSpecies = () => {
     : null;
 };
 
-const SpeciesTitleArea = () => {
+const SpeciesTitleArea = (props: { assemblyCount: number }) => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -114,6 +114,12 @@ const SpeciesTitleArea = () => {
         <div className={styles.speciesNameWrapper}>
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
+        </div>
+        <div className={styles.assemblyCountWrapper}>
+          <span className={styles.assemblyCountLozenge}>
+            {props.assemblyCount}
+          </span>
+          <span className={styles.assemblyCountText}>Assemblies</span>
         </div>
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />

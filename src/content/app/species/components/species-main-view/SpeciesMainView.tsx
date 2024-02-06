@@ -21,10 +21,10 @@ import SpeciesTitleArea from 'src/content/app/species/components/species-title-a
 
 import styles from './SpeciesMainView.module.css';
 
-const SpeciesMainView = () => {
+const SpeciesMainView = (props: { assemblyCount: number }) => {
   return (
     <div className={styles.speciesContainer}>
-      <SpeciesTitleArea />
+      <SpeciesTitleArea assemblyCount={props.assemblyCount} />
       <SpeciesMainViewStats />
     </div>
   );
