@@ -1,12 +1,15 @@
-.container {
+/* .container {
   display: inline-grid;
   grid-template-columns:  [icon] auto [link] auto;
   column-gap: var(--external-link-icon-offset, 5px);
   align-items: baseline;
-}
+} */
 
 .icon {
+  position: relative;
+  bottom: -1px;
   display: inline-block;
+  margin-right: var(--external-link-icon-offset, 5px);
   fill: var(--external-link-icon-offset, var(--color-orange));
   grid-column: icon;
   height: var(--external-link-icon-size, 12px);

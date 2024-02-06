@@ -29,21 +29,19 @@ export type ExternalLinkProps = {
 };
 
 const ExternalLink = (props: ExternalLinkProps) => {
-  const componentClasses = classNames(styles.container, props.className);
+  const componentClasses = classNames(styles.link, props.className);
 
   return (
-    <span className={componentClasses}>
+    <a
+      className={componentClasses}
+      href={props.to}
+      target="_blank"
+      rel="nofollow noreferrer"
+      onClick={props.onClick}
+    >
       <LinkIcon className={styles.icon} />
-      <a
-        className={styles.link}
-        href={props.to}
-        target="_blank"
-        rel="nofollow noreferrer"
-        onClick={props.onClick}
-      >
-        {props.children}
-      </a>
-    </span>
+      {props.children}
+    </a>
   );
 };
 
