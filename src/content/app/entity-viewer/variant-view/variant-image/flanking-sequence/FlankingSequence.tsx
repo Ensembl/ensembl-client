@@ -35,17 +35,22 @@ const FlankingSequence = (props: Props) => {
 
   const letters = sequence.split('');
 
+  // for ellipsis, in this image, designer prefers three separate dots
+  // rather than a single ellipsis character
   if (hasEllipsisAtStart) {
-    letters[0] = '…';
+    letters[0] = '...';
   }
   if (hasEllipsisAtEnd) {
-    letters[letters.length - 1] = '…';
+    letters[letters.length - 1] = '...';
   }
 
   const getLetterClasses = (letterIndex: number) => {
     return classNames(styles.letter, {
       [styles.firstRightSequenceLetter]:
-        position === 'right' && letterIndex === 0
+        position === 'right' && letterIndex === 0,
+      [styles.ellipsis]:
+        (letterIndex === 0 && hasEllipsisAtStart) ||
+        (letterIndex === letters.length - 1 && hasEllipsisAtEnd)
     });
   };
 

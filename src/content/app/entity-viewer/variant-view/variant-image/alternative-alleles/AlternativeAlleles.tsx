@@ -103,9 +103,12 @@ const Row = (props: {
     <>
       <div className={styles.left}>
         {index === 0 && (
-          <span className={styles.label}>Alternative alleles</span>
+          <span className={styles.label}>Alternative allele(s)</span>
         )}
-        <span className={styles.alleleLength}>{alleleLength}</span>
+        <span className={styles.alleleLength}>
+          {alleleLength}
+          <span className={styles.alleleLengthUnit}>bp</span>
+        </span>
       </div>
       {children}
     </>

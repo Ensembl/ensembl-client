@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-import type { ValueSetMetadata } from '../core-api/metadata';
+import { gql } from 'graphql-request';
 
-export type VariantAllelePopulationFrequency = {
-  population_name: string;
-  allele_count: number | null; // Number of individuals/samples in the population where variant allele is found
-  allele_number: number | null; // Total number of alleles in called genotypes
-  allele_frequency: number;
-  dataset: FrequencyDataset;
-  qc_filter: ValueSetMetadata;
-  is_minor_allele: boolean;
-  is_hpmaf: boolean;
-};
+import type { VariantStudyPopulation } from 'src/shared/types/variation-api/variantStudyPopulation';
 
-type FrequencyDataset = {
-  version: string;
-  release_date: string; // ISO date string yyyy-mm-dd
-  source: unknown; // FIXME
+export const variantStudyPopulationsQuery = gql`
+  query VariantStudyPopulations($genomeId: String!) {
+    populations(genome_id: $genomeId) {
+      name
+      description
+      is_global
+      display_group_name
+    }
+  }
+`;
+
+type PopulationInResponse = Omit<
+  VariantStudyPopulation,
+  'super_population' | 'sub_populations'
+>;
+
+export type VariantStudyPopulationsQueryResult = {
+  populations: PopulationInResponse[];
 };

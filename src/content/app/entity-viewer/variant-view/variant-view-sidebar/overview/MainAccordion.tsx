@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -87,8 +87,6 @@ const MainAccordion = (props: Props) => {
           >
             <Alleles
               alleles={variant.alleles}
-              genomeId={genomeId}
-              variantId={variantId}
               activeAlleleId={activeAlleleId}
             />
           </AccordionItemPanel>
@@ -159,14 +157,12 @@ const MainAccordion = (props: Props) => {
 };
 
 type AllelesProps = {
-  genomeId: string;
-  variantId: string;
   activeAlleleId: string | null;
   alleles: VariantDetails['alleles'];
 };
 
 const Alleles = (props: AllelesProps) => {
-  const { genomeId, variantId, alleles, activeAlleleId } = props;
+  const { alleles, activeAlleleId } = props;
   const { referenceAllele, alternativeAlleles } =
     getReferenceAndAltAlleles(alleles);
 
@@ -176,12 +172,7 @@ const Alleles = (props: AllelesProps) => {
         <div className={styles.row}>
           <div className={styles.label}>Ref</div>
           <div>
-            <Allele
-              genomeId={genomeId}
-              variantId={variantId}
-              allele={referenceAllele}
-              activeAlleleId={activeAlleleId}
-            />
+            <Allele allele={referenceAllele} activeAlleleId={activeAlleleId} />
           </div>
         </div>
       )}
@@ -191,8 +182,6 @@ const Alleles = (props: AllelesProps) => {
           {alternativeAlleles.map((allele) => (
             <Allele
               key={allele.urlId}
-              genomeId={genomeId}
-              variantId={variantId}
               allele={allele}
               activeAlleleId={activeAlleleId}
             />
@@ -204,22 +193,21 @@ const Alleles = (props: AllelesProps) => {
 };
 
 const Allele = (props: {
-  genomeId: string;
-  variantId: string;
   allele: VariantDetails['alleles'][number];
   activeAlleleId: string | null;
 }) => {
-  const { genomeId, variantId, allele, activeAlleleId } = props;
+  const { allele, activeAlleleId } = props;
   const formattedSequence = formatAlleleSequence(allele.allele_sequence);
+  const urlLocation = useLocation();
+
+  const urlPath = urlLocation.pathname;
+  const urlSearchParams = new URLSearchParams(urlLocation.search);
 
   if (allele.urlId === activeAlleleId) {
     return <span>{formattedSequence}</span>;
   } else {
-    const url = urlFor.entityViewerVariant({
-      genomeId,
-      variantId,
-      alleleId: allele.urlId
-    });
+    urlSearchParams.set('allele', allele.urlId);
+    const url = `${urlPath}?${urlSearchParams.toString()}`;
 
     return <Link to={url}>{formattedSequence}</Link>;
   }

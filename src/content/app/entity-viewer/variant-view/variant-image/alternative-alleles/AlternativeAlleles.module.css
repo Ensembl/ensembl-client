@@ -10,7 +10,7 @@
   grid-column: left;
   display: flex;
   justify-content: flex-end;
-  padding-right: 12px;
+  padding-right: 14px;
   gap: 12px;
 }
 
@@ -21,4 +21,9 @@
 
 .alleleLength {
   font-size: 11px;
+}
+
+.alleleLengthUnit {
+  font-weight: var(--font-weight-light);
+  margin-left: 5px;
 }

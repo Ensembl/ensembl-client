@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-import type { ValueSetMetadata } from '../core-api/metadata';
+import type { RootState } from 'src/store';
 
-export type VariantAllelePopulationFrequency = {
-  population_name: string;
-  allele_count: number | null; // Number of individuals/samples in the population where variant allele is found
-  allele_number: number | null; // Total number of alleles in called genotypes
-  allele_frequency: number;
-  dataset: FrequencyDataset;
-  qc_filter: ValueSetMetadata;
-  is_minor_allele: boolean;
-  is_hpmaf: boolean;
+const getSliceForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  return state.entityViewer.variantView.general[genomeId]?.[variantId];
 };
 
-type FrequencyDataset = {
-  version: string;
-  release_date: string; // ISO date string yyyy-mm-dd
-  source: unknown; // FIXME
+export const getViewForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  const slice = getSliceForVariant(state, genomeId, variantId);
+  return slice?.view;
+};
+
+export const getAlleleIdForVariant = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  const slice = getSliceForVariant(state, genomeId, variantId);
+  return slice?.alleleId;
 };

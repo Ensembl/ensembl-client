@@ -91,7 +91,7 @@ export const variantDefaultQuery = gql`
   }
 `;
 
-type VariantDetailsAllele = Pick<
+export type VariantDetailsAllele = Pick<
   VariantAllele,
   'name' | 'allele_sequence' | 'reference_sequence'
 > &

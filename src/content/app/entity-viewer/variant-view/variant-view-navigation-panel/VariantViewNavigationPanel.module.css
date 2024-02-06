@@ -2,12 +2,20 @@
   display: grid;
   grid-template-columns: repeat(5, 210px);
   column-gap: 10px;
-  row-gap: 32px;
+  row-gap: 30px;
   align-items: start;
-  padding: 34px 0;
+  padding-top: 34px;
+  padding-bottom: 46px;
   position: sticky;
   top: 0;
+  color: var(--color-white);
   background-color: var(--color-black);
-  border-bottom: 1px solid var(--color-orange); /* NOTE: this will only need to be enabled for the default view that shows variant image */
   z-index: 2;
+}
+
+/* The orange bottom border shown in the default view,
+   which displays variant image.
+*/
+.withBottomBorder {
+  border-bottom: 1px solid var(--color-orange);
 }

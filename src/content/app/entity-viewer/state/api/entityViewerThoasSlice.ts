@@ -60,10 +60,19 @@ import {
   variantDefaultQuery,
   type EntityViewerVariantDefaultQueryResult
 } from './queries/variantDefaultQuery';
+import {
+  variantStudyPopulationsQuery,
+  type VariantStudyPopulationsQueryResult
+} from './queries/variantStudyPopulationsQuery';
+import {
+  variantAlleleFrequenciesQuery,
+  type VariantAlleleFrequenciesQueryResult
+} from './queries/variantAlleleFrequenciesQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
 type VariantQueryParams = { genomeId: string; variantId: string };
+type VariantStudyPopulationsQueryParams = { genomeId: string };
 
 const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -177,18 +186,50 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       }),
       transformResponse: (response: EntityViewerVariantDefaultQueryResult) => {
-        response.variant.alleles = response.variant.alleles.map(
-          (allele, index) => ({
-            ...allele,
-            urlId: `${index}`
-          })
-        );
-
-        return response;
+        return addAlleleUrlId(response);
       }
+    }),
+    variantStudyPopulations: builder.query<
+      VariantStudyPopulationsQueryResult,
+      VariantStudyPopulationsQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantStudyPopulationsQuery,
+        variables: params
+      })
+    }),
+    variantAllelePopulationFrequencies: builder.query<
+      VariantAlleleFrequenciesQueryResult,
+      VariantQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantAlleleFrequenciesQuery,
+        variables: params
+      }),
+      transformResponse: (response: VariantAlleleFrequenciesQueryResult) =>
+        addAlleleUrlId(response)
     })
   })
 });
+
+const addAlleleUrlId = <
+  T extends {
+    variant: {
+      alleles: Record<string, unknown>[];
+    };
+  }
+>(
+  response: T
+): T => {
+  response.variant.alleles = response.variant.alleles.map((allele, index) => ({
+    ...allele,
+    urlId: `${index}`
+  }));
+
+  return response;
+};
 
 export const {
   useGenePageMetaQuery,
@@ -200,7 +241,9 @@ export const {
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
   useVariantPageMetaQuery,
-  useDefaultEntityViewerVariantQuery
+  useDefaultEntityViewerVariantQuery,
+  useVariantStudyPopulationsQuery,
+  useVariantAllelePopulationFrequenciesQuery
 } = entityViewerThoasSlice;
 
 export const {

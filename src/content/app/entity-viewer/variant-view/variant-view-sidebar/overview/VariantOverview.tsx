@@ -28,6 +28,7 @@ import VariantConsequence, {
   getMostSevereVariantConsequence
 } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import styles from './VariantOverview.module.css';
 
@@ -51,7 +52,7 @@ const VariantOverview = () => {
   );
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return <SidebarLoader />;
   }
 
   if (!genomeIdForUrl || !variantId || !currentData?.variant) {
