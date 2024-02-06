@@ -120,11 +120,7 @@ const SpeciesPageContent = () => {
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
 
       <StandardAppLayout
-        mainContent={
-          <SpeciesMainView
-            assemblyCount={speciesDetails.number_of_genomes_in_group}
-          />
-        }
+        mainContent={<SpeciesMainView />}
         sidebarContent={<SidebarContent />}
         sidebarNavigation={null}
         topbarContent={<TopBar />}
