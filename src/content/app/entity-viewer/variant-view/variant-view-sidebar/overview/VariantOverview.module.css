@@ -11,6 +11,10 @@
   margin-top: 16px;
 }
 
+.rowWithMargin {
+  margin-top: 8px;
+}
+
 .label {
   font-weight: var(--font-weight-light);
   font-size: 12px;
@@ -19,7 +23,7 @@
 
 .labelValueWrapper {
   display: flex;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .externalLink {

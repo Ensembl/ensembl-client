@@ -37,6 +37,8 @@ import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
+import prepareVariantSummaryData from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/prepareVariantSummaryData';
+import { CADDScores } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/VariantSummary';
 import { Strand } from 'src/shared/types/core-api/strand';
 
 import styles from './VariantOverview.module.css';
@@ -50,6 +52,8 @@ type Props = {
 
 const MainAccordion = (props: Props) => {
   const { genomeId, variantId, variant, activeAlleleId } = props;
+
+  const preparedSummaryData = prepareVariantSummaryData(variant);
 
   const gbVariantUrl = urlFor.browser({
     genomeId: genomeId,
@@ -65,6 +69,40 @@ const MainAccordion = (props: Props) => {
       [styles.entityViewerAccordionButtonDisabled]: true
     }
   );
+
+  const ChangeTolerance = () => {
+    if (
+      !preparedSummaryData.caddScores.length &&
+      !preparedSummaryData.gerpScore
+    ) {
+      return null;
+    } else {
+      return (
+        <>
+          <div className={styles.sectionHead}>Change tolerance</div>
+          <div className={styles.sectionContent}>
+            {!!preparedSummaryData.caddScores.length && (
+              <div className={classNames(styles.row, styles.newRowGroup)}>
+                <div className={styles.label}>CADD</div>
+                <div className={styles.value}>
+                  <CADDScores data={preparedSummaryData.caddScores} />
+                </div>
+              </div>
+            )}
+
+            {preparedSummaryData.gerpScore && (
+              <div className={classNames(styles.row, styles.labelValueWrapper)}>
+                <div className={styles.label}>GERP</div>
+                <div className={styles.value}>
+                  {preparedSummaryData.gerpScore}
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      );
+    }
+  };
 
   return (
     <div className={styles.accordionContainer}>
@@ -91,6 +129,10 @@ const MainAccordion = (props: Props) => {
             />
           </AccordionItemPanel>
         </AccordionItem>
+
+        <section>
+          <ChangeTolerance />
+        </section>
 
         <section>
           <div className={styles.sectionHead}>Location</div>

@@ -226,7 +226,9 @@ export const VariantDB = (props: {
   );
 };
 
-const CADDScores = (props: { data: { sequence: string; score: number }[] }) => {
+export const CADDScores = (props: {
+  data: { sequence: string; score: number }[];
+}) => {
   const caddScoreString = props.data
     .map((data) => `${data.score} (${data.sequence})`)
     .join(', ');
