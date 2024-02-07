@@ -27,7 +27,8 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
-
+import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
+import InfoPill from 'src/shared/components/info-pill/InfoPill';
 import SearchIcon from 'static/icons/icon_search.svg';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
@@ -41,9 +42,7 @@ import {
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
-import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
-
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.module.css';
 
@@ -124,8 +123,8 @@ const SpeciesTitleArea = () => {
           <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
         <div className={styles.assemblyCountWrapper}>
-          <span className={styles.assemblyCountLozenge}>{assemblyCount}</span>
-          <span className={styles.assemblyCountText}>Assemblies</span>
+          <InfoPill>{assemblyCount}</InfoPill>
+          <span className={styles.assembliesLink}>Assemblies</span>
         </div>
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />

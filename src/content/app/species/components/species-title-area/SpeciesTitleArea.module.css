@@ -43,20 +43,10 @@
 .assemblyCountWrapper {
   display: inline-flex;
   grid-area: assembly-count;
-  column-gap: 8px;
+  justify-content: space-around;
 }
 
-.assemblyCountLozenge {
-  background: var(--color-black);
-  border-radius: 10px;
-  color: var(--color-white);
-  font-weight: var(--font-weight-bold);
-  margin-left: 5px;
-  padding: 0 8px;
-}
-
-.assemblyCountText {
-  color: var(--color-blue);
+.assembliesLink {
   font-size: 12px;
 }
 
