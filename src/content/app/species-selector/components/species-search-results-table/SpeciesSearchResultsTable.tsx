@@ -171,10 +171,9 @@ const SpeciesSearchResultsTable = (props: Props) => {
             <td className={styles.assemblyName}>{searchMatch.assembly.name}</td>
             <td>
               {!shouldDisableRow(searchMatch, canAddToStaged) ? (
-                <ExternalLink
-                  to={searchMatch.assembly.url}
-                  linkText={searchMatch.assembly.accession_id}
-                />
+                <ExternalLink to={searchMatch.assembly.url}>
+                  {searchMatch.assembly.accession_id}
+                </ExternalLink>
               ) : (
                 <DisabledExternalLink>
                   {searchMatch.assembly.accession_id}

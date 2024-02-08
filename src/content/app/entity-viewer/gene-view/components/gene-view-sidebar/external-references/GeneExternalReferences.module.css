@@ -22,10 +22,6 @@
 }
 
 .showHide,
-.externalReferenceContainer {
+.externalReference {
   margin-bottom: 10px;
-}
-
-.externalReferenceLink {
-  font-size: 12px;
 }

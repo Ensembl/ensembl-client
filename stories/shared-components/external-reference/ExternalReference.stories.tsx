@@ -20,27 +20,43 @@ import ExternalReference from 'src/shared/components/external-reference/External
 
 import styles from './ExternalReference.stories.module.css';
 
+const DefaultExternalReference = () => (
+  <ExternalReference
+    label={'Source name'}
+    to="#"
+    className={styles.externalReference}
+  >
+    Link Text
+  </ExternalReference>
+);
+
+const WithoutLabel = () => (
+  <ExternalReference to="#" className={styles.externalReference}>
+    Link Text
+  </ExternalReference>
+);
+
+const WithoutLink = () => (
+  <ExternalReference label={'Source name'} className={styles.externalReference}>
+    Link Text
+  </ExternalReference>
+);
+
+export const DefaultExternalReferenceStory = {
+  name: 'default',
+  render: () => <DefaultExternalReference />
+};
+
+export const WithoutLabelExternalReferenceStory = {
+  name: 'without label',
+  render: () => <WithoutLabel />
+};
+
+export const WithoutLinkExternalReferenceStory = {
+  name: 'without link',
+  render: () => <WithoutLink />
+};
+
 export default {
   title: 'Components/Shared Components/ExternalReference'
 };
-
-export const DefaultExternalReference = () => (
-  <ExternalReference
-    label={'Source name'}
-    linkText={'LinkText'}
-    to={''}
-    classNames={{ container: styles.wrapper }}
-  />
-);
-
-DefaultExternalReference.storyName = 'default';
-
-export const WithoutLabel = () => (
-  <ExternalReference
-    linkText={'LinkText'}
-    to={''}
-    classNames={{ container: styles.wrapper }}
-  />
-);
-
-WithoutLabel.storyName = 'without label';

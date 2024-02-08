@@ -20,14 +20,17 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import styles from './ExternalLink.stories.module.css';
 
-export default {
-  title: 'Components/Shared Components/ExternalLink'
-};
-
-export const DefaultExternalLink = () => (
+const DefaultExternalLink = () => (
   <div className={styles.wrapper}>
-    <ExternalLink linkText={'LinkText'} to={''} />
+    <ExternalLink to="#">LinkText</ExternalLink>
   </div>
 );
 
-DefaultExternalLink.storyName = 'default';
+export const DefaultExternalLinkStory = {
+  name: 'default',
+  render: () => <DefaultExternalLink />
+};
+
+export default {
+  title: 'Components/Shared Components/ExternalLink'
+};

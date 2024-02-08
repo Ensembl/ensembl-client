@@ -254,10 +254,11 @@ const TranscriptSummary = (props: Props) => {
             )}
             {uniprotXref?.url && (
               <ExternalReference
-                label={'UniProtKB/Swiss-Prot'}
+                label="UniProtKB/Swiss-Prot"
                 to={uniprotXref.url}
-                linkText={uniprotXref.accession_id}
-              />
+              >
+                {uniprotXref.accession_id}
+              </ExternalReference>
             )}
           </div>
         </div>
@@ -266,12 +267,9 @@ const TranscriptSummary = (props: Props) => {
       {ccdsXref?.url && (
         <div className={`${styles.row} ${styles.spaceAbove}`}>
           <div className={styles.value}>
-            <ExternalReference
-              classNames={{ label: styles.lightText }}
-              label={'CCDS'}
-              to={ccdsXref.url}
-              linkText={ccdsXref.accession_id}
-            />
+            <ExternalReference label="CCDS" to={ccdsXref.url}>
+              {ccdsXref.accession_id}
+            </ExternalReference>
           </div>
         </div>
       )}

@@ -97,14 +97,12 @@ const GeneOverview = () => {
           <div className={styles.geneName}>{getGeneName(gene.name)}</div>
           {geneNameMetadata?.accession_id && geneNameMetadata?.url && (
             <ExternalReference
-              classNames={{
-                container: styles.externalRefContainer,
-                link: styles.externalRefLink
-              }}
+              className={styles.externalReference}
               to={geneNameMetadata.url}
-              linkText={geneNameMetadata.accession_id}
               onClick={trackLink}
-            />
+            >
+              {geneNameMetadata.accession_id}
+            </ExternalReference>
           )}
         </div>
       </section>

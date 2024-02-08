@@ -176,25 +176,25 @@ export const TranscriptsListItemInfo = (
           <div className={styles.moreInfoColumn}>
             {!!transcriptNCBI && (
               <ExternalReference
-                classNames={{
-                  link: styles.externalRefLink
-                }}
-                label={'RefSeq match'}
+                label="RefSeq match"
                 to={transcriptNCBI.url}
-                linkText={transcriptNCBI.id}
                 onClick={() => handleExternalReferenceClick('RefSeq match')}
-              />
+              >
+                <span className={styles.externalRefLink}>
+                  {transcriptNCBI.id}
+                </span>
+              </ExternalReference>
             )}
             {transcriptCCDS?.url && (
               <ExternalReference
-                classNames={{
-                  link: styles.externalRefLink
-                }}
-                label={'CCDS'}
+                label="CCDS"
                 to={transcriptCCDS.url}
-                linkText={transcriptCCDS.accession_id}
                 onClick={() => handleExternalReferenceClick('CCDS')}
-              />
+              >
+                <span className={styles.externalRefLink}>
+                  {transcriptCCDS.accession_id}
+                </span>
+              </ExternalReference>
             )}
           </div>
         )}

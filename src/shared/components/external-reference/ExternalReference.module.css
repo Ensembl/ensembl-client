@@ -3,11 +3,6 @@
   font-weight: var(--font-weight-light);
 }
 
-.xrefText {
-  font-weight: var(--font-weight-light);
-  margin-left: 7px;
-}
-
 .noLink {
   margin-left: 5px;
 }

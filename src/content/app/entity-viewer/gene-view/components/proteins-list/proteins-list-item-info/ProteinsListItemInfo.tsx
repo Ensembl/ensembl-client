@@ -226,15 +226,13 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   return (
     <div className={styles.proteinExternalReference}>
       <ExternalReference
-        classNames={{
-          container: styles.externalRefContainer,
-          link: styles.externalRefLink
-        }}
+        className={styles.externalReference}
         label={props.source}
         to={url}
-        linkText={props.accessionId}
         onClick={onClick}
-      />
+      >
+        {props.accessionId}
+      </ExternalReference>
     </div>
   );
 };
