@@ -119,3 +119,12 @@ export type SpeciesStatsQueryParams = {
 export type SpeciesStatsResponse = {
   genome_stats: SpeciesStatistics;
 };
+
+export type SpeciesFileLink = {
+  dataset_type: string;
+  path: string;
+};
+
+export type SpeciesFileLinksResponse = {
+  links: SpeciesFileLink[];
+};
