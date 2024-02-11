@@ -16,7 +16,10 @@
 
 import React from 'react';
 import classnames from 'classnames';
+
 import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
 import useTranscriptConsequencesData from './useTranscriptConsequencesData';
 
@@ -28,7 +31,10 @@ import { getExpandedTranscriptConseqeuenceIds } from '../../state/variant-view/g
 import { setExpandedTranscriptConsequenceIds } from '../../state/variant-view/general/variantViewGeneralSlice';
 import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccordion';
 
+// import TranscriptVariantDiagram from './transcript-variant-diagram/TranscriptVariantDiagram';
+
 import styles from './TranscriptConsequences.module.css';
+
 
 type Props = {
   genomeId: string;
@@ -46,7 +52,7 @@ const TranscriptConsequences = (props: Props) => {
   const { currentData, isLoading } = useTranscriptConsequencesData({
     genomeId,
     variantId,
-    activeAlleleId
+    alleleId: activeAlleleId
   });
 
   if (isLoading) {
@@ -69,7 +75,7 @@ const TranscriptConsequences = (props: Props) => {
     return null;
   }
 
-  const { variant, transcriptConsequences, transcriptAllele } = currentData;
+  const { variant, transcriptConsequences, allele, geneData } = currentData;
   const panelHeader = <PanelHeader variant={variant} />;
 
   if (!transcriptConsequences) {
@@ -79,6 +85,12 @@ const TranscriptConsequences = (props: Props) => {
       </Panel>
     );
   }
+
+  const strand = geneData.slice.strand.code;
+  const alleleSequence = allele?.allele_sequence ?? '';
+  const alleleSeqReverseComplement = strand === 'reverse'
+    ? getReverseComplement(alleleSequence)
+    : '';
 
   return (
     <Panel header={panelHeader}>
@@ -90,13 +102,22 @@ const TranscriptConsequences = (props: Props) => {
               <div className={styles.transcriptAllele}>
                 <span className={styles.label}>Transcript allele</span>
                 <span className={styles.value}>
-                  {formatAlleleSequence(transcriptAllele as string)}
+                  {formatAlleleSequence(alleleSequence)}
+                  { alleleSeqReverseComplement &&
+                    ` (${formatAlleleSequence(alleleSeqReverseComplement)})`
+                  }
                 </span>
               </div>
               <div className={styles.geneDetails}>
                 <span className={styles.label}>Gene</span>
-                <span className={styles.geneSymbol}>SYM</span>
-                <span className={styles.geneStableId}>ENSG0000000000</span>
+                { geneData.symbol &&
+                <span className={styles.geneSymbol}>
+                  { geneData.symbol }
+                </span>
+                }
+                <span className={styles.geneStableId}>
+                  { geneData.stable_id }
+                </span>
               </div>
             </div>
           </div>
@@ -195,7 +216,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                       Transcript variant type
                     </span>
                     <span className={styles.value}>
-                      {transcript.consequences[0].accession_id}
+                      {transcript.consequences.map(({ value }) => value).join(', ')}
                     </span>
                   </div>
                   <div>
@@ -230,5 +251,38 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
 const TranscriptsConsequencesItemInfo = (props: { transcriptId: string }) => (
   <div>More info for {props.transcriptId}</div>
 );
+
+// const TranscriptConsequences = (props: Props) => {
+//   const { genomeId, variantId, activeAlleleId } = props;
+//   const { currentData } = useTranscriptConsequencesData({
+//     genomeId,
+//     variantId,
+//     alleleId: activeAlleleId
+//   });
+
+//   // FETCH SEQUENCE
+//   console.log({currentData});
+
+//   const panelHeader = (
+//     <div>
+//       Transcript consequences
+//     </div>
+//   )
+
+//   return (
+//     <Panel header={panelHeader}>
+//       <div className={styles.details}>
+//         { currentData &&
+//           <TranscriptVariantDiagram
+//             gene={currentData.geneData}
+//             transcript={currentData.transcriptData}
+//             variant={currentData.variant}
+//           />
+//         }
+//       </div>
+//     </Panel>
+//   );
+
+// };
 
 export default TranscriptConsequences;

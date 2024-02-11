@@ -27,9 +27,10 @@ import {
 } from 'src/shared/helpers/variantHelpers';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-import useTranscriptConsequencesData from '../transcript-consequences/useTranscriptConsequencesData';
 
 import VariantViewTab from './variant-view-tab/VariantViewTab';
+
+import type { ViewName } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
 
 import styles from './VariantViewNavigationPanel.module.css';
 
@@ -44,11 +45,6 @@ type Props = {
 const VariantViewNavigationPanel = (props: Props) => {
   const { genomeIdForUrl, variantId, activeAlleleId, view } = props;
   const { currentData } = useVariantViewNavigationData(props);
-  const { currentData: transcriptConsequenceData } =
-    useTranscriptConsequencesData(props);
-
-  const transcriptConsequenceCount =
-    transcriptConsequenceData?.transcriptConsequences?.length;
 
   const navigate = useNavigate();
 
@@ -67,23 +63,10 @@ const VariantViewNavigationPanel = (props: Props) => {
     alleleId: activeAlleleId
   };
 
-  const onVariantDefaultTabClick = () => {
-    const url = urlFor.entityViewerVariant(commonUrlParams);
-    navigate(url);
-  };
-
-  const onAlleleFrequenciesClick = () => {
+  const onViewChange = (view: ViewName | null) => {
     const url = urlFor.entityViewerVariant({
       ...commonUrlParams,
-      view: 'allele-frequencies'
-    });
-    navigate(url);
-  };
-
-  const onTranscriptConsequencesClick = () => {
-    const url = urlFor.entityViewerVariant({
-      ...commonUrlParams,
-      view: 'transcript-consequences'
+      view
     });
     navigate(url);
   };
@@ -98,17 +81,16 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="default"
         tabText={variant.name}
         labelText={variantGroupLabel}
-        onClick={onVariantDefaultTabClick}
+        onClick={() => onViewChange(null)}
         pressed={view === null}
       />
       <VariantViewTab
         viewId="transcript-consequences"
         tabText="Transcript consequences"
         labelText="Features"
-        pillContent={transcriptConsequenceCount}
-        disabled={transcriptConsequenceCount === 0}
-        onClick={onTranscriptConsequencesClick}
+        pillContent="0"
         pressed={view === 'transcript-consequences'}
+        onClick={() => onViewChange('transcript-consequences')}
       />
       <VariantViewTab
         viewId="regulatory-consequences"
@@ -123,7 +105,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         tabText="Allele frequency"
         labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
         pillContent="0"
-        onClick={onAlleleFrequenciesClick}
+        onClick={() => onViewChange('allele-frequencies')}
         pressed={view === 'allele-frequencies'}
       />
       <VariantViewTab

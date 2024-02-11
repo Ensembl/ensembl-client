@@ -19,8 +19,8 @@ import type { ExternalReference } from '../core-api/externalReference';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllelePopulationFrequency } from './variantAllelePopulationFrequency';
 import type { VariantAllelePhenotypeAssertion } from './variantAllelePhenotypeAssertion';
-import type { OntologyTermMetadata } from '../core-api/metadata';
 import type { VariantPredictedMolecularConsequence } from './variantPredictedMolecularConsequence';
+import type { OntologyTermMetadata } from '../core-api/metadata';
 
 export type VariantAllele = {
   type: 'VariantAllele';

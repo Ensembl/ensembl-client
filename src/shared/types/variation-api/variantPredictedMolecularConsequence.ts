@@ -15,10 +15,10 @@
  */
 
 export type VariantPredictedMolecularConsequence = {
-  consequences: Consequence[];
-  feature_stable_id: string;
+  feature_stable_id: string; // NOTE: this will soon be changed to stable_id
+  consequences: AlleleConsequence[];
 };
 
-type Consequence = {
-  accession_id: string;
+type AlleleConsequence = {
+  value: string;
 };

@@ -16,53 +16,74 @@
 
 import {
   useDefaultEntityViewerVariantQuery,
-  useVariantTranscriptConsequencesQuery
+  useVariantPredictedMolecularConsequencesQuery,
+  useGeneForVariantTranscriptConsequencesQuery,
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 type Params = {
   genomeId: string;
   variantId: string;
-  activeAlleleId: string;
+  alleleId: string;
 };
 
 const useTranscriptConsequencesData = (params: Params) => {
+  const { genomeId, variantId, alleleId } = params;
+
   const {
-    currentData: defaultVariantData,
+    currentData: variantData,
     isFetching: isVariantLoading,
     isError: isVariantError
   } = useDefaultEntityViewerVariantQuery({
-    genomeId: params.genomeId,
-    variantId: params.variantId
+    genomeId,
+    variantId
   });
 
+  const variantAllele = variantData?.variant
+    .alleles.find(allele => allele.urlId === alleleId);
+
   const {
-    currentData: transcriptConsequencesData,
-    isFetching: areTranscriptConsequencesLoading,
-    isError: isTranscriptConsequencesError
-  } = useVariantTranscriptConsequencesQuery(params);
+    currentData: consequencesData,
+    isFetching: areConsequencesLoading,
+    isError: isConsequencesError
+  } = useVariantPredictedMolecularConsequencesQuery({
+    genomeId,
+    variantId
+  });
 
-  if (!defaultVariantData || !transcriptConsequencesData) {
-    return {
-      currentData: null,
-      isLoading: isVariantLoading || areTranscriptConsequencesLoading,
-      isError: isVariantError || isTranscriptConsequencesError
-    };
-  }
+  // current data will contain gene stable id; but currently it doesn't
+  const consequencesForAllele = consequencesData?.variant
+    .alleles.find(allele => allele.urlId === alleleId)
+    ?.predicted_molecular_consequences;
 
-  const transcriptConsData = transcriptConsequencesData.variant.alleles.find(
-    (allele) => allele.urlId === params.activeAlleleId
-  );
+  const transcriptId = consequencesForAllele?.[0]?.feature_stable_id;
+
+  const {
+    currentData: geneData,
+    isFetching: isLoadingGeneData,
+    isError: isGeneDataError
+  } = useGeneForVariantTranscriptConsequencesQuery({
+    genomeId,
+    transcriptId: transcriptId ?? ''
+  }, {
+    skip: !transcriptId
+  });
+
+  const summaryData = variantData && consequencesData && geneData ? {
+    variant: variantData.variant,
+    allele: variantAllele,
+    geneData: geneData.transcript.gene,
+    transcriptConsequences: consequencesForAllele
+  } : null;
+
+  const isLoading = isVariantLoading || areConsequencesLoading || isLoadingGeneData;
+  const isError = isVariantError || isConsequencesError || isGeneDataError;
 
   return {
-    currentData: {
-      variant: defaultVariantData.variant,
-      transcriptAllele: transcriptConsData?.allele_sequence,
-      transcriptConsequences:
-        transcriptConsData?.predicted_molecular_consequences
-    },
-    isLoading: false,
-    isError: false
+    currentData: summaryData,
+    isLoading,
+    isError
   };
 };
+
 
 export default useTranscriptConsequencesData;
