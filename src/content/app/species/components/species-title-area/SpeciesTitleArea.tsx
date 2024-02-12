@@ -27,12 +27,14 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
-
+import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
+import InfoPill from 'src/shared/components/info-pill/InfoPill';
 import SearchIcon from 'static/icons/icon_search.svg';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { useSpeciesDetailsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import {
   SpeciesSidebarModalView,
@@ -40,9 +42,7 @@ import {
 } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
-import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
-
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 import styles from './SpeciesTitleArea.module.css';
 
@@ -51,6 +51,12 @@ const useSpecies = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
+  );
+  const { data: speciesDetails } = useSpeciesDetailsQuery(
+    activeGenomeId ?? '',
+    {
+      skip: !activeGenomeId
+    }
   );
 
   if (!currentData) {
@@ -67,7 +73,8 @@ const useSpecies = () => {
   return committedSpecies
     ? {
         species: committedSpecies,
-        iconUrl
+        iconUrl,
+        assemblyCount: speciesDetails?.number_of_genomes_in_group
       }
     : null;
 };
@@ -76,7 +83,7 @@ const SpeciesTitleArea = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { species, iconUrl } = useSpecies() || {};
+  const { species, iconUrl, assemblyCount } = useSpecies() || {};
   const [isRemoving, setIsRemoving] = useState(false);
   const { trackDeletedSpecies } = useSpeciesAnalytics();
 
@@ -114,6 +121,10 @@ const SpeciesTitleArea = () => {
         <div className={styles.speciesNameWrapper}>
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
+        </div>
+        <div className={styles.assemblyCountWrapper}>
+          <InfoPill>{assemblyCount}</InfoPill>
+          <span className={styles.assembliesLink}>Assemblies</span>
         </div>
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />

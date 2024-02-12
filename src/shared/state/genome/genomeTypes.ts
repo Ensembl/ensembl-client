@@ -62,6 +62,7 @@ export type BriefGenomeSummary = Pick<
   | 'species_taxonomy_id'
   | 'type'
   | 'is_reference'
+  | 'number_of_genomes_in_group'
 > & {
   assembly: Pick<GenomeInfo['assembly'], 'name' | 'accession_id'>;
 };

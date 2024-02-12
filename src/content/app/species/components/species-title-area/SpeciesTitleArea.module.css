@@ -40,6 +40,16 @@
   line-height: 1;
 }
 
+.assemblyCountWrapper {
+  display: inline-flex;
+  grid-area: assembly-count;
+  justify-content: space-around;
+}
+
+.assembliesLink {
+  font-size: 12px;
+}
+
 .speciesToggle {
   grid-area: usage-toggle;
 }
@@ -88,9 +98,9 @@
   .grid {
     display: grid;
     grid-template-areas:
-      'icon species-name usage-toggle search remove'
-      '. remove-message remove-message remove-message remove-message';
-    grid-template-columns: 60px fit-content(60%) minmax(200px, 680px) auto 1fr;
+      'icon species-name assembly-count usage-toggle search remove'
+      '. remove-message remove-message remove-message remove-message remove-message';
+    grid-template-columns: 60px fit-content(60%) 110px minmax(200px, 680px) auto 1fr;
     grid-template-rows: 80px auto;
   }
 
@@ -103,9 +113,9 @@
 @container species-page-title-area (min-width: 641px) and (max-width: 760px) {
   .grid {
     grid-template-areas:
-      'icon species-name usage-toggle remove'
-      '. remove-message remove-message remove-message'
-      '. search . .';
+      'icon species-name assembly-count usage-toggle remove'
+      '. remove-message remove-message remove-message .'
+      '. search . . .';
     grid-template-columns: 60px min-content auto 1fr;
     grid-template-rows: 80px auto auto;
     margin-bottom: 20px;
@@ -145,10 +155,10 @@
 @container species-page-title-area (max-width: 640px) {
   .grid {
     grid-template-areas:
-      'icon species-name .'
-      '. usage-toggle remove'
-      '. remove-message remove-message'
-      '. search .';
+      'icon species-name assembly-count .'
+      '. usage-toggle remove .'
+      '. remove-message remove-message .'
+      '. search . .';
     grid-template-columns: 60px 150px 1fr;
     grid-template-rows: 80px 0 auto 40px;
     grid-row-gap: 10px;
