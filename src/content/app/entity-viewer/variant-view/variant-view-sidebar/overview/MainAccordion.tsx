@@ -37,7 +37,9 @@ import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
-import prepareVariantSummaryData from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/prepareVariantSummaryData';
+import prepareVariantSummaryData, {
+  type PreparedVariantSummaryData
+} from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/prepareVariantSummaryData';
 import { CADDScores } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/VariantSummary';
 import { Strand } from 'src/shared/types/core-api/strand';
 
@@ -70,39 +72,7 @@ const MainAccordion = (props: Props) => {
     }
   );
 
-  const ChangeTolerance = () => {
-    if (
-      !preparedSummaryData.caddScores.length &&
-      !preparedSummaryData.gerpScore
-    ) {
-      return null;
-    } else {
-      return (
-        <>
-          <div className={styles.sectionHead}>Change tolerance</div>
-          <div className={styles.sectionContent}>
-            {!!preparedSummaryData.caddScores.length && (
-              <div className={classNames(styles.row, styles.newRowGroup)}>
-                <div className={styles.label}>CADD</div>
-                <div className={styles.value}>
-                  <CADDScores data={preparedSummaryData.caddScores} />
-                </div>
-              </div>
-            )}
-
-            {preparedSummaryData.gerpScore && (
-              <div className={classNames(styles.row, styles.labelValueWrapper)}>
-                <div className={styles.label}>GERP</div>
-                <div className={styles.value}>
-                  {preparedSummaryData.gerpScore}
-                </div>
-              </div>
-            )}
-          </div>
-        </>
-      );
-    }
-  };
+  const { caddScores, gerpScore } = preparedSummaryData;
 
   return (
     <div className={styles.accordionContainer}>
@@ -131,7 +101,7 @@ const MainAccordion = (props: Props) => {
         </AccordionItem>
 
         <section>
-          <ChangeTolerance />
+          <ChangeTolerance caddScores={caddScores} gerpScore={gerpScore} />
         </section>
 
         <section>
@@ -196,6 +166,40 @@ const MainAccordion = (props: Props) => {
       </Accordion>
     </div>
   );
+};
+
+type ChangeToleranceProps = Pick<
+  PreparedVariantSummaryData,
+  'caddScores' | 'gerpScore'
+>;
+
+const ChangeTolerance = (props: ChangeToleranceProps) => {
+  if (!props.caddScores.length && !props.gerpScore) {
+    return null;
+  } else {
+    return (
+      <>
+        <div className={styles.sectionHead}>Change tolerance</div>
+        <div className={styles.sectionContent}>
+          {!!props.caddScores.length && (
+            <div className={classNames(styles.row, styles.newRowGroup)}>
+              <div className={styles.label}>CADD</div>
+              <div className={styles.value}>
+                <CADDScores data={props.caddScores} />
+              </div>
+            </div>
+          )}
+
+          {props.gerpScore && (
+            <div className={classNames(styles.row, styles.labelValueWrapper)}>
+              <div className={styles.label}>GERP</div>
+              <div className={styles.value}>{props.gerpScore}</div>
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
 };
 
 type AllelesProps = {

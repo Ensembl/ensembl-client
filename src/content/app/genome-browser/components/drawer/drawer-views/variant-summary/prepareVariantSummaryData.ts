@@ -18,7 +18,7 @@ import memoize from 'lodash/memoize';
 
 import type { VariantDetails } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
-type PreparedVariantSummaryData = {
+export type PreparedVariantSummaryData = {
   ancestralAllele?: string;
   mostSevereConsequence?: string;
   minorAlleleFrequency?: {
