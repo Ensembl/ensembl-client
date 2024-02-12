@@ -27,6 +27,7 @@ import {
 } from 'src/shared/helpers/variantHelpers';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import useTranscriptConsequencesData from '../transcript-consequences/useTranscriptConsequencesData';
 
 import VariantViewTab from './variant-view-tab/VariantViewTab';
 
@@ -43,6 +44,12 @@ type Props = {
 const VariantViewNavigationPanel = (props: Props) => {
   const { genomeIdForUrl, variantId, activeAlleleId, view } = props;
   const { currentData } = useVariantViewNavigationData(props);
+  const { currentData: transcriptConsequenceData } =
+    useTranscriptConsequencesData(props);
+
+  const transcriptConsequenceCount =
+    transcriptConsequenceData?.transcriptConsequences?.length;
+
   const navigate = useNavigate();
 
   if (!currentData) {
@@ -73,6 +80,14 @@ const VariantViewNavigationPanel = (props: Props) => {
     navigate(url);
   };
 
+  const onTranscriptConsequencesClick = () => {
+    const url = urlFor.entityViewerVariant({
+      ...commonUrlParams,
+      view: 'transcript-consequences'
+    });
+    navigate(url);
+  };
+
   const componentClasses = classNames(styles.grid, {
     [styles.withBottomBorder]: !props.view
   });
@@ -90,9 +105,10 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="transcript-consequences"
         tabText="Transcript consequences"
         labelText="Features"
-        pillContent="0"
-        pressed={false}
-        disabled={true}
+        pillContent={transcriptConsequenceCount}
+        disabled={transcriptConsequenceCount === 0}
+        onClick={onTranscriptConsequencesClick}
+        pressed={view === 'transcript-consequences'}
       />
       <VariantViewTab
         viewId="regulatory-consequences"

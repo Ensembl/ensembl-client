@@ -1,0 +1,112 @@
+.container {
+  padding-left: var(--double-standard-gutter);
+  margin-top: 20px;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+/* Note: might need changing after Panel is refactored */
+.panelHeader {
+  padding-left: calc(var(--standard-gutter) - 10px);
+}
+
+.variantName {
+  font-weight: var(--font-weight-bold);
+}
+
+.variantType {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+  margin: 0 10px;
+}
+
+.colonSeparator {
+  font-weight: var(--font-weight-bold);
+}
+
+.transcriptLeftColumn {
+  padding-top: 6px;
+}
+
+.transcriptId {
+  color: var(--color-blue);
+  cursor: pointer;
+  padding-top: 8px;
+}
+
+.transcriptMiddleColumn {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-orange);
+  padding: 6px 0;
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+}
+.value {
+  padding-left: 10px;
+}
+
+.transcriptConsqTitle {
+  margin-left: 20px;
+}
+
+.transcriptsList {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+.content {
+  position: relative;
+  padding-top: 36px;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 160px 18px 695px 27px 180px;
+  padding: 5px 0;
+  font-size: 12px;
+  position: relative;
+}
+
+.header {
+  margin-bottom: 25px;
+}
+
+.headerMiddleColumn {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.headerRightColumn {
+  padding: 6px 0;
+}
+
+.geneDetails span {
+  padding-left: 8px; 
+}
+
+.geneDetails .geneStableId {
+  font-weight: var(--font-weight-normal);;
+}
+
+.geneDetails .geneSymbol {
+  font-weight: var(--font-weight-bold);;
+}
+
+.left {
+  grid-column: 1/2;
+  text-align: right;
+}
+
+.middle {
+  grid-column: 3/4;
+  position: relative;
+}
+
+.right {
+  grid-column: 5/6;
+}

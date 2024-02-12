@@ -213,7 +213,7 @@ const Allele = (props: {
   }
 };
 
-const formatAlleleSequence = (sequence: string) => {
+export const formatAlleleSequence = (sequence: string) => {
   const maxCharacters = 18;
 
   return sequence.length > maxCharacters

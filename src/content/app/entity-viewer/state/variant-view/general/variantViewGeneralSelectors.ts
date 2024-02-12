@@ -41,3 +41,12 @@ export const getAlleleIdForVariant = (
   const slice = getSliceForVariant(state, genomeId, variantId);
   return slice?.alleleId;
 };
+
+export const getExpandedTranscriptConseqeuenceIds = (
+  state: RootState,
+  genomeId: string,
+  variantId: string
+) => {
+  const transcriptsSlice = getSliceForVariant(state, genomeId, variantId);
+  return transcriptsSlice?.expandedTranscriptConseqeuenceIds ?? [];
+};
