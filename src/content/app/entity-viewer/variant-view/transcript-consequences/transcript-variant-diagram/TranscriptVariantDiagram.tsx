@@ -20,12 +20,13 @@ import { scaleLinear, interpolateRound } from 'd3';
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 
 import type { TranscriptConsequencesData } from '../useTranscriptConsequencesData';
+import type { TranscriptDetailsData } from '../useTranscriptDetails';
 
 import styles from './TranscriptVariantDiagram.module.css';
 
 type Props = {
   gene: TranscriptConsequencesData['geneData'];
-  transcript: TranscriptConsequencesData['transcriptData'];
+  transcript: TranscriptDetailsData['transcriptData'];
   variant: TranscriptConsequencesData['variant'];
 };
 

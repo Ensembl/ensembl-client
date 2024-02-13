@@ -20,31 +20,25 @@ import classnames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
-
-import useTranscriptConsequencesData from './useTranscriptConsequencesData';
-
-import Panel from 'src/shared/components/panel/Panel';
-import { CircleLoader } from 'src/shared/components/loader';
-
-import { VariantPredictedMolecularConsequence } from 'src/shared/types/variation-api/variantPredictedMolecularConsequence';
 import { getExpandedTranscriptConseqeuenceIds } from '../../state/variant-view/general/variantViewGeneralSelectors';
 import { setExpandedTranscriptConsequenceIds } from '../../state/variant-view/general/variantViewGeneralSlice';
 import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccordion';
 
-// import TranscriptVariantDiagram from './transcript-variant-diagram/TranscriptVariantDiagram';
+import useTranscriptConsequencesData, {
+  type TranscriptConsequencesData
+} from './useTranscriptConsequencesData';
+
+import Panel from 'src/shared/components/panel/Panel';
+import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './TranscriptConsequences.module.css';
-
 
 type Props = {
   genomeId: string;
   variantId: string;
   activeAlleleId: string;
 };
-
-type TranscriptConsequencesData = NonNullable<
-  ReturnType<typeof useTranscriptConsequencesData>['currentData']
->;
 
 const TranscriptConsequences = (props: Props) => {
   const { genomeId, variantId, activeAlleleId } = props;
@@ -71,7 +65,7 @@ const TranscriptConsequences = (props: Props) => {
         </div>
       </Panel>
     );
-  } else if (!currentData) {
+  } else if (!currentData || !currentData.allele) {
     return null;
   }
 
@@ -88,9 +82,8 @@ const TranscriptConsequences = (props: Props) => {
 
   const strand = geneData.slice.strand.code;
   const alleleSequence = allele?.allele_sequence ?? '';
-  const alleleSeqReverseComplement = strand === 'reverse'
-    ? getReverseComplement(alleleSequence)
-    : '';
+  const alleleSeqReverseComplement =
+    strand === 'reverse' ? getReverseComplement(alleleSequence) : '';
 
   return (
     <Panel header={panelHeader}>
@@ -103,20 +96,17 @@ const TranscriptConsequences = (props: Props) => {
                 <span className={styles.label}>Transcript allele</span>
                 <span className={styles.value}>
                   {formatAlleleSequence(alleleSequence)}
-                  { alleleSeqReverseComplement &&
-                    ` (${formatAlleleSequence(alleleSeqReverseComplement)})`
-                  }
+                  {alleleSeqReverseComplement &&
+                    ` (${formatAlleleSequence(alleleSeqReverseComplement)})`}
                 </span>
               </div>
               <div className={styles.geneDetails}>
                 <span className={styles.label}>Gene</span>
-                { geneData.symbol &&
-                <span className={styles.geneSymbol}>
-                  { geneData.symbol }
-                </span>
-                }
+                {geneData.symbol && (
+                  <span className={styles.geneSymbol}>{geneData.symbol}</span>
+                )}
                 <span className={styles.geneStableId}>
-                  { geneData.stable_id }
+                  {geneData.stable_id}
                 </span>
               </div>
             </div>
@@ -129,6 +119,9 @@ const TranscriptConsequences = (props: Props) => {
           transcriptConsequences={transcriptConsequences}
           genomeId={genomeId}
           variantId={variantId}
+          gene={geneData}
+          variant={variant}
+          allele={allele}
         />
       </div>
     </Panel>
@@ -153,31 +146,32 @@ const PanelHeader = (props: {
 };
 
 const TranscriptConsquencesTable = (props: {
+  genomeId: string;
+  variantId: string;
   transcriptConsequences: NonNullable<
     TranscriptConsequencesData['transcriptConsequences']
   >;
-  genomeId: string;
-  variantId: string;
+  gene: TranscriptConsequencesData['geneData'];
+  allele: NonNullable<TranscriptConsequencesData['allele']>;
+  variant: TranscriptConsequencesData['variant'];
 }) => {
-  const { transcriptConsequences, genomeId, variantId } = props;
-
-  return (
-    <TranscriptConsequencesList
-      transcriptConsequences={transcriptConsequences}
-      genomeId={genomeId}
-      variantId={variantId}
-    />
-  );
+  // FIXME: remove TranscriptConsquencesTable component?
+  return <TranscriptConsequencesList {...props} />;
 };
 
 type TranscriptConsequencesListProps = {
-  transcriptConsequences: VariantPredictedMolecularConsequence[];
   genomeId: string;
   variantId: string;
+  transcriptConsequences: NonNullable<
+    TranscriptConsequencesData['transcriptConsequences']
+  >;
+  gene: TranscriptConsequencesData['geneData'];
+  allele: NonNullable<TranscriptConsequencesData['allele']>;
+  variant: TranscriptConsequencesData['variant'];
 };
 
 const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
-  const { genomeId, variantId } = props;
+  const { genomeId, variantId, gene, allele, variant } = props;
   const expandedTranscriptIds = useAppSelector((state) =>
     getExpandedTranscriptConseqeuenceIds(state, genomeId, variantId)
   );
@@ -216,7 +210,9 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                       Transcript variant type
                     </span>
                     <span className={styles.value}>
-                      {transcript.consequences.map(({ value }) => value).join(', ')}
+                      {transcript.consequences
+                        .map(({ value }) => value)
+                        .join(', ')}
                     </span>
                   </div>
                   <div>
@@ -238,51 +234,22 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
           </div>
 
           {expandedTranscriptIds.includes(transcript.feature_stable_id) ? (
-            <TranscriptsConsequencesItemInfo
-              transcriptId={transcript.feature_stable_id}
-            />
+            <div className={styles.row}>
+              <div className={styles.middle}>
+                <TranscriptConsequenceDetails
+                  genomeId={genomeId}
+                  transcriptId={transcript.feature_stable_id}
+                  gene={gene}
+                  allele={allele}
+                  variant={variant}
+                />
+              </div>
+            </div>
           ) : null}
         </div>
       ))}
     </div>
   );
 };
-
-const TranscriptsConsequencesItemInfo = (props: { transcriptId: string }) => (
-  <div>More info for {props.transcriptId}</div>
-);
-
-// const TranscriptConsequences = (props: Props) => {
-//   const { genomeId, variantId, activeAlleleId } = props;
-//   const { currentData } = useTranscriptConsequencesData({
-//     genomeId,
-//     variantId,
-//     alleleId: activeAlleleId
-//   });
-
-//   // FETCH SEQUENCE
-//   console.log({currentData});
-
-//   const panelHeader = (
-//     <div>
-//       Transcript consequences
-//     </div>
-//   )
-
-//   return (
-//     <Panel header={panelHeader}>
-//       <div className={styles.details}>
-//         { currentData &&
-//           <TranscriptVariantDiagram
-//             gene={currentData.geneData}
-//             transcript={currentData.transcriptData}
-//             variant={currentData.variant}
-//           />
-//         }
-//       </div>
-//     </Panel>
-//   );
-
-// };
 
 export default TranscriptConsequences;

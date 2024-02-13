@@ -17,7 +17,7 @@
 import {
   useDefaultEntityViewerVariantQuery,
   useVariantPredictedMolecularConsequencesQuery,
-  useGeneForVariantTranscriptConsequencesQuery,
+  useGeneForVariantTranscriptConsequencesQuery
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 type Params = {
@@ -25,6 +25,10 @@ type Params = {
   variantId: string;
   alleleId: string;
 };
+
+export type TranscriptConsequencesData = NonNullable<
+  ReturnType<typeof useTranscriptConsequencesData>['currentData']
+>;
 
 const useTranscriptConsequencesData = (params: Params) => {
   const { genomeId, variantId, alleleId } = params;
@@ -38,8 +42,9 @@ const useTranscriptConsequencesData = (params: Params) => {
     variantId
   });
 
-  const variantAllele = variantData?.variant
-    .alleles.find(allele => allele.urlId === alleleId);
+  const variantAllele = variantData?.variant.alleles.find(
+    (allele) => allele.urlId === alleleId
+  );
 
   const {
     currentData: consequencesData,
@@ -51,9 +56,9 @@ const useTranscriptConsequencesData = (params: Params) => {
   });
 
   // current data will contain gene stable id; but currently it doesn't
-  const consequencesForAllele = consequencesData?.variant
-    .alleles.find(allele => allele.urlId === alleleId)
-    ?.predicted_molecular_consequences;
+  const consequencesForAllele = consequencesData?.variant.alleles.find(
+    (allele) => allele.urlId === alleleId
+  )?.predicted_molecular_consequences;
 
   const transcriptId = consequencesForAllele?.[0]?.feature_stable_id;
 
@@ -61,21 +66,28 @@ const useTranscriptConsequencesData = (params: Params) => {
     currentData: geneData,
     isFetching: isLoadingGeneData,
     isError: isGeneDataError
-  } = useGeneForVariantTranscriptConsequencesQuery({
-    genomeId,
-    transcriptId: transcriptId ?? ''
-  }, {
-    skip: !transcriptId
-  });
+  } = useGeneForVariantTranscriptConsequencesQuery(
+    {
+      genomeId,
+      transcriptId: transcriptId ?? ''
+    },
+    {
+      skip: !transcriptId
+    }
+  );
 
-  const summaryData = variantData && consequencesData && geneData ? {
-    variant: variantData.variant,
-    allele: variantAllele,
-    geneData: geneData.transcript.gene,
-    transcriptConsequences: consequencesForAllele
-  } : null;
+  const summaryData =
+    variantData && consequencesData && geneData
+      ? {
+          variant: variantData.variant,
+          allele: variantAllele,
+          geneData: geneData.transcript.gene,
+          transcriptConsequences: consequencesForAllele
+        }
+      : null;
 
-  const isLoading = isVariantLoading || areConsequencesLoading || isLoadingGeneData;
+  const isLoading =
+    isVariantLoading || areConsequencesLoading || isLoadingGeneData;
   const isError = isVariantError || isConsequencesError || isGeneDataError;
 
   return {
@@ -84,6 +96,5 @@ const useTranscriptConsequencesData = (params: Params) => {
     isError
   };
 };
-
 
 export default useTranscriptConsequencesData;
