@@ -20,7 +20,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type {
   SpeciesStatistics,
-  SpeciesFileLinksResponse
+  SpeciesFtpLinksResponse
 } from './speciesApiTypes';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
@@ -47,11 +47,11 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
       })
     }),
-    speciesFileLinks: builder.query<SpeciesFileLinksResponse, string>({
+    speciesFileLinks: builder.query<SpeciesFtpLinksResponse, string>({
       /*query: (genomeId) => ({
-        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/ftplinks`
       })*/
-      queryFn: async (genomeId) => {
+      queryFn: async () => {
         //eslint-disable-line
         const { mockFtpLinks } = await import('./fixtures/mockFtpLinks');
         return { data: mockFtpLinks };
@@ -63,5 +63,5 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
 export const {
   useGetSpeciesStatisticsQuery,
   useSpeciesDetailsQuery,
-  useSpeciesFileLinksQuery
+  useSpeciesFtpLinksQuery
 } = speciesApiSlice;

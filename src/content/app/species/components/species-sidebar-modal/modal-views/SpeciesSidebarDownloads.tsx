@@ -19,7 +19,7 @@ import React from 'react';
 import { useAppSelector } from 'src/store';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 
-import { useSpeciesFileLinksQuery } from 'src/content/app/species/state/api/speciesApiSlice';
+import { useSpeciesFtpLinksQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
@@ -27,14 +27,14 @@ import styles from './SpeciesSidebarDownloads.module.css';
 
 const SpeciesSidebarDownloads = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
-  const { data: fileLinksResponse } = useSpeciesFileLinksQuery(activeGenomeId, {
+  const { data: ftpLinksResponse } = useSpeciesFtpLinksQuery(activeGenomeId, {
     skip: !activeGenomeId
   });
-  const fileLinks = fileLinksResponse?.links || [];
+  const ftpLinks = ftpLinksResponse || [];
   const linkSections: Record<string, string> = {};
 
-  for (const link of fileLinks) {
-    linkSections[link.dataset_type] = link.path;
+  for (const link of ftpLinks) {
+    linkSections[link.dataset] = link.url;
   }
 
   return (
@@ -42,49 +42,49 @@ const SpeciesSidebarDownloads = () => {
       {linkSections.assembly && (
         <section>
           <div className={styles.sectionHead}>Assembly</div>
-          <SpeciesFilesLink title="DNA sequence" link={linkSections.assembly}>
+          <SpeciesFtpLink title="DNA sequence" link={linkSections.assembly}>
             FASTA
-          </SpeciesFilesLink>
+          </SpeciesFtpLink>
         </section>
       )}
       <section>
         <div className={styles.sectionHead}>Annotation</div>
         {linkSections.genebuild && (
-          <SpeciesFilesLink
+          <SpeciesFtpLink
             title="Genes, cDNA, ncRNA, proteins"
             link={linkSections.genebuild}
           >
             FASTA/GTF/GFF3
-          </SpeciesFilesLink>
+          </SpeciesFtpLink>
         )}
         {linkSections.variation && (
-          <SpeciesFilesLink title="Variation" link={linkSections.variation}>
+          <SpeciesFtpLink title="Variation" link={linkSections.variation}>
             VCF
-          </SpeciesFilesLink>
+          </SpeciesFtpLink>
         )}
         {linkSections.homologies && (
-          <SpeciesFilesLink title="Homologies" link={linkSections.homologies}>
+          <SpeciesFtpLink title="Homologies" link={linkSections.homologies}>
             TSV
-          </SpeciesFilesLink>
+          </SpeciesFtpLink>
         )}
         {linkSections.regulation && (
-          <SpeciesFilesLink title="Regulation" link={linkSections.regulation}>
+          <SpeciesFtpLink title="Regulation" link={linkSections.regulation}>
             BigBED/TSV/GFF3/BigWig
-          </SpeciesFilesLink>
+          </SpeciesFtpLink>
         )}
       </section>
     </div>
   );
 };
 
-const SpeciesFilesLink = (props: {
+const SpeciesFtpLink = (props: {
   title: string;
   link: string;
   children: React.ReactNode;
 }) => {
   return (
-    <div className={styles.speciesFilesLink}>
-      <div className={styles.speciesFilesLinkTitle}>{props.title}</div>
+    <div className={styles.SpeciesFtpLink}>
+      <div className={styles.SpeciesFtpLinkTitle}>{props.title}</div>
       <ExternalLink to={props.link}>{props.children}</ExternalLink>
     </div>
   );

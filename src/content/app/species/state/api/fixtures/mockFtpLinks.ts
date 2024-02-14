@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-import type { SpeciesFileLinksResponse } from '../speciesApiTypes';
+import type { SpeciesFtpLinksResponse } from '../speciesApiTypes';
 
-export const mockFtpLinks = {
-  links: [
-    {
-      dataset_type: 'genebuild',
-      path: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/genebuild/GENCODE44'
-    },
-    {
-      dataset_type: 'assembly',
-      path: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/genome'
-    },
-    {
-      dataset_type: 'variation',
-      path: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/variation/GENCODE44'
-    },
-    {
-      dataset_type: 'homologies',
-      path: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/homology/GENCODE44'
-    },
-    {
-      dataset_type: 'regulation',
-      path: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/regulation'
-    }
-  ]
-} satisfies SpeciesFileLinksResponse;
+export const mockFtpLinks = [
+  {
+    dataset: 'genebuild',
+    url: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/genebuild/GENCODE44'
+  },
+  {
+    dataset: 'assembly',
+    url: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/genome'
+  },
+  {
+    dataset: 'variation',
+    url: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/variation/GENCODE44'
+  },
+  {
+    dataset: 'homologies',
+    url: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/homology/GENCODE44'
+  },
+  {
+    dataset: 'regulation',
+    url: 'https://ftp.ebi.ac.uk/pub/databases/ensembl/organisms/Homo_sapiens/GCA_000001405.29/ensembl/regulation'
+  }
+] satisfies SpeciesFtpLinksResponse;

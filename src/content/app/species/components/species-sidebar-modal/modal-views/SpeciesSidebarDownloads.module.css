@@ -10,15 +10,15 @@
   margin-top: 30px;
 }
 
-.speciesFilesLink{
+.SpeciesFtpLink{
   margin-left: 10px;
 }
 
-.speciesFilesLink:not(:last-child) {
+.SpeciesFtpLink:not(:last-child) {
   margin-bottom: 25px;
 }
 
-.speciesFilesLinkTitle{
+.SpeciesFtpLinkTitle{
   font-weight: var(--font-weight-light);
   margin-bottom: 10px;
 }
