@@ -77,6 +77,7 @@
 
 .modalLink {
   display: inline-flex;
+  font-size: 12px;
   align-items: center;
   color: var(--color-blue);
   cursor: pointer;

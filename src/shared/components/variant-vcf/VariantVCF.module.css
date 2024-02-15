@@ -2,7 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   column-gap: 2ch;
-  row-gap: 1ch;  
+  row-gap: 1ch;
+  --var-copy-font-size: 12px;
 }
 
 .vcfString {

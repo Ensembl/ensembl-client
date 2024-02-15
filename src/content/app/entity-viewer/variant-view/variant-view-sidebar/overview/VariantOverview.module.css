@@ -35,11 +35,11 @@
 .variantType {
   font-size: 12px;
   font-weight: var(--font-weight-light);
-  margin-left: 0.6rem;
+  margin-left: 12px;
 }
 
 .labelTextStrong {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: var(--font-weight-bold);
 }
 
