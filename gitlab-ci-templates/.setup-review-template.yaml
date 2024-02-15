@@ -5,7 +5,7 @@
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - git clone --depth 1 --branch review-on-newk8s https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - kubectl create namespace $CI_COMMIT_REF_SLUG 
+    - kubectl create namespace ${CI_COMMIT_REF_SLUG} --dry-run=client -o yaml | kubectl apply -f -
     
   script:
     # Setup Ingress for default backend
