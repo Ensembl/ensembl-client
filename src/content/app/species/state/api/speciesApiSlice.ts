@@ -48,14 +48,9 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
       })
     }),
     speciesFtpLinks: builder.query<SpeciesFtpLinksResponse, string>({
-      /*query: (genomeId) => ({
+      query: (genomeId) => ({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/ftplinks`
-      })*/
-      queryFn: async () => {
-        //eslint-disable-line
-        const { mockFtpLinks } = await import('./fixtures/mockFtpLinks');
-        return { data: mockFtpLinks };
-      }
+      })
     })
   })
 });
