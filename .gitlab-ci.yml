@@ -405,7 +405,7 @@ Dev:wp51:HL:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -417,7 +417,7 @@ Pub:Dev-HL:wp51:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
