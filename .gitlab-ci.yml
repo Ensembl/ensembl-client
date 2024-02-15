@@ -125,16 +125,6 @@ variables:
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template to deploy to WP k8s cluster
-.deploy:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  script:
-  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-  - git -C ensembl-k8s-manifests/ checkout wp-k8s
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
 # Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
