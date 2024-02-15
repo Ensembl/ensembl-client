@@ -71,7 +71,7 @@ variables:
     - docker logout $CI_REGISTRY
 
 .publish_assets:
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   stage: deploy
   environment:
     name: jobs/k8s-job
