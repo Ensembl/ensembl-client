@@ -15,6 +15,11 @@
  */
 
 import {
+  MAX_REFERENCE_ALLELE_DISPLAY_LENGTH,
+  MIN_FLANKING_SEQUENCE_LENGTH
+} from '../variant-image/variantImageConstants';
+
+import {
   calculateSliceStart,
   calculateSliceEnd
 } from 'src/content/app/entity-viewer/variant-view/variant-image/useVariantImageData';
@@ -112,7 +117,7 @@ const useGenomicRegionData = (params: {
   gene?: GeneForVariantTranscriptConsequencesResponse['transcript']['gene'];
   transcript?: TranscriptForVariantTranscriptConsequencesResponse['transcript'];
 }) => {
-  const { gene, variant, allele } = params;
+  const { gene, transcript, variant, allele } = params;
   const variantStart = variant?.slice.location.start;
   const variantEnd = variant?.slice.location.end;
   const alleleType = allele?.allele_type.value;
@@ -166,14 +171,14 @@ const useGenomicRegionData = (params: {
     }
   );
 
-  const variantToGeneStartDistance =
+  const variantToTranscriptStartDistance =
     strand === 'forward'
-      ? (variantStart ?? 0) - (gene?.slice.location.start ?? 0)
-      : (gene?.slice.location.end ?? 0) - (variantEnd ?? 0);
-  const variantToGeneEndDistance =
+      ? (variantStart ?? 0) - (transcript?.slice.location.start ?? 0)
+      : (transcript?.slice.location.end ?? 0) - (variantEnd ?? 0);
+  const variantToTranscriptEndDistance =
     strand === 'forward'
-      ? (gene?.slice.location.end ?? 0) - (variantEnd ?? 0)
-      : (variantStart ?? 0) - (gene?.slice.location.start ?? 0);
+      ? (transcript?.slice.location.end ?? 0) - (variantEnd ?? 0)
+      : (variantStart ?? 0) - (transcript?.slice.location.start ?? 0);
 
   alleleSequence =
     strand === 'forward'
@@ -189,14 +194,83 @@ const useGenomicRegionData = (params: {
         currentData: {
           genomicSequence,
           alleleSequence,
-          variantToGeneStartDistance,
-          variantToGeneEndDistance
+          variantToTranscriptStartDistance,
+          variantToTranscriptEndDistance
         }
       }
     : {
         isLoading,
         isError
       };
+};
+
+/**
+ * Calculate the number of nucleotides to show to the left of the variant.
+ * (Assume that the input variant start coordinate has been corrected for the possible presence of an anchor base).
+ * The midpoint of the variant sequence will be displayed in the middle of the screen.
+ */
+export const getDistanceToSliceStart = (params: {
+  variantStart: number;
+  variantLength: number;
+  transcriptStart: number;
+  strand: 'forward' | 'reverse';
+}) => {
+  const { variantStart, variantLength, transcriptStart, strand } = params;
+  const halfMaxReferenceAlleleDisplayLength = Math.floor(
+    MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2
+  );
+
+  // Even-length variants have their extra nucleotide to the left of the midpoint
+  let halfVariantLength = Math.floor(variantLength / 2);
+
+  if (strand === 'reverse' && variantLength % 2 === 0) {
+    halfVariantLength -= 1;
+  }
+
+  // how many more nucleotides can fit in the slot dedicated to reference allele
+  const remainderForVariantSection =
+    halfMaxReferenceAlleleDisplayLength - halfVariantLength;
+  const maxDistanceToSliceStart =
+    MIN_FLANKING_SEQUENCE_LENGTH + remainderForVariantSection;
+  const distanceToTranscriptStart = variantStart - transcriptStart;
+
+  // in case the variant starts right near the start of the transcript
+  return Math.min(maxDistanceToSliceStart, distanceToTranscriptStart);
+};
+
+/**
+ * Calculates the number of nucleotides to show to the right of the variant
+ * (i.e. distance from variant end to the end of the slice).
+ * Similar to getDistanceToSliceStart; but for the transcript end
+ */
+export const getDistanceToSliceEnd = (params: {
+  variantStart: number;
+  variantLength: number;
+  transcriptEnd: number;
+  strand: 'forward' | 'reverse';
+}) => {
+  const { variantStart, variantLength, transcriptEnd, strand } = params;
+  const halfMaxReferenceAlleleDisplayLength = Math.floor(
+    MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2
+  );
+
+  // Even-length variants have their extra nucleotide to the left of the midpoint
+  let halfVariantLength = Math.floor(variantLength / 2);
+
+  if (strand === 'forward' && variantLength % 2 === 0) {
+    halfVariantLength -= 1;
+  }
+
+  // how many more nucleotides can fit in the slot dedicated to reference allele
+  const remainderForVariantSection =
+    halfMaxReferenceAlleleDisplayLength - halfVariantLength;
+  const maxDistanceToSliceEnd =
+    MIN_FLANKING_SEQUENCE_LENGTH + remainderForVariantSection;
+  const distanceToTranscriptEnd =
+    transcriptEnd - Math.max(variantStart + variantLength - 1, variantStart);
+
+  // in case the variant starts right near the end of the transcript
+  return Math.min(maxDistanceToSliceEnd, distanceToTranscriptEnd);
 };
 
 export default useTranscriptDetails;

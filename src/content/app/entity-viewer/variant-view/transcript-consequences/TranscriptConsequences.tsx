@@ -145,6 +145,7 @@ const PanelHeader = (props: {
   );
 };
 
+// FIXME: remove this component?
 const TranscriptConsquencesTable = (props: {
   genomeId: string;
   variantId: string;
@@ -155,7 +156,6 @@ const TranscriptConsquencesTable = (props: {
   allele: NonNullable<TranscriptConsequencesData['allele']>;
   variant: TranscriptConsequencesData['variant'];
 }) => {
-  // FIXME: remove TranscriptConsquencesTable component?
   return <TranscriptConsequencesList {...props} />;
 };
 
@@ -234,17 +234,13 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
           </div>
 
           {expandedTranscriptIds.includes(transcript.feature_stable_id) ? (
-            <div className={styles.row}>
-              <div className={styles.middle}>
-                <TranscriptConsequenceDetails
-                  genomeId={genomeId}
-                  transcriptId={transcript.feature_stable_id}
-                  gene={gene}
-                  allele={allele}
-                  variant={variant}
-                />
-              </div>
-            </div>
+            <TranscriptConsequenceDetails
+              genomeId={genomeId}
+              transcriptId={transcript.feature_stable_id}
+              gene={gene}
+              allele={allele}
+              variant={variant}
+            />
           ) : null}
         </div>
       ))}

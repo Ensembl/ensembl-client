@@ -23,6 +23,8 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
 
+import commonStyles from '../TranscriptConsequences.module.css';
+
 type Props = {
   genomeId: string;
   transcriptId: string;
@@ -40,19 +42,35 @@ const TranscriptConsequenceDetails = (props: Props) => {
   const transcript = transcriptDetailsData?.transcriptData;
 
   if (isLoading) {
-    return <CircleLoader />;
+    return (
+      <div className={commonStyles.row}>
+        <div className={commonStyles.middle}>
+          <CircleLoader />;
+        </div>
+      </div>
+    );
   } else if (!transcript) {
     return null;
   }
 
   return (
-    <div>
-      <TranscriptVariantDiagram
-        gene={gene}
-        transcript={transcript}
-        variant={variant}
-      />
-    </div>
+    <>
+      <div className={commonStyles.row}>
+        <div className={commonStyles.left}>Genomic</div>
+        <div className={commonStyles.middle}></div>
+      </div>
+
+      <div className={commonStyles.row}>
+        <div className={commonStyles.left}>Transcript</div>
+        <div className={commonStyles.middle}>
+          <TranscriptVariantDiagram
+            gene={gene}
+            transcript={transcript}
+            variant={variant}
+          />
+        </div>
+      </div>
+    </>
   );
 };
 
