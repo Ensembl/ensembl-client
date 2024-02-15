@@ -180,11 +180,8 @@ Test:
   - npm run check-types
   - npm run test
 
-  only:
-  - /^nodeploy\/.*$/
-  except:
-  - dev
-  - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -214,11 +211,8 @@ Test_N_Build:review:
   variables:
     ENVIRONMENT: development
     API_HOST: ""
-
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
 
 # Job to build node docker image for staging environment
 # dev branch -> Staging
@@ -259,11 +253,8 @@ Nginx:review:
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
@@ -274,11 +265,8 @@ Node:review:
   variables:
     DEPLOYENV: dev
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
