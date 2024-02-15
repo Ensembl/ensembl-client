@@ -206,7 +206,7 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "review-on-newk8s"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -246,7 +246,7 @@ Node:Live:
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "review-on-newk8s"
+    - if: $CI_COMMIT_BRANCH == "master"
   needs:
     - Test_N_Build
 
@@ -405,19 +405,19 @@ Dev:wp51:HL:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "review-on-newk8s"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   needs:
     - Test_N_Build
     - Node:Live
 
-Pub:Live-HL:wp51:
+Pub:Dev-HL:wp51:
   extends: .publish_assets-newcluster
   environment:
     name: wp51-hl-development
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "review-on-newk8s"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   needs:
     - Test_N_Build
     - Node:Live
