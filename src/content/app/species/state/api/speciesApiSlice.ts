@@ -47,7 +47,7 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
       })
     }),
-    speciesFileLinks: builder.query<SpeciesFtpLinksResponse, string>({
+    speciesFtpLinks: builder.query<SpeciesFtpLinksResponse, string>({
       /*query: (genomeId) => ({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/ftplinks`
       })*/
