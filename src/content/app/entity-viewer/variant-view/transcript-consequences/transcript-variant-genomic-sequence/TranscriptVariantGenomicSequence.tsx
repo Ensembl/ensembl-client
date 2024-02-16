@@ -16,19 +16,33 @@
 
 import React from 'react';
 
+import SequenceLetterBlock from 'src/content/app/entity-viewer/variant-view/variant-image/sequence-letter-block/SequenceLetterBlock';
+
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
+
+import styles from './TranscriptVariantGenomicSequence.module.css';
 
 type Props = {
   sequence: string;
-  alleleStart: number;
-  alleleEnd: number;
+  variantStart: number; // where the reference allele starts on the genomic sequence
+  variantEnd: number; // where the reference allele ends on the genomic sequence
   allele: NonNullable<TranscriptConsequencesData['allele']>;
 };
 
 const TranscriptVariantGenomicSequence = (props: Props) => {
   const { sequence } = props;
 
-  return <div>{sequence}</div>;
+  return (
+    <div>
+      {sequence.split('').map((letter, index) => (
+        <SequenceLetterBlock
+          letter={letter}
+          className={styles.letter}
+          key={index}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default TranscriptVariantGenomicSequence;

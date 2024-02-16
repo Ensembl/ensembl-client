@@ -19,6 +19,7 @@ import React from 'react';
 import useTranscriptDetails from '../useTranscriptDetails';
 
 import TranscriptVariantDiagram from '../transcript-variant-diagram/TranscriptVariantDiagram';
+import TranscriptVariantGenomicSequence from '../transcript-variant-genomic-sequence/TranscriptVariantGenomicSequence';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
@@ -34,12 +35,15 @@ type Props = {
 };
 
 const TranscriptConsequenceDetails = (props: Props) => {
-  const { gene, variant } = props;
+  const { gene, variant, allele } = props;
 
   const { currentData: transcriptDetailsData, isLoading } =
     useTranscriptDetails(props);
 
   const transcript = transcriptDetailsData?.transcriptData;
+  const genomicRegionData = transcriptDetailsData?.genomicRegionData;
+  const variantStart = variant.slice.location.start;
+  const variantEnd = variant.slice.location.end;
 
   if (isLoading) {
     return (
@@ -49,7 +53,7 @@ const TranscriptConsequenceDetails = (props: Props) => {
         </div>
       </div>
     );
-  } else if (!transcript) {
+  } else if (!transcript || !genomicRegionData) {
     return null;
   }
 
@@ -57,11 +61,18 @@ const TranscriptConsequenceDetails = (props: Props) => {
     <>
       <div className={commonStyles.row}>
         <div className={commonStyles.left}>Genomic</div>
-        <div className={commonStyles.middle}></div>
+        <div className={commonStyles.middle}>
+          <TranscriptVariantGenomicSequence
+            sequence={genomicRegionData.genomicSequence}
+            allele={allele}
+            variantStart={variantStart}
+            variantEnd={variantEnd}
+          />
+        </div>
       </div>
 
       <div className={commonStyles.row}>
-        <div className={commonStyles.left}>Transcript</div>
+        <div className={commonStyles.left}>Transcript position in gene</div>
         <div className={commonStyles.middle}>
           <TranscriptVariantDiagram
             gene={gene}

@@ -19,10 +19,10 @@ import {
   MIN_FLANKING_SEQUENCE_LENGTH
 } from '../variant-image/variantImageConstants';
 
-import {
-  calculateSliceStart,
-  calculateSliceEnd
-} from 'src/content/app/entity-viewer/variant-view/variant-image/useVariantImageData';
+// import {
+//   calculateSliceStart,
+//   calculateSliceEnd
+// } from 'src/content/app/entity-viewer/variant-view/variant-image/useVariantImageData';
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
 import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
@@ -119,34 +119,52 @@ const useGenomicRegionData = (params: {
 }) => {
   const { gene, transcript, variant, allele } = params;
   const variantStart = variant?.slice.location.start;
-  const variantEnd = variant?.slice.location.end;
   const alleleType = allele?.allele_type.value;
   let alleleSequence = allele?.allele_sequence ?? '';
   let variantLength = variant?.slice.location.length ?? 0;
-  const regionLength = gene?.slice.region.length;
   const regionChecksum = gene?.slice.region.sequence.checksum;
+  const transcriptStart = transcript?.slice.location.start;
+  const transcriptEnd = transcript?.slice.location.end;
   const strand = gene?.slice.strand.code;
 
   const hasAnchorBase = ['insertion', 'deletion'].includes(alleleType ?? '');
 
   variantLength = hasAnchorBase
-    ? Math.min(variantLength - 1, 0)
+    ? Math.max(variantLength - 1, 0)
     : variantLength;
 
-  const genomicSliceStart = variantStart
-    ? calculateSliceStart({
-        variantStart,
-        variantLength
-      })
-    : 0;
+  // distances to slice start and slice end are calculated for the forward strand
+  const distanceToSliceStart = getDistanceToSliceStart({
+    variantStart: variantStart ?? 0,
+    variantLength,
+    transcriptStart: transcriptStart ?? 0,
+    strand: strand ?? 'forward'
+  });
+  const distanceToSliceEnd = getDistanceToSliceEnd({
+    variantStart: variantStart ?? 0,
+    variantLength,
+    transcriptEnd: transcriptEnd ?? 0,
+    strand: strand ?? 'forward'
+  });
+
+  const genomicSliceStart = (variantStart ?? 0) - distanceToSliceStart;
   const genomicSliceEnd =
-    variantEnd && regionLength
-      ? calculateSliceEnd({
-          variantEnd,
-          variantLength,
-          regionLength
-        })
-      : 0;
+    (variantStart ?? 0) + variantLength + distanceToSliceEnd - 1;
+
+  // const genomicSliceStart = variantStart
+  //   ? calculateSliceStart({
+  //       variantStart,
+  //       variantLength
+  //     })
+  //   : 0;
+  // const genomicSliceEnd =
+  //   variantEnd && regionLength
+  //     ? calculateSliceEnd({
+  //         variantEnd,
+  //         variantLength,
+  //         regionLength
+  //       })
+  //     : 0;
 
   // console.log({
   //   variantEnd,
@@ -171,14 +189,19 @@ const useGenomicRegionData = (params: {
     }
   );
 
+  // console.log({
+  //   variantLength,
+  //   distanceToSliceStart,
+  //   distanceToSliceEnd,
+  //   genomicSliceStart,
+  //   genomicSliceEnd,
+  //   referenceSequence
+  // });
+
   const variantToTranscriptStartDistance =
-    strand === 'forward'
-      ? (variantStart ?? 0) - (transcript?.slice.location.start ?? 0)
-      : (transcript?.slice.location.end ?? 0) - (variantEnd ?? 0);
+    strand === 'forward' ? distanceToSliceStart : distanceToSliceEnd;
   const variantToTranscriptEndDistance =
-    strand === 'forward'
-      ? (transcript?.slice.location.end ?? 0) - (variantEnd ?? 0)
-      : (variantStart ?? 0) - (transcript?.slice.location.start ?? 0);
+    strand === 'forward' ? distanceToSliceEnd : distanceToSliceStart;
 
   alleleSequence =
     strand === 'forward'

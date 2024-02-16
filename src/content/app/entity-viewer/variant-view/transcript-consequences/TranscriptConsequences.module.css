@@ -65,7 +65,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 160px 18px 695px 27px 180px;
+  grid-template-columns: 160px 18px 700px 27px 180px;
   padding: 5px 0;
   font-size: 12px;
   position: relative;
