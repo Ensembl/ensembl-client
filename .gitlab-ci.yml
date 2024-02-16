@@ -181,7 +181,7 @@ Test:
   - npm run test
 
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -373,7 +373,8 @@ Pub:Internal::WP40:HL:
     - Test_N_Build:internal
     - Node:Internal
 
-# Job to deploy to live environment in the new kubernetes cluster (wp40)
+# Job to deploy to Dev environment in the new kubernetes cluster (wp51)
+# This deployment is for dev-2020.ensembl.org and same as production environment
 Dev:wp51:HL:
   extends: .deploy-newcluster
   variables:
