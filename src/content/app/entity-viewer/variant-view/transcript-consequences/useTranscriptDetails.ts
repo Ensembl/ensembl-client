@@ -19,10 +19,6 @@ import {
   MIN_FLANKING_SEQUENCE_LENGTH
 } from '../variant-image/variantImageConstants';
 
-// import {
-//   calculateSliceStart,
-//   calculateSliceEnd
-// } from 'src/content/app/entity-viewer/variant-view/variant-image/useVariantImageData';
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
 
 import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
@@ -37,15 +33,6 @@ import type {
   GeneForVariantTranscriptConsequencesResponse,
   TranscriptForVariantTranscriptConsequencesResponse
 } from 'src/content/app/entity-viewer/state/api/queries/variantTranscriptConsequencesQueries';
-
-/**
- * - Fetch predicted molecular consequences for variant
- * - Filter out predicted molecular consequences for allele
- * - Use transcript id to fetch the gene
- * - Use transcript checksum to fetch the sequence
- * - Using gene slice and transcript slice, create a transcript image
- * - Create image for transcript genomic sequence
- */
 
 type Params = {
   genomeId: string;
@@ -146,6 +133,20 @@ const useGenomicRegionData = (params: {
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'
   });
+  const distanceToTranscriptStart = getDistanceToTranscriptStart({
+    variantStart: variantStart ?? 0,
+    variantEnd: variantStart ?? 0 + variantLength ?? 0,
+    transcriptStart: transcriptStart ?? 0,
+    transcriptEnd: transcriptEnd ?? 0,
+    strand: strand ?? 'forward'
+  });
+  const distanceToTranscriptEnd = getDistanceToTranscriptEnd({
+    variantStart: variantStart ?? 0,
+    variantEnd: variantStart ?? 0 + variantLength ?? 0,
+    transcriptStart: transcriptStart ?? 0,
+    transcriptEnd: transcriptEnd ?? 0,
+    strand: strand ?? 'forward'
+  });
 
   const genomicSliceStart = (variantStart ?? 0) - distanceToSliceStart;
   const genomicSliceEnd =
@@ -185,40 +186,58 @@ const useGenomicRegionData = (params: {
       end: genomicSliceEnd
     },
     {
-      skip: !regionChecksum // meaning that this query can be sent only after gene query has returned
+      skip: !variant || !gene || !transcript
     }
   );
 
   // console.log({
+  //   variant,
+  //   variantStart,
   //   variantLength,
   //   distanceToSliceStart,
   //   distanceToSliceEnd,
   //   genomicSliceStart,
-  //   genomicSliceEnd,
-  //   referenceSequence
+  //   genomicSliceEnd
   // });
 
-  const variantToTranscriptStartDistance =
-    strand === 'forward' ? distanceToSliceStart : distanceToSliceEnd;
-  const variantToTranscriptEndDistance =
-    strand === 'forward' ? distanceToSliceEnd : distanceToSliceStart;
+  // const variantToTranscriptStartDistance =
+  //   strand === 'forward' ? distanceToSliceStart : distanceToSliceEnd;
+  // const variantToTranscriptEndDistance =
+  //   strand === 'forward' ? distanceToSliceEnd : distanceToSliceStart;
 
   alleleSequence =
     strand === 'forward'
       ? alleleSequence
       : getReverseComplement(alleleSequence);
-  const genomicSequence =
-    strand === 'forward'
-      ? referenceSequence ?? ''
-      : getReverseComplement(referenceSequence ?? '');
+
+  const leftFlankingSequence = getLeftFlankingGenomicSequence({
+    sequence: referenceSequence ?? '',
+    distanceToSliceStart,
+    distanceToSliceEnd,
+    strand: strand ?? 'forward'
+  });
+  const referenceAlleleSequence = getReferenceAlleleGenomicSequence({
+    sequence: referenceSequence ?? '',
+    distanceToSliceStart,
+    distanceToSliceEnd,
+    strand: strand ?? 'forward'
+  });
+  const rightFlankingSequence = getRightFlankingGenomicSequence({
+    sequence: referenceSequence ?? '',
+    distanceToSliceStart,
+    distanceToSliceEnd,
+    strand: strand ?? 'forward'
+  });
 
   return referenceSequence
     ? {
         currentData: {
-          genomicSequence,
+          leftFlankingSequence,
+          rightFlankingSequence,
+          referenceAlleleSequence,
           alleleSequence,
-          variantToTranscriptStartDistance,
-          variantToTranscriptEndDistance
+          variantToTranscriptStartDistance: distanceToTranscriptStart,
+          variantToTranscriptEndDistance: distanceToTranscriptEnd
         }
       }
     : {
@@ -239,6 +258,12 @@ export const getDistanceToSliceStart = (params: {
   strand: 'forward' | 'reverse';
 }) => {
   const { variantStart, variantLength, transcriptStart, strand } = params;
+  const distanceToTranscriptStart = variantStart - transcriptStart;
+
+  if (variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return Math.min(MIN_FLANKING_SEQUENCE_LENGTH, distanceToTranscriptStart);
+  }
+
   const halfMaxReferenceAlleleDisplayLength = Math.floor(
     MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2
   );
@@ -255,7 +280,6 @@ export const getDistanceToSliceStart = (params: {
     halfMaxReferenceAlleleDisplayLength - halfVariantLength;
   const maxDistanceToSliceStart =
     MIN_FLANKING_SEQUENCE_LENGTH + remainderForVariantSection;
-  const distanceToTranscriptStart = variantStart - transcriptStart;
 
   // in case the variant starts right near the start of the transcript
   return Math.min(maxDistanceToSliceStart, distanceToTranscriptStart);
@@ -273,6 +297,13 @@ export const getDistanceToSliceEnd = (params: {
   strand: 'forward' | 'reverse';
 }) => {
   const { variantStart, variantLength, transcriptEnd, strand } = params;
+  const distanceToTranscriptEnd =
+    transcriptEnd - Math.max(variantStart + variantLength - 1, variantStart);
+
+  if (variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return Math.min(MIN_FLANKING_SEQUENCE_LENGTH, distanceToTranscriptEnd);
+  }
+
   const halfMaxReferenceAlleleDisplayLength = Math.floor(
     MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2
   );
@@ -289,11 +320,107 @@ export const getDistanceToSliceEnd = (params: {
     halfMaxReferenceAlleleDisplayLength - halfVariantLength;
   const maxDistanceToSliceEnd =
     MIN_FLANKING_SEQUENCE_LENGTH + remainderForVariantSection;
-  const distanceToTranscriptEnd =
-    transcriptEnd - Math.max(variantStart + variantLength - 1, variantStart);
 
   // in case the variant starts right near the end of the transcript
   return Math.min(maxDistanceToSliceEnd, distanceToTranscriptEnd);
+};
+
+export const getLeftFlankingGenomicSequence = ({
+  sequence,
+  distanceToSliceStart, // this is the distance to the beginning of the genomic slice on the forward strand
+  distanceToSliceEnd, // this is the distance to the end of the genomic slice on the forward strand
+  strand
+}: {
+  sequence: string;
+  distanceToSliceStart: number;
+  distanceToSliceEnd: number;
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    return sequence.slice(0, distanceToSliceStart);
+  } else {
+    return getReverseComplement(sequence).slice(0, distanceToSliceEnd);
+  }
+};
+
+export const getRightFlankingGenomicSequence = ({
+  sequence,
+  distanceToSliceStart, // this is the distance to the beginning of the genomic slice on the forward strand
+  distanceToSliceEnd, // this is the distance to the end of the genomic slice on the forward strand
+  strand
+}: {
+  sequence: string;
+  distanceToSliceStart: number;
+  distanceToSliceEnd: number;
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    return sequence.slice(-1 * distanceToSliceEnd);
+  } else {
+    return getReverseComplement(sequence).slice(-1 * distanceToSliceStart);
+  }
+};
+
+export const getReferenceAlleleGenomicSequence = ({
+  sequence,
+  distanceToSliceStart, // this is the distance to the beginning of the genomic slice on the forward strand
+  distanceToSliceEnd, // this is the distance to the end of the genomic slice on the forward strand
+  strand
+}: {
+  sequence: string;
+  distanceToSliceStart: number;
+  distanceToSliceEnd: number;
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    const startIndex = distanceToSliceStart;
+    const endIndex = sequence.length - distanceToSliceEnd;
+    return sequence.slice(startIndex, endIndex);
+  } else {
+    const startIndex = distanceToSliceEnd;
+    const endIndex = sequence.length - distanceToSliceStart;
+    return getReverseComplement(sequence).slice(startIndex, endIndex);
+  }
+};
+
+const getDistanceToTranscriptStart = ({
+  variantStart,
+  variantEnd,
+  transcriptStart,
+  transcriptEnd,
+  strand
+}: {
+  variantStart: number;
+  variantEnd: number;
+  transcriptStart: number; // start coordinate on forward strand
+  transcriptEnd: number; // start coordinate on reverse strand
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    return variantStart - transcriptStart;
+  } else {
+    return transcriptEnd - variantEnd;
+  }
+};
+
+const getDistanceToTranscriptEnd = ({
+  variantStart,
+  variantEnd,
+  transcriptStart,
+  transcriptEnd,
+  strand
+}: {
+  variantStart: number;
+  variantEnd: number;
+  transcriptStart: number; // start coordinate on forward strand
+  transcriptEnd: number; // start coordinate on reverse strand
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    return transcriptEnd - variantEnd;
+  } else {
+    return variantStart - transcriptStart;
+  }
 };
 
 export default useTranscriptDetails;

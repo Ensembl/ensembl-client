@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
+
 import {
   getDistanceToSliceStart,
-  getDistanceToSliceEnd
+  getDistanceToSliceEnd,
+  getLeftFlankingGenomicSequence,
+  getRightFlankingGenomicSequence,
+  getReferenceAlleleGenomicSequence
 } from './useTranscriptDetails';
 
 describe('getDistanceToSliceStart', () => {
@@ -172,6 +177,17 @@ describe('getDistanceToSliceStart', () => {
         strand: 'forward'
       })
     ).toBe(0);
+  });
+
+  test('Long variant, far from transcript start', () => {
+    expect(
+      getDistanceToSliceStart({
+        variantStart: 45988418,
+        variantLength: 48,
+        transcriptStart: 45981770,
+        strand: 'forward'
+      })
+    ).toBe(10);
   });
 });
 
@@ -330,5 +346,156 @@ describe('getDistanceToSliceEnd', () => {
         strand: 'reverse'
       })
     ).toBe(6);
+  });
+
+  test('Long variant, far from transcript end', () => {
+    expect(
+      getDistanceToSliceEnd({
+        variantStart: 45988418,
+        variantLength: 48,
+        transcriptEnd: 46005048,
+        strand: 'forward'
+      })
+    ).toBe(10);
+  });
+});
+
+describe('functions splitting genomic sequence into parts', () => {
+  test('SNV, middle of sequence, forward strand', () => {
+    const sequence = 'TGGAAGGGACGGCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 41 characters; SNV will be in the middle
+
+    const expectedLeftFlankingSeq = 'TGGAAGGGACGGCGGGGTCC'; // first 20 characters
+    const expectedVariantSeq = 'A';
+    const expectedRightFlankingSeq = 'GCAGGCAGGCTCCGGCCGTG'; // last 20 characters
+
+    expect(
+      getLeftFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'forward'
+      })
+    ).toBe(expectedLeftFlankingSeq);
+    expect(
+      getRightFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'forward'
+      })
+    ).toBe(expectedRightFlankingSeq);
+    expect(
+      getReferenceAlleleGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'forward'
+      })
+    ).toBe(expectedVariantSeq);
+  });
+
+  test('SNV, middle of sequence, reverse strand', () => {
+    const sequence = 'TGGAAGGGACGGCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 41 characters; SNV will be in the middle
+
+    const expectedLeftFlankingSeq = getReverseComplement(
+      'GCAGGCAGGCTCCGGCCGTG'
+    ); // reverse complement of last 20 characters
+    const expectedVariantSeq = 'T'; // reverse complement of forward strand
+    const expectedRightFlankingSeq = getReverseComplement(
+      'TGGAAGGGACGGCGGGGTCC'
+    ); // reverse complement of first 20 characters
+
+    expect(
+      getLeftFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'reverse'
+      })
+    ).toBe(expectedLeftFlankingSeq);
+    expect(
+      getRightFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'reverse'
+      })
+    ).toBe(expectedRightFlankingSeq);
+    expect(
+      getReferenceAlleleGenomicSequence({
+        sequence,
+        distanceToSliceStart: 20,
+        distanceToSliceEnd: 20,
+        strand: 'reverse'
+      })
+    ).toBe(expectedVariantSeq);
+  });
+
+  test('Insertion, near forward-strand start, forward strand', () => {
+    const sequence = 'GCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 30 characters
+
+    const expectedLeftFlankingSeq = 'GCGGGGTCC'; // first 9 characters
+    const expectedVariantSeq = '';
+    const expectedRightFlankingSeq = 'AGCAGGCAGGCTCCGGCCGTG'; // 21 characters
+
+    expect(
+      getLeftFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'forward'
+      })
+    ).toBe(expectedLeftFlankingSeq);
+    expect(
+      getRightFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'forward'
+      })
+    ).toBe(expectedRightFlankingSeq);
+    expect(
+      getReferenceAlleleGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'forward'
+      })
+    ).toBe(expectedVariantSeq);
+  });
+
+  test('Insertion, near forward-strand start, reverse strand', () => {
+    const sequence = 'GCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 30 characters
+
+    const expectedLeftFlankingSeq = getReverseComplement(
+      'AGCAGGCAGGCTCCGGCCGTG'
+    ); // reverse complement of last 21 characters
+    const expectedVariantSeq = '';
+    const expectedRightFlankingSeq = getReverseComplement('GCGGGGTCC'); // reverse complement of first 9 characters
+
+    expect(
+      getLeftFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'reverse'
+      })
+    ).toBe(expectedLeftFlankingSeq);
+    expect(
+      getRightFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'reverse'
+      })
+    ).toBe(expectedRightFlankingSeq);
+    expect(
+      getReferenceAlleleGenomicSequence({
+        sequence,
+        distanceToSliceStart: 9,
+        distanceToSliceEnd: 21,
+        strand: 'reverse'
+      })
+    ).toBe(expectedVariantSeq);
   });
 });

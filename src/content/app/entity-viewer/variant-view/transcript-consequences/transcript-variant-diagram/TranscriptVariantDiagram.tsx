@@ -84,7 +84,10 @@ const Diagram = (
 
   // const verticalOffsetToTranscript = 20;
 
-  const mockDistanceToStart = 5;
+  const shouldRenderLeftGeneSegment =
+    transcript.slice.location.start !== geneStart;
+  const shouldRenderRightGeneSegment =
+    transcript.slice.location.end !== geneEnd;
 
   return (
     <svg
@@ -92,18 +95,12 @@ const Diagram = (
       viewBox={`0 0 ${width} ${ELEMENT_HEIGHT}`}
       overflow="visible"
     >
-      <GeneSegment width={mockDistanceToStart} side="left" />
-
-      {distanceFromGeneStart >= 3 && (
+      {shouldRenderLeftGeneSegment && (
         <GeneSegment width={distanceFromGeneStart} side="left" />
       )}
 
       {/* diagram of the transcript */}
-      <g
-        transform={`translate(${
-          distanceFromGeneStart * mockDistanceToStart
-        } 19.5)`}
-      >
+      <g transform={`translate(${distanceFromGeneStart} 19.5)`}>
         <UnsplicedTranscript
           width={transcriptWidth}
           transcript={transcript}
@@ -113,8 +110,12 @@ const Diagram = (
         />
       </g>
 
-      {distanceToGeneEnd >= 3 && (
-        <GeneSegment width={distanceToGeneEnd} side="right" />
+      {shouldRenderRightGeneSegment && (
+        <GeneSegment
+          width={distanceToGeneEnd}
+          side="right"
+          leftOffset={distanceFromGeneStart + transcriptWidth}
+        />
       )}
 
       <VariantMark x={variantX} />
@@ -124,13 +125,12 @@ const Diagram = (
 };
 
 // Pass the initial x-coordinate
-const GeneSegment = (props: { width: number; side: 'left' | 'right' }) => {
-  const { side, width } = props;
-
-  if (props.width < 3) {
-    // avoid colliding the start/end tick into an exon
-    return null;
-  }
+const GeneSegment = (props: {
+  width: number;
+  side: 'left' | 'right';
+  leftOffset?: number; // to know where to start drawing the right gene segment
+}) => {
+  const { side, width, leftOffset } = props;
 
   // const tickHeight = 7; // same as BLOCK_HEIGHT in UnsplicedTranscript
 
@@ -140,7 +140,7 @@ const GeneSegment = (props: { width: number; side: 'left' | 'right' }) => {
   );
 
   return (
-    <g>
+    <g transform={leftOffset ? `translate(${leftOffset} 0)` : undefined}>
       {props.side === 'left' && tick}
       <line
         className={styles.geneLine}

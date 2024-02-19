@@ -82,8 +82,6 @@ const TranscriptConsequences = (props: Props) => {
 
   const strand = geneData.slice.strand.code;
   const alleleSequence = allele?.allele_sequence ?? '';
-  const alleleSeqReverseComplement =
-    strand === 'reverse' ? getReverseComplement(alleleSequence) : '';
 
   return (
     <Panel header={panelHeader}>
@@ -92,14 +90,10 @@ const TranscriptConsequences = (props: Props) => {
           <div className={styles.left}></div>
           <div className={styles.middle}>
             <div className={styles.headerMiddleColumn}>
-              <div className={styles.transcriptAllele}>
-                <span className={styles.label}>Transcript allele</span>
-                <span className={styles.value}>
-                  {formatAlleleSequence(alleleSequence)}
-                  {alleleSeqReverseComplement &&
-                    ` (${formatAlleleSequence(alleleSeqReverseComplement)})`}
-                </span>
-              </div>
+              <TranscriptAllele
+                alleleSequence={alleleSequence}
+                strand={strand}
+              />
               <div className={styles.geneDetails}>
                 <span className={styles.label}>Gene</span>
                 {geneData.symbol && (
@@ -143,6 +137,44 @@ const PanelHeader = (props: {
       </span>
     </div>
   );
+};
+
+const TranscriptAllele = ({
+  alleleSequence,
+  strand
+}: {
+  alleleSequence: string;
+  strand: 'forward' | 'reverse';
+}) => {
+  if (strand === 'forward') {
+    return (
+      <div className={styles.transcriptAllele}>
+        <span className={styles.label}>Transcript strand allele</span>
+        <span className={styles.value}>
+          {formatAlleleSequence(alleleSequence)}
+        </span>
+      </div>
+    );
+  } else {
+    const reverseComplement = getReverseComplement(alleleSequence);
+
+    return (
+      <div className={styles.transcriptAllele}>
+        <div>
+          <span className={styles.label}>Transcript strand allele</span>
+          <span className={styles.value}>
+            {formatAlleleSequence(reverseComplement)}
+          </span>
+        </div>
+        <div>
+          <span className={styles.label}>Reference strand allele</span>
+          <span className={styles.value}>
+            {formatAlleleSequence(alleleSequence)}
+          </span>
+        </div>
+      </div>
+    );
+  }
 };
 
 // FIXME: remove this component?

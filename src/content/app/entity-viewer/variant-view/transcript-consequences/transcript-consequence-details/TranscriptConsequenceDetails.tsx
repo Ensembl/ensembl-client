@@ -15,6 +15,9 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
+
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import useTranscriptDetails from '../useTranscriptDetails';
 
@@ -25,6 +28,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
 
 import commonStyles from '../TranscriptConsequences.module.css';
+import styles from './TranscriptConsequenceDetails.module.css';
 
 type Props = {
   genomeId: string;
@@ -34,6 +38,16 @@ type Props = {
   allele: NonNullable<TranscriptConsequencesData['allele']>;
 };
 
+/**
+ * TODO:
+ * - Draw arrow
+ * - Draw allele sequence
+ *
+ * Example variants
+ * - long insertion: variant:21:45988497:rs4647797
+ * - fairly long deletion: variant:21:45988418:rs2123469477
+ */
+
 const TranscriptConsequenceDetails = (props: Props) => {
   const { gene, variant, allele } = props;
 
@@ -42,8 +56,6 @@ const TranscriptConsequenceDetails = (props: Props) => {
 
   const transcript = transcriptDetailsData?.transcriptData;
   const genomicRegionData = transcriptDetailsData?.genomicRegionData;
-  const variantStart = variant.slice.location.start;
-  const variantEnd = variant.slice.location.end;
 
   if (isLoading) {
     return (
@@ -57,22 +69,48 @@ const TranscriptConsequenceDetails = (props: Props) => {
     return null;
   }
 
+  const strand = gene.slice.strand.code;
+
   return (
     <>
       <div className={commonStyles.row}>
         <div className={commonStyles.left}>Genomic</div>
         <div className={commonStyles.middle}>
-          <TranscriptVariantGenomicSequence
-            sequence={genomicRegionData.genomicSequence}
-            allele={allele}
-            variantStart={variantStart}
-            variantEnd={variantEnd}
+          <VariantPositionInTranscript
+            distanceToTranscriptStart={
+              genomicRegionData.variantToTranscriptStartDistance
+            }
+            referenceAlleleSequence={genomicRegionData.referenceAlleleSequence}
+            transcriptLength={transcript.slice.location.length}
           />
         </div>
       </div>
 
       <div className={commonStyles.row}>
-        <div className={commonStyles.left}>Transcript position in gene</div>
+        <div className={commonStyles.middle}>
+          <TranscriptVariantGenomicSequence
+            {...genomicRegionData}
+            variantSequence={genomicRegionData.referenceAlleleSequence}
+            variantType={variant.allele_type.value}
+            alleleType={allele.allele_type.value}
+          />
+        </div>
+        <div className={commonStyles.right}>
+          <span className={styles.smallLight}>
+            {strand === 'forward' ? 'forward strand' : 'reverse complement'}
+          </span>
+        </div>
+      </div>
+
+      <div className={commonStyles.row}>
+        <div
+          className={classNames(
+            commonStyles.left,
+            styles.transcriptDiagramLabel
+          )}
+        >
+          Transcript position in gene
+        </div>
         <div className={commonStyles.middle}>
           <TranscriptVariantDiagram
             gene={gene}
@@ -82,6 +120,36 @@ const TranscriptConsequenceDetails = (props: Props) => {
         </div>
       </div>
     </>
+  );
+};
+
+const VariantPositionInTranscript = ({
+  distanceToTranscriptStart,
+  referenceAlleleSequence,
+  transcriptLength
+}: {
+  distanceToTranscriptStart: number;
+  referenceAlleleSequence: string;
+  transcriptLength: number;
+}) => {
+  const variantLength = referenceAlleleSequence.length;
+  const variantStartInTranscript = distanceToTranscriptStart + 1;
+  const variantEndInTranscript = variantStartInTranscript + variantLength;
+
+  const formattedVarStart = formatNumber(variantStartInTranscript);
+  const formattedVarEnd = formatNumber(variantEndInTranscript);
+  const formattedTranscriptLength = formatNumber(transcriptLength);
+
+  return (
+    <span>
+      <span className={styles.smallLight}>Position in transcript</span>{' '}
+      <span className={styles.small}>
+        {variantStartInTranscript === variantEndInTranscript
+          ? formattedVarStart
+          : `${formattedVarStart} - ${formattedVarEnd}`}
+      </span>{' '}
+      <span className={styles.smallLight}>of {formattedTranscriptLength}</span>
+    </span>
   );
 };
 
