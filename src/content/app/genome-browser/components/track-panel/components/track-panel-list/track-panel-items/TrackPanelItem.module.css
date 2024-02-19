@@ -8,7 +8,6 @@
 }
 
 .labelText {
-  font-size: 13px;
   line-height: 1;
 }
 
@@ -37,8 +36,8 @@
 }
 
 .itemsExpandLozenge {
+  --pill-button-font-size: 11px;
   display: flex;
   column-gap: 5px;
   padding: 4px 10px;
-  --pill-button-font-size: 11px;
 }

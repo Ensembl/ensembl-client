@@ -4,7 +4,7 @@
   padding: 0 14px;
   align-items: center;
   justify-content: center;
-  font-size: var(--var-copy-font-size);
+  font-size: var(--copy-font-size);
 }
 
 .copy {

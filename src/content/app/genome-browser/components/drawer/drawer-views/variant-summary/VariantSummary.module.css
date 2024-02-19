@@ -51,6 +51,11 @@ For the reference (from Andrea)
   margin-left: 12px;
 }
 
+.sourceRelease {
+  margin-left: 12px;
+  font-size: 12px;
+}
+
 .variantSequenceBlock {
   max-width: 60ch;
 }

@@ -217,7 +217,7 @@ export const VariantDB = (props: {
     <div>
       {dbElement}
       {primary_source.source.release && (
-        <span className={classNames(styles.light, styles.withSpaceLeft)}>
+        <span className={classNames(styles.light, styles.sourceRelease)}>
           Release {primary_source.source.release}
         </span>
       )}
