@@ -105,9 +105,10 @@ export const SpeciesSidebarToolstrip = () => {
         image={ShareIcon}
       />
       <ImageButton
-        status={Status.DISABLED}
+        status={getViewIconStatus(SpeciesSidebarModalView.DOWNLOADS)}
         description="Download"
         className={styles.sidebarIcon}
+        onClick={() => toggleModalView(SpeciesSidebarModalView.DOWNLOADS)}
         image={DownloadIcon}
       />
     </>

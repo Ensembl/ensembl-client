@@ -119,3 +119,8 @@ export type SpeciesStatsQueryParams = {
 export type SpeciesStatsResponse = {
   genome_stats: SpeciesStatistics;
 };
+
+export type SpeciesFtpLinksResponse = {
+  dataset: string;
+  url: string;
+}[];
