@@ -52,6 +52,7 @@ const VariantVCF = (props: Props) => {
 
   return (
     <div className={componentClasses}>
+      {props.withCopy && <Copy value={vcfSequenceParts.vcfString} />}
       <span className={styles.vcfString}>
         <span>{vcfSequenceParts.regionName}</span>
         <span>{vcfSequenceParts.startCoordinate}</span>
@@ -59,7 +60,6 @@ const VariantVCF = (props: Props) => {
         <span>{vcfSequenceParts.referenceAlleleSequence}</span>
         <span>{vcfSequenceParts.alternativeAlleleSequences.join(',')}</span>
       </span>
-      {props.withCopy && <Copy value={vcfSequenceParts.vcfString} />}
     </div>
   );
 };

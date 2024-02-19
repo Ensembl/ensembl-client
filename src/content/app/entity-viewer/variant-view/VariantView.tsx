@@ -38,6 +38,7 @@ import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewe
 import VariantViewNavigationPanel from './variant-view-navigation-panel/VariantViewNavigationPanel';
 import VariantImage from './variant-image/VariantImage';
 import PopulationAlleleFrequencies from './population-allele-frequencies/PopulationAlleleFrequencies';
+import TranscriptConsequences from './transcript-consequences/TranscriptConsequences';
 
 import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';
 
@@ -122,6 +123,8 @@ const MainContent = (props: {
     return <VariantImage {...otherProps} />;
   } else if (view === 'allele-frequencies') {
     return <PopulationAlleleFrequencies {...otherProps} />;
+  } else if (view === 'transcript-consequences') {
+    return <TranscriptConsequences {...otherProps} />;
   }
 };
 

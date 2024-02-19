@@ -1,0 +1,24 @@
+.sectionHead {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-grey);
+  margin-bottom: 10px;
+  margin-top: 45px;
+}
+
+.sectionHead:first-child {
+  margin-top: 30px;
+}
+
+.SpeciesFtpLink{
+  margin-left: 10px;
+}
+
+.SpeciesFtpLink:not(:last-child) {
+  margin-bottom: 25px;
+}
+
+.SpeciesFtpLinkTitle{
+  font-weight: var(--font-weight-light);
+  margin-bottom: 10px;
+}

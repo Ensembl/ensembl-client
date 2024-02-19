@@ -18,7 +18,10 @@ import config from 'config';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { SpeciesStatistics } from './speciesApiTypes';
+import type {
+  SpeciesStatistics,
+  SpeciesFtpLinksResponse
+} from './speciesApiTypes';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 type SpeciesStatsQueryParams = {
@@ -43,9 +46,17 @@ const speciesApiSlice = restApiSlice.injectEndpoints({
       query: (genomeId) => ({
         url: `${config.metadataApiBaseUrl}/genome/${genomeId}/details`
       })
+    }),
+    speciesFtpLinks: builder.query<SpeciesFtpLinksResponse, string>({
+      query: (genomeId) => ({
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/ftplinks`
+      })
     })
   })
 });
 
-export const { useGetSpeciesStatisticsQuery, useSpeciesDetailsQuery } =
-  speciesApiSlice;
+export const {
+  useGetSpeciesStatisticsQuery,
+  useSpeciesDetailsQuery,
+  useSpeciesFtpLinksQuery
+} = speciesApiSlice;

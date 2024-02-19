@@ -68,6 +68,10 @@ import {
   variantAlleleFrequenciesQuery,
   type VariantAlleleFrequenciesQueryResult
 } from './queries/variantAlleleFrequenciesQuery';
+import {
+  VariantTranscriptConsequencesQueryResult,
+  variantTranscriptConsequencesQuery
+} from './queries/variantTranscriptConsequenceQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
@@ -210,6 +214,18 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       }),
       transformResponse: (response: VariantAlleleFrequenciesQueryResult) =>
         addAlleleUrlId(response)
+    }),
+    variantTranscriptConsequences: builder.query<
+      VariantTranscriptConsequencesQueryResult,
+      VariantQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantTranscriptConsequencesQuery,
+        variables: params
+      }),
+      transformResponse: (response: VariantTranscriptConsequencesQueryResult) =>
+        addAlleleUrlId(response)
     })
   })
 });
@@ -243,7 +259,8 @@ export const {
   useVariantPageMetaQuery,
   useDefaultEntityViewerVariantQuery,
   useVariantStudyPopulationsQuery,
-  useVariantAllelePopulationFrequenciesQuery
+  useVariantAllelePopulationFrequenciesQuery,
+  useVariantTranscriptConsequencesQuery
 } = entityViewerThoasSlice;
 
 export const {

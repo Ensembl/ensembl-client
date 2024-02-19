@@ -71,7 +71,7 @@ variables:
     - docker logout $CI_REGISTRY
 
 .publish_assets:
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   stage: deploy
   environment:
     name: jobs/k8s-job
@@ -125,16 +125,6 @@ variables:
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template to deploy to WP k8s cluster
-.deploy:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  script:
-  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-  - git -C ensembl-k8s-manifests/ checkout wp-k8s
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
 # Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
@@ -151,16 +141,17 @@ variables:
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   script:
   - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-  - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - git -C ensembl-k8s-manifests/ checkout k8s123-migration
+  - cd ensembl-k8s-manifests/ensembl-client/nginx
+  - mv deployment_review.yaml deployment.yaml
+  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_IMAGE}
+  - kubectl apply -k ./
+  - cd ../node
+  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+  - kubectl apply -k ./
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
@@ -189,11 +180,8 @@ Test:
   - npm run check-types
   - npm run test
 
-  only:
-  - /^nodeploy\/.*$/
-  except:
-  - dev
-  - master
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -223,11 +211,8 @@ Test_N_Build:review:
   variables:
     ENVIRONMENT: development
     API_HOST: ""
-
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
 
 # Job to build node docker image for staging environment
 # dev branch -> Staging
@@ -268,11 +253,8 @@ Nginx:review:
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
@@ -283,11 +265,8 @@ Node:review:
   variables:
     DEPLOYENV: dev
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
@@ -394,65 +373,52 @@ Pub:Internal::WP40:HL:
     - Test_N_Build:internal
     - Node:Internal
 
-# Job to deploy review deployments to development environment in Hinxton
-Review:HX:
+# Job to deploy to Dev environment in the new kubernetes cluster (wp51)
+# This deployment is for dev-2020.ensembl.org and same as production environment
+Dev:wp51:HL:
+  extends: .deploy-newcluster
+  variables:
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+  environment:
+    name: wp51-hl-development
+    kubernetes:
+      namespace: ensembl-dev
+  rules:
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+Pub:Dev-HL:wp51:
+  extends: .publish_assets-newcluster
+  environment:
+    name: wp51-hl-development
+    kubernetes:
+      namespace: ensembl-dev
+  rules:
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+  needs:
+    - Test_N_Build
+    - Node:Live
+
+
+# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
+Review:WP51:HL:
   extends: .deploy-review
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
-    name: review/$CI_COMMIT_REF_SLUG
+    name: wp51-hl-development
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
     kubernetes:
-      namespace: ensembl-dev
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
-
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
-Review:WP40:HL:
-  extends: .deploy-newcluster
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
+      namespace: ${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
     - Node:review
-
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
-Review:WP41:HX:
-  extends: .deploy-newcluster
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
-  rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
-
 
 stop_review:
   extends: .stop-review
@@ -466,10 +432,10 @@ stop_review:
   - master
   - /^nodeploy\/.*$/
 
-SetupReview:HX:
-  extends: .setup-review
+SetupReview:HL51:
+  extends: .setup-review-newk8s
   environment:
-    name: wp-hx-dev-ing
+    name: wp51-hl-development
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && 
           $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
