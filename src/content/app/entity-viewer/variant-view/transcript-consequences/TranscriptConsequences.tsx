@@ -91,7 +91,9 @@ const TranscriptConsequences = (props: Props) => {
           <div className={styles.middle}>
             <div className={styles.headerMiddleColumn}>
               <TranscriptAllele
+                referenceSequence={allele.reference_sequence}
                 alleleSequence={alleleSequence}
+                alleleType={allele.allele_type.value}
                 strand={strand}
               />
               <div className={styles.geneDetails}>
@@ -140,13 +142,32 @@ const PanelHeader = (props: {
 };
 
 const TranscriptAllele = ({
+  referenceSequence,
   alleleSequence,
+  alleleType,
   strand
 }: {
+  referenceSequence: string;
   alleleSequence: string;
+  alleleType: string;
   strand: 'forward' | 'reverse';
 }) => {
-  if (strand === 'forward') {
+  if (alleleType === 'deletion') {
+    // deletion is represented as a sequence of dashes
+    // of the same lengh as the deleted fragment
+    const characters = referenceSequence
+      .split('')
+      .slice(1) // remove anchor base
+      .map(() => '-')
+      .join('');
+
+    return (
+      <div className={styles.transcriptAllele}>
+        <span className={styles.label}>Transcript strand allele</span>
+        <span className={styles.value}>{formatAlleleSequence(characters)}</span>
+      </div>
+    );
+  } else if (strand === 'forward') {
     return (
       <div className={styles.transcriptAllele}>
         <span className={styles.label}>Transcript strand allele</span>

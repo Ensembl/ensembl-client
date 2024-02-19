@@ -105,7 +105,7 @@ const useGenomicRegionData = (params: {
   transcript?: TranscriptForVariantTranscriptConsequencesResponse['transcript'];
 }) => {
   const { gene, transcript, variant, allele } = params;
-  const variantStart = variant?.slice.location.start;
+  let variantStart = variant?.slice.location.start ?? 0;
   const alleleType = allele?.allele_type.value;
   let alleleSequence = allele?.allele_sequence ?? '';
   let variantLength = variant?.slice.location.length ?? 0;
@@ -114,35 +114,36 @@ const useGenomicRegionData = (params: {
   const transcriptEnd = transcript?.slice.location.end;
   const strand = gene?.slice.strand.code;
 
-  const hasAnchorBase = ['insertion', 'deletion'].includes(alleleType ?? '');
-
-  variantLength = hasAnchorBase
-    ? Math.max(variantLength - 1, 0)
-    : variantLength;
+  if (alleleType === 'deletion') {
+    variantStart += 1;
+    variantLength -= 1;
+  } else if (alleleType === 'insertion') {
+    variantLength = 0;
+  }
 
   // distances to slice start and slice end are calculated for the forward strand
   const distanceToSliceStart = getDistanceToSliceStart({
-    variantStart: variantStart ?? 0,
+    variantStart: variantStart,
     variantLength,
     transcriptStart: transcriptStart ?? 0,
     strand: strand ?? 'forward'
   });
   const distanceToSliceEnd = getDistanceToSliceEnd({
-    variantStart: variantStart ?? 0,
+    variantStart: variantStart,
     variantLength,
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'
   });
   const distanceToTranscriptStart = getDistanceToTranscriptStart({
-    variantStart: variantStart ?? 0,
-    variantEnd: variantStart ?? 0 + variantLength ?? 0,
+    variantStart: variantStart,
+    variantEnd: variantStart + variantLength ?? 0,
     transcriptStart: transcriptStart ?? 0,
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'
   });
   const distanceToTranscriptEnd = getDistanceToTranscriptEnd({
-    variantStart: variantStart ?? 0,
-    variantEnd: variantStart ?? 0 + variantLength ?? 0,
+    variantStart: variantStart,
+    variantEnd: variantStart + variantLength ?? 0,
     transcriptStart: transcriptStart ?? 0,
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'

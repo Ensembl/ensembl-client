@@ -266,7 +266,11 @@ const Deletion = ({ sequenceLength }: { sequenceLength: number }) => {
   }
 
   return [...Array(sequenceLength)].map((_, index) => (
-    <SequenceLetterBlock letter="-" key={index} />
+    <SequenceLetterBlock
+      letter="-"
+      className={styles.altAlleleLetter}
+      key={index}
+    />
   ));
 };
 

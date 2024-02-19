@@ -61,7 +61,7 @@ const TranscriptConsequenceDetails = (props: Props) => {
     return (
       <div className={commonStyles.row}>
         <div className={commonStyles.middle}>
-          <CircleLoader />;
+          <CircleLoader />
         </div>
       </div>
     );
