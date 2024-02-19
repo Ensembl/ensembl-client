@@ -179,6 +179,38 @@ describe('getDistanceToSliceStart', () => {
     ).toBe(0);
   });
 
+  test('Insertion, forward strand', () => {
+    /**
+     * Diagram (asterisk is the anchor base):
+     * |--------------------*--------------------|
+     */
+
+    expect(
+      getDistanceToSliceStart({
+        variantStart: 201,
+        variantLength: 0,
+        transcriptStart: 101,
+        strand: 'forward'
+      })
+    ).toBe(20);
+  });
+
+  test('Insertion, reverse strand', () => {
+    /**
+     * Diagram (asterisk is the anchor base):
+     * |--------------------*--------------------|
+     */
+
+    expect(
+      getDistanceToSliceStart({
+        variantStart: 201,
+        variantLength: 0,
+        transcriptStart: 101,
+        strand: 'reverse'
+      })
+    ).toBe(20);
+  });
+
   test('Long variant, far from transcript start', () => {
     expect(
       getDistanceToSliceStart({
@@ -346,6 +378,38 @@ describe('getDistanceToSliceEnd', () => {
         strand: 'reverse'
       })
     ).toBe(6);
+  });
+
+  test('Insertion, forward strand', () => {
+    /**
+     * Diagram (asterisk is the anchor base):
+     * |--------------------*--------------------|
+     */
+
+    expect(
+      getDistanceToSliceEnd({
+        variantStart: 201,
+        variantLength: 0,
+        transcriptEnd: 300,
+        strand: 'forward'
+      })
+    ).toBe(21);
+  });
+
+  test('Insertion, reverse strand', () => {
+    /**
+     * Diagram (asterisk is the anchor base):
+     * |--------------------*--------------------|
+     */
+
+    expect(
+      getDistanceToSliceEnd({
+        variantStart: 201,
+        variantLength: 0,
+        transcriptEnd: 300,
+        strand: 'reverse'
+      })
+    ).toBe(21);
   });
 
   test('Long variant, far from transcript end', () => {

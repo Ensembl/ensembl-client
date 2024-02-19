@@ -352,27 +352,34 @@ const getAltAlleleAnchorPosition = ({
 
   if (variantType === 'insertion') {
     return (
-      halfGenomicSequenceLength * letterWidth + halfGenomicSequenceLength - 1
-    ); // 1px space between letter blocks
+      halfGenomicSequenceLength * letterWidth +
+      // 1px space between letter blocks
+      halfGenomicSequenceLength -
+      1 -
+      letterWidth
+    );
   } else if (variantType === 'deletion') {
     return (
       halfGenomicSequenceLength * letterWidth +
+      // 1px space between letter blocks
       halfGenomicSequenceLength -
       1 -
       letterWidth / 2
-    ); // 1px space between letter blocks
+    );
   }
 
   const offsetForOddLengthVariant =
     halfGenomicSequenceLength * letterWidth +
+    // 1px space between letter blocks
     halfGenomicSequenceLength -
     1 -
-    letterWidth / 2; // 1px space between letter blocks
+    letterWidth / 2;
   const offsetForEvenLengthVariant =
     halfGenomicSequenceLength * letterWidth +
+    // 1px space between letter blocks
     halfGenomicSequenceLength -
-    1 - // 1px space between letter blocks
-    letterWidth / 2;
+    1 -
+    letterWidth;
 
   return refAlleleSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
     ? offsetForOddLengthVariant

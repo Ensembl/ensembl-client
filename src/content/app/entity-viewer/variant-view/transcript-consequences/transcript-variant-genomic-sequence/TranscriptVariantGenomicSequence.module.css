@@ -37,6 +37,10 @@
   --sequence-block-letter-color: var(--color-white);
 }
 
+.altAlleleLetter + .altAlleleLetter {
+  margin-left: 1px;
+}
+
 /* creating a basic CSS triangle: https://front-end.social/@css/111861629372809662 */
 .altAlleleArrow {
   position: absolute;

@@ -53,7 +53,7 @@ const TranscriptConsequences = (props: Props) => {
     const panelHeader = (
       <div className={styles.panelHeader}>
         <span className={styles.transcriptConsqTitle}>
-          Transcript Consequences
+          Transcript consequences
         </span>
       </div>
     );
@@ -66,7 +66,11 @@ const TranscriptConsequences = (props: Props) => {
       </Panel>
     );
   } else if (!currentData || !currentData.allele) {
-    return null;
+    return (
+      <Panel>
+        <div className={styles.container}>No data</div>
+      </Panel>
+    );
   }
 
   const { variant, transcriptConsequences, allele, geneData } = currentData;
@@ -135,7 +139,7 @@ const PanelHeader = (props: {
       <span className={styles.variantType}>{variant.allele_type.value}</span>
       <span className={styles.colonSeparator}>:</span>
       <span className={styles.transcriptConsqTitle}>
-        Transcript Consequences
+        Transcript consequences
       </span>
     </div>
   );

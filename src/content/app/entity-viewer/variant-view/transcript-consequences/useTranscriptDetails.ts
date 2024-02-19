@@ -118,6 +118,9 @@ const useGenomicRegionData = (params: {
     variantStart += 1;
     variantLength -= 1;
   } else if (alleleType === 'insertion') {
+    if (strand === 'forward') {
+      variantStart += 1;
+    }
     variantLength = 0;
   }
 
@@ -153,29 +156,6 @@ const useGenomicRegionData = (params: {
   const genomicSliceEnd =
     (variantStart ?? 0) + variantLength + distanceToSliceEnd - 1;
 
-  // const genomicSliceStart = variantStart
-  //   ? calculateSliceStart({
-  //       variantStart,
-  //       variantLength
-  //     })
-  //   : 0;
-  // const genomicSliceEnd =
-  //   variantEnd && regionLength
-  //     ? calculateSliceEnd({
-  //         variantEnd,
-  //         variantLength,
-  //         regionLength
-  //       })
-  //     : 0;
-
-  // console.log({
-  //   variantEnd,
-  //   regionLength,
-  //   variant,
-  //   genomicSliceStart,
-  //   genomicSliceEnd
-  // });
-
   const {
     currentData: referenceSequence,
     isLoading,
@@ -191,25 +171,18 @@ const useGenomicRegionData = (params: {
     }
   );
 
-  // console.log({
-  //   variant,
-  //   variantStart,
-  //   variantLength,
-  //   distanceToSliceStart,
-  //   distanceToSliceEnd,
-  //   genomicSliceStart,
-  //   genomicSliceEnd
-  // });
-
-  // const variantToTranscriptStartDistance =
-  //   strand === 'forward' ? distanceToSliceStart : distanceToSliceEnd;
-  // const variantToTranscriptEndDistance =
-  //   strand === 'forward' ? distanceToSliceEnd : distanceToSliceStart;
-
   alleleSequence =
     strand === 'forward'
       ? alleleSequence
       : getReverseComplement(alleleSequence);
+
+  if (alleleType === 'insertion') {
+    // strip off the anchor base
+    alleleSequence =
+      strand === 'forward'
+        ? alleleSequence.slice(1)
+        : alleleSequence.slice(0, -1);
+  }
 
   const leftFlankingSequence = getLeftFlankingGenomicSequence({
     sequence: referenceSequence ?? '',
@@ -272,7 +245,7 @@ export const getDistanceToSliceStart = (params: {
   // Even-length variants have their extra nucleotide to the left of the midpoint
   let halfVariantLength = Math.floor(variantLength / 2);
 
-  if (strand === 'reverse' && variantLength % 2 === 0) {
+  if (strand === 'reverse' && variantLength && variantLength % 2 === 0) {
     halfVariantLength -= 1;
   }
 
@@ -313,6 +286,9 @@ export const getDistanceToSliceEnd = (params: {
   let halfVariantLength = Math.floor(variantLength / 2);
 
   if (strand === 'forward' && variantLength % 2 === 0) {
+    halfVariantLength -= 1;
+  } else if (strand === 'reverse' && !variantLength) {
+    // insertion
     halfVariantLength -= 1;
   }
 
