@@ -22,14 +22,23 @@ import { getActiveGenomeId } from 'src/content/app/species/state/general/species
 import { useSpeciesFtpLinksQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './SpeciesSidebarDownloads.module.css';
 
 const SpeciesSidebarDownloads = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
-  const { data: ftpLinksResponse } = useSpeciesFtpLinksQuery(activeGenomeId, {
-    skip: !activeGenomeId
-  });
+  const { data: ftpLinksResponse, isFetching } = useSpeciesFtpLinksQuery(
+    activeGenomeId,
+    {
+      skip: !activeGenomeId
+    }
+  );
+
+  if (isFetching) {
+    return <CircleLoader />;
+  }
+
   const ftpLinks = ftpLinksResponse || [];
   const linkSections: Record<string, string> = {};
 

@@ -58,3 +58,29 @@
 .assemblyLevel {
   font-weight: var(--font-weight-bold);
 }
+
+.getFilesSection {
+  margin-top: 40px;
+}
+
+.getFiles {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 10px;
+  font-size: 12px;
+  color: var(--color-blue);
+}
+
+.downloadIcon {
+  display: inline-flex;
+  width: 22px;
+  aspect-ratio: 1;
+  background: var(--color-blue);
+  align-items: center;
+  justify-content: center;
+}
+
+.downloadIcon svg {
+  width: 55%;
+  fill: var(--color-white);
+}
