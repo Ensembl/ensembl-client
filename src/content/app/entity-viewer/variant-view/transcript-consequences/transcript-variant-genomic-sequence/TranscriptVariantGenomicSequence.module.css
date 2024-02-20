@@ -24,7 +24,7 @@
   transform: translateX(-50%);
 }
 
-.alternativeAllele:before {
+.alternativeAllele::before {
   content: 'Alternative allele';
   position: absolute;
   left: -12px;

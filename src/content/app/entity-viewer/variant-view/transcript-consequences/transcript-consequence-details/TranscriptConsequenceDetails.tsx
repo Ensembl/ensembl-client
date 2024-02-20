@@ -38,16 +38,6 @@ type Props = {
   allele: NonNullable<TranscriptConsequencesData['allele']>;
 };
 
-/**
- * TODO:
- * - Draw arrow
- * - Draw allele sequence
- *
- * Example variants
- * - long insertion: variant:21:45988497:rs4647797
- * - fairly long deletion: variant:21:45988418:rs2123469477
- */
-
 const TranscriptConsequenceDetails = (props: Props) => {
   const { gene, variant, allele } = props;
 

@@ -115,7 +115,7 @@ const TranscriptConsequences = (props: Props) => {
             <span>{`${transcriptConsequences.length} transcripts`}</span>
           </div>
         </div>
-        <TranscriptConsquencesTable
+        <TranscriptConsequencesList
           transcriptConsequences={transcriptConsequences}
           genomeId={genomeId}
           variantId={variantId}
@@ -200,20 +200,6 @@ const TranscriptAllele = ({
       </div>
     );
   }
-};
-
-// FIXME: remove this component?
-const TranscriptConsquencesTable = (props: {
-  genomeId: string;
-  variantId: string;
-  transcriptConsequences: NonNullable<
-    TranscriptConsequencesData['transcriptConsequences']
-  >;
-  gene: TranscriptConsequencesData['geneData'];
-  allele: NonNullable<TranscriptConsequencesData['allele']>;
-  variant: TranscriptConsequencesData['variant'];
-}) => {
-  return <TranscriptConsequencesList {...props} />;
 };
 
 type TranscriptConsequencesListProps = {

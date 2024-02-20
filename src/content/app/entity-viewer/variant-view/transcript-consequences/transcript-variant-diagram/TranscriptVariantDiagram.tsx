@@ -82,8 +82,6 @@ const Diagram = (
   const transcriptWidth = width - distanceFromGeneStart - distanceToGeneEnd;
   const variantX = scale(variantRelativeStart);
 
-  // const verticalOffsetToTranscript = 20;
-
   const shouldRenderLeftGeneSegment =
     transcript.slice.location.start !== geneStart;
   const shouldRenderRightGeneSegment =
@@ -124,15 +122,12 @@ const Diagram = (
   );
 };
 
-// Pass the initial x-coordinate
 const GeneSegment = (props: {
   width: number;
   side: 'left' | 'right';
   leftOffset?: number; // to know where to start drawing the right gene segment
 }) => {
   const { side, width, leftOffset } = props;
-
-  // const tickHeight = 7; // same as BLOCK_HEIGHT in UnsplicedTranscript
 
   const tickX = side === 'left' ? 0 : width;
   const tick = (

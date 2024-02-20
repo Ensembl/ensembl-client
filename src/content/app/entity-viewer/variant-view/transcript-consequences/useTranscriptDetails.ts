@@ -96,7 +96,7 @@ const useTranscriptDetails = (params: Params) => {
  * - get the sequence of the short genomic slice
  * - make sure to flip the slice sequence to reverse complement if the gene is on reverse strand
  * - this means that the variant allele sequence also has to be flipped to reverse complement
- * - what are the consequences of having the anchor base?
+ * - remember that insertions and deletions are a special case (they have an anchor base)
  */
 const useGenomicRegionData = (params: {
   variant?: VariantDetails;

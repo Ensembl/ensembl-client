@@ -325,7 +325,7 @@ const calculateLeftOffset = ({
 
 /**
  * The variant is positioned such that its middle nucleotide is
- * in the middle. The allotted space has an odd number of nucleotides.
+ * in the middle of the image. The allotted space has an odd number of nucleotides.
  * Thus, when the variant's length is an odd number, it sits exactly
  * in the middle of the allotted space; but when its length is an even number,
  * more of its nucleotides are to the left than to the right of the midline.
@@ -349,36 +349,30 @@ const getAltAlleleAnchorPosition = ({
   const halfGenomicSequenceLength = Math.ceil(
     DISPLAYED_REFERENCE_SEQUENCE_LENGTH / 2
   );
+  // 1px space between letter blocks
+  const totalSpaceBetweenLetters = halfGenomicSequenceLength - 1;
 
   if (variantType === 'insertion') {
     return (
       halfGenomicSequenceLength * letterWidth +
-      // 1px space between letter blocks
-      halfGenomicSequenceLength -
-      1 -
+      totalSpaceBetweenLetters -
       letterWidth
     );
   } else if (variantType === 'deletion') {
     return (
       halfGenomicSequenceLength * letterWidth +
-      // 1px space between letter blocks
-      halfGenomicSequenceLength -
-      1 -
+      totalSpaceBetweenLetters -
       letterWidth / 2
     );
   }
 
   const offsetForOddLengthVariant =
     halfGenomicSequenceLength * letterWidth +
-    // 1px space between letter blocks
-    halfGenomicSequenceLength -
-    1 -
+    totalSpaceBetweenLetters -
     letterWidth / 2;
   const offsetForEvenLengthVariant =
     halfGenomicSequenceLength * letterWidth +
-    // 1px space between letter blocks
-    halfGenomicSequenceLength -
-    1 -
+    totalSpaceBetweenLetters -
     letterWidth;
 
   return refAlleleSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
