@@ -48,9 +48,14 @@ const TranscriptConsequenceDetails = (props: Props) => {
   const genomicRegionData = transcriptDetailsData?.genomicRegionData;
 
   if (isLoading) {
+    const middleColumnClasses = classNames(
+      commonStyles.middle,
+      styles.loaderContainer
+    );
+
     return (
       <div className={commonStyles.row}>
-        <div className={commonStyles.middle}>
+        <div className={middleColumnClasses}>
           <CircleLoader />
         </div>
       </div>
@@ -101,7 +106,7 @@ const TranscriptConsequenceDetails = (props: Props) => {
         >
           Transcript position in gene
         </div>
-        <div className={commonStyles.middle}>
+        <div className={classNames(commonStyles.middle, styles.spacingBottom)}>
           <TranscriptVariantDiagram
             gene={gene}
             transcript={transcript}

@@ -242,7 +242,13 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
     <div className={styles.transcriptConsequenceListView}>
       {transcriptConsequences.map((transcript, index) => (
         <div key={index}>
-          <div className={styles.row}>
+          <div
+            className={classnames(styles.row, {
+              [styles.rowExpanded]: expandedIds.has(
+                transcript.feature_stable_id
+              )
+            })}
+          >
             {/* <TranscriptQualityLabel metadata={props.transcript.metadata} /> */}
             <div className={styles.transcriptLeftColumn}></div>
             <div className={styles.middle}>
@@ -276,7 +282,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
             </div>
           </div>
 
-          {expandedTranscriptIds.includes(transcript.feature_stable_id) ? (
+          {expandedIds.has(transcript.feature_stable_id) ? (
             <TranscriptConsequenceDetails
               genomeId={genomeId}
               transcriptId={transcript.feature_stable_id}

@@ -71,6 +71,10 @@
   position: relative;
 }
 
+.rowExpanded {
+  padding-bottom: 30px;
+}
+
 .header {
   margin-bottom: 25px;
 }
