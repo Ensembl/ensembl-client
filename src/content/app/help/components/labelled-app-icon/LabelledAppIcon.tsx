@@ -21,12 +21,13 @@ import upperFirst from 'lodash/upperFirst';
 import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
-  EntityViewerIcon
+  EntityViewerIcon,
+  BlastIcon
 } from 'src/shared/components/app-icon';
 
 import styles from './LabelledAppIcon.module.css';
 
-type AppName = 'speciesSelector' | 'genomeBrowser' | 'entityViewer';
+type AppName = 'speciesSelector' | 'genomeBrowser' | 'entityViewer' | 'blast';
 
 type Size = 'regular' | 'small';
 
@@ -38,13 +39,15 @@ type Props = {
 const appNameToIcon: Record<AppName, React.FunctionComponent> = {
   speciesSelector: SpeciesSelectorIcon,
   genomeBrowser: GenomeBrowserIcon,
-  entityViewer: EntityViewerIcon
+  entityViewer: EntityViewerIcon,
+  blast: BlastIcon
 };
 
 const appNameToLabel: Record<AppName, string> = {
   speciesSelector: 'Species selector',
   genomeBrowser: 'Genome browser',
-  entityViewer: 'Entity viewer'
+  entityViewer: 'Entity viewer',
+  blast: 'Blast'
 };
 
 const LabelledAppIcon = (props: Props) => {

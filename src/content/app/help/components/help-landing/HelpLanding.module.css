@@ -60,13 +60,6 @@
   line-height: 1;
 }
 
-.lastSectionGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 324px);
-  column-gap: calc(96px + var(--standard-gutter));
-  row-gap: 30px;
-}
-
-.lastSectionGrid p {
-  padding-left: var(--standard-gutter);
+.bottomSection {
+  margin-top: 60px;
 }

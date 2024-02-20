@@ -16,8 +16,6 @@
 
 import React, { useState } from 'react';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
@@ -31,12 +29,7 @@ const HelpLanding = () => {
     <div className={styles.helpLanding}>
       <AppsSection />
       <StartUsingSection />
-      {
-        /* We don't yet have full documentation announced in this section */
-        isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
-          <LastSection />
-        )
-      }
+      <LastSection />
     </div>
   );
 };
@@ -145,21 +138,22 @@ const StartUsingSection = () => {
 
 const LastSection = () => {
   return (
-    <section className={styles.lastSectionGrid}>
-      <div>
-        <h1>Using Ensembl</h1>
-        <p>
-          Use the Help menu above to find articles &amp; videos that will help
-          you understand more about what what each app does, and how to use it
-        </p>
-      </div>
-      <div>
-        <h1>Ensembl annotation &amp; prediction</h1>
-        <p>
-          Learn how Ensembl predicts the genes present in an assembled genome,
-          and is then able to provide efficient functional annotations to those
-          genes.
-        </p>
+    <section className={styles.bottomSection}>
+      <h1>Ensembl tools</h1>
+
+      <div className={styles.appsGrid}>
+        <div className={styles.appBlock}>
+          <div className={styles.appLabel}>
+            <LabelledAppIcon app="blast" />
+          </div>
+          Compare DNA or protein sequences across species
+          <ul>
+            <li>opened from the launchbar at the top of every page</li>
+            <li>add up to 30 sequences and up to 25 species at a time</li>
+            <li>see significant sequence matches across species</li>
+            <li>results available for 7 days</li>
+          </ul>
+        </div>
       </div>
     </section>
   );
