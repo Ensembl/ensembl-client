@@ -124,7 +124,10 @@ const VariantPositionInTranscript = ({
 }) => {
   const variantLength = referenceAlleleSequence.length;
   const variantStartInTranscript = distanceToTranscriptStart + 1;
-  const variantEndInTranscript = variantStartInTranscript + variantLength;
+  const variantEndInTranscript = Math.max(
+    variantStartInTranscript + variantLength - 1,
+    variantStartInTranscript
+  );
 
   const formattedVarStart = formatNumber(variantStartInTranscript);
   const formattedVarEnd = formatNumber(variantEndInTranscript);
