@@ -26,6 +26,7 @@ import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/stat
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import DownloadIcon from 'static/icons/icon_download.svg';
 
@@ -141,7 +142,9 @@ const AnnotationProvider = (props: GenomeInfo) => {
   }
 
   const annotationProviderElement = annotation_provider.url ? (
-    <a href={annotation_provider.url}>{annotation_provider.name}</a>
+    <ExternalLink to={annotation_provider.url}>
+      {annotation_provider.name}
+    </ExternalLink>
   ) : (
     <span>{annotation_provider.name}</span>
   );
@@ -149,7 +152,9 @@ const AnnotationProvider = (props: GenomeInfo) => {
   return (
     <div className={styles.field}>
       <span className={styles.label}>Provider</span>
-      {annotationProviderElement}
+      <span className={styles.annotationProvider}>
+        {annotationProviderElement}
+      </span>
     </div>
   );
 };

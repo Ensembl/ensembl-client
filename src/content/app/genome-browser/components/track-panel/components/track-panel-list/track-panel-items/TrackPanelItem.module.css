@@ -4,16 +4,14 @@
 }
 
 .label > *:not(:last-child, .itemsCount) {
-  margin-right: 10px;
+  margin-right: 12px;
 }
 
 .labelText {
-  font-size: 12px;
   line-height: 1;
 }
 
 .labelTextStrong {
-  font-size: 12px;
   font-weight: var(--font-weight-bold);
 }
 
@@ -37,6 +35,7 @@
 }
 
 .itemsExpandLozenge {
+  --pill-button-font-size: 11px;
   display: flex;
   column-gap: 5px;
   padding: 4px 10px;

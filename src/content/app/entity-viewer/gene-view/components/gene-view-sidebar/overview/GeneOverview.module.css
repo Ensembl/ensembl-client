@@ -17,12 +17,12 @@
 }
 
 .sectionContent {
-  margin-left: 15px;
+  margin-left: 12px;
 }
 
 .geneSymbol {
   font-weight: var(--font-weight-bold);
-  margin-right: 10px;
+  margin-right: 12px;
 }
 
 .attributeRow {
@@ -93,6 +93,7 @@
   display: inline-flex;
   align-items: center;
   column-gap: 12px;
+  font-size: 12px;
 }
 
 .findAGene svg {
