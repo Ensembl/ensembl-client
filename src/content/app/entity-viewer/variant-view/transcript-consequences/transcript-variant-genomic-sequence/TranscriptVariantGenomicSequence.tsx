@@ -352,20 +352,6 @@ const getAltAlleleAnchorPosition = ({
   // 1px space between letter blocks
   const totalSpaceBetweenLetters = halfGenomicSequenceLength - 1;
 
-  if (variantType === 'insertion') {
-    return (
-      halfGenomicSequenceLength * letterWidth +
-      totalSpaceBetweenLetters -
-      letterWidth
-    );
-  } else if (variantType === 'deletion') {
-    return (
-      halfGenomicSequenceLength * letterWidth +
-      totalSpaceBetweenLetters -
-      letterWidth / 2
-    );
-  }
-
   const offsetForOddLengthVariant =
     halfGenomicSequenceLength * letterWidth +
     totalSpaceBetweenLetters -
@@ -374,6 +360,11 @@ const getAltAlleleAnchorPosition = ({
     halfGenomicSequenceLength * letterWidth +
     totalSpaceBetweenLetters -
     letterWidth;
+
+  if (variantType === 'insertion') {
+    // insertions behave similar to even-length variants
+    return offsetForEvenLengthVariant;
+  }
 
   return refAlleleSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
     ? offsetForOddLengthVariant
