@@ -41,6 +41,7 @@
   /* FONT WEIGHTS */
   --font-weight-light: 300;
   --font-weight-normal: 400;
+  --font-weight-semibold: 600; /* only for the monospace font, i.e. IBM Plex Mono */
   --font-weight-bold: 700;
   --font-weight-dark: 900;
 

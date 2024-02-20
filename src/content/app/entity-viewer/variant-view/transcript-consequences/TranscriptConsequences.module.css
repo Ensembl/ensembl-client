@@ -1,5 +1,4 @@
 .container {
-  padding-left: var(--double-standard-gutter);
   margin-top: 20px;
   padding-bottom: var(--global-padding-bottom);
 }
@@ -43,6 +42,7 @@
 .label {
   font-weight: var(--font-weight-light);
 }
+
 .value {
   padding-left: 10px;
 }
@@ -65,10 +65,14 @@
 
 .row {
   display: grid;
-  grid-template-columns: 160px 18px 695px 27px 180px;
+  grid-template-columns: 160px 18px 700px 27px 180px;
   padding: 5px 0;
   font-size: 12px;
   position: relative;
+}
+
+.rowExpanded {
+  padding-bottom: 30px;
 }
 
 .header {
@@ -109,4 +113,9 @@
 
 .right {
   grid-column: 5/6;
+}
+
+
+.details {
+  width: 700px;
 }

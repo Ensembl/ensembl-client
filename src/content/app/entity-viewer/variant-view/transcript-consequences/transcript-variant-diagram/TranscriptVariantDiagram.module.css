@@ -1,0 +1,25 @@
+.geneLine {
+  stroke: var(--color-medium-light-grey);
+  stroke-dasharray: 3;
+  stroke-width: 2;
+}
+
+.geneTick {
+  stroke: var(--color-medium-light-grey);
+  stroke-width: 1;
+}
+
+.variant {
+  stroke: var(--color-black);
+  stroke-width: 2;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.transcript rect {
+  stroke: var(--color-grey);
+  fill: var(--color-grey);
+}
