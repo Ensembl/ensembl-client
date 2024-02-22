@@ -1,0 +1,13 @@
+.section:not(:first-child) {
+  margin-top: 3rem;
+}
+
+.frame {
+  border: 1px dashed var(--color-medium-light-grey);
+  width: fit-content;
+}
+
+.inFrameContainer {
+  display: flex;
+  column-gap: 0.6rem;
+}

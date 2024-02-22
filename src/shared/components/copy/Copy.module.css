@@ -1,13 +1,37 @@
 .copyLozenge {
   display: inline-flex;
   height: 18px;
-  padding: 0 14px;
+  width: 68px;
   align-items: center;
+}
+
+/* 
+  Considering that when the copy button is pressed, it shows
+  a lozenge that is wider than the initial text "Copy"
+  (the lozenge text says "Copied", and the lozenge itself
+  has padding left and right), below are three alignment classes
+  to position the initial label ("Copy") within the space taken by the lozenge.
+
+  The label "Copy" can be aligned to the left of the lozenge space,
+  or to its right, or to the middle.
+  Notice that the text "Copied" is always middle-aligned
+*/
+
+.alignLeft {
+  justify-content: flex-start;
+}
+
+.alignMiddle {
   justify-content: center;
+}
+
+.alignRight {
+  justify-content: flex-end;
 }
 
 .copy {
   color: var(--color-blue);
+  line-height: inherit;
 }
 
 .copyLozengeCopied {
