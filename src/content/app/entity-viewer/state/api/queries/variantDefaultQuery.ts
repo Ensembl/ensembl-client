@@ -65,6 +65,9 @@ export const variantDefaultQuery = gql`
             start
             end
           }
+          strand {
+            code
+          }
         }
         allele_sequence
         reference_sequence
@@ -88,7 +91,7 @@ export const variantDefaultQuery = gql`
   }
 `;
 
-type VariantDetailsAllele = Pick<
+export type VariantDetailsAllele = Pick<
   VariantAllele,
   'name' | 'allele_sequence' | 'reference_sequence'
 > &
@@ -126,6 +129,7 @@ type VariantDetailsAllelePredictionResult = Pick<
 export type VariantDetails = Pick<Variant, 'name'> &
   Pick3<Variant, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<Variant, 'slice', 'region', 'name'> &
+  Pick3<Variant, 'slice', 'strand', 'code'> &
   Pick2<Variant, 'allele_type', 'value'> &
   Pick2<Variant, 'primary_source', 'url'> &
   Pick3<Variant, 'primary_source', 'source', 'name' | 'release'> & {

@@ -132,15 +132,15 @@ describe('<GeneOverview />', () => {
     });
 
     it('renders all data correctly', () => {
-      const { container, queryByTestId } = render(<GeneOverview />);
+      const { container, queryByTestId, queryByText } = render(
+        <GeneOverview />
+      );
 
       const geneSymbolElement = container.querySelector('.geneSymbol');
       const stableIdElement = queryByTestId('stableId');
       const geneNameElement = container.querySelector('.geneName');
       const synonymsElement = container.querySelector('.synonyms');
-      const xrefElement = container.querySelector(
-        '.externalLinkContainer .link'
-      );
+      const xrefElement = queryByText(metadata.name.accession_id);
       const biotypeValueElement = container.querySelector('.biotypeValue');
 
       // child components
@@ -149,7 +149,7 @@ describe('<GeneOverview />', () => {
       expect(geneSymbolElement?.textContent).toMatch(geneSymbol);
       expect(stableIdElement?.textContent).toMatch(stableId);
       expect(geneNameElement?.textContent).toMatch(geneName);
-      expect(xrefElement?.textContent).toMatch(metadata.name.accession_id);
+      expect(xrefElement).toBeTruthy();
       expect(synonymsElement?.textContent).toMatch(
         alternativeSymbols.join(', ')
       );

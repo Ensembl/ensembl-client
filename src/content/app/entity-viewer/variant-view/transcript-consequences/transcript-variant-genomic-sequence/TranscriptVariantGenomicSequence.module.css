@@ -1,0 +1,71 @@
+.letter {
+  --sequence-block-color: transparent;
+  --sequence-block-letter-color: var(--color-black);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.letterFlankingSequence {
+  --sequence-block-letter-color: var(--color-medium-dark-grey);
+}
+
+.letter + .letter {
+  margin-left: 1px;
+}
+
+.ellipsis {
+  letter-spacing: -3px;
+}
+
+.alternativeAllele {
+  position: relative;
+  width: fit-content;
+  padding-top: 16px;
+  transform: translateX(-50%);
+}
+
+.alternativeAllele::before {
+  content: 'Alternative allele';
+  position: absolute;
+  left: -12px;
+  transform: translateX(-100%);
+  white-space: nowrap;
+}
+
+.altAlleleLetter {
+  --sequence-block-color: var(--color-dark-grey);
+  --sequence-block-letter-color: var(--color-white);
+}
+
+.altAlleleLetter + .altAlleleLetter {
+  margin-left: 1px;
+}
+
+/* creating a basic CSS triangle: https://front-end.social/@css/111861629372809662 */
+.altAlleleArrow {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+  width: 9px;
+  aspect-ratio: 1.5;
+  background-color: var(--color-orange);
+}
+
+.altAlleleArrowUp {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%); /* this is what creates the triangle */
+}
+
+.altAlleleArrowDown {
+  clip-path: polygon(0 0, 50% 100%, 100% 0); /* this is what creates the triangle */
+}
+
+.altAlleleSequenceLength {
+  display: inline-flex;
+  align-items: center;
+  height: 16px; /* same as sequence letter */
+  min-width: 16px;
+  padding: 0 5px;
+  background-color: var(--color-dark-grey);
+  color: var(--color-white);
+}

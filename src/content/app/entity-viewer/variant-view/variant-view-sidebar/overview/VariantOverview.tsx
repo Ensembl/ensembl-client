@@ -28,6 +28,7 @@ import VariantConsequence, {
   getMostSevereVariantConsequence
 } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import styles from './VariantOverview.module.css';
 
@@ -51,7 +52,7 @@ const VariantOverview = () => {
   );
 
   if (isFetching) {
-    return <div>Loading...</div>;
+    return <SidebarLoader />;
   }
 
   if (!genomeIdForUrl || !variantId || !currentData?.variant) {
@@ -78,7 +79,7 @@ const VariantOverview = () => {
 
   return (
     <div className={styles.overviewContainer}>
-      <section className={styles.defaultContent}>
+      <section className={styles.sectionContent}>
         <div>
           <span className={styles.labelTextStrong}>{variant.name}</span>
           <span className={styles.variantType}>
@@ -102,10 +103,9 @@ const VariantOverview = () => {
         <div className={styles.externalLink}>
           {currentVariantType &&
             (currentVariantType.url ? (
-              <ExternalLink
-                to={currentVariantType.url}
-                linkText={currentVariantType.so_accession_id}
-              />
+              <ExternalLink to={currentVariantType.url}>
+                {currentVariantType.so_accession_id}
+              </ExternalLink>
             ) : (
               <span>{currentVariantType.so_accession_id}</span>
             ))}

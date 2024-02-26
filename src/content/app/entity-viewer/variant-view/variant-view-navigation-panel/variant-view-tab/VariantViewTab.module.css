@@ -32,7 +32,7 @@
 .pill {
   --info-pill-color: transparent;
   --info-pill-border-color: var(--color-dark-grey);
-  --info-pill-padding: 0 10px;
+  --info-pill-padding: 2px 10px;
   --info-pill-font-size: 11px;
 }
 

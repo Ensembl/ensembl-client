@@ -18,75 +18,59 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 
-import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
+import ExternalReference from './ExternalReference';
 
-const defaultProps: ExternalReferenceProps = {
-  label: faker.lorem.word(),
-  linkText: faker.lorem.word(),
-  to: faker.internet.url(),
-  classNames: {
-    container: faker.lorem.word(),
-    label: faker.lorem.word(),
-    icon: faker.lorem.word(),
-    link: faker.lorem.word()
-  }
-};
+const link = faker.internet.url();
 
 describe('<ExternalReference />', () => {
-  const renderExternalReference = (
-    props: Partial<ExternalReferenceProps> = {}
-  ) => render(<ExternalReference {...defaultProps} {...props} />);
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('renders without error', () => {
-    const { container } = renderExternalReference();
-    expect(() => container).not.toThrow();
+  it('renders a link with a label', () => {
+    const labelText = 'I am label';
+    const linkText = 'Hello world';
+    const className = faker.lorem.word();
+
+    const { container, getByText } = render(
+      <ExternalReference label={labelText} to={link} className={className}>
+        {linkText}
+      </ExternalReference>
+    );
+
+    const labelElement = getByText(labelText);
+    const linkElement = getByText(linkText);
+
+    expect(labelElement).toBeTruthy();
+    expect(linkElement.tagName).toBe('A');
+
+    expect(
+      (container.firstChild as HTMLElement).classList.contains(className)
+    ).toBe(true);
   });
 
-  it('hides label container div when there is no label', () => {
-    const { container } = renderExternalReference({ label: undefined });
+  it('renders a link without a label', () => {
+    const linkText = 'Hello world';
+
+    const { container, getByText } = render(
+      <ExternalReference to={link}>{linkText}</ExternalReference>
+    );
+
+    const linkElement = getByText(linkText);
 
     expect(container.querySelector('.label')).toBeFalsy();
+    expect(linkElement.tagName).toBe('A');
   });
 
-  it('applies the passed in classNames', () => {
-    const { container } = renderExternalReference();
+  it('renders reference in a span if no link was provided', () => {
+    const linkText = 'Hello world';
 
-    expect(
-      container.querySelector(`.${defaultProps.classNames?.container}`)
-    ).toBeTruthy();
-
-    expect(
-      container
-        .querySelector('.label')
-        ?.classList.contains(defaultProps.classNames?.label as string)
-    ).toBeTruthy();
-
-    expect(
-      container
-        .querySelector(`.externalLinkContainer svg`)
-        ?.classList.contains(defaultProps.classNames?.icon as string)
-    ).toBeTruthy();
-
-    expect(
-      container.querySelector(
-        `.externalLinkContainer .${defaultProps.classNames?.link}`
-      )
-    ).toBeTruthy();
-  });
-
-  it('does not display ExternalLink component when there is no link', () => {
-    const { container } = renderExternalReference({ to: undefined });
-
-    expect(container.querySelector(`.externalLinkContainer`)).toBeFalsy();
-
-    expect(container.querySelector(`.noLink`)).toBeTruthy();
-
-    expect(container.querySelector(`.noLink`)?.textContent).toBe(
-      defaultProps.linkText
+    const { getByText } = render(
+      <ExternalReference>{linkText}</ExternalReference>
     );
+
+    const linkElement = getByText(linkText);
+
+    expect(linkElement.tagName).toBe('SPAN');
   });
 });

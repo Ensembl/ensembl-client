@@ -207,10 +207,9 @@ export const VariantDB = (props: {
     dbElement = <span>{primary_source.source.name}</span>;
   } else {
     dbElement = (
-      <ExternalLink
-        to={primary_source.url}
-        linkText={primary_source.source.name}
-      />
+      <ExternalLink to={primary_source.url}>
+        {primary_source.source.name}
+      </ExternalLink>
     );
   }
 
@@ -218,7 +217,7 @@ export const VariantDB = (props: {
     <div>
       {dbElement}
       {primary_source.source.release && (
-        <span className={classNames(styles.light, styles.withSpaceLeft)}>
+        <span className={classNames(styles.light, styles.sourceRelease)}>
           Release {primary_source.source.release}
         </span>
       )}
@@ -226,7 +225,9 @@ export const VariantDB = (props: {
   );
 };
 
-const CADDScores = (props: { data: { sequence: string; score: number }[] }) => {
+export const CADDScores = (props: {
+  data: { sequence: string; score: number }[];
+}) => {
   const caddScoreString = props.data
     .map((data) => `${data.score} (${data.sequence})`)
     .join(', ');
@@ -240,11 +241,9 @@ const VariantSynonyms = (props: { variant: VariantQueryResult['variant'] }) => {
     (reference, index) => {
       if (reference.url) {
         return (
-          <ExternalLink
-            key={index}
-            to={reference.url}
-            linkText={reference.name}
-          />
+          <ExternalLink key={index} to={reference.url}>
+            {reference.name}
+          </ExternalLink>
         );
       } else {
         return <span key={index}>{reference.name}</span>;

@@ -1,18 +1,14 @@
-.externalLinkContainer {
-  display: inline-grid;
-  grid-template-columns:  [icon] auto [link] auto;
-  column-gap: 5px;
-  align-items: baseline;
-}
-
 .icon {
+  position: relative;
+  bottom: -1px;
   display: inline-block;
-  fill: var(--color-orange);
-  grid-column: icon;
-  height: 12px;
-  width: 12px;
+  margin-right: var(--external-link-icon-offset, 5px);
+  fill: var(--external-link-icon-offset, var(--color-orange));
+  height: var(--external-link-icon-size, 12px);
+  aspect-ratio: 1;
 }
 
 .link {
   display: inline-block;
+  font-size: 12px; /* seems to be Andrea's default for external links; can be overridden by wrapping the child in a span with its own styles */
 }

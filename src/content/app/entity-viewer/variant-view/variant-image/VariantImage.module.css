@@ -1,22 +1,40 @@
 .container {
   --chevrons-block-width: 165px; /* the block of right-pointing chevrons to the left of reference sequence, indicating forward strand */
   height: 100%;
-  background:
-    repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
-  background-size: 1px 100%;
-  background-position: calc(var(--chevrons-block-width) + var(--nucleotides-offset) * 16px - 1px);
-  background-repeat: no-repeat;
   padding-bottom: var(--global-padding-bottom);
+  position: relative;
+  color: var(--color-white);
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, var(--color-orange) 0 4px, transparent 4px 8px);
+  background-size: 1px 100%;
+  background-repeat: no-repeat;
+  left: calc(
+    var(--chevrons-block-width) +
+    calc(var(--nucleotides-offset)) * calc(16px + 1px)
+    - 2px);
+  z-index: 1;
 }
 
 .referenceSequenceBlock {
+  --chevron-height: 7px; /* note that this is the height of the chevron icon before rotation */
   display: grid;
   grid-template-areas:
     '. . variant-start .'
     '. reference-sequence-label variant-name view-in'
     'chevrons sequence sequence .'
     '. . strand-label .';
-  grid-template-columns: var(--chevrons-block-width) calc(var(--nucleotides-offset) * 16px) max-content auto;
+  grid-template-columns: var(--chevrons-block-width) calc(var(--nucleotides-offset) * calc(16px + 1px)) max-content auto;
+  position: sticky;
+  top: 231px;
+  background-color: var(--color-black);
+  z-index: 1;
 }
 
 
@@ -28,6 +46,7 @@
   justify-content: space-between;
   width: var(--chevrons-block-width);
   padding-right: 24px;
+  margin-top: 2px;
 }
 
 .variantStartLabel {
@@ -52,7 +71,7 @@
   grid-area: variant-name;
   margin-left: 8px; /* half the letter block width */
   display: inline-flex;
-  height: 36px;
+  height: 28px;
   align-items: flex-start;
 }
 
@@ -76,5 +95,10 @@
   font-weight: var(--font-weight-light);
   font-size: 11px;
   justify-self: end;
-  margin-top: 14px;
+  margin-top: 11px;
+}
+
+.viewIn {
+  grid-area: view-in;
+  margin-left: 32px;
 }

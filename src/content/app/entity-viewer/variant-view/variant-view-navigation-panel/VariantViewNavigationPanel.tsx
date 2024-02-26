@@ -15,50 +15,82 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import {
+  getReferenceAndAltAlleles,
+  getMostSevereVariantConsequence,
+  getVariantGroupLabel
+} from 'src/shared/helpers/variantHelpers';
 
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import VariantViewTab from './variant-view-tab/VariantViewTab';
 
-import styles from './VariantViewNavigationPanel.module.css';
+import type { ViewName } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
 
-/**
- * TODO:
- * - Update styles of tab elements
- * - Update styles of info pill
- * - Use alt allele data for allele frequency
- */
+import styles from './VariantViewNavigationPanel.module.css';
 
 type Props = {
   genomeId: string;
+  genomeIdForUrl: string;
   variantId: string;
   activeAlleleId: string;
+  view: string | null;
 };
 
 const VariantViewNavigationPanel = (props: Props) => {
+  const { genomeIdForUrl, variantId, activeAlleleId, view } = props;
   const { currentData } = useVariantViewNavigationData(props);
+
+  const navigate = useNavigate();
 
   if (!currentData) {
     return null;
   }
 
-  const { alleleSequence } = currentData;
+  const { variant, alleleSequence, isReferenceAlleleActive } = currentData;
+
+  const mostSevereVariantConsequence = getMostSevereVariantConsequence(variant);
+  const variantGroupLabel = getVariantGroupLabel(mostSevereVariantConsequence);
+
+  const commonUrlParams = {
+    genomeId: genomeIdForUrl,
+    variantId,
+    alleleId: activeAlleleId
+  };
+
+  const onViewChange = (view: ViewName | null) => {
+    const url = urlFor.entityViewerVariant({
+      ...commonUrlParams,
+      view
+    });
+    navigate(url);
+  };
+
+  const componentClasses = classNames(styles.grid, {
+    [styles.withBottomBorder]: !props.view
+  });
 
   return (
-    <div className={styles.grid}>
+    <div className={componentClasses}>
       <VariantViewTab
         viewId="default"
-        tabText="Variant name"
-        labelText="Protein altering variant"
-        pressed={true}
+        tabText={variant.name}
+        labelText={variantGroupLabel}
+        onClick={() => onViewChange(null)}
+        pressed={view === null}
       />
       <VariantViewTab
         viewId="transcript-consequences"
         tabText="Transcript consequences"
         labelText="Features"
         pillContent="0"
-        pressed={false}
-        disabled={true}
+        pressed={view === 'transcript-consequences'}
+        onClick={() => onViewChange('transcript-consequences')}
       />
       <VariantViewTab
         viewId="regulatory-consequences"
@@ -71,9 +103,10 @@ const VariantViewNavigationPanel = (props: Props) => {
       <VariantViewTab
         viewId="allele-frequencies"
         tabText="Allele frequency"
-        labelText={alleleSequence}
+        labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
         pillContent="0"
-        pressed={false}
+        onClick={() => onViewChange('allele-frequencies')}
+        pressed={view === 'allele-frequencies'}
       />
       <VariantViewTab
         viewId="genes"
@@ -135,6 +168,7 @@ const useVariantViewNavigationData = (params: Props) => {
   }
 
   const variant = currentData.variant;
+  const { referenceAllele } = getReferenceAndAltAlleles(variant.alleles);
   const activeAllele = variant.alleles.find(
     (allele) => allele.urlId === activeAlleleId
   );
@@ -146,10 +180,13 @@ const useVariantViewNavigationData = (params: Props) => {
 
     alleleSequence = `${truncatedSequence}${ellipsis}`;
   }
+  const isReferenceAlleleActive = referenceAllele?.urlId === activeAlleleId;
 
   return {
     currentData: {
-      alleleSequence
+      variant: currentData.variant,
+      alleleSequence,
+      isReferenceAlleleActive
     },
     isLoading,
     isError

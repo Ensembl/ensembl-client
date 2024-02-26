@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import SequenceLetterBlock from '../sequence-letter-block/SequenceLetterBlock';
 
@@ -22,21 +23,36 @@ import styles from './FlankingSequence.module.css';
 
 type Props = {
   sequence: string;
-  hasEllipsisAtStart?: boolean;
-  hasEllipsisAtEnd?: boolean;
+  position: 'left' | 'right';
+  hasEllipsis?: boolean;
 };
 
 const FlankingSequence = (props: Props) => {
-  const { sequence, hasEllipsisAtStart, hasEllipsisAtEnd } = props;
+  const { sequence, position, hasEllipsis } = props;
+
+  const hasEllipsisAtStart = hasEllipsis && position === 'left';
+  const hasEllipsisAtEnd = hasEllipsis && position === 'right';
 
   const letters = sequence.split('');
 
+  // for ellipsis, in this image, designer prefers three separate dots
+  // rather than a single ellipsis character
   if (hasEllipsisAtStart) {
-    letters[0] = '…';
+    letters[0] = '...';
   }
   if (hasEllipsisAtEnd) {
-    letters[letters.length - 1] = '…';
+    letters[letters.length - 1] = '...';
   }
+
+  const getLetterClasses = (letterIndex: number) => {
+    return classNames(styles.letter, {
+      [styles.firstRightSequenceLetter]:
+        position === 'right' && letterIndex === 0,
+      [styles.ellipsis]:
+        (letterIndex === 0 && hasEllipsisAtStart) ||
+        (letterIndex === letters.length - 1 && hasEllipsisAtEnd)
+    });
+  };
 
   return (
     <>
@@ -44,7 +60,7 @@ const FlankingSequence = (props: Props) => {
         <SequenceLetterBlock
           key={index}
           letter={letter}
-          className={styles.letter}
+          className={getLetterClasses(index)}
         />
       ))}
     </>

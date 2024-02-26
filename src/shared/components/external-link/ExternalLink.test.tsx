@@ -18,35 +18,20 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 
-import ExternalLink, { ExternalLinkProps } from './ExternalLink';
-
-const defaultProps: ExternalLinkProps = {
-  linkText: faker.lorem.words(),
-  to: faker.internet.url(),
-  classNames: {
-    icon: faker.lorem.word(),
-    link: faker.lorem.word()
-  }
-};
+import ExternalLink from './ExternalLink';
 
 describe('<ExternalLink />', () => {
-  const renderExternalLink = () => render(<ExternalLink {...defaultProps} />);
-  it('renders without error', () => {
-    const { container } = renderExternalLink();
-    expect(() => container).not.toThrow();
-  });
+  it('applies the passed in className', () => {
+    const className = faker.lorem.word();
 
-  it('applies the passed in classNames', () => {
-    const { container } = renderExternalLink();
-
-    expect(
-      container
-        .querySelector(`svg`)
-        ?.classList.contains(defaultProps.classNames?.icon as string)
-    ).toBeTruthy();
+    const { container } = render(
+      <ExternalLink className={className} to={faker.internet.url()}>
+        Hello world
+      </ExternalLink>
+    );
 
     expect(
-      container.querySelector(`.link.${defaultProps.classNames?.link}`)
-    ).toBeTruthy();
+      (container.firstChild as HTMLElement).classList.contains(className)
+    ).toBe(true);
   });
 });

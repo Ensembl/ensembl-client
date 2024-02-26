@@ -28,13 +28,9 @@
   grid-column: download;
 }
 
-.externalRefContainer {
+.externalReference {
   font-weight: var(--font-weight-normal);
   margin-right: 16px;
-}
-
-.externalRefLink {
-  font-size: 12px;
 }
 
 .proteinFeaturesCountWrapper {

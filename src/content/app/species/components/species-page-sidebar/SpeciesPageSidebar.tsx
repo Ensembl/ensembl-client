@@ -15,11 +15,22 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+
+import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
+import DownloadIcon from 'static/icons/icon_download.svg';
+
+import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesPageSidebar.module.css';
@@ -54,11 +65,9 @@ const SpeciesPageSidebar = (props: Props) => {
         <div className={styles.fieldsGroup}>
           <div className={styles.assemblyName}>{data.assembly.name}</div>
           <div className={styles.assemblySource}>
-            <ExternalReference
-              label="INSDC"
-              linkText={data.assembly.accession_id}
-              to={data.assembly.url}
-            />
+            <ExternalReference label="INSDC" to={data.assembly.url}>
+              {data.assembly.accession_id}
+            </ExternalReference>
           </div>
         </div>
 
@@ -87,6 +96,10 @@ const SpeciesPageSidebar = (props: Props) => {
           </div>
           <AssemblyDate {...data} />
         </div>
+      </section>
+
+      <section className={classNames(styles.section, styles.getFilesSection)}>
+        <GetFilesButton />
       </section>
     </Sidebar>
   );
@@ -129,7 +142,9 @@ const AnnotationProvider = (props: GenomeInfo) => {
   }
 
   const annotationProviderElement = annotation_provider.url ? (
-    <a href={annotation_provider.url}>{annotation_provider.name}</a>
+    <ExternalLink to={annotation_provider.url}>
+      {annotation_provider.name}
+    </ExternalLink>
   ) : (
     <span>{annotation_provider.name}</span>
   );
@@ -137,7 +152,9 @@ const AnnotationProvider = (props: GenomeInfo) => {
   return (
     <div className={styles.field}>
       <span className={styles.label}>Provider</span>
-      {annotationProviderElement}
+      <span className={styles.annotationProvider}>
+        {annotationProviderElement}
+      </span>
     </div>
   );
 };
@@ -199,6 +216,29 @@ const AssemblyDate = (props: GenomeInfo) => {
       <span className={styles.label}>Assembly released</span>
       {assembly_date}
     </div>
+  );
+};
+
+const GetFilesButton = () => {
+  const activeGenomeId = useAppSelector(getActiveGenomeId) as string;
+  const dispatch = useAppDispatch();
+
+  const onClick = () => {
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: SpeciesSidebarModalView.DOWNLOADS }
+      })
+    );
+  };
+
+  return (
+    <button className={styles.getFiles} onClick={onClick}>
+      <span>Get files</span>
+      <span className={styles.downloadIcon}>
+        <DownloadIcon />
+      </span>
+    </button>
   );
 };
 

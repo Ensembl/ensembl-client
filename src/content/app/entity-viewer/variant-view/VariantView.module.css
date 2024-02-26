@@ -1,9 +1,9 @@
 .container {
-  color: var(--color-white);
   background-color: var(--color-black);
   display: grid;
   grid-template-rows: [navigation-panel] auto [view-specific-content] 1fr;
   height: 100%;
   padding-left: var(--double-standard-gutter);
+  padding-right: var(--standard-gutter);
   overflow: auto;
 }

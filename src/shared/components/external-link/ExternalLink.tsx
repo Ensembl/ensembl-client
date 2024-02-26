@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import LinkIcon from 'static/icons/icon_xlink.svg';
@@ -23,32 +23,25 @@ import styles from './ExternalLink.module.css';
 
 export type ExternalLinkProps = {
   to: string;
-  linkText: string;
-  classNames?: {
-    icon?: string;
-    link?: string;
-  };
+  children: ReactNode;
+  className?: string;
   onClick?: () => void;
 };
 
 const ExternalLink = (props: ExternalLinkProps) => {
-  const iconClass = classNames(styles.icon, props.classNames?.icon);
-
-  const linkClass = classNames(styles.link, props.classNames?.link);
+  const componentClasses = classNames(styles.link, props.className);
 
   return (
-    <span className={styles.externalLinkContainer}>
-      <LinkIcon className={iconClass} />
-      <a
-        className={linkClass}
-        href={props.to}
-        target="_blank"
-        rel="nofollow noreferrer"
-        onClick={props.onClick}
-      >
-        {props.linkText}
-      </a>
-    </span>
+    <a
+      className={componentClasses}
+      href={props.to}
+      target="_blank"
+      rel="nofollow noreferrer"
+      onClick={props.onClick}
+    >
+      <LinkIcon className={styles.icon} />
+      {props.children}
+    </a>
   );
 };
 

@@ -17,7 +17,7 @@
 import type { ValueSetMetadata } from '../core-api/metadata';
 
 export type VariantAllelePopulationFrequency = {
-  population: string;
+  population_name: string;
   allele_count: number | null; // Number of individuals/samples in the population where variant allele is found
   allele_number: number | null; // Total number of alleles in called genotypes
   allele_frequency: number;

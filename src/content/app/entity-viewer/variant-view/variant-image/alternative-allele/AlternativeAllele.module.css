@@ -1,6 +1,7 @@
 .allele {
   --sequence-block-letter-color: var(--color-black);
   justify-self: start;
+  font-size: 11px;
 }
 
 .letterBlock + .letterBlock {

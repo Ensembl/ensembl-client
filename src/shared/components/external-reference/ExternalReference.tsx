@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+import React, { type ReactNode } from 'react';
 
 import ExternalLink from '../external-link/ExternalLink';
 
@@ -23,43 +22,26 @@ import styles from './ExternalReference.module.css';
 
 export type ExternalReferenceProps = {
   label?: string | null;
-  to: string;
-  linkText: string;
-  classNames?: {
-    container?: string;
-    label?: string;
-    icon?: string;
-    link?: string;
-  };
+  to?: string;
+  className?: string;
+  children: ReactNode;
   onClick?: () => void;
 };
 
 const ExternalReference = (props: ExternalReferenceProps) => {
-  const containerClass = classNames(props.classNames?.container);
-  const containerProps = containerClass
-    ? {
-        className: containerClass
-      }
-    : {};
-
-  const labelClass = classNames(styles.label, props.classNames?.label);
-
   return (
-    <div {...containerProps} data-test-id="external reference container">
-      {!!props.label && <span className={labelClass}>{props.label}</span>}
+    <div
+      className={props.className}
+      data-test-id="external reference container"
+    >
+      {!!props.label && <span className={styles.label}>{props.label}</span>}
 
       {props.to ? (
-        <ExternalLink
-          to={props.to}
-          linkText={props.linkText}
-          classNames={{
-            icon: props.classNames?.icon,
-            link: props.classNames?.link
-          }}
-          onClick={props.onClick}
-        />
+        <ExternalLink to={props.to} onClick={props.onClick}>
+          {props.children}
+        </ExternalLink>
       ) : (
-        <span className={styles.noLink}>{props.linkText}</span>
+        <span className={styles.noLink}>{props.children}</span>
       )}
     </div>
   );

@@ -183,13 +183,11 @@ const ExternalReferencesGroup = (props: {
             : entry.description
         }
         to={entry.url}
-        linkText={entry.accession_id}
         key={key}
-        classNames={{
-          container: styles.externalReferenceContainer,
-          link: styles.externalReferenceLink
-        }}
-      />
+        className={styles.externalReference}
+      >
+        {entry.accession_id}
+      </ExternalReference>
     ) : null
   );
 
@@ -263,13 +261,11 @@ const renderExternalReferencesGroups = (
             <ExternalReference
               label={externalReferencesGroup.source.name}
               to={externalReferencesGroup.references[0].url}
-              linkText={externalReferencesGroup.references[0].accession_id}
               onClick={() => onClick(externalReferencesGroup.source.name)}
-              classNames={{
-                container: styles.externalReferenceContainer,
-                link: styles.externalReferenceLink
-              }}
-            />
+              className={styles.externalReference}
+            >
+              {externalReferencesGroup.references[0].accession_id}
+            </ExternalReference>
           ) : null
         ) : (
           <ExternalReferencesGroup

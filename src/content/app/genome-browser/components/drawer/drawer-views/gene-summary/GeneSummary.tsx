@@ -174,10 +174,11 @@ const GeneSummary = () => {
           {getGeneName(gene.name)}
           {geneNameMetadata?.accession_id && geneNameMetadata?.url && (
             <ExternalReference
-              classNames={{ container: styles.marginTop }}
+              className={styles.marginTop}
               to={geneNameMetadata.url}
-              linkText={geneNameMetadata.accession_id}
-            />
+            >
+              {geneNameMetadata.accession_id}
+            </ExternalReference>
           )}
         </div>
       </div>

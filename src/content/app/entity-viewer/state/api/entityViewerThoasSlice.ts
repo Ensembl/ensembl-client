@@ -60,10 +60,30 @@ import {
   variantDefaultQuery,
   type EntityViewerVariantDefaultQueryResult
 } from './queries/variantDefaultQuery';
+import {
+  variantStudyPopulationsQuery,
+  type VariantStudyPopulationsQueryResult
+} from './queries/variantStudyPopulationsQuery';
+import {
+  variantAlleleFrequenciesQuery,
+  type VariantAlleleFrequenciesQueryResult
+} from './queries/variantAlleleFrequenciesQuery';
+import {
+  variantPredictedMolecularConsequencesQuery,
+  type VariantPredictedMolecularConsequencesResponse
+} from './queries/variantPredictedMolecularConsequencesQuery';
+import {
+  geneForVariantTranscriptConsequencesQuery,
+  transcriptForVariantTranscriptConsequencesQuery,
+  type GeneForVariantTranscriptConsequencesResponse,
+  type TranscriptForVariantTranscriptConsequencesResponse
+} from './queries/variantTranscriptConsequencesQueries';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
+type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
 type VariantQueryParams = { genomeId: string; variantId: string };
+type VariantStudyPopulationsQueryParams = { genomeId: string };
 
 const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -177,18 +197,94 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       }),
       transformResponse: (response: EntityViewerVariantDefaultQueryResult) => {
-        response.variant.alleles = response.variant.alleles.map(
-          (allele, index) => ({
-            ...allele,
-            urlId: `${index}`
-          })
-        );
-
-        return response;
+        return addAlleleUrlId(response);
       }
-    })
+    }),
+    variantStudyPopulations: builder.query<
+      VariantStudyPopulationsQueryResult,
+      VariantStudyPopulationsQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantStudyPopulationsQuery,
+        variables: params
+      })
+    }),
+    variantAllelePopulationFrequencies: builder.query<
+      VariantAlleleFrequenciesQueryResult,
+      VariantQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantAlleleFrequenciesQuery,
+        variables: params
+      }),
+      transformResponse: (response: VariantAlleleFrequenciesQueryResult) =>
+        addAlleleUrlId(response)
+    }),
+    variantPredictedMolecularConsequences: builder.query<
+      VariantPredictedMolecularConsequencesResponse,
+      VariantQueryParams
+    >({
+      query: (params) => ({
+        url: config.variationApiUrl,
+        body: variantPredictedMolecularConsequencesQuery,
+        variables: params
+      }),
+      transformResponse: (response: VariantPredictedMolecularConsequencesResponse) => {
+        // Adapt to the api error by copying values from consequence.accession_id to consequence.value
+        // TODO: remove when the api is fix
+        for (const allele of response.variant.alleles ) {
+          for ( const predicted_consequence of allele.predicted_molecular_consequences ) {
+            for ( const cons of predicted_consequence.consequences) {
+              cons.value = (cons as any).accession_id;
+            }
+          }
+
+        }
+        return addAlleleUrlId(response);
+      }
+
+    }),
+    geneForVariantTranscriptConsequences: builder.query<
+      GeneForVariantTranscriptConsequencesResponse,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: geneForVariantTranscriptConsequencesQuery,
+        variables: params
+      })
+    }),
+    transcriptForVariantTranscriptConsequences: builder.query<
+      TranscriptForVariantTranscriptConsequencesResponse,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptForVariantTranscriptConsequencesQuery,
+        variables: params
+      })
+    }),
   })
 });
+
+const addAlleleUrlId = <
+  T extends {
+    variant: {
+      alleles: Record<string, unknown>[];
+    };
+  }
+>(
+  response: T
+): T => {
+  response.variant.alleles = response.variant.alleles.map((allele, index) => ({
+    ...allele,
+    urlId: `${index}`
+  }));
+
+  return response;
+};
 
 export const {
   useGenePageMetaQuery,
@@ -200,7 +296,12 @@ export const {
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
   useVariantPageMetaQuery,
-  useDefaultEntityViewerVariantQuery
+  useDefaultEntityViewerVariantQuery,
+  useVariantStudyPopulationsQuery,
+  useVariantAllelePopulationFrequenciesQuery,
+  useVariantPredictedMolecularConsequencesQuery,
+  useGeneForVariantTranscriptConsequencesQuery,
+  useTranscriptForVariantTranscriptConsequencesQuery
 } = entityViewerThoasSlice;
 
 export const {

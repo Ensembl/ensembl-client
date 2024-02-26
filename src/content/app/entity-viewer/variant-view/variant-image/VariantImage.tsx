@@ -16,10 +16,12 @@
 
 import React from 'react';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getReferenceAndAltAlleles,
   getMostSevereVariantConsequence
 } from 'src/shared/helpers/variantHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useVariantImageData from './useVariantImageData';
 
@@ -27,6 +29,7 @@ import FlankingSequence from './flanking-sequence/FlankingSequence';
 import ReferenceSequenceAllele from './reference-sequence-allele/ReferenceSequenceAllele';
 import AlternativeAlleles from './alternative-alleles/AlternativeAlleles';
 import Chevron from 'src/shared/components/chevron/Chevron';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
 
@@ -34,13 +37,20 @@ import styles from './VariantImage.module.css';
 
 type Props = {
   genomeId: string;
+  genomeIdForUrl: string;
   variantId: string;
   activeAlleleId: string;
   onAlleleChange: (alleleId: string) => void;
 };
 
 const VariantImage = (props: Props) => {
-  const { genomeId, variantId, activeAlleleId, onAlleleChange } = props;
+  const {
+    genomeId,
+    genomeIdForUrl,
+    variantId,
+    activeAlleleId,
+    onAlleleChange
+  } = props;
 
   const { currentData } = useVariantImageData({
     genomeId,
@@ -88,6 +98,8 @@ const VariantImage = (props: Props) => {
         regionName={regionName}
         regionLength={regionLength}
         variant={variant}
+        genomeIdForUrl={genomeIdForUrl}
+        variantId={variantId}
         referenceAllele={referenceAllele as VariantDetails['alleles'][number]}
         activeAlleleId={activeAlleleId}
         mostSevereConsequence={mostSevereConsequence}
@@ -100,6 +112,7 @@ const VariantImage = (props: Props) => {
         hasAnchorBase={hasAnchorBase}
         variantStart={variantStart}
         activeAlleleId={activeAlleleId}
+        isReferenceAlleleSelected={referenceAllele?.urlId === activeAlleleId}
         mostSevereConsequence={mostSevereConsequence}
         onAlleleClick={onAlleleChange}
       />
@@ -118,6 +131,8 @@ const ReferenceSequence = (props: {
   regionName: string;
   regionLength: number;
   variant: VariantDetails;
+  genomeIdForUrl: string;
+  variantId: string;
   referenceAllele: VariantDetails['alleles'][number];
   activeAlleleId: string;
   mostSevereConsequence: string;
@@ -133,6 +148,8 @@ const ReferenceSequence = (props: {
     regionLength,
     hasAnchorBase,
     variant,
+    genomeIdForUrl,
+    variantId,
     referenceAllele,
     activeAlleleId,
     mostSevereConsequence,
@@ -178,7 +195,8 @@ const ReferenceSequence = (props: {
       <div className={styles.referenceSequence}>
         <FlankingSequence
           sequence={leftFlankingSequence}
-          hasEllipsisAtStart={hasEllipsisAtStart}
+          position="left"
+          hasEllipsis={hasEllipsisAtStart}
         />
         <ReferenceSequenceAllele
           sequence={referenceSequence}
@@ -193,9 +211,25 @@ const ReferenceSequence = (props: {
         />
         <FlankingSequence
           sequence={rightFlankingSequence}
-          hasEllipsisAtEnd={hasEllipsisAtEnd}
+          position="right"
+          hasEllipsis={hasEllipsisAtEnd}
         />
       </div>
+      <ViewInApp
+        className={styles.viewIn}
+        theme="dark"
+        links={{
+          genomeBrowser: {
+            url: urlFor.browser({
+              genomeId: genomeIdForUrl,
+              focus: buildFocusIdForUrl({
+                type: 'variant',
+                objectId: variantId
+              })
+            })
+          }
+        }}
+      />
     </div>
   );
 };

@@ -31,6 +31,9 @@ import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModa
 const speciesSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   [SpeciesSidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/SpeciesSidebarSearch')
+  ),
+  [SpeciesSidebarModalView.DOWNLOADS]: lazy(
+    () => import('./modal-views/SpeciesSidebarDownloads')
   )
 };
 
@@ -38,14 +41,13 @@ export const speciesSidebarModalTitles: { [key: string]: string } = {
   [SpeciesSidebarModalView.SEARCH]: 'Search',
   [SpeciesSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [SpeciesSidebarModalView.SHARE]: 'Share',
-  [SpeciesSidebarModalView.DOWNLOADS]: 'Downloads'
+  [SpeciesSidebarModalView.DOWNLOADS]: 'Download'
 };
 
 export const SpeciesSidebarModal = () => {
   const speciesSidebarModalView = useAppSelector(getSpeciesSidebarModalView);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const dispatch = useAppDispatch();
-
   if (!speciesSidebarModalView || !activeGenomeId) {
     return null;
   }

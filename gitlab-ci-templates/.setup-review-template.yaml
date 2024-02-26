@@ -1,94 +1,37 @@
 # Template to setup review app
 # Create Service, Apply Ingress rules etc
-.setup-review:
+.setup-review-newk8s:
   stage: setup
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  variables:
-    NEW_BROWSER_SERVICE_SLUG: dev
-    GENOME_SEARCH_SERVICE_SLUG: dev
-    THOAS_SERVICE_SLUG: dev
-    CORE_API_SERVICE_SLUG: dev
-    REFGET_SERVICE_SLUG: dev
-    HELP_DOCS_SERVICE_SLUG: dev
-    TRACK_API_SERVICE_SLUG: dev
-    TOOLS_API_SERVICE_SLUG: dev
-
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
-    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
-    - cd ensembl-k8s-manifests/
-    # ensembl-client
-    - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_ingress.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
-    - sed -i "s#<THOAS_SERVICE_SLUG>#${THOAS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
-    - sed -i "s#<CORE_API_SERVICE_SLUG>#${CORE_API_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
-    - sed -i "s#<GENOME_SEARCH_SERVICE_SLUG>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
-    - sed -i "s#<HELP_DOCS_SERVICE_SLUG>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_cm.yaml
-    - sed -i "s#<GA_KEY>#${GA_KEY}#g" ensembl_client_node_cm.yaml
-    # ensembl-new-genome-browser
-    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_BROWSER_SERVICE_SLUG}#g" ensembl_new_gb_hi_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_BROWSER_SERVICE_SLUG}#g" ensembl_new_gb_lo_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_BROWSER_SERVICE_SLUG}#g" ensembl_new_gb_hi_ingress.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_BROWSER_SERVICE_SLUG}#g" ensembl_new_gb_lo_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_new_gb_hi_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_new_gb_lo_ingress.yaml
-    # ensembl-2020-genome-search
-    - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_genome_search_ingress.yaml     
-    # ensembl-refget-proxy
-    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${REFGET_SERVICE_SLUG}#g" ensembl_refget_proxy_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_refget_proxy_ingress.yaml 
-    # ensembl-help-docs
-    - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${HELP_DOCS_SERVICE_SLUG}#g" ensembl_help_docs_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_help_docs_ingress.yaml
-    # ensembl-track-api
-    - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${TRACK_API_SERVICE_SLUG}#g" ensembl_track_api_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_track_api_ingress.yaml
-    # ensembl-tools-api
-    - sed -i "s#<DEPLOYMENT_ENV>#${TOOLS_API_SERVICE_SLUG}#g" ensembl_tools_api_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${TOOLS_API_SERVICE_SLUG}#g" ensembl_tools_api_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_tools_api_ingress.yaml
-    # ensembl-search-api
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_search_hub_ingress.yaml
-    # metadata api
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" metadata_api_ingress.yaml
+    - git clone --depth 1 --branch k8s123-migration https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - kubectl create namespace ${CI_COMMIT_REF_SLUG} --dry-run=client -o yaml | kubectl apply -f -
+    
   script:
-    # ensembl-tools-api
-    - kubectl apply -f ensembl_tools_api_service.yaml
-    - kubectl apply -f ensembl_tools_api_ingress.yaml
-    # ensembl-track-api
-    - kubectl apply -f ensembl_track_api_service.yaml
-    - kubectl apply -f ensembl_track_api_ingress.yaml
-    # ensembl-help-and-docs
-    - kubectl apply -f ensembl_help_docs_service.yaml
-    - kubectl apply -f ensembl_help_docs_ingress.yaml
-    # ensembl-refget-proxy
-    - kubectl apply -f ensembl_refget_proxy_service.yaml
-    - kubectl apply -f ensembl_refget_proxy_ingress.yaml
-    # ensembl-new-genome-browser
-    - kubectl apply -f ensembl_new_gb_hi_service.yaml
-    - kubectl apply -f ensembl_new_gb_lo_service.yaml
-    - kubectl apply -f ensembl_new_gb_hi_ingress.yaml
-    - kubectl apply -f ensembl_new_gb_lo_ingress.yaml
-    # ensembl-2020-genome-search
-    - kubectl apply -f ensembl_genome_search_service.yaml
-    - kubectl apply -f ensembl_genome_search_ingress.yaml
-    # ensembl-client
-    - kubectl apply -f ensembl_client_nginx_service.yaml
-    - kubectl apply -f ensembl_client_nginx_ingress.yaml
-    - kubectl apply -f ensembl_client_node_service.yaml
-    - kubectl apply -f ensembl_client_node_ingress.yaml
-    - kubectl apply -f ensembl_client_node_cm.yaml
-    # ensembl searchapi ingress
-    - kubectl apply -f ensembl_search_hub_ingress.yaml
-    # metadata api ingress
-    - kubectl apply -f metadata_api_ingress.yaml
+    # Setup Ingress for default backend
+    - cd ensembl-k8s-manifests
+    - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
+    - cp review-setup/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ | kubectl apply -f -
+    
+    # Deploy nginx & node
+    - echo "NGINX & NODE"
+    - mv kustomization-ensembl-client.yaml kustomization.yaml
+    - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ | kubectl apply -f -
+
+    # Setup Ingress for Genome Browser
+    - echo "GENOME-BROWSER HI"
+    - cp genome-browser/review/hi/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ | kubectl apply -f -
+
+    - echo "GENOME-BROWSER LO"
+    - cp genome-browser/review/lo/*.yaml ./
+    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize build ./ | kubectl apply -f -
+
+  after_script:
+    - cd ../../
+    - rm -rf ensembl-k8s-manifests

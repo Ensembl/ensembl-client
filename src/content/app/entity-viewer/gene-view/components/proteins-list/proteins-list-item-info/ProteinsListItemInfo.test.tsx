@@ -104,9 +104,11 @@ describe('<ProteinsListItemInfo /', () => {
 
         expect(getByText(props.xrefs[1].accession_id)).toBeTruthy();
         expect(getAllByText(props.source)).toHaveLength(4);
-        expect(
-          container.querySelectorAll('.externalLinkContainer')
-        ).toHaveLength(4);
+
+        for (const xrefData of tremblXrefs) {
+          const link = getByText(xrefData.accession_id);
+          expect(link).toBeTruthy();
+        }
       });
     });
   });
