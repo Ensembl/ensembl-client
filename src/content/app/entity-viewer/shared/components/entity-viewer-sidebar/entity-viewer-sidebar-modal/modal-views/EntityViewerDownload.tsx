@@ -63,13 +63,14 @@ const EntityViewerSidebarDownload = () => {
     const { transcript: transcriptOptions, gene: geneOptions } =
       payload.options;
 
-    const downloadOptions = Object.entries(transcriptOptions)
-      .filter(([, isSelected]) => isSelected)
-      .map(([key]) => `transcript_${key}`);
-
-    if (geneOptions.genomicSequence) {
-      downloadOptions.unshift('gene_genomicSequence');
-    }
+    const downloadOptions = [
+      ...Object.entries(geneOptions)
+        .filter(([, isSelected]) => isSelected)
+        .map(([key]) => `gene_${key}`),
+      ...Object.entries(transcriptOptions)
+        .filter(([, isSelected]) => isSelected)
+        .map(([key]) => `transcript_${key}`)
+    ];
 
     trackGeneDownload({
       geneSymbol: currentData.gene.stable_id,

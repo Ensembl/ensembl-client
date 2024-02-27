@@ -1,9 +1,10 @@
 .checkboxGrid {
   margin-top: 0.5em;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, max-content);
   grid-template-rows: auto;
-  grid-row-gap: 0.2em;
+  column-gap: 42px;
+  row-gap: 0.2em;
 }
 
 .label {
@@ -27,6 +28,11 @@
   align-self: end;
   justify-self: end;
   font-size: 12px;
+}
+
+.geneSection .checkboxes {
+  display: flex;
+  flex-direction: column;
 }
 
 .layout {
@@ -91,8 +97,11 @@
 }
 
 .layoutVertical .geneSection .checkbox {
-  margin-top: 12px;
   margin-left: 6px;
+}
+
+.layoutVertical .geneSection .checkbox:first-child {
+  margin-top: 12px;
 }
 
 .layoutVertical .transcriptSection .label {
@@ -100,8 +109,31 @@
 }
 
 .layoutVertical .checkboxGrid {
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: repeat(3, auto);
+  grid-template-areas:
+    'genomic cdna exons'
+    'protein cds .';
   padding-left: 6px;
+
+  .genomic {
+    grid-area: genomic;
+  }
+
+  .cdna {
+    grid-area: cdna;
+  }
+
+  .exons {
+    grid-area: exons;
+  }
+
+  .protein {
+    grid-area: protein;
+  }
+
+  .cds {
+    grid-area: cds;
+  }
 }
 
 .layoutVertical button {

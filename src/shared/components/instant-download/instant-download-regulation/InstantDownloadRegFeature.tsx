@@ -15,11 +15,14 @@
  */
 
 import React, { useState } from 'react';
+import { wrap } from 'comlink';
 
-import { fetchRegulatoryFeatureSequences } from '../instant-download-fetch/fetchRegulatoryFeature';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
+
+import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
 
 import styles from './InstantDownloadRegFeature.module.css';
 
@@ -47,7 +50,7 @@ const InstantDownloadRegFeature = (props: Props) => {
       }
     };
 
-    await fetchRegulatoryFeatureSequences(payload);
+    await downloadSequence(payload);
     resetCheckboxes();
   };
 
@@ -78,6 +81,58 @@ const InstantDownloadRegFeature = (props: Props) => {
       </div>
     </div>
   );
+};
+
+const buildFastaHeader = (params: {
+  id: string;
+  featureType: string;
+  regionName: string;
+  start: number;
+  end: number;
+}) => {
+  const { id, featureType, regionName, start, end } = params;
+  return `er|${id}|${featureType}|${regionName}:${start}-${end}`;
+};
+
+const downloadSequence = async (params: {
+  id: string;
+  genomeId: string;
+  featureType: string;
+  regionName: string;
+  boundsRegion: {
+    start: number;
+    end: number;
+  };
+}) => {
+  const worker = new Worker(
+    new URL(
+      'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker.ts',
+      import.meta.url
+    )
+  );
+
+  const fastaHeader = buildFastaHeader({
+    ...params,
+    start: params.boundsRegion.start,
+    end: params.boundsRegion.end
+  });
+
+  try {
+    const service = wrap<WorkerApi>(worker);
+    const sequences = await service.downloadGenomicSlice({
+      genomeId: params.genomeId,
+      regionName: params.regionName,
+      label: fastaHeader,
+      start: params.boundsRegion.start,
+      end: params.boundsRegion.end
+    });
+
+    await downloadTextAsFile(sequences, `${params.id}.fasta`, {
+      type: 'text/x-fasta'
+    });
+  } finally {
+    worker.terminate();
+  }
 };
 
 export default InstantDownloadRegFeature;

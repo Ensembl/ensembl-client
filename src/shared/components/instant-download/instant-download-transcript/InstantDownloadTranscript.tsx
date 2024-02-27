@@ -15,15 +15,18 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { wrap } from 'comlink';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 import intersection from 'lodash/intersection';
 
-import { fetchForTranscript } from '../instant-download-fetch/fetchForTranscript';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import InstantDownloadTranscriptVisualisation from './InstantDownloadTranscriptVisualisation';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
+
+import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
 
 import styles from './InstantDownloadTranscript.module.css';
 
@@ -44,7 +47,7 @@ export type TrackTranscriptDownloadPayload = {
   transcriptId: string;
   options: {
     transcript: Partial<TranscriptOptions>;
-    gene: { genomicSequence: boolean };
+    gene: Partial<GeneOptions>;
   };
 };
 
@@ -70,38 +73,52 @@ type TranscriptSectionProps = {
 
 type GeneSectionProps = {
   gene: GeneFields;
-  isGenomicSequenceSelected: boolean;
+  options: Partial<GeneOptions>;
   theme: Theme;
-  onChange: () => void;
+  onChange: (key: keyof GeneOptions) => void;
+};
+
+export type GeneOptions = {
+  genomic: boolean;
+  exons: boolean;
 };
 
 export type TranscriptOptions = {
-  genomicSequence: boolean;
-  proteinSequence: boolean;
+  genomic: boolean;
+  protein: boolean;
   cdna: boolean;
   cds: boolean;
+  exons: boolean;
 };
 
 export type TranscriptOption = keyof Partial<TranscriptOptions>;
 
 export const transcriptOptionsOrder: TranscriptOption[] = [
-  'genomicSequence',
+  'genomic',
+  'exons',
   'cdna',
-  'proteinSequence',
+  'protein',
   'cds'
 ];
 
 export const defaultTranscriptOptions: TranscriptOptions = {
-  genomicSequence: false,
+  genomic: false,
   cdna: false,
-  proteinSequence: false,
+  exons: false,
+  protein: false,
   cds: false
 };
 
+const defaultGeneOptions: GeneOptions = {
+  genomic: false,
+  exons: false
+};
+
 const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
-  genomicSequence: 'Genomic sequence',
-  proteinSequence: 'Protein sequence',
+  genomic: 'Genomic sequence',
+  protein: 'Protein sequence',
   cdna: 'cDNA',
+  exons: 'Exons',
   cds: 'CDS'
 };
 
@@ -110,7 +127,7 @@ export const filterTranscriptOptions = (
 ): Partial<TranscriptOptions> => {
   return isProteinCoding
     ? defaultTranscriptOptions
-    : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
+    : pick(defaultTranscriptOptions, ['genomic', 'cdna', 'exons']);
 };
 
 export const getCheckboxTheme = (theme: Theme) =>
@@ -127,14 +144,14 @@ const InstantDownloadTranscript = (props: Props) => {
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(isProteinCoding)
   );
-  const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
+  const [geneOptions, setGeneOptions] = useState(defaultGeneOptions);
 
   useEffect(() => {
     setTranscriptOptions(filterTranscriptOptions(isProteinCoding));
   }, [isProteinCoding]);
 
   const resetCheckboxes = () => {
-    setIsGeneSequenceSelected(false);
+    setGeneOptions(defaultGeneOptions);
     setTranscriptOptions(filterTranscriptOptions(isProteinCoding));
   };
 
@@ -145,11 +162,11 @@ const InstantDownloadTranscript = (props: Props) => {
       transcriptId,
       options: {
         transcript: transcriptOptions,
-        gene: { genomicSequence: isGeneSequenceSelected }
+        gene: geneOptions
       }
     };
     try {
-      await fetchForTranscript(payload);
+      await downloadSequences(payload);
       props.onDownloadSuccess?.(payload);
     } catch (error) {
       props.onDownloadFailure?.(payload);
@@ -166,8 +183,11 @@ const InstantDownloadTranscript = (props: Props) => {
     };
     setTranscriptOptions(updatedOptions);
   };
-  const onGeneOptionChange = () => {
-    setIsGeneSequenceSelected(!isGeneSequenceSelected);
+  const onGeneOptionChange = (key: keyof GeneOptions) => {
+    setGeneOptions({
+      ...geneOptions,
+      [key]: !geneOptions[key]
+    });
   };
 
   const wrapperClasses = classNames(styles.layout, {
@@ -175,10 +195,10 @@ const InstantDownloadTranscript = (props: Props) => {
     [styles.layoutVertical]: layout === 'vertical'
   });
 
-  const isButtonDisabled = !hasSelectedOptions({
-    ...transcriptOptions,
-    geneSequence: isGeneSequenceSelected
-  });
+  const isButtonDisabled = !hasSelectedOptions([
+    transcriptOptions,
+    geneOptions
+  ]);
 
   return (
     <div className={wrapperClasses}>
@@ -190,7 +210,7 @@ const InstantDownloadTranscript = (props: Props) => {
       />
       <GeneSection
         gene={props.gene}
-        isGenomicSequenceSelected={isGeneSequenceSelected}
+        options={geneOptions}
         theme={theme}
         onChange={onGeneOptionChange}
       />
@@ -214,6 +234,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
+      className={styles[key]}
       theme={getCheckboxTheme(props.theme)}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
@@ -223,9 +244,9 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
 
   const transcriptVisualisation = (
     <InstantDownloadTranscriptVisualisation
-      isGenomicSequenceEnabled={options.genomicSequence}
-      isProteinSequenceEnabled={options.proteinSequence}
-      isCDNAEnabled={options.cdna}
+      isGenomicSequenceEnabled={options.genomic}
+      isProteinSequenceEnabled={options.protein}
+      isCDNAEnabled={options.cdna || options.exons}
       isCDSEnabled={options.cds}
       theme={props.theme}
     />
@@ -250,12 +271,19 @@ const GeneSection = (props: GeneSectionProps) => {
         Gene
         <span className={styles.featureId}>{props.gene.id}</span>
       </div>
-      <div>
+      <div className={styles.checkboxes}>
         <Checkbox
           theme={getCheckboxTheme(props.theme)}
           label="Genomic sequence"
-          checked={props.isGenomicSequenceSelected}
-          onChange={props.onChange}
+          checked={!!props.options.genomic}
+          onChange={() => props.onChange('genomic')}
+          className={styles.checkbox}
+        />
+        <Checkbox
+          theme={getCheckboxTheme(props.theme)}
+          label="Exons"
+          checked={!!props.options.exons}
+          onChange={() => props.onChange('exons')}
           className={styles.checkbox}
         />
       </div>
@@ -263,12 +291,35 @@ const GeneSection = (props: GeneSectionProps) => {
   );
 };
 
-const hasSelectedOptions = (
-  options: Partial<TranscriptOptions> & { geneSequence: boolean }
-) => {
-  return Object.keys(options).some(
-    (key) => options[key as keyof TranscriptOptions]
+const hasSelectedOptions = (options: Record<string, boolean>[]) => {
+  return options.some((obj) => Object.values(obj).includes(true));
+};
+
+const downloadSequences = async (params: TrackTranscriptDownloadPayload) => {
+  const { transcriptId } = params;
+
+  const worker = new Worker(
+    new URL(
+      'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker.ts',
+      import.meta.url
+    )
   );
+
+  try {
+    const service = wrap<WorkerApi>(worker);
+    const sequences = await service.downloadSequencesForTranscript({
+      genomeId: params.genomeId,
+      transcriptId: params.transcriptId,
+      geneSequences: params.options.gene,
+      transcriptSequences: params.options.transcript
+    });
+
+    await downloadTextAsFile(sequences, `${transcriptId}.fasta`, {
+      type: 'text/x-fasta'
+    });
+  } finally {
+    worker.terminate();
+  }
 };
 
 export default InstantDownloadTranscript;

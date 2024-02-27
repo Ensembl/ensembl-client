@@ -174,6 +174,7 @@ const ProteinsListItemInfo = (props: Props) => {
                 <InstantDownloadProtein
                   genomeId={genomeId as string}
                   transcriptId={transcript.unversioned_stable_id}
+                  proteinId={productId}
                   onDownloadSuccess={(payload) =>
                     onDownload(payload, 'success')
                   }

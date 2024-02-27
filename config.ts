@@ -60,16 +60,16 @@ const getBaseApiUrls = (): BaseApiUrls => {
   // the following will be run on the server
   return {
     coreApiUrl:
-      process.env.SSR_CORE_API_BASE_URL ??
+      globalThis.process?.env.SSR_CORE_API_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.coreApiUrl}`,
     docsBaseUrl:
-      process.env.SSR_DOCS_BASE_URL ??
+      globalThis.process?.env.SSR_DOCS_BASE_URL ??
       `${defaultServerHost}${defaultApiUrls.docsBaseUrl}`,
     variationApiUrl:
-      process.env.SSR_VARIATION_GRAPHQL_API_URL ??
+      globalThis.process?.env.SSR_VARIATION_GRAPHQL_API_URL ??
       `${defaultServerHost}${defaultApiUrls.variationApiUrl}`,
     metadataApiBaseUrl:
-      process.env.SSR_METADATA_API_URL ??
+      globalThis.process?.env.SSR_METADATA_API_URL ??
       `${defaultServerHost}${defaultApiUrls.metadataApiBaseUrl}`,
     comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
