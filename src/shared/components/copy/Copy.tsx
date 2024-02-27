@@ -19,10 +19,13 @@ import classNames from 'classnames';
 
 import styles from './Copy.module.css';
 
+type Alignment = 'left' | 'middle' | 'right';
+
 type Props = {
   value: string;
   onCopy?: () => void;
   className?: string;
+  align?: Alignment; // by default, the component aligns the text "Copy" to middle
 };
 
 const Copy = (props: Props) => {
@@ -52,6 +55,9 @@ const Copy = (props: Props) => {
   const componentStyles = classNames(
     styles.copyLozenge,
     {
+      [styles.alignLeft]: props.align === 'left' && !copied,
+      [styles.alignMiddle]: props.align === 'middle' || !props.align || copied,
+      [styles.alignRight]: props.align === 'right' && !copied,
       [styles.copyLozengeCopied]: copied
     },
     props.className
