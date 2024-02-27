@@ -49,7 +49,7 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.SEARCH]: 'Search',
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
-  [BrowserSidebarModalView.DOWNLOADS]: 'Downloads',
+  [BrowserSidebarModalView.DOWNLOADS]: 'Download',
   [BrowserSidebarModalView.NAVIGATE]: 'Change location'
 };
 

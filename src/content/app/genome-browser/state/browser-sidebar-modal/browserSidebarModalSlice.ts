@@ -29,7 +29,7 @@ export enum BrowserSidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'Previously viewed',
   SHARE = 'Share',
-  DOWNLOADS = 'Downloads',
+  DOWNLOADS = 'Download',
   NAVIGATE = 'Navigate'
 }
 

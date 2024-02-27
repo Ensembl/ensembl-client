@@ -43,7 +43,7 @@ const entityViewerSidebarModals: Record<
 const entityViewerSidebarModalTitles = {
   [SidebarModalView.SEARCH]: 'Search',
   [SidebarModalView.BOOKMARKS]: 'Previously viewed',
-  [SidebarModalView.DOWNLOADS]: 'Downloads'
+  [SidebarModalView.DOWNLOADS]: 'Download'
 };
 
 export const EntityViewerSidebarModal = () => {
