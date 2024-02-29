@@ -44,7 +44,7 @@ export enum SidebarTabName {
 export enum SidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'bookmarks',
-  DOWNLOADS = 'download'
+  DOWNLOAD = 'download'
 }
 
 export type EntityViewerSidebarState = Readonly<{

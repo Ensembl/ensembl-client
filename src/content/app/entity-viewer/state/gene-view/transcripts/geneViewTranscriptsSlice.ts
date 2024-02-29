@@ -228,7 +228,7 @@ export const toggleTranscriptDownload =
     }
 
     dispatch(
-      transcriptsSlice.actions.updateExpandedDownloads({
+      transcriptsSlice.actions.updateExpandedDownload({
         activeGenomeId,
         activeEntityId,
         expandedIds: [...expandedIds.values()]
@@ -319,7 +319,7 @@ const transcriptsSlice = createSlice({
       state[activeGenomeId][activeEntityId].isExpandedTranscriptsListModified =
         true;
     },
-    updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
+    updateExpandedDownload(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
       ensureGenePresence(state, action.payload);
       state[activeGenomeId][activeEntityId].expandedDownloadIds = expandedIds;

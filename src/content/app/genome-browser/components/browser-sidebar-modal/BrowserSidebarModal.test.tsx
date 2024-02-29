@@ -36,14 +36,15 @@ jest.mock('./modal-views/SearchModal', () => () => (
   <div className="searchModal" />
 ));
 
-jest.mock('./modal-views/DownloadsModal', () => () => (
-  <div className="downloadsModal" />
+jest.mock('./modal-views/DownloadModal', () => () => (
+  <div className="downloadModal" />
 ));
 
 jest.mock(
   'src/shared/components/close-button/CloseButton',
-  () => (props: { onClick: () => void }) =>
+  () => (props: { onClick: () => void }) => (
     <button className="closeButton" onClick={props.onClick}></button>
+  )
 );
 
 const mockState = createMockBrowserState();
@@ -84,19 +85,19 @@ describe('<TrackPanelModal />', () => {
       });
     });
 
-    it('displays track panel modal view for downloads', async () => {
+    it('displays track panel modal view for download', async () => {
       const { activeGenomeId } = mockState.browser.browserGeneral;
       const { container } = renderComponent(
         set(
           `browser.browserSidebarModal.${activeGenomeId}.browserSidebarModalView`,
-          BrowserSidebarModalView.DOWNLOADS,
+          BrowserSidebarModalView.DOWNLOAD,
           mockState
         )
       );
 
       await waitFor(() => {
         expect(container.querySelector('.title')?.innerHTML).toBe(
-          browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOADS]
+          browserSidebarModalTitles[BrowserSidebarModalView.DOWNLOAD]
         );
       });
     });

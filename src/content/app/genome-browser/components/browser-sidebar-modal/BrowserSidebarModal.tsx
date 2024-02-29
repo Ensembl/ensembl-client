@@ -37,8 +37,8 @@ const browserSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   [BrowserSidebarModalView.SHARE]: lazy(
     () => import('./modal-views/ShareModal')
   ),
-  [BrowserSidebarModalView.DOWNLOADS]: lazy(
-    () => import('./modal-views/DownloadsModal')
+  [BrowserSidebarModalView.DOWNLOAD]: lazy(
+    () => import('./modal-views/DownloadModal')
   ),
   [BrowserSidebarModalView.NAVIGATE]: lazy(
     () => import('./modal-views/NavigateModal')
@@ -49,7 +49,7 @@ export const browserSidebarModalTitles: { [key: string]: string } = {
   [BrowserSidebarModalView.SEARCH]: 'Search',
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
-  [BrowserSidebarModalView.DOWNLOADS]: 'Download',
+  [BrowserSidebarModalView.DOWNLOAD]: 'Download',
   [BrowserSidebarModalView.NAVIGATE]: 'Change location'
 };
 

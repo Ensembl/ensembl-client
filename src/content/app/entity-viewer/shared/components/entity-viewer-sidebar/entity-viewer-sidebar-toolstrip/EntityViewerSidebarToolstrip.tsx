@@ -92,10 +92,10 @@ export const EntityViewerSidebarToolstrip = () => {
         image={ShareIcon}
       />
       <ImageButton
-        status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
+        status={getViewIconStatus(SidebarModalView.DOWNLOAD)}
         description="Download"
         className={styles.sidebarIcon}
-        onClick={() => toggleModalView(SidebarModalView.DOWNLOADS)}
+        onClick={() => toggleModalView(SidebarModalView.DOWNLOAD)}
         image={DownloadIcon}
       />
     </>

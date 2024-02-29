@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-const DownloadsModal = () => {
+const DownloadModal = () => {
   return (
-    <section className="downloadsModal">
+    <section className="downloadModal">
       <p>Export your browser configurations as images or data</p>
       <p>Not ready yet &hellip;</p>
     </section>
   );
 };
 
-export default DownloadsModal;
+export default DownloadModal;

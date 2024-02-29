@@ -116,7 +116,7 @@ const BrowserSidebarToolstrip = () => {
         className={layoutStyles.sidebarIcon}
         status={Status.DISABLED}
         description="Download"
-        onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOADS)}
+        onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOAD)}
         image={DownloadIcon}
       />
       <ImageButton

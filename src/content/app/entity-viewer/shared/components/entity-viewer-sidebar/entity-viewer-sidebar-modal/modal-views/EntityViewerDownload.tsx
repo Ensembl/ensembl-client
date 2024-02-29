@@ -33,7 +33,7 @@ import InstantDownloadGene, {
   OnDownloadPayload
 } from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
-const EntityViewerSidebarDownloads = () => {
+const EntityViewerSidebarDownload = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
   const { trackGeneDownload } = useEntityViewerAnalytics();
@@ -93,4 +93,4 @@ const EntityViewerSidebarDownloads = () => {
   );
 };
 
-export default EntityViewerSidebarDownloads;
+export default EntityViewerSidebarDownload;
