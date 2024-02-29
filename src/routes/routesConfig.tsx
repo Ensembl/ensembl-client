@@ -66,7 +66,7 @@ const routes: RouteConfig[] = [
     serverFetch: genomeBrowserPageServerFetch
   },
   {
-    path: '/species-selector',
+    path: '/species-selector/*',
     element: <SpeciesSelectorPage />,
     serverFetch: speciesSelectorServerFetch
   },

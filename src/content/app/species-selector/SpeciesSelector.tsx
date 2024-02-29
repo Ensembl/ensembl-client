@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -30,13 +31,14 @@ import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-
 import styles from './SpeciesSelector.module.css';
 
 const SpeciesSelector = () => {
+  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   const modalView = useAppSelector(getSpeciesSelectorModalView);
   const dispatch = useAppDispatch();
 
-  const shouldShowResultsView = [
-    'species-search',
-    'popular-species-genomes'
-  ].includes(modalView || '');
+  const shouldShowResultsView =
+    pathname.includes('/search') &&
+    (searchParams.has('query') || searchParams.has('species_taxonomy_id'));
 
   useEffect(() => {
     return () => {

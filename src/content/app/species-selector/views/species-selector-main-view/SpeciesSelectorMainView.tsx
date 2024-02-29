@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
@@ -28,13 +28,14 @@ import PopularSpeciesList from 'src/content/app/species-selector/components/popu
 import styles from './SpeciesSelectorMainView.module.css';
 
 const SpeciesSelectorMainView = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
 
   const onSearchSubmit = (query: string) => {
     dispatch(setPopularSpecies(null));
-    dispatch(setModalView('species-search'));
     trackSpeciesSearchQuery(query);
+    navigate(`/species-selector/search?query=${query}`);
   };
 
   return (

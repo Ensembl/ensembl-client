@@ -15,22 +15,18 @@
  */
 
 import React from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import {
-  getSpeciesSearchQuery,
-  getSelectedPopularSpecies
-} from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
-import { getSpeciesSelectorModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISelectors';
+import { getSelectedPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
 
 import {
   setQuery,
   commitSelectedSpeciesAndSave
 } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import GenomeSelectorBySearchQuery from 'src/content/app/species-selector/components/genome-selector-by-search-query/GenomeSelectorBySearchQuery';
@@ -40,10 +36,11 @@ import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/
 
 const SpeciesSelectorResultslView = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onClose = () => {
     dispatch(setQuery(''));
-    dispatch(setModalView(null));
+    navigate(-1);
   };
 
   return (
@@ -54,8 +51,8 @@ const SpeciesSelectorResultslView = () => {
 };
 
 const Content = (props: { onClose: () => void }) => {
-  const modalView = useAppSelector(getSpeciesSelectorModalView);
-  const query = useAppSelector(getSpeciesSearchQuery);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const selectedPopularSpecies = useAppSelector(getSelectedPopularSpecies);
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
@@ -73,19 +70,21 @@ const Content = (props: { onClose: () => void }) => {
     for (const addedGenome of genomes) {
       trackAddedGenome(addedGenome);
     }
+
+    navigate('/species-selector');
   };
 
-  return modalView === 'species-search' ? (
+  return searchParams.has('query') ? (
     <GenomeSelectorBySearchQuery
-      query={query}
+      query={searchParams.get('query') || ''}
       onSpeciesAdd={onSpeciesAdd}
       onClose={props.onClose}
     />
-  ) : selectedPopularSpecies ? (
+  ) : searchParams.has('species_taxonomy_id') && selectedPopularSpecies ? (
     <GenomeSelectorBySpeciesTaxonomyId
       onSpeciesAdd={onSpeciesAdd}
-      speciesTaxonomyId={selectedPopularSpecies.species_taxonomy_id}
-      speciesImageUrl={selectedPopularSpecies.image}
+      speciesTaxonomyId={selectedPopularSpecies?.species_taxonomy_id}
+      speciesImageUrl={selectedPopularSpecies?.image}
     />
   ) : null; // this last option should never happen
 };
