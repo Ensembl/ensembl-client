@@ -20,7 +20,7 @@ export enum SpeciesSidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'previously viewed',
   SHARE = 'share',
-  DOWNLOADS = 'downloads'
+  DOWNLOAD = 'download'
 }
 
 type StateForGenome = {

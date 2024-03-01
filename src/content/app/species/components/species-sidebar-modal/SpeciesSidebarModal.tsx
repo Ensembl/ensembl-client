@@ -32,8 +32,8 @@ const speciesSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   [SpeciesSidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/SpeciesSidebarSearch')
   ),
-  [SpeciesSidebarModalView.DOWNLOADS]: lazy(
-    () => import('./modal-views/SpeciesSidebarDownloads')
+  [SpeciesSidebarModalView.DOWNLOAD]: lazy(
+    () => import('./modal-views/SpeciesSidebarDownload')
   )
 };
 
@@ -41,7 +41,7 @@ export const speciesSidebarModalTitles: { [key: string]: string } = {
   [SpeciesSidebarModalView.SEARCH]: 'Search',
   [SpeciesSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [SpeciesSidebarModalView.SHARE]: 'Share',
-  [SpeciesSidebarModalView.DOWNLOADS]: 'Download'
+  [SpeciesSidebarModalView.DOWNLOAD]: 'Download'
 };
 
 export const SpeciesSidebarModal = () => {

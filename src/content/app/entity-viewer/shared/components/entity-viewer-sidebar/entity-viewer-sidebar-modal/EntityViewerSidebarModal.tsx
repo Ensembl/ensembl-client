@@ -35,15 +35,15 @@ const entityViewerSidebarModals: Record<
   [SidebarModalView.BOOKMARKS]: lazy(
     () => import('./modal-views/EntityViewerBookmarks')
   ),
-  [SidebarModalView.DOWNLOADS]: lazy(
-    () => import('./modal-views/EntityViewerDownloads')
+  [SidebarModalView.DOWNLOAD]: lazy(
+    () => import('./modal-views/EntityViewerDownload')
   )
 };
 
 const entityViewerSidebarModalTitles = {
   [SidebarModalView.SEARCH]: 'Search',
   [SidebarModalView.BOOKMARKS]: 'Previously viewed',
-  [SidebarModalView.DOWNLOADS]: 'Downloads'
+  [SidebarModalView.DOWNLOAD]: 'Download'
 };
 
 export const EntityViewerSidebarModal = () => {

@@ -105,10 +105,10 @@ export const SpeciesSidebarToolstrip = () => {
         image={ShareIcon}
       />
       <ImageButton
-        status={getViewIconStatus(SpeciesSidebarModalView.DOWNLOADS)}
+        status={getViewIconStatus(SpeciesSidebarModalView.DOWNLOAD)}
         description="Download"
         className={styles.sidebarIcon}
-        onClick={() => toggleModalView(SpeciesSidebarModalView.DOWNLOADS)}
+        onClick={() => toggleModalView(SpeciesSidebarModalView.DOWNLOAD)}
         image={DownloadIcon}
       />
     </>

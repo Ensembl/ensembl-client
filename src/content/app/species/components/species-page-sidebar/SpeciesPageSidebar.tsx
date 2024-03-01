@@ -227,7 +227,7 @@ const GetFilesButton = () => {
     dispatch(
       updateSpeciesSidebarModalForGenome({
         activeGenomeId,
-        fragment: { sidebarModalView: SpeciesSidebarModalView.DOWNLOADS }
+        fragment: { sidebarModalView: SpeciesSidebarModalView.DOWNLOAD }
       })
     );
   };

@@ -24,9 +24,9 @@ import { useSpeciesFtpLinksQuery } from 'src/content/app/species/state/api/speci
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import styles from './SpeciesSidebarDownloads.module.css';
+import styles from './SpeciesSidebarDownload.module.css';
 
-const SpeciesSidebarDownloads = () => {
+const SpeciesSidebarDownload = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) || '';
   const { data: ftpLinksResponse, isFetching } = useSpeciesFtpLinksQuery(
     activeGenomeId,
@@ -99,4 +99,4 @@ const SpeciesFtpLink = (props: {
   );
 };
 
-export default SpeciesSidebarDownloads;
+export default SpeciesSidebarDownload;
