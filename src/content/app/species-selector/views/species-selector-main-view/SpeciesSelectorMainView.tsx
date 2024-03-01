@@ -22,6 +22,8 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 
 import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
 
@@ -35,7 +37,11 @@ const SpeciesSelectorMainView = () => {
   const onSearchSubmit = (query: string) => {
     dispatch(setPopularSpecies(null));
     trackSpeciesSearchQuery(query);
-    navigate(`/species-selector/search?query=${query}`);
+    navigate(
+      urlFor.speciesSelector({
+        query
+      })
+    );
   };
 
   return (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -27,6 +27,8 @@ import {
   setQuery,
   commitSelectedSpeciesAndSave
 } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import GenomeSelectorBySearchQuery from 'src/content/app/species-selector/components/genome-selector-by-search-query/GenomeSelectorBySearchQuery';
@@ -60,6 +62,18 @@ const Content = (props: { onClose: () => void }) => {
   const { trackAddedGenome, trackTotalSelectedGenomesCount } =
     useSpeciesSelectorAnalytics();
 
+  useEffect(() => {
+    if (
+      !(
+        (searchParams.has('query') && searchParams.get('query')) ||
+        (searchParams.has('species_taxonomy_id') &&
+          searchParams.get('species_taxonomy_id'))
+      )
+    ) {
+      navigate(urlFor.speciesSelector());
+    }
+  });
+
   const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
     dispatch(commitSelectedSpeciesAndSave(genomes));
 
@@ -71,7 +85,7 @@ const Content = (props: { onClose: () => void }) => {
       trackAddedGenome(addedGenome);
     }
 
-    navigate('/species-selector');
+    navigate(urlFor.speciesSelector());
   };
 
   return searchParams.has('query') ? (

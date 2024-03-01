@@ -25,6 +25,8 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
 import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
@@ -46,7 +48,7 @@ const PopularSpeciesList = () => {
     dispatch(setPopularSpecies(species));
     trackPopularSpeciesClick(species);
     navigate(
-      `/species-selector/search?species_taxonomy_id=${species.species_taxonomy_id}`
+      urlFor.speciesSelector({ speciesTaxonomyId: species.species_taxonomy_id })
     );
   };
 
