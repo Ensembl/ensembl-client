@@ -16,13 +16,15 @@
 
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import Browser from './Browser';
+
+import createRootReducer from 'src/root/rootReducer';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
@@ -49,8 +51,9 @@ jest.mock('./components/interstitial/BrowserInterstitial', () => () => (
 ));
 jest.mock(
   './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip',
-  () => () =>
+  () => () => (
     <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
+  )
 );
 jest.mock('./components/track-panel/TrackPanel', () => () => (
   <div className="trackPanel">TrackPanel</div>
@@ -68,9 +71,6 @@ jest.mock('./components/drawer/Drawer', () => () => (
 ));
 
 const mockState = createMockBrowserState();
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
 
 const renderComponent = (
   params: { state: typeof mockState; url: string } = {
@@ -78,7 +78,13 @@ const renderComponent = (
     url: '/'
   }
 ) => {
-  store = mockStore(params.state);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([restApiSlice.middleware]),
+    preloadedState: params.state as any
+  });
+
   return render(
     <MemoryRouter initialEntries={[params.url]}>
       <Provider store={store}>

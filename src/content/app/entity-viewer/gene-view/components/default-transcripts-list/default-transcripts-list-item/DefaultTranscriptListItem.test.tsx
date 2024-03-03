@@ -16,10 +16,12 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
-import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
+
+import createRootReducer from 'src/root/rootReducer';
+import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import {
   DefaultTranscriptListItem,
@@ -31,7 +33,6 @@ import {
   createGene,
   createRulerTicks
 } from 'tests/fixtures/entity-viewer/gene';
-import { updateExpandedTranscripts } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
   <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>
@@ -41,8 +42,6 @@ jest.mock(
   'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript',
   () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
-
-const mockStore = configureMockStore([thunk]);
 
 const mockState = {
   entityViewer: {
@@ -80,31 +79,38 @@ const mockState = {
   }
 };
 
+const defaultProps = {
+  transcriptPosition: 1,
+  gene: createGene(),
+  transcript: createProteinCodingTranscript(),
+  rulerTicks: createRulerTicks(),
+  expandTranscript: false,
+  expandDownload: false,
+  expandMoreInfo: false
+};
+
+const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: mockState as any
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
+      <DefaultTranscriptListItem {...defaultProps} {...props} />
+    </Provider>
+  );
+
+  return {
+    ...renderResult,
+    store
+  };
+};
+
 describe('<DefaultTranscriptListItem />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
-  const defaultProps = {
-    transcriptPosition: 1,
-    gene: createGene(),
-    transcript: createProteinCodingTranscript(),
-    rulerTicks: createRulerTicks(),
-    expandTranscript: false,
-    expandDownload: false,
-    expandMoreInfo: false
-  };
-
-  let store: ReturnType<typeof mockStore>;
-
-  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) => {
-    store = mockStore(mockState);
-    return render(
-      <Provider store={store}>
-        <DefaultTranscriptListItem {...defaultProps} {...props} />
-      </Provider>
-    );
-  };
 
   it('displays unspliced transcript', () => {
     const { queryByTestId } = renderComponent();
@@ -112,26 +118,27 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   it('toggles transcript item info onClick', async () => {
-    const { container } = renderComponent();
+    const { container, store } = renderComponent();
     const clickableArea = container.querySelector(
       '.clickableTranscriptArea'
     ) as HTMLElement;
     const transcriptLabel = container.querySelector('.right') as HTMLElement;
 
+    const transcriptId = defaultProps.transcript.stable_id;
+    let expandedTranscriptIds: string[];
+
+    expandedTranscriptIds = getExpandedTranscriptIds(store.getState());
+    expect(expandedTranscriptIds).toEqual([]);
+
     await userEvent.click(clickableArea);
 
-    expect(
-      store
-        .getActions()
-        .filter((action) => action.type === updateExpandedTranscripts.type)
-    ).toHaveLength(1);
+    expandedTranscriptIds = getExpandedTranscriptIds(store.getState());
+    expect(expandedTranscriptIds).toEqual([transcriptId]);
 
     await userEvent.click(transcriptLabel);
-    expect(
-      store
-        .getActions()
-        .filter((action) => action.type === updateExpandedTranscripts.type)
-    ).toHaveLength(2);
+
+    expandedTranscriptIds = getExpandedTranscriptIds(store.getState());
+    expect(expandedTranscriptIds).toEqual([]);
   });
 
   it('hides transcript info by default', () => {

@@ -15,25 +15,27 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
-import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
+
+import createRootReducer from 'src/root/rootReducer';
+import {
+  getIsBrowserSidebarModalOpened,
+  getBrowserSidebarModalView
+} from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 
 import BrowserSidebarToolstrip from './BrowserSidebarToolstrip';
 
-import * as drawerActions from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
-  () => (props: { description: string; onClick: () => void }) =>
+  () => (props: { description: string; onClick: () => void }) => (
     <button onClick={props.onClick}>{props.description}</button>
+  )
 );
 
 jest.mock(
@@ -62,25 +64,26 @@ const mockState = {
       [fakeGenomeId]: {
         isTrackPanelOpened: true
       }
-    },
-    browserSidebarModal: {
-      [fakeGenomeId]: {
-        browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
-      }
     }
   }
 };
 
-const mockStore = configureMockStore([thunk]);
-let store: ReturnType<typeof mockStore>;
-
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
-  return render(
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
     <Provider store={store}>
       <BrowserSidebarToolstrip />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 describe('<BrowserSidebarToolstrip />', () => {
@@ -94,128 +97,50 @@ describe('<BrowserSidebarToolstrip />', () => {
       expect(container.querySelectorAll('button').length).toBe(5);
     });
 
-    it('passes correct data to callbacks when buttons are clicked', async () => {
-      const { container } = renderComponent(
-        set(
-          `browser.browserSidebarModal.${fakeGenomeId}.browserSidebarModalView`,
-          null,
-          mockState
-        )
-      );
-      const shareButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === BrowserSidebarModalView.SHARE
+    it('toggles sidebar modal', async () => {
+      const { container, store } = renderComponent();
+
+      const searchButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === 'Search'
       ) as HTMLButtonElement;
 
-      await userEvent.click(shareButton);
+      // sidebar is not showing a modal initially
+      expect(getBrowserSidebarModalView(store.getState())).toBe(null);
 
-      const toggleBrowserSidebarModalAction = store
-        .getActions()
-        .find(
-          (action) =>
-            action.type ===
-            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
-        );
+      await userEvent.click(searchButton);
 
-      const expectedPayload = {
-        activeGenomeId: fakeGenomeId,
-        data: {
-          ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          browserSidebarModalView: BrowserSidebarModalView.SHARE
-        }
-      };
+      expect(getBrowserSidebarModalView(store.getState())).toBe(
+        BrowserSidebarModalView.SEARCH
+      );
 
-      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
+      await userEvent.click(searchButton);
+
+      // the modal gets closed
+      expect(getBrowserSidebarModalView(store.getState())).toBe(null);
     });
 
     it('opens the track panel if it is closed when a button is clicked', async () => {
-      jest.spyOn(trackPanelActions, 'toggleTrackPanel');
-
       const newMockState = merge(mockState, {
         browser: {
           trackPanel: {
             [fakeGenomeId]: {
               isTrackPanelOpened: false
             }
-          },
-          browserSidebarModal: {
-            [fakeGenomeId]: {
-              browserSidebarModalView: null
-            }
           }
         }
       });
 
-      const { container } = renderComponent(newMockState);
+      const { container, store } = renderComponent(newMockState);
+
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
       ) as HTMLButtonElement;
 
-      await userEvent.click(bookmarksButton);
-
-      const toggleBrowserSidebarModalAction = store
-        .getActions()
-        .find(
-          (action) =>
-            action.type ===
-            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
-        );
-
-      const expectedPayload = {
-        activeGenomeId: fakeGenomeId,
-        data: {
-          ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          browserSidebarModalView: BrowserSidebarModalView.BOOKMARKS
-        }
-      };
-
-      expect(trackPanelActions.toggleTrackPanel).toHaveBeenCalledWith(true);
-      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
-    });
-
-    it('causes browser sidebar modal to close if a pressed button is clicked again', async () => {
-      const { container } = renderComponent();
-      const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === BrowserSidebarModalView.BOOKMARKS
-      ) as HTMLButtonElement;
+      expect(getIsBrowserSidebarModalOpened(store.getState())).toBe(false);
 
       await userEvent.click(bookmarksButton);
 
-      const toggleBrowserSidebarModalAction = store
-        .getActions()
-        .find(
-          (action) =>
-            action.type ===
-            browserSidebarModalActions.updateBrowserSidebarModalForGenome.type
-        );
-
-      const expectedPayload = {
-        activeGenomeId: fakeGenomeId,
-        data: {
-          ...mockState.browser.browserSidebarModal[fakeGenomeId],
-          browserSidebarModalView: null
-        }
-      };
-
-      expect(toggleBrowserSidebarModalAction.payload).toEqual(expectedPayload);
-    });
-
-    it('closes drawer view when the modal view changes', async () => {
-      jest.spyOn(drawerActions, 'closeDrawer');
-
-      const { container } = renderComponent(
-        set(
-          `browser.drawer.general.${fakeGenomeId}.isDrawerOpened`,
-          true,
-          mockState
-        )
-      );
-      const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
-      ) as HTMLButtonElement;
-
-      await userEvent.click(bookmarksButton);
-
-      expect(drawerActions.closeDrawer).toHaveBeenCalled();
+      expect(getIsBrowserSidebarModalOpened(store.getState())).toBe(true);
     });
   });
 });

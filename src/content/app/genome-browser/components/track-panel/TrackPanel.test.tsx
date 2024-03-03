@@ -15,11 +15,12 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
@@ -50,12 +51,12 @@ jest.mock(
 
 const mockState = createMockBrowserState();
 
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
-
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
   return render(
     <Provider store={store}>
       <TrackPanel />
@@ -69,7 +70,7 @@ describe('<TrackPanel />', () => {
   });
 
   describe('rendering', () => {
-    it('does not render anything when not all rendering requirements are satisfied', () => {
+    it('does not render anything unless all rendering requirements are satisfied', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
       const { container } = renderComponent(

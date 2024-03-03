@@ -47,19 +47,20 @@ const SlideToggle = (props: Props) => {
   );
 
   return (
-    <svg
-      className={className}
-      onClick={onToggle}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 19 10"
-    >
-      <path
-        className={styles.slideToggleTrack}
-        d="M14.5,14.5h-9A4.48,4.48,0,0,1,1,10H1A4.48,4.48,0,0,1,5.5,5.5h9A4.48,4.48,0,0,1,19,10h0A4.48,4.48,0,0,1,14.5,14.5Z"
-        transform="translate(-0.5 -5)"
-      />
-      <circle className={styles.slideToggleThumb} cx="5" cy="5" r="4" />
-    </svg>
+    <button onClick={onToggle}>
+      <svg
+        className={className}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 19 10"
+      >
+        <path
+          className={styles.slideToggleTrack}
+          d="M14.5,14.5h-9A4.48,4.48,0,0,1,1,10H1A4.48,4.48,0,0,1,5.5,5.5h9A4.48,4.48,0,0,1,19,10h0A4.48,4.48,0,0,1,14.5,14.5Z"
+          transform="translate(-0.5 -5)"
+        />
+        <circle className={styles.slideToggleThumb} cx="5" cy="5" r="4" />
+      </svg>
+    </button>
   );
 };
 

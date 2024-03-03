@@ -15,12 +15,14 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
+
+import createRootReducer from 'src/root/rootReducer';
+import { getSortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import { Status } from 'src/shared/types/status';
 import {
@@ -65,8 +67,6 @@ const mockState = {
   }
 };
 
-const mockStore = configureMockStore([thunk]);
-
 const proteinCodingTranscript1 = createProteinCodingTranscript();
 const proteinCodingTranscript2 = createProteinCodingTranscript();
 const nonCodingTranscript1 = createNonCodingTranscript();
@@ -80,14 +80,17 @@ const defaultTranscripts = [
 ];
 
 const mockToggleFilterPanel = jest.fn();
-let store: ReturnType<typeof mockStore>;
 
 const wrapInRedux = (
   state: typeof mockState = mockState,
   transcripts = defaultTranscripts
 ) => {
-  store = mockStore(state);
-  return render(
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
     <Provider store={store}>
       <TranscriptsFilter
         transcripts={transcripts}
@@ -95,6 +98,11 @@ const wrapInRedux = (
       />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 describe('<TranscriptsFilter />', () => {
@@ -125,22 +133,15 @@ describe('<TranscriptsFilter />', () => {
   });
 
   it('correctly changes the sorting order', async () => {
-    const { container } = wrapInRedux();
+    const { container, store } = wrapInRedux();
     const label = [...container.querySelectorAll('label')].find(
       (el) => el.textContent === 'Combined exon length: longest – shortest'
     );
 
+    expect(getSortingRule(store.getState())).toBe('default');
+
     await userEvent.click(label as HTMLElement);
 
-    const sortingActions = store
-      .getActions()
-      .filter(
-        (action) =>
-          action.type ===
-          'entity-viewer-gene-view-transcripts/updateSortingRule'
-      );
-
-    expect(sortingActions.length).toBe(1);
-    expect(sortingActions[0].payload.sortingRule).toBe('spliced_length_desc');
+    expect(getSortingRule(store.getState())).toBe('spliced_length_desc');
   });
 });

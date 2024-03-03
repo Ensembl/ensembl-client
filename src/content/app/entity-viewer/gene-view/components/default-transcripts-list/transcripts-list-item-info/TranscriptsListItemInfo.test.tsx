@@ -15,12 +15,13 @@
  */
 
 import React from 'react';
+import { configureStore } from '@reduxjs/toolkit';
 import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import {
   TranscriptsListItemInfo,
@@ -111,9 +112,6 @@ const defaultProps = {
   expandMoreInfo
 };
 
-const mockStore = configureMockStore([thunk]);
-let store: ReturnType<typeof mockStore>;
-
 const mockState = {
   entityViewer: {
     general: {
@@ -151,7 +149,11 @@ const mockState = {
   }
 };
 const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
-  store = mockStore(mockState);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: mockState as any
+  });
+
   return render(
     <Provider store={store}>
       <MemoryRouter>

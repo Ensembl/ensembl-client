@@ -15,29 +15,26 @@
  */
 
 import React from 'react';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 
-import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import createRootReducer from 'src/root/rootReducer';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+// import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesUsageToggle from './SpeciesUsageToggle';
-import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 jest.mock(
-  'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice',
+  'src/content/app/species-selector/services/speciesSelectorStorageService',
   () => ({
-    toggleSpeciesUseAndSave: jest.fn(() => ({
-      type: 'toggleSpeciesUseAndSave'
-    }))
+    saveMultipleSelectedSpecies: jest.fn()
   })
-);
-jest.mock('src/shared/components/slide-toggle/SlideToggle', () =>
-  jest.fn(() => null)
 );
 
 jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
@@ -74,16 +71,24 @@ const stateWithDisabledSpecies = {
   }
 };
 
-const mockStore = configureMockStore([thunk]);
-
-const wrapInRedux = (
+const renderComponent = (
   state: typeof stateWithEnabledSpecies = stateWithEnabledSpecies
 ) => {
-  return render(
-    <Provider store={mockStore(state)}>
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
+  const renderResult = render(
+    <Provider store={store}>
       <SpeciesUsageToggle />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 describe('SpeciesSelectionControls', () => {
@@ -92,7 +97,7 @@ describe('SpeciesSelectionControls', () => {
   });
 
   it('shows correct controls for enabled species', () => {
-    const { container } = wrapInRedux();
+    const { container } = renderComponent();
     const useLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === 'Use'
     );
@@ -100,13 +105,12 @@ describe('SpeciesSelectionControls', () => {
       (element) => element.textContent === "Don't use"
     );
 
-    expect((SlideToggle as any).mock.calls[0][0]).toMatchObject({ isOn: true });
     expect(useLabel?.classList.contains('clickable')).toBe(false);
     expect(doNotUseLabel?.classList.contains('clickable')).toBe(true);
   });
 
   it('shows correct controls for disabled species', () => {
-    const { container } = wrapInRedux(stateWithDisabledSpecies);
+    const { container } = renderComponent(stateWithDisabledSpecies);
 
     const useLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === 'Use'
@@ -115,53 +119,62 @@ describe('SpeciesSelectionControls', () => {
       (element) => element.textContent === "Don't use"
     );
 
-    expect((SlideToggle as any).mock.calls[0][0]).toMatchObject({
-      isOn: false
-    });
     expect(useLabel?.classList.contains('clickable')).toBe(true);
     expect(doNotUseLabel?.classList.contains('clickable')).toBe(false);
   });
 
-  it('changes species status via the toggle', () => {
-    wrapInRedux(stateWithDisabledSpecies);
-    const { onChange } = (SlideToggle as any).mock.calls[0][0];
-    onChange(true);
+  it('changes species status via the toggle', async () => {
+    const { container, store } = renderComponent();
+    const toggle = container.querySelector('button') as HTMLElement;
 
-    expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
-      disabledSpecies.genome_id
-    );
+    // start with an enabled species
+    let committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(true);
 
-    jest.clearAllMocks();
+    await userEvent.click(toggle);
 
-    onChange(true);
-    expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
-      disabledSpecies.genome_id
-    );
+    // the species should have been disabled
+    committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(false);
+
+    await userEvent.click(toggle);
+
+    // the species should have been re-enabled
+    committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(true);
   });
 
   it('disables species by clicking on label', async () => {
-    const { container } = wrapInRedux();
+    const { container, store } = renderComponent();
     const doNotUseLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === "Don't use"
     );
 
+    // start with an enabled species
+    let committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(true);
+
     await userEvent.click(doNotUseLabel as HTMLSpanElement);
 
-    expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
-      selectedSpecies.genome_id
-    );
+    // the species should have been disabled
+    committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(false);
   });
 
   it('enables species by clicking on label', async () => {
-    const { container } = wrapInRedux(stateWithDisabledSpecies);
+    const { container, store } = renderComponent(stateWithDisabledSpecies);
     const useLabel = [...container.querySelectorAll('span')].find(
       (element) => element.textContent === 'Use'
     );
 
+    // start with a disabled species
+    let committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(false);
+
     await userEvent.click(useLabel as HTMLSpanElement);
 
-    expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
-      selectedSpecies.genome_id
-    );
+    // the species should have been enabled
+    committedSpecies = getCommittedSpecies(store.getState())[0];
+    expect(committedSpecies.isEnabled).toBe(true);
   });
 });
