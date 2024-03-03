@@ -34,8 +34,8 @@ describe('SlideToggle', () => {
   describe('rendering', () => {
     it('has proper class when off', () => {
       const { container } = render(<SlideToggle {...defaultProps} />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.getAttribute('class')).toMatch('slideToggleOff');
+      const toggle = container.querySelector('svg') as SVGSVGElement;
+      expect(toggle.getAttribute('class')).toMatch('slideToggleOff');
     });
 
     it('has proper class when on', () => {
@@ -44,8 +44,8 @@ describe('SlideToggle', () => {
         isOn: true
       };
       const { container } = render(<SlideToggle {...props} />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.getAttribute('class')).toMatch('slideToggleOn');
+      const toggle = container.querySelector('svg') as SVGSVGElement;
+      expect(toggle.getAttribute('class')).toMatch('slideToggleOn');
     });
 
     it('adds class received from parent', () => {
@@ -55,8 +55,8 @@ describe('SlideToggle', () => {
         className: externalClassName
       };
       const { container } = render(<SlideToggle {...props} />);
-      const element = container.firstChild as HTMLElement;
-      expect(element.getAttribute('class')).toMatch(externalClassName);
+      const toggle = container.querySelector('svg') as SVGSVGElement;
+      expect(toggle.getAttribute('class')).toMatch(externalClassName);
     });
   });
 
