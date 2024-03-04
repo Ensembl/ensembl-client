@@ -15,10 +15,12 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import set from 'lodash/fp/set';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import GenePublications from './GenePublications';
 
@@ -47,14 +49,17 @@ const mockState = {
   }
 };
 
-const mockStore = configureMockStore();
-
-const wrapInRedux = (
+const renderComponent = (
   state: typeof mockState = mockState,
   props: typeof defaultProps = defaultProps
 ) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
   return render(
-    <Provider store={mockStore(state)}>
+    <Provider store={store}>
       <GenePublications {...props} />
     </Provider>
   );
@@ -63,14 +68,14 @@ const wrapInRedux = (
 describe('GenePublications', () => {
   it('does not render if gene does not have a symbol', () => {
     const props = set('gene.symbol', null, defaultProps);
-    const { container } = wrapInRedux(undefined, props);
+    const { container } = renderComponent(undefined, props);
 
     expect(container.firstChild).toBeFalsy();
   });
 
   describe('link to Europe PMC', () => {
     it('contains both common name and scientific name in the query when both are present', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
 
       const euroPMCLink = [...container.querySelectorAll('a')].find((element) =>
         (element.textContent as string).match('Europe PMC')
@@ -91,7 +96,7 @@ describe('GenePublications', () => {
         null,
         mockState
       );
-      const { container } = wrapInRedux(updatedState);
+      const { container } = renderComponent(updatedState);
 
       const euroPMCLink = [...container.querySelectorAll('a')].find((element) =>
         (element.textContent as string).match('Europe PMC')

@@ -15,9 +15,11 @@
  */
 
 import React from 'react';
-import { screen, render } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { screen, render } from '@testing-library/react';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
@@ -44,8 +46,6 @@ jest.mock(
     genomeIdForUrl: mockGenomeId
   })
 );
-
-const mockStore = configureMockStore();
 
 const exampleEntities = [
   {
@@ -100,9 +100,14 @@ const mockState = {
   }
 };
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
   return render(
-    <Provider store={mockStore(state)}>
+    <Provider store={store}>
       <EntityViewerSidebarBookmarks />
     </Provider>
   );
@@ -114,7 +119,7 @@ describe('<EntityViewerSidebarBookmarks />', () => {
   });
 
   it('shows previously viewed entities if present', () => {
-    wrapInRedux();
+    renderComponent();
     const previouslyViewedSection = screen.getByTestId(
       'previously viewed links'
     );
