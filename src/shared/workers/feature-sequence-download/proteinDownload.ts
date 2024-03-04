@@ -37,7 +37,7 @@ export async function* getProteinRelatedSequences(
 
   // since we are inside of code that is downloading protein sequences,
   // we should be able to make an assumption that the product-generating context has both protein and cds
-  if (params.sequences.protein) {
+  if (params.sequenceTypes.protein) {
     const proteinId = productGeneratingContext.product!.stable_id;
     const checksum = productGeneratingContext.product!.sequence.checksum;
     const refgetUrl = urlFor.refget({ checksum });
@@ -47,7 +47,7 @@ export async function* getProteinRelatedSequences(
       sequence
     };
   }
-  if (params.sequences.cds) {
+  if (params.sequenceTypes.cds) {
     const checksum = productGeneratingContext.cds!.sequence.checksum;
     const refgetUrl = urlFor.refget({ checksum });
     const sequence = await fetch(refgetUrl).then((response) => response.text());

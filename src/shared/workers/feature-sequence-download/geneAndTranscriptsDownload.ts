@@ -35,7 +35,7 @@ import type {
 
 type SequenceDownloadOptions = Pick<
   GeneDownloadOptions,
-  'geneSequences' | 'transcriptSequences'
+  'geneSequenceTypes' | 'transcriptSequenceTypes'
 >;
 
 /**
@@ -60,7 +60,8 @@ type SequenceDownloadOptions = Pick<
 export async function* geneAndTranscriptsSequences(
   params: GeneDownloadOptions
 ) {
-  const { genomeId, geneId, geneSequences, transcriptSequences } = params;
+  const { genomeId, geneId, geneSequenceTypes, transcriptSequenceTypes } =
+    params;
   const metadata = await fetchGeneAndTranscriptsMetadata({ genomeId, geneId });
   const strand = metadata.gene.slice.strand.code;
 
@@ -83,13 +84,13 @@ export async function* geneAndTranscriptsSequences(
     }
   }
 
-  if (geneSequences?.genomic) {
+  if (geneSequenceTypes?.genomic) {
     yield {
       label: `${geneId} genomic`,
       sequence: geneSequence
     };
   }
-  if (geneSequences?.exons) {
+  if (geneSequenceTypes?.exons) {
     for (const transcript of metadata.gene.transcripts) {
       for (const splicedExon of transcript.spliced_exons) {
         const exonSequence = getExonSequence({
@@ -115,7 +116,7 @@ export async function* geneAndTranscriptsSequences(
   for (const transcript of metadata.gene.transcripts) {
     const productGeneratingContext = transcript.product_generating_contexts[0];
 
-    if (transcriptSequences?.genomic) {
+    if (transcriptSequenceTypes?.genomic) {
       const transcriptSequence = getTranscriptSequence({
         geneSequence,
         transcript_relative_location: transcript.relative_location
@@ -126,7 +127,7 @@ export async function* geneAndTranscriptsSequences(
       };
     }
 
-    if (transcriptSequences?.exons) {
+    if (transcriptSequenceTypes?.exons) {
       for (const splicedExon of transcript.spliced_exons) {
         const exonSequence = getExonSequence({
           geneSequence,
@@ -146,7 +147,7 @@ export async function* geneAndTranscriptsSequences(
       }
     }
 
-    if (transcriptSequences?.cdna) {
+    if (transcriptSequenceTypes?.cdna) {
       const sequenceChecksum = productGeneratingContext.cdna.sequence.checksum;
       const url = urlFor.refget({ checksum: sequenceChecksum });
       const sequence = await fetch(url).then((response) => response.text());
@@ -156,7 +157,7 @@ export async function* geneAndTranscriptsSequences(
       };
     }
 
-    if (transcriptSequences?.cds) {
+    if (transcriptSequenceTypes?.cds) {
       const sequenceChecksum = productGeneratingContext.cds?.sequence.checksum;
       if (sequenceChecksum) {
         const url = urlFor.refget({ checksum: sequenceChecksum });
@@ -168,7 +169,7 @@ export async function* geneAndTranscriptsSequences(
       }
     }
 
-    if (transcriptSequences?.protein) {
+    if (transcriptSequenceTypes?.protein) {
       const product = productGeneratingContext.product;
       if (product) {
         const sequenceChecksum = product.sequence.checksum;
@@ -190,7 +191,8 @@ export async function* geneAndTranscriptsSequences(
 export async function* transcriptAndGeneSequences(
   params: TranscriptDownloadOptions
 ) {
-  const { genomeId, transcriptId, geneSequences, transcriptSequences } = params;
+  const { genomeId, transcriptId, geneSequenceTypes, transcriptSequenceTypes } =
+    params;
   const metadata = await fetchTranscriptAndGeneMetadata({
     genomeId,
     transcriptId
@@ -222,7 +224,7 @@ export async function* transcriptAndGeneSequences(
 
   const productGeneratingContext = transcript.product_generating_contexts[0];
 
-  if (transcriptSequences?.genomic) {
+  if (transcriptSequenceTypes?.genomic) {
     const transcriptSequence = getTranscriptSequence({
       geneSequence,
       transcript_relative_location: transcript.relative_location
@@ -233,7 +235,7 @@ export async function* transcriptAndGeneSequences(
     };
   }
 
-  if (transcriptSequences?.exons) {
+  if (transcriptSequenceTypes?.exons) {
     for (const splicedExon of transcript.spliced_exons) {
       const exonSequence = getExonSequence({
         geneSequence,
@@ -253,7 +255,7 @@ export async function* transcriptAndGeneSequences(
     }
   }
 
-  if (transcriptSequences?.cdna) {
+  if (transcriptSequenceTypes?.cdna) {
     const sequenceChecksum = productGeneratingContext.cdna.sequence.checksum;
     const url = urlFor.refget({ checksum: sequenceChecksum });
     const sequence = await fetch(url).then((response) => response.text());
@@ -263,7 +265,7 @@ export async function* transcriptAndGeneSequences(
     };
   }
 
-  if (transcriptSequences?.cds) {
+  if (transcriptSequenceTypes?.cds) {
     const sequenceChecksum = productGeneratingContext.cds?.sequence.checksum;
     if (sequenceChecksum) {
       const url = urlFor.refget({ checksum: sequenceChecksum });
@@ -275,7 +277,7 @@ export async function* transcriptAndGeneSequences(
     }
   }
 
-  if (transcriptSequences?.protein) {
+  if (transcriptSequenceTypes?.protein) {
     const product = productGeneratingContext.product;
     if (product) {
       const sequenceChecksum = product.sequence.checksum;
@@ -288,13 +290,14 @@ export async function* transcriptAndGeneSequences(
     }
   }
 
-  if (geneSequences?.genomic) {
+  if (geneSequenceTypes?.genomic) {
     yield {
       label: `${gene.stable_id} genomic`,
       sequence: geneSequence
     };
   }
-  if (geneSequences?.exons) {
+
+  if (geneSequenceTypes?.exons) {
     for (const transcript of gene.transcripts) {
       for (const splicedExon of transcript.spliced_exons) {
         const exonSequence = getExonSequence({
@@ -319,13 +322,13 @@ export async function* transcriptAndGeneSequences(
 }
 
 const needsGenomicSequence = (params: SequenceDownloadOptions) => {
-  const { geneSequences, transcriptSequences } = params;
+  const { geneSequenceTypes, transcriptSequenceTypes } = params;
 
   return (
-    geneSequences?.genomic ||
-    geneSequences?.exons ||
-    transcriptSequences?.genomic ||
-    transcriptSequences?.exons
+    geneSequenceTypes?.genomic ||
+    geneSequenceTypes?.exons ||
+    transcriptSequenceTypes?.genomic ||
+    transcriptSequenceTypes?.exons
   );
 };
 

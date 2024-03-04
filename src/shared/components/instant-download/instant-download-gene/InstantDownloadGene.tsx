@@ -262,8 +262,8 @@ const downloadGeneSequences = async (params: OnDownloadPayload) => {
     const sequences = await service.downloadSequencesForGene({
       genomeId: params.genomeId,
       geneId: params.geneId,
-      geneSequences: params.options.gene,
-      transcriptSequences: params.options.transcript
+      geneSequenceTypes: params.options.gene,
+      transcriptSequenceTypes: params.options.transcript
     });
 
     await downloadTextAsFile(sequences, `${geneId}.fasta`, {

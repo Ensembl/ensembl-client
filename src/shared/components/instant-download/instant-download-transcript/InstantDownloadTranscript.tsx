@@ -310,8 +310,8 @@ const downloadSequences = async (params: TrackTranscriptDownloadPayload) => {
     const sequences = await service.downloadSequencesForTranscript({
       genomeId: params.genomeId,
       transcriptId: params.transcriptId,
-      geneSequences: params.options.gene,
-      transcriptSequences: params.options.transcript
+      geneSequenceTypes: params.options.gene,
+      transcriptSequenceTypes: params.options.transcript
     });
 
     await downloadTextAsFile(sequences, `${transcriptId}.fasta`, {

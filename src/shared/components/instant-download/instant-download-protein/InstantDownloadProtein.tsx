@@ -130,7 +130,7 @@ const downloadProteinSequences = async (params: OnDownloadPayload) => {
     const sequences = await service.downloadSequencesForProtein({
       genomeId: params.genomeId,
       transcriptId: params.transcriptId,
-      sequences: params.options
+      sequenceTypes: params.options
     });
 
     worker.terminate();

@@ -43,11 +43,11 @@ import { getGenomicSliceSequence } from './genomicSliceDownload';
 export type GeneDownloadOptions = {
   genomeId: string;
   geneId: string;
-  geneSequences?: Partial<{
+  geneSequenceTypes?: Partial<{
     genomic: boolean;
     exons: boolean;
   }>;
-  transcriptSequences?: Partial<{
+  transcriptSequenceTypes?: Partial<{
     genomic: boolean;
     cdna: boolean;
     cds: boolean;
@@ -65,7 +65,7 @@ export type TranscriptDownloadOptions = Omit<GeneDownloadOptions, 'geneId'> & {
 export type ProteinDownloadOptions = {
   genomeId: string;
   transcriptId: string;
-  sequences: {
+  sequenceTypes: {
     protein: boolean;
     cds: boolean;
   };
