@@ -15,47 +15,50 @@
  */
 
 import React, { useState } from 'react';
+import { wrap } from 'comlink';
+
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
 
-import { fetchForProtein } from '../instant-download-fetch/fetchForProtein';
-
-import { TranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
+import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
 
 import styles from './InstantDownloadProtein.module.css';
 
 export type InstantDownloadProteinProps = {
   genomeId: string;
   transcriptId: string;
+  proteinId: string;
   onDownloadSuccess?: (params: OnDownloadPayload) => void;
   onDownloadFailure?: (params: OnDownloadPayload) => void;
 };
 
-export type ProteinOptions = Pick<TranscriptOptions, 'proteinSequence' | 'cds'>;
+export type ProteinOptions = {
+  protein: boolean;
+  cds: boolean;
+};
 
 export type ProteinOption = keyof Partial<ProteinOptions>;
 
-export const proteinOptionsOrder: ProteinOption[] = ['proteinSequence', 'cds'];
+export const proteinOptionsOrder: ProteinOption[] = ['protein', 'cds'];
 
 export type OnDownloadPayload = {
   genomeId: string;
   transcriptId: string;
-  options: {
-    proteinSequence: boolean;
-    cds: boolean;
-  };
+  proteinId: string;
+  options: ProteinOptions;
 };
 
 const proteinOptionLabels: Record<keyof ProteinOptions, string> = {
-  proteinSequence: 'Protein sequence',
+  protein: 'Protein sequence',
   cds: 'CDS'
 };
 
 const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const [isProteinSeqSelected, setProteinSeqSelected] = useState(false);
   const [isCdsSeqSelected, setCdsSeqSelected] = useState(false);
-  const { genomeId, transcriptId } = props;
+  const { genomeId, transcriptId, proteinId } = props;
 
   const onProteinCheckboxChange = () =>
     setProteinSeqSelected(!isProteinSeqSelected);
@@ -70,14 +73,15 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
     const payload = {
       genomeId,
       transcriptId,
+      proteinId,
       options: {
-        proteinSequence: isProteinSeqSelected,
+        protein: isProteinSeqSelected,
         cds: isCdsSeqSelected
       }
     };
 
     try {
-      await fetchForProtein(payload);
+      await downloadProteinSequences(payload);
       props.onDownloadSuccess?.(payload);
     } catch {
       props.onDownloadFailure?.(payload);
@@ -91,7 +95,7 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   return (
     <div className={styles.inputGroup}>
       <Checkbox
-        label={proteinOptionLabels.proteinSequence}
+        label={proteinOptionLabels.protein}
         checked={isProteinSeqSelected}
         onChange={onProteinCheckboxChange}
         theme="lighter"
@@ -109,6 +113,34 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       />
     </div>
   );
+};
+
+const downloadProteinSequences = async (params: OnDownloadPayload) => {
+  const { proteinId } = params;
+
+  const worker = new Worker(
+    new URL(
+      'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker.ts',
+      import.meta.url
+    )
+  );
+
+  try {
+    const service = wrap<WorkerApi>(worker);
+    const sequences = await service.downloadSequencesForProtein({
+      genomeId: params.genomeId,
+      transcriptId: params.transcriptId,
+      sequenceTypes: params.options
+    });
+
+    worker.terminate();
+
+    await downloadTextAsFile(sequences, `${proteinId}.fasta`, {
+      type: 'text/x-fasta'
+    });
+  } finally {
+    worker.terminate();
+  }
 };
 
 export default InstantDownloadProtein;

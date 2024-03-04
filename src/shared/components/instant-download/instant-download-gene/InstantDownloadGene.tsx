@@ -15,14 +15,17 @@
  */
 
 import React, { useState } from 'react';
+import { wrap } from 'comlink';
 import intersection from 'lodash/intersection';
 import classNames from 'classnames';
 
-import { fetchForGene } from '../instant-download-fetch/fetchForGene';
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
+
+import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
 
 import styles from './InstantDownloadGene.module.css';
 
@@ -49,7 +52,7 @@ export type OnDownloadPayload = {
   geneId: string;
   options: {
     transcript: Partial<TranscriptOptions>;
-    gene: { genomicSequence: boolean };
+    gene: { genomic: boolean; exons: boolean };
   };
 };
 
@@ -61,36 +64,49 @@ type TranscriptSectionProps = {
 
 type GeneSectionProps = {
   gene: GeneFields;
-  isGenomicSequenceSelected: boolean;
+  options: Partial<GeneOptions>;
   theme: Theme;
-  onChange: () => void;
+  onChange: (key: keyof GeneOptions) => void;
+};
+
+export type GeneOptions = {
+  genomic: boolean;
+  exons: boolean;
 };
 
 export type TranscriptOptions = {
-  genomicSequence: boolean;
-  proteinSequence: boolean;
+  genomic: boolean;
+  protein: boolean;
   cdna: boolean;
   cds: boolean;
+  exons: boolean;
 };
 
 export type TranscriptOption = keyof Partial<TranscriptOptions>;
 
 export const transcriptOptionsOrder: TranscriptOption[] = [
-  'genomicSequence',
+  'genomic',
   'cdna',
   'cds',
-  'proteinSequence'
+  'exons',
+  'protein'
 ];
 
 const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
-  genomicSequence: 'Genomic sequence',
+  genomic: 'Genomic sequence',
   cdna: 'cDNA',
   cds: 'CDS',
-  proteinSequence: 'Protein sequence'
+  exons: 'Exons',
+  protein: 'Protein sequence'
+};
+
+const defaultGeneOptions: GeneOptions = {
+  genomic: false,
+  exons: false
 };
 
 export const getCheckboxTheme = (theme: Theme) =>
-  theme === 'light' ? 'lighter' : 'dark';
+  theme === 'light' ? 'light' : 'dark';
 
 const InstantDownloadGene = (props: Props) => {
   const {
@@ -101,7 +117,7 @@ const InstantDownloadGene = (props: Props) => {
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(isProteinCoding)
   );
-  const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
+  const [geneOptions, setGeneOptions] = useState(defaultGeneOptions);
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
@@ -112,12 +128,17 @@ const InstantDownloadGene = (props: Props) => {
     setTranscriptOptions(updatedOptions);
   };
 
-  const onGeneOptionChange = () => {
-    setIsGeneSequenceSelected(!isGeneSequenceSelected);
+  const onGeneOptionChange = (key: keyof GeneOptions) => {
+    const updatedOptions = {
+      ...geneOptions,
+      [key]: !geneOptions[key]
+    };
+
+    setGeneOptions(updatedOptions);
   };
 
   const resetCheckboxes = () => {
-    setIsGeneSequenceSelected(false);
+    setGeneOptions(defaultGeneOptions);
     setTranscriptOptions(filterTranscriptOptions(isProteinCoding));
   };
 
@@ -126,13 +147,13 @@ const InstantDownloadGene = (props: Props) => {
       genomeId,
       geneId,
       options: {
-        transcript: transcriptOptions,
-        gene: { genomicSequence: isGeneSequenceSelected }
+        gene: geneOptions,
+        transcript: transcriptOptions
       }
     };
 
     try {
-      await fetchForGene(payload);
+      await downloadGeneSequences(payload);
       props.onDownloadSuccess?.(payload);
     } catch (error) {
       props.onDownloadFailure?.(payload);
@@ -146,16 +167,16 @@ const InstantDownloadGene = (props: Props) => {
 
   const containerClasses = classNames(styles.container, themeClass);
 
-  const isButtonDisabled = !hasSelectedOptions({
-    ...transcriptOptions,
-    geneSequence: isGeneSequenceSelected
-  });
+  const isButtonDisabled = !hasSelectedOptions([
+    transcriptOptions,
+    geneOptions
+  ]);
 
   return (
     <div className={containerClasses}>
       <GeneSection
         gene={props.gene}
-        isGenomicSequenceSelected={isGeneSequenceSelected}
+        options={geneOptions}
         theme={theme}
         onChange={onGeneOptionChange}
       />
@@ -183,8 +204,15 @@ const GeneSection = (props: GeneSectionProps) => (
     <Checkbox
       theme={getCheckboxTheme(props.theme)}
       label="Genomic sequence"
-      checked={props.isGenomicSequenceSelected}
-      onChange={props.onChange}
+      checked={!!props.options.genomic}
+      onChange={() => props.onChange('genomic')}
+      className={styles.checkbox}
+    />
+    <Checkbox
+      theme={getCheckboxTheme(props.theme)}
+      label="Exons"
+      checked={!!props.options.exons}
+      onChange={() => props.onChange('exons')}
       className={styles.checkbox}
     />
   </div>
@@ -215,12 +243,35 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   );
 };
 
-const hasSelectedOptions = (
-  options: Partial<TranscriptOptions> & { geneSequence: boolean }
-) => {
-  return Object.keys(options).some(
-    (key) => options[key as keyof TranscriptOptions]
+const hasSelectedOptions = (options: Record<string, boolean>[]) => {
+  return options.some((obj) => Object.values(obj).includes(true));
+};
+
+const downloadGeneSequences = async (params: OnDownloadPayload) => {
+  const { geneId } = params;
+
+  const worker = new Worker(
+    new URL(
+      'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker.ts',
+      import.meta.url
+    )
   );
+
+  try {
+    const service = wrap<WorkerApi>(worker);
+    const sequences = await service.downloadSequencesForGene({
+      genomeId: params.genomeId,
+      geneId: params.geneId,
+      geneSequenceTypes: params.options.gene,
+      transcriptSequenceTypes: params.options.transcript
+    });
+
+    await downloadTextAsFile(sequences, `${geneId}.fasta`, {
+      type: 'text/x-fasta'
+    });
+  } finally {
+    worker.terminate();
+  }
 };
 
 export default InstantDownloadGene;

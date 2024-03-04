@@ -95,9 +95,9 @@ const GeneSummary = () => {
       options: { gene, transcript }
     } = params;
 
-    const selectedOptions = gene.genomicSequence
-      ? ['gene-genomic_sequence']
-      : [];
+    const selectedOptions = Object.entries(gene)
+      .filter(([, isSet]) => isSet)
+      .map(([option]) => `gene-${option}`);
 
     Object.entries(transcript).forEach(([option, isSet]) => {
       if (isSet) {

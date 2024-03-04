@@ -46,7 +46,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
-import { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
+import type { TranscriptDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
 import styles from './TranscriptSummary.module.css';
@@ -118,9 +118,9 @@ const TranscriptSummary = (props: Props) => {
       options: { gene, transcript }
     } = params;
 
-    const selectedOptions = gene.genomicSequence
-      ? ['gene-genomic_sequence']
-      : [];
+    const selectedOptions = Object.entries(gene)
+      .filter(([, isSet]) => isSet)
+      .map(([option]) => `gene-${option}`);
 
     Object.entries(transcript).forEach(([option, isSet]) => {
       if (isSet) {

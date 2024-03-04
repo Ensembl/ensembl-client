@@ -32,6 +32,11 @@
 }
 
 .checkbox {
-  display: block;
   margin-left: 15px;
+}
+
+/* Increase selector specificity to override display: inline-block on the checkbox */
+.transcriptSection .checkbox,
+.geneSection .checkbox {
+  display: block;
 }
