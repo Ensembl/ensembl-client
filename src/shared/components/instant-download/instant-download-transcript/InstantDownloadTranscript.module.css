@@ -109,7 +109,7 @@
 }
 
 .layoutVertical .checkboxGrid {
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(3, max-content);
   grid-template-areas:
     'genomic cdna exons'
     'protein cds .';

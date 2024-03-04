@@ -131,7 +131,7 @@ export const filterTranscriptOptions = (
 };
 
 export const getCheckboxTheme = (theme: Theme) =>
-  theme === 'light' ? 'lighter' : 'dark';
+  theme === 'light' ? 'light' : 'dark';
 
 const InstantDownloadTranscript = (props: Props) => {
   const {

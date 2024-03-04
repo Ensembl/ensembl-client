@@ -106,7 +106,7 @@ const defaultGeneOptions: GeneOptions = {
 };
 
 export const getCheckboxTheme = (theme: Theme) =>
-  theme === 'light' ? 'lighter' : 'dark';
+  theme === 'light' ? 'light' : 'dark';
 
 const InstantDownloadGene = (props: Props) => {
   const {
