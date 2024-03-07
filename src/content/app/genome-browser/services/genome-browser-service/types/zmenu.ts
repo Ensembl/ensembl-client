@@ -85,6 +85,11 @@ export type ZmenuContentRegulationMetadata = {
   core_end: number; // end coordinate of the feature core
 };
 
+export type ZmenuContentOptionalMetadata = {
+  id?: string; // the payload might include some feature metadata
+  type: string;
+};
+
 export type ZmenuContentGene = {
   data: ZmenuContentLine[];
   metadata: ZmenuContentGeneMetadata;
@@ -105,11 +110,17 @@ export type ZmenuContentRegulation = {
   metadata: ZmenuContentRegulationMetadata;
 };
 
+export type ZmenuContentDefault = {
+  data: ZmenuContentLine[];
+  metadata: ZmenuContentOptionalMetadata;
+};
+
 export type ZmenuContent =
   | ZmenuContentGene
   | ZmenuContentTranscript
   | ZmenuContentVariant
-  | ZmenuContentRegulation;
+  | ZmenuContentRegulation
+  | ZmenuContentDefault;
 
 export enum ZmenuPayloadVarietyType {
   GENE_AND_ONE_TRANSCRIPT = 'gene-and-one-transcript',

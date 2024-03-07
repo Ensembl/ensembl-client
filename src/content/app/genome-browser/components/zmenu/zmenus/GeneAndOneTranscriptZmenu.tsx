@@ -61,7 +61,8 @@ const GeneAndOneTranscriptZmenu = (props: Props) => {
     gene = content.find(
       (feature) =>
         feature.metadata.type === 'gene' &&
-        feature.metadata.versioned_id === transcript?.metadata.gene_id
+        (feature.metadata as ZmenuContentGene['metadata']).versioned_id ===
+          transcript?.metadata.gene_id
     ) as ZmenuContentGene;
 
     if (gene) {
