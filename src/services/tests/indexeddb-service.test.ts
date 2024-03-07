@@ -16,7 +16,7 @@
 
 import 'fake-indexeddb/auto';
 import { IDBFactory } from 'fake-indexeddb';
-import { openDB } from 'idb/with-async-ittr';
+import { openDB } from 'idb';
 import { faker } from '@faker-js/faker';
 
 import IndexedDB from 'src/services/indexeddb-service';

@@ -15,12 +15,13 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
-import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
@@ -62,12 +63,12 @@ jest.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
 
 const mockState = createMockBrowserState();
 
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
-
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
   return render(
     <MemoryRouter>
       <Provider store={store}>

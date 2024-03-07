@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { http, HttpResponse } from 'msw';
@@ -126,7 +126,7 @@ beforeAll(() =>
 afterAll(() => server.close());
 
 describe('<TrackPanelTabs />', () => {
-  beforeEach(() => {
+  afterEach(() => {
     jest.restoreAllMocks();
   });
 
@@ -146,6 +146,15 @@ describe('<TrackPanelTabs />', () => {
     describe('on track panel tab click', () => {
       it('selects track panel tab', async () => {
         const { container } = renderComponent();
+
+        // Wait for track categories data from the api, which will enable the tab
+        await waitFor(() => {
+          const tab = container.querySelector(
+            '.trackPanelTab:not(.trackPanelTabDisabled)'
+          );
+          expect(tab).not.toBe(null);
+        });
+
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'selectTrackPanelTab');
@@ -158,6 +167,15 @@ describe('<TrackPanelTabs />', () => {
 
       it('opens track panel if it is closed', async () => {
         let { container } = renderComponent();
+
+        // Wait for track categories data from the api, which will enable the tab
+        await waitFor(() => {
+          const tab = container.querySelector(
+            '.trackPanelTab:not(.trackPanelTabDisabled)'
+          );
+          expect(tab).not.toBe(null);
+        });
+
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'toggleTrackPanel');
@@ -168,6 +186,14 @@ describe('<TrackPanelTabs />', () => {
         const newState = structuredClone(initialReduxState);
         newState.browser.trackPanel.human.isTrackPanelOpened = false;
         container = renderComponent(newState).container;
+
+        // Wait for track categories data from the api, which will enable the tab
+        await waitFor(() => {
+          const tab = container.querySelector(
+            '.trackPanelTab:not(.trackPanelTabDisabled)'
+          );
+          expect(tab).not.toBe(null);
+        });
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         await userEvent.click(tab);
@@ -176,6 +202,14 @@ describe('<TrackPanelTabs />', () => {
 
       it('closes drawer if it is opened', async () => {
         let { container } = renderComponent();
+
+        // Wait for track categories data from the api, which will enable the tab
+        await waitFor(() => {
+          const tab = container.querySelector(
+            '.trackPanelTab.trackPanelTabActive'
+          );
+          expect(tab).not.toBe(null);
+        });
 
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
@@ -187,6 +221,14 @@ describe('<TrackPanelTabs />', () => {
         const newState = structuredClone(initialReduxState);
         newState.browser.drawer.general.human.drawerView = 'some view';
         container = renderComponent(newState).container;
+
+        // Wait for track categories data from the api, which will enable the tab
+        await waitFor(() => {
+          const tab = container.querySelector(
+            '.trackPanelTab:not(.trackPanelTabDisabled)'
+          );
+          expect(tab).not.toBe(null);
+        });
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         await userEvent.click(tab);

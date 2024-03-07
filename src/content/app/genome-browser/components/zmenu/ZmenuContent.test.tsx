@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
+import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import thunk from 'redux-thunk';
 import { faker } from '@faker-js/faker';
-import configureMockStore from 'redux-mock-store';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import {
   createMockBrowserState,
@@ -55,22 +56,26 @@ enum Markup {
 }
 
 const mockState = createMockBrowserState();
-const mockStoreCreator = configureMockStore([thunk]);
-const mockStore = mockStoreCreator(() => mockState);
 
 const defaultZmenuContentProps: ZmenuContentProps = {
   ...createZmenuContentPayload(),
   destroyZmenu: jest.fn()
 };
 
-const renderZmenuContent = (store = mockStore) =>
-  render(
+const renderZmenuContent = (state = mockState) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
+  return render(
     <MemoryRouter>
       <Provider store={store}>
         <ZmenuContent {...defaultZmenuContentProps} />
       </Provider>
     </MemoryRouter>
   );
+};
 
 const defaultZmenuContentItemProps: ZmenuContentItemProps = {
   featureId: faker.lorem.words(),
@@ -79,8 +84,13 @@ const defaultZmenuContentItemProps: ZmenuContentItemProps = {
   destroyZmenu: jest.fn()
 };
 
-const renderZmenuContentItem = (store = mockStore) =>
-  render(
+const renderZmenuContentItem = (state = mockState) => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
+  return render(
     <MemoryRouter>
       <Provider store={store}>
         <ZmenuContentItem {...defaultZmenuContentItemProps} />
@@ -88,6 +98,7 @@ const renderZmenuContentItem = (store = mockStore) =>
       <LocationDisplay />
     </MemoryRouter>
   );
+};
 
 describe('<ZmenuContent />', () => {
   beforeEach(() => {

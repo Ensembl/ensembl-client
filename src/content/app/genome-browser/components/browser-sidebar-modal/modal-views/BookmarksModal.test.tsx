@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import configureMockStore from 'redux-mock-store';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
@@ -25,7 +24,8 @@ import times from 'lodash/times';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
 
-import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import createRootReducer from 'src/root/rootReducer';
+import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
@@ -75,19 +75,25 @@ const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
 });
 
 const mockState = createMockBrowserState();
-const mockStore = configureMockStore([thunk]);
-let store: ReturnType<typeof mockStore>;
 
 const { activeGenomeId } = mockState.browser.browserGeneral;
 
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
 
-  return render(
+  const renderResult = render(
     <Provider store={store}>
       <BookmarksModal />
     </Provider>
   );
+
+  return {
+    ...renderResult,
+    store
+  };
 };
 
 describe('<BookmarksModal />', () => {
@@ -174,7 +180,7 @@ describe('<BookmarksModal />', () => {
   });
 
   it('changes drawer view and toggles drawer when the "more" link is clicked', async () => {
-    const { container } = renderComponent(
+    const { container, store } = renderComponent(
       set(
         `browser.browserBookmarks.previouslyViewedObjects.${activeGenomeId}`,
         times(21, () => createRandomPreviouslyViewedObject()),
@@ -186,17 +192,10 @@ describe('<BookmarksModal />', () => {
       '.bookmarksModal .more span'
     ) as HTMLElement;
 
+    expect(getActiveDrawerView(store.getState())).toBe(null); // drawer should be closed
+
     await userEvent.click(moreLink);
 
-    const dispatchedDrawerActions = store.getActions();
-
-    const updateDrawerViewAction = dispatchedDrawerActions.find(
-      (action) => action.type === changeDrawerViewForGenome.toString()
-    );
-
-    expect(updateDrawerViewAction.payload).toEqual({
-      genomeId: activeGenomeId,
-      drawerView: { name: 'bookmarks' }
-    });
+    expect(getActiveDrawerView(store.getState())?.name).toBe('bookmarks'); // drawer should show bookmarks
   });
 });

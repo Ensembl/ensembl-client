@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { openDB, IDBPDatabase } from 'idb/with-async-ittr';
+import { openDB, IDBPDatabase } from 'idb';
 
 import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/services/speciesSelectorStorageConstants';
 import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageConstants';

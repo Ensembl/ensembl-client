@@ -15,12 +15,13 @@
  */
 
 import React from 'react';
-import configureMockStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 import * as browserSidebarModalActions from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
@@ -49,12 +50,12 @@ jest.mock(
 
 const mockState = createMockBrowserState();
 
-const mockStore = configureMockStore([thunk]);
-
-let store: ReturnType<typeof mockStore>;
-
 const renderComponent = (state: typeof mockState = mockState) => {
-  store = mockStore(state);
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state as any
+  });
+
   return render(
     <Provider store={store}>
       <BrowserSidebarModal />

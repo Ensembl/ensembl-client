@@ -15,9 +15,11 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import { render } from '@testing-library/react';
+
+import createRootReducer from 'src/root/rootReducer';
 
 import useRestoredReduxState from './useRestoredReduxState';
 import { updateBreakpointWidth } from 'src/global/globalSlice';
@@ -47,9 +49,12 @@ jest.mock(
 
 describe('<Root />', () => {
   const getRenderedRoot = () => {
-    const mockStore = configureMockStore();
+    const store = configureStore({
+      reducer: createRootReducer()
+    });
+
     return render(
-      <Provider store={mockStore({})}>
+      <Provider store={store}>
         <Root />
       </Provider>
     );
