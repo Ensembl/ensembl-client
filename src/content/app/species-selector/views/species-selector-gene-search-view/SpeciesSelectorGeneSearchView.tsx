@@ -17,15 +17,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
 import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
 
 const SpeciesSelectorGeneSearchView = () => {
   const navigate = useNavigate();
 
   const onClose = () => {
-    navigate(urlFor.speciesSelector()); // TODO: This will break the browser forward button. Need to figure out how to do this properly.
+    navigate(-1);
   };
 
   return <GeneSearchPanel onClose={onClose} />;
