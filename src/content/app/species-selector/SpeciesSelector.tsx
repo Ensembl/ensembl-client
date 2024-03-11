@@ -30,6 +30,7 @@ const SpeciesSelector = () => {
     <Routes>
       <Route index element={<SpeciesSelectorAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsModalAppBar />} />
+      <Route path="/search/gene" element={<SpeciesSelectorAppBar />} />
     </Routes>
   );
 

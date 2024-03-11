@@ -37,6 +37,9 @@ type SpeciesPageUrlParams = {
 
 type SpeciesSelectorParams = {
   query?: string;
+  gene?: {
+    query?: string;
+  };
   speciesTaxonomyId?: string | number;
 };
 
@@ -50,12 +53,21 @@ export const speciesSelector = (params?: SpeciesSelectorParams) => {
   const speciesSelectorPath = '/species-selector';
 
   if (params) {
-    const path = `${speciesSelectorPath}/search`;
+    let path = `${speciesSelectorPath}/search`;
     const urlSearchParams = new URLSearchParams('');
 
     if (params.query) {
       urlSearchParams.append('query', params.query);
     }
+
+    if (params.gene) {
+      path = `${path}/gene`;
+
+      if (params.gene.query) {
+        urlSearchParams.append('query', params.gene.query);
+      }
+    }
+
     if (params.speciesTaxonomyId) {
       urlSearchParams.append(
         'species_taxonomy_id',

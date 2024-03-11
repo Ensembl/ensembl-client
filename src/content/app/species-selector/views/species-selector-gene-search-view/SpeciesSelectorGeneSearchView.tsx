@@ -15,18 +15,17 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from 'src/store';
-
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
 
 const SpeciesSelectorGeneSearchView = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onClose = () => {
-    dispatch(setModalView(null));
+    navigate(urlFor.speciesSelector()); // TODO: This will break the browser forward button. Need to figure out how to do this properly.
   };
 
   return <GeneSearchPanel onClose={onClose} />;

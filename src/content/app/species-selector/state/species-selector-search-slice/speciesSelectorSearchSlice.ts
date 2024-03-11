@@ -25,7 +25,6 @@ import { saveMultipleSelectedSpecies } from 'src/content/app/species-selector/se
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { updateCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import type { RootState } from 'src/store';
 import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
@@ -75,7 +74,6 @@ export const commitSelectedSpeciesAndSave = createAsyncThunk(
     ];
 
     dispatch(updateCommittedSpecies(newCommittedSpecies));
-    dispatch(setModalView(null));
 
     saveMultipleSelectedSpecies(newCommittedSpecies);
   }
