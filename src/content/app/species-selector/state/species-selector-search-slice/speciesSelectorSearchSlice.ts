@@ -27,18 +27,15 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import { updateCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import type { RootState } from 'src/store';
-import type { PopularSpecies } from 'src/content/app/species-selector/types/popularSpecies';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type State = {
   query: string;
-  popularSpecies: PopularSpecies | null;
 };
 
 const initialState: State = {
-  query: '',
-  popularSpecies: null
+  query: ''
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -85,9 +82,6 @@ const speciesSelectorSearchSlice = createSlice({
   reducers: {
     setQuery(state, action: PayloadAction<string>) {
       state.query = action.payload;
-    },
-    setPopularSpecies(state, action: PayloadAction<PopularSpecies | null>) {
-      state.popularSpecies = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -97,7 +91,6 @@ const speciesSelectorSearchSlice = createSlice({
   }
 });
 
-export const { setQuery, setPopularSpecies } =
-  speciesSelectorSearchSlice.actions;
+export const { setQuery } = speciesSelectorSearchSlice.actions;
 
 export default speciesSelectorSearchSlice.reducer;

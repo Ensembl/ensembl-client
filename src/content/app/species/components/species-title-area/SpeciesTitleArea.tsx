@@ -100,6 +100,14 @@ const SpeciesTitleArea = () => {
     );
   };
 
+  const navigateToAssemblies = () => {
+    navigate(
+      urlFor.speciesSelector({
+        speciesTaxonomyId: species?.species_taxonomy_id
+      })
+    );
+  };
+
   const toggleRemovalDialog = () => {
     setIsRemoving(!isRemoving);
   };
@@ -122,7 +130,10 @@ const SpeciesTitleArea = () => {
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
-        <div className={styles.assemblyCountWrapper}>
+        <div
+          className={styles.assemblyCountWrapper}
+          onClick={navigateToAssemblies}
+        >
           <InfoPill>{assemblyCount}</InfoPill>
           <span className={styles.assembliesLink}>Assemblies</span>
         </div>

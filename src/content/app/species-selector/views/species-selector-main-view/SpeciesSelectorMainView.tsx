@@ -17,10 +17,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
-
-import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -31,11 +28,9 @@ import styles from './SpeciesSelectorMainView.module.css';
 
 const SpeciesSelectorMainView = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
 
   const onSearchSubmit = (query: string) => {
-    dispatch(setPopularSpecies(null));
     trackSpeciesSearchQuery(query);
     navigate(
       urlFor.speciesSelector({

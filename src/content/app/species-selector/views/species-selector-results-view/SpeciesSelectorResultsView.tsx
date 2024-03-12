@@ -21,7 +21,6 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { getSelectedPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
 
 import {
   setQuery,
@@ -55,7 +54,6 @@ const SpeciesSelectorResultslView = () => {
 const Content = (props: { onClose: () => void }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const selectedPopularSpecies = useAppSelector(getSelectedPopularSpecies);
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
   const dispatch = useAppDispatch();
@@ -85,7 +83,7 @@ const Content = (props: { onClose: () => void }) => {
       trackAddedGenome(addedGenome);
     }
 
-    navigate(urlFor.speciesSelector());
+    navigate(-1);
   };
 
   return searchParams.has('query') ? (
@@ -94,11 +92,10 @@ const Content = (props: { onClose: () => void }) => {
       onSpeciesAdd={onSpeciesAdd}
       onClose={props.onClose}
     />
-  ) : searchParams.has('species_taxonomy_id') && selectedPopularSpecies ? (
+  ) : searchParams.has('species_taxonomy_id') ? (
     <GenomeSelectorBySpeciesTaxonomyId
       onSpeciesAdd={onSpeciesAdd}
-      speciesTaxonomyId={selectedPopularSpecies?.species_taxonomy_id}
-      speciesImageUrl={selectedPopularSpecies?.image}
+      speciesTaxonomyId={searchParams.get('species_taxonomy_id') || ''}
     />
   ) : null; // this last option should never happen
 };

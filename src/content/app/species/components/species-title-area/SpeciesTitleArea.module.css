@@ -41,12 +41,14 @@
 }
 
 .assemblyCountWrapper {
+  cursor: pointer;
   display: inline-flex;
   grid-area: assembly-count;
   justify-content: space-around;
 }
 
 .assembliesLink {
+  color: var(--color-blue);
   font-size: 12px;
 }
 
