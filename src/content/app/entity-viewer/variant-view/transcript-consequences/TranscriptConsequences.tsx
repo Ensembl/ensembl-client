@@ -240,12 +240,12 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
   const { transcriptConsequences } = props;
   return (
     <div className={styles.transcriptConsequenceListView}>
-      {transcriptConsequences.map((transcript, index) => (
+      {transcriptConsequences.map((consequencesForSingleTranscript, index) => (
         <div key={index}>
           <div
             className={classnames(styles.row, {
               [styles.rowExpanded]: expandedIds.has(
-                transcript.feature_stable_id
+                consequencesForSingleTranscript.stable_id
               )
             })}
           >
@@ -259,7 +259,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                       Transcript variant type
                     </span>
                     <span className={styles.value}>
-                      {transcript.consequences
+                      {consequencesForSingleTranscript.consequences
                         .map(({ value }) => value)
                         .join(', ')}
                     </span>
@@ -273,22 +273,25 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
             <div
               className={styles.right}
               onClick={() =>
-                handleTranscriptConsequenceClick(transcript.feature_stable_id)
+                handleTranscriptConsequenceClick(
+                  consequencesForSingleTranscript.stable_id
+                )
               }
             >
               <div className={styles.transcriptId}>
-                {transcript.feature_stable_id}
+                {consequencesForSingleTranscript.stable_id}
               </div>
             </div>
           </div>
 
-          {expandedIds.has(transcript.feature_stable_id) ? (
+          {expandedIds.has(consequencesForSingleTranscript.stable_id) ? (
             <TranscriptConsequenceDetails
               genomeId={genomeId}
-              transcriptId={transcript.feature_stable_id}
+              transcriptId={consequencesForSingleTranscript.stable_id}
               gene={gene}
               allele={allele}
               variant={variant}
+              transcriptConsequences={consequencesForSingleTranscript}
             />
           ) : null}
         </div>

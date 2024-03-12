@@ -14,9 +14,33 @@
  * limitations under the License.
  */
 
+// NOTE: currently, VariantPredictedMolecularConsequence represents an affected transcript.
+// This is why it has such fields as gene_stable_id, protein_stable_id, cdna_location, cds_location, etc.
 export type VariantPredictedMolecularConsequence = {
-  feature_stable_id: string; // NOTE: this will soon be changed to stable_id
+  stable_id: string;
+  gene_stable_id: string;
+  gene_symbol: string;
+  protein_stable_id: string | null;
+  transcript_biotype: string;
+  cdna_location: VariantRelativeLocation | null;
+  cds_location: VariantRelativeLocation | null;
+  protein_location: VariantRelativeLocation | null;
   consequences: AlleleConsequence[];
+};
+
+/**
+ * If one end of the variant, in the genomic sequence, is in an exon,
+ * and the other is in an intron, then one of the coordinates (either start or end)
+ * cannot be projected onto cDNA or CDS. As a result, the length of the variant cannot
+ * be determined, and neither can its reference or alternate sequence.
+ */
+export type VariantRelativeLocation = {
+  start: number | null;
+  end: number | null;
+  length: number | null;
+  percentage_overlap: number | null;
+  ref_sequence: string | null;
+  alt_sequence: string | null;
 };
 
 type AlleleConsequence = {

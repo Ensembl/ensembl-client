@@ -18,14 +18,17 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { addRelativeLocationInCDSToExons } from 'src/shared/helpers/exon-helpers/exonHelpers';
 
 import useTranscriptDetails from '../useTranscriptDetails';
 
 import TranscriptVariantDiagram from '../transcript-variant-diagram/TranscriptVariantDiagram';
 import TranscriptVariantGenomicSequence from '../transcript-variant-genomic-sequence/TranscriptVariantGenomicSequence';
+import TranscriptVariantCDS from '../transcript-variant-cds/TranscriptVariantCDS';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
+import type { PredictedMolecularConsequenceInResponse } from 'src/content/app/entity-viewer/state/api/queries/variantPredictedMolecularConsequencesQuery';
 
 import commonStyles from '../TranscriptConsequences.module.css';
 import styles from './TranscriptConsequenceDetails.module.css';
@@ -36,10 +39,11 @@ type Props = {
   gene: TranscriptConsequencesData['geneData'];
   variant: TranscriptConsequencesData['variant'];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
+  transcriptConsequences: PredictedMolecularConsequenceInResponse;
 };
 
 const TranscriptConsequenceDetails = (props: Props) => {
-  const { gene, variant, allele } = props;
+  const { gene, variant, allele, transcriptConsequences } = props;
 
   const { currentData: transcriptDetailsData, isLoading } =
     useTranscriptDetails(props);
@@ -65,9 +69,21 @@ const TranscriptConsequenceDetails = (props: Props) => {
   }
 
   const strand = gene.slice.strand.code;
+  const cds = transcript.product_generating_contexts[0]?.cds;
 
   return (
     <>
+      {cds && transcriptConsequences.cds_location && (
+        <CDSSection
+          exons={transcript.spliced_exons}
+          cds={cds}
+          allele={{
+            type: allele.allele_type.value,
+            relativeLocation: transcriptConsequences.cds_location
+          }}
+        />
+      )}
+
       <div className={commonStyles.row}>
         <div className={commonStyles.left}>Genomic</div>
         <div className={commonStyles.middle}>
@@ -148,6 +164,49 @@ const VariantPositionInTranscript = ({
       </span>{' '}
       <span className={styles.smallLight}>of {formattedTranscriptLength}</span>
     </span>
+  );
+};
+
+type TranscriptDetailsData = NonNullable<
+  ReturnType<typeof useTranscriptDetails>['currentData']
+>['transcriptData'];
+
+const CDSSection = (props: {
+  exons: TranscriptDetailsData['spliced_exons'];
+  cds: NonNullable<
+    TranscriptDetailsData['product_generating_contexts'][number]['cds']
+  >;
+  allele: {
+    type: string;
+    relativeLocation: NonNullable<
+      PredictedMolecularConsequenceInResponse['cds_location']
+    >;
+  };
+}) => {
+  const { exons, cds } = props;
+
+  const exonsWithinCDS = addRelativeLocationInCDSToExons({
+    exons,
+    cds
+  }).filter((exon) => Boolean(exon.relative_location_in_cds));
+
+  return (
+    <>
+      <div className={commonStyles.row}>
+        <div className={commonStyles.left}>CDS</div>
+        <div className={commonStyles.middle}>Position in CDS</div>
+      </div>
+
+      <div className={commonStyles.row}>
+        <div className={commonStyles.middle}>
+          <TranscriptVariantCDS
+            exons={exonsWithinCDS}
+            cds={cds}
+            allele={props.allele}
+          />
+        </div>
+      </div>
+    </>
   );
 };
 

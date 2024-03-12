@@ -231,20 +231,9 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: variantPredictedMolecularConsequencesQuery,
         variables: params
       }),
-      transformResponse: (response: VariantPredictedMolecularConsequencesResponse) => {
-        // Adapt to the api error by copying values from consequence.accession_id to consequence.value
-        // TODO: remove when the api is fix
-        for (const allele of response.variant.alleles ) {
-          for ( const predicted_consequence of allele.predicted_molecular_consequences ) {
-            for ( const cons of predicted_consequence.consequences) {
-              cons.value = (cons as any).accession_id;
-            }
-          }
-
-        }
-        return addAlleleUrlId(response);
-      }
-
+      transformResponse: (
+        response: VariantPredictedMolecularConsequencesResponse
+      ) => addAlleleUrlId(response)
     }),
     geneForVariantTranscriptConsequences: builder.query<
       GeneForVariantTranscriptConsequencesResponse,
@@ -265,7 +254,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: transcriptForVariantTranscriptConsequencesQuery,
         variables: params
       })
-    }),
+    })
   })
 });
 
