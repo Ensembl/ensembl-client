@@ -196,12 +196,21 @@ const CDSSection = (props: {
   const variantEndInCDS = allele.relativeLocation.end;
   const singleVariantCoord = variantStartInCDS || (variantEndInCDS as number); // we are promised that there will always be either a start or an end
 
-  const variantLocationString =
-    allele.type === 'insertion'
-      ? formatNumber(variantStartInCDS as number)
-      : variantStartInCDS && variantEndInCDS
-        ? `${formatNumber(variantStartInCDS)} - ${formatNumber(variantEndInCDS)}`
-        : formatNumber(singleVariantCoord);
+  let variantLocationString: string;
+
+  if (allele.type === 'insertion') {
+    // just show the start coordinate for an insertion; it should be available
+    variantLocationString = formatNumber(variantStartInCDS as number);
+  } else if (variantStartInCDS === variantEndInCDS) {
+    // start and end shouldn't both be null; which means that they both are the same number
+    variantLocationString = formatNumber(variantStartInCDS as number);
+  } else if (variantStartInCDS && variantEndInCDS) {
+    // both start and end are present, and are different from each other
+    variantLocationString = `${formatNumber(variantStartInCDS)} - ${formatNumber(variantEndInCDS)}`;
+  } else {
+    // one of the coordinates is unknown; show the known one
+    variantLocationString = formatNumber(singleVariantCoord);
+  }
 
   return (
     <>

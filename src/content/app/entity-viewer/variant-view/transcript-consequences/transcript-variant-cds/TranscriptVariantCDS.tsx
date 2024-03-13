@@ -84,6 +84,7 @@ const MIN_EXON_BLOCK_WITH_ARROW_WIDTH = 18;
 const VARIANT_MARKER_HEIGHT = 18;
 const VATIANT_MARKER_WIDTH = 2;
 const DIAGRAM_HEIGHT = 42;
+const EXON_TO_LABEL_DISTANCE = 12; // distance between the bottom of exon blocks and the top of the label under the variant mark
 
 const EXON_BLOCK_OFFSET_TOP = (VARIANT_MARKER_HEIGHT - EXON_BLOCK_HEIGHT) / 2;
 
@@ -236,6 +237,9 @@ const VariantMarkLabel = (props: {
 
   const labelText = `Coding exon ${affectedExonNumber} of ${totalCodingExonsCount}`;
   const labelFont = '11px Lato';
+  const labelFontSize = 11;
+  const labelY =
+    EXON_BLOCK_HEIGHT + EXON_BLOCK_OFFSET_TOP + EXON_TO_LABEL_DISTANCE;
 
   const { width: predictedLabelWidth } = measureText({
     text: labelText,
@@ -255,15 +259,18 @@ const VariantMarkLabel = (props: {
 
   return (
     <text
+      alignmentBaseline="hanging"
       className={styles.label}
       textAnchor={textAnchor}
       x={labelX}
-      y="30"
-      fontSize={11}
+      y={labelY}
+      fontSize={labelFontSize}
     >
       Coding exon{' '}
-      <tspan className={styles.labelBold}>{affectedExonNumber}</tspan> of{' '}
-      {exons.length}
+      <tspan className={styles.labelBold} alignmentBaseline="hanging">
+        {affectedExonNumber}
+      </tspan>{' '}
+      of {exons.length}
     </text>
   );
 };
