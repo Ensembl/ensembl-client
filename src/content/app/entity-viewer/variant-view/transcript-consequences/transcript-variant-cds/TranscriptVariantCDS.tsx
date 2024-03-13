@@ -41,6 +41,13 @@ type VariantRelativeLocationFields = Pick<
 >;
 
 /**
+ * WARNING!
+ * This component is using spliced exons from the core api to draw a CDS diagram.
+ * This will fail to work if we ever get cases of trans-splicing.
+ * It should be api's responsibility to tell the client how exons are arranged along a CDS.
+ */
+
+/**
  * Specs
  * - Exon
  *  - height: 12px
@@ -86,7 +93,7 @@ const TranscriptVariantCDS = (props: Props) => {
 
   const scale = scaleLinear()
     .domain([1, cds.nucleotide_length])
-    .range([1, width])
+    .range([0, width])
     .interpolate(interpolateRound)
     .clamp(true);
 
@@ -132,6 +139,16 @@ const ExonBlock = (props: { x: number; width: number }) => {
   const { x, width } = props;
   const desiredArrowHeight = 9;
 
+  const exonRectangle = (
+    <rect
+      className={styles.exonBlock}
+      x={x}
+      y={EXON_BLOCK_OFFSET_TOP}
+      width={width}
+      height={EXON_BLOCK_HEIGHT}
+    />
+  );
+
   if (width >= MIN_EXON_BLOCK_WITH_ARROW_WIDTH) {
     // FIXME: instead of desiredArrowHeight, i.e. the width of the chevron, subtract half the true height of the chevron
     const arrowX = x + width / 2 - desiredArrowHeight;
@@ -142,13 +159,7 @@ const ExonBlock = (props: { x: number; width: number }) => {
 
     return (
       <>
-        <rect
-          className={styles.exonBlock}
-          x={x}
-          y={EXON_BLOCK_OFFSET_TOP}
-          width={width}
-          height={EXON_BLOCK_HEIGHT}
-        />
+        {exonRectangle}
         {/* 
           Wrapping ChevronDown in a group element,
           because browsers have not yet implemented transform attribute on svg element itself;
@@ -167,7 +178,7 @@ const ExonBlock = (props: { x: number; width: number }) => {
       </>
     );
   } else {
-    return <rect x={x} width={width} height={EXON_BLOCK_HEIGHT} />;
+    return exonRectangle;
   }
 };
 

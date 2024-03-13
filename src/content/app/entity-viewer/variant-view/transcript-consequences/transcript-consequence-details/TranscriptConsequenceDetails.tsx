@@ -183,18 +183,37 @@ const CDSSection = (props: {
     >;
   };
 }) => {
-  const { exons, cds } = props;
+  const { exons, cds, allele } = props;
 
+  // NOTE: instead of using the function below that tries to calculate exon locations in CDS,
+  // the api should report this to the client.
   const exonsWithinCDS = addRelativeLocationInCDSToExons({
     exons,
     cds
   }).filter((exon) => Boolean(exon.relative_location_in_cds));
 
+  const variantStartInCDS = allele.relativeLocation.start;
+  const variantEndInCDS = allele.relativeLocation.end;
+  const singleVariantCoord = variantStartInCDS || (variantEndInCDS as number); // we are promised that there will always be either a start or an end
+
+  const variantLocationString =
+    allele.type === 'insertion'
+      ? formatNumber(variantStartInCDS as number)
+      : variantStartInCDS && variantEndInCDS
+        ? `${formatNumber(variantStartInCDS)} - ${formatNumber(variantEndInCDS)}`
+        : formatNumber(singleVariantCoord);
+
   return (
     <>
       <div className={commonStyles.row}>
         <div className={commonStyles.left}>CDS</div>
-        <div className={commonStyles.middle}>Position in CDS</div>
+        <div className={commonStyles.middle}>
+          <span className={styles.smallLight}>Position in CDS</span>{' '}
+          <span className={styles.small}>{variantLocationString}</span>{' '}
+          <span className={styles.smallLight}>
+            of {formatNumber(cds.nucleotide_length)}
+          </span>
+        </div>
       </div>
 
       <div className={commonStyles.row}>
