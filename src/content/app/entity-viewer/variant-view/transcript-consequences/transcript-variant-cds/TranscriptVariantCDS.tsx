@@ -47,27 +47,6 @@ type VariantRelativeLocationFields = Pick<
  * It should be api's responsibility to tell the client how exons are arranged along a CDS.
  */
 
-/**
- * Specs
- * - Exon
- *  - height: 12px
- *  - color: $grey
- * - White space to the right of exon: 1px
- *
- * - Min exon width: 2px
- * - Min exon width with arrow: 18px
- *  - Arrow:
- *    - height: 9px
- *    - color: $white, opacity: 50%
- *
- * - Line representing the variant:
- *  - height: 18px
- *  - width: 2px
- *  - color: $black
- *  - centered vertically relative to exon block
- *
- */
-
 type Props = {
   exons: Array<ExonFields & ExonWithRelativeLocationInCDS>;
   cds: CDSFields;
@@ -77,6 +56,7 @@ type Props = {
   };
 };
 
+const DIAGRAM_WIDTH = 700;
 const MIN_EXON_BLOCK_WIDTH = 2;
 const EXON_MARGIN_WIDTH = 1;
 const EXON_BLOCK_HEIGHT = 12;
@@ -90,25 +70,24 @@ const EXON_BLOCK_OFFSET_TOP = (VARIANT_MARKER_HEIGHT - EXON_BLOCK_HEIGHT) / 2;
 
 const TranscriptVariantCDS = (props: Props) => {
   const { exons, allele, cds } = props;
-  const width = 700;
 
   const scale = scaleLinear()
     .domain([1, cds.nucleotide_length])
-    .range([0, width])
+    .range([0, DIAGRAM_WIDTH])
     .interpolate(interpolateRound)
     .clamp(true);
 
   const exonsWithWidths = getExonWidths({
     exons,
-    containerWidth: width,
+    containerWidth: DIAGRAM_WIDTH,
     scale
   });
 
   return (
     <svg
-      width={width}
+      width={DIAGRAM_WIDTH}
       height={DIAGRAM_HEIGHT}
-      viewBox={`0 0 ${width} ${DIAGRAM_HEIGHT}`}
+      viewBox={`0 0 ${DIAGRAM_WIDTH} ${DIAGRAM_HEIGHT}`}
       overflow="visible"
     >
       <Exons exons={exonsWithWidths} />
@@ -116,7 +95,7 @@ const TranscriptVariantCDS = (props: Props) => {
         exons={exonsWithWidths}
         allele={allele}
         scale={scale}
-        containerWidth={width}
+        containerWidth={DIAGRAM_WIDTH}
       />
     </svg>
   );
@@ -274,23 +253,6 @@ const VariantMarkLabel = (props: {
     </text>
   );
 };
-
-// const WidthContainer = (props: { children: React.ReactNode }) => {
-//   const [containerWidth, setContainerWidth] = useState(0);
-//   const containerRef = useRef<HTMLDivElement | null>(null);
-
-//   useLayoutEffect(() => {
-//     const measuredContainerWidth =
-//       containerRef.current?.getBoundingClientRect().width ?? 0;
-//     setContainerWidth(measuredContainerWidth);
-//   }, []);
-
-//   return (
-//     <div ref={containerRef}>
-//       { !!containerWidth && props.children }
-//     </div>
-//   );
-// };
 
 const getExonWidths = (params: {
   exons: Props['exons'];

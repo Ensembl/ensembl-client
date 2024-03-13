@@ -16,6 +16,7 @@
 
 // NOTE: currently, VariantPredictedMolecularConsequence represents an affected transcript.
 // This is why it has such fields as gene_stable_id, protein_stable_id, cdna_location, cds_location, etc.
+// It is quite possible that in the future this will have to be reviewed, with consequences for other feature types added
 export type VariantPredictedMolecularConsequence = {
   stable_id: string;
   gene_stable_id: string;
