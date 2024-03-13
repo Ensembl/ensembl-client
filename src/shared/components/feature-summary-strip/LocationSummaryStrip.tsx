@@ -39,7 +39,7 @@ const LocationSummaryStrip = (
   });
   return (
     <div className={stripClasses} ref={ref}>
-      <span className={styles.featureSummaryStripLabel}>Location:</span>
+      <span className={styles.featureSummaryStripLabel}>Location</span>
       <span className={styles.featureDisplayName}>
         {getFormattedLocation(location.location)}
       </span>

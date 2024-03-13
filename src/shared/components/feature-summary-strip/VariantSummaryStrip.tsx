@@ -27,9 +27,12 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
+import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
+
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './FeatureSummaryStrip.module.css';
+import styles from './VariantSummaryStrip.module.css';
+import featureStripStyles from './FeatureSummaryStrip.module.css';
 
 export type VariantForSummaryStrip = ComponentProps<
   typeof VariantConsequence
@@ -58,9 +61,13 @@ const VariantSummaryStrip = (
     return null;
   }
 
-  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
-    [styles.featureSummaryStripGhosted]: isGhosted
-  });
+  const stripClasses = classNames(
+    featureStripStyles.featureSummaryStrip,
+    props.className,
+    {
+      [featureStripStyles.featureSummaryStripGhosted]: isGhosted
+    }
+  );
 
   return (
     <div className={stripClasses} ref={ref}>
@@ -70,28 +77,36 @@ const VariantSummaryStrip = (
 };
 
 const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
+  const { referenceAllele } = getReferenceAndAltAlleles(variant.alleles);
   const mostSevereConsequence = (
     <VariantConsequence variant={variant} withColour={false} />
   );
 
   return (
     <>
-      <div className={styles.section}>
-        <span className={styles.featureSummaryStripLabel}>Variant</span>
-        <span className={styles.featureNameEmphasized}>{variant.name}</span>
+      <div className={featureStripStyles.section}>
+        <span className={featureStripStyles.featureSummaryStripLabel}>
+          Variant
+        </span>
+        <span className={featureStripStyles.featureNameEmphasized}>
+          {variant.name}
+        </span>
+        <span className={styles.variantType}>
+          {referenceAllele?.allele_type.value}
+        </span>
       </div>
       {mostSevereConsequence && (
-        <div className={styles.section}>
-          <span className={styles.featureSummaryStripLabel}>
+        <div className={featureStripStyles.section}>
+          <span className={featureStripStyles.featureSummaryStripLabel}>
             Most severe consequence
           </span>
           {mostSevereConsequence}
         </div>
       )}
-      <div className={styles.section}>
+      <div className={featureStripStyles.section}>
         <VariantAllelesSequences alleles={variant.alleles} />
       </div>
-      <div className={styles.section}>
+      <div className={featureStripStyles.section}>
         <VariantLocation variant={variant} />
       </div>
     </>
