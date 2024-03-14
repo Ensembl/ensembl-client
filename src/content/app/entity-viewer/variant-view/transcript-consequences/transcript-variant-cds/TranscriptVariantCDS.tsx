@@ -117,7 +117,11 @@ const Exons = (props: { exons: Array<{ width: number }> }) => {
 
 const ExonBlock = (props: { x: number; width: number }) => {
   const { x, width } = props;
-  const desiredArrowHeight = 9;
+  const initialChevronWidth = 32; // <-- from the viewBox attribute of the svg image, in which the chevron is pointing down
+  const initialChevronHeight = 20; // <-- from the viewBox attribute of the svg image, in which the chevron is pointing down
+  const targetChevronWidth = 9; // <-- before rotating the chevron 90°; after the rotation this will become its height
+  const targetChevronHeight =
+    initialChevronHeight * (targetChevronWidth / initialChevronWidth);
 
   const exonRectangle = (
     <rect
@@ -130,11 +134,10 @@ const ExonBlock = (props: { x: number; width: number }) => {
   );
 
   if (width >= MIN_EXON_BLOCK_WITH_ARROW_WIDTH) {
-    // FIXME: instead of desiredArrowHeight, i.e. the width of the chevron, subtract half the true height of the chevron
-    const arrowX = x + width / 2 - desiredArrowHeight;
+    const arrowX = x + width / 2 - targetChevronWidth;
 
     // for each arrow, define the rotation origin to be exactly in the middle of the arrow
-    const rotateOriginX = arrowX + desiredArrowHeight / 2;
+    const rotateOriginX = arrowX + targetChevronWidth / 2;
     const rotateOriginY = EXON_BLOCK_OFFSET_TOP + EXON_BLOCK_HEIGHT / 2;
 
     return (
@@ -151,8 +154,8 @@ const ExonBlock = (props: { x: number; width: number }) => {
             className={styles.exonBlockArrow}
             x={arrowX}
             y={EXON_BLOCK_OFFSET_TOP + EXON_BLOCK_HEIGHT / 2}
-            width={desiredArrowHeight}
-            height="5.625"
+            width={targetChevronWidth}
+            height={targetChevronHeight}
           />
         </g>
       </>
