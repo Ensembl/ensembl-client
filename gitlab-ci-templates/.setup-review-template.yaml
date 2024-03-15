@@ -13,24 +13,24 @@
     - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
     - cp review-setup/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl -k apply .
+    - kubectl apply -k .
     
     # Deploy nginx & node
     - echo "NGINX & NODE"
     - mv kustomization-ensembl-client.yaml kustomization.yaml
     - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
-    - kubectl -k apply .
+    - kubectl apply -k .
 
     # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
     - cp genome-browser/review/hi/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl -k apply .
+    - kubectl apply -k .
 
     - echo "GENOME-BROWSER LO"
     - cp genome-browser/review/lo/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl -k apply .
+    - kubectl apply -k .
 
     # Setup ebi dockerhub credentials (for non-default backend deployments)
     - kubectl create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
