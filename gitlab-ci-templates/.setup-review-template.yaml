@@ -5,7 +5,7 @@
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - git clone --depth 1 --branch k8s123-migration https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - kubectl create namespace ${CI_COMMIT_REF_SLUG} --dry-run=client -o yaml | kubectl apply -f -
+    - kubectl create namespace ${CI_COMMIT_REF_SLUG} || true # Carry on if namespace already exists
     
   script:
     # Setup Ingress for default backend
@@ -13,24 +13,27 @@
     - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
     - cp review-setup/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kustomize build ./ | kubectl apply -f -
+    - kubectl -k apply .
     
     # Deploy nginx & node
     - echo "NGINX & NODE"
     - mv kustomization-ensembl-client.yaml kustomization.yaml
     - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
-    - kustomize build ./ | kubectl apply -f -
+    - kubectl -k apply .
 
-    # Setup Ingress for Genome Browser
+    # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
     - cp genome-browser/review/hi/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kustomize build ./ | kubectl apply -f -
+    - kubectl -k apply .
 
     - echo "GENOME-BROWSER LO"
     - cp genome-browser/review/lo/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kustomize build ./ | kubectl apply -f -
+    - kubectl -k apply .
+
+    # Setup ebi dockerhub credentials (for non-default backend deployments)
+    - kubectl create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
 
   after_script:
     - cd ../../
