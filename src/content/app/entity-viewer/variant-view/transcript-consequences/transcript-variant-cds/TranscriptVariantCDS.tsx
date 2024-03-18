@@ -181,7 +181,10 @@ const VariantMark = (props: {
     return null;
   }
 
-  const x = scale(variantPosition);
+  const x = Math.min(
+    scale(variantPosition),
+    DIAGRAM_WIDTH - VATIANT_MARKER_WIDTH // make sure the mark does not extend beyond the boundaries of the diagram
+  );
 
   return (
     <>
@@ -264,9 +267,12 @@ const getExonWidths = (params: {
 }) => {
   const { exons, scale, containerWidth } = params;
 
-  const exonBlocks = exons.map((exon) => ({
+  const exonBlocks = exons.map((exon, index) => ({
     ...exon,
-    width: scale(exon.relative_location_in_cds!.length) - EXON_MARGIN_WIDTH
+    width:
+      index === exons.length - 1
+        ? scale(exon.relative_location_in_cds!.length)
+        : scale(exon.relative_location_in_cds!.length) - EXON_MARGIN_WIDTH
   }));
 
   return adjustExonWidths({ exonBlocks, containerWidth });
