@@ -72,7 +72,7 @@ const TranscriptVariantCDS = (props: Props) => {
   const { exons, allele, cds } = props;
 
   const scale = scaleLinear()
-    .domain([1, cds.nucleotide_length])
+    .domain([0, cds.nucleotide_length])
     .range([0, DIAGRAM_WIDTH])
     .interpolate(interpolateRound)
     .clamp(true);
