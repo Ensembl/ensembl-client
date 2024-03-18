@@ -41,6 +41,7 @@
 }
 
 .assemblyCountWrapper {
+  align-items: center;
   display: inline-flex;
   grid-area: assembly-count;
   justify-content: space-around;
