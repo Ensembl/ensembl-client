@@ -80,14 +80,14 @@ const Content = (props: { onClose: () => void }) => {
 
   return searchParams.has('query') ? (
     <GenomeSelectorBySearchQuery
-      query={searchParams.get('query') || ''}
+      query={searchParams.get('query') as string}
       onSpeciesAdd={onSpeciesAdd}
       onClose={props.onClose}
     />
   ) : searchParams.has('species_taxonomy_id') ? (
     <GenomeSelectorBySpeciesTaxonomyId
       onSpeciesAdd={onSpeciesAdd}
-      speciesTaxonomyId={searchParams.get('species_taxonomy_id') || ''}
+      speciesTaxonomyId={searchParams.get('species_taxonomy_id') as string}
     />
   ) : null; // this last option should never happen
 };

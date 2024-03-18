@@ -68,7 +68,7 @@ Search for a species using a common name, scientific name, assembly ID or GCA.
 If no results are shown, please try a different spelling or attribute
 `;
 
-// Species search field, but wrapped in redux.
+// Species search field, but wrapped in a component that reads a query parameter from the url.
 // Can be used by default in Species Selector
 const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
   const [searchParams] = useSearchParams();
