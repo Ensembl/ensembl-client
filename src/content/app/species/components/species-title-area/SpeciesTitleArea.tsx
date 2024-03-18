@@ -118,6 +118,8 @@ const SpeciesTitleArea = () => {
     navigate(urlFor.speciesSelector());
   };
 
+  const shouldShowAssemblyCount = assemblyCount && assemblyCount > 1;
+
   return species ? (
     <div className={styles.speciesTitleArea}>
       <div className={styles.grid}>
@@ -130,13 +132,15 @@ const SpeciesTitleArea = () => {
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
-        <button
-          className={styles.assemblyCountWrapper}
-          onClick={navigateToAssemblies}
-        >
-          <InfoPill>{assemblyCount}</InfoPill>
-          <span className={styles.assembliesLink}>Assemblies</span>
-        </button>
+        {shouldShowAssemblyCount && (
+          <button
+            className={styles.assemblyCountWrapper}
+            onClick={navigateToAssemblies}
+          >
+            <InfoPill>{assemblyCount}</InfoPill>
+            <span className={styles.assembliesLink}>Assemblies</span>
+          </button>
+        )}
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />
         </div>
