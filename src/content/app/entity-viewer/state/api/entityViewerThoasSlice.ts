@@ -272,11 +272,6 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
           };
         }
       }
-      // query: (params) => ({
-      //   url: config.coreApiUrl,
-      //   body: geneForVariantTranscriptConsequencesQuery,
-      //   variables: params
-      // })
     }),
     transcriptForVariantTranscriptConsequences: builder.query<
       TranscriptForVariantTranscriptConsequencesResponse,
