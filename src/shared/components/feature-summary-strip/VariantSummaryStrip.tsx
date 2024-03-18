@@ -27,8 +27,6 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
-import { getReferenceAndAltAlleles } from 'src/shared/helpers/variantHelpers';
-
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './VariantSummaryStrip.module.css';
@@ -39,6 +37,9 @@ export type VariantForSummaryStrip = ComponentProps<
 >['variant'] &
   ComponentProps<typeof VariantLocation>['variant'] & {
     name: string;
+    allele_type: {
+      value: string;
+    };
     alleles: ComponentProps<typeof VariantAllelesSequences>['alleles'];
   };
 
@@ -77,7 +78,6 @@ const VariantSummaryStrip = (
 };
 
 const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
-  const { referenceAllele } = getReferenceAndAltAlleles(variant.alleles);
   const mostSevereConsequence = (
     <VariantConsequence variant={variant} withColour={false} />
   );
@@ -91,9 +91,7 @@ const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
         <span className={featureStripStyles.featureNameEmphasized}>
           {variant.name}
         </span>
-        <span className={styles.variantType}>
-          {referenceAllele?.allele_type.value}
-        </span>
+        <span className={styles.variantType}>{variant.allele_type.value}</span>
       </div>
       {mostSevereConsequence && (
         <div className={featureStripStyles.section}>

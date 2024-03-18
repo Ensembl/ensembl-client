@@ -24,10 +24,10 @@
 
 .emphasized {
   font-weight: var(--font-weight-bold);
+  margin-right: 12px;
 }
 
 .variantType {
   font-size: 12px;
   font-weight: var(--font-weight-light);
-  margin-left: 18px;
 }

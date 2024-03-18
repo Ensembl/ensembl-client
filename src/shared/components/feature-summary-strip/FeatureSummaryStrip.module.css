@@ -31,4 +31,5 @@
 
 .featureNameEmphasized {
   font-weight: var(--font-weight-bold);
+  margin-right: 12px;
 }
