@@ -25,7 +25,7 @@ import type { TranscriptDetailsData } from '../useTranscriptDetails';
 import styles from './TranscriptVariantDiagram.module.css';
 
 type Props = {
-  gene: TranscriptConsequencesData['geneData'];
+  gene: TranscriptConsequencesData['geneData'][number];
   transcript: TranscriptDetailsData['transcriptData'];
   variant: TranscriptConsequencesData['variant'];
 };

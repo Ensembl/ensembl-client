@@ -51,16 +51,14 @@
   margin-left: 20px;
 }
 
+.geneSection:not(:first-child) {
+  margin-top: 100px;
+}
+
 .transcriptsList {
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100%;
-}
-
-.content {
-  position: relative;
-  padding-top: 36px;
-  padding-bottom: var(--global-padding-bottom);
 }
 
 .row {
@@ -85,8 +83,14 @@
   padding: 6px 0;
 }
 
-.headerRightColumn {
-  padding: 6px 0;
+.geneSection:not(:first-child) .headerMiddleColumn {
+  border-top: 2px solid var(--color-orange);
+  padding-top: 50px;
+}
+
+.transcriptsCount {
+  align-self: end; /* to keep transcript count level with gene label when there are several genes (see padding-top: 50px in geneSection above) */
+  padding-bottom: 6px;
 }
 
 .geneDetails span {
@@ -113,9 +117,4 @@
 
 .right {
   grid-column: 5/6;
-}
-
-
-.details {
-  width: 700px;
 }

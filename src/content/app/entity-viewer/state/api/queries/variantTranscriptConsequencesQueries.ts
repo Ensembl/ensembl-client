@@ -21,35 +21,58 @@ import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 
-/**
- * As a temporary solution, this query fetches gene
- * using the transcript stable id
- */
-
-// NOTE: transcriptId as an input parameter will later be replaced with gene stable id
 export const geneForVariantTranscriptConsequencesQuery = gql`
   query GeneForVariantTranscriptConsequences(
     $genomeId: String!
-    $transcriptId: String!
+    $geneId: String!
   ) {
-    transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
-      gene {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
+      symbol
+      slice {
+        location {
+          start
+          end
+          length
+        }
+        region {
+          sequence {
+            checksum
+          }
+          length
+        }
+        strand {
+          code
+        }
+      }
+      transcripts {
         stable_id
-        symbol
+        unversioned_stable_id
         slice {
           location {
-            start
-            end
             length
           }
-          region {
-            sequence {
-              checksum
-            }
-            length
+        }
+        metadata {
+          biotype {
+            value
           }
-          strand {
-            code
+          canonical {
+            value
+            label
+            definition
+          }
+          mane {
+            value
+            label
+            definition
+          }
+        }
+        product_generating_contexts {
+          product_type
+          product {
+            length
           }
         }
       }
@@ -94,11 +117,45 @@ export const transcriptForVariantTranscriptConsequencesQuery = gql`
   }
 `;
 
-type GeneInResponse = Pick<FullGene, 'stable_id' | 'symbol'> &
+type ProductGeneratingContextInTranscriptInGene = Pick<
+  FullProductGeneratingContext,
+  'product_type'
+> & {
+  product: Pick<
+    NonNullable<FullProductGeneratingContext['product']>,
+    'length'
+  > | null;
+};
+
+type TranscriptInGene = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id'
+> &
+  Pick3<FullTranscript, 'slice', 'location', 'length'> &
+  Pick3<FullTranscript, 'metadata', 'biotype', 'value'> & {
+    metadata: {
+      canonical: Pick<
+        NonNullable<FullTranscript['metadata']['canonical']>,
+        'value' | 'label' | 'definition'
+      > | null;
+      mane: Pick<
+        NonNullable<FullTranscript['metadata']['mane']>,
+        'value' | 'label' | 'definition'
+      > | null;
+    };
+    product_generating_contexts: ProductGeneratingContextInTranscriptInGene[];
+  };
+
+type GeneInResponse = Pick<
+  FullGene,
+  'stable_id' | 'unversioned_stable_id' | 'symbol'
+> &
   Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<FullGene, 'slice', 'region', 'length'> &
   Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'> &
-  Pick3<FullGene, 'slice', 'strand', 'code'>;
+  Pick3<FullGene, 'slice', 'strand', 'code'> & {
+    transcripts: TranscriptInGene[];
+  };
 
 type SplicedExonInTranscript = Pick<
   FullTranscript['spliced_exons'][number],
@@ -135,9 +192,7 @@ type TranscriptInResponse = Pick3<
   };
 
 export type GeneForVariantTranscriptConsequencesResponse = {
-  transcript: {
-    gene: GeneInResponse; // NOTE: later on, gene will be the top-level field
-  };
+  gene: GeneInResponse;
 };
 
 export type TranscriptForVariantTranscriptConsequencesResponse = {
