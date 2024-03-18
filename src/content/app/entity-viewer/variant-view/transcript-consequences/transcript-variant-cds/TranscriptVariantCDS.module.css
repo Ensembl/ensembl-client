@@ -1,0 +1,15 @@
+.exonBlock {
+  fill: var(--color-grey);
+}
+
+.exonBlockArrow {
+  fill: color-mix(in srgb, var(--color-white) 50%, transparent);
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+}
+
+.labelBold {
+  font-weight: initial;
+}

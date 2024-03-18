@@ -60,7 +60,7 @@ const useTranscriptConsequencesData = (params: Params) => {
     (allele) => allele.urlId === alleleId
   )?.predicted_molecular_consequences;
 
-  const transcriptId = consequencesForAllele?.[0]?.feature_stable_id;
+  const transcriptId = consequencesForAllele?.[0]?.stable_id;
 
   const {
     currentData: geneData,

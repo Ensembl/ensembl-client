@@ -76,6 +76,7 @@ export const transcriptForVariantTranscriptConsequencesQuery = gql`
         length
       }
       spliced_exons {
+        index
         relative_location {
           start
           end
@@ -86,6 +87,7 @@ export const transcriptForVariantTranscriptConsequencesQuery = gql`
         cds {
           relative_start
           relative_end
+          nucleotide_length
         }
       }
     }
@@ -98,11 +100,15 @@ type GeneInResponse = Pick<FullGene, 'stable_id' | 'symbol'> &
   Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'> &
   Pick3<FullGene, 'slice', 'strand', 'code'>;
 
-type SplicedExonInTranscript = Pick2<
+type SplicedExonInTranscript = Pick<
   FullTranscript['spliced_exons'][number],
-  'relative_location',
-  'start' | 'end' | 'length'
->;
+  'index'
+> &
+  Pick2<
+    FullTranscript['spliced_exons'][number],
+    'relative_location',
+    'start' | 'end' | 'length'
+  >;
 type ProductGeneratingContextInTranscript = {
   cds: {
     relative_start: NonNullable<
@@ -111,6 +117,9 @@ type ProductGeneratingContextInTranscript = {
     relative_end: NonNullable<
       FullProductGeneratingContext['cds']
     >['relative_end'];
+    nucleotide_length: NonNullable<
+      FullProductGeneratingContext['cds']
+    >['nucleotide_length'];
   } | null;
 };
 
