@@ -126,7 +126,7 @@ const GeneSearchForm = (props: {
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    navigate(urlFor.speciesSelector({ gene: { query: searchInput } }), {
+    navigate(urlFor.speciesSelectorGeneSearch(searchInput), {
       replace: true
     });
   };

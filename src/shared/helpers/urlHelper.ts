@@ -35,11 +35,8 @@ type SpeciesPageUrlParams = {
   genomeId: string;
 };
 
-type SpeciesSelectorParams = {
+type SpeciesSelectorSearchParams = {
   query?: string;
-  gene?: {
-    query?: string;
-  };
   speciesTaxonomyId?: string | number;
 };
 
@@ -49,37 +46,39 @@ export const speciesPage = (params: SpeciesPageUrlParams) => {
   return `${speciesPageRootPath}/${params.genomeId}`;
 };
 
-export const speciesSelector = (params?: SpeciesSelectorParams) => {
-  const speciesSelectorPath = '/species-selector';
+const speciesSelectorPath = '/species-selector';
 
-  if (params) {
-    let path = `${speciesSelectorPath}/search`;
-    const urlSearchParams = new URLSearchParams('');
+export const speciesSelector = () => speciesSelectorPath;
 
-    if (params.query) {
-      urlSearchParams.append('query', params.query);
-    }
+export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
+  const path = `${speciesSelectorPath}/search`;
+  const urlSearchParams = new URLSearchParams('');
 
-    if (params.gene) {
-      path = `${path}/gene`;
-
-      if (params.gene.query) {
-        urlSearchParams.append('query', params.gene.query);
-      }
-    }
-
-    if (params.speciesTaxonomyId) {
-      urlSearchParams.append(
-        'species_taxonomy_id',
-        String(params.speciesTaxonomyId)
-      );
-    }
-
-    const query = decodeURIComponent(urlSearchParams.toString());
-    return query ? `${path}?${query}` : path;
-  } else {
-    return speciesSelectorPath;
+  if (params.query) {
+    urlSearchParams.append('query', params.query);
   }
+
+  if (params.speciesTaxonomyId) {
+    urlSearchParams.append(
+      'species_taxonomy_id',
+      String(params.speciesTaxonomyId)
+    );
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
+};
+
+export const speciesSelectorGeneSearch = (searchInput?: string) => {
+  const path = `${speciesSelectorPath}/search/gene`;
+  const urlSearchParams = new URLSearchParams('');
+
+  if (searchInput) {
+    urlSearchParams.append('query', searchInput);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
 };
 
 export const browser = (params?: BrowserUrlParams) => {

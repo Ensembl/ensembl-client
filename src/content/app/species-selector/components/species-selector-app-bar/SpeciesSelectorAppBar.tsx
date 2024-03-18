@@ -66,7 +66,7 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
   const isInGeneSearchMode = location.pathname.includes('/search/gene');
 
   const onGeneSearchOpen = () => {
-    navigate(urlFor.speciesSelector({ gene: {} }));
+    navigate(urlFor.speciesSelectorGeneSearch());
   };
 
   const onGeneSearchClose = () => {

@@ -22,10 +22,7 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import {
-  setQuery,
-  commitSelectedSpeciesAndSave
-} from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
+import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -36,11 +33,9 @@ import GenomeSelectorBySpeciesTaxonomyId from 'src/content/app/species-selector/
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 const SpeciesSelectorResultslView = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const onClose = () => {
-    dispatch(setQuery(''));
     navigate(-1);
   };
 
@@ -62,11 +57,8 @@ const Content = (props: { onClose: () => void }) => {
 
   useEffect(() => {
     if (
-      !(
-        (searchParams.has('query') && searchParams.get('query')) ||
-        (searchParams.has('species_taxonomy_id') &&
-          searchParams.get('species_taxonomy_id'))
-      )
+      !searchParams.get('query') &&
+      !searchParams.get('species_taxonomy_id')
     ) {
       navigate(urlFor.speciesSelector());
     }

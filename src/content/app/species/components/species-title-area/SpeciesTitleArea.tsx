@@ -102,7 +102,7 @@ const SpeciesTitleArea = () => {
 
   const navigateToAssemblies = () => {
     navigate(
-      urlFor.speciesSelector({
+      urlFor.speciesSelectorSearch({
         speciesTaxonomyId: species?.species_taxonomy_id
       })
     );
@@ -130,13 +130,13 @@ const SpeciesTitleArea = () => {
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
-        <div
+        <button
           className={styles.assemblyCountWrapper}
           onClick={navigateToAssemblies}
         >
           <InfoPill>{assemblyCount}</InfoPill>
           <span className={styles.assembliesLink}>Assemblies</span>
-        </div>
+        </button>
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />
         </div>

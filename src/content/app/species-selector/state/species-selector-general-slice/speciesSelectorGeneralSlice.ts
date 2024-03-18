@@ -38,8 +38,9 @@ import {
   getCommittedSpeciesById
 } from './speciesSelectorGeneralSelectors';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { RootState } from 'src/store';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
@@ -96,6 +97,44 @@ export const deleteSpeciesAndSave =
 const initialState: SpeciesSelectorState = {
   committedItems: []
 };
+
+const prepareSelectedSpeciesForCommit = (
+  selectedSpecies: SpeciesSearchMatch[]
+): CommittedItem[] => {
+  return selectedSpecies.map((species) => ({
+    genome_id: species.genome_id,
+    genome_tag: species.genome_tag,
+    common_name: species.common_name,
+    scientific_name: species.scientific_name,
+    species_taxonomy_id: species.species_taxonomy_id,
+    assembly: {
+      accession_id: species.assembly.name,
+      name: species.assembly.name
+    },
+    is_reference: species.is_reference,
+    type: species.type,
+    isEnabled: true
+  }));
+};
+
+export const commitSelectedSpeciesAndSave = createAsyncThunk(
+  'species-selector/commit-selected-species',
+  (selectedSpecies: SpeciesSearchMatch[], thunkAPI) => {
+    const dispatch = thunkAPI.dispatch;
+    const getState = thunkAPI.getState as () => RootState;
+    const alreadyCommittedSpecies = getCommittedSpecies(getState());
+    const newSpeciesToCommit = prepareSelectedSpeciesForCommit(selectedSpecies);
+
+    const newCommittedSpecies = [
+      ...alreadyCommittedSpecies,
+      ...newSpeciesToCommit
+    ];
+
+    dispatch(updateCommittedSpecies(newCommittedSpecies));
+
+    saveMultipleSelectedSpecies(newCommittedSpecies);
+  }
+);
 
 const speciesSelectorGeneralSlice = createSlice({
   name: 'species-selector-general',

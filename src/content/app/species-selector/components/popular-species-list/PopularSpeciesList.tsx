@@ -45,7 +45,9 @@ const PopularSpeciesList = () => {
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
     trackPopularSpeciesClick(species);
     navigate(
-      urlFor.speciesSelector({ speciesTaxonomyId: species.species_taxonomy_id })
+      urlFor.speciesSelectorSearch({
+        speciesTaxonomyId: species.species_taxonomy_id
+      })
     );
   };
 

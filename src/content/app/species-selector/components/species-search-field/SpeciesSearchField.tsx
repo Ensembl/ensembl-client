@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
+import React, { useState, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
-
-import { useAppDispatch, useAppSelector } from 'src/store';
-
-import { getSpeciesSearchQuery } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSelectors';
-import { setQuery } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -75,16 +71,19 @@ If no results are shown, please try a different spelling or attribute
 // Species search field, but wrapped in redux.
 // Can be used by default in Species Selector
 const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
-  const dispatch = useAppDispatch();
-  const query = useAppSelector(getSpeciesSearchQuery);
+  const [searchParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get('query') || ''
+  );
 
   const onInput = (event: FormEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value;
-    dispatch(setQuery(value));
+    setSearchInput(event.currentTarget.value);
     props.onInput?.(event);
   };
 
-  return <SpeciesSearchField {...props} onInput={onInput} query={query} />;
+  return (
+    <SpeciesSearchField {...props} onInput={onInput} query={searchInput} />
+  );
 };
 
 export default WrappedSpeciesSearchField;

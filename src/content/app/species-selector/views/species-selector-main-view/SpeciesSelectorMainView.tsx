@@ -33,7 +33,7 @@ const SpeciesSelectorMainView = () => {
   const onSearchSubmit = (query: string) => {
     trackSpeciesSearchQuery(query);
     navigate(
-      urlFor.speciesSelector({
+      urlFor.speciesSelectorSearch({
         query
       })
     );
