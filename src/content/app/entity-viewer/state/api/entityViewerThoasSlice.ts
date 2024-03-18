@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { request } from 'graphql-request';
+
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import config from 'config';
@@ -235,15 +237,41 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         response: VariantPredictedMolecularConsequencesResponse
       ) => addAlleleUrlId(response)
     }),
-    geneForVariantTranscriptConsequences: builder.query<
-      GeneForVariantTranscriptConsequencesResponse,
-      TranscriptQueryParams
+    genesForVariantTranscriptConsequences: builder.query<
+      { genes: GeneForVariantTranscriptConsequencesResponse['gene'][] },
+      { genomeId: string; geneIds: string[] }
     >({
-      query: (params) => ({
-        url: config.coreApiUrl,
-        body: geneForVariantTranscriptConsequencesQuery,
-        variables: params
-      })
+      queryFn: async (params) => {
+        const { genomeId, geneIds } = params;
+        const requestPromises = geneIds.map((geneId) =>
+          request<GeneForVariantTranscriptConsequencesResponse>({
+            url: config.coreApiUrl,
+            document: geneForVariantTranscriptConsequencesQuery,
+            variables: {
+              genomeId,
+              geneId
+            }
+          })
+        );
+
+        try {
+          const responses = await Promise.all(requestPromises);
+          return {
+            data: {
+              genes: responses.map(({ gene }) => gene)
+            }
+          };
+        } catch (error) {
+          return {
+            error: {
+              status: 500,
+              meta: {
+                error: 'Failed to fetch genes'
+              }
+            }
+          };
+        }
+      }
     }),
     transcriptForVariantTranscriptConsequences: builder.query<
       TranscriptForVariantTranscriptConsequencesResponse,
@@ -289,7 +317,7 @@ export const {
   useVariantStudyPopulationsQuery,
   useVariantAllelePopulationFrequenciesQuery,
   useVariantPredictedMolecularConsequencesQuery,
-  useGeneForVariantTranscriptConsequencesQuery,
+  useGenesForVariantTranscriptConsequencesQuery,
   useTranscriptForVariantTranscriptConsequencesQuery
 } = entityViewerThoasSlice;
 

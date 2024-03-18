@@ -17,7 +17,7 @@
 import {
   useDefaultEntityViewerVariantQuery,
   useVariantPredictedMolecularConsequencesQuery,
-  useGeneForVariantTranscriptConsequencesQuery
+  useGenesForVariantTranscriptConsequencesQuery
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 type Params = {
@@ -60,19 +60,23 @@ const useTranscriptConsequencesData = (params: Params) => {
     (allele) => allele.urlId === alleleId
   )?.predicted_molecular_consequences;
 
-  const transcriptId = consequencesForAllele?.[0]?.stable_id;
+  const geneIds = new Set<string>();
+
+  consequencesForAllele?.forEach((consequence) =>
+    geneIds.add(consequence.gene_stable_id)
+  );
 
   const {
     currentData: geneData,
     isFetching: isLoadingGeneData,
     isError: isGeneDataError
-  } = useGeneForVariantTranscriptConsequencesQuery(
+  } = useGenesForVariantTranscriptConsequencesQuery(
     {
       genomeId,
-      transcriptId: transcriptId ?? ''
+      geneIds: [...geneIds]
     },
     {
-      skip: !transcriptId
+      skip: !geneIds.size
     }
   );
 
@@ -81,7 +85,7 @@ const useTranscriptConsequencesData = (params: Params) => {
       ? {
           variant: variantData.variant,
           allele: variantAllele,
-          geneData: geneData.transcript.gene,
+          geneData: geneData.genes,
           transcriptConsequences: consequencesForAllele
         }
       : null;

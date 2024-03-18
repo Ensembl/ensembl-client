@@ -20,8 +20,11 @@ import classnames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
-import { getExpandedTranscriptConseqeuenceIds } from '../../state/variant-view/general/variantViewGeneralSelectors';
-import { setExpandedTranscriptConsequenceIds } from '../../state/variant-view/general/variantViewGeneralSlice';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { defaultSort as defaultSortForTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+
+import { getExpandedTranscriptConseqeuenceIds } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSelectors';
+import { setExpandedTranscriptConsequenceIds } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
 import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccordion';
 
 import useTranscriptConsequencesData, {
@@ -30,6 +33,7 @@ import useTranscriptConsequencesData, {
 
 import Panel from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './TranscriptConsequences.module.css';
@@ -84,45 +88,24 @@ const TranscriptConsequences = (props: Props) => {
     );
   }
 
-  const strand = geneData.slice.strand.code;
-  const alleleSequence = allele?.allele_sequence ?? '';
-
   return (
     <Panel header={panelHeader}>
       <div className={styles.container}>
-        <div className={classnames(styles.row, styles.header)}>
-          <div className={styles.left}></div>
-          <div className={styles.middle}>
-            <div className={styles.headerMiddleColumn}>
-              <TranscriptAllele
-                referenceSequence={allele.reference_sequence}
-                alleleSequence={alleleSequence}
-                alleleType={allele.allele_type.value}
-                strand={strand}
-              />
-              <div className={styles.geneDetails}>
-                <span className={styles.label}>Gene</span>
-                {geneData.symbol && (
-                  <span className={styles.geneSymbol}>{geneData.symbol}</span>
-                )}
-                <span className={styles.geneStableId}>
-                  {geneData.stable_id}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className={classnames(styles.right, styles.headerRightColumn)}>
-            <span>{`${transcriptConsequences.length} transcripts`}</span>
-          </div>
-        </div>
-        <TranscriptConsequencesList
-          transcriptConsequences={transcriptConsequences}
-          genomeId={genomeId}
-          variantId={variantId}
-          gene={geneData}
-          variant={variant}
-          allele={allele}
-        />
+        {geneData.map((gene) => (
+          <TranscriptConsequencesPerGene
+            key={gene.stable_id}
+            genomeId={genomeId}
+            gene={gene}
+            allele={allele}
+            variantId={variantId}
+            variant={variant}
+            transcriptConsequences={transcriptConsequences.filter(
+              (cons) =>
+                cons.gene_stable_id === gene.stable_id ||
+                cons.gene_stable_id === gene.unversioned_stable_id
+            )}
+          />
+        ))}
       </div>
     </Panel>
   );
@@ -141,6 +124,88 @@ const PanelHeader = (props: {
       <span className={styles.transcriptConsqTitle}>
         Transcript consequences
       </span>
+    </div>
+  );
+};
+
+const TranscriptConsequencesPerGene = (props: {
+  genomeId: string;
+  variantId: string;
+  gene: TranscriptConsequencesData['geneData'][number];
+  variant: TranscriptConsequencesData['variant'];
+  allele: NonNullable<TranscriptConsequencesData['allele']>;
+  transcriptConsequences: NonNullable<
+    TranscriptConsequencesData['transcriptConsequences']
+  >;
+}) => {
+  const { genomeId, gene, variantId, variant, allele, transcriptConsequences } =
+    props;
+  const strand = gene.slice.strand.code;
+  const alleleSequence = allele.allele_sequence;
+
+  const transcriptConsequencesWithTranscript: Array<
+    (typeof transcriptConsequences)[number] & {
+      transcript: (typeof gene)['transcripts'][number];
+    }
+  > = [];
+
+  const sortedTranscripts = defaultSortForTranscripts(gene.transcripts);
+
+  for (const transcript of sortedTranscripts) {
+    // Currently, stable ids in transcript consequences returned by the api
+    // are unversioned; later on, they are expected to be changed to versioned ids.
+    const consequence = transcriptConsequences.find(
+      (cons) =>
+        cons.stable_id === transcript.stable_id ||
+        cons.stable_id === transcript.unversioned_stable_id
+    );
+
+    if (consequence) {
+      transcriptConsequencesWithTranscript.push({
+        ...consequence,
+        transcript
+      });
+    }
+  }
+
+  const transcriptConsCount = transcriptConsequencesWithTranscript.length;
+
+  return (
+    <div className={styles.geneSection}>
+      <div className={classnames(styles.row, styles.header)}>
+        <div className={styles.left}></div>
+        <div className={styles.middle}>
+          <div className={styles.headerMiddleColumn}>
+            <TranscriptAllele
+              referenceSequence={allele.reference_sequence}
+              alleleSequence={alleleSequence}
+              alleleType={allele.allele_type.value}
+              strand={strand}
+            />
+            <div className={styles.geneDetails}>
+              <span className={styles.label}>Gene</span>
+              {gene.symbol && (
+                <span className={styles.geneSymbol}>{gene.symbol}</span>
+              )}
+              <span className={styles.geneStableId}>{gene.stable_id}</span>
+            </div>
+          </div>
+        </div>
+        <div className={classnames(styles.right, styles.transcriptsCount)}>
+          <span>{transcriptConsCount}</span>
+          <span className={styles.label}>
+            {pluralise('transcript', transcriptConsCount)}
+          </span>
+        </div>
+      </div>
+      <TranscriptConsequencesList
+        transcriptConsequences={transcriptConsequencesWithTranscript}
+        genomeId={genomeId}
+        variantId={variantId}
+        gene={gene}
+        variant={variant}
+        allele={allele}
+      />
     </div>
   );
 };
@@ -205,10 +270,14 @@ const TranscriptAllele = ({
 type TranscriptConsequencesListProps = {
   genomeId: string;
   variantId: string;
-  transcriptConsequences: NonNullable<
-    TranscriptConsequencesData['transcriptConsequences']
+  transcriptConsequences: Array<
+    NonNullable<
+      TranscriptConsequencesData['transcriptConsequences']
+    >[number] & {
+      transcript: TranscriptConsequencesData['geneData'][number]['transcripts'][number];
+    }
   >;
-  gene: TranscriptConsequencesData['geneData'];
+  gene: TranscriptConsequencesData['geneData'][number];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
   variant: TranscriptConsequencesData['variant'];
 };
@@ -249,8 +318,11 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
               )
             })}
           >
-            {/* <TranscriptQualityLabel metadata={props.transcript.metadata} /> */}
-            <div className={styles.transcriptLeftColumn}></div>
+            <div className={styles.transcriptLeftColumn}>
+              <TranscriptQualityLabel
+                metadata={consequencesForSingleTranscript.transcript.metadata}
+              />
+            </div>
             <div className={styles.middle}>
               <div className={styles.clickableTranscriptArea}>
                 <div className={styles.transcriptMiddleColumn}>
@@ -265,7 +337,11 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                     </span>
                   </div>
                   <div>
-                    <span className={styles.label}>Transcript biotype</span>
+                    <span className={styles.label}>Transcript biotype</span>{' '}
+                    {
+                      consequencesForSingleTranscript.transcript.metadata
+                        .biotype.value
+                    }
                   </div>
                 </div>
               </div>

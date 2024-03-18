@@ -36,7 +36,7 @@ import styles from './TranscriptConsequenceDetails.module.css';
 type Props = {
   genomeId: string;
   transcriptId: string;
-  gene: TranscriptConsequencesData['geneData'];
+  gene: TranscriptConsequencesData['geneData'][number];
   variant: TranscriptConsequencesData['variant'];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
   transcriptConsequences: PredictedMolecularConsequenceInResponse;

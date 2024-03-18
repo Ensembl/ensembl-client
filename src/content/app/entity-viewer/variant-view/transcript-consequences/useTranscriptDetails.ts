@@ -37,7 +37,7 @@ import type {
 type Params = {
   genomeId: string;
   transcriptId: string;
-  gene: TranscriptConsequencesData['geneData'];
+  gene: TranscriptConsequencesData['geneData'][number];
   variant: TranscriptConsequencesData['variant'];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
 };
@@ -101,7 +101,7 @@ const useTranscriptDetails = (params: Params) => {
 const useGenomicRegionData = (params: {
   variant?: VariantDetails;
   allele?: VariantDetailsAllele;
-  gene?: GeneForVariantTranscriptConsequencesResponse['transcript']['gene'];
+  gene?: GeneForVariantTranscriptConsequencesResponse['gene'];
   transcript?: TranscriptForVariantTranscriptConsequencesResponse['transcript'];
 }) => {
   const { gene, transcript, variant, allele } = params;
