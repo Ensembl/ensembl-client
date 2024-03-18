@@ -55,6 +55,24 @@
   margin-top: 100px;
 }
 
+/* Draw a 2-px-thick line above the middle section of the row
+  The values in linear-gradient are copied from grid-template-columns of .row class
+*/
+.geneSection:not(:first-child)::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    transparent calc(160px + 18px),
+    var(--color-orange) calc(160px + 18px),
+    var(--color-orange) calc(160px + 18px + 700px),
+    transparent calc(160px + 18px + 700px)
+  );
+  margin-bottom: 40px;
+}
+
 .transcriptsList {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -83,14 +101,8 @@
   padding: 6px 0;
 }
 
-.geneSection:not(:first-child) .headerMiddleColumn {
-  border-top: 2px solid var(--color-orange);
-  padding-top: 50px;
-}
-
 .transcriptsCount {
-  align-self: end; /* to keep transcript count level with gene label when there are several genes (see padding-top: 50px in geneSection above) */
-  padding-bottom: 6px;
+  padding: 6px 0;
 }
 
 .geneDetails span {
