@@ -22,7 +22,7 @@
   margin-right: 10px;
 }
 
-.emphasized {
+.variantName {
   font-weight: var(--font-weight-bold);
   margin-right: 12px;
 }
