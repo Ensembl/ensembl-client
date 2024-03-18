@@ -156,17 +156,23 @@ variables:
 # Template for stopping review app - Do cleanup here 
 .stop-review:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   variables:
     GIT_STRATEGY: none
   when: manual
   script:
-  - kubectl delete ingress ensembl-client-${CI_COMMIT_REF_SLUG}-nginx-ingress
-  - kubectl delete ingress ensembl-client-${CI_COMMIT_REF_SLUG}-node-ingress
-  - kubectl delete svc ensembl-client-${CI_COMMIT_REF_SLUG}-nginx-svc
-  - kubectl delete svc ensembl-client-${CI_COMMIT_REF_SLUG}-node-svc
-  - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-nginx-deployment
-  - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-node-deployment
+  - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi
+  - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo
+  - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG}
+  - kubectl delete namespace ${CI_COMMIT_REF_SLUG}
 
 Test:
   image: node:20.9.0
@@ -402,7 +408,7 @@ Pub:Dev-HL:wp51:
     - Node:Live
 
 
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP40)
+# Job to deploy review deployments to development environment in the new cluster in Harlow (WP51)
 Review:WP51:HL:
   extends: .deploy-review
   variables:
@@ -419,18 +425,17 @@ Review:WP51:HL:
     - Test_N_Build:review
     - Nginx:review
     - Node:review
-
+# Clean up the review app resources
 stop_review:
   extends: .stop-review
   environment:
-    name: review/$CI_COMMIT_REF_SLUG
+    name: wp51-hl-development
     action: stop
     kubernetes:
-      namespace: ensembl-dev
+      namespace: ensembl-development
   except:
   - dev
   - master
-  - /^nodeploy\/.*$/
 
 SetupReview:HL51:
   extends: .setup-review-newk8s
