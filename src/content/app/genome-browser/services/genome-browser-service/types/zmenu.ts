@@ -85,7 +85,7 @@ export type ZmenuContentRegulationMetadata = {
   core_end: number; // end coordinate of the feature core
 };
 
-export type ZmenuContentOptionalMetadata = {
+export type ZmenuContentMinimalMetadata = {
   id?: string; // the payload might include some feature metadata
   type: string;
 };
@@ -112,7 +112,7 @@ export type ZmenuContentRegulation = {
 
 export type ZmenuContentDefault = {
   data: ZmenuContentLine[];
-  metadata: ZmenuContentOptionalMetadata;
+  metadata: ZmenuContentMinimalMetadata;
 };
 
 export type ZmenuContent =

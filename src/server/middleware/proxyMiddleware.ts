@@ -32,8 +32,7 @@ const serverConfig = getConfigForServer();
  * EXAMPLE: to proxy all requests except for the genome browser backend to staging-2020,
  * while directing requests for the genome browser backend to your locally running server,
  * change the body of the createApiProxyMiddleware function as follows:
- */
-const createApiProxyMiddleware = () => {
+
   const apiProxyMiddleware = createHttpProxyMiddleware(
     ['/api/**', '!/api/browser/**'],
     {
@@ -53,9 +52,8 @@ const createApiProxyMiddleware = () => {
   });
 
   return [apiProxyMiddleware, browserProxyMiddleware];
-};
+*/
 
-/*
 const createApiProxyMiddleware = () => {
   const apiProxyMiddleware = createHttpProxyMiddleware('/api', {
     target: 'https://staging-2020.ensembl.org',
@@ -67,7 +65,6 @@ const createApiProxyMiddleware = () => {
   // (see example in the comment block above)
   return [apiProxyMiddleware];
 };
-*/
 
 const createStaticAssetsMiddleware = () => {
   // proxy all requests for static assets to the server that runs webpack dev middleware
