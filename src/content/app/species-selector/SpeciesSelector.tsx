@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-
-import { useAppSelector, useAppDispatch } from 'src/store';
-
-import { getSpeciesSelectorModalView } from './state/species-selector-ui-slice/speciesSelectorUISelectors';
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
 import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
@@ -30,33 +26,20 @@ import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-
 import styles from './SpeciesSelector.module.css';
 
 const SpeciesSelector = () => {
-  const modalView = useAppSelector(getSpeciesSelectorModalView);
-  const dispatch = useAppDispatch();
-
-  const shouldShowResultsView = [
-    'species-search',
-    'popular-species-genomes'
-  ].includes(modalView || '');
-
-  useEffect(() => {
-    return () => {
-      // close the modal view when leaving Species Selector
-      dispatch(setModalView(null));
-    };
-  }, []);
-
-  const appBar = shouldShowResultsView ? (
-    <SpeciesSearchResultsModalAppBar />
-  ) : (
-    <SpeciesSelectorAppBar />
+  const appBar = (
+    <Routes>
+      <Route index element={<SpeciesSelectorAppBar />} />
+      <Route path="/search" element={<SpeciesSearchResultsModalAppBar />} />
+      <Route path="/search/gene" element={<SpeciesSelectorAppBar />} />
+    </Routes>
   );
 
-  const body = shouldShowResultsView ? (
-    <SpeciesSelectorResultsView />
-  ) : modalView === 'gene-search' ? (
-    <SpeciesSelectorGeneSearchView />
-  ) : (
-    <SpeciesSelectorMainView />
+  const body = (
+    <Routes>
+      <Route index element={<SpeciesSelectorMainView />} />
+      <Route path="/search" element={<SpeciesSelectorResultsView />} />
+      <Route path="/search/gene" element={<SpeciesSelectorGeneSearchView />} />
+    </Routes>
   );
 
   return (

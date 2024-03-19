@@ -15,16 +15,13 @@
  */
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { getSpeciesSelectorModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISelectors';
-
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
@@ -64,16 +61,16 @@ export const SpeciesSelectorAppBar = () => {
 };
 
 const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
-  const isInGeneSearchMode =
-    useAppSelector(getSpeciesSelectorModalView) === 'gene-search';
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isInGeneSearchMode = location.pathname.includes('/search/gene');
 
   const onGeneSearchOpen = () => {
-    dispatch(setModalView('gene-search'));
+    navigate(urlFor.speciesSelectorGeneSearch());
   };
 
   const onGeneSearchClose = () => {
-    dispatch(setModalView(null));
+    navigate(-1);
   };
 
   const geneSearchButton = !isInGeneSearchMode ? (
@@ -97,8 +94,8 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
 
 const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   const navigate = useNavigate();
-  const isInGeneSearchMode =
-    useAppSelector(getSpeciesSelectorModalView) === 'gene-search';
+  const location = useLocation();
+  const isInGeneSearchMode = location.pathname.includes('/search/gene');
 
   const showSpeciesPage = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;

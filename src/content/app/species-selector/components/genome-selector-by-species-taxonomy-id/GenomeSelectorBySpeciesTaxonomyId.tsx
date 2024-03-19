@@ -20,7 +20,10 @@ import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { useLazyGetGenomesBySpeciesTaxonomyIdQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import {
+  useGetPopularSpeciesQuery,
+  useLazyGetGenomesBySpeciesTaxonomyIdQuery
+} from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -36,7 +39,6 @@ import styles from './GenomeSelectorBySpeciesTaxonomyId.module.css';
 
 type Props = {
   speciesTaxonomyId: string | number;
-  speciesImageUrl: string | null;
   onSpeciesAdd: (genomes: SpeciesSearchMatch[]) => void;
 };
 
@@ -45,6 +47,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const [filterQuery, setFilterQuery] = useState('');
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
+  const { currentData: popularSpeciesData } = useGetPopularSpeciesQuery();
   const { currentData, isLoading, isError } = result;
 
   const {
@@ -65,6 +68,10 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     searchTrigger({ speciesTaxonomyId });
   }, []);
 
+  const speciesImageUrl = popularSpeciesData?.popular_species.find(
+    (species) => species.species_taxonomy_id === speciesTaxonomyId
+  )?.image;
+
   return (
     <div className={styles.main}>
       {isLoading && <CircleLoader className={styles.loader} />}
@@ -74,6 +81,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             {...props}
             genomes={genomes}
             stagedGenomes={stagedGenomes}
+            speciesImageUrl={speciesImageUrl}
             onFilterChange={setFilterQuery}
           />
           <div className={styles.tableContainer}>
@@ -96,11 +104,12 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
+  speciesImageUrl: string | undefined;
   onFilterChange: (filter: string) => void;
 };
 
 const TopSection = (props: TopSectionProps) => {
-  const { speciesImageUrl, genomes, stagedGenomes } = props;
+  const { genomes, stagedGenomes, speciesImageUrl } = props;
 
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);

@@ -15,10 +15,7 @@
  */
 
 import React from 'react';
-
-import { useAppDispatch } from 'src/store';
-
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import { useNavigate } from 'react-router-dom';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
@@ -37,10 +34,10 @@ const SpeciesSearchResultsModalAppBar = () => {
 };
 
 const CloseModalView = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    dispatch(setModalView(null));
+    navigate(-1);
   };
 
   return (

@@ -15,18 +15,15 @@
  */
 
 import React from 'react';
-
-import { useAppDispatch } from 'src/store';
-
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
+import { useNavigate } from 'react-router-dom';
 
 import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
 
 const SpeciesSelectorGeneSearchView = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onClose = () => {
-    dispatch(setModalView(null));
+    navigate(-1);
   };
 
   return <GeneSearchPanel onClose={onClose} />;

@@ -19,8 +19,10 @@ import React, {
   useRef,
   type FormEvent,
   type ChangeEvent,
-  type ReactNode
+  type ReactNode,
+  useEffect
 } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import noop from 'lodash/noop';
 import classNames from 'classnames';
 
@@ -75,14 +77,31 @@ const Panel = (props: { onClose: () => void; children: ReactNode }) => {
 };
 
 const Main = () => {
+  const [searchParams] = useSearchParams();
   const [searchTrigger, searchResult] = useLazySearchGenesQuery();
   const committedSpecies = useAppSelector(getCommittedSpecies);
+
+  const searchQuery = searchParams.get('query') || '';
   const { currentData: currentSearchResults } = searchResult;
+  const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
+
+  useEffect(() => {
+    searchTrigger({
+      genome_ids: genomeIds,
+      query: searchQuery,
+      page: 1,
+      per_page: 50
+    });
+  }, [searchQuery]);
 
   return (
     <div className={styles.main}>
-      <GeneSearchForm onSearch={searchTrigger} species={committedSpecies} />
-      {currentSearchResults && (
+      <GeneSearchForm
+        onSearch={searchTrigger}
+        species={committedSpecies}
+        query={searchQuery}
+      />
+      {!!currentSearchResults?.matches.length && (
         <GeneSearchResults
           speciesList={committedSpecies}
           searchResults={currentSearchResults}
@@ -95,23 +114,25 @@ const Main = () => {
 const GeneSearchForm = (props: {
   species: CommittedItem[];
   onSearch: ReturnType<typeof useLazySearchGenesQuery>[0];
+  query?: string;
 }) => {
-  const queryRef = useRef('');
+  const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState('');
+
+  useEffect(() => {
+    setSearchInput(props.query || '');
+  }, []);
 
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const genomeIds = props.species.map(({ genome_id }) => genome_id);
 
-    props.onSearch({
-      genome_ids: genomeIds,
-      query: queryRef.current,
-      page: 1,
-      per_page: 50
+    navigate(urlFor.speciesSelectorGeneSearch(searchInput), {
+      replace: true
     });
   };
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    queryRef.current = event.target.value;
+    setSearchInput(event.target.value);
   };
 
   // FIXME: update the Button component to not require onClick property
@@ -123,6 +144,7 @@ const GeneSearchForm = (props: {
           className={styles.searchField}
           size="large"
           onChange={onQueryChange}
+          value={searchInput || ''}
         />
         <PrimaryButton type="submit" className={styles.submit} onClick={noop}>
           Go

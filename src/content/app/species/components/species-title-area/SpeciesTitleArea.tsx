@@ -100,6 +100,14 @@ const SpeciesTitleArea = () => {
     );
   };
 
+  const navigateToAssemblies = () => {
+    navigate(
+      urlFor.speciesSelectorSearch({
+        speciesTaxonomyId: species?.species_taxonomy_id
+      })
+    );
+  };
+
   const toggleRemovalDialog = () => {
     setIsRemoving(!isRemoving);
   };
@@ -109,6 +117,8 @@ const SpeciesTitleArea = () => {
     species && trackDeletedSpecies(species);
     navigate(urlFor.speciesSelector());
   };
+
+  const shouldShowAssemblyCount = assemblyCount && assemblyCount > 1;
 
   return species ? (
     <div className={styles.speciesTitleArea}>
@@ -122,10 +132,15 @@ const SpeciesTitleArea = () => {
           <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
           <span className={styles.assemblyName}>{species.assembly.name}</span>
         </div>
-        <div className={styles.assemblyCountWrapper}>
-          <InfoPill>{assemblyCount}</InfoPill>
-          <span className={styles.assembliesLink}>Assemblies</span>
-        </div>
+        {shouldShowAssemblyCount && (
+          <button
+            className={styles.assemblyCountWrapper}
+            onClick={navigateToAssemblies}
+          >
+            <InfoPill>{assemblyCount}</InfoPill>
+            <span className={styles.assembliesLink}>Assemblies</span>
+          </button>
+        )}
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />
         </div>

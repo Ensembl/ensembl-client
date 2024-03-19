@@ -17,7 +17,6 @@
 import config from 'config';
 
 export const home = () => '/';
-export const speciesSelector = () => '/species-selector';
 
 type BrowserUrlParams = {
   genomeId?: string | null;
@@ -36,10 +35,50 @@ type SpeciesPageUrlParams = {
   genomeId: string;
 };
 
+type SpeciesSelectorSearchParams = {
+  query?: string;
+  speciesTaxonomyId?: string | number;
+};
+
 export const speciesPage = (params: SpeciesPageUrlParams) => {
   const speciesPageRootPath = '/species';
 
   return `${speciesPageRootPath}/${params.genomeId}`;
+};
+
+const speciesSelectorPath = '/species-selector';
+
+export const speciesSelector = () => speciesSelectorPath;
+
+export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
+  const path = `${speciesSelectorPath}/search`;
+  const urlSearchParams = new URLSearchParams('');
+
+  if (params.query) {
+    urlSearchParams.append('query', params.query);
+  }
+
+  if (params.speciesTaxonomyId) {
+    urlSearchParams.append(
+      'species_taxonomy_id',
+      String(params.speciesTaxonomyId)
+    );
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
+};
+
+export const speciesSelectorGeneSearch = (searchInput?: string) => {
+  const path = `${speciesSelectorPath}/search/gene`;
+  const urlSearchParams = new URLSearchParams('');
+
+  if (searchInput) {
+    urlSearchParams.append('query', searchInput);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
 };
 
 export const browser = (params?: BrowserUrlParams) => {

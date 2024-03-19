@@ -15,15 +15,16 @@
  */
 
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { setModalView } from 'src/content/app/species-selector/state/species-selector-ui-slice/speciesSelectorUISlice';
-import { setPopularSpecies } from 'src/content/app/species-selector/state/species-selector-search-slice/speciesSelectorSearchSlice';
 import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
@@ -32,7 +33,7 @@ import type { PopularSpecies } from 'src/content/app/species-selector/types/popu
 import styles from './PopularSpeciesList.module.css';
 
 const PopularSpeciesList = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const committedItems = useAppSelector(getCommittedSpecies);
   const { currentData } = useGetPopularSpeciesQuery();
   const { trackPopularSpeciesClick } = useSpeciesSelectorAnalytics();
@@ -42,9 +43,12 @@ const PopularSpeciesList = () => {
   }, [committedItems]);
 
   const onPopularSpeciesButtonClick = (species: PopularSpecies) => {
-    dispatch(setPopularSpecies(species));
-    dispatch(setModalView('popular-species-genomes'));
     trackPopularSpeciesClick(species);
+    navigate(
+      urlFor.speciesSelectorSearch({
+        speciesTaxonomyId: species.species_taxonomy_id
+      })
+    );
   };
 
   return (
