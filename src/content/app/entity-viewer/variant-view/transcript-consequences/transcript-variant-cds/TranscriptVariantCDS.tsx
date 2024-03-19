@@ -278,13 +278,16 @@ const getExonWidths = (params: {
   return adjustExonWidths({ exonBlocks, containerWidth });
 };
 
-const adjustExonWidths = <T extends { index: number; width: number }>(params: {
+export const adjustExonWidths = <
+  T extends { index: number; width: number }
+>(params: {
   exonBlocks: Array<T>;
   containerWidth: number;
 }) => {
   const { exonBlocks, containerWidth } = params;
-  const maxExonBlocksCount =
-    containerWidth / (EXON_MARGIN_WIDTH + MIN_EXON_BLOCK_WIDTH);
+  const maxExonBlocksCount = Math.floor(
+    containerWidth / (EXON_MARGIN_WIDTH + MIN_EXON_BLOCK_WIDTH)
+  );
 
   if (maxExonBlocksCount <= exonBlocks.length) {
     return exonBlocks.slice(0, maxExonBlocksCount).map((exon) => ({
@@ -296,26 +299,34 @@ const adjustExonWidths = <T extends { index: number; width: number }>(params: {
   // sort by width, shortest to longest
   exonBlocks.sort((exonA, exonB) => exonA.width - exonB.width);
 
-  let currentShrinkableExonIndex = exonBlocks.length - 1;
+  let currentDonorExonIndex = exonBlocks.length - 1;
 
   for (const exon of exonBlocks) {
     if (exon.width < MIN_EXON_BLOCK_WIDTH) {
       const extraWidth = MIN_EXON_BLOCK_WIDTH - exon.width;
-      let donorExonBlock = exonBlocks[currentShrinkableExonIndex];
 
-      if (donorExonBlock.width! > MIN_EXON_BLOCK_WIDTH) {
-        currentShrinkableExonIndex = exonBlocks.length - 1;
-        donorExonBlock = exonBlocks[currentShrinkableExonIndex];
-      }
+      const anchorIndex = currentDonorExonIndex; // to break the while-loop if needed
+      let hasWrappedAround = false;
 
-      if (donorExonBlock.width > MIN_EXON_BLOCK_WIDTH) {
-        donorExonBlock.width -= extraWidth;
-        exon.width += extraWidth;
-        currentShrinkableExonIndex -= 1;
-      } else {
-        // After the previous if-clause we would expect the donor exon block's to be wider than the minimum width
-        // But if, for whatever reason, it is not, it means that something has gone wrong, and we better skip any further adjustments
-        break;
+      while (!(hasWrappedAround && currentDonorExonIndex === anchorIndex)) {
+        const donorExonBlock = exonBlocks[currentDonorExonIndex];
+
+        if (donorExonBlock.width > MIN_EXON_BLOCK_WIDTH) {
+          donorExonBlock.width -= extraWidth;
+          exon.width += extraWidth;
+          currentDonorExonIndex -= 1;
+          break;
+        }
+
+        if (currentDonorExonIndex === 0) {
+          hasWrappedAround = true;
+        }
+
+        if (currentDonorExonIndex > 0) {
+          currentDonorExonIndex -= 1;
+        } else {
+          currentDonorExonIndex = exonBlocks.length - 1;
+        }
       }
     }
   }
