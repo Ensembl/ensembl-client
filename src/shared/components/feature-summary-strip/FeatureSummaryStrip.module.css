@@ -26,9 +26,10 @@
 .featureSummaryStripLabel {
   font-size: 12px;
   font-weight: var(--font-weight-light);
-  margin-right: 18px;
+  margin-right: 10px;
 }
 
 .featureNameEmphasized {
   font-weight: var(--font-weight-bold);
+  margin-right: 12px;
 }

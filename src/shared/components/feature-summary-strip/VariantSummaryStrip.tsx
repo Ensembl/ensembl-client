@@ -29,13 +29,17 @@ import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/geno
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
 
-import styles from './FeatureSummaryStrip.module.css';
+import styles from './VariantSummaryStrip.module.css';
+import featureStripStyles from './FeatureSummaryStrip.module.css';
 
 export type VariantForSummaryStrip = ComponentProps<
   typeof VariantConsequence
 >['variant'] &
   ComponentProps<typeof VariantLocation>['variant'] & {
     name: string;
+    allele_type: {
+      value: string;
+    };
     alleles: ComponentProps<typeof VariantAllelesSequences>['alleles'];
   };
 
@@ -58,9 +62,13 @@ const VariantSummaryStrip = (
     return null;
   }
 
-  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
-    [styles.featureSummaryStripGhosted]: isGhosted
-  });
+  const stripClasses = classNames(
+    featureStripStyles.featureSummaryStrip,
+    props.className,
+    {
+      [featureStripStyles.featureSummaryStripGhosted]: isGhosted
+    }
+  );
 
   return (
     <div className={stripClasses} ref={ref}>
@@ -76,22 +84,27 @@ const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
 
   return (
     <>
-      <div className={styles.section}>
-        <span className={styles.featureSummaryStripLabel}>Variant</span>
-        <span className={styles.featureNameEmphasized}>{variant.name}</span>
+      <div className={featureStripStyles.section}>
+        <span className={featureStripStyles.featureSummaryStripLabel}>
+          Variant
+        </span>
+        <span className={featureStripStyles.featureNameEmphasized}>
+          {variant.name}
+        </span>
+        <span className={styles.variantType}>{variant.allele_type.value}</span>
       </div>
       {mostSevereConsequence && (
-        <div className={styles.section}>
-          <span className={styles.featureSummaryStripLabel}>
+        <div className={featureStripStyles.section}>
+          <span className={featureStripStyles.featureSummaryStripLabel}>
             Most severe consequence
           </span>
           {mostSevereConsequence}
         </div>
       )}
-      <div className={styles.section}>
+      <div className={featureStripStyles.section}>
         <VariantAllelesSequences alleles={variant.alleles} />
       </div>
-      <div className={styles.section}>
+      <div className={featureStripStyles.section}>
         <VariantLocation variant={variant} />
       </div>
     </>
