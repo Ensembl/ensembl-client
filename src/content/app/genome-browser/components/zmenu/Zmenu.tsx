@@ -30,6 +30,7 @@ import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import GeneAndOneTranscriptZmenu from './zmenus/GeneAndOneTranscriptZmenu';
 import VariantZmenu from './zmenus/VariantZmenu';
 import RegulationZmenu from './zmenus/RegulationZmenu';
+import DefaultZmenu from './zmenus/DefaultZmenu';
 
 import {
   ZmenuPayloadVarietyType,
@@ -99,10 +100,10 @@ const Zmenu = (props: ZmenuProps) => {
     zmenuContent = (
       <RegulationZmenu payload={props.payload} onDestroy={destroyZmenu} />
     );
-  }
-
-  if (!zmenuContent) {
-    return null;
+  } else {
+    zmenuContent = (
+      <DefaultZmenu payload={props.payload} onDestroy={destroyZmenu} />
+    );
   }
 
   const anchorStyles = getAnchorInlineStyles(props);

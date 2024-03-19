@@ -25,22 +25,14 @@ import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeB
 import {
   ZmenuContentItem as ZmenuContentItemType,
   Markup,
-  ZmenuContentTranscript,
-  ZmenuContentGene,
-  ZmenuContentVariant,
-  ZmenuContentRegulation
+  ZmenuContent as ZmenuContentType
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 import styles from './Zmenu.module.css';
 
 export type ZmenuContentProps = {
-  features: (
-    | ZmenuContentTranscript
-    | ZmenuContentGene
-    | ZmenuContentVariant
-    | ZmenuContentRegulation
-  )[];
-  featureId: string;
+  features: ZmenuContentType[];
+  featureId?: string;
   destroyZmenu: () => void;
 };
 
@@ -49,7 +41,7 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
 
   const renderedContent = (
     <>
-      {features.map((feature: any, index) => (
+      {features.map((feature, index) => (
         <p key={index} className={styles.zmenuContentFeature}>
           <ZmenuContentFeature
             featureId={featureId}
@@ -65,8 +57,8 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
 };
 
 type ZmenuContentFeatureProps = {
-  featureId: string;
-  feature: ZmenuContentGene | ZmenuContentTranscript;
+  featureId?: string;
+  feature: ZmenuContentType;
   destroyZmenu: () => void;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
@@ -95,7 +87,7 @@ export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
 
 type ZmenuContentBlockProps = {
   items: ZmenuContentItemType[];
-  featureId: string;
+  featureId?: string;
   destroyZmenu: () => void;
 };
 
@@ -115,7 +107,7 @@ export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
 };
 
 export type ZmenuContentItemProps = ZmenuContentItemType & {
-  featureId: string;
+  featureId?: string;
   destroyZmenu: () => void;
 };
 
@@ -145,7 +137,7 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
 
   const itemProps = {
     className,
-    ...(isFocusable && { onClick: handleClick })
+    ...(isFocusable && featureId && { onClick: handleClick })
   };
 
   return <span {...itemProps}>{text}</span>;
