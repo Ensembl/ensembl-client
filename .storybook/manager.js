@@ -9,5 +9,5 @@ const ensemblTheme = createTheme({
 });
 
 addons.setConfig({
-  theme: ensemblTheme,
+  theme: ensemblTheme
 });
