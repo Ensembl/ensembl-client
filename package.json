@@ -63,7 +63,6 @@
     "@babel/preset-react": "7.24.1",
     "@babel/preset-typescript": "7.24.1",
     "@faker-js/faker": "8.4.1",
-    "@storybook/addon-essentials": "8.0.2",
     "@storybook/addon-webpack5-compiler-babel": "3.0.3",
     "@storybook/manager-api": "8.0.2",
     "@storybook/react": "8.0.2",
