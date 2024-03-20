@@ -1,4 +1,5 @@
-import { addons } from '@storybook/addons';
+import { addons } from '@storybook/manager-api';
+
 import { create as createTheme } from '@storybook/theming/create';
 
 const ensemblTheme = createTheme({
