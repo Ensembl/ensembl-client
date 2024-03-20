@@ -1,3 +1,5 @@
+import { addons } from '@storybook/manager-api';
+
 import { create as createTheme } from '@storybook/theming/create';
 
 const ensemblTheme = createTheme({
@@ -6,6 +8,6 @@ const ensemblTheme = createTheme({
   brandUrl: 'https://ensembl.org'  
 });
 
-// addons.setConfig({
-//   theme: ensemblTheme
-// });
+addons.setConfig({
+  theme: ensemblTheme,
+});
