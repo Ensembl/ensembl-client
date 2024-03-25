@@ -400,4 +400,84 @@ const getDistanceToTranscriptEnd = ({
   }
 };
 
+export const getProteinSliceCoordinates = ({
+  variantStart,
+  variantEnd,
+  proteinLength
+}: {
+  variantStart: number;
+  variantEnd: number;
+  proteinLength: number;
+}) => {
+  const variantLength = variantEnd - variantStart + 1;
+
+  let distanceToProteinSliceStart: number;
+  let distanceToProteinSliceEnd: number;
+  let proteinSliceStart: number;
+  let proteinSliceEnd: number;
+
+  if (variantLength > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    distanceToProteinSliceStart = Math.min(
+      MIN_FLANKING_SEQUENCE_LENGTH,
+      variantStart - 1
+    );
+    proteinSliceStart = variantStart - distanceToProteinSliceStart;
+
+    distanceToProteinSliceEnd = Math.min(
+      MIN_FLANKING_SEQUENCE_LENGTH,
+      proteinLength - variantEnd
+    );
+    proteinSliceEnd = variantEnd + distanceToProteinSliceEnd;
+  } else {
+    /**
+     * find variant mid-length
+     * find variant half length
+     *   - remember even vs odd number of amino acids
+     *   - => half length to start and half length to end will be different
+     * subtract the relevant variant half length from MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
+     *
+     * distance will be the min between
+     *  - (MAX_REFERENCE_ALLELE_DISPLAY_LENGTH - variant half length) + MIN_FLANKING_SEQUENCE_LENGTH
+     *  - and variant start - 1
+     *
+     * similarly, distance to end will be the min between
+     *  - (MAX_REFERENCE_ALLELE_DISPLAY_LENGTH - variant half length) + MIN_FLANKING_SEQUENCE_LENGTH
+     *  - and proteinLength - variantEnd
+     */
+    const isVariantLengthEven = variantLength % 2 === 0;
+    const variantLeftHalfLength = isVariantLengthEven
+      ? variantLength / 2
+      : Math.floor(variantLength / 2);
+    const variantRightHalfLength = isVariantLengthEven
+      ? variantLength / 2 - 1
+      : Math.floor(variantLength / 2);
+    const halfMaxReferenceAlleleDisplayLength = Math.floor(
+      MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2
+    );
+
+    distanceToProteinSliceStart = Math.min(
+      halfMaxReferenceAlleleDisplayLength -
+        variantLeftHalfLength +
+        MIN_FLANKING_SEQUENCE_LENGTH,
+      variantStart - 1
+    );
+    distanceToProteinSliceEnd = Math.min(
+      halfMaxReferenceAlleleDisplayLength -
+        variantRightHalfLength +
+        MIN_FLANKING_SEQUENCE_LENGTH,
+      proteinLength - variantEnd
+    );
+
+    proteinSliceStart = variantStart - distanceToProteinSliceStart;
+    proteinSliceEnd = variantEnd + distanceToProteinSliceEnd;
+  }
+
+  return {
+    proteinSliceStart,
+    proteinSliceEnd,
+    distanceToProteinSliceStart,
+    distanceToProteinSliceEnd
+  };
+};
+
 export default useTranscriptDetails;
