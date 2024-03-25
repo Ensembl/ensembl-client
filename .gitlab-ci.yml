@@ -70,26 +70,8 @@ variables:
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
 
-.publish_assets:
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
-  stage: deploy
-  environment:
-    name: jobs/k8s-job
-
-  before_script:
-    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - git -C ensembl-k8s-manifests/ checkout wp-k8s
-    - cd ensembl-k8s-manifests
-
-  script:
-    - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" static_assets_copy_job.yaml
-    - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" static_assets_copy_job.yaml
-    - kustomize edit set namesuffix -- -${CI_PROJECT_ID}-${BUILD_JOB_ID}
-    - kubectl apply -k .
-
 # Template for publishing static assets for the new kubernetes cluster
-# Will need updating after the migration is completed (see the name of the template, name of the ensembl-k8s-manifests branch)
-.publish_assets-newcluster:
+.publish_assets:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   stage: deploy
   environment:
@@ -125,12 +107,20 @@ variables:
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
+# The before_script commands for deployment jobs
+# that are used to set up gitlab agent
+.gitlab-agent-setup-commands: &gitlab-agent-setup-commands
+  - kubectl config use-context ${AGENT}
+  - kubectl config set-context --current --namespace=${NAMESPACE}
+
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
 # Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
-.deploy-newcluster:
+.deploy:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
+  before_script:
+    - *gitlab-agent-setup-commands
   script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout k8s123-migration
@@ -142,6 +132,8 @@ variables:
 .deploy-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
+  before_script:
+    - *gitlab-agent-setup-commands
   script:
   - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
   - git -C ensembl-k8s-manifests/ checkout k8s123-migration
@@ -278,19 +270,23 @@ Node:review:
 
 
 ######## DEPLOYMENT JOBS ########
-# Job to deploy to staging environment on the new cluster (WP40-HL k8s cluster)
-Staging:WP40:HL:
-  extends: .deploy-newcluster
+
+# Job to deploy to the staging environment (staging-2020.review.ensembl.org)
+Staging:
+  extends: .deploy
   environment:
-    name: wp40-hl-staging
+    name: staging
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
   needs:
     - Test_N_Build
     - Node:Staging
+  variables:
+    AGENT: ${STAGING_AGENT}
+    NAMESPACE: ${STAGING_NS}
 
 Pub:Staging:WP40:HL:
-  extends: .publish_assets-newcluster
+  extends: .publish_assets
   environment:
     name: wp40-hl-staging
     kubernetes:
@@ -301,13 +297,15 @@ Pub:Staging:WP40:HL:
     - Test_N_Build
     - Node:Staging
 
-# Job to deploy to live environment in the new kubernetes cluster (wp40)
-Live:wp40:HL:
-  extends: .deploy-newcluster
+# Job to deploy to live (aka production) environment (beta.ensembl.org)
+Live:
+  extends: .deploy
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+    AGENT: ${PROD_AGENT}
+    NAMESPACE: ${PROD_NS}
   environment:
-    name: wp40-hl-prod
+    name: production
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
@@ -315,7 +313,7 @@ Live:wp40:HL:
     - Node:Live
 
 Pub:Live-HL:wp40:
-  extends: .publish_assets-newcluster
+  extends: .publish_assets
   environment:
     name: wp40-hl-prod
     kubernetes:
@@ -327,14 +325,16 @@ Pub:Live-HL:wp40:
     - Node:Live
 
 
-# Job to deploy a production fallback to the new kubernetes cluster in Hinxton (WP41)
-Live:WP41:HX:
-  extends: .deploy-newcluster
+# Fallback deployment for the live (production) deployment: beta.ensembl.org (Hinxton)
+LiveFallback:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+    AGENT: ${FALLBACK_AGENT}
+    NAMESPACE: ${FALLBACK_NS}
   environment:
-    name: wp41-hx-prod
+    name: fallback
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
@@ -342,7 +342,7 @@ Live:WP41:HX:
     - Node:Live
 
 Pub::WP41:Live-HX:
-  extends: .publish_assets-newcluster
+  extends: .publish_assets
   environment:
     name: wp41-hx-prod
     kubernetes:
@@ -353,14 +353,16 @@ Pub::WP41:Live-HX:
     - Test_N_Build
     - Node:Live
 
-# Job to deploy to internal environment in the new cluster in Harlow (WP40)
-Internal:WP40:HL:
-  extends: .deploy-newcluster
+# Internal deployment: internal-2020.ensembl.org
+Internal:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
+    AGENT: ${INTERNAL_AGENT}
+    NAMESPACE: ${INTERNAL_NS}
   environment:
-    name: wp40-hl-internal
+    name: internal
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   needs:
@@ -368,7 +370,7 @@ Internal:WP40:HL:
     - Node:Internal
 
 Pub:Internal::WP40:HL:
-  extends: .publish_assets-newcluster
+  extends: .publish_assets
   environment:
     name: wp40-hl-internal
     kubernetes:
@@ -379,14 +381,15 @@ Pub:Internal::WP40:HL:
     - Test_N_Build:internal
     - Node:Internal
 
-# Job to deploy to Dev environment in the new kubernetes cluster (wp51)
-# This deployment is for dev-2020.ensembl.org and same as production environment
-Dev:wp51:HL:
-  extends: .deploy-newcluster
+# Development deployment: dev-2020.ensembl.org
+Dev:
+  extends: .deploy
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+    AGENT: ${DEV_AGENT}
+    NAMESPACE: ${DEV_NS}
   environment:
-    name: wp51-hl-development
+    name: development
     kubernetes:
       namespace: ensembl-dev
   rules:
@@ -396,7 +399,7 @@ Dev:wp51:HL:
     - Node:Live
 
 Pub:Dev-HL:wp51:
-  extends: .publish_assets-newcluster
+  extends: .publish_assets
   environment:
     name: wp51-hl-development
     kubernetes:
@@ -414,8 +417,10 @@ Review:WP51:HL:
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    AGENT: ${DEV_AGENT}
+    NAMESPACE: ${DEV_NS}
   environment:
-    name: wp51-hl-development
+    name: development
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
