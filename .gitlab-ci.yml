@@ -445,7 +445,10 @@ stop_review:
 SetupReview:HL51:
   extends: .setup-review-newk8s
   environment:
-    name: wp51-hl-development
+    name: development
+  variables:
+    AGENT: ${DEV_AGENT}
+    NAMESPACE: ${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && 
           $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
