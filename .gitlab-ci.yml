@@ -22,9 +22,8 @@ variables:
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
-# The before_script commands for deployment jobs
-# that are used to set up gitlab agent
-# (will be used through yaml anchors in the jobs below)
+# The `before_script` commands for deployment jobs that are used to set up gitlab agent
+# (will be used via yaml anchors in the jobs below)
 .gitlab-agent-setup-commands: &gitlab-agent-setup-commands
   - kubectl config use-context ${AGENT}
   - kubectl config set-context --current --namespace=${NAMESPACE}
@@ -117,7 +116,6 @@ variables:
 
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
-# Will need updating after the migration is completed (the name of the template, name of the ensembl-k8s-manifests branch)
 .deploy:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
@@ -183,7 +181,7 @@ Test:
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
-# Job to build static asset for staging and live environment
+# Job to build static assets for staging and live environment
 # dev branch -> Staging
 # master branch -> Live
 Test_N_Build:
@@ -195,7 +193,7 @@ Test_N_Build:
   rules:
     - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
 
-# Job to build static asset for internal environment
+# Job to build static assets for internal environment
 # master branch -> Internal
 Test_N_Build:internal:
   extends: .build-static
@@ -234,7 +232,7 @@ Node:Live:
   needs:
     - Test_N_Build
 
-# Job to build node docker image for internal environment at WP
+# Job to build node docker image for internal environment
 # master branch -> internal
 Node:Internal:
   extends: .build-node
@@ -246,7 +244,7 @@ Node:Internal:
   needs:
     - Test_N_Build:internal
 
-# Job to build nginx docker image for review environment at WP
+# Job to build nginx docker image for review environment
 # all other branch -> dev
 Nginx:review:
   extends: .build-nginx
@@ -258,7 +256,7 @@ Nginx:review:
   needs:
     - Test_N_Build:review
 
-# Job to build node docker image for review environment at WP
+# Job to build node docker image for review environment
 # all other branch -> dev
 Node:review:
   extends: .build-node
