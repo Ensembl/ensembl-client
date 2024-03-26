@@ -4,8 +4,10 @@
   stage: setup
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
+    - kubectl config use-context ${AGENT}
     - git clone --depth 1 --branch k8s123-migration https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - kubectl create namespace ${CI_COMMIT_REF_SLUG} || true # Carry on even if namespace already exists
+    - kubectl create namespace ${NAMESPACE} || true # Carry on even if namespace already exists
+    - kubectl config set-context --current --namespace=${NAMESPACE}
     
   script:
     # Setup Ingress for default backend
