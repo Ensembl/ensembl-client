@@ -82,11 +82,13 @@ variables:
   stage: deploy
   environment:
     name: jobs/k8s-job
+
   before_script:
     - *gitlab-agent-setup-commands
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout k8s123-migration
     - cd ensembl-k8s-manifests/ensembl-client/static-assets
+
   script:
     - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" copy_job.yaml
     - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" copy_job.yaml
@@ -190,7 +192,7 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "switch-to-gitlab-agent" || $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
 
 # Job to build static asset for internal environment
 # master branch -> Internal
@@ -227,7 +229,7 @@ Node:Live:
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "switch-to-gitlab-agent"
+    - if: $CI_COMMIT_BRANCH == "master"
   needs:
     - Test_N_Build
 
