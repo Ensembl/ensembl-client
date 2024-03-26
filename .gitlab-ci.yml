@@ -22,6 +22,12 @@ variables:
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
+# The before_script commands for deployment jobs
+# that are used to set up gitlab agent
+.gitlab-agent-setup-commands: &gitlab-agent-setup-commands
+  - kubectl config use-context ${AGENT}
+  - kubectl config set-context --current --namespace=${NAMESPACE}
+
 # Template to build static assets
 .build-static:
   stage: test_build_static
@@ -107,12 +113,6 @@ variables:
     - docker push ${CONTAINER_NODE_IMAGE}
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
-
-# The before_script commands for deployment jobs
-# that are used to set up gitlab agent
-.gitlab-agent-setup-commands: &gitlab-agent-setup-commands
-  - kubectl config use-context ${AGENT}
-  - kubectl config set-context --current --namespace=${NAMESPACE}
 
 # Template for deployment to the new kubernetes cluster
 # For live deployment, it does not need to deploy a static assets container
