@@ -78,6 +78,7 @@ variables:
     name: jobs/k8s-job
 
   before_script:
+    - *gitlab-agent-setup-commands
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout k8s123-migration
     - cd ensembl-k8s-manifests/ensembl-client/static-assets
@@ -271,33 +272,10 @@ Node:review:
 
 ######## DEPLOYMENT JOBS ########
 
-# Job to deploy to the staging environment (staging-2020.review.ensembl.org)
-Staging:
-  extends: .deploy
-  environment:
-    name: staging
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-  needs:
-    - Test_N_Build
-    - Node:Staging
-  variables:
-    AGENT: ${STAGING_AGENT}
-    NAMESPACE: ${STAGING_NS}
 
-Pub:Staging:WP40:HL:
-  extends: .publish_assets
-  environment:
-    name: wp40-hl-staging
-    kubernetes:
-      namespace: ensembl-stage
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-  needs:
-    - Test_N_Build
-    - Node:Staging
+# DEPLOYMENT TO THE LIVE (PRODUCTION) ENVIRONMENT (beta.ensembl.org)
 
-# Job to deploy to live (aka production) environment (beta.ensembl.org)
+# Deploy the Node server
 Live:
   extends: .deploy
   variables:
@@ -312,12 +290,14 @@ Live:
     - Test_N_Build
     - Node:Live
 
-Pub:Live-HL:wp40:
+# Publish static assets
+Pub:Live:
   extends: .publish_assets
   environment:
-    name: wp40-hl-prod
-    kubernetes:
-      namespace: ensembl-prod
+    name: production
+  variables:
+    AGENT: ${PROD_AGENT}
+    NAMESPACE: ${PROD_NS}
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
@@ -325,7 +305,9 @@ Pub:Live-HL:wp40:
     - Node:Live
 
 
-# Fallback deployment for the live (production) deployment: beta.ensembl.org (Hinxton)
+# DEPLOYMENT TO THE LIVE (PRODUCTION) FALLBACK ENVIRONMENT (beta.ensembl.org, running in Hinxton)
+
+# Deploy the Node server
 LiveFallback:
   extends: .deploy
   variables:
@@ -341,19 +323,55 @@ LiveFallback:
     - Test_N_Build
     - Node:Live
 
-Pub::WP41:Live-HX:
+# Publish static assets
+Pub::LiveFallback:
   extends: .publish_assets
   environment:
-    name: wp41-hx-prod
-    kubernetes:
-      namespace: ensembl-prod
+    name: fallback
+  variables:
+    AGENT: ${FALLBACK_AGENT}
+    NAMESPACE: ${FALLBACK_NS}
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
     - Test_N_Build
     - Node:Live
 
-# Internal deployment: internal-2020.ensembl.org
+
+# DEPLOYMENT TO THE STAGING ENVIRONMENT (staging-2020.ensembl.org)
+
+# Deploy the Node server
+Staging:
+  extends: .deploy
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+  needs:
+    - Test_N_Build
+    - Node:Staging
+  variables:
+    AGENT: ${STAGING_AGENT}
+    NAMESPACE: ${STAGING_NS}
+
+# Publish static assets
+Pub:Staging:
+  extends: .publish_assets
+  environment:
+    name: staging
+  variables:
+    AGENT: ${STAGING_AGENT}
+    NAMESPACE: ${STAGING_NS}
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+  needs:
+    - Test_N_Build
+    - Node:Staging
+
+
+# DEPLOYMENT TO THE INTERNAL ENVIRONMENT (internal-2020.ensembl.org)
+
+# Deploy the Node server
 Internal:
   extends: .deploy
   variables:
@@ -369,19 +387,24 @@ Internal:
     - Test_N_Build:internal
     - Node:Internal
 
-Pub:Internal::WP40:HL:
+# Publish static assets
+Pub:Internal:
   extends: .publish_assets
   environment:
-    name: wp40-hl-internal
-    kubernetes:
-      namespace: ensembl-internal
+    name: internal
+  variables:
+    AGENT: ${INTERNAL_AGENT}
+    NAMESPACE: ${INTERNAL_NS}
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   needs:
     - Test_N_Build:internal
     - Node:Internal
 
-# Development deployment: dev-2020.ensembl.org
+
+# DEPLOYMENT TO THE DEVELOPMENT ENVIRONMENT (dev-2020.ensembl.org)
+
+# Deploy the Node server
 Dev:
   extends: .deploy
   variables:
@@ -398,12 +421,14 @@ Dev:
     - Test_N_Build
     - Node:Live
 
+# Publish static assets
 Pub:Dev-HL:wp51:
   extends: .publish_assets
   environment:
-    name: wp51-hl-development
-    kubernetes:
-      namespace: ensembl-dev
+    name: development
+  variables:
+    AGENT: ${DEV_AGENT}
+    NAMESPACE: ${DEV_NS}
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
   needs:
