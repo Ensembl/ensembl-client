@@ -24,6 +24,7 @@ variables:
 
 # The before_script commands for deployment jobs
 # that are used to set up gitlab agent
+# (will be used through yaml anchors in the jobs below)
 .gitlab-agent-setup-commands: &gitlab-agent-setup-commands
   - kubectl config use-context ${AGENT}
   - kubectl config set-context --current --namespace=${NAMESPACE}
@@ -422,7 +423,7 @@ Dev:
     - Node:Live
 
 # Publish static assets
-Pub:Dev-HL:wp51:
+Pub:Dev:
   extends: .publish_assets
   environment:
     name: development
@@ -436,7 +437,9 @@ Pub:Dev-HL:wp51:
     - Node:Live
 
 
-# Job to deploy review deployments to development environment in the new cluster in Harlow (WP51)
+# REVIEW DEPLOYMENTS (<branch_name>.review.ensembl.org)
+
+# Job to deploy Node server and a dedicated Nginx container with embedded static assets
 Review:
   extends: .deploy-review
   variables:
@@ -455,19 +458,22 @@ Review:
     - Test_N_Build:review
     - Nginx:review
     - Node:review
+
 # Clean up the review app resources
-stop_review:
+CleanUpReview:
   extends: .stop-review
   environment:
-    name: wp51-hl-development
+    name: development
     action: stop
     kubernetes:
-      namespace: ensembl-development
+      namespace: ${CI_COMMIT_REF_SLUG}
   except:
   - dev
   - master
 
-SetupReview:HL51:
+
+# Create a review deployment (runs once per new branch)
+SetupReview:
   extends: .setup-review-newk8s
   environment:
     name: development
