@@ -416,7 +416,7 @@ Dev:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "switch-to-gitlab-agent"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -430,7 +430,7 @@ Pub:Dev-HL:wp51:
     AGENT: ${DEV_AGENT}
     NAMESPACE: ${DEV_NS}
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "switch-to-gitlab-agent"'
   needs:
     - Test_N_Build
     - Node:Live
