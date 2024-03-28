@@ -25,6 +25,7 @@ import useTranscriptDetails from '../useTranscriptDetails';
 import TranscriptVariantDiagram from '../transcript-variant-diagram/TranscriptVariantDiagram';
 import TranscriptVariantGenomicSequence from '../transcript-variant-genomic-sequence/TranscriptVariantGenomicSequence';
 import TranscriptVariantCDS from '../transcript-variant-cds/TranscriptVariantCDS';
+import TranscriptVariantProtein from '../transcript-variant-protein/TranscriptVariantProtein';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { TranscriptConsequencesData } from 'src/content/app/entity-viewer/variant-view/transcript-consequences/useTranscriptConsequencesData';
@@ -70,9 +71,23 @@ const TranscriptConsequenceDetails = (props: Props) => {
 
   const strand = gene.slice.strand.code;
   const cds = transcript.product_generating_contexts[0]?.cds;
+  const { proteinData } = transcriptDetailsData;
 
   return (
     <>
+      {proteinData && (
+        <TranscriptVariantProtein
+          alleleType={allele.allele_type.value}
+          proteinId={proteinData.proteinStableId}
+          proteinSequence={proteinData.proteinSequence}
+          variantSequence={proteinData.variantAltSequence}
+          variantStart={proteinData.variantStart}
+          variantEnd={proteinData.variantEnd}
+          distanceToProteinSliceStart={proteinData.distanceToProteinSliceStart}
+          distanceToProteinSliceEnd={proteinData.distanceToProteinSliceEnd}
+        />
+      )}
+
       {cds && transcriptConsequences.cds_location && (
         <CDSSection
           exons={transcript.spliced_exons}

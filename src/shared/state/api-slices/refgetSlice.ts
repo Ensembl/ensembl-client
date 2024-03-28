@@ -46,6 +46,8 @@ const refgetApiSlice = restApiSlice.injectEndpoints({
           ? `?${queryParameters.toString()}`
           : '';
 
+        // FIXME:
+        // Use urlFor.refget helper. !!!Remember that urlFor.refget helper accepts start in Ensembl coordinates
         return {
           url: `${config.refgetBaseUrl}/sequence/${checksum}${queryString}`,
           responseHandler: 'text'

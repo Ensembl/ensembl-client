@@ -581,6 +581,21 @@ describe('getProteinSliceCoordinates', () => {
     });
   });
 
+  test('short variant near the start of protein, odd length', () => {
+    expect(
+      getProteinSliceCoordinates({
+        variantStart: 3,
+        variantEnd: 7,
+        proteinLength: 180
+      })
+    ).toEqual({
+      proteinSliceStart: 1,
+      proteinSliceEnd: 25,
+      distanceToProteinSliceStart: 2,
+      distanceToProteinSliceEnd: 18
+    });
+  });
+
   test('short variant, far from both the start and the end of protein, even length', () => {
     expect(
       getProteinSliceCoordinates({
