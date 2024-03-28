@@ -189,13 +189,12 @@ type ProductGeneratingContextInTranscript = {
     stable_id: NonNullable<
       FullProductGeneratingContext['product']
     >['stable_id'];
-    length: NonNullable<
-      FullProductGeneratingContext['product']
-    >['length'];
-    sequence: Pick2<NonNullable<
-      FullProductGeneratingContext['product']
-    >, 'sequence', 'checksum'>;
-  }
+    length: NonNullable<FullProductGeneratingContext['product']>['length'];
+    sequence: Pick<
+      NonNullable<FullProductGeneratingContext['product']>['sequence'],
+      'checksum'
+    >;
+  } | null;
 };
 
 type TranscriptInResponse = Pick3<

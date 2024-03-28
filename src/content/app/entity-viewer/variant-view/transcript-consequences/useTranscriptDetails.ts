@@ -33,6 +33,7 @@ import type {
   GeneForVariantTranscriptConsequencesResponse,
   TranscriptForVariantTranscriptConsequencesResponse
 } from 'src/content/app/entity-viewer/state/api/queries/variantTranscriptConsequencesQueries';
+import type { PredictedMolecularConsequenceInResponse } from 'src/content/app/entity-viewer/state/api/queries/variantPredictedMolecularConsequencesQuery';
 
 type Params = {
   genomeId: string;
@@ -40,6 +41,7 @@ type Params = {
   gene: TranscriptConsequencesData['geneData'][number];
   variant: TranscriptConsequencesData['variant'];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
+  transcriptConsequences: PredictedMolecularConsequenceInResponse;
 };
 
 export type TranscriptDetailsData = NonNullable<
@@ -74,16 +76,29 @@ const useTranscriptDetails = (params: Params) => {
     transcript: transcriptData?.transcript
   });
 
+  const {
+    currentData: proteinData,
+    isLoading: isProteinDataLoading,
+    isError: isProteinDataError
+  } = useProteinData({
+    isTranscriptLoading: isLoadingTranscriptData,
+    transcriptConsequences: params.transcriptConsequences,
+    transcript: transcriptData?.transcript
+  });
+
   const summaryData =
     transcriptData && genomicRegionData
       ? {
           transcriptData: transcriptData.transcript,
-          genomicRegionData
+          genomicRegionData,
+          proteinData: proteinData
         }
       : null;
 
-  const isLoading = isLoadingTranscriptData || isGenomicRegionLoading;
-  const isError = isTranscriptDataError || isGenomicRegionError;
+  const isLoading =
+    isLoadingTranscriptData || isGenomicRegionLoading || isProteinDataLoading;
+  const isError =
+    isTranscriptDataError || isGenomicRegionError || isProteinDataError;
 
   return {
     currentData: summaryData,
@@ -218,6 +233,88 @@ const useGenomicRegionData = (params: {
         isLoading,
         isError
       };
+};
+
+const useProteinData = (params: {
+  transcript?: TranscriptForVariantTranscriptConsequencesResponse['transcript'];
+  transcriptConsequences: Params['transcriptConsequences'];
+  isTranscriptLoading: boolean;
+}) => {
+  const { transcript, isTranscriptLoading, transcriptConsequences } = params;
+  const { protein_location } = transcriptConsequences;
+
+  const productInTranscript =
+    transcript?.product_generating_contexts[0].product;
+  const proteinChecksum = productInTranscript?.sequence.checksum;
+  const proteinLength = productInTranscript?.length;
+  const proteinId = productInTranscript?.stable_id; // currently, variation api does not include protein id in its consequences payload
+
+  let { start: variantStart, end: variantEnd } = protein_location ?? {};
+
+  if (variantStart && !variantEnd) {
+    variantEnd = variantStart;
+  } else if (variantEnd && !variantStart) {
+    variantStart = variantEnd;
+  }
+
+  const proteinSliceCoordinates = getProteinSliceCoordinates({
+    variantStart: variantStart ?? 1,
+    variantEnd: variantEnd ?? 1,
+    proteinLength: proteinLength ?? 1
+  });
+
+  const {
+    currentData: proteinSequence,
+    isLoading,
+    isError
+  } = useRefgetSequenceQuery(
+    {
+      checksum: proteinChecksum ?? '',
+      start: proteinSliceCoordinates.proteinSliceStart - 1, // FIXME: undo the (- 1) after useRefgetSequenceQuery hook is updated to use urlFor.refget
+      end: proteinSliceCoordinates.proteinSliceEnd
+    },
+    {
+      skip: !proteinChecksum
+    }
+  );
+
+  if (!transcript && isTranscriptLoading) {
+    return {
+      currentData: null,
+      isLoading: true
+    };
+  } else if (!transcript) {
+    // something wrong must have happened during the fetching of the transcript
+    return {
+      currentData: null,
+      isError: true
+    };
+  } else if (!protein_location || !proteinId) {
+    // no data about the protein (the transcript is probably non-coding)
+    return {
+      currentData: null
+    };
+  } else if (isLoading || isError) {
+    return {
+      currentData: null,
+      isLoading,
+      isError
+    };
+  }
+
+  const currentData = {
+    ...proteinSliceCoordinates,
+    proteinStableId: proteinId,
+    proteinSequence: proteinSequence as string, // at this point, protein sequence will be a string
+    variantStart: (variantStart || variantEnd) as number, // if start is not known, make it the same as the end
+    variantEnd: (variantEnd || variantStart) as number, // if end is not known, make it the same as the start
+    variantRefSequence: protein_location.ref_sequence,
+    variantAltSequence: protein_location.alt_sequence
+  };
+
+  return {
+    currentData
+  };
 };
 
 /**
@@ -429,21 +526,6 @@ export const getProteinSliceCoordinates = ({
     );
     proteinSliceEnd = variantEnd + distanceToProteinSliceEnd;
   } else {
-    /**
-     * find variant mid-length
-     * find variant half length
-     *   - remember even vs odd number of amino acids
-     *   - => half length to start and half length to end will be different
-     * subtract the relevant variant half length from MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
-     *
-     * distance will be the min between
-     *  - (MAX_REFERENCE_ALLELE_DISPLAY_LENGTH - variant half length) + MIN_FLANKING_SEQUENCE_LENGTH
-     *  - and variant start - 1
-     *
-     * similarly, distance to end will be the min between
-     *  - (MAX_REFERENCE_ALLELE_DISPLAY_LENGTH - variant half length) + MIN_FLANKING_SEQUENCE_LENGTH
-     *  - and proteinLength - variantEnd
-     */
     const isVariantLengthEven = variantLength % 2 === 0;
     const variantLeftHalfLength = isVariantLengthEven
       ? variantLength / 2

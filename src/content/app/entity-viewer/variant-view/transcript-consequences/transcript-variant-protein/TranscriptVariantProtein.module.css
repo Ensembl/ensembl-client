@@ -1,0 +1,77 @@
+.letter {
+  --sequence-block-color: transparent;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.letterReferenceAllele {
+  --sequence-block-letter-color: var(--color-black);
+}
+
+.letterFlankingSequence {
+  --sequence-block-letter-color: var(--color-medium-dark-grey);
+}
+
+.letter + .letter {
+  margin-left: 1px;
+}
+
+.changedSequenceContainer {
+  position: relative;
+  display: inline-block;
+  transform: translateX(-50%);
+  margin-top: 16px;
+}
+
+.changedSequenceBlock {
+  display: inline-flex;
+  height: 16px;
+  align-items: center;
+  color: var(--color-white);
+  background-color: var(--color-dark-grey);
+  font-family: var(--font-family-monospace);
+  line-height: 1;
+  font-size: 11px;
+  padding: 0 8px;
+}
+
+.proteinImpactLabel {
+  position: absolute;
+  left: -12px;
+  transform: translateX(-100%);
+  white-space: nowrap;
+}
+
+.modificationTypeLabel {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  font-size: 10px;
+  font-weight: var(--font-weight-light);
+  transform: translate(100%, -50%);
+}
+
+.altAlleleLetter {
+  --sequence-block-color: var(--color-dark-grey);
+}
+
+/* FIXME: remove the classes for alt allele arrow
+   after extracting it into a dedicated component
+*/
+.altAlleleArrow {
+  position: absolute;
+  left: 50%;
+  top: -11px; /* positioning styles should be passed to the arrow */
+  transform: translateX(-50%);
+  width: 9px;
+  aspect-ratio: 1.5;
+  background-color: var(--color-orange);
+}
+
+.altAlleleArrowUp {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%); /* this is what creates the triangle */
+}
+
+.altAlleleArrowDown {
+  clip-path: polygon(0 0, 50% 100%, 100% 0); /* this is what creates the triangle */
+}
