@@ -56,6 +56,8 @@ const SEQUENCE_LETTER_WIDTH = 16;
  * DISCOVERED PROBLEMS:
  * - http://localhost:8080/entity-viewer/grch38/variant:1:964529:rs1642816219?allele=0&view=transcript-consequences
  *   (notice that variant is displayed in exon 11 in transcript diagram; but in exon 12 in CDS diagram)
+ * - http://localhost:8080/entity-viewer/grch38/variant:13:32341046:rs1057517557?allele=0&view=transcript-consequences
+ *   (same disagreement between CDS and the transcript diagram)
  */
 
 const TranscriptVariantProtein = (props: Props) => {
@@ -233,12 +235,25 @@ const ReferenceVariantLetterBlocks = ({ letters }: { letters: string[] }) => {
  * - unknown protein location end: 1:964529:rs1642816219
  */
 const ProteinImpact = (props: Props) => {
-  const { variantSequence, alleleType, variantStart, variantEnd } = props;
+  const {
+    variantSequence,
+    alleleType,
+    variantStart,
+    variantEnd,
+    consequences
+  } = props;
   /**
    * - uncertain
    * - number
    * -
    */
+
+  // For protein sequences, only treat in-frame insertions as insertions
+  // An insertion that has caused a frame shift will be treated differently (with a consequence being marked as "uncertain").
+  const isInframeInsertion = consequences.some(
+    (conseq) => conseq.value === 'inframe_insertion'
+  );
+
   let changedSequence: React.ReactNode; // can show modified amino acids, number of amino acids, or a special label such as "uncertain" depending on situation
   let modificationTypeLabel: React.ReactNode = null;
 
@@ -280,7 +295,7 @@ const ProteinImpact = (props: Props) => {
 
   if (alleleType === 'deletion') {
     modificationTypeLabel = <span>deleted</span>;
-  } else if (alleleType === 'insertion') {
+  } else if (isInframeInsertion) {
     modificationTypeLabel = <span>inserted</span>;
   }
 
@@ -302,7 +317,7 @@ const ProteinImpact = (props: Props) => {
 
   return (
     <div className={styles.changedSequenceContainer} style={componentStyles}>
-      <AltAlleleArrow alleleType={alleleType} />
+      <AltAlleleArrow direction={isInframeInsertion ? 'up' : 'down'} />
       <span className={styles.proteinImpactLabel}>Protein impact</span>
       {changedSequence}
       {modificationTypeLabel && (
@@ -315,11 +330,9 @@ const ProteinImpact = (props: Props) => {
 };
 
 // FIXME: extract in a reusable component
-const AltAlleleArrow = ({ alleleType }: { alleleType: string }) => {
+const AltAlleleArrow = ({ direction }: { direction: 'up' | 'down' }) => {
   const arrowDirectionClassName =
-    alleleType === 'insertion'
-      ? styles.altAlleleArrowUp
-      : styles.altAlleleArrowDown;
+    direction === 'up' ? styles.altAlleleArrowUp : styles.altAlleleArrowDown;
 
   const classes = classNames(styles.altAlleleArrow, arrowDirectionClassName);
 
