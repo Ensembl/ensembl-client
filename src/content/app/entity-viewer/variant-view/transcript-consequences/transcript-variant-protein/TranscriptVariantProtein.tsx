@@ -24,6 +24,8 @@ import {
 
 import SequenceLetterBlock from 'src/content/app/entity-viewer/variant-view/variant-image/sequence-letter-block/SequenceLetterBlock';
 
+import type { PredictedMolecularConsequenceInResponse } from 'src/content/app/entity-viewer/state/api/queries/variantPredictedMolecularConsequencesQuery';
+
 import commonStyles from '../TranscriptConsequences.module.css';
 import styles from './TranscriptVariantProtein.module.css';
 
@@ -31,20 +33,29 @@ type Props = {
   alleleType: string;
   proteinId: string;
   proteinSequence: string;
-  // TODO: proteinLength
+  proteinLength: number;
   variantSequence: string | null;
   variantStart: number;
   variantEnd: number;
   distanceToProteinSliceStart: number;
   distanceToProteinSliceEnd: number;
+  consequences: PredictedMolecularConsequenceInResponse['consequences'];
 };
 
 const SEQUENCE_LETTER_WIDTH = 16;
 
 /**
  * TODO:
- * - Ellipses
  * - Protein stable id on the right
+ * - Inspect the list of consequences, and only show the arrow up if the variant is an in-frame insertion
+ * - Long variants
+ *    http://localhost:8080/entity-viewer/grch38/variant:14:91234215:rs1555409827?allele=0&view=transcript-consequences
+ * - Base the direction of the arrow
+ *
+ *
+ * DISCOVERED PROBLEMS:
+ * - http://localhost:8080/entity-viewer/grch38/variant:1:964529:rs1642816219?allele=0&view=transcript-consequences
+ *   (notice that variant is displayed in exon 11 in transcript diagram; but in exon 12 in CDS diagram)
  */
 
 const TranscriptVariantProtein = (props: Props) => {
@@ -65,6 +76,8 @@ const ProteinSequence = (props: Props) => {
   const {
     proteinSequence,
     distanceToProteinSliceStart,
+    distanceToProteinSliceEnd,
+    proteinLength,
     variantStart,
     variantEnd
   } = props;
@@ -76,17 +89,64 @@ const ProteinSequence = (props: Props) => {
   });
 
   const variantStartIndex = distanceToProteinSliceStart;
-  const variantLength = variantEnd - variantStart; // FIXME: plus 1?
-  const variantEndIndex = variantStartIndex + variantLength;
+  const variantLength = variantEnd - variantStart + 1; // FIXME: plus 1?
+  const variantEndIndex = variantStartIndex + variantLength - 1;
 
-  const letterBlocks = proteinSequence.split('').map((letter, index) => {
-    const isWithinVariant =
-      index >= variantStartIndex && index <= variantEndIndex;
+  const flankingSequenceLeft = proteinSequence.slice(0, variantStartIndex);
+  const flankingSequenceRight = proteinSequence.slice(variantEndIndex + 1);
+  const referenceVariantSequence = proteinSequence.slice(
+    variantStartIndex,
+    variantEndIndex + 1
+  );
 
-    const letterBlockClasses = classNames(styles.letter, {
-      [styles.letterReferenceAllele]: isWithinVariant,
-      [styles.letterFlankingSequence]: !isWithinVariant
-    });
+  const containerStyles = {
+    marginLeft: `${offsetLeft}px`
+  };
+
+  return (
+    <div style={containerStyles}>
+      <FlankingSequence
+        sequence={flankingSequenceLeft}
+        position="left"
+        hasEllipsis={variantStart - distanceToProteinSliceStart > 1}
+      />
+      <ReferenceVariantSequence sequence={referenceVariantSequence} />
+      <FlankingSequence
+        sequence={flankingSequenceRight}
+        position="right"
+        hasEllipsis={variantEnd + distanceToProteinSliceEnd < proteinLength}
+      />
+    </div>
+  );
+};
+
+const FlankingSequence = ({
+  sequence,
+  position,
+  hasEllipsis
+}: {
+  sequence: string;
+  position: 'left' | 'right';
+  hasEllipsis: boolean;
+}) => {
+  const letters = sequence.split('');
+  if (hasEllipsis && position === 'left') {
+    letters[0] = '...';
+  } else if (hasEllipsis && position === 'right') {
+    letters[letters.length - 1] = '...';
+  }
+
+  const letterBlocks = letters.map((letter, index) => {
+    // NOTICE: we are using individual dot characters instead of a single ellipsis character,
+    // so that we can control the distance between the dots
+
+    const letterBlockClasses = classNames(
+      styles.letter,
+      styles.letterFlankingSequence,
+      {
+        [styles.ellipsis]: letter === '...'
+      }
+    );
 
     return (
       <SequenceLetterBlock
@@ -97,11 +157,65 @@ const ProteinSequence = (props: Props) => {
     );
   });
 
-  const containerStyles = {
-    marginLeft: `${offsetLeft}px`
-  };
+  return letterBlocks;
+};
 
-  return <div style={containerStyles}>{letterBlocks}</div>;
+const ReferenceVariantSequence = ({ sequence }: { sequence: string }) => {
+  const letters = sequence.split('');
+
+  if (sequence.length <= MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return <ReferenceVariantLetterBlocks letters={letters} />;
+  }
+
+  const variantHalfWidth = Math.floor(MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2);
+  const lettersLeft = letters.slice(0, variantHalfWidth - 2); // expect eight letters
+  const lettersRight = letters.slice(letters.length - (variantHalfWidth - 2)); // expect eight letters
+
+  const letterBlocksLeft = (
+    <ReferenceVariantLetterBlocks letters={lettersLeft} />
+  );
+  const letterBlocksRight = (
+    <ReferenceVariantLetterBlocks letters={lettersRight} />
+  );
+
+  const middleBlock = (
+    <>
+      <ReferenceVariantLetterBlocks letters={['.']} />
+      <span>
+        <span className={styles.referenceVariantSequenceLength}>
+          {/**
+           * showing the length of the full variant sequence here,
+           * despite slices of the sequence shown to the left and the right
+           */}
+          {sequence.length}
+        </span>{' '}
+        <span className={styles.referenceVariantSequenceLabel}>altered</span>
+      </span>
+      <ReferenceVariantLetterBlocks letters={['.']} />
+    </>
+  );
+
+  return (
+    <>
+      {letterBlocksLeft}
+      {middleBlock}
+      {letterBlocksRight}
+    </>
+  );
+};
+
+const ReferenceVariantLetterBlocks = ({ letters }: { letters: string[] }) => {
+  const letterBlockClasses = classNames(
+    styles.letter,
+    styles.letterReferenceAllele
+  );
+  return letters.map((letter, index) => (
+    <SequenceLetterBlock
+      key={index}
+      letter={letter}
+      className={letterBlockClasses}
+    />
+  ));
 };
 
 /**
@@ -113,6 +227,10 @@ const ProteinSequence = (props: Props) => {
  * - inframe insertion with protein consequence: http://localhost:8080/entity-viewer/grch38/variant:1:924510:rs1405511870?allele=0&view=transcript-consequences
  * - synonymous SNV: http://localhost:8080/entity-viewer/grch38/variant:1:2194735:rs886654766?allele=0&view=transcript-consequences
  * - insertion: http://localhost:8080/entity-viewer/grch38/variant:1:2193889:rs1688548931?allele=0&view=transcript-consequences
+ * - in-frame insertion (showing number): http://localhost:8080/entity-viewer/grch38/variant:1:924510:rs1405511870?allele=0&view=transcript-consequences
+ *
+ * - unknown protein location start: 1:999609:rs1463383567
+ * - unknown protein location end: 1:964529:rs1642816219
  */
 const ProteinImpact = (props: Props) => {
   const { variantSequence, alleleType, variantStart, variantEnd } = props;
@@ -128,15 +246,23 @@ const ProteinImpact = (props: Props) => {
     // A sequence containing the letter X is interpreted as an unknown sequence.
     // When no sequence is provided, the result is also unknown
     changedSequence = (
-      <div className={styles.changedSequenceBlock}>Uncertain</div>
+      <div className={styles.changedSequenceBlock}>uncertain</div>
     );
   } else if (
-    variantSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH ||
-    ['deletion', 'insertion'].includes(alleleType)
+    variantSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH &&
+    alleleType !== 'deletion'
   ) {
+    /* show the number of inserted / changed amino acids */
     changedSequence = (
       <div className={styles.changedSequenceBlock}>
         {variantSequence.length}
+      </div>
+    );
+  } else if (alleleType === 'deletion') {
+    /* deletion shows the number of deleted amino acids */
+    changedSequence = (
+      <div className={styles.changedSequenceBlock}>
+        {variantEnd - variantStart + 1}
       </div>
     );
   } else {
@@ -208,7 +334,9 @@ const getSequenceOffsetLeft = (params: {
   const { variantStart, variantEnd, distanceToProteinSliceStart } = params;
   const variantLength = variantEnd - variantStart + 1;
 
-  const variantSeqLeftHalfLength = Math.floor(variantLength / 2);
+  const variantSeqLeftHalfLength = Math.floor(
+    Math.min(variantLength, MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) / 2
+  );
   const halfMaxDisplayedSequenceLength = Math.floor(
     DISPLAYED_REFERENCE_SEQUENCE_LENGTH / 2
   );

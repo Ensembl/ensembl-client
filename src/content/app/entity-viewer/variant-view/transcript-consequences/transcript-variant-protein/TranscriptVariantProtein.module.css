@@ -16,6 +16,11 @@
   margin-left: 1px;
 }
 
+/* should probably move this to common styles */
+.ellipsis {
+  letter-spacing: -3px;
+}
+
 .changedSequenceContainer {
   position: relative;
   display: inline-block;
@@ -53,6 +58,16 @@
 
 .altAlleleLetter {
   --sequence-block-color: var(--color-dark-grey);
+}
+
+.referenceVariantSequenceLength {
+  font-family: var(--font-family-monospace);
+  font-size: 10px;
+}
+
+.referenceVariantSequenceLabel {
+  font-size: 10px;
+  font-weight: var(--font-weight-light);
 }
 
 /* FIXME: remove the classes for alt allele arrow

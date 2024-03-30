@@ -80,11 +80,13 @@ const TranscriptConsequenceDetails = (props: Props) => {
           alleleType={allele.allele_type.value}
           proteinId={proteinData.proteinStableId}
           proteinSequence={proteinData.proteinSequence}
+          proteinLength={proteinData.proteinLength}
           variantSequence={proteinData.variantAltSequence}
           variantStart={proteinData.variantStart}
           variantEnd={proteinData.variantEnd}
           distanceToProteinSliceStart={proteinData.distanceToProteinSliceStart}
           distanceToProteinSliceEnd={proteinData.distanceToProteinSliceEnd}
+          consequences={transcriptConsequences.consequences}
         />
       )}
 

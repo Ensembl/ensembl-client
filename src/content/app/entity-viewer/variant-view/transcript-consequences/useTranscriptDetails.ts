@@ -305,6 +305,7 @@ const useProteinData = (params: {
   const currentData = {
     ...proteinSliceCoordinates,
     proteinStableId: proteinId,
+    proteinLength: proteinLength as number, // at this point, there is a protein,
     proteinSequence: proteinSequence as string, // at this point, protein sequence will be a string
     variantStart: (variantStart || variantEnd) as number, // if start is not known, make it the same as the end
     variantEnd: (variantEnd || variantStart) as number, // if end is not known, make it the same as the start
