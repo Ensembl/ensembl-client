@@ -47,11 +47,6 @@ const SEQUENCE_LETTER_WIDTH = 16;
 /**
  * TODO:
  * - Protein stable id on the right
- * - Inspect the list of consequences, and only show the arrow up if the variant is an in-frame insertion
- * - Long variants
- *    http://localhost:8080/entity-viewer/grch38/variant:14:91234215:rs1555409827?allele=0&view=transcript-consequences
- * - Base the direction of the arrow
- *
  *
  * DISCOVERED PROBLEMS:
  * - http://localhost:8080/entity-viewer/grch38/variant:1:964529:rs1642816219?allele=0&view=transcript-consequences
@@ -70,6 +65,7 @@ const TranscriptVariantProtein = (props: Props) => {
           <ProteinImpact {...props} />
         </div>
       </div>
+      <div className={commonStyles.right}>{props.proteinId}</div>
     </div>
   );
 };
@@ -229,7 +225,7 @@ const ReferenceVariantLetterBlocks = ({ letters }: { letters: string[] }) => {
  * - inframe insertion with protein consequence: http://localhost:8080/entity-viewer/grch38/variant:1:924510:rs1405511870?allele=0&view=transcript-consequences
  * - synonymous SNV: http://localhost:8080/entity-viewer/grch38/variant:1:2194735:rs886654766?allele=0&view=transcript-consequences
  * - insertion: http://localhost:8080/entity-viewer/grch38/variant:1:2193889:rs1688548931?allele=0&view=transcript-consequences
- * - in-frame insertion (showing number): http://localhost:8080/entity-viewer/grch38/variant:1:924510:rs1405511870?allele=0&view=transcript-consequences
+ * - long variant http://localhost:8080/entity-viewer/grch38/variant:14:91234215:rs1555409827?allele=0&view=transcript-consequences
  *
  * - unknown protein location start: 1:999609:rs1463383567
  * - unknown protein location end: 1:964529:rs1642816219
