@@ -44,17 +44,6 @@ type Props = {
 
 const SEQUENCE_LETTER_WIDTH = 16;
 
-/**
- * TODO:
- * - Protein stable id on the right
- *
- * DISCOVERED PROBLEMS:
- * - http://localhost:8080/entity-viewer/grch38/variant:1:964529:rs1642816219?allele=0&view=transcript-consequences
- *   (notice that variant is displayed in exon 11 in transcript diagram; but in exon 12 in CDS diagram)
- * - http://localhost:8080/entity-viewer/grch38/variant:13:32341046:rs1057517557?allele=0&view=transcript-consequences
- *   (same disagreement between CDS and the transcript diagram)
- */
-
 const TranscriptVariantProtein = (props: Props) => {
   return (
     <div className={commonStyles.row}>
@@ -216,20 +205,6 @@ const ReferenceVariantLetterBlocks = ({ letters }: { letters: string[] }) => {
   ));
 };
 
-/**
- * - different for different allele types
- * - label: "Protein impact"
- *
- * Examples:
- * - substitution (2 nucleotides; 1 AA): http://localhost:8080/entity-viewer/grch38/variant:13:32341046:rs1057517557?allele=0&view=transcript-consequences
- * - inframe insertion with protein consequence: http://localhost:8080/entity-viewer/grch38/variant:1:924510:rs1405511870?allele=0&view=transcript-consequences
- * - synonymous SNV: http://localhost:8080/entity-viewer/grch38/variant:1:2194735:rs886654766?allele=0&view=transcript-consequences
- * - insertion: http://localhost:8080/entity-viewer/grch38/variant:1:2193889:rs1688548931?allele=0&view=transcript-consequences
- * - long variant http://localhost:8080/entity-viewer/grch38/variant:14:91234215:rs1555409827?allele=0&view=transcript-consequences
- *
- * - unknown protein location start: 1:999609:rs1463383567
- * - unknown protein location end: 1:964529:rs1642816219
- */
 const ProteinImpact = (props: Props) => {
   const {
     variantSequence,
@@ -238,12 +213,6 @@ const ProteinImpact = (props: Props) => {
     variantEnd,
     consequences
   } = props;
-  /**
-   * - uncertain
-   * - number
-   * -
-   */
-
   // For protein sequences, only treat in-frame insertions as insertions
   // An insertion that has caused a frame shift will be treated differently (with a consequence being marked as "uncertain").
   const isInframeInsertion = consequences.some(
