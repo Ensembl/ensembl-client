@@ -87,7 +87,7 @@ const ProteinSequence = (props: Props) => {
   });
 
   const variantStartIndex = distanceToProteinSliceStart;
-  const variantLength = variantEnd - variantStart + 1; // FIXME: plus 1?
+  const variantLength = variantEnd - variantStart + 1;
   const variantEndIndex = variantStartIndex + variantLength - 1;
 
   const flankingSequenceLeft = proteinSequence.slice(0, variantStartIndex);
