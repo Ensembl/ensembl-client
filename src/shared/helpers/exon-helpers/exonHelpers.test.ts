@@ -20,6 +20,7 @@ import * as example1 from './fixtures/exons-cds-data-1';
 import * as example2 from './fixtures/exons-cds-data-2';
 import * as example3 from './fixtures/exons-cds-data-3';
 import * as example4 from './fixtures/exons-cds-data-4';
+import * as example5 from './fixtures/exons-cds-data-5';
 
 describe('addRelativeLocationInCDSToExons', () => {
   test('transcript with a single exon and no UTRs ', () => {
@@ -67,5 +68,14 @@ describe('addRelativeLocationInCDSToExons', () => {
     expect(totalLength).toBe(example4.cds.nucleotide_length);
 
     expect(result).toEqual(example4.exonsWithRelativeLocationInCDS);
+  });
+
+  test('transcript with two exons and no UTRs', () => {
+    const result = addRelativeLocationInCDSToExons({
+      exons: example5.exons,
+      cds: example5.cds
+    });
+
+    expect(result).toEqual(example5.exonsWithRelativeLocationInCDS);
   });
 });

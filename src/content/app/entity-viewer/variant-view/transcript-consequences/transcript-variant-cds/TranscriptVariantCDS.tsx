@@ -71,8 +71,16 @@ const EXON_BLOCK_OFFSET_TOP = (VARIANT_MARKER_HEIGHT - EXON_BLOCK_HEIGHT) / 2;
 const TranscriptVariantCDS = (props: Props) => {
   const { exons, allele, cds } = props;
 
-  const scale = scaleLinear()
+  // length's domain is between 0 and the length of the CDS
+  const lengthScale = scaleLinear()
     .domain([0, cds.nucleotide_length])
+    .range([0, DIAGRAM_WIDTH])
+    .interpolate(interpolateRound)
+    .clamp(true);
+
+  // meanwhile, since position starts at 1, the position scale is between 1 and the length of the CDS
+  const positionScale = scaleLinear()
+    .domain([1, cds.nucleotide_length])
     .range([0, DIAGRAM_WIDTH])
     .interpolate(interpolateRound)
     .clamp(true);
@@ -80,7 +88,7 @@ const TranscriptVariantCDS = (props: Props) => {
   const exonsWithWidths = getExonWidths({
     exons,
     containerWidth: DIAGRAM_WIDTH,
-    scale
+    scale: lengthScale
   });
 
   return (
@@ -95,7 +103,7 @@ const TranscriptVariantCDS = (props: Props) => {
       <VariantMark
         exons={exonsWithWidths}
         allele={allele}
-        scale={scale}
+        scale={positionScale}
         containerWidth={DIAGRAM_WIDTH}
       />
     </svg>

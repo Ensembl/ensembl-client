@@ -496,7 +496,7 @@ describe('functions splitting genomic sequence into parts', () => {
     ).toBe(expectedVariantSeq);
   });
 
-  test('Insertion, near forward-strand start, forward strand', () => {
+  test('insertion, near forward-strand start, forward strand', () => {
     const sequence = 'GCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 30 characters
 
     const expectedLeftFlankingSeq = 'GCGGGGTCC'; // first 9 characters
@@ -529,7 +529,7 @@ describe('functions splitting genomic sequence into parts', () => {
     ).toBe(expectedVariantSeq);
   });
 
-  test('Insertion, near forward-strand start, reverse strand', () => {
+  test('insertion, near forward-strand start, reverse strand', () => {
     const sequence = 'GCGGGGTCCAGCAGGCAGGCTCCGGCCGTG'; // 30 characters
 
     const expectedLeftFlankingSeq = getReverseComplement(
@@ -559,6 +559,39 @@ describe('functions splitting genomic sequence into parts', () => {
         sequence,
         distanceToSliceStart: 9,
         distanceToSliceEnd: 21,
+        strand: 'reverse'
+      })
+    ).toBe(expectedVariantSeq);
+  });
+
+  test('allele starts at the start of genomic slice, reverse strand', () => {
+    const sequence = 'TCTCTCACACAGTAATACATG'; // 21 characters
+
+    const expectedLeftFlankingSeq = getReverseComplement(sequence).slice(0, 20);
+    const expectedVariantSeq = getReverseComplement(sequence)[20];
+    const expectedRightFlankingSeq = '';
+
+    expect(
+      getLeftFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 0,
+        distanceToSliceEnd: 20,
+        strand: 'reverse'
+      })
+    ).toBe(expectedLeftFlankingSeq);
+    expect(
+      getRightFlankingGenomicSequence({
+        sequence,
+        distanceToSliceStart: 0,
+        distanceToSliceEnd: 20,
+        strand: 'reverse'
+      })
+    ).toBe(expectedRightFlankingSeq);
+    expect(
+      getReferenceAlleleGenomicSequence({
+        sequence,
+        distanceToSliceStart: 0,
+        distanceToSliceEnd: 20,
         strand: 'reverse'
       })
     ).toBe(expectedVariantSeq);

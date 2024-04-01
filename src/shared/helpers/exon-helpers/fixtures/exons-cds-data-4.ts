@@ -244,97 +244,97 @@ export const exonsWithRelativeLocationInCDS = [
   {
     index: 3,
     relative_location: { start: 3570, end: 3818 },
-    relative_location_in_cds: { start: 67, end: 315, length: 249 }
+    relative_location_in_cds: { start: 68, end: 316, length: 249 }
   },
   {
     index: 4,
     relative_location: { start: 9569, end: 9677 },
-    relative_location_in_cds: { start: 315, end: 423, length: 109 }
+    relative_location_in_cds: { start: 317, end: 425, length: 109 }
   },
   {
     index: 5,
     relative_location: { start: 10594, end: 10643 },
-    relative_location_in_cds: { start: 423, end: 472, length: 50 }
+    relative_location_in_cds: { start: 426, end: 475, length: 50 }
   },
   {
     index: 6,
     relative_location: { start: 10735, end: 10775 },
-    relative_location_in_cds: { start: 472, end: 512, length: 41 }
+    relative_location_in_cds: { start: 476, end: 516, length: 41 }
   },
   {
     index: 7,
     relative_location: { start: 10992, end: 11106 },
-    relative_location_in_cds: { start: 512, end: 626, length: 115 }
+    relative_location_in_cds: { start: 517, end: 631, length: 115 }
   },
   {
     index: 8,
     relative_location: { start: 13936, end: 13985 },
-    relative_location_in_cds: { start: 626, end: 675, length: 50 }
+    relative_location_in_cds: { start: 632, end: 681, length: 50 }
   },
   {
     index: 9,
     relative_location: { start: 15412, end: 15523 },
-    relative_location_in_cds: { start: 675, end: 786, length: 112 }
+    relative_location_in_cds: { start: 682, end: 793, length: 112 }
   },
   {
     index: 10,
     relative_location: { start: 16765, end: 17880 },
-    relative_location_in_cds: { start: 786, end: 1901, length: 1116 }
+    relative_location_in_cds: { start: 794, end: 1909, length: 1116 }
   },
   {
     index: 11,
     relative_location: { start: 20758, end: 25689 },
-    relative_location_in_cds: { start: 1901, end: 6832, length: 4932 }
+    relative_location_in_cds: { start: 1910, end: 6841, length: 4932 }
   },
   {
     index: 12,
     relative_location: { start: 29051, end: 29146 },
-    relative_location_in_cds: { start: 6832, end: 6927, length: 96 }
+    relative_location_in_cds: { start: 6842, end: 6937, length: 96 }
   },
   {
     index: 13,
     relative_location: { start: 31320, end: 31389 },
-    relative_location_in_cds: { start: 6927, end: 6996, length: 70 }
+    relative_location_in_cds: { start: 6938, end: 7007, length: 70 }
   },
   {
     index: 14,
     relative_location: { start: 39354, end: 39781 },
-    relative_location_in_cds: { start: 6996, end: 7423, length: 428 }
+    relative_location_in_cds: { start: 7008, end: 7435, length: 428 }
   },
   {
     index: 15,
     relative_location: { start: 40921, end: 41102 },
-    relative_location_in_cds: { start: 7423, end: 7604, length: 182 }
+    relative_location_in_cds: { start: 7436, end: 7617, length: 182 }
   },
   {
     index: 16,
     relative_location: { start: 42235, end: 42422 },
-    relative_location_in_cds: { start: 7604, end: 7791, length: 188 }
+    relative_location_in_cds: { start: 7618, end: 7805, length: 188 }
   },
   {
     index: 17,
     relative_location: { start: 47016, end: 47186 },
-    relative_location_in_cds: { start: 7791, end: 7961, length: 171 }
+    relative_location_in_cds: { start: 7806, end: 7976, length: 171 }
   },
   {
     index: 18,
     relative_location: { start: 47672, end: 48026 },
-    relative_location_in_cds: { start: 7961, end: 8315, length: 355 }
+    relative_location_in_cds: { start: 7977, end: 8331, length: 355 }
   },
   {
     index: 19,
     relative_location: { start: 54895, end: 55050 },
-    relative_location_in_cds: { start: 8315, end: 8470, length: 156 }
+    relative_location_in_cds: { start: 8332, end: 8487, length: 156 }
   },
   {
     index: 20,
     relative_location: { start: 55449, end: 55593 },
-    relative_location_in_cds: { start: 8470, end: 8614, length: 145 }
+    relative_location_in_cds: { start: 8488, end: 8632, length: 145 }
   },
   {
     index: 21,
     relative_location: { start: 59455, end: 59703 },
-    relative_location_in_cds: { start: 8614, end: 8732, length: 119 }
+    relative_location_in_cds: { start: 8633, end: 8751, length: 119 }
   },
   {
     index: 22,
