@@ -467,7 +467,7 @@ CleanUpReview:
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
   except:
     - dev
-    - main
+    - master
 
 
 # Create a review deployment (runs once per new branch)
