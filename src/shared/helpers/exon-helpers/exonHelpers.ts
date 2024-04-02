@@ -47,7 +47,7 @@ export const addRelativeLocationInCDSToExons = <
   const cds = params.cds;
   const exons = structuredClone(params.exons);
 
-  let lastPositionInCDS = 1;
+  let lastPositionInCDS = 0;
 
   for (const exon of exons) {
     if (doesExonIncludeCDS({ exon, cds })) {
@@ -86,7 +86,7 @@ export const addRelativeLocationInCDSToExons = <
       !isExonEndWithinCDS({ exon, cds })
     ) {
       // last exon in CDS
-      const relativeStart = lastPositionInCDS;
+      const relativeStart = lastPositionInCDS + 1;
       const remainingExonLength =
         cds.relative_end - exon.relative_location.start + 1;
       const relativeEnd = relativeStart + remainingExonLength - 1;
@@ -98,7 +98,7 @@ export const addRelativeLocationInCDSToExons = <
       };
     } else {
       // exon fully within CDS
-      const relativeStart = lastPositionInCDS;
+      const relativeStart = lastPositionInCDS + 1;
       const exonLength =
         exon.relative_location.end - exon.relative_location.start + 1;
       const relativeEnd = relativeStart + exonLength - 1;

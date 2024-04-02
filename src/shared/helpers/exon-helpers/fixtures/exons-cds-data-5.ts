@@ -14,44 +14,60 @@
  * limitations under the License.
  */
 
-/**
- * A transcript of a human gene, with two exons, both have UTRs
- */
+// Exons of human transcript ENST00000622028.1
+// It is a protein-coding transcript with no UTRs
 
-// Exons of transcript ENST00000381033.5
 export const exons = [
   {
     index: 1,
     relative_location: {
       start: 1,
-      end: 545
+      end: 46,
+      length: 46
     }
   },
   {
     index: 2,
     relative_location: {
-      start: 4257,
-      end: 6314
+      start: 130,
+      end: 436,
+      length: 307
     }
   }
 ];
 
 export const cds = {
-  relative_start: 140,
-  relative_end: 4702,
-  nucleotide_length: 852
+  relative_start: 1,
+  relative_end: 436,
+  nucleotide_length: 353
 };
 
 // The expected result
 export const exonsWithRelativeLocationInCDS = [
   {
     index: 1,
-    relative_location: { start: 1, end: 545 },
-    relative_location_in_cds: { start: 1, end: 406, length: 406 }
+    relative_location: {
+      start: 1,
+      end: 46,
+      length: 46
+    },
+    relative_location_in_cds: {
+      start: 1,
+      end: 46,
+      length: 46
+    }
   },
   {
     index: 2,
-    relative_location: { start: 4257, end: 6314 },
-    relative_location_in_cds: { start: 407, end: 852, length: 446 }
+    relative_location: {
+      start: 130,
+      end: 436,
+      length: 307
+    },
+    relative_location_in_cds: {
+      start: 47,
+      end: 353,
+      length: 307
+    }
   }
 ];

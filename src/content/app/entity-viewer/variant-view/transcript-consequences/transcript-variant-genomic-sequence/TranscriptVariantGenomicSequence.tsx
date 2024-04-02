@@ -37,6 +37,9 @@ type Props = {
   variantToTranscriptEndDistance: number;
 };
 
+const SEQUENCE_LETTER_WIDTH = 16;
+const SEQUENCE_LETTER_RIGHT_MARGIN = 1;
+
 const TranscriptVariantGenomicSequence = (props: Props) => {
   const {
     leftFlankingSequence,
@@ -49,12 +52,21 @@ const TranscriptVariantGenomicSequence = (props: Props) => {
     alleleType
   } = props;
 
+  const leftOffsetInLetters = calculateLeftOffset({
+    flankingSequence: leftFlankingSequence,
+    variantSequence
+  });
+  const leftOffsetInPx = leftOffsetInLetters
+    ? leftOffsetInLetters * SEQUENCE_LETTER_WIDTH +
+      leftOffsetInLetters * SEQUENCE_LETTER_RIGHT_MARGIN
+    : undefined;
+  const leftOffset = leftOffsetInPx ? `${leftOffsetInPx}px` : undefined;
+
   return (
     <div className={styles.diagramContainer}>
-      <div>
+      <div style={{ marginLeft: leftOffset }}>
         <LeftFlankingSequence
           flankingSequence={leftFlankingSequence}
-          variantSequence={variantSequence}
           variantToTranscriptStartDistance={variantToTranscriptStartDistance}
         />
         <ReferenceAlleleSequence sequence={variantSequence} />
@@ -75,19 +87,11 @@ const TranscriptVariantGenomicSequence = (props: Props) => {
 
 const LeftFlankingSequence = ({
   flankingSequence,
-  variantSequence,
   variantToTranscriptStartDistance
 }: {
   flankingSequence: string;
-  variantSequence: string;
   variantToTranscriptStartDistance: number;
 }) => {
-  const leftOffset = calculateLeftOffset({
-    flankingSequence,
-    variantSequence
-  });
-  const marginLeft = leftOffset ? `${leftOffset}px` : undefined;
-
   const letters = flankingSequence.split('');
 
   const letterClasses = classNames(
@@ -112,7 +116,6 @@ const LeftFlankingSequence = ({
       letter={letter}
       key={index}
       className={hasEllipsis && index === 0 ? ellipsisClasses : letterClasses}
-      style={index === 0 && marginLeft ? { marginLeft } : undefined}
     />
   ));
 };
@@ -345,7 +348,7 @@ const getAltAlleleAnchorPosition = ({
   refAlleleSequence: string;
   variantType: string;
 }) => {
-  const letterWidth = 16;
+  const letterWidth = SEQUENCE_LETTER_WIDTH;
   const halfGenomicSequenceLength = Math.ceil(
     DISPLAYED_REFERENCE_SEQUENCE_LENGTH / 2
   );

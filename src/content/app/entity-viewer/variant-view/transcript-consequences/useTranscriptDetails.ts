@@ -412,9 +412,11 @@ export const getLeftFlankingGenomicSequence = ({
   strand: 'forward' | 'reverse';
 }) => {
   if (strand === 'forward') {
-    return sequence.slice(0, distanceToSliceStart);
+    return distanceToSliceStart ? sequence.slice(0, distanceToSliceStart) : '';
   } else {
-    return getReverseComplement(sequence).slice(0, distanceToSliceEnd);
+    return distanceToSliceEnd
+      ? getReverseComplement(sequence).slice(0, distanceToSliceEnd)
+      : '';
   }
 };
 
@@ -430,9 +432,11 @@ export const getRightFlankingGenomicSequence = ({
   strand: 'forward' | 'reverse';
 }) => {
   if (strand === 'forward') {
-    return sequence.slice(-1 * distanceToSliceEnd);
+    return distanceToSliceEnd ? sequence.slice(-1 * distanceToSliceEnd) : '';
   } else {
-    return getReverseComplement(sequence).slice(-1 * distanceToSliceStart);
+    return distanceToSliceStart
+      ? getReverseComplement(sequence).slice(-1 * distanceToSliceStart)
+      : '';
   }
 };
 
