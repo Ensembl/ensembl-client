@@ -477,6 +477,7 @@ SetupReview:
     name: development
   variables:
     AGENT: ${DEV_AGENT}
+    DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && 

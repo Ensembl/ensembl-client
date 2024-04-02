@@ -14,6 +14,7 @@
     - cd ensembl-k8s-manifests
     - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
     - cp review-setup/*.yaml ./
+    - kustomize edit set namespace ${DEV_NAMESPACE}
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
     - kubectl apply -k .
 
