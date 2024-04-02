@@ -6,37 +6,37 @@
   before_script:
     - kubectl config use-context ${AGENT}
     - git clone --depth 1 --branch k8s123-migration https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - kubectl create namespace ${NAMESPACE} || true # Carry on even if namespace already exists
-    - kubectl config set-context --current --namespace=${NAMESPACE}
+    - kubectl create namespace ${NAMESPACE} || true # Carry on even if review namespace already exists
+    - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
     
   script:
     # Setup Ingress for default backend
     - cd ensembl-k8s-manifests
-    - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
+    - sed -i "s#<HOST>#${NAMESPACE}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
     - cp review-setup/*.yaml ./
     - kustomize edit set namespace ${DEV_NAMESPACE}
-    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize edit set namesuffix -- -${NAMESPACE}
     - kubectl apply -k .
 
     # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
     - cp genome-browser/review/hi/*.yaml ./
-    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize edit set namesuffix -- -${NAMESPACE}
     - kubectl apply -k .
 
     - echo "GENOME-BROWSER LO"
     - cp genome-browser/review/lo/*.yaml ./
-    - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
+    - kustomize edit set namesuffix -- -${NAMESPACE}
     - kubectl apply -k .
     
     # Deploy nginx & node to review namespace
     - echo "NGINX & NODE"
     - mv kustomization-ensembl-client.yaml kustomization.yaml
-    - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
+    - kustomize edit set namespace ${NAMESPACE}
     - kubectl apply -k .
 
     # Setup ebi dockerhub credentials in review ns (for non-default backend deployments)
-    - kubectl -n ${CI_COMMIT_REF_SLUG} create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
+    - kubectl -n ${NAMESPACE} create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
 
   after_script:
     - cd ../../
