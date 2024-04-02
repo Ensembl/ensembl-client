@@ -313,6 +313,9 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
         <div key={index}>
           <div
             className={classnames(styles.row, {
+              [styles.rowCollapsed]: !expandedIds.has(
+                consequencesForSingleTranscript.stable_id
+              ),
               [styles.rowExpanded]: expandedIds.has(
                 consequencesForSingleTranscript.stable_id
               )

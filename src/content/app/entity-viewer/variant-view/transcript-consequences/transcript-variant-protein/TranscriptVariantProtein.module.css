@@ -1,3 +1,7 @@
+.diagramContainer {
+  margin-bottom: 50px;
+}
+
 .letter {
   --sequence-block-color: transparent;
   font-size: 11px;

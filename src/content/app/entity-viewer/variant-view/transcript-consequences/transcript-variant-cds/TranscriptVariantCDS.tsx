@@ -89,6 +89,7 @@ const TranscriptVariantCDS = (props: Props) => {
       height={DIAGRAM_HEIGHT}
       viewBox={`0 0 ${DIAGRAM_WIDTH} ${DIAGRAM_HEIGHT}`}
       overflow="visible"
+      className={styles.diagram}
     >
       <Exons exons={exonsWithWidths} />
       <VariantMark

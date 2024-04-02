@@ -1,3 +1,7 @@
+.diagram {
+  margin-bottom: 50px;
+}
+
 .exonBlock {
   fill: var(--color-grey);
 }

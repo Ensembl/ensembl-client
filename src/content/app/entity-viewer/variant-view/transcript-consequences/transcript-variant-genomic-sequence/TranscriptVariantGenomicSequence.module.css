@@ -1,3 +1,7 @@
+.diagramContainer {
+  margin-bottom: 20px;
+}
+
 .letter {
   --sequence-block-color: transparent;
   --sequence-block-letter-color: var(--color-black);

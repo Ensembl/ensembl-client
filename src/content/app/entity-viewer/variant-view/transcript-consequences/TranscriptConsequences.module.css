@@ -87,6 +87,10 @@
   position: relative;
 }
 
+.rowCollapsed {
+  margin-bottom: 5px;
+}
+
 .rowExpanded {
   padding-bottom: 30px;
 }

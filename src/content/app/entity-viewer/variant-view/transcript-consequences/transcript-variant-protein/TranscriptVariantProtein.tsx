@@ -49,7 +49,7 @@ const TranscriptVariantProtein = (props: Props) => {
     <div className={commonStyles.row}>
       <div className={commonStyles.left}>Protein</div>
       <div className={commonStyles.middle}>
-        <div>
+        <div className={styles.diagramContainer}>
           <ProteinSequence {...props} />
           <ProteinImpact {...props} />
         </div>
