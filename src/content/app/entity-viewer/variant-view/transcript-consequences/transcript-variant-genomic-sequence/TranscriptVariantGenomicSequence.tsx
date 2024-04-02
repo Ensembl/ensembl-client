@@ -50,7 +50,7 @@ const TranscriptVariantGenomicSequence = (props: Props) => {
   } = props;
 
   return (
-    <div>
+    <div className={styles.diagramContainer}>
       <div>
         <LeftFlankingSequence
           flankingSequence={leftFlankingSequence}
@@ -369,8 +369,8 @@ const getAltAlleleAnchorPosition = ({
   return refAlleleSequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH
     ? offsetForOddLengthVariant
     : refAlleleSequence.length % 2 === 0
-    ? offsetForEvenLengthVariant
-    : offsetForOddLengthVariant;
+      ? offsetForEvenLengthVariant
+      : offsetForOddLengthVariant;
 };
 
 export default TranscriptVariantGenomicSequence;

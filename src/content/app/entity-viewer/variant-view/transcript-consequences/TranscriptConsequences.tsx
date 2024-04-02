@@ -192,7 +192,7 @@ const TranscriptConsequencesPerGene = (props: {
           </div>
         </div>
         <div className={classnames(styles.right, styles.transcriptsCount)}>
-          <span>{transcriptConsCount}</span>
+          <span>{transcriptConsCount}</span>{' '}
           <span className={styles.label}>
             {pluralise('transcript', transcriptConsCount)}
           </span>
@@ -313,6 +313,9 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
         <div key={index}>
           <div
             className={classnames(styles.row, {
+              [styles.rowCollapsed]: !expandedIds.has(
+                consequencesForSingleTranscript.stable_id
+              ),
               [styles.rowExpanded]: expandedIds.has(
                 consequencesForSingleTranscript.stable_id
               )

@@ -112,6 +112,13 @@ export const transcriptForVariantTranscriptConsequencesQuery = gql`
           relative_end
           nucleotide_length
         }
+        product {
+          stable_id
+          length
+          sequence {
+            checksum
+          }
+        }
       }
     }
   }
@@ -177,6 +184,16 @@ type ProductGeneratingContextInTranscript = {
     nucleotide_length: NonNullable<
       FullProductGeneratingContext['cds']
     >['nucleotide_length'];
+  } | null;
+  product: {
+    stable_id: NonNullable<
+      FullProductGeneratingContext['product']
+    >['stable_id'];
+    length: NonNullable<FullProductGeneratingContext['product']>['length'];
+    sequence: Pick<
+      NonNullable<FullProductGeneratingContext['product']>['sequence'],
+      'checksum'
+    >;
   } | null;
 };
 

@@ -21,7 +21,8 @@ import {
   getDistanceToSliceEnd,
   getLeftFlankingGenomicSequence,
   getRightFlankingGenomicSequence,
-  getReferenceAlleleGenomicSequence
+  getReferenceAlleleGenomicSequence,
+  getProteinSliceCoordinates
 } from './useTranscriptDetails';
 
 describe('getDistanceToSliceStart', () => {
@@ -561,5 +562,67 @@ describe('functions splitting genomic sequence into parts', () => {
         strand: 'reverse'
       })
     ).toBe(expectedVariantSeq);
+  });
+});
+
+describe('getProteinSliceCoordinates', () => {
+  test('short variant near the start of protein, even length', () => {
+    expect(
+      getProteinSliceCoordinates({
+        variantStart: 2,
+        variantEnd: 5,
+        proteinLength: 100
+      })
+    ).toEqual({
+      proteinSliceStart: 1,
+      proteinSliceEnd: 24,
+      distanceToProteinSliceStart: 1,
+      distanceToProteinSliceEnd: 19
+    });
+  });
+
+  test('short variant near the start of protein, odd length', () => {
+    expect(
+      getProteinSliceCoordinates({
+        variantStart: 3,
+        variantEnd: 7,
+        proteinLength: 180
+      })
+    ).toEqual({
+      proteinSliceStart: 1,
+      proteinSliceEnd: 25,
+      distanceToProteinSliceStart: 2,
+      distanceToProteinSliceEnd: 18
+    });
+  });
+
+  test('short variant, far from both the start and the end of protein, even length', () => {
+    expect(
+      getProteinSliceCoordinates({
+        variantStart: 31,
+        variantEnd: 34,
+        proteinLength: 100
+      })
+    ).toEqual({
+      proteinSliceStart: 13,
+      proteinSliceEnd: 53,
+      distanceToProteinSliceStart: 18,
+      distanceToProteinSliceEnd: 19
+    });
+  });
+
+  test('short variant, near the end of protein, even length', () => {
+    expect(
+      getProteinSliceCoordinates({
+        variantStart: 93,
+        variantEnd: 96,
+        proteinLength: 100
+      })
+    ).toEqual({
+      proteinSliceStart: 75,
+      proteinSliceEnd: 100,
+      distanceToProteinSliceStart: 18,
+      distanceToProteinSliceEnd: 4
+    });
   });
 });
