@@ -154,17 +154,17 @@ variables:
     - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
   when: manual
   script:
-    - kubectl delete ingress compara-server-ingress-${NAMESPACE} || true
-    - kubectl delete ingress ensembl-help-docs-ingress-${NAMESPACE} || true
-    - kubectl delete ingress ensembl-in-app-search-api-ingress-${NAMESPACE} || true
-    - kubectl delete ingress ensembl-thoas-ingress-${NAMESPACE} || true
-    - kubectl delete ingress ensembl-tools-api-ingress-${NAMESPACE} || true
-    - kubectl delete ingress ensembl-track-api-ingress-${NAMESPACE} || true
-    - kubectl delete ingress genome-browser-server-${NAMESPACE}-hi || true
-    - kubectl delete ingress genome-browser-server-${NAMESPACE}-lo || true
-    - kubectl delete ingress metadata-api-ingress-${NAMESPACE} || true
-    - kubectl delete ingress refget-proxy-ingress-${NAMESPACE} || true
-    - kubectl delete ingress variation-graphql-ingress-${NAMESPACE} || true
+    - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi || true
+    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo || true
+    - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete namespace ${NAMESPACE}
 
 Test:
