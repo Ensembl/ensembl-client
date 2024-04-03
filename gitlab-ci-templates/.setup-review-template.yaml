@@ -6,8 +6,8 @@
   before_script:
     - kubectl config use-context ${AGENT}
     - git clone --depth 1 --branch k8s123-migration https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-    - kubectl create namespace ${NAMESPACE} || true # Carry on even if namespace already exists
-    - kubectl config set-context --current --namespace=${NAMESPACE}
+    - kubectl create namespace ${NAMESPACE} || true # Carry on even if review namespace already exists
+    - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
     
   script:
     # Setup Ingress for default backend
@@ -32,11 +32,11 @@
     # Deploy nginx & node to review namespace
     - echo "NGINX & NODE"
     - mv kustomization-ensembl-client.yaml kustomization.yaml
-    - kustomize edit set namespace ${CI_COMMIT_REF_SLUG}
+    - kustomize edit set namespace ${NAMESPACE}
     - kubectl apply -k .
 
     # Setup ebi dockerhub credentials in review ns (for non-default backend deployments)
-    - kubectl -n ${CI_COMMIT_REF_SLUG} create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
+    - kubectl -n ${NAMESPACE} create secret docker-registry ensemblweb-pull-secret --docker-server=${GITLAB_REGISTRY_URL} --docker-username=${WEB_PULL_DOCKER_USER} --docker-password=${WEB_PULL_DOCKER_SECRET} --docker-email=${WEB_PULL_DOCKER_EMAIL} || true
 
   after_script:
     - cd ../../

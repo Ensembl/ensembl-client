@@ -135,49 +135,47 @@ variables:
   before_script:
     - *gitlab-agent-setup-commands
   script:
-  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
-  - git -C ensembl-k8s-manifests/ checkout k8s123-migration
-  - cd ensembl-k8s-manifests/ensembl-client/nginx
-  - mv deployment_review.yaml deployment.yaml
-  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_IMAGE}
-  - kubectl apply -k ./
-  - cd ../node
-  - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
-  - kubectl apply -k ./
+    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - git -C ensembl-k8s-manifests/ checkout k8s123-migration
+    - cd ensembl-k8s-manifests/ensembl-client/nginx
+    - mv deployment_review.yaml deployment.yaml
+    - kustomize edit set image DOCKER_IMAGE=${CONTAINER_IMAGE}
+    - kubectl apply -k ./
+    - cd ../node
+    - kustomize edit set image DOCKER_IMAGE=${CONTAINER_NODE_IMAGE}
+    - kubectl apply -k ./
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
-  variables:
-    GIT_STRATEGY: none
+  before_script:
+    - kubectl config use-context ${AGENT}
+    - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
   when: manual
   script:
-  - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi
-  - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo
-  - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG}
-  - kubectl delete namespace ${CI_COMMIT_REF_SLUG}
+    - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi || true
+    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo || true
+    - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete namespace ${NAMESPACE}
 
 Test:
   image: node:20.9.0
   stage: test
-
   before_script:
-  - npm install --global npm@8.1.0
-  - npm ci --loglevel warn
-
+    - npm install --global npm@8.1.0
+    - npm ci --loglevel warn
   script:
-  - npm run check-types
-  - npm run test
-
+    - npm run check-types
+    - npm run test
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
@@ -463,11 +461,13 @@ CleanUpReview:
   environment:
     name: development
     action: stop
-    kubernetes:
-      namespace: ${CI_COMMIT_REF_SLUG}
+  variables:
+    AGENT: ${DEV_AGENT}
+    DEV_NAMESPACE: ${DEV_NS}
+    NAMESPACE: ${CI_COMMIT_REF_SLUG}
   except:
-  - dev
-  - master
+    - dev
+    - master
 
 
 # Create a review deployment (runs once per new branch)
@@ -476,6 +476,7 @@ SetupReview:
   environment:
     name: development
   variables:
+    GIT_STRATEGY: none
     AGENT: ${DEV_AGENT}
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
