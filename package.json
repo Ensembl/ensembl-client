@@ -34,6 +34,7 @@
     "@react-spring/web": "9.7.3",
     "@reduxjs/toolkit": "2.2.1",
     "@sentry/browser": "7.107.0",
+    "@storybook/addon-essentials": "8.0.2",
     "classnames": "2.5.1",
     "comlink": "4.4.1",
     "core-js": "3.36.1",
