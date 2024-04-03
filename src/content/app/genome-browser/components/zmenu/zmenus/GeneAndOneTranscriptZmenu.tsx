@@ -104,7 +104,6 @@ const GeneAndOneTranscriptZmenu = (props: Props) => {
     <ToolboxExpandableContent
       mainContent={mainContent}
       footerContent={footerContent}
-      className={styles.toolBox}
     />
   );
 };

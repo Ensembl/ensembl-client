@@ -115,6 +115,7 @@ const Zmenu = (props: ZmenuProps) => {
           onOutsideClick={destroyZmenu}
           anchor={anchorRef.current}
           position={toolboxPosition}
+          className={styles.toolbox}
         >
           {zmenuContent}
         </Toolbox>

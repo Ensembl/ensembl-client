@@ -136,7 +136,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
               ? PointerBoxPosition.RIGHT_BOTTOM
               : PointerBoxPosition.BOTTOM_RIGHT
           }
-          classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
+          className={styles.tooltip}
           onOutsideClick={hideTooltip}
         >
           <MatchDetails {...props} onClick={onAppClick} />

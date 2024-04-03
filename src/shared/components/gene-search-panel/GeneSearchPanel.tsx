@@ -300,7 +300,7 @@ const GeneMatch = (props: { match: SearchMatch; species: CommittedItem }) => {
       {shouldShowTooltip && anchorRef.current && (
         <PointerBox
           anchor={anchorRef.current}
-          classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
+          className={styles.tooltip}
           position={PointerBoxPosition.RIGHT_TOP}
           onOutsideClick={handleClick}
         >

@@ -70,7 +70,7 @@ const TooltipWithAnchor = (props: Props) => {
       autoAdjust={props.autoAdjust}
       renderInsideAnchor={props.renderInsideAnchor}
       onClose={props.onClose}
-      classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
+      className={styles.tooltip}
       onOutsideClick={props.onClose}
     >
       {props.children}

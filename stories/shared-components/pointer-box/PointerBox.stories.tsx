@@ -16,9 +16,9 @@
 
 import React from 'react';
 
-import VariantsStory from './variantsStory';
-import PositioningStory from './positioningStory';
-import ScrollingStory from './scrollingStory';
+import VariantsStory from './pointerBoxVariantsStory';
+import PositioningStory from './pointerBoxPositioningStory';
+import ScrollingStory from './pointerBoxScrollingStory';
 
 export default {
   title: 'Components/Shared Components/PointerBox'

@@ -3,15 +3,9 @@
 }
 
 .pointerBox {
-  padding: 6px 12px;
-  background: var(--color-black);
-  color: var(--color-white);
+  --pointer-box-padding: 6px 12px;
 }
 
 .pointerBox p {
   max-width: 200px;
-}
-
-.pointerBoxPointer {
-  fill: var(--color-black);
 }

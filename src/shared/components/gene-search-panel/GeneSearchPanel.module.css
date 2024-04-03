@@ -104,14 +104,8 @@
 }
 
 .tooltip {
-  background: var(--color-black);
-  padding: 12px 20px;
+  --pointer-box-padding: 12px 20px;
   filter: drop-shadow(2px 2px 3px var(--shadow-color));
-  color: var(--color-white);
-}
-
-.tooltipTip {
-  fill: var(--color-black);
 }
 
 /* FIXME: remove the pseudo-radio elements when we replace them with real radio buttons */

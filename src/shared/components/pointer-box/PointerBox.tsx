@@ -46,7 +46,6 @@ export type InlineStylesState = {
 
 type PointerProps = {
   style: InlineStyles;
-  className?: string;
   width: number;
   height: number;
 };
@@ -60,10 +59,7 @@ export type PointerBoxProps = {
   pointerWidth?: number;
   pointerHeight?: number;
   pointerOffset?: number;
-  classNames?: {
-    box?: string;
-    pointer?: string;
-  };
+  className?: string;
   children: ReactNode;
   onOutsideClick?: (() => void) | ((event: Event) => void);
   onClose?: () => void;
@@ -166,7 +162,7 @@ const PointerBox = (props: PointerBoxProps) => {
 
   const bodyClasses = classNames(
     styles.pointerBox,
-    props.classNames?.box,
+    props.className,
     positionFromProps,
     { [styles.invisible]: isPositioning || !hasInlineStyles() }
   );
@@ -178,7 +174,6 @@ const PointerBox = (props: PointerBoxProps) => {
       style={inlineStyles.boxStyles}
     >
       <Pointer
-        className={props.classNames?.pointer}
         width={pointerWidthFromProps}
         height={pointerHeightFromProps}
         style={inlineStyles.pointerStyles}
@@ -201,7 +196,7 @@ const Pointer = (props: PointerProps) => {
     height: `${pointerHeight}px`
   };
 
-  const pointerClasses = classNames(styles.pointer, props.className);
+  const pointerClasses = classNames(styles.pointer);
   const polygonPoints = `0,${pointerHeight} ${pointerWidth},${pointerHeight} ${pointerEndX},0`;
 
   return (
