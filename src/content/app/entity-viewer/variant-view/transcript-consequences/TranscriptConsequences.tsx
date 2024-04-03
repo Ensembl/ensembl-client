@@ -330,9 +330,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
               <div className={styles.clickableTranscriptArea}>
                 <div className={styles.transcriptMiddleColumn}>
                   <div>
-                    <span className={styles.label}>
-                      Transcript variant type
-                    </span>
+                    <span className={styles.label}>Transcript consequence</span>
                     <span className={styles.value}>
                       {consequencesForSingleTranscript.consequences
                         .map(({ value }) => value)
