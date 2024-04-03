@@ -22,6 +22,7 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 
 import styles from './Toolbox.module.css';
+import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 export enum ToolboxPosition {
   LEFT = 'left',
@@ -43,7 +44,11 @@ const Toolbox = (props: ToolboxProps) => {
       ? Position.LEFT_BOTTOM
       : Position.RIGHT_BOTTOM;
 
-  const componentClasses = classNames(styles.toolbox, props.className);
+  const componentClasses = classNames(
+    styles.toolbox,
+    pointerBoxStyles.pointerBoxShadow,
+    props.className
+  );
 
   return (
     <PointerBox

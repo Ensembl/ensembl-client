@@ -41,6 +41,7 @@ import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { InAppSearchMode } from './InAppSearch';
 
 import styles from './InAppSearch.module.css';
+import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type InAppSearchMatchesProps = SearchResults & {
   app: AppName;
@@ -136,7 +137,10 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
               ? PointerBoxPosition.RIGHT_BOTTOM
               : PointerBoxPosition.BOTTOM_RIGHT
           }
-          className={styles.tooltip}
+          className={classNames(
+            styles.tooltip,
+            pointerBoxStyles.pointerBoxShadow
+          )}
           onOutsideClick={hideTooltip}
         >
           <MatchDetails {...props} onClick={onAppClick} />

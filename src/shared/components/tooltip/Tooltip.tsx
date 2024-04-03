@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode, useEffect, useState } from 'react';
+import classNames from 'classnames';
 
 import { TOOLTIP_TIMEOUT } from './tooltip-constants';
 
@@ -25,6 +26,7 @@ import PointerBox, {
 import { TooltipPosition } from './tooltip-types';
 
 import styles from './Tooltip.module.css';
+import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type Props = {
   anchor: HTMLElement;
@@ -62,6 +64,11 @@ const TooltipWithAnchor = (props: Props) => {
     return null;
   }
 
+  const componentClasses = classNames(
+    styles.tooltip,
+    pointerBoxStyles.pointerBoxShadow
+  );
+
   return (
     <PointerBox
       position={props.position ?? Position.BOTTOM_RIGHT}
@@ -70,7 +77,7 @@ const TooltipWithAnchor = (props: Props) => {
       autoAdjust={props.autoAdjust}
       renderInsideAnchor={props.renderInsideAnchor}
       onClose={props.onClose}
-      className={styles.tooltip}
+      className={componentClasses}
       onOutsideClick={props.onClose}
     >
       {props.children}

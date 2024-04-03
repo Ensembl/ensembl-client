@@ -26,3 +26,11 @@ hence it is placed in top left corner of the screen with position: fixed */
   position: absolute;
   mix-blend-mode: lighten;
 }
+
+/* This is a shared class for adding a shadow to PointerBox.
+   It is passed to PointerBox from parent components
+   that need PointerBox to have a shadow.
+*/
+.pointerBoxShadow {
+  filter: drop-shadow(2px 2px 3px var(--shadow-color));
+}

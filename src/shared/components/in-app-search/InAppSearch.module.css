@@ -92,7 +92,6 @@
 
 .tooltip {
   --pointer-box-padding: 12px 20px;
-  filter: drop-shadow(2px 2px 3px var(--shadow-color));
 }
 
 .tooltipContent {
