@@ -5,7 +5,6 @@
   cursor: default; /* to override cursor: pointer if e.g. parent is a button */
   position: absolute;
   width: max-content;
-  box-sizing: content-box; /* Safari doesn't seem to respect "width: max-content" if box-sizing is border-box */
   padding: var(--pointer-box-padding, 6px);
   z-index: 1000;
 }
