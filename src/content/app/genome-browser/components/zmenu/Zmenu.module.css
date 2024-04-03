@@ -62,7 +62,7 @@
 }
 
 .toolbox {
-  max-width: 400px; /* notice that since PointerBox has box-sizing: content-box, this width will not include the width of paddings */
+  max-width: 400px;
   min-width: 250px;
   word-break: break-word;
 }
