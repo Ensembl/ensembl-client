@@ -55,7 +55,8 @@ const serverConfig = getConfigForServer();
 */
 
 const createApiProxyMiddleware = () => {
-  const apiProxyMiddleware = createHttpProxyMiddleware('/api', {
+  const apiProxyMiddleware = createHttpProxyMiddleware({
+    pathFilter: '/api',
     target: 'https://staging-2020.ensembl.org',
     changeOrigin: true,
     secure: false
@@ -68,7 +69,8 @@ const createApiProxyMiddleware = () => {
 
 const createStaticAssetsMiddleware = () => {
   // proxy all requests for static assets to the server that runs webpack dev middleware
-  return createHttpProxyMiddleware('/static', {
+  return createHttpProxyMiddleware({
+    pathFilter: '/static',
     target: 'http://localhost:8081'
   });
 };
