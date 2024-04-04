@@ -81,6 +81,10 @@ export const speciesSelectorGeneSearch = (searchInput?: string) => {
   return query ? `${path}?${query}` : path;
 };
 
+export const speciesManager = () => {
+  return `${speciesSelectorPath}/manage-species`;
+};
+
 export const browser = (params?: BrowserUrlParams) => {
   const browserRootPath = '/genome-browser';
   if (params) {

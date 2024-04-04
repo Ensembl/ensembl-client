@@ -15,48 +15,55 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-import { AppName as AppNameText } from 'src/global/globalConfig';
+import { useAppSelector } from 'src/store';
 
-import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
-import { SelectedSpecies } from 'src/shared/components/selected-species';
-import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
+import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-type SpeciesAppBarProps = {
-  onSpeciesSelect: (species: CommittedItem) => void;
-};
+export const SpeciesManagerAppBar = () => {
+  const selectedSpecies = useAppSelector(getCommittedSpecies);
+  const navigate = useNavigate();
 
-const SpeciesAppBar = (props: SpeciesAppBarProps) => {
-  const activeGenomeId = useSelector(getActiveGenomeId);
-  const species = useSelector(getCommittedSpecies);
+  const onClose = () => navigate(-1);
 
-  const speciesTabs = species.map((species, index) => (
-    <SelectedSpecies
-      key={index}
-      species={species}
-      isActive={species.genome_id === activeGenomeId}
-      onClick={props.onSpeciesSelect}
-    />
-  ));
+  const mainContent = <AppBarMainContent selectedSpecies={selectedSpecies} />;
 
-  const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
+  const appName = <AppName>Species Selector</AppName>;
 
   return (
     <AppBar
-      topLeft={<AppName>{AppNameText.SPECIES_SELECTOR}</AppName>}
-      topRight={<SpeciesManagerIndicator />}
-      mainContent={tabsSlider}
-      aside={<HelpPopupButton slug="species-homepage" />}
+      topLeft={appName}
+      topRight={<SpeciesManagerIndicator mode="close" onClose={onClose} />}
+      mainContent={mainContent}
+      aside={<HelpPopupButton slug="species-selector-intro" />}
     />
   );
 };
 
-export default SpeciesAppBar;
+const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
+  const selectedSpecies = props.selectedSpecies.map((species) => (
+    <SpeciesLozenge
+      key={species.genome_id}
+      species={species}
+      theme="grey"
+      disabled={true}
+    />
+  ));
+
+  return (
+    <div>
+      <SpeciesTabsSlider>{selectedSpecies}</SpeciesTabsSlider>
+    </div>
+  );
+};
+
+export default SpeciesManagerAppBar;

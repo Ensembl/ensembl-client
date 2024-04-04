@@ -20,18 +20,20 @@ import { Link } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { AppName } from 'src/global/globalConfig';
+import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
+import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
+
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 type BrowserAppBarProps = {
@@ -77,7 +79,8 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
 
   return (
     <AppBar
-      appName={AppName.GENOME_BROWSER}
+      topLeft={<AppName>{AppNameText.GENOME_BROWSER}</AppName>}
+      topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
       aside={<HelpPopupButton slug="genome-browser" />}
     />

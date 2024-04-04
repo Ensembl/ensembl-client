@@ -35,13 +35,14 @@ import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-f
 import { placeholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
+import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SpeciesLozenge } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-import { AppName } from 'src/global/globalConfig';
+import { AppName as AppNameText } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const BlastAppBar = () => {
@@ -56,7 +57,7 @@ const BlastAppBar = () => {
   const isSmallViewport = useMediaQuery(smallViewportMediaQuery);
 
   const appBarProps = {
-    appName: AppName.TOOLS,
+    topLeft: <AppName>{AppNameText.TOOLS}</AppName>,
     aside: <HelpPopupButton slug="blast" />
   };
 
@@ -112,7 +113,13 @@ const BlastAppBar = () => {
     </SpeciesTabsWrapper>
   );
 
-  return <AppBar mainContent={speciesTabsSlider} {...appBarProps} />;
+  return (
+    <AppBar
+      mainContent={speciesTabsSlider}
+      topRight={<SpeciesManagerIndicator />}
+      {...appBarProps}
+    />
+  );
 };
 
 const shouldEnableSpecies = (params: {

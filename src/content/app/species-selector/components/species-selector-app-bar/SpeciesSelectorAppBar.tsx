@@ -23,7 +23,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
+import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
@@ -53,7 +54,8 @@ export const SpeciesSelectorAppBar = () => {
 
   return (
     <AppBar
-      appName="Species Selector"
+      topLeft={<AppName>Species Selector</AppName>}
+      topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
       aside={<HelpPopupButton slug="species-selector-intro" />}
     />

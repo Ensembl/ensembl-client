@@ -2,7 +2,6 @@
   width: var(--close-button-size, 16px);
   height: var(--close-button-size, 16px);
   border-radius: 100%;
-  cursor: pointer;
 }
 
 .icon {
@@ -18,4 +17,17 @@
 
 .icon path {
   fill: var(--color-white);
+}
+
+
+.closeButtonWithLabel {
+  display: inline-flex;
+  align-items: center;
+  column-gap: var(--close-button-label-offset, 12px);
+  color: var(--color-blue);
+}
+
+.closeButtonWithLabel .icon {
+  width: var(--close-button-size, 16px);
+  height: var(--close-button-size, 16px);
 }
