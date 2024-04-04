@@ -15,12 +15,14 @@
  */
 
 import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 
 import styles from './Toolbox.module.css';
+import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 export enum ToolboxPosition {
   LEFT = 'left',
@@ -31,6 +33,7 @@ type ToolboxProps = {
   position?: ToolboxPosition;
   anchor: HTMLElement;
   onOutsideClick?: () => void;
+  className?: string;
   children: ReactNode;
 };
 
@@ -41,13 +44,19 @@ const Toolbox = (props: ToolboxProps) => {
       ? Position.LEFT_BOTTOM
       : Position.RIGHT_BOTTOM;
 
+  const componentClasses = classNames(
+    styles.toolbox,
+    pointerBoxStyles.pointerBoxShadow,
+    props.className
+  );
+
   return (
     <PointerBox
       position={pointerBoxPosition}
       anchor={props.anchor}
       onOutsideClick={props.onOutsideClick}
       renderInsideAnchor={true}
-      classNames={{ box: styles.toolbox, pointer: styles.tooltipTip }}
+      className={componentClasses}
     >
       {props.children}
     </PointerBox>

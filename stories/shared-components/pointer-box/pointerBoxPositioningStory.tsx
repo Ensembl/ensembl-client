@@ -57,10 +57,7 @@ const Item = (props: ItemProps) => {
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
-          classNames={{
-            box: styles.pointerBox,
-            pointer: styles.pointerBoxPointer
-          }}
+          className={styles.pointerBox}
           pointerOffset={5}
         >
           Hello sailor!

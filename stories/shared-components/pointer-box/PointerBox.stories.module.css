@@ -1,7 +1,5 @@
 .pointerBox {
-  padding: 6px 12px;
-  background: black;
-  color: white;
+  --pointer-box-padding: 6px 12px;
 }
 
 .pointerBox p {

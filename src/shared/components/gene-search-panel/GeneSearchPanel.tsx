@@ -49,6 +49,7 @@ import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 
 import styles from './GeneSearchPanel.module.css';
 import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
+import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type Props = {
   onClose: () => void;
@@ -300,7 +301,10 @@ const GeneMatch = (props: { match: SearchMatch; species: CommittedItem }) => {
       {shouldShowTooltip && anchorRef.current && (
         <PointerBox
           anchor={anchorRef.current}
-          classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
+          className={classNames(
+            styles.tooltip,
+            pointerBoxStyles.pointerBoxShadow
+          )}
           position={PointerBoxPosition.RIGHT_TOP}
           onOutsideClick={handleClick}
         >

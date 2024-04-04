@@ -1,14 +1,7 @@
 .tooltip {
-  background: var(--color-dark-grey);
-  padding: 6px 18px 8px;
-  filter: drop-shadow(2px 2px 3px var(--shadow-color));
-  cursor: default;
-  color: var(--color-white);
+  --pointer-box-color: var(--color-dark-grey);
+  --pointer-box-padding: 6px 18px 8px;
   border-radius: 4px;
   font-size: 14px;
   max-width: 300px;
-}
-
-.tooltipTip {
-  fill: var(--color-dark-grey);
 }

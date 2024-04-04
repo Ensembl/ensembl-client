@@ -67,10 +67,7 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
           onClose={onClose}
           position={position}
           autoAdjust={true}
-          classNames={{
-            box: styles.pointerBox,
-            pointer: styles.pointerBoxPointer
-          }}
+          className={styles.pointerBox}
         >
           <ViewInApp theme="dark" links={links} />
         </PointerBox>

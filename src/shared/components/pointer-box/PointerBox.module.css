@@ -1,9 +1,12 @@
 .pointerBox {
+  --_pointer-box-color: var(--pointer-box-color, var(--color-black));
+  color: var(--pointer-box-text-color, var(--color-white));
+  background-color: var(--_pointer-box-color);
+  cursor: default; /* to override cursor: pointer if e.g. parent is a button */
   position: absolute;
-  z-index: 1000;
   width: max-content;
-  box-sizing: content-box; /* Safari doesn't seem to respect "width: max-content" if box-sizing is border-box */
-  padding: 6px;
+  padding: var(--pointer-box-padding, 6px);
+  z-index: 1000;
 }
 
 /* Class applied to pointer box while the code is finding appropriate position for it.
@@ -18,6 +21,15 @@ hence it is placed in top left corner of the screen with position: fixed */
 }
 
 .pointer {
+  fill: var(--_pointer-box-color);
   position: absolute;
   mix-blend-mode: lighten;
+}
+
+/* This is a shared class for adding a shadow to PointerBox.
+   It is passed to PointerBox from parent components
+   that need PointerBox to have a shadow.
+*/
+.pointerBoxShadow {
+  filter: drop-shadow(2px 2px 3px var(--shadow-color));
 }
