@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom';
 import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -36,10 +37,14 @@ type Props =
       onClose: () => void;
     };
 
-// FIXME: hide on live deployments
 const SpeciesManagerIndicator = (props: Props) => {
   const { mode = 'default' } = props;
   const selectedSpecies = useAppSelector(getCommittedSpecies);
+
+  // temporarily hide on live deployments
+  if (isEnvironment([Environment.PRODUCTION])) {
+    return null;
+  }
 
   const totalSpeciesCount = selectedSpecies.length;
   const enabledSpeciesCount = selectedSpecies.filter(
@@ -50,7 +55,7 @@ const SpeciesManagerIndicator = (props: Props) => {
 
   const pathToSpeciesManager = urlFor.speciesManager();
 
-  return (
+  return totalSpeciesCount > 0 ? (
     <div className={styles.container}>
       <SpeciesInUse
         enabledSpeciesCount={enabledSpeciesCount}
@@ -59,7 +64,7 @@ const SpeciesManagerIndicator = (props: Props) => {
       {mode === 'default' && <Link to={pathToSpeciesManager}>Manage</Link>}
       {mode === 'close' && <CloseButtonWithLabel onClick={onClose} />}
     </div>
-  );
+  ) : null;
 };
 
 const SpeciesInUse = ({
