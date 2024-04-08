@@ -82,7 +82,7 @@ export const speciesSelectorGeneSearch = (searchInput?: string) => {
 };
 
 export const speciesManager = () => {
-  return `${speciesSelectorPath}/manage-species`;
+  return `${speciesSelectorPath}/manage`;
 };
 
 export const browser = (params?: BrowserUrlParams) => {

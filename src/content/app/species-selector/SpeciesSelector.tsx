@@ -33,7 +33,7 @@ const SpeciesSelector = () => {
       <Route index element={<SpeciesSelectorAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsModalAppBar />} />
       <Route path="/search/gene" element={<SpeciesSelectorAppBar />} />
-      <Route path="/manage-species" element={<SpeciesManagerAppBar />} />
+      <Route path="/manage" element={<SpeciesManagerAppBar />} />
     </Routes>
   );
 
@@ -42,7 +42,7 @@ const SpeciesSelector = () => {
       <Route index element={<SpeciesSelectorMainView />} />
       <Route path="/search" element={<SpeciesSelectorResultsView />} />
       <Route path="/search/gene" element={<SpeciesSelectorGeneSearchView />} />
-      <Route path="/manage-species" element={<SpeciesManager />} />
+      <Route path="/manage" element={<SpeciesManager />} />
     </Routes>
   );
 
