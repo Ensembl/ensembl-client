@@ -1,27 +1,24 @@
 .appBar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
+  grid-template-columns: auto minmax(0, 1fr) minmax(250px, auto);
+  row-gap: 8px;
   align-content: start;
   grid-template-areas:
-    'top top'
-    'main right';
+    'top-left top-right top-right'
+    'main main bottom-right';
   align-items: center;
   padding: 8px var(--standard-gutter) 0 var(--standard-gutter);
   min-height: 80px;
   width: 100%;
 }
 
-.chevron {
-  --chevron-height: 6px;
-  --chevron-fill: var(--color-grey);
-  margin-left: 5px;
+.appBarTopLeft {
+  grid-area: top-left;
 }
 
-.appBarTop {
-  grid-area: top;
-  min-height: 30px;
-  color: var(--color-black);
-  font-weight: 300;
+.appBarTopRight {
+  grid-area: top-right;
+  margin-left: var(--standard-gutter);
 }
 
 .appBarMain {
@@ -30,7 +27,7 @@
 }
 
 .appBarAside {
-  grid-area: right;
+  grid-area: bottom-right;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -42,6 +39,10 @@
   width: 40px;
   margin-left: 20px;
   height: 25px;
+}
+
+.appName {
+  font-weight: var(--font-weight-light);
 }
 
 .helpLink {

@@ -35,4 +35,51 @@ const CloseButton = (props: Props) => {
   );
 };
 
+/**
+ * Design mock-ups are showing a common pattern of a close button
+ * accompanied by a short label either to the left or to the right of the button.
+ * Both the label and the button are clickable.
+ * This component captures this simple arrangement.
+ * For anything more complicated, please use constituent components separately.
+ */
+export const CloseButtonWithLabel = (
+  props: Props & {
+    label?: string;
+    labelPosition?: 'left' | 'right';
+  }
+) => {
+  const {
+    label = 'Close',
+    labelPosition = 'left',
+    onClick,
+    className: classNameFromProps
+  } = props;
+
+  const componentClasses = classNames(
+    styles.closeButtonWithLabel,
+    classNameFromProps
+  );
+
+  const closeIcon = <CloseIcon className={styles.icon} />;
+
+  const buttonContent =
+    labelPosition === 'left' ? (
+      <>
+        <span>{label}</span>
+        {closeIcon}
+      </>
+    ) : (
+      <>
+        {closeIcon}
+        <span>{label}</span>
+      </>
+    );
+
+  return (
+    <button type="button" onClick={onClick} className={componentClasses}>
+      {buttonContent}
+    </button>
+  );
+};
+
 export default CloseButton;

@@ -20,7 +20,7 @@ import isEqual from 'lodash/isEqual';
 
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { AppName } from 'src/global/globalConfig';
+import { AppName as AppNameText } from 'src/global/globalConfig';
 import {
   parseFocusObjectId,
   buildFocusIdForUrl
@@ -35,7 +35,8 @@ import { getAllGeneViews } from 'src/content/app/entity-viewer/state/gene-view/v
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
+import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
@@ -98,7 +99,8 @@ const EntityViewerAppBar = () => {
 
   return (
     <AppBar
-      appName={AppName.ENTITY_VIEWER}
+      topLeft={<AppName>{AppNameText.ENTITY_VIEWER}</AppName>}
+      topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
       aside={<HelpPopupButton slug="entity-viewer" />}
     />

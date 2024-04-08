@@ -17,34 +17,29 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
-import { HelpPopupButton } from 'src/shared/components/help-popup';
-import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
+import ModalView from 'src/shared/components/modal-view/ModalView';
 
-const SpeciesSearchResultsModalAppBar = () => {
-  return (
-    <AppBar
-      topLeft={<AppName>Species Selector</AppName>}
-      mainContent={<CloseModalView />}
-      aside={<HelpPopupButton slug="species-selector-intro" />}
-    />
-  );
-};
+import SelectedGenomesTable from './selected-genomes-table/SelectedGenomesTable';
 
-const CloseModalView = () => {
+import styles from './SpeciesManager.module.css';
+
+const SpeciesManager = () => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const onClose = () => {
     navigate(-1);
   };
 
   return (
-    <CloseButtonWithLabel
-      label="Find a species"
-      labelPosition="right"
-      onClick={handleClick}
-    />
+    <ModalView onClose={onClose}>
+      <div className={styles.container}>
+        <div style={{ height: '60px' }}>Here will be the dropdown</div>
+        <div>
+          <SelectedGenomesTable />
+        </div>
+      </div>
+    </ModalView>
   );
 };
 
-export default SpeciesSearchResultsModalAppBar;
+export default SpeciesManager;

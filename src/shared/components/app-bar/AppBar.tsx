@@ -21,14 +21,20 @@ import ConversationIcon from 'src/shared/components/communication-framework/Conv
 import styles from './AppBar.module.css';
 
 type AppBarProps = {
-  appName?: string;
+  topLeft?: React.ReactNode;
+  topRight?: React.ReactNode;
   mainContent: React.ReactNode;
   aside?: React.ReactNode;
 };
 
 export const AppBar = (props: AppBarProps) => (
   <section className={styles.appBar}>
-    <div className={styles.appBarTop}>{props.appName}</div>
+    {props.topLeft && (
+      <div className={styles.appBarTopLeft}>{props.topLeft}</div>
+    )}
+    {props.topRight && (
+      <div className={styles.appBarTopRight}>{props.topRight}</div>
+    )}
     <div className={styles.appBarMain}>{props.mainContent}</div>
     <div className={styles.appBarAside}>
       {props.aside}
@@ -38,5 +44,9 @@ export const AppBar = (props: AppBarProps) => (
     </div>
   </section>
 );
+
+export const AppName = ({ children }: { children: React.ReactNode }) => {
+  return <span className={styles.appName}>{children}</span>;
+};
 
 export default AppBar;
