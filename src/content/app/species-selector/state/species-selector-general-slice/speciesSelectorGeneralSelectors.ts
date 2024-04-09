@@ -23,6 +23,10 @@ export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
   return state.speciesSelector.general.committedItems;
 };
 
+export const getLozengeDisplaySelection = (state: RootState): string => {
+  return state.speciesSelector.general.lozengeDisplay;
+};
+
 export const getCommittedSpeciesById = (
   state: RootState,
   genomeId: string | null

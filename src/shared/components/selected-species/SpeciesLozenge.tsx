@@ -22,9 +22,8 @@ import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 
-import { getDisplayName } from './selectedSpeciesHelpers';
-
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import styles from './SpeciesLozenge.module.css';
 
@@ -35,17 +34,18 @@ export type Props = DetailedHTMLProps<
   HTMLButtonElement
 > & {
   species: CommittedItem;
+  view: string;
   theme: SpeciesLozengeTheme;
 };
 
 const SpeciesLozenge = (props: Props) => {
   const {
     species,
+    view,
     theme,
     className: classNameFromProps,
     ...otherProps
   } = props;
-  const displayName = getDisplayName(species);
 
   const componentClasses = classNames(
     styles.species,
@@ -56,11 +56,60 @@ const SpeciesLozenge = (props: Props) => {
   return (
     <button className={componentClasses} {...otherProps}>
       <div className={styles.inner}>
-        <span className={styles.name}>{displayName}</span>
-        <span className={styles.assembly}>{props.species.assembly.name}</span>
+        <LozengeContent species={species} view={view} />
       </div>
     </button>
   );
+};
+
+type DisplayStringProps = {
+  species: CommittedItem;
+  view: string;
+};
+
+const LozengeContent = (props: DisplayStringProps) => {
+  const { species, view } = props;
+  if (view === LozengeOptionValues.COMMON_ASSEMBLY) {
+    return (
+      <>
+        <span className={styles.default}>{species.common_name}</span>
+        <span className={styles.assembly}>{species.assembly.name}</span>
+      </>
+    );
+  } else if (view === LozengeOptionValues.COMMON_TYPE_ASSEMBLY) {
+    return (
+      <>
+        <span className={styles.default}>{species.common_name}</span>
+        {species.type?.value ? (
+          <span className={styles.type}> {species.type?.value}</span>
+        ) : null}
+        <span className={styles.assembly}>{species.assembly.name}</span>
+      </>
+    );
+  } else if (view === LozengeOptionValues.SCIENTIFIC_ASSEMBLY) {
+    return (
+      <>
+        <span className={styles.scientificName}>{species.scientific_name}</span>
+        <span className={styles.assembly}>{species.assembly.name}</span>
+      </>
+    );
+  } else if (view === LozengeOptionValues.SCIENTIFIC_TYPE_ASSEMBLY) {
+    return (
+      <>
+        <span className={styles.scientificName}>{species.scientific_name}</span>
+        {species.type?.value ? (
+          <span className={styles.type}> {species.type?.value}</span>
+        ) : null}
+        <span className={styles.assembly}>{species.assembly.name}</span>
+      </>
+    );
+  } else if (view === LozengeOptionValues.ACCESSION) {
+    return (
+      <>
+        <span className={styles.default}>{species.assembly.accession_id}</span>
+      </>
+    );
+  }
 };
 
 export default SpeciesLozenge;

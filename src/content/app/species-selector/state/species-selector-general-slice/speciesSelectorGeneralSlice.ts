@@ -37,6 +37,7 @@ import {
   getCommittedSpecies,
   getCommittedSpeciesById
 } from './speciesSelectorGeneralSelectors';
+import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -44,6 +45,7 @@ import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/
 
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
+  lozengeDisplay: string;
 };
 
 // TODO: investigate
@@ -95,7 +97,8 @@ export const deleteSpeciesAndSave =
   };
 
 const initialState: SpeciesSelectorState = {
-  committedItems: []
+  committedItems: [],
+  lozengeDisplay: LozengeOptionValues.ACCESSION
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -142,6 +145,9 @@ const speciesSelectorGeneralSlice = createSlice({
   reducers: {
     updateCommittedSpecies(state, action: PayloadAction<CommittedItem[]>) {
       state.committedItems = action.payload;
+    },
+    setLozengeDisplaySelection(state, action: PayloadAction<string>) {
+      state.lozengeDisplay = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -151,6 +157,7 @@ const speciesSelectorGeneralSlice = createSlice({
   }
 });
 
-export const { updateCommittedSpecies } = speciesSelectorGeneralSlice.actions;
+export const { updateCommittedSpecies, setLozengeDisplaySelection } =
+  speciesSelectorGeneralSlice.actions;
 
 export default speciesSelectorGeneralSlice.reducer;

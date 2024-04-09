@@ -20,11 +20,15 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
+import createRootReducer from 'src/root/rootReducer';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 import SelectedSpecies, {
   type Props as SelectedSpeciesProps
 } from './SelectedSpecies';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 const speciesData = {
   genome_id: faker.string.uuid(),
@@ -42,9 +46,22 @@ const minimalProps = {
   onClick: jest.fn()
 };
 
+const mockState = {
+  committedItems: [],
+  lozengeDisplay: LozengeOptionValues.ACCESSION
+};
+
 describe('<SelectedSpecies />', () => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: mockState as any
+  });
   const renderSelectedSpecies = (props: SelectedSpeciesProps) =>
-    render(<SelectedSpecies {...speciesData} {...props} />);
+    render(
+      <Provider store={store}>
+        <SelectedSpecies {...speciesData} {...props} />
+      </Provider>
+    );
 
   describe('lozenge', () => {
     it('has correct classes when active and enabled', () => {

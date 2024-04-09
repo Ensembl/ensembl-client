@@ -24,56 +24,63 @@ import { LozengeOptionValues } from 'src/content/app/species-selector/components
 import styles from './SelectedSpecies.stories.module.css';
 
 export default {
-  title: 'Components/Shared Components/Selected Species',
-  argTypes: { onClick: { action: 'Clicked' } }
+  title: 'Components/Shared Components/Selected Species'
 };
 
-type StoryArgs = {
-  onClick: () => void;
-};
-
-export const SelectedSpeciesStory = (args: StoryArgs) => {
+export const SpeciesLozengeStory = () => {
   const species = speciesData[0];
-  const view = LozengeOptionValues.ACCESSION;
   return (
     <>
       <div className={styles.wrapper}>
+        <p>Lozenges with different labels</p>
+
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="blue" species={species} />
-          <span>blue theme</span>
+          <SpeciesLozenge
+            view={LozengeOptionValues.COMMON_ASSEMBLY}
+            theme="blue"
+            species={species}
+          />
+          <span>Common name and Assembly</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="black" species={species} />
-          <span>black theme</span>
+          <SpeciesLozenge
+            view={LozengeOptionValues.COMMON_TYPE_ASSEMBLY}
+            theme="blue"
+            species={species}
+          />
+          <span>Common name, Type and Assembly</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="ice-blue" species={species} />
-          <span>ice-blue theme</span>
+          <SpeciesLozenge
+            view={LozengeOptionValues.SCIENTIFIC_ASSEMBLY}
+            theme="blue"
+            species={species}
+          />
+          <span>Scientific name and Assembly</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="grey" species={species} />
-          <span>grey theme</span>
+          <SpeciesLozenge
+            view={LozengeOptionValues.SCIENTIFIC_TYPE_ASSEMBLY}
+            theme="blue"
+            species={species}
+          />
+          <span>Scientific name, Type and Assembly</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="red" species={species} />
-          <span>red theme</span>
+          <SpeciesLozenge
+            view={LozengeOptionValues.ACCESSION}
+            theme="blue"
+            species={species}
+          />
+          <span>Assembly accession</span>
         </div>
-      </div>
-      <p>A clickable lozenge will change the cursor to hover, like so:</p>
-      <div>
-        <SpeciesLozenge
-          view={view}
-          theme="blue"
-          species={species}
-          onClick={args.onClick}
-        />
       </div>
     </>
   );
 };
 
-SelectedSpeciesStory.storyName = 'Themes';
+SpeciesLozengeStory.storyName = 'Lozenge';

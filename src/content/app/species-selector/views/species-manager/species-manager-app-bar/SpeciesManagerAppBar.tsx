@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
 
@@ -24,8 +25,8 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -51,11 +52,12 @@ export const SpeciesManagerAppBar = () => {
 
 const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
   const selectedSpecies = props.selectedSpecies.map((species) => (
-    <SpeciesLozenge
+    <SelectedSpecies
       key={species.genome_id}
       species={species}
-      theme="grey"
-      disabled={true}
+      isActive={false}
+      onClick={() => noop}
+      isDisabled={true}
     />
   ));
 

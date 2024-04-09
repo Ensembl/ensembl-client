@@ -29,6 +29,7 @@ import speciesSelectorReducer from 'src/content/app/species-selector/state/speci
 import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from './BlastAppBar';
+import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 jest.mock(
   'src/shared/components/communication-framework/ConversationIcon',
@@ -62,7 +63,8 @@ const initialState = {
   blast: { blastForm: initialBlastFormState },
   speciesSelector: {
     general: {
-      committedItems: mockCommittedItems
+      committedItems: mockCommittedItems,
+      lozengeDisplay: LozengeOptionValues.ACCESSION
     }
   }
 };
