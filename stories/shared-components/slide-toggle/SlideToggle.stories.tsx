@@ -18,16 +18,29 @@ import React from 'react';
 import noop from 'lodash/noop';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
+import styles from './SlideToggle.stories.module.css';
+
 export default {
   title: 'Components/Shared Components/SlideToggle'
 };
 
-export const DefaultSlideToggle = () => {
-  return (
+export const DefaultSlideToggleStory = {
+  name: 'default',
+  render: () => (
     <div>
       <SlideToggle isOn={false} onChange={noop} />
     </div>
-  );
+  )
 };
 
-DefaultSlideToggle.storyName = 'default';
+export const DisabledSlideToggleStory = {
+  name: 'disabled',
+  render: () => (
+    <div className={styles.disabledStoryGrid}>
+      <SlideToggle isOn={false} onChange={noop} disabled={true} />
+      <span>Disabled when off</span>
+      <SlideToggle isOn={true} onChange={noop} disabled={true} />
+      <span>Disabled when on</span>
+    </div>
+  )
+};

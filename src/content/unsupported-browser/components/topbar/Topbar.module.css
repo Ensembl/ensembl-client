@@ -4,7 +4,7 @@
   color: white;
   height: 28px;
   padding: 0 30px 0 22px;
-  background-color: #1b2c39; /* --color-black */
+  background-color: var(--color-black);
 }
 
 .topbar > * {
@@ -20,7 +20,7 @@
 
 .homeIcon {
   margin-right: 16px;
-  fill: #0099ff; /* --color-blue */
+  fill: var(--color-blue);
   height: 19px;
   width: 19px;
 }
@@ -38,7 +38,7 @@
 .copyright {
   font-size: 12px;
   margin-left: 30px;
-  color: #33adff; /* --color-light-blue */
+  color: var(--color-light-blue);
   padding-top: 3px;
 }
 

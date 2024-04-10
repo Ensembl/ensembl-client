@@ -1,0 +1,7 @@
+.scientificName {
+  font-style: italic;
+}
+
+.reference {
+  font-style: var(--species-reference-font-style, italic);
+}

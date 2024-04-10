@@ -1,0 +1,7 @@
+.assemblyName {
+  font-weight: var(--assembly-name-table-font-weight, var(--font-weight-light));
+}
+
+.assemblyAccessionId {
+  font-weight: var(--assembly-accession-table-font-weight, var(--font-weight-light));
+}
