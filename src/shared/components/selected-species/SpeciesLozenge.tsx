@@ -24,6 +24,13 @@ import camelCase from 'lodash/camelCase';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import { type SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import {
+  AssemblyAccessionId,
+  CommonName,
+  ScientificName,
+  SpeciesType,
+  AssemblyName
+} from '../species-name-parts';
 
 import styles from './SpeciesLozenge.module.css';
 
@@ -75,41 +82,56 @@ const LozengeContent = (props: DisplayStringProps) => {
   if (displayOption === 'common-name_assembly-name') {
     return (
       <>
-        <span className={styles.default}>{species.common_name}</span>
-        <span className={styles.assembly}>{species.assembly.name}</span>
+        <CommonName
+          common_name={species.common_name}
+          className={styles.default}
+        />
+        <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
   } else if (displayOption === 'common-name_type_assembly-name') {
     return (
       <>
-        <span className={styles.default}>{species.common_name}</span>
+        <CommonName
+          common_name={species.common_name}
+          className={styles.default}
+        />
         {species.type?.value ? (
-          <span className={styles.type}> {species.type?.value}</span>
+          <SpeciesType type={species.type} className={styles.type} />
         ) : null}
-        <span className={styles.assembly}>{species.assembly.name}</span>
+        <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
   } else if (displayOption === 'scientific-name_assembly-name') {
     return (
       <>
-        <span className={styles.scientificName}>{species.scientific_name}</span>
-        <span className={styles.assembly}>{species.assembly.name}</span>
+        <ScientificName
+          scientific_name={species.scientific_name}
+          className={styles.default}
+        />
+        <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
   } else if (displayOption === 'scientific-name_type_assembly-name') {
     return (
       <>
-        <span className={styles.scientificName}>{species.scientific_name}</span>
+        <ScientificName
+          scientific_name={species.scientific_name}
+          className={styles.default}
+        />
         {species.type?.value ? (
-          <span className={styles.type}> {species.type?.value}</span>
+          <SpeciesType type={species.type} className={styles.type} />
         ) : null}
-        <span className={styles.assembly}>{species.assembly.name}</span>
+        <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
   } else if (displayOption === 'assembly-accession-id') {
     return (
       <>
-        <span className={styles.default}>{species.assembly.accession_id}</span>
+        <AssemblyAccessionId
+          assembly={species.assembly}
+          className={styles.default}
+        />
       </>
     );
   }
