@@ -29,7 +29,6 @@ import speciesSelectorReducer from 'src/content/app/species-selector/state/speci
 import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
 
 import BlastAppBar from './BlastAppBar';
-import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 jest.mock(
   'src/shared/components/communication-framework/ConversationIcon',
@@ -64,7 +63,7 @@ const initialState = {
   speciesSelector: {
     general: {
       committedItems: mockCommittedItems,
-      lozengeDisplay: LozengeOptionValues.ACCESSION
+      speciesNameDisplayOption: 'common-name_assembly-name'
     }
   }
 };
@@ -101,13 +100,12 @@ describe('BlastAppBar', () => {
   describe('Species Lozenge click', () => {
     it('updates the selectedSpecies state', async () => {
       const { container, store } = renderComponent();
-
       const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
-      await userEvent.click(speciesLozenge);
+      speciesLozenge && (await userEvent.click(speciesLozenge));
 
       const updatedState = store.getState();
-
+      updatedState.blast.blastForm.selectedSpecies;
       expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     });
   });

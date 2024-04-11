@@ -37,15 +37,21 @@ import {
   getCommittedSpecies,
   getCommittedSpeciesById
 } from './speciesSelectorGeneralSelectors';
-import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
+export type SpeciesNameDisplayOption =
+  | 'common-name_assembly-name'
+  | 'common-name_type_assembly-name'
+  | 'scientific-name_assembly-name'
+  | 'scientific-name_type_assembly-name'
+  | 'assembly-accession-id';
+
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
-  lozengeDisplay: string;
+  speciesNameDisplayOption: SpeciesNameDisplayOption;
 };
 
 // TODO: investigate
@@ -98,7 +104,7 @@ export const deleteSpeciesAndSave =
 
 const initialState: SpeciesSelectorState = {
   committedItems: [],
-  lozengeDisplay: LozengeOptionValues.ACCESSION
+  speciesNameDisplayOption: 'common-name_assembly-name'
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -146,8 +152,11 @@ const speciesSelectorGeneralSlice = createSlice({
     updateCommittedSpecies(state, action: PayloadAction<CommittedItem[]>) {
       state.committedItems = action.payload;
     },
-    setLozengeDisplaySelection(state, action: PayloadAction<string>) {
-      state.lozengeDisplay = action.payload;
+    setSpeciesNameDisplayOption(
+      state,
+      action: PayloadAction<SpeciesNameDisplayOption>
+    ) {
+      state.speciesNameDisplayOption = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -157,7 +166,7 @@ const speciesSelectorGeneralSlice = createSlice({
   }
 });
 
-export const { updateCommittedSpecies, setLozengeDisplaySelection } =
+export const { updateCommittedSpecies, setSpeciesNameDisplayOption } =
   speciesSelectorGeneralSlice.actions;
 
 export default speciesSelectorGeneralSlice.reducer;

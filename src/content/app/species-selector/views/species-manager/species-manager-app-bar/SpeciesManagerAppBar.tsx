@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
 
@@ -56,8 +55,7 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
       key={species.genome_id}
       species={species}
       isActive={false}
-      onClick={() => noop}
-      isDisabled={true}
+      disabled={true}
     />
   ));
 

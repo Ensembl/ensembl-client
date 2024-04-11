@@ -28,7 +28,6 @@ import SelectedSpecies, {
   type Props as SelectedSpeciesProps
 } from './SelectedSpecies';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 const speciesData = {
   genome_id: faker.string.uuid(),
@@ -48,7 +47,7 @@ const minimalProps = {
 
 const mockState = {
   committedItems: [],
-  lozengeDisplay: LozengeOptionValues.ACCESSION
+  speciesNameDisplayOption: 'assembly-accession-id'
 };
 
 describe('<SelectedSpecies />', () => {
@@ -102,6 +101,7 @@ describe('<SelectedSpecies />', () => {
 
     it('responds to clicks when inactive', async () => {
       const props = set('isActive', false, minimalProps);
+
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
 

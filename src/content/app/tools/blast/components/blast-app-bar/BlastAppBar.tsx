@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -98,18 +97,13 @@ const BlastAppBar = () => {
     ? speciesList.map((species, index) => (
         <SelectedSpecies
           key={index}
-          isDisabled={false}
+          disabled={false}
           species={species}
           onClick={() => speciesLozengeClick(species)}
         />
       ))
     : speciesList.map((species, index) => (
-        <SelectedSpecies
-          key={index}
-          isDisabled={true}
-          species={species}
-          onClick={() => noop}
-        />
+        <SelectedSpecies key={index} disabled={true} species={species} />
       ));
 
   const speciesTabsSlider = (

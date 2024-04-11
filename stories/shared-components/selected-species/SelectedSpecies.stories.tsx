@@ -19,7 +19,6 @@ import React from 'react';
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from './speciesData';
-import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import styles from './SelectedSpecies.stories.module.css';
 
@@ -34,39 +33,59 @@ type StoryArgs = {
 
 export const SelectedSpeciesStory = (args: StoryArgs) => {
   const species = speciesData[0];
-  const view = LozengeOptionValues.ACCESSION;
+  const displayOption = 'common-name_assembly-name';
   return (
     <>
       <div className={styles.wrapper}>
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="blue" species={species} />
+          <SpeciesLozenge
+            speciesNameDisplayOption={displayOption}
+            theme="blue"
+            species={species}
+          />
           <span>blue theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="black" species={species} />
+          <SpeciesLozenge
+            speciesNameDisplayOption={displayOption}
+            theme="black"
+            species={species}
+          />
           <span>black theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="ice-blue" species={species} />
+          <SpeciesLozenge
+            speciesNameDisplayOption={displayOption}
+            theme="ice-blue"
+            species={species}
+          />
           <span>ice-blue theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="grey" species={species} />
+          <SpeciesLozenge
+            speciesNameDisplayOption={displayOption}
+            theme="grey"
+            species={species}
+          />
           <span>grey theme</span>
         </div>
 
         <div className={styles.innerWrapper}>
-          <SpeciesLozenge view={view} theme="red" species={species} />
+          <SpeciesLozenge
+            speciesNameDisplayOption={displayOption}
+            theme="red"
+            species={species}
+          />
           <span>red theme</span>
         </div>
       </div>
       <p>A clickable lozenge will change the cursor to hover, like so:</p>
       <div>
         <SpeciesLozenge
-          view={view}
+          speciesNameDisplayOption={displayOption}
           theme="blue"
           species={species}
           onClick={args.onClick}

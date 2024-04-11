@@ -19,7 +19,6 @@ import React from 'react';
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from './speciesData';
-import { LozengeOptionValues } from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import styles from './SelectedSpecies.stories.module.css';
 
@@ -36,7 +35,7 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
-            view={LozengeOptionValues.COMMON_ASSEMBLY}
+            speciesNameDisplayOption="common-name_assembly-name"
             theme="blue"
             species={species}
           />
@@ -45,7 +44,7 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
-            view={LozengeOptionValues.COMMON_TYPE_ASSEMBLY}
+            speciesNameDisplayOption="common-name_type_assembly-name"
             theme="blue"
             species={species}
           />
@@ -54,7 +53,7 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
-            view={LozengeOptionValues.SCIENTIFIC_ASSEMBLY}
+            speciesNameDisplayOption="scientific-name_assembly-name"
             theme="blue"
             species={species}
           />
@@ -63,7 +62,7 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
-            view={LozengeOptionValues.SCIENTIFIC_TYPE_ASSEMBLY}
+            speciesNameDisplayOption="scientific-name_type_assembly-name"
             theme="blue"
             species={species}
           />
@@ -72,7 +71,7 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
-            view={LozengeOptionValues.ACCESSION}
+            speciesNameDisplayOption="assembly-accession-id"
             theme="blue"
             species={species}
           />

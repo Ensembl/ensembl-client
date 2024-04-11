@@ -19,48 +19,49 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
+import {
+  setSpeciesNameDisplayOption,
+  type SpeciesNameDisplayOption
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import { getSpeciesNameDisplayOption } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
 import styles from './SpeciesLozengeDisplaySelector.module.css';
-import { setLozengeDisplaySelection } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
-import { getLozengeDisplaySelection } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-export enum LozengeOptionValues {
-  COMMON_ASSEMBLY = 'common_assembly',
-  COMMON_TYPE_ASSEMBLY = 'common_type_assembly',
-  SCIENTIFIC_ASSEMBLY = 'scientific_assembly',
-  SCIENTIFIC_TYPE_ASSEMBLY = 'scientific_type_assembly',
-  ACCESSION = 'accession'
-}
+type LozengeOptionType = {
+  value: SpeciesNameDisplayOption;
+  label: string;
+};
 
-const lozengeOptions = [
+const lozengeOptions: LozengeOptionType[] = [
   {
-    value: LozengeOptionValues.COMMON_ASSEMBLY,
+    value: 'common-name_assembly-name',
     label: 'Common name & assembly'
   },
   {
-    value: LozengeOptionValues.COMMON_TYPE_ASSEMBLY,
+    value: 'common-name_type_assembly-name',
     label: 'Common name, type & assembly'
   },
   {
-    value: LozengeOptionValues.SCIENTIFIC_ASSEMBLY,
+    value: 'scientific-name_assembly-name',
     label: 'Scientific name & assembly'
   },
   {
-    value: LozengeOptionValues.SCIENTIFIC_TYPE_ASSEMBLY,
+    value: 'scientific-name_type_assembly-name',
     label: 'Scientific name, type & assembly'
   },
   {
-    value: LozengeOptionValues.ACCESSION,
+    value: 'assembly-accession-id',
     label: 'Assembly accession only'
   }
 ];
 
 const SpeciesLozengeDisplaySelector = () => {
   const dispatch = useAppDispatch();
-  const currentSelection = useAppSelector(getLozengeDisplaySelection);
+  const currentSelection = useAppSelector(getSpeciesNameDisplayOption);
 
   const onChange = (e: FormEvent<HTMLSelectElement>) => {
-    const value = e.currentTarget.value;
-    dispatch(setLozengeDisplaySelection(value));
+    const value = e.currentTarget.value as SpeciesNameDisplayOption;
+    dispatch(setSpeciesNameDisplayOption(value));
   };
   return (
     <div className={styles.grid}>
