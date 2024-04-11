@@ -56,7 +56,9 @@ export default (env: Record<string, unknown>): Configuration => {
                 modules: {
                   auto: true, // will match all files with a pattern /\.module\.\w+$/
                   localIdentName: '[local]__[name]__[hash:base64:5]',
-                  getLocalIdent: buildClassName
+                  getLocalIdent: buildClassName,
+                  namedExport: false, // since v 7.0 it is true by default, should we refactor our code to "import * as styles ..."?
+                  exportLocalsConvention: 'as-is' // consequence of using `namedExport: false` (the loader in this mode also camel-cases css class names). If namedExports were true, this field wouldn't have been needed
                 }
               }
             },
