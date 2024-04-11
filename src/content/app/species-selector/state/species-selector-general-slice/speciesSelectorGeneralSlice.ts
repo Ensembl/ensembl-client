@@ -102,7 +102,7 @@ export const deleteSpeciesAndSave =
     deleteSelectedSpeciesById(genomeId);
   };
 
-const initialState: SpeciesSelectorState = {
+export const initialState: SpeciesSelectorState = {
   committedItems: [],
   speciesNameDisplayOption: 'common-name_assembly-name'
 };

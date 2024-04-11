@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, type ReactNode } from 'react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+
+import createRootReducer from 'src/root/rootReducer';
+import { initialState as speciesSelectorInitialGeneralState } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
@@ -22,6 +27,24 @@ import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpec
 import speciesData from './speciesData';
 
 import styles from './SpeciesTabsSlider.stories.module.css';
+
+const ReduxWrapper = (props: { children: ReactNode }) => {
+  const state = {
+    speciesSelector: {
+      general: {
+        ...speciesSelectorInitialGeneralState,
+        committedItems: speciesData
+      }
+    }
+  };
+
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: state
+  });
+
+  return <Provider store={store}>{props.children}</Provider>;
+};
 
 const SpeciesTabsSliderStory = () => {
   const [selectedSpeciesIndex, setSelectedSpeciesIndex] = useState<
@@ -40,9 +63,11 @@ const SpeciesTabsSliderStory = () => {
   });
 
   return (
-    <div className={styles.container}>
-      <SpeciesTabsSlider>{speciesLozenges}</SpeciesTabsSlider>
-    </div>
+    <ReduxWrapper>
+      <div className={styles.container}>
+        <SpeciesTabsSlider>{speciesLozenges}</SpeciesTabsSlider>
+      </div>
+    </ReduxWrapper>
   );
 };
 
