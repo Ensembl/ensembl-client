@@ -59,6 +59,7 @@
 .scientificName {
   font-size: 15px;
   font-style: italic;
+  font-weight: var(--font-weight-bold);
 }
 
 .type {
