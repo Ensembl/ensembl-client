@@ -47,25 +47,29 @@
   line-height: 1;
 }
 
-.inner span {
+.inner > span {
   margin-right: 10px;
 }
 
 .default {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: var(--font-weight-bold);
 }
 
 .scientificName {
-  font-size: 15px;
+  font-size: 16px;
   font-style: italic;
   font-weight: var(--font-weight-bold);
 }
 
 .type {
-  font-size: 15px;
-  font-style: italic;
+  /* font-size: 15px; */
+  /* font-style: italic; */
   font-weight: var(--font-weight-normal)
+}
+
+.reference {
+  font-style: italic;
 }
 
 .assembly {

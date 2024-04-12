@@ -20,6 +20,8 @@ import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozeng
 
 import speciesData from './speciesData';
 
+import { humanGenome } from 'src/shared/components/selected-species/fixtures/speciesTestData';
+
 import styles from './SelectedSpecies.stories.module.css';
 
 export default {
@@ -37,16 +39,25 @@ export const SpeciesLozengeStory = () => {
           <SpeciesLozenge
             speciesNameDisplayOption="common-name_assembly-name"
             theme="blue"
-            species={species}
+            species={humanGenome}
           />
-          <span>Common name and Assembly</span>
+          <span>Common name and Assembly, both available</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge
+            speciesNameDisplayOption="common-name_assembly-name"
+            theme="blue"
+            species={{ ...humanGenome, common_name: null }}
+          />
+          <span>No common name</span>
         </div>
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
             speciesNameDisplayOption="common-name_type_assembly-name"
             theme="blue"
-            species={species}
+            species={humanGenome}
           />
           <span>Common name, Type and Assembly</span>
         </div>
@@ -73,7 +84,7 @@ export const SpeciesLozengeStory = () => {
           <SpeciesLozenge
             speciesNameDisplayOption="assembly-accession-id"
             theme="blue"
-            species={species}
+            species={humanGenome}
           />
           <span>Assembly accession</span>
         </div>

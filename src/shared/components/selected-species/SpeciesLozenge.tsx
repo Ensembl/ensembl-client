@@ -22,15 +22,17 @@ import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import { type SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import {
   AssemblyAccessionId,
   CommonName,
   ScientificName,
   SpeciesType,
-  AssemblyName
+  AssemblyName,
+  SpeciesReference
 } from '../species-name-parts';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import { type SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import styles from './SpeciesLozenge.module.css';
 
@@ -79,11 +81,21 @@ type DisplayStringProps = {
 
 const LozengeContent = (props: DisplayStringProps) => {
   const { species, displayOption } = props;
+  const scientificNameClasses = classNames(styles.default, styles.italic);
+
+  const scientificNameElement = (
+    <ScientificName
+      scientific_name={species.scientific_name}
+      className={scientificNameClasses}
+    />
+  );
+
   if (displayOption === 'common-name_assembly-name') {
     return (
       <>
         <CommonName
           common_name={species.common_name}
+          fallback={scientificNameElement}
           className={styles.default}
         />
         <AssemblyName assembly={species.assembly} className={styles.assembly} />
@@ -94,11 +106,16 @@ const LozengeContent = (props: DisplayStringProps) => {
       <>
         <CommonName
           common_name={species.common_name}
+          fallback={scientificNameElement}
           className={styles.default}
         />
-        {species.type?.value ? (
-          <SpeciesType type={species.type} className={styles.type} />
-        ) : null}
+        {!!(species.type || species.is_reference) && (
+          <span className={styles.type}>
+            <SpeciesType type={species.type} />
+            {species.type && species.is_reference && ', '}
+            <SpeciesReference {...species} />
+          </span>
+        )}
         <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
@@ -107,7 +124,7 @@ const LozengeContent = (props: DisplayStringProps) => {
       <>
         <ScientificName
           scientific_name={species.scientific_name}
-          className={styles.default}
+          className={scientificNameClasses}
         />
         <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
@@ -117,11 +134,15 @@ const LozengeContent = (props: DisplayStringProps) => {
       <>
         <ScientificName
           scientific_name={species.scientific_name}
-          className={styles.default}
+          className={scientificNameClasses}
         />
-        {species.type?.value ? (
-          <SpeciesType type={species.type} className={styles.type} />
-        ) : null}
+        {!!(species.type || species.is_reference) && (
+          <span>
+            <SpeciesType type={species.type} />
+            {species.type && species.is_reference && ', '}
+            <SpeciesReference {...species} className={styles.italic} />
+          </span>
+        )}
         <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
     );
