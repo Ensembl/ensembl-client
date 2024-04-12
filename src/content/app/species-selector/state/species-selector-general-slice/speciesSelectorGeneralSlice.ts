@@ -117,7 +117,7 @@ const prepareSelectedSpeciesForCommit = (
     scientific_name: species.scientific_name,
     species_taxonomy_id: species.species_taxonomy_id,
     assembly: {
-      accession_id: species.assembly.name,
+      accession_id: species.assembly.accession_id,
       name: species.assembly.name
     },
     is_reference: species.is_reference,
