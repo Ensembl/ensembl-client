@@ -64,6 +64,15 @@ export const SpeciesLozengeStory = () => {
 
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
+            speciesNameDisplayOption="common-name_type_assembly-name"
+            theme="blue"
+            species={{ ...humanGenome, type: null }}
+          />
+          <span>Common name, no type, is reference and assembly</span>
+        </div>
+
+        <div className={styles.innerWrapper}>
+          <SpeciesLozenge
             speciesNameDisplayOption="scientific-name_assembly-name"
             theme="blue"
             species={species}

@@ -81,7 +81,7 @@ type DisplayStringProps = {
 
 const LozengeContent = (props: DisplayStringProps) => {
   const { species, displayOption } = props;
-  const scientificNameClasses = classNames(styles.default, styles.italic);
+  const scientificNameClasses = classNames(styles.prominent, styles.italic);
 
   const scientificNameElement = (
     <ScientificName
@@ -96,7 +96,7 @@ const LozengeContent = (props: DisplayStringProps) => {
         <CommonName
           common_name={species.common_name}
           fallback={scientificNameElement}
-          className={styles.default}
+          className={styles.prominent}
         />
         <AssemblyName assembly={species.assembly} className={styles.assembly} />
       </>
@@ -107,7 +107,7 @@ const LozengeContent = (props: DisplayStringProps) => {
         <CommonName
           common_name={species.common_name}
           fallback={scientificNameElement}
-          className={styles.default}
+          className={styles.prominent}
         />
         {!!(species.type || species.is_reference) && (
           <span className={styles.type}>
@@ -151,7 +151,7 @@ const LozengeContent = (props: DisplayStringProps) => {
       <>
         <AssemblyAccessionId
           assembly={species.assembly}
-          className={styles.default}
+          className={styles.prominent}
         />
       </>
     );
