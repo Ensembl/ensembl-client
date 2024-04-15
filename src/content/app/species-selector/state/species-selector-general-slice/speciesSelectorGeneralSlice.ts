@@ -29,7 +29,6 @@ import {
   deleteSelectedSpeciesById
 } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
-// WHERE IS DELETION HAPPENING?
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
@@ -54,7 +53,6 @@ export type SpeciesSelectorState = {
   speciesNameDisplayOption: SpeciesNameDisplayOption;
 };
 
-// TODO: investigate
 export const fetchSpeciesSearchResults = createAction<string>(
   'species-selector/fetchSpeciesSearchResults'
 );

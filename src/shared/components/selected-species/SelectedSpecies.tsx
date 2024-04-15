@@ -34,7 +34,7 @@ export type Props = {
 
 const SelectedSpecies = (props: Props) => {
   const onClick = () => {
-    props.onClick ? props.onClick(props.species) : null;
+    props.onClick?.(props.species);
   };
 
   const speciesNameDisplayOptionOption = useAppSelector(

@@ -21,7 +21,7 @@ import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozeng
 import speciesData from './speciesData';
 import { humanGenome } from 'src/shared/components/selected-species/fixtures/speciesTestData';
 
-import styles from './SelectedSpecies.stories.module.css';
+import styles from './SpeciesLozenge.stories.module.css';
 
 export default {
   title: 'Components/Shared Components/SpeciesLozenge'
