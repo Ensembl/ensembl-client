@@ -41,14 +41,11 @@
 }
 
 .inner {
-  overflow: hidden;
+  display: flex;
+  align-items: baseline;
+  column-gap: 10px;
   white-space: nowrap;
-  text-overflow: ellipsis;
   line-height: 1;
-}
-
-.inner > span {
-  margin-right: 10px;
 }
 
 .prominent {

@@ -54,7 +54,6 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      isActive={false}
       disabled={true}
     />
   ));
