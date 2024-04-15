@@ -37,14 +37,12 @@ const SelectedSpecies = (props: Props) => {
     props.onClick?.(props.species);
   };
 
-  const speciesNameDisplayOptionOption = useAppSelector(
-    getSpeciesNameDisplayOption
-  );
+  const speciesNameDisplayOption = useAppSelector(getSpeciesNameDisplayOption);
 
   return (
     <SpeciesLozenge
       species={props.species}
-      speciesNameDisplayOption={speciesNameDisplayOptionOption}
+      speciesNameDisplayOption={speciesNameDisplayOption}
       className={props.className}
       onClick={onClick}
       {...getSpeciesLozengeProps(props)}
