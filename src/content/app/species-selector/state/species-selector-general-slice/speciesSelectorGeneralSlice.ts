@@ -29,7 +29,6 @@ import {
   deleteSelectedSpeciesById
 } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
-// WHERE IS DELETION HAPPENING?
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
@@ -42,11 +41,18 @@ import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
+export type SpeciesNameDisplayOption =
+  | 'common-name_assembly-name'
+  | 'common-name_type_assembly-name'
+  | 'scientific-name_assembly-name'
+  | 'scientific-name_type_assembly-name'
+  | 'assembly-accession-id';
+
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
+  speciesNameDisplayOption: SpeciesNameDisplayOption;
 };
 
-// TODO: investigate
 export const fetchSpeciesSearchResults = createAction<string>(
   'species-selector/fetchSpeciesSearchResults'
 );
@@ -94,8 +100,9 @@ export const deleteSpeciesAndSave =
     deleteSelectedSpeciesById(genomeId);
   };
 
-const initialState: SpeciesSelectorState = {
-  committedItems: []
+export const initialState: SpeciesSelectorState = {
+  committedItems: [],
+  speciesNameDisplayOption: 'common-name_assembly-name'
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -108,7 +115,7 @@ const prepareSelectedSpeciesForCommit = (
     scientific_name: species.scientific_name,
     species_taxonomy_id: species.species_taxonomy_id,
     assembly: {
-      accession_id: species.assembly.name,
+      accession_id: species.assembly.accession_id,
       name: species.assembly.name
     },
     is_reference: species.is_reference,
@@ -142,6 +149,12 @@ const speciesSelectorGeneralSlice = createSlice({
   reducers: {
     updateCommittedSpecies(state, action: PayloadAction<CommittedItem[]>) {
       state.committedItems = action.payload;
+    },
+    setSpeciesNameDisplayOption(
+      state,
+      action: PayloadAction<SpeciesNameDisplayOption>
+    ) {
+      state.speciesNameDisplayOption = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -151,6 +164,7 @@ const speciesSelectorGeneralSlice = createSlice({
   }
 });
 
-export const { updateCommittedSpecies } = speciesSelectorGeneralSlice.actions;
+export const { updateCommittedSpecies, setSpeciesNameDisplayOption } =
+  speciesSelectorGeneralSlice.actions;
 
 export default speciesSelectorGeneralSlice.reducer;

@@ -18,9 +18,16 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { SpeciesNameDisplayOption } from './speciesSelectorGeneralSlice';
 
 export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
   return state.speciesSelector.general.committedItems;
+};
+
+export const getSpeciesNameDisplayOption = (
+  state: RootState
+): SpeciesNameDisplayOption => {
+  return state.speciesSelector.general.speciesNameDisplayOption;
 };
 
 export const getCommittedSpeciesById = (

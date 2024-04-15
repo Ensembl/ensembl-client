@@ -1,5 +1,5 @@
 .container {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: minmax(60px, auto) 1fr;
   padding-left: var(--double-standard-gutter);
 }

@@ -23,7 +23,10 @@ export default [
     scientific_name: 'Homo sapiens',
     species_taxonomy_id: '1',
     is_reference: true,
-    type: null,
+    type: {
+      kind: 'population',
+      value: 'African Caribbean in Barbados'
+    },
     assembly: {
       accession_id: 'GRCh38',
       name: 'GRCh38'

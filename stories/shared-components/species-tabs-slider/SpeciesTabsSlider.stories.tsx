@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from './speciesData';
 
@@ -30,10 +30,11 @@ const SpeciesTabsSliderStory = () => {
 
   const speciesLozenges = speciesData.map((item, index) => {
     return (
-      <SelectedSpecies
+      <SpeciesLozenge
         key={index}
-        isActive={index === selectedSpeciesIndex}
+        theme={index === selectedSpeciesIndex ? 'black' : 'blue'}
         species={item}
+        speciesNameDisplayOption="common-name_assembly-name"
         onClick={() => setSelectedSpeciesIndex(index)}
       />
     );

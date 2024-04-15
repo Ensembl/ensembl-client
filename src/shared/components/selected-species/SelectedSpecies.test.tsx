@@ -20,6 +20,9 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
+import createRootReducer from 'src/root/rootReducer';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 import SelectedSpecies, {
   type Props as SelectedSpeciesProps
@@ -42,9 +45,22 @@ const minimalProps = {
   onClick: jest.fn()
 };
 
+const mockState = {
+  committedItems: [],
+  speciesNameDisplayOption: 'assembly-accession-id'
+};
+
 describe('<SelectedSpecies />', () => {
+  const store = configureStore({
+    reducer: createRootReducer(),
+    preloadedState: mockState as any
+  });
   const renderSelectedSpecies = (props: SelectedSpeciesProps) =>
-    render(<SelectedSpecies {...speciesData} {...props} />);
+    render(
+      <Provider store={store}>
+        <SelectedSpecies {...speciesData} {...props} />
+      </Provider>
+    );
 
   describe('lozenge', () => {
     it('has correct classes when active and enabled', () => {
@@ -85,6 +101,7 @@ describe('<SelectedSpecies />', () => {
 
     it('responds to clicks when inactive', async () => {
       const props = set('isActive', false, minimalProps);
+
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
 

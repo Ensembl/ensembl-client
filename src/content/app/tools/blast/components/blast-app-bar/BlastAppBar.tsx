@@ -37,7 +37,7 @@ import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGen
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
-import { SpeciesLozenge } from 'src/shared/components/selected-species';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
@@ -95,15 +95,14 @@ const BlastAppBar = () => {
 
   const speciesTabs = areSpeciesEnabled
     ? speciesList.map((species, index) => (
-        <SpeciesLozenge
+        <SelectedSpecies
           key={index}
-          theme="blue"
           species={species}
           onClick={() => speciesLozengeClick(species)}
         />
       ))
     : speciesList.map((species, index) => (
-        <SpeciesLozenge key={index} theme="grey" species={species} />
+        <SelectedSpecies key={index} disabled={true} species={species} />
       ));
 
   const speciesTabsSlider = (

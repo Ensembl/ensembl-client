@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import ModalView from 'src/shared/components/modal-view/ModalView';
 
 import SelectedGenomesTable from './selected-genomes-table/SelectedGenomesTable';
+import SpeciesLozengeDisplaySelector from 'src/content/app/species-selector/components/species-lozenge-display-selector/SpeciesLozengeDisplaySelector';
 
 import styles from './SpeciesManager.module.css';
 
@@ -33,7 +34,9 @@ const SpeciesManager = () => {
   return (
     <ModalView onClose={onClose}>
       <div className={styles.container}>
-        <div style={{ height: '60px' }}>Here will be the dropdown</div>
+        <div>
+          <SpeciesLozengeDisplaySelector />
+        </div>
         <div>
           <SelectedGenomesTable />
         </div>
