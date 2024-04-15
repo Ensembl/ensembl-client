@@ -28,12 +28,12 @@ import SpeciesManagerIndicator from 'src/shared/components/species-manager-indic
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesSelectorAppBar.module.css';
-import { SelectedSpecies } from 'src/shared/components/selected-species';
 
 export const placeholderMessage =
   'Find and add your favourite species to use them across the site';

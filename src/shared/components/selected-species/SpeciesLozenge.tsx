@@ -32,7 +32,7 @@ import {
 } from '../species-name-parts';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import { type SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import styles from './SpeciesLozenge.module.css';
 
@@ -74,12 +74,10 @@ const SpeciesLozenge = (props: Props) => {
   );
 };
 
-type DisplayStringProps = {
+const LozengeContent = (props: {
   species: CommittedItem;
   displayOption: SpeciesNameDisplayOption;
-};
-
-const LozengeContent = (props: DisplayStringProps) => {
+}) => {
   const { species, displayOption } = props;
   const scientificNameClasses = classNames(styles.prominent, styles.italic);
 
