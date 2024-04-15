@@ -73,8 +73,8 @@ describe('<SpeciesLozenge />', () => {
       const typeKind = upperFirst(humanGenome.type.kind);
       const typeValue = humanGenome.type.value;
       const ref = 'Reference';
-      const assemblyNameme = humanGenome.assembly.name;
-      const expectedText = `${commonName}${typeKind} - ${typeValue}, ${ref}${assemblyNameme}`;
+      const assemblyName = humanGenome.assembly.name;
+      const expectedText = `${commonName}${typeKind} - ${typeValue}, ${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -97,8 +97,8 @@ describe('<SpeciesLozenge />', () => {
       const typeKind = upperFirst(testGenome.type.kind);
       const typeValue = testGenome.type.value;
       const ref = 'Reference';
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${typeKind} - ${typeValue}, ${ref}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${typeKind} - ${typeValue}, ${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -119,8 +119,8 @@ describe('<SpeciesLozenge />', () => {
       const renderedText = container.textContent;
       const commonName = testGenome.common_name;
       const ref = 'Reference';
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${commonName}${ref}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${commonName}${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -142,8 +142,8 @@ describe('<SpeciesLozenge />', () => {
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
       const ref = 'Reference';
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${ref}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -165,8 +165,8 @@ describe('<SpeciesLozenge />', () => {
       const commonName = testGenome.common_name;
       const typeKind = upperFirst(testGenome.type.kind);
       const typeValue = testGenome.type.value;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${commonName}${typeKind} - ${typeValue}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${commonName}${typeKind} - ${typeValue}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -187,8 +187,8 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const commonName = testGenome.common_name;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${commonName}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${commonName}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -211,8 +211,8 @@ describe('<SpeciesLozenge />', () => {
       const scientificName = testGenome.scientific_name;
       const typeKind = upperFirst(testGenome.type.kind);
       const typeValue = testGenome.type.value;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${typeKind} - ${typeValue}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${typeKind} - ${typeValue}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -234,8 +234,8 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
   });
@@ -254,8 +254,8 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
   });
@@ -273,11 +273,11 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
+      const assemblyName = testGenome.assembly.name;
       const typeKind = upperFirst(testGenome.type.kind);
       const typeValue = testGenome.type.value;
       const ref = 'Reference';
-      const expectedText = `${scientificName}${typeKind} - ${typeValue}, ${ref}${assemblyNameme}`;
+      const expectedText = `${scientificName}${typeKind} - ${typeValue}, ${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -297,10 +297,10 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
+      const assemblyName = testGenome.assembly.name;
       const typeKind = upperFirst(testGenome.type.kind);
       const typeValue = testGenome.type.value;
-      const expectedText = `${scientificName}${typeKind} - ${typeValue}${assemblyNameme}`;
+      const expectedText = `${scientificName}${typeKind} - ${typeValue}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -321,8 +321,8 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
-      const expectedText = `${scientificName}${assemblyNameme}`;
+      const assemblyName = testGenome.assembly.name;
+      const expectedText = `${scientificName}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
 
@@ -342,9 +342,9 @@ describe('<SpeciesLozenge />', () => {
 
       const renderedText = container.textContent;
       const scientificName = testGenome.scientific_name;
-      const assemblyNameme = testGenome.assembly.name;
+      const assemblyName = testGenome.assembly.name;
       const ref = 'Reference';
-      const expectedText = `${scientificName}${ref}${assemblyNameme}`;
+      const expectedText = `${scientificName}${ref}${assemblyName}`;
       expect(renderedText).toBe(expectedText);
     });
   });
