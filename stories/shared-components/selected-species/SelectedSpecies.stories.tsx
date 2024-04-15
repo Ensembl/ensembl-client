@@ -96,103 +96,99 @@ const SpeciesLozengeThemes = () => {
 
 const SpeciesLozengeContentFormatting = () => {
   return (
-    <>
-      <div className={styles.wrapper}>
-        <p>The different display options of species lozenge</p>
+    <div className={styles.wrapper}>
+      <p>The different display options of species lozenge</p>
 
-        <p>1. Common name and assembly name</p>
+      <p>1. Common name and assembly name</p>
 
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="common-name_assembly-name"
-            theme="blue"
-            species={humanGenome}
-          />
-          <span>For species with a common name</span>
-        </div>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="common-name_assembly-name"
-            theme="blue"
-            species={{ ...humanGenome, common_name: null }}
-          />
-          <span>
-            For species without a common name (falls back to scientific name)
-          </span>
-        </div>
-
-        <p>2. Scientific name and assembly name</p>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="scientific-name_assembly-name"
-            theme="blue"
-            species={humanGenome}
-          />
-          <span>
-            A genome always has a species scientific name and an assembly name
-          </span>
-        </div>
-
-        <p>3. Common name, type, and assembly name</p>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="common-name_type_assembly-name"
-            theme="blue"
-            species={humanGenome}
-          />
-          <span>
-            For genome that both has a type, and is a reference assembly
-          </span>
-        </div>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="common-name_type_assembly-name"
-            theme="blue"
-            species={{ ...humanGenome, is_reference: false }}
-          />
-          <span>
-            For genome that has a type, but is not a reference assembly
-          </span>
-        </div>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="common-name_type_assembly-name"
-            theme="blue"
-            species={{ ...humanGenome, type: null }}
-          />
-          <span>
-            For genome that does not have a type, but is a reference assembly
-          </span>
-        </div>
-
-        <p>4. Scientific name, type, and assembly name</p>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="scientific-name_type_assembly-name"
-            theme="blue"
-            species={humanGenome}
-          />
-          <span>For a genome that has a type and is a reference assembly</span>
-        </div>
-
-        <p>5. Only assembly accession id</p>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption="assembly-accession-id"
-            theme="blue"
-            species={humanGenome}
-          />
-          <span>A genome always has an accession id</span>
-        </div>
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="common-name_assembly-name"
+          theme="blue"
+          species={humanGenome}
+        />
+        <span>For species with a common name</span>
       </div>
-    </>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="common-name_assembly-name"
+          theme="blue"
+          species={{ ...humanGenome, common_name: null }}
+        />
+        <span>
+          For species without a common name (falls back to scientific name)
+        </span>
+      </div>
+
+      <p>2. Scientific name and assembly name</p>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="scientific-name_assembly-name"
+          theme="blue"
+          species={humanGenome}
+        />
+        <span>
+          A genome always has a species scientific name and an assembly name
+        </span>
+      </div>
+
+      <p>3. Common name, type, and assembly name</p>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="common-name_type_assembly-name"
+          theme="blue"
+          species={humanGenome}
+        />
+        <span>
+          For genome that both has a type, and is a reference assembly
+        </span>
+      </div>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="common-name_type_assembly-name"
+          theme="blue"
+          species={{ ...humanGenome, is_reference: false }}
+        />
+        <span>For genome that has a type, but is not a reference assembly</span>
+      </div>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="common-name_type_assembly-name"
+          theme="blue"
+          species={{ ...humanGenome, type: null }}
+        />
+        <span>
+          For genome that does not have a type, but is a reference assembly
+        </span>
+      </div>
+
+      <p>4. Scientific name, type, and assembly name</p>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="scientific-name_type_assembly-name"
+          theme="blue"
+          species={humanGenome}
+        />
+        <span>For a genome that has a type and is a reference assembly</span>
+      </div>
+
+      <p>5. Only assembly accession id</p>
+
+      <div className={styles.innerWrapper}>
+        <SpeciesLozenge
+          speciesNameDisplayOption="assembly-accession-id"
+          theme="blue"
+          species={humanGenome}
+        />
+        <span>A genome always has an accession id</span>
+      </div>
+    </div>
   );
 };
 
