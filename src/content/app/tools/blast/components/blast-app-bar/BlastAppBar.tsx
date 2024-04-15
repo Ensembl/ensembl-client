@@ -97,7 +97,6 @@ const BlastAppBar = () => {
     ? speciesList.map((species, index) => (
         <SelectedSpecies
           key={index}
-          disabled={false}
           species={species}
           onClick={() => speciesLozengeClick(species)}
         />
