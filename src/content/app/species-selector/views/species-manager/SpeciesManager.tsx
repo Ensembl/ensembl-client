@@ -34,7 +34,7 @@ const SpeciesManager = () => {
   return (
     <ModalView onClose={onClose}>
       <div className={styles.container}>
-        <div style={{ height: '60px' }}>
+        <div>
           <SpeciesLozengeDisplaySelector />
         </div>
         <div>
