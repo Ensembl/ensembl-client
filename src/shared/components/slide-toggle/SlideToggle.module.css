@@ -24,12 +24,6 @@
   fill: var(--color-white);
 }
 
-.slideToggleOn.disabled .slideToggleTrack {
-  fill: var(--color-grey);
-  stroke: var(--color-grey);
-  transition: none;
-}
-
 .slideToggleOff .slideToggleTrack {
   fill: var(--color-white);
   stroke: var(--color-grey);
@@ -40,7 +34,13 @@
   transform: translateX(0);
 }
 
-.slideToggleOff.disabled .slideToggleThumb {
+.disabled.slideToggleOn .slideToggleTrack {
+  fill: var(--color-grey);
+  stroke: var(--color-grey);
+  transition: none;
+}
+
+.disabled.slideToggleOff .slideToggleThumb {
   fill: var(--color-grey);
   transition: none;
 }
