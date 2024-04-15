@@ -59,8 +59,8 @@ import styles from './SelectedGenomesTable.module.css';
  */
 
 type DeletionModeSettings = {
-  rowDeletionInitiated: string;
-  genomeIds: string[];
+  initialGenomeId: string; // id of the genome whose row in the table contains the delete button that triggered the deletion mode
+  genomeIds: string[]; // the list of genome ids marked for deletion
 };
 
 type TableState = {
@@ -90,7 +90,7 @@ type DispatchedTableAction =
 // The function accepts id of the genome in the table row where the delete button was clicked
 const getNewDeleteModeSettings = (genomeId: string): DeletionModeSettings => {
   return {
-    rowDeletionInitiated: genomeId,
+    initialGenomeId: genomeId,
     genomeIds: [genomeId]
   };
 };
@@ -269,7 +269,7 @@ const SelectedGenomesTable = () => {
               </td>
             </tr>
             {isInDeletionMode &&
-              tableState.deletionModeSettings?.rowDeletionInitiated ===
+              tableState.deletionModeSettings?.initialGenomeId ===
                 species.genome_id && (
                 <ConfirmDeletion
                   species={species}
@@ -335,7 +335,6 @@ const ConfirmDeletion = (props: {
     props.onDelete(props.species);
   };
 
-  // FIXME: the colspan on the first td should depend on how many columns the table shows
   return (
     <tr className={styles.removalRow}>
       <td colSpan={cpanColumnsCount}>
