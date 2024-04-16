@@ -15,15 +15,18 @@
  */
 
 import React from 'react';
+import { useAppSelector } from 'src/store';
 
 import SpeciesLozenge from './SpeciesLozenge';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import { getSpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 export type Props = {
   species: CommittedItem;
   isActive?: boolean;
-  onClick: (species: CommittedItem) => void;
+  disabled?: boolean;
+  onClick?: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
@@ -31,12 +34,15 @@ export type Props = {
 
 const SelectedSpecies = (props: Props) => {
   const onClick = () => {
-    props.onClick(props.species);
+    props.onClick?.(props.species);
   };
+
+  const speciesNameDisplayOption = useAppSelector(getSpeciesNameDisplayOption);
 
   return (
     <SpeciesLozenge
       species={props.species}
+      speciesNameDisplayOption={speciesNameDisplayOption}
       className={props.className}
       onClick={onClick}
       {...getSpeciesLozengeProps(props)}
@@ -47,10 +53,19 @@ const SelectedSpecies = (props: Props) => {
 const getSpeciesLozengeProps = (props: Props) => {
   const {
     isActive = false,
-    species: { isEnabled }
+    species: { isEnabled },
+    disabled
   } = props;
 
   // TODO: add invalid (red) species when we start having them
+
+  if (disabled) {
+    return {
+      theme: 'grey',
+      disabled: true,
+      'data-active': true
+    } as const;
+  }
 
   if (isActive && isEnabled) {
     return {
@@ -66,11 +81,11 @@ const getSpeciesLozengeProps = (props: Props) => {
     } as const;
   } else if (!isActive && isEnabled) {
     return {
-      theme: 'blue',
+      theme: 'blue'
     } as const;
   } else {
     return {
-      theme: 'ice-blue',
+      theme: 'ice-blue'
     } as const;
   }
 };

@@ -1,0 +1,42 @@
+.table {
+  --table-background: var(--color-light-grey);
+}
+
+.disabledRow {
+  color: var(--color-medium-dark-grey);
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.homeIcon {
+  fill: var(--color-blue);
+  width: 19px;
+  aspect-ratio: 1;
+  font-size: 0; /* to remove the empty vertical space around the home icon and better center it vertically */
+}
+
+.disabledRow .homeIcon {
+  fill: var(--color-medium-dark-grey);
+}
+
+.removalRow {
+  --table-row-border-color: transparent;
+  --table-cell-padding-top: 0;
+}
+
+.removalRowContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 20px;
+}
+
+.removalWarning {
+  color: var(--color-red);
+}
+
+.cancelGenomeRemoval {
+  color: var(--color-blue);
+}

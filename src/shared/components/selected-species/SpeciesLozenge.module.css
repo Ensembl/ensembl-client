@@ -41,16 +41,20 @@
 }
 
 .inner {
-  overflow: hidden;
+  display: flex;
+  align-items: baseline;
+  column-gap: 10px;
   white-space: nowrap;
-  text-overflow: ellipsis;
   line-height: 1;
 }
 
-.name {
-  font-size: 15px;
+.prominent {
+  font-size: 16px;
   font-weight: var(--font-weight-bold);
-  margin-right: 10px;
+}
+
+.italic {
+  font-style: italic;
 }
 
 .assembly {

@@ -26,9 +26,9 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -113,7 +113,7 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
     : ({ theme: 'grey', disabled: true } as const);
 
   const selectedSpecies = props.selectedSpecies.map((species) => (
-    <SpeciesLozenge
+    <SelectedSpecies
       key={species.genome_id}
       species={species}
       onClick={() => showSpeciesPage(species)}

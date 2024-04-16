@@ -1,6 +1,5 @@
 .slideToggle {
   --transition-time: 0.15s;
-  cursor: pointer;
   user-select: none;
   height: 12px;
 }
@@ -33,4 +32,15 @@
 .slideToggleOff  .slideToggleThumb {
   fill: var(--color-blue);
   transform: translateX(0);
+}
+
+.disabled.slideToggleOn .slideToggleTrack {
+  fill: var(--color-grey);
+  stroke: var(--color-grey);
+  transition: none;
+}
+
+.disabled.slideToggleOff .slideToggleThumb {
+  fill: var(--color-grey);
+  transition: none;
 }

@@ -23,6 +23,7 @@ type Props = {
   isOn: boolean;
   className?: string;
   onChange: (isOn: boolean) => void;
+  disabled?: boolean;
 };
 
 const SlideToggle = (props: Props) => {
@@ -39,15 +40,14 @@ const SlideToggle = (props: Props) => {
     setIsOn(!isOn);
   };
 
-  const className = classNames(
-    styles.slideToggle,
-    props.className,
-    { [styles.slideToggleOn]: isOn },
-    { [styles.slideToggleOff]: !isOn }
-  );
+  const className = classNames(styles.slideToggle, props.className, {
+    [styles.slideToggleOn]: isOn,
+    [styles.slideToggleOff]: !isOn,
+    [styles.disabled]: props.disabled
+  });
 
   return (
-    <button onClick={onToggle}>
+    <button onClick={onToggle} disabled={props.disabled}>
       <svg
         className={className}
         xmlns="http://www.w3.org/2000/svg"
