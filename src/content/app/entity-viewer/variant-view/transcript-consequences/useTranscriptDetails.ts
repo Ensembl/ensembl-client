@@ -178,7 +178,7 @@ const useGenomicRegionData = (params: {
   } = useRefgetSequenceQuery(
     {
       checksum: regionChecksum ?? '',
-      start: genomicSliceStart - 1, // translate to 0-based coordinate system that refget uses
+      start: genomicSliceStart,
       end: genomicSliceEnd
     },
     {
@@ -270,7 +270,7 @@ const useProteinData = (params: {
   } = useRefgetSequenceQuery(
     {
       checksum: proteinChecksum ?? '',
-      start: proteinSliceCoordinates.proteinSliceStart - 1, // FIXME: undo the (- 1) after useRefgetSequenceQuery hook is updated to use urlFor.refget
+      start: proteinSliceCoordinates.proteinSliceStart,
       end: proteinSliceCoordinates.proteinSliceEnd
     },
     {

@@ -107,7 +107,7 @@ const useVariantImageData = (params: {
   } = useRefgetSequenceQuery(
     {
       checksum: regionChecksum ?? '',
-      start: sliceStart - 1, // translate to 0-based coordinate system that refget uses
+      start: sliceStart,
       end: sliceEnd
     },
     {

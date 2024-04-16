@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import config from 'config';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
@@ -24,7 +24,7 @@ import { Strand } from 'src/shared/types/core-api/strand';
 
 export type SequenceQueryParams = {
   checksum: string;
-  start?: number;
+  start?: number; // In Ensembl (1-based) coordinate system!
   end?: number;
   strand?: Strand;
 };
@@ -33,23 +33,9 @@ const refgetApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     refgetSequence: builder.query<string, SequenceQueryParams>({
       query: (params) => {
-        const { checksum, start, end } = params;
-        const queryParameters = new URLSearchParams();
-        if (start) {
-          queryParameters.set('start', `${start}`);
-        }
-        if (end) {
-          queryParameters.set('end', `${end}`);
-        }
-
-        const queryString = [...queryParameters].length
-          ? `?${queryParameters.toString()}`
-          : '';
-
-        // FIXME:
-        // Use urlFor.refget helper. !!!Remember that urlFor.refget helper accepts start in Ensembl coordinates
+        const refgetUrl = urlFor.refget(params);
         return {
-          url: `${config.refgetBaseUrl}/sequence/${checksum}${queryString}`,
+          url: refgetUrl,
           responseHandler: 'text'
         };
       },
