@@ -68,7 +68,7 @@ const Diagram = (
 
   const scale = scaleLinear()
     .domain([1, geneLength])
-    .range([1, width])
+    .range([0, width])
     .interpolate(interpolateRound)
     .clamp(true);
 
@@ -82,10 +82,9 @@ const Diagram = (
   const transcriptWidth = width - distanceFromGeneStart - distanceToGeneEnd;
   const variantX = scale(variantRelativeStart);
 
-  const shouldRenderLeftGeneSegment =
-    transcript.slice.location.start !== geneStart;
+  const shouldRenderLeftGeneSegment = transcript.relative_location.start !== 1;
   const shouldRenderRightGeneSegment =
-    transcript.slice.location.end !== geneEnd;
+    transcript.relative_location.start !== geneLength;
 
   return (
     <svg
