@@ -3,10 +3,44 @@
   margin-left: 1px;
 }
 
+.referenceAllele {
+  position: relative;
+}
+
 .referenceSequenceGap {
   display: inline-flex;
   justify-content: space-around;
   color: var(--color-white);
   width: calc(5 * 16px + 5 * 1px); /* where 16px is width of a sequence letter block, and 1px is the gap width */
   font-size: 11px;
+}
+
+.lengthMeasure {
+  position: absolute;
+  bottom: -26px; /* to align with the center of the strand label */
+  left: 0;
+  right: 0;
+  text-align: center;
+  /* background-color: white; */
+  background:
+    /* var(--color-dark-grey); */ /* middle grey line */
+    linear-gradient(var(--color-dark-grey), var(--color-dark-grey)),
+    linear-gradient(transparent 20%, var(--color-dark-grey) 20%, var(--color-dark-grey) 80%, transparent 80%, transparent 100%),
+    linear-gradient(transparent 20%, var(--color-dark-grey) 20%, var(--color-dark-grey) 80%, transparent 80%, transparent 100%);
+  background-size:
+    100% 1px,
+    1px 100%,
+    1px 100%;
+  background-position:
+    1px 50%,
+    1px, 100%,
+    100% 0;
+  background-repeat: no-repeat;
+}
+
+.lengthMeasure > span {
+  color: white;
+  background-color: var(--color-black);
+  font-size: 11px;
+  padding: 0 10px;
 }

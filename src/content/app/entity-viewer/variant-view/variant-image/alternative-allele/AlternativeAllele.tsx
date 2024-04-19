@@ -35,6 +35,13 @@ type AlleleData = {
   urlId: string;
 };
 
+/**
+ * TODO:
+ * - only expand sequence if there are up to five nucleotides remaining
+ * - replace dashes with dots
+ *
+ */
+
 type Props = {
   regionSliceStart: number;
   variantStart: number; // accounts for anchor base in appropriate variant types
@@ -177,7 +184,7 @@ const Deletion = (props: {
     };
 
     const sequenceLeft = Array(flankingBlocksCount).fill('-').join('');
-    const sequenceMid = Array(blocksGapCount).fill('-').join('');
+    const sequenceMid = Array(blocksGapCount).fill('.').join('');
     const sequenceRight = Array(flankingBlocksCount).fill('-').join('');
 
     return (
