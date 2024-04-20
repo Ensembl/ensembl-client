@@ -21,9 +21,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  /* background-color: white; */
   background:
-    /* var(--color-dark-grey); */ /* middle grey line */
     linear-gradient(var(--color-dark-grey), var(--color-dark-grey)),
     linear-gradient(transparent 20%, var(--color-dark-grey) 20%, var(--color-dark-grey) 80%, transparent 80%, transparent 100%),
     linear-gradient(transparent 20%, var(--color-dark-grey) 20%, var(--color-dark-grey) 80%, transparent 80%, transparent 100%);

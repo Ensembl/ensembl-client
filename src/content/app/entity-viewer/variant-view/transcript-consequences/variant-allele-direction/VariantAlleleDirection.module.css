@@ -1,0 +1,19 @@
+.arrow {
+  width: 9px;
+  aspect-ratio: 1.5;
+  background-color: var(--color-orange);
+}
+
+/* creating a basic CSS triangle: https://front-end.social/@css/111861629372809662 */
+.up {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%); /* this is what creates the triangle pointing up */
+}
+
+.down {
+  clip-path: polygon(0 0, 50% 100%, 100% 0); /* this is what creates the triangle pointing down */
+}
+
+/* wrapper for cases when the component displays both an up-pointing and a down-pointing arrow */
+.container {
+  display: inline-flex;
+}

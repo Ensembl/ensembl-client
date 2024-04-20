@@ -23,6 +23,7 @@ import {
 } from '../../variant-image/variantImageConstants';
 
 import SequenceLetterBlock from 'src/content/app/entity-viewer/variant-view/variant-image/sequence-letter-block/SequenceLetterBlock';
+import VariantAlleleDirection from '../variant-allele-direction/VariantAlleleDirection';
 
 import styles from './TranscriptVariantGenomicSequence.module.css';
 
@@ -160,59 +161,57 @@ const RightFlankingSequence = ({
 };
 
 const ReferenceAlleleSequence = ({ sequence }: { sequence: string }) => {
-  if (sequence.length > MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
-    const lettersLeft = sequence
-      .slice(0, 8)
-      .split('')
-      .map((letter, index) => (
-        <SequenceLetterBlock
-          letter={letter}
-          key={index}
-          className={styles.letter}
-        />
-      ));
-    const lettersRight = sequence
-      .slice(-8)
-      .split('')
-      .map((letter, index) => (
-        <SequenceLetterBlock
-          letter={letter}
-          key={index}
-          className={styles.letter}
-        />
-      ));
-    const gapLength = sequence.length - MAX_REFERENCE_ALLELE_DISPLAY_LENGTH + 1;
-    const middle = (
-      <>
-        <SequenceLetterBlock letter="." className={styles.letter} />
-        <SequenceLetterBlock letter="." className={styles.letter} />
-        <SequenceLetterBlock
-          letter={`(${gapLength})`}
-          className={styles.letter}
-        />
-        <SequenceLetterBlock letter="." className={styles.letter} />
-        <SequenceLetterBlock letter="." className={styles.letter} />
-      </>
-    );
+  const letters = sequence.split('');
 
-    return (
-      <>
-        {lettersLeft}
-        {middle}
-        {lettersRight}
-      </>
-    );
-  } else {
-    const letters = sequence.split('');
-
-    return letters.map((letter, index) => (
-      <SequenceLetterBlock
-        letter={letter}
-        key={index}
-        className={styles.letter}
-      />
-    ));
+  if (letters.length <= MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) {
+    return <ReferenceAlleleLetterBlocks letters={letters} />;
   }
+
+  const variantHalfWidth = Math.floor(MAX_REFERENCE_ALLELE_DISPLAY_LENGTH / 2);
+  const lettersLeft = letters.slice(0, variantHalfWidth - 2); // expect eight letters
+  const lettersRight = letters.slice(letters.length - (variantHalfWidth - 2)); // expect eight letters
+
+  const letterBlocksLeft = (
+    <ReferenceAlleleLetterBlocks letters={lettersLeft} />
+  );
+  const letterBlocksRight = (
+    <ReferenceAlleleLetterBlocks letters={lettersRight} />
+  );
+
+  const middleBlock = (
+    <>
+      <ReferenceAlleleLetterBlocks letters={['.']} />
+      <span>
+        <span className={styles.referenceAlleleSequenceLength}>
+          {/**
+           * showing the length of the full reference allele sequence here,
+           * despite slices of the sequence shown to the left and the right
+           */}
+          {sequence.length}
+        </span>{' '}
+        <span className={styles.referenceAlleleSequenceLabel}>altered</span>
+      </span>
+      <ReferenceAlleleLetterBlocks letters={['.']} />
+    </>
+  );
+
+  return (
+    <>
+      {letterBlocksLeft}
+      {middleBlock}
+      {letterBlocksRight}
+    </>
+  );
+};
+
+const ReferenceAlleleLetterBlocks = ({ letters }: { letters: string[] }) => {
+  return letters.map((letter, index) => (
+    <SequenceLetterBlock
+      letter={letter}
+      key={index}
+      className={styles.letter}
+    />
+  ));
 };
 
 const AltAlleleSequence = ({
@@ -258,7 +257,16 @@ const AltAlleleSequence = ({
   return (
     <div className={styles.alternativeAllele} style={elementStyles}>
       {alleleRepresentation}
-      <AltAlleleArrow alleleType={alleleType} />
+      <VariantAlleleDirection
+        direction={
+          alleleType === 'indel'
+            ? 'both'
+            : alleleType === 'insertion'
+              ? 'up'
+              : 'down'
+        }
+        className={styles.arrow}
+      />
     </div>
   );
 };
@@ -279,17 +287,6 @@ const Deletion = ({ sequenceLength }: { sequenceLength: number }) => {
 
 const AltAlleleSequenceLength = ({ length }: { length: number }) => {
   return <span className={styles.altAlleleSequenceLength}>{length}</span>;
-};
-
-const AltAlleleArrow = ({ alleleType }: { alleleType: string }) => {
-  const arrowDirectionClassName =
-    alleleType === 'insertion'
-      ? styles.altAlleleArrowUp
-      : styles.altAlleleArrowDown;
-
-  const classes = classNames(styles.altAlleleArrow, arrowDirectionClassName);
-
-  return <div className={classes} />;
 };
 
 /**
