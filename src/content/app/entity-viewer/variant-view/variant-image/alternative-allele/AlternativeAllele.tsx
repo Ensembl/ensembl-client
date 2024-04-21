@@ -35,13 +35,6 @@ type AlleleData = {
   urlId: string;
 };
 
-/**
- * TODO:
- * - only expand sequence if there are up to five nucleotides remaining
- * - replace dashes with dots
- *
- */
-
 type Props = {
   regionSliceStart: number;
   variantStart: number; // accounts for anchor base in appropriate variant types
@@ -80,21 +73,11 @@ const AlternativeAllele = (props: Props) => {
     sequence = sequence.slice(1); // exclude the first (anchor) base of the allele
   }
 
-  // Maximum alt allele display length is dynamic, and depends on where the variant starts
-  // Alt alleles are allowed to exceed the length of the remaining reference sequence
-  // (to the right of variant start) by five nucleotides
-  const distanceToVariantStart = variantStart - regionSliceStart;
-  const maxAlternativeAlleleLength =
-    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - distanceToVariantStart + 5;
-
-  const sequenceLetters = sequence
-    .split('')
-    .slice(0, maxAlternativeAlleleLength);
-  const shouldShowEllipsis = sequence.length > maxAlternativeAlleleLength;
-
-  if (shouldShowEllipsis) {
-    sequenceLetters[sequenceLetters.length - 1] = '…';
-  }
+  const { sequenceLetters, shouldShowEllipsis } = getAltAlleleSequenceLetters({
+    variantStart,
+    regionSliceStart,
+    sequence
+  });
 
   const defaultLetterColour = 'var(--color-grey)'; // this is a fallback colour that should never be displayed if everything is working correctly
   const letterColour = isReferenceAlleleSelected
@@ -108,7 +91,8 @@ const AlternativeAllele = (props: Props) => {
   const lastSequenceLetterStyle = shouldShowEllipsis
     ? {
         ['--sequence-block-color' as string]: 'transparent',
-        ['--sequence-block-letter-color' as string]: letterColour
+        ['--sequence-block-letter-color' as string]: letterColour,
+        letterSpacing: '-3px'
       }
     : sequenceLetterStyle;
 
@@ -150,6 +134,55 @@ const AlternativeAllele = (props: Props) => {
       </button>
     );
   }
+};
+
+/**
+ * Rules for how many letters of the alternative allele sequence to display,
+ * according to design:
+ * - Alternative allele sequence is allowed to extend past the end of the reference sequence
+ *   by five nucleotides.
+ * - However, this "extra five nucleotides" rule only applies to the alternative alleles
+ *   whose whole sequence can fit into this space.
+ * - If the alternative allele's sequence is longer than the distance to the end of the
+ *   reference sequence + 5 nucleotides, then it should be truncated at the same point
+ *   where the reference sequence is truncated (i.e. the space for 5 extra nucleotides is not added)
+ */
+const getAltAlleleSequenceLetters = ({
+  variantStart,
+  regionSliceStart,
+  sequence
+}: {
+  variantStart: number;
+  regionSliceStart: number;
+  sequence: string;
+}) => {
+  // The start of the alternative allele has to be aligned with the start of the reference allele.
+  // This means that the maximum alt allele display length is dynamic,
+  // and depends on the distance between the variant start and the region slice start
+  const distanceToVariantStart = variantStart - regionSliceStart;
+  const distanceToRefSequenceEnd =
+    DISPLAYED_REFERENCE_SEQUENCE_LENGTH - distanceToVariantStart;
+
+  // Alt allele's sequence length is allowed to extend by 5 nucleotides
+  // past the reference sequence; but only if the alt allele's sequence can fully fit into this space
+  const displayedSequenceLength =
+    sequence.length <= distanceToRefSequenceEnd + 5
+      ? sequence.length
+      : distanceToRefSequenceEnd;
+
+  const sequenceLetters = sequence.split('').slice(0, displayedSequenceLength);
+
+  const shouldShowEllipsis = sequence.length > displayedSequenceLength;
+
+  if (shouldShowEllipsis) {
+    // according to design requirements, using three individual dots instead of a single ellipsis character (…)
+    sequenceLetters[sequenceLetters.length - 1] = '...';
+  }
+
+  return {
+    sequenceLetters,
+    shouldShowEllipsis
+  };
 };
 
 const Deletion = (props: {
