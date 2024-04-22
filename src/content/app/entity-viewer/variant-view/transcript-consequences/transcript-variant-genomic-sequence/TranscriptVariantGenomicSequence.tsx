@@ -205,11 +205,13 @@ const ReferenceAlleleSequence = ({ sequence }: { sequence: string }) => {
 };
 
 const ReferenceAlleleLetterBlocks = ({ letters }: { letters: string[] }) => {
+  const letterClasses = classNames(styles.letter, styles.refAlleleLetter);
+
   return letters.map((letter, index) => (
     <SequenceLetterBlock
       letter={letter}
       key={index}
-      className={styles.letter}
+      className={letterClasses}
     />
   ));
 };

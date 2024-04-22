@@ -79,7 +79,11 @@ const ReferenceSequenceAllele = (props: Props) => {
 
   if (!shouldDisplayGap) {
     return (
-      <button onClick={onClick} disabled={isSelectedAllele}>
+      <button
+        onClick={onClick}
+        className={styles.referenceAllele}
+        disabled={isSelectedAllele}
+      >
         {letters.map((letter, index) => (
           <SequenceLetterBlock
             key={index}

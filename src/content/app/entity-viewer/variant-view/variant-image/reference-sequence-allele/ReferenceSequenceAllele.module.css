@@ -7,6 +7,10 @@
   position: relative;
 }
 
+.referenceAllele .letter {
+  font-weight: var(--font-weight-semibold);
+}
+
 .referenceSequenceGap {
   display: inline-flex;
   justify-content: space-around;
