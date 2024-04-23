@@ -80,7 +80,6 @@ const Content = (props: { onClose: () => void }) => {
 
   return searchParams.has('query') ? (
     <GenomeSelectorBySearchQuery
-      query={searchParams.get('query') as string}
       onSpeciesAdd={onSpeciesAdd}
       onClose={props.onClose}
     />
