@@ -23,3 +23,7 @@ export const MAX_REFERENCE_ALLELE_DISPLAY_LENGTH = 21;
 export const MIN_FLANKING_SEQUENCE_LENGTH =
   (DISPLAYED_REFERENCE_SEQUENCE_LENGTH - MAX_REFERENCE_ALLELE_DISPLAY_LENGTH) /
   2;
+
+// if reference allele sequence is longer than the maximum display length,
+// a gap is drawn in the middle of the sequence
+export const REFERENCE_ALLELE_GAP_LENGTH = 5;

@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import {
   MAX_REFERENCE_ALLELE_DISPLAY_LENGTH,
-  MIN_FLANKING_SEQUENCE_LENGTH
+  REFERENCE_ALLELE_GAP_LENGTH
 } from '../variantImageConstants';
 
 import { getVariantGroupCSSColour } from 'src/shared/helpers/variantHelpers';
@@ -79,7 +79,11 @@ const ReferenceSequenceAllele = (props: Props) => {
 
   if (!shouldDisplayGap) {
     return (
-      <button onClick={onClick} disabled={isSelectedAllele}>
+      <button
+        onClick={onClick}
+        className={styles.referenceAllele}
+        disabled={isSelectedAllele}
+      >
         {letters.map((letter, index) => (
           <SequenceLetterBlock
             key={index}
@@ -91,9 +95,13 @@ const ReferenceSequenceAllele = (props: Props) => {
       </button>
     );
   } else {
-    // show six nucleotides on both sides
+    // the total number of displayed nucleotides is 21 - 5 = 16
+    const numDisplayedNucleotides =
+      MAX_REFERENCE_ALLELE_DISPLAY_LENGTH - REFERENCE_ALLELE_GAP_LENGTH;
+    const numHalfDisplayedNucleotides = numDisplayedNucleotides / 2;
+
     const lettersLeft = letters
-      .slice(0, 6)
+      .slice(0, numHalfDisplayedNucleotides)
       .map((letter, index) => (
         <SequenceLetterBlock
           key={index}
@@ -103,7 +111,7 @@ const ReferenceSequenceAllele = (props: Props) => {
         />
       ));
     const lettersRight = letters
-      .slice(letters.length - 6)
+      .slice(letters.length - numHalfDisplayedNucleotides)
       .map((letter, index) => (
         <SequenceLetterBlock
           key={index}
@@ -112,45 +120,42 @@ const ReferenceSequenceAllele = (props: Props) => {
           style={sequenceLetterStyle}
         />
       ));
-    const twoDotBlocks = [...Array(2)].map((_, index) => (
-      <SequenceLetterBlock
-        key={index}
-        letter="."
-        className={letterBlockClasses}
-        style={sequenceLetterStyle}
-      />
-    ));
-
-    const visibleLetterBlocksCount = 16; // for the reference allele, image shows 8 letter blocks on either side of the gap
-    const missingSequenceLength =
-      sequence.length -
-      2 * MIN_FLANKING_SEQUENCE_LENGTH -
-      visibleLetterBlocksCount;
-    const gap = <ReferenceSequenceGap gapLength={missingSequenceLength} />;
 
     return (
-      <button onClick={onClick} disabled={isSelectedAllele}>
+      <button
+        className={styles.referenceAllele}
+        onClick={onClick}
+        disabled={isSelectedAllele}
+      >
         {lettersLeft}
-        {twoDotBlocks}
-        {gap}
-        {twoDotBlocks}
+        <ReferenceSequenceGap />
         {lettersRight}
+        <SequenceLengthMeasure length={letters.length} />
       </button>
     );
   }
 };
 
-const ReferenceSequenceGap = (props: { gapLength: number }) => {
-  const dotsCount = 4;
-  const remainingGap = props.gapLength - dotsCount;
+const ReferenceSequenceGap = () => {
+  const dotsCount = REFERENCE_ALLELE_GAP_LENGTH;
 
   return (
     <div className={styles.referenceSequenceGap}>
-      <span>.</span>
-      <span>.</span>
-      <span>{remainingGap}</span>
-      <span>.</span>
-      <span>.</span>
+      {[...Array(dotsCount)].map((_, index) => (
+        <span key={index}>.</span>
+      ))}
+    </div>
+  );
+};
+
+// a ruler-like element that is displayed under a long sequence of the reference allele,
+// and shows its length
+const SequenceLengthMeasure = (props: {
+  length: number; // total length of the reference allele sequence
+}) => {
+  return (
+    <div className={styles.lengthMeasure}>
+      <span>{props.length}</span>
     </div>
   );
 };

@@ -23,6 +23,7 @@ import {
 } from '../../variant-image/variantImageConstants';
 
 import SequenceLetterBlock from 'src/content/app/entity-viewer/variant-view/variant-image/sequence-letter-block/SequenceLetterBlock';
+import VariantAlleleDirection from '../variant-allele-direction/VariantAlleleDirection';
 
 import type { PredictedMolecularConsequenceInResponse } from 'src/content/app/entity-viewer/state/api/queries/variantPredictedMolecularConsequencesQuery';
 
@@ -282,7 +283,10 @@ const ProteinImpact = (props: Props) => {
 
   return (
     <div className={styles.changedSequenceContainer} style={componentStyles}>
-      <AltAlleleArrow direction={isInframeInsertion ? 'up' : 'down'} />
+      <VariantAlleleDirection
+        direction={isInframeInsertion ? 'up' : 'down'}
+        className={styles.arrow}
+      />
       <span className={styles.proteinImpactLabel}>Protein impact</span>
       {changedSequence}
       {modificationTypeLabel && (
@@ -292,16 +296,6 @@ const ProteinImpact = (props: Props) => {
       )}
     </div>
   );
-};
-
-// FIXME: extract in a reusable component
-const AltAlleleArrow = ({ direction }: { direction: 'up' | 'down' }) => {
-  const arrowDirectionClassName =
-    direction === 'up' ? styles.altAlleleArrowUp : styles.altAlleleArrowDown;
-
-  const classes = classNames(styles.altAlleleArrow, arrowDirectionClassName);
-
-  return <div className={classes} />;
 };
 
 const getSequenceOffsetLeft = (params: {

@@ -17,6 +17,7 @@
 import React from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   getReferenceAndAltAlleles,
   getMostSevereVariantConsequence
@@ -181,7 +182,7 @@ const ReferenceSequence = (props: {
   return (
     <div className={styles.referenceSequenceBlock}>
       <div className={styles.variantStartLabel}>
-        {`${regionName}:${variantLocationStart}`}
+        {`${regionName}:${formatNumber(variantLocationStart)}`}
       </div>
       <div className={styles.referenceSequenceLabel}>Reference sequence</div>
       <div className={styles.variantInfo}>

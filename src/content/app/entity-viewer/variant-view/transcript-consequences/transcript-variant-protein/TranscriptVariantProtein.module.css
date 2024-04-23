@@ -5,11 +5,11 @@
 .letter {
   --sequence-block-color: transparent;
   font-size: 11px;
-  font-weight: var(--font-weight-semibold);
 }
 
 .letterReferenceAllele {
   --sequence-block-letter-color: var(--color-black);
+  font-weight: var(--font-weight-semibold);
 }
 
 .letterFlankingSequence {
@@ -74,23 +74,9 @@
   font-weight: var(--font-weight-light);
 }
 
-/* FIXME: remove the classes for alt allele arrow
-   after extracting it into a dedicated component
-*/
-.altAlleleArrow {
+.arrow {
   position: absolute;
   left: 50%;
-  top: -11px; /* positioning styles should be passed to the arrow */
+  top: -11px;
   transform: translateX(-50%);
-  width: 9px;
-  aspect-ratio: 1.5;
-  background-color: var(--color-orange);
-}
-
-.altAlleleArrowUp {
-  clip-path: polygon(50% 0, 100% 100%, 0 100%); /* this is what creates the triangle */
-}
-
-.altAlleleArrowDown {
-  clip-path: polygon(0 0, 50% 100%, 100% 0); /* this is what creates the triangle */
 }

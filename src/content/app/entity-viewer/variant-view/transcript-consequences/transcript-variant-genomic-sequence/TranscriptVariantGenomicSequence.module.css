@@ -6,7 +6,6 @@
   --sequence-block-color: transparent;
   --sequence-block-letter-color: var(--color-black);
   font-size: 11px;
-  font-weight: var(--font-weight-semibold);
 }
 
 .letterFlankingSequence {
@@ -15,6 +14,10 @@
 
 .letter + .letter {
   margin-left: 1px;
+}
+
+.refAlleleLetter {
+  font-weight: var(--font-weight-semibold);
 }
 
 .ellipsis {
@@ -39,29 +42,28 @@
 .altAlleleLetter {
   --sequence-block-color: var(--color-dark-grey);
   --sequence-block-letter-color: var(--color-white);
+  font-weight: var(--font-weight-semibold);
 }
 
 .altAlleleLetter + .altAlleleLetter {
   margin-left: 1px;
 }
 
-/* creating a basic CSS triangle: https://front-end.social/@css/111861629372809662 */
-.altAlleleArrow {
+.referenceAlleleSequenceLength {
+  font-family: var(--font-family-monospace);
+  font-size: 10px;
+}
+
+.referenceAlleleSequenceLabel {
+  font-size: 10px;
+  font-weight: var(--font-weight-light);
+}
+
+.arrow {
   position: absolute;
   left: 50%;
   top: 4px;
   transform: translateX(-50%);
-  width: 9px;
-  aspect-ratio: 1.5;
-  background-color: var(--color-orange);
-}
-
-.altAlleleArrowUp {
-  clip-path: polygon(50% 0, 100% 100%, 0 100%); /* this is what creates the triangle */
-}
-
-.altAlleleArrowDown {
-  clip-path: polygon(0 0, 50% 100%, 100% 0); /* this is what creates the triangle */
 }
 
 .altAlleleSequenceLength {
