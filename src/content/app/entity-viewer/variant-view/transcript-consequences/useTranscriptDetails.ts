@@ -139,6 +139,12 @@ const useGenomicRegionData = (params: {
     variantLength = 0;
   }
 
+  // the reason we are calculating variant end instead of just reading it from the api response
+  // is because the api gives conflicting data for insertions (where end = start + 1, but length = 0)
+  const variantEnd = variantLength
+    ? variantStart + variantLength - 1
+    : variantStart;
+
   // distances to slice start and slice end are calculated for the forward strand
   const distanceToSliceStart = getDistanceToSliceStart({
     variantStart: variantStart,
@@ -153,15 +159,15 @@ const useGenomicRegionData = (params: {
     strand: strand ?? 'forward'
   });
   const distanceToTranscriptStart = getDistanceToTranscriptStart({
-    variantStart: variantStart,
-    variantEnd: variantStart + variantLength ?? 0,
+    variantStart,
+    variantEnd,
     transcriptStart: transcriptStart ?? 0,
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'
   });
   const distanceToTranscriptEnd = getDistanceToTranscriptEnd({
-    variantStart: variantStart,
-    variantEnd: variantStart + variantLength ?? 0,
+    variantStart,
+    variantEnd,
     transcriptStart: transcriptStart ?? 0,
     transcriptEnd: transcriptEnd ?? 0,
     strand: strand ?? 'forward'

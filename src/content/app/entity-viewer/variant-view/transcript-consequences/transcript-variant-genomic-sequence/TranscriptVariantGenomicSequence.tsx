@@ -333,9 +333,6 @@ const calculateLeftOffset = ({
  * more of its nucleotides are to the left than to the right of the midline.
  */
 const getVariantLeftHalfLength = (sequence: string) => {
-  if (!sequence.length) {
-    return 0;
-  }
   return Math.floor(sequence.length / 2) + 1;
 };
 
