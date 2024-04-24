@@ -15,6 +15,7 @@
  */
 
 import React, { useState, useEffect, useDeferredValue } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
@@ -37,18 +38,20 @@ import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/
 import styles from './GenomeSelectorBySearchQuery.module.css';
 
 type Props = {
-  query: string;
   onSpeciesAdd: (genomes: SpeciesSearchMatch[]) => void;
   onClose: () => void;
 };
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
-  const { query, onClose } = props;
+  const { onClose } = props;
   const [filterQuery, setFilterQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const committedSpecies = useAppSelector(getCommittedSpecies);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData, isLoading } = result;
+
+  const query = searchParams.get('query') as string;
 
   const {
     genomes,
@@ -68,7 +71,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
 
   useEffect(() => {
     searchTrigger({ query });
-  }, []);
+  }, [query]);
 
   const onSearchInput = () => {
     if (!canSubmitSearch) {
@@ -80,8 +83,10 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
-  const onSearchSubmit = () => {
-    searchTrigger({ query });
+  const onSearchSubmit = (query: string) => {
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set('query', query);
+    setSearchParams(newSearchParams, { replace: true });
     setCanSubmitSearch(false);
   };
 
@@ -123,7 +128,7 @@ type TopSectionProps = {
   searchResults?: SpeciesSearchResponse;
   canAddGenomes: boolean;
   canSubmitSearch: boolean;
-  onSearchSubmit: () => void;
+  onSearchSubmit: (query: string) => void;
   onSearchInput: () => void;
   onGenomesAdd: () => void;
   onFilterChange: (filter: string) => void;
