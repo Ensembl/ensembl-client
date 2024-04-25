@@ -85,25 +85,10 @@ const variantViewGeneralSlice = createSlice({
       const { genomeId, variantId, alleleId } = action.payload;
       ensurePresenceOfVariantState(state, genomeId, variantId);
       state[genomeId][variantId].alleleId = alleleId;
-    },
-    setExpandedTranscriptConsequenceIds(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        variantId: string;
-        expandedTranscriptConseqeuenceIds: string[];
-      }>
-    ) {
-      const { genomeId, variantId, expandedTranscriptConseqeuenceIds } =
-        action.payload;
-      ensurePresenceOfVariantState(state, genomeId, variantId);
-      state[genomeId][variantId].expandedTranscriptConseqeuenceIds =
-        expandedTranscriptConseqeuenceIds;
     }
   }
 });
 
-export const { setView, setAllele, setExpandedTranscriptConsequenceIds } =
-  variantViewGeneralSlice.actions;
+export const { setView, setAllele } = variantViewGeneralSlice.actions;
 
 export default variantViewGeneralSlice.reducer;

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import type { RootState } from 'src/store';
 
-import variantViewGeneralReducer from './general/variantViewGeneralSlice';
-import transcriptConsequenceSliceReducer from './transcriptConsequenceSlice';
-
-export default combineReducers({
-  general: variantViewGeneralReducer,
-  transcriptConsequences: transcriptConsequenceSliceReducer
-});
+export const getExpandedTranscriptConseqeuenceIds = (
+  state: RootState,
+  genomeId: string,
+  variantId: string,
+  alleleId: string
+) => {
+  return (
+    state.entityViewer.variantView.transcriptConsequences[genomeId]?.[
+      variantId
+    ]?.[alleleId].expandedIds ?? null
+  );
+};
