@@ -60,6 +60,11 @@ For the reference (from Andrea)
   max-width: 60ch;
 }
 
+.caddScore {
+  display: block;
+  word-break: break-all;
+}
+
 .phenotypeAssociations {
   margin-top: 15px;
   margin-bottom: 30px;

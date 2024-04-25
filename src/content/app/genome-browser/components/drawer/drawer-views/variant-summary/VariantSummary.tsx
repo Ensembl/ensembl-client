@@ -230,7 +230,11 @@ export const CADDScores = (props: {
 }) => {
   const caddScoreString = props.data
     .map((data) => `${data.score} (${data.sequence})`)
-    .join(', ');
+    .map((content) => (
+      <span className={styles.caddScore} key={content}>
+        {content}
+      </span>
+    ));
 
   return <span>{caddScoreString}</span>;
 };
