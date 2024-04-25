@@ -17,6 +17,8 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
+import { formatSmallNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
 import usePopulationAlleleFrequenciesData from './usePopulationAlleleFrequenciesData';
 
 import Panel from 'src/shared/components/panel/Panel';
@@ -157,13 +159,16 @@ const GlobalFrequenciesTable = (props: {
   const diagram = alleleGlobalFreq ? (
     <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
   ) : null;
+  const formattedFreq = alleleGlobalFreq
+    ? formatSmallNumber(alleleGlobalFreq.allele_frequency)
+    : null;
 
   return (
     <table className={tableClasses}>
       <tbody>
         <tr>
           <td>Global</td>
-          <td>{alleleGlobalFreq?.allele_frequency}</td>
+          <td>{formattedFreq}</td>
           <td>{diagram}</td>
         </tr>
       </tbody>
@@ -198,10 +203,10 @@ const PopulationFrequenciesTable = (props: {
         {filteredAllelePopFreqs.map((popFreq, index) => (
           <tr key={index}>
             <td>{popFreq.description}</td>
-            <td>{popFreq.allele_frequency}</td>
             <td>
               <CircleDiagram alleleFrequency={popFreq.allele_frequency} />
             </td>
+            <td>{formatSmallNumber(popFreq.allele_frequency)}</td>
           </tr>
         ))}
       </tbody>

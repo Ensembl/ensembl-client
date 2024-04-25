@@ -30,3 +30,45 @@ export const getNumberWithoutCommas = (input: string) => {
   const inputWithoutCommas = input.replace(/,/g, '');
   return +inputWithoutCommas;
 };
+
+export const formatSmallNumber = (
+  num: number,
+  options?: Intl.NumberFormatOptions & {
+    scientificNotation?:
+      | {
+          cutoff?: number; // number below which we should format the input using scientific notation
+          maximumSignificantDigits?: number;
+        }
+      | boolean;
+  }
+) => {
+  options = options ?? {};
+  options = {
+    ...defaultSmallNumberFormatterOptions,
+    ...options
+  };
+  options.scientificNotation = options.scientificNotation ?? true; // use scientific notation unless explicitly told not to
+
+  if (options.scientificNotation) {
+    const scientificNotationConfig =
+      options.scientificNotation === true ? {} : options.scientificNotation;
+    const { cutoff = 0.00001 } = scientificNotationConfig;
+    const numAbs = Math.abs(num);
+    if (numAbs > 0 && numAbs < cutoff) {
+      options.notation = 'scientific';
+      options.maximumSignificantDigits =
+        scientificNotationConfig.maximumSignificantDigits ??
+        defaultSmallNumberFormatterOptions.maximumSignificantDigits;
+    }
+  }
+
+  const formatter = new Intl.NumberFormat('en-GB', options);
+
+  return formatter.format(num).toLocaleLowerCase();
+};
+
+// FIXME: Intl.NumberFormatOptions type doesn't seem to include "roundingMode"?
+const defaultSmallNumberFormatterOptions = {
+  maximumSignificantDigits: 21,
+  roundingMode: 'trunc'
+};

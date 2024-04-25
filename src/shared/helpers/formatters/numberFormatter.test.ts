@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatNumber } from './numberFormatter';
+import { formatNumber, formatSmallNumber } from './numberFormatter';
 
 import { faker } from '@faker-js/faker';
 
@@ -136,5 +136,71 @@ describe('formatNumber', () => {
     expect(numberSplitByComma[1].length).toBe(5);
 
     expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
+  });
+});
+
+describe('formatSmallNumber', () => {
+  describe('with truncation and scientific notation', () => {
+    const commonFormattingOptions = {
+      maximumSignificantDigits: 5,
+      scientificNotation: true
+    };
+
+    test('0.999959690 is formatted as 0.99995', () => {
+      // Notice that the number is truncated rather than rounded!
+      expect(formatSmallNumber(0.99995969, commonFormattingOptions)).toBe(
+        '0.99995'
+      );
+    });
+
+    test('0.00000123 is formatted as 1.23e-6', () => {
+      expect(formatSmallNumber(0.00000123, commonFormattingOptions)).toBe(
+        '1.23e-6'
+      );
+    });
+
+    test('0.0000012395 is formatted as 1.23e-6', () => {
+      // Notice that the number got truncated rather than rounded!
+      expect(
+        formatSmallNumber(0.0000012395, {
+          ...commonFormattingOptions,
+          scientificNotation: {
+            maximumSignificantDigits: 3
+          }
+        })
+      ).toBe('1.23e-6');
+    });
+  });
+
+  describe('with scientific notation, but without truncation', () => {
+    const commonFormattingOptions = {
+      maximumSignificantDigits: 21, // this is the maximum number allowed
+      scientificNotation: true
+    };
+
+    test('0.999959690 is formatted as 0.99995969', () => {
+      // Note that the trailing zero is removed,
+      // because the Number type has no memory of its literal representation.
+      expect(formatSmallNumber(0.99995969, commonFormattingOptions)).toBe(
+        '0.99995969'
+      );
+    });
+
+    test('0.00000123 is formatted as 1.23e-6', () => {
+      expect(formatSmallNumber(0.00000123, commonFormattingOptions)).toBe(
+        '1.23e-6'
+      );
+    });
+
+    test('0.0000012395 is formatted as 1.2395e-6', () => {
+      expect(
+        formatSmallNumber(0.0000012395, {
+          ...commonFormattingOptions,
+          scientificNotation: {
+            maximumSignificantDigits: 21 // i.e. as many as possible
+          }
+        })
+      ).toBe('1.2395e-6');
+    });
   });
 });
