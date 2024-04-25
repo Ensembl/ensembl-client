@@ -129,7 +129,7 @@ const useGenomicRegionData = (params: {
   const transcriptEnd = transcript?.slice.location.end;
   const strand = gene?.slice.strand.code;
 
-  if (alleleType === 'deletion') {
+  if (alleleType === 'deletion' || alleleType === 'indel') {
     variantStart += 1;
     variantLength -= 1;
   } else if (alleleType === 'insertion') {
@@ -197,7 +197,7 @@ const useGenomicRegionData = (params: {
       ? alleleSequence
       : getReverseComplement(alleleSequence);
 
-  if (alleleType === 'insertion') {
+  if (alleleType === 'insertion' || alleleType === 'indel') {
     // strip off the anchor base
     alleleSequence =
       strand === 'forward'
