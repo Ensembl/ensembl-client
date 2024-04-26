@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import classnames from 'classnames';
+import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -255,7 +255,7 @@ const TranscriptConsequencesPerGene = (props: {
 
   return (
     <div className={styles.geneSection}>
-      <div className={classnames(styles.row, styles.header)}>
+      <div className={classNames(styles.row, styles.header)}>
         <div className={styles.left}></div>
         <div className={styles.middle}>
           <div className={styles.headerMiddleColumn}>
@@ -274,7 +274,7 @@ const TranscriptConsequencesPerGene = (props: {
             </div>
           </div>
         </div>
-        <div className={classnames(styles.right, styles.transcriptsCount)}>
+        <div className={classNames(styles.right, styles.transcriptsCount)}>
           <span>{transcriptConsCount}</span>{' '}
           <span className={styles.label}>
             {pluralise('transcript', transcriptConsCount)}
@@ -391,7 +391,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
       {transcriptConsequences.map((consequencesForSingleTranscript, index) => (
         <div key={index}>
           <div
-            className={classnames(styles.row, {
+            className={classNames(styles.row, {
               [styles.rowCollapsed]: !expandedIds.has(
                 consequencesForSingleTranscript.stable_id
               ),
@@ -426,18 +426,16 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                 </div>
               </div>
             </div>
-            <div
-              className={styles.right}
+            <button
+              className={classNames(styles.right, styles.transcriptId)}
               onClick={() =>
                 handleTranscriptConsequenceClick(
                   consequencesForSingleTranscript.stable_id
                 )
               }
             >
-              <div className={styles.transcriptId}>
-                {consequencesForSingleTranscript.stable_id}
-              </div>
-            </div>
+              {consequencesForSingleTranscript.stable_id}
+            </button>
           </div>
 
           {expandedIds.has(consequencesForSingleTranscript.stable_id) ? (
