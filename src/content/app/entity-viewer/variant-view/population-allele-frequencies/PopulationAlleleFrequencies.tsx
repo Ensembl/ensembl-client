@@ -168,8 +168,8 @@ const GlobalFrequenciesTable = (props: {
       <tbody>
         <tr>
           <td>Global</td>
-          <td>{formattedFreq}</td>
           <td>{diagram}</td>
+          <td>{formattedFreq}</td>
         </tr>
       </tbody>
     </table>
