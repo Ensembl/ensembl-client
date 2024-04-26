@@ -30,7 +30,6 @@ import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccor
 import useTranscriptConsequencesData, {
   type TranscriptConsequencesData
 } from './useTranscriptConsequencesData';
-import useExpandedTranscriptConsequence from '../hooks/useExpandedTranscripts';
 
 import Panel from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
@@ -67,13 +66,6 @@ const TranscriptConsequences = (props: Props) => {
   });
   const dispatch = useAppDispatch();
 
-  useExpandedTranscriptConsequence({
-    genomeId: genomeId,
-    variantId: variantId,
-    alleleId: activeAlleleId,
-    expandTranscriptIds: []
-  });
-
   const transcriptConseqeuencesToExpandByDefault: string[] = [];
   const expandedTranscriptIds = useAppSelector((state) =>
     getExpandedTranscriptConseqeuenceIds(
@@ -97,7 +89,12 @@ const TranscriptConsequences = (props: Props) => {
         )
       );
     }
-  }, [transcriptConseqeuencesToExpandByDefault, expandedTranscriptIds]);
+  }, [
+    genomeId,
+    variantId,
+    activeAlleleId,
+    transcriptConseqeuencesToExpandByDefault
+  ]);
 
   if (isLoading) {
     const panelHeader = (
