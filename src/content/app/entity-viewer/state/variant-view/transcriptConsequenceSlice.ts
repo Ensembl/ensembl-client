@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Action,
-  PayloadAction,
-  ThunkAction,
-  createSlice
-} from '@reduxjs/toolkit';
-import { RootState } from 'src/store';
-
-import { getExpandedTranscriptConseqeuenceIds } from './transcriptConsequenceSelectors';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 type TranscriptConsequenceState = {
   [genomeId: string]: {
@@ -53,68 +45,61 @@ const ensurePresenceOfTranscriptConsequenceState = (
   }
 };
 
-export const toggleTranscriptIds =
-  (
-    genomeId: string,
-    variantId: string,
-    alleleId: string,
-    expandTranscriptIds: string[]
-  ): ThunkAction<void, RootState, void, Action<string>> =>
-  (dispatch, getState) => {
-    if (!genomeId || !variantId) {
-      return;
-    }
-    const state = getState();
-    const expandedIdsState = new Set<string>(
-      getExpandedTranscriptConseqeuenceIds(state, genomeId, variantId, alleleId)
-    );
-
-    expandTranscriptIds.map((transcriptId) => {
-      if (expandedIdsState.has(transcriptId)) {
-        expandedIdsState.delete(transcriptId);
-      } else {
-        expandedIdsState.add(transcriptId);
-      }
-    });
-
-    if (expandTranscriptIds.length) {
-      dispatch(
-        transcriptConsequenceSlice.actions.setExpandedTranscriptConsequenceIds({
-          genomeId,
-          variantId,
-          alleleId,
-          expandTranscriptIds: [...expandedIdsState.values()]
-        })
-      );
-    }
-  };
-
 const transcriptConsequenceSlice = createSlice({
   name: 'transcript-consequence-slice',
   initialState: {} as TranscriptConsequenceState,
   reducers: {
-    setExpandedTranscriptConsequenceIds(
+    expandTranscript(
       state,
       action: PayloadAction<{
         genomeId: string;
         variantId: string;
         alleleId: string;
-        expandTranscriptIds: string[];
+        transcriptId: string;
       }>
     ) {
-      const { genomeId, variantId, alleleId, expandTranscriptIds } =
-        action.payload;
+      const { genomeId, variantId, alleleId, transcriptId } = action.payload;
       ensurePresenceOfTranscriptConsequenceState(
         state,
         genomeId,
         variantId,
         alleleId
       );
-      state[genomeId][variantId][alleleId].expandedIds = expandTranscriptIds;
+
+      const expandedIds = state[genomeId][variantId][alleleId].expandedIds;
+      if (expandedIds) {
+        expandedIds.push(transcriptId);
+      } else {
+        state[genomeId][variantId][alleleId].expandedIds = [transcriptId];
+      }
+    },
+    collapseTranscript(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        variantId: string;
+        alleleId: string;
+        transcriptId: string;
+      }>
+    ) {
+      const { genomeId, variantId, alleleId, transcriptId } = action.payload;
+      ensurePresenceOfTranscriptConsequenceState(
+        state,
+        genomeId,
+        variantId,
+        alleleId
+      );
+
+      let expandedIds = state[genomeId][variantId][alleleId].expandedIds;
+      if (expandedIds) {
+        // this should always be the case in this reducer
+        expandedIds = expandedIds.filter((id) => id !== transcriptId);
+        state[genomeId][variantId][alleleId].expandedIds = expandedIds;
+      }
     }
   }
 });
 
-export const { setExpandedTranscriptConsequenceIds } =
+export const { expandTranscript, collapseTranscript } =
   transcriptConsequenceSlice.actions;
 export default transcriptConsequenceSlice.reducer;

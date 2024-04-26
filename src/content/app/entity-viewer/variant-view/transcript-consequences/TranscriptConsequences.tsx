@@ -24,7 +24,10 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 import { defaultSort as defaultSortForTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { getExpandedTranscriptConseqeuenceIds } from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSelectors';
-import { toggleTranscriptIds } from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSlice';
+import {
+  collapseTranscript,
+  expandTranscript
+} from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSlice';
 import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccordion';
 
 import useTranscriptConsequencesData, {
@@ -64,37 +67,8 @@ const TranscriptConsequences = (props: Props) => {
     variantId,
     alleleId: activeAlleleId
   });
-  const dispatch = useAppDispatch();
 
   const transcriptConseqeuencesToExpandByDefault: string[] = [];
-  const expandedTranscriptIds = useAppSelector((state) =>
-    getExpandedTranscriptConseqeuenceIds(
-      state,
-      genomeId,
-      variantId,
-      activeAlleleId
-    )
-  );
-
-  useEffect(() => {
-    // expandedTranscriptIds will be null only on the initial load, before user interaction.
-    // Expand default transcript ids only when expandedTranscriptIds.
-    if (expandedTranscriptIds === null) {
-      dispatch(
-        toggleTranscriptIds(
-          genomeId,
-          variantId,
-          activeAlleleId,
-          transcriptConseqeuencesToExpandByDefault
-        )
-      );
-    }
-  }, [
-    genomeId,
-    variantId,
-    activeAlleleId,
-    transcriptConseqeuencesToExpandByDefault
-  ]);
 
   if (isLoading) {
     const panelHeader = (
@@ -170,22 +144,12 @@ const TranscriptConsequences = (props: Props) => {
 
   return (
     <Panel header={panelHeader}>
-      <div className={styles.container}>
-        {geneDataWithTranscriptConsequences.map((gene) => {
-          return (
-            <TranscriptConsequencesPerGene
-              key={gene.stable_id}
-              genomeId={genomeId}
-              gene={gene}
-              allele={allele}
-              variantId={variantId}
-              variant={variant}
-              alleleId={activeAlleleId}
-              transcriptConsequences={gene.transcriptConsequences}
-            />
-          );
-        })}
-      </div>
+      <GenesWithTranscriptConsequences
+        {...props}
+        allele={allele}
+        variant={variant}
+        genes={geneDataWithTranscriptConsequences}
+      />
     </Panel>
   );
 };
@@ -203,6 +167,66 @@ const PanelHeader = (props: {
       <span className={styles.transcriptConsqTitle}>
         Transcript consequences
       </span>
+    </div>
+  );
+};
+
+const GenesWithTranscriptConsequences = (
+  props: Props & {
+    allele: NonNullable<TranscriptConsequencesData['allele']>;
+    variant: TranscriptConsequencesData['variant'];
+    genes: GeneDataWithTranscriptConsequencesType[];
+  }
+) => {
+  const { genomeId, variantId, activeAlleleId, allele, variant, genes } = props;
+  const expandedTranscriptIds = useAppSelector((state) =>
+    getExpandedTranscriptConseqeuenceIds(
+      state,
+      genomeId,
+      variantId,
+      activeAlleleId
+    )
+  );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // After initial load, before the user has interacted with any of the transcripts,
+    // expandedTranscriptIds will be null.
+    // Use this as a signal to expand the first transcript in each of the genes.
+    if (expandedTranscriptIds === null) {
+      const defaultExpandedTranscriptIds = genes.map(
+        (gene) => gene.transcriptConsequences[0].stable_id
+      );
+
+      for (const transcriptId of defaultExpandedTranscriptIds) {
+        dispatch(
+          expandTranscript({
+            genomeId,
+            variantId,
+            alleleId: activeAlleleId,
+            transcriptId
+          })
+        );
+      }
+    }
+  }, [genomeId, variantId, activeAlleleId, genes]);
+
+  return (
+    <div className={styles.container}>
+      {genes.map((gene) => {
+        return (
+          <TranscriptConsequencesPerGene
+            key={gene.stable_id}
+            genomeId={genomeId}
+            gene={gene}
+            allele={allele}
+            variantId={variantId}
+            variant={variant}
+            alleleId={activeAlleleId}
+            transcriptConsequences={gene.transcriptConsequences}
+          />
+        );
+      })}
     </div>
   );
 };
@@ -347,8 +371,17 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
   const expandedIds = new Set<string>(expandedTranscriptIds || []);
 
   const handleTranscriptConsequenceClick = (transcriptId: string) => {
+    const reduxActionCreator = expandedIds.has(transcriptId)
+      ? expandTranscript
+      : collapseTranscript;
+
     dispatch(
-      toggleTranscriptIds(genomeId, variantId, alleleId, [transcriptId])
+      reduxActionCreator({
+        genomeId,
+        variantId,
+        alleleId,
+        transcriptId
+      })
     );
   };
 
