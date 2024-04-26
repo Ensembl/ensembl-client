@@ -32,7 +32,7 @@ export type ViewName = (typeof views)[number];
 export type StateForVariant = {
   view: ViewName;
   alleleId: string | null;
-  expandedTranscriptConseqeuenceIds: string[];
+  expandTranscriptIds: string[];
 };
 
 type VariantViewGeneralState = {
@@ -53,7 +53,7 @@ const ensurePresenceOfVariantState = (
     state[genomeId][variantId] = {
       view: 'default',
       alleleId: null,
-      expandedTranscriptConseqeuenceIds: []
+      expandTranscriptIds: []
     };
   }
 };

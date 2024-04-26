@@ -53,12 +53,12 @@ const ensurePresenceOfTranscriptConsequenceState = (
   }
 };
 
-export const toggleTranscriptConsequenceIds =
+export const toggleTranscriptIds =
   (
     genomeId: string,
     variantId: string,
     alleleId: string,
-    expandIds: string[]
+    expandTranscriptIds: string[]
   ): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {
     if (!genomeId || !variantId) {
@@ -69,7 +69,7 @@ export const toggleTranscriptConsequenceIds =
       getExpandedTranscriptConseqeuenceIds(state, genomeId, variantId, alleleId)
     );
 
-    expandIds.map((transcriptId) => {
+    expandTranscriptIds.map((transcriptId) => {
       if (expandedIdsState.has(transcriptId)) {
         expandedIdsState.delete(transcriptId);
       } else {
@@ -77,13 +77,13 @@ export const toggleTranscriptConsequenceIds =
       }
     });
 
-    if (expandIds.length) {
+    if (expandTranscriptIds.length) {
       dispatch(
         transcriptConsequenceSlice.actions.setExpandedTranscriptConsequenceIds({
           genomeId,
           variantId,
           alleleId,
-          expandedTranscriptConseqeuenceIds: [...expandedIdsState.values()]
+          expandTranscriptIds: [...expandedIdsState.values()]
         })
       );
     }
@@ -99,23 +99,18 @@ const transcriptConsequenceSlice = createSlice({
         genomeId: string;
         variantId: string;
         alleleId: string;
-        expandedTranscriptConseqeuenceIds: string[];
+        expandTranscriptIds: string[];
       }>
     ) {
-      const {
-        genomeId,
-        variantId,
-        alleleId,
-        expandedTranscriptConseqeuenceIds
-      } = action.payload;
+      const { genomeId, variantId, alleleId, expandTranscriptIds } =
+        action.payload;
       ensurePresenceOfTranscriptConsequenceState(
         state,
         genomeId,
         variantId,
         alleleId
       );
-      state[genomeId][variantId][alleleId].expandedIds =
-        expandedTranscriptConseqeuenceIds;
+      state[genomeId][variantId][alleleId].expandedIds = expandTranscriptIds;
     }
   }
 });

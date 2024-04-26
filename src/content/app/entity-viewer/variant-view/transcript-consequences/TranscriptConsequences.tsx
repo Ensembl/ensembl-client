@@ -24,20 +24,20 @@ import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter'
 import { defaultSort as defaultSortForTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { getExpandedTranscriptConseqeuenceIds } from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSelectors';
-import { toggleTranscriptConsequenceIds } from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSlice';
+import { toggleTranscriptIds } from 'src/content/app/entity-viewer/state/variant-view/transcriptConsequenceSlice';
 import { formatAlleleSequence } from '../variant-view-sidebar/overview/MainAccordion';
 
 import useTranscriptConsequencesData, {
   type TranscriptConsequencesData
 } from './useTranscriptConsequencesData';
-import useExpandedTranscriptConsequence from '../hooks/useExpandedTranscriptConsequence';
-
-import { type GeneInResponse } from '../../state/api/queries/variantTranscriptConsequencesQueries';
+import useExpandedTranscriptConsequence from '../hooks/useExpandedTranscripts';
 
 import Panel from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { CircleLoader } from 'src/shared/components/loader';
+
+import type { GeneInResponse } from '../../state/api/queries/variantTranscriptConsequencesQueries';
 
 import styles from './TranscriptConsequences.module.css';
 
@@ -47,11 +47,15 @@ type Props = {
   activeAlleleId: string;
 };
 
-type transcriptConsequencesWithTranscriptType = Array<
-  NonNullable<TranscriptConsequencesData['transcriptConsequences']>[number] & {
-    transcript: TranscriptConsequencesData['geneData'][number]['transcripts'][number];
-  }
->;
+type TranscriptConsequencesWithTranscriptType = NonNullable<
+  TranscriptConsequencesData['transcriptConsequences']
+>[number] & {
+  transcript: TranscriptConsequencesData['geneData'][number]['transcripts'][number];
+};
+
+type GeneDataWithTranscriptConsequencesType = GeneInResponse & {
+  transcriptConsequences: TranscriptConsequencesWithTranscriptType[];
+};
 
 const TranscriptConsequences = (props: Props) => {
   const { genomeId, variantId, activeAlleleId } = props;
@@ -67,7 +71,7 @@ const TranscriptConsequences = (props: Props) => {
     genomeId: genomeId,
     variantId: variantId,
     alleleId: activeAlleleId,
-    expandIds: []
+    expandTranscriptIds: []
   });
 
   const transcriptConseqeuencesToExpandByDefault: string[] = [];
@@ -85,7 +89,7 @@ const TranscriptConsequences = (props: Props) => {
     // Expand default transcript ids only when expandedTranscriptIds.
     if (expandedTranscriptIds === null) {
       dispatch(
-        toggleTranscriptConsequenceIds(
+        toggleTranscriptIds(
           genomeId,
           variantId,
           activeAlleleId,
@@ -130,11 +134,7 @@ const TranscriptConsequences = (props: Props) => {
     );
   }
 
-  type geneDataWithTranscriptConsequencesType = GeneInResponse & {
-    transcriptConsequences: transcriptConsequencesWithTranscriptType;
-  };
-
-  const geneDataWithTranscriptConsequences: geneDataWithTranscriptConsequencesType[] =
+  const geneDataWithTranscriptConsequences: GeneDataWithTranscriptConsequencesType[] =
     [];
 
   geneData.map((gene) => {
@@ -217,7 +217,7 @@ const TranscriptConsequencesPerGene = (props: {
   variant: TranscriptConsequencesData['variant'];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
   alleleId: string;
-  transcriptConsequences: transcriptConsequencesWithTranscriptType;
+  transcriptConsequences: TranscriptConsequencesWithTranscriptType[];
 }) => {
   const {
     genomeId,
@@ -333,7 +333,7 @@ const TranscriptAllele = ({
 type TranscriptConsequencesListProps = {
   genomeId: string;
   variantId: string;
-  transcriptConsequences: transcriptConsequencesWithTranscriptType;
+  transcriptConsequences: TranscriptConsequencesWithTranscriptType[];
   gene: TranscriptConsequencesData['geneData'][number];
   allele: NonNullable<TranscriptConsequencesData['allele']>;
   alleleId: string;
@@ -351,9 +351,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
 
   const handleTranscriptConsequenceClick = (transcriptId: string) => {
     dispatch(
-      toggleTranscriptConsequenceIds(genomeId, variantId, alleleId, [
-        transcriptId
-      ])
+      toggleTranscriptIds(genomeId, variantId, alleleId, [transcriptId])
     );
   };
 

@@ -18,17 +18,17 @@ import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getExpandedTranscriptConseqeuenceIds } from '../../state/variant-view/transcriptConsequenceSelectors';
-import { toggleTranscriptConsequenceIds } from '../../state/variant-view/transcriptConsequenceSlice';
+import { toggleTranscriptIds } from '../../state/variant-view/transcriptConsequenceSlice';
 
 type Params = {
   genomeId: string;
   variantId: string;
   alleleId: string;
-  expandIds: string[];
+  expandTranscriptIds: string[];
 };
 
-const useExpandedTranscriptConsequence = (params: Params) => {
-  const { genomeId, variantId, alleleId, expandIds } = params;
+const useExpandedTranscripts = (params: Params) => {
+  const { genomeId, variantId, alleleId, expandTranscriptIds } = params;
   const dispatch = useAppDispatch();
   const expandedIds = useAppSelector((state) =>
     getExpandedTranscriptConseqeuenceIds(state, genomeId, variantId, alleleId)
@@ -37,10 +37,10 @@ const useExpandedTranscriptConsequence = (params: Params) => {
   useEffect(() => {
     if (expandedIds === null) {
       dispatch(
-        toggleTranscriptConsequenceIds(genomeId, variantId, alleleId, expandIds)
+        toggleTranscriptIds(genomeId, variantId, alleleId, expandTranscriptIds)
       );
     }
-  }, []);
+  }, [genomeId, variantId, alleleId]);
 };
 
-export default useExpandedTranscriptConsequence;
+export default useExpandedTranscripts;
