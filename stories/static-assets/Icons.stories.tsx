@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import IconCard from './IconCard';
 
 import storyStyles from '../common.module.css';

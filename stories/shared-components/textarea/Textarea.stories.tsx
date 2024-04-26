@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Textarea from 'src/shared/components/textarea/Textarea';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 

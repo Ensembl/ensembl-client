@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';

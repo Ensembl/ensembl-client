@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import styles from './ExternalLink.stories.module.css';

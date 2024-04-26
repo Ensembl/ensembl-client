@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import noop from 'lodash/noop';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 

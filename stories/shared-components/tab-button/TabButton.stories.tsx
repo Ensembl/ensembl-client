@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
 
 import TabButton from 'src/shared/components/tab-button/TabButton';

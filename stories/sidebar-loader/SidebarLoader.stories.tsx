@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { SidebarLoader } from 'src/shared/components/loader';
 
 import styles from './SidebarLoader.stories.module.css';

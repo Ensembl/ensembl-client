@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import PointerBox, {

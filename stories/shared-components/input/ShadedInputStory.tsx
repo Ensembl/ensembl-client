@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, type ChangeEventHandler } from 'react';
+import { useState, type ChangeEventHandler } from 'react';
 import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';

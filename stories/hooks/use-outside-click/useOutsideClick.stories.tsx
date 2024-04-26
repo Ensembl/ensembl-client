@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.module.css';

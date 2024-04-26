@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Copy from 'src/shared/components/copy/Copy';
 
 import styles from './Copy.stories.module.css';

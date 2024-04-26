@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import RoundButton, {
   RoundButtonStatus
 } from 'src/shared/components/round-button/RoundButton';

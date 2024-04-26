@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import useFileDrop from 'src/shared/components/upload/hooks/useFileDrop';

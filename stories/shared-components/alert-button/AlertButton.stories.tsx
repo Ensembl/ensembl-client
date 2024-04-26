@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 
 import styles from './AlertButton.stories.module.css';

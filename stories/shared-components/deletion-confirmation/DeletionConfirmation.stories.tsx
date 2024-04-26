@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
 import styles from './DeletionConfirmation.module.css';
