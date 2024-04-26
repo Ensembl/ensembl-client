@@ -68,7 +68,9 @@ const transcriptConsequenceSlice = createSlice({
 
       const expandedIds = state[genomeId][variantId][alleleId].expandedIds;
       if (expandedIds) {
-        expandedIds.push(transcriptId);
+        const uniqueIds = new Set(expandedIds);
+        uniqueIds.add(transcriptId);
+        state[genomeId][variantId][alleleId].expandedIds = [...uniqueIds];
       } else {
         state[genomeId][variantId][alleleId].expandedIds = [transcriptId];
       }

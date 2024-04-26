@@ -372,8 +372,8 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
 
   const handleTranscriptConsequenceClick = (transcriptId: string) => {
     const reduxActionCreator = expandedIds.has(transcriptId)
-      ? expandTranscript
-      : collapseTranscript;
+      ? collapseTranscript
+      : expandTranscript;
 
     dispatch(
       reduxActionCreator({
