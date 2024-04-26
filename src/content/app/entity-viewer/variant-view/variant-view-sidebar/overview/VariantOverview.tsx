@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 import type JSONValue from 'src/shared/types/JSON';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import { SpeciesType, SpeciesReference } from '../species-name-parts';
 

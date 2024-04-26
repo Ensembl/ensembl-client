@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -180,8 +180,8 @@ const useVariantViewRouting = (params: {
         viewInUrl && isValidVariantView(viewInUrl)
           ? viewInUrl
           : viewInRedux !== 'default'
-          ? viewInRedux
-          : null;
+            ? viewInRedux
+            : null;
 
       const url = urlFor.entityViewerVariant({
         genomeId: genomeIdForUrl,

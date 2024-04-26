@@ -15,7 +15,6 @@
  */
 
 import { Request, Response } from 'express';
-import React from 'react';
 import { renderToPipeableStream } from 'react-dom/server';
 
 import { getConfigForClient } from '../helpers/getConfigForClient';

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+import * as React from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import classNames from 'classnames';
 import clamp from 'lodash/clamp';

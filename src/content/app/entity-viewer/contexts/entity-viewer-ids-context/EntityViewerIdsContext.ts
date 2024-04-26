@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createContext } from 'react';
 
 import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -64,4 +64,4 @@ const defaultContext: EntityViewerIdsContextType = {
 };
 
 export const EntityViewerIdsContext =
-  React.createContext<EntityViewerIdsContextType>(defaultContext);
+  createContext<EntityViewerIdsContextType>(defaultContext);

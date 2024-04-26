@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Topbar from './components/topbar/Topbar';
 import SupportedWebBrowser from './components/supported-web-browser/SupportedWebBrowser';
 

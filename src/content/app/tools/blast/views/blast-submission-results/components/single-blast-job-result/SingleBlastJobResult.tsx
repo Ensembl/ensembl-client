@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import orderBy from 'lodash/orderBy';

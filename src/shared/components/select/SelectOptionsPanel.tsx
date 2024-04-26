@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   useState,
   useEffect,
   useLayoutEffect,
   useReducer,
   useRef
 } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import {

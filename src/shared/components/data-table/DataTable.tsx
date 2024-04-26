@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { type ReactNode, useEffect, useReducer, useRef } from 'react';
+
+import {
+  useEffect,
+  useReducer,
+  useRef,
+  createContext,
+  type Dispatch,
+  type ReactNode
+} from 'react';
 import classNames from 'classnames';
 
 import Table from '../table/Table';
@@ -34,7 +42,7 @@ import {
 import styles from './DataTable.module.css';
 
 export type TableContextType = DataTableState & {
-  dispatch: React.Dispatch<AllTableActions>;
+  dispatch: Dispatch<AllTableActions>;
   columns: DataTableColumns;
   theme?: TableTheme;
   selectableColumnIndex?: number;
@@ -45,9 +53,7 @@ export type TableContextType = DataTableState & {
   rows: TableRows;
 };
 
-export const TableContext = React.createContext(
-  null as TableContextType | null
-);
+export const TableContext = createContext(null as TableContextType | null);
 
 export type TableProps = {
   state?: Partial<DataTableState>;

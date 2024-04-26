@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';

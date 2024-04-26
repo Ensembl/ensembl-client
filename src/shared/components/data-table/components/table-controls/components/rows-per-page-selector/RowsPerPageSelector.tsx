@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { useContext } from 'react';
+
+import * as React from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableContext } from 'src/shared/components/data-table/DataTable';

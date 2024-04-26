@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';

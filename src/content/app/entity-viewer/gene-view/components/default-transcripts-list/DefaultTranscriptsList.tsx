@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';

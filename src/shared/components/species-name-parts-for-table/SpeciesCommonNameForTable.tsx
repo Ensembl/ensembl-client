@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import { CommonName } from '../species-name-parts';
 

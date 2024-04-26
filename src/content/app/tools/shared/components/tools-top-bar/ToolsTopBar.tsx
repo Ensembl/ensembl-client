@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import styles from './ToolsTopBar.module.css';
 

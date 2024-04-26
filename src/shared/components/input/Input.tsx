@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  forwardRef,
-  type InputHTMLAttributes,
-  type ForwardedRef
-} from 'react';
+import { forwardRef, type InputHTMLAttributes, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Input.module.css';

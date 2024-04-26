@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useRef, useCallback } from 'react';
+import { ReactNode, useEffect, useRef, useCallback } from 'react';
 import classNames from 'classnames';
 
 import usePrevious from 'src/shared/hooks/usePrevious';

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+
+import * as React from 'react';
 import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 

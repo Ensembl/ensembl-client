@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { InjectedHeadingAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';

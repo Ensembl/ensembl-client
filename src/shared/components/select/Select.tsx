@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import { splitFromSelected } from './helpers/select-helpers';

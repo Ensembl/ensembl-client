@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   useState,
   useRef,
+  useEffect,
   type FormEvent,
   type ChangeEvent,
-  type ReactNode,
-  useEffect
+  type ReactNode
 } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import noop from 'lodash/noop';

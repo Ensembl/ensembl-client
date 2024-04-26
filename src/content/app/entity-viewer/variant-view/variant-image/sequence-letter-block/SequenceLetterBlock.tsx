@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 import styles from './SequenceLetterBlock.module.css';

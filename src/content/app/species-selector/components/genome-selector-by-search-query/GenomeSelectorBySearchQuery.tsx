@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useDeferredValue } from 'react';
+import { useState, useEffect, useDeferredValue } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  memo,
-  type FunctionComponent,
-  type ButtonHTMLAttributes
-} from 'react';
+import { memo, type FunctionComponent, type ButtonHTMLAttributes } from 'react';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 

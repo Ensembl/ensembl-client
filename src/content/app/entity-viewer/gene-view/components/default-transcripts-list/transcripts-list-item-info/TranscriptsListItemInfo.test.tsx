@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';

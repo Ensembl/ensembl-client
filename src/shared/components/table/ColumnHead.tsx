@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { DetailedHTMLProps, ThHTMLAttributes } from 'react';
+import { DetailedHTMLProps, ThHTMLAttributes } from 'react';
 import classNames from 'classnames';
 
 import SortIcon from 'static/icons/icon_arrow.svg';

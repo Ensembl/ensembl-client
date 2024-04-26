@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 import defaultStyles from '../css/Accordion.module.css';

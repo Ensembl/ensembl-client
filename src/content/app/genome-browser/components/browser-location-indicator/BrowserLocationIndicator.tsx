@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, type RefObject } from 'react';
+import { useState, useEffect, useRef, type RefObject } from 'react';
 import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -35,9 +35,8 @@ type Props = {
 
 export const BrowserLocationIndicator = (props: Props) => {
   const shouldCheckProximity = props.containerRef && props.nonOverlapElementRef;
-  const [shouldShowRegionName, setShouldShowRegionName] = useState(
-    !shouldCheckProximity
-  ); // start with false if component needs to figure out how close it is to its neightbor on the left
+  const [shouldShowRegionName, setShouldShowRegionName] =
+    useState(!shouldCheckProximity); // start with false if component needs to figure out how close it is to its neightbor on the left
   const actualChrLocation = useAppSelector(getActualChrLocation);
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
 

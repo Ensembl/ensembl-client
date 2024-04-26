@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';

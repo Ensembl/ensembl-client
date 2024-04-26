@@ -19,7 +19,7 @@
 // We may want to move this component to the shared folder,
 // if we discover a need to reuse it.
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 type Props = {

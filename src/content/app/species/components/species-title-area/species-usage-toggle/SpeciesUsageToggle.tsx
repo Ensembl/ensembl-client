@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 

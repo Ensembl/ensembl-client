@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 

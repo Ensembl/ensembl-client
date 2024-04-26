@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useGeneForSequenceDownloadQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import {
   DISPLAYED_REFERENCE_SEQUENCE_LENGTH,
   MAX_REFERENCE_ALLELE_DISPLAY_LENGTH

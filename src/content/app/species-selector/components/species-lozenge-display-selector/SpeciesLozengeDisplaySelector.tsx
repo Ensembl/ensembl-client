@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
+import type { FormEvent } from 'react';
+
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';

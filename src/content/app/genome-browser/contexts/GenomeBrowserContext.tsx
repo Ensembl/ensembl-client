@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+
+import * as React from 'react';
 
 import type { EnsemblGenomeBrowser } from 'src/content/app/genome-browser/services/genome-browser-service/types/ensemblGenomeBrowser';
 import type { Zmenus } from '../components/zmenu/ZmenuController';
 
 type GenomeBrowserService =
-  typeof import('src/content/app/genome-browser/services/genome-browser-service/genomeBrowserService')['GenomeBrowserService'];
+  (typeof import('src/content/app/genome-browser/services/genome-browser-service/genomeBrowserService'))['GenomeBrowserService'];
 
 type GenomeBrowserContextType = {
   genomeBrowser: EnsemblGenomeBrowser | null;

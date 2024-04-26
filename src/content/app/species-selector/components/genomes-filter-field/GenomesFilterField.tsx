@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type FormEvent } from 'react';
+import type { FormEvent } from 'react';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { wrap } from 'comlink';
 import intersection from 'lodash/intersection';
 import classNames from 'classnames';

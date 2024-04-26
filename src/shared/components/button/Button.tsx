@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import React, {
-  type DetailedHTMLProps,
-  type ButtonHTMLAttributes
-} from 'react';
 import classNames from 'classnames';
+import type { DetailedHTMLProps, ButtonHTMLAttributes } from 'react';
 
 import styles from './Button.module.css';
 

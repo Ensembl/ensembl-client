@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, HTMLAttributes } from 'react';
+import { ReactNode, HTMLAttributes } from 'react';
 
 type Props = HTMLAttributes<HTMLSpanElement> & {
   text: string | string[];

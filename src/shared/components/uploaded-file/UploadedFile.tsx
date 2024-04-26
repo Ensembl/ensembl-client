@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { filesize } from 'filesize';
 import classNames from 'classnames';
 

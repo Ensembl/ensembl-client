@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';

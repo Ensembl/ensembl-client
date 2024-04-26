@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import classNames from 'classnames';
 import { useAppSelector, useAppDispatch } from 'src/store';
 

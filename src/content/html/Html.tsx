@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode } from 'react';
+import { createContext, type ReactNode } from 'react';
 
 import IndexedDB from 'src/services/indexeddb-service';
 

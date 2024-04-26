@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';

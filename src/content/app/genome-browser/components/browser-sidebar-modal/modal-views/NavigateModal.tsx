@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 
 import {
   Accordion,
@@ -57,4 +57,4 @@ const NavigateModal = () => {
   );
 };
 
-export default React.memo(NavigateModal);
+export default memo(NavigateModal);

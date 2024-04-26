@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
@@ -26,8 +25,9 @@ import { Status } from 'src/shared/types/status';
 jest.mock(
   'src/shared/components/tooltip/Tooltip',
   () =>
-    ({ children }: { children: any }) =>
+    ({ children }: { children: any }) => (
       <div className="tooltip">{children}</div>
+    )
 );
 
 const defaultProps = {

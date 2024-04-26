@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 const ShareModal = () => {
   return (
     <section className="shareModal">

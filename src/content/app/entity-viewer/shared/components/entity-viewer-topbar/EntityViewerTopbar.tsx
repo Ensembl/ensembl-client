@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 

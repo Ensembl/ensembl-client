@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { createBlastSequenceAlignment } from './blastSequenceAlignmentHelper';
 import { simpleStringBlastAlignmentFormatter } from './formatters/simpleStringFormatter';
 

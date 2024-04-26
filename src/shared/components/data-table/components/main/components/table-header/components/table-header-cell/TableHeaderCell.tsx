@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import classNames from 'classnames';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';

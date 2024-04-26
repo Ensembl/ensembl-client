@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
 

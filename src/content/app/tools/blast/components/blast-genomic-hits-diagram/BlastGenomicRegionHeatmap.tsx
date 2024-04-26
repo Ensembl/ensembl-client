@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
 import {

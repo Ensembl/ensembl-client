@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import React, {
-  useState,
-  useReducer,
-  useCallback,
-  useRef,
-  FormEvent
-} from 'react';
+import { useState, useReducer, useCallback, useRef, FormEvent } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import { submitForm } from '../submitForm';

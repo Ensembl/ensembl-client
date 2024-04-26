@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { lazy } from 'react';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
@@ -27,7 +27,7 @@ import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LazilyLoadedHelp = React.lazy(() => import('./Help'));
+const LazilyLoadedHelp = lazy(() => import('./Help'));
 
 const HelpPage = () => {
   const hasMounted = useHasMounted();

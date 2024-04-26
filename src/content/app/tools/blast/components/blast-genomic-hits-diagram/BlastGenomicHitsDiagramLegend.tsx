@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import {
   TOP_HIT_MARK_RADIUS,
   HIT_MARK_RADIUS

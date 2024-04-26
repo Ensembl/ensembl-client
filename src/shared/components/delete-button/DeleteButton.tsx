@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  forwardRef,
-  type HTMLAttributes,
-  type ForwardedRef
-} from 'react';
+import { forwardRef, type HTMLAttributes, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import TrashcanIcon from 'static/icons/icon_delete.svg';

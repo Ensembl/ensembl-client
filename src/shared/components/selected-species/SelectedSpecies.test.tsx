@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

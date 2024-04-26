@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import classNames from 'classnames';
 
 import AlertIcon from 'static/icons/icon_alert_circle.svg';

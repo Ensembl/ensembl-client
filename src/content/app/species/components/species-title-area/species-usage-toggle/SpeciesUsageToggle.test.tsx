@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

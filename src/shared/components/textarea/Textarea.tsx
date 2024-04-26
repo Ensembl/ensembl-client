@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, TextareaHTMLAttributes, ForwardedRef } from 'react';
+import { forwardRef, TextareaHTMLAttributes, ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Textarea.module.css';

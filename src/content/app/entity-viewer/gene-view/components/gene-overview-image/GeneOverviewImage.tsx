@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { scaleLinear } from 'd3';
 import { Pick3 } from 'ts-multipick';
 

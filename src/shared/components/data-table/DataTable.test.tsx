@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { render } from '@testing-library/react';
 import { times } from 'lodash';
 import userEvent from '@testing-library/user-event';

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import {

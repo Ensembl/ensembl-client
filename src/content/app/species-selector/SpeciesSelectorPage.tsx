@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -24,9 +24,7 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LazilyLoadedSpeciesSelector = React.lazy(
-  () => import('./SpeciesSelector')
-);
+const LazilyLoadedSpeciesSelector = lazy(() => import('./SpeciesSelector'));
 
 const pageTitle = 'Species selector — Ensembl';
 const pageDescription = 'Select one or more species to start using Ensembl';

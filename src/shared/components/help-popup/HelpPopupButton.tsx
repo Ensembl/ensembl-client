@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import Modal from 'src/shared/components/modal/Modal';

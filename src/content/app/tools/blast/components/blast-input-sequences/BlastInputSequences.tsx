@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { useAppSelector } from 'src/store';
 
 import BlastFormContext from 'src/content/app/tools/blast/views/blast-form/BlastFormContext';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, ReactNode, useEffect } from 'react';
+import { useState, useRef, ReactNode, useEffect } from 'react';
 import { of, from, merge, timer, combineLatest, Subscription } from 'rxjs';
 import { tap, mergeMap, delay, map, take, catchError } from 'rxjs/operators';
 

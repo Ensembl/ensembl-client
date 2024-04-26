@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
+import { useEffect, memo } from 'react';
 import { useLocation, useRoutes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, MutableRefObject } from 'react';
+import { useState, useRef, MutableRefObject } from 'react';
+
+import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';

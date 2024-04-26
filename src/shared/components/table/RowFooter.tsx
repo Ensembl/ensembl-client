@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, type HTMLProps } from 'react';
+import { useState, useEffect, useRef, type HTMLProps } from 'react';
 import classNames from 'classnames';
 
 import styles from './Table.module.css';

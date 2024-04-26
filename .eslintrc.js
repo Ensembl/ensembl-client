@@ -27,6 +27,8 @@ module.exports = {
     'react/display-name': 0,
     'react/prop-types': 0,
     'react/no-unescaped-entities': 0,
+    'react/jsx-uses-react': "off",
+    'react/react-in-jsx-scope': "off",
     'react-hooks/rules-of-hooks': 2,
     'prettier/prettier': 0,
     'no-unused-vars': 'off',

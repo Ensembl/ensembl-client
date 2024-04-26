@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -33,7 +33,7 @@ import EntityViewerIdsContextProvider from 'src/content/app/entity-viewer/contex
 
 export { serverFetch } from 'src/content/app/entity-viewer/shared/server-fetch/entityViewerServerFetch';
 
-const LazilyLoadedEntityViewer = React.lazy(() => import('./EntityViewer'));
+const LazilyLoadedEntityViewer = lazy(() => import('./EntityViewer'));
 
 const EntityViewerPage = () => {
   const hasMounted = useHasMounted();

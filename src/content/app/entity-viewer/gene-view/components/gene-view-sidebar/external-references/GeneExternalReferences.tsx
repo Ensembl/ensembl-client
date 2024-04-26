@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import sortBy from 'lodash/sortBy';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';

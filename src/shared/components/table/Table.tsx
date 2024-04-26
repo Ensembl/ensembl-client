@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type HTMLProps } from 'react';
 import classNames from 'classnames';
+import type { HTMLProps } from 'react';
 
 import styles from './Table.module.css';
 

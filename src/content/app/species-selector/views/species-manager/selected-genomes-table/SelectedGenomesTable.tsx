@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useReducer } from 'react';
+import { Fragment, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';

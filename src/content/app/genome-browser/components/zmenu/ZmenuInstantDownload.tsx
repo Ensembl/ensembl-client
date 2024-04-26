@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useGbTranscriptInZmenuQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';

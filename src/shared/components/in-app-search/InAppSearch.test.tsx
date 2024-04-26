@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
@@ -112,7 +111,7 @@ describe('<InAppSearch />', () => {
       // check that correct arguments are passed to the search function
       jest
         .spyOn(inAppSearchSlice, 'search')
-        .mockImplementation(() => ({ type: 'action' } as any));
+        .mockImplementation(() => ({ type: 'action' }) as any);
       const onSearchSubmit = jest.fn();
       const props = { ...defaultProps, onSearchSubmit };
 

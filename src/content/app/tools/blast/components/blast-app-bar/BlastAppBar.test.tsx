@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 
 import blastFormReducer, {
   initialState as initialBlastFormState

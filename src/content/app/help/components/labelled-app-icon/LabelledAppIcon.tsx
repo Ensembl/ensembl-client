@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 

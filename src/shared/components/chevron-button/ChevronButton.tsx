@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes } from 'react';
 import classNames from 'classnames';
+import type { ButtonHTMLAttributes } from 'react';
 
 import Chevron, { type Direction } from '../chevron/Chevron';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';

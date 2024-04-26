@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 
 import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';

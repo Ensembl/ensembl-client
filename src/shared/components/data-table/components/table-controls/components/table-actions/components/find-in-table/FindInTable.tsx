@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from 'react';
+import { useContext } from 'react';
+
+import * as React from 'react';
 
 import Input from 'src/shared/components/input/Input';
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';

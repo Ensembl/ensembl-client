@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';

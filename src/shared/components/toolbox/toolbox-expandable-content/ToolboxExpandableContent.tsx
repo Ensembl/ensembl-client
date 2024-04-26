@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode } from 'react';
 import noop from 'lodash/noop';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
@@ -35,8 +35,9 @@ type ToggleButtonProps = {
   label: string;
 };
 
-const ToolboxExpandableContentContext =
-  React.createContext<ToolboxContext | null>(null);
+const ToolboxExpandableContentContext = createContext<ToolboxContext | null>(
+  null
+);
 
 const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
   const [isExpanded, setIsExpanded] = useState(false);

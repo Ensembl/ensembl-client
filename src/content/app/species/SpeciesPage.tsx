@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -35,7 +35,7 @@ import { getPathParameters, useUrlParams } from 'src/shared/hooks/useUrlParams';
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
 
-const LazylyLoadedSpeciesPageContent = React.lazy(
+const LazylyLoadedSpeciesPageContent = lazy(
   () => import('./SpeciesPageContent')
 );
 

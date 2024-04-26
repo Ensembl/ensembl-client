@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import Chevron from 'src/shared/components/chevron/Chevron';

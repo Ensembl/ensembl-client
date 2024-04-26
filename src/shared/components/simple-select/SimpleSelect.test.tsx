@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useState, ChangeEvent } from 'react';
+import { useRef, useEffect, useState, ChangeEvent } from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

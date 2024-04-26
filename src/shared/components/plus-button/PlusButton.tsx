@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
 import PlusIcon from 'static/icons/icon_plus_circle.svg';
 

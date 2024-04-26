@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react';
+import { useRef } from 'react';
+
+import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';

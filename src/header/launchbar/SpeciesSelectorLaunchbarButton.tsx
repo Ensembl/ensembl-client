@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useLocation } from 'react-router';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';

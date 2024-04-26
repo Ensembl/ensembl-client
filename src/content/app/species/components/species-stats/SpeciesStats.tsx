@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import * as React from 'react';
 import classNames from 'classnames';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';

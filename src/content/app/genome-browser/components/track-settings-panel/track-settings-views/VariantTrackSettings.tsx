@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, type ForwardedRef } from 'react';
+import { forwardRef, type ForwardedRef } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 

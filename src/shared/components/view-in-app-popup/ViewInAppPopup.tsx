@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode } from 'react';
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';

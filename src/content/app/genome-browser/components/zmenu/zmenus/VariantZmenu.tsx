@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { buildFocusVariantId } from 'src/shared/helpers/focusObjectHelpers';

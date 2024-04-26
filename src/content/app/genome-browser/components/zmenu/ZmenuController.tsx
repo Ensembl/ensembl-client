@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
+import { useEffect, memo } from 'react';
+
+import * as React from 'react';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
