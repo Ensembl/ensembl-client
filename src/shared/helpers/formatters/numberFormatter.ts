@@ -52,7 +52,7 @@ export const formatSmallNumber = (
   if (options.scientificNotation) {
     const scientificNotationConfig =
       options.scientificNotation === true ? {} : options.scientificNotation;
-    const { cutoff = 0.00001 } = scientificNotationConfig;
+    const { cutoff = 0.0001 } = scientificNotationConfig;
     const numAbs = Math.abs(num);
     if (numAbs > 0 && numAbs < cutoff) {
       options.notation = 'scientific';
