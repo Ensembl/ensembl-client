@@ -3,6 +3,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
     'plugin:prettier/recommended', // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
   ],
   plugins: ['react-hooks', 'jest'],
@@ -27,8 +28,6 @@ module.exports = {
     'react/display-name': 0,
     'react/prop-types': 0,
     'react/no-unescaped-entities': 0,
-    'react/jsx-uses-react': "off",
-    'react/react-in-jsx-scope': "off",
     'react-hooks/rules-of-hooks': 2,
     'prettier/prettier': 0,
     'no-unused-vars': 'off',
