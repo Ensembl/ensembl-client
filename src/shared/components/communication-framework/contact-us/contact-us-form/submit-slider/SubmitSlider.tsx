@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-
-import * as React from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type RefObject
+} from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import classNames from 'classnames';
 import clamp from 'lodash/clamp';
@@ -76,8 +80,8 @@ const SubmitSlider = (props: Props) => {
 };
 
 type UseDraggableSliderParams = {
-  trackRef: React.RefObject<HTMLDivElement>;
-  sliderRef: React.RefObject<HTMLDivElement>;
+  trackRef: RefObject<HTMLDivElement>;
+  sliderRef: RefObject<HTMLDivElement>;
   isDisabled: boolean;
   onRelease: () => void;
   onSlideCompleted: () => void;
@@ -211,9 +215,7 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     });
   };
 
-  const getCurrentPointerX = (
-    event: TouchEvent | React.TouchEvent | MouseEvent | React.MouseEvent
-  ) => {
+  const getCurrentPointerX = (event: TouchEvent | MouseEvent) => {
     if ('touches' in event) {
       return event.touches[0].clientX;
     } else {

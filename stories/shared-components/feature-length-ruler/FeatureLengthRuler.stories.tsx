@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react';
-
-import * as React from 'react';
+import { useState, useRef, type FormEvent } from 'react';
 
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
@@ -30,7 +28,7 @@ type ContainerProps = {
 const LengthInputForm = (props: ContainerProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = (event: React.FormEvent) => {
+  const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     const value = inputRef.current?.value;
     const parsedValue = value ? parseInt(value, 10) : null;

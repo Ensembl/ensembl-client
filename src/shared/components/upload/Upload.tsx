@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
-
-import * as React from 'react';
+import { useRef, type ChangeEvent } from 'react';
 import classNames from 'classnames';
 
 import useFileDrop from './hooks/useFileDrop';
@@ -41,9 +39,7 @@ const Upload = <T extends Options>(props: UploadProps<T>) => {
   const { ref, isDraggedOver } = useFileDrop(props);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSelectedFiles = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleSelectedFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = [...(event.target.files as FileList)];
 
     if (transformTo) {

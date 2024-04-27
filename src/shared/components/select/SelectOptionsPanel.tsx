@@ -19,10 +19,10 @@ import {
   useEffect,
   useLayoutEffect,
   useReducer,
-  useRef
+  useRef,
+  type ReactNode,
+  type SyntheticEvent
 } from 'react';
-
-import * as React from 'react';
 import classNames from 'classnames';
 
 import {
@@ -71,7 +71,7 @@ type OptionProps = Option & {
 
 type Props = {
   optionGroups: OptionGroup[];
-  header: React.ReactNode;
+  header: ReactNode;
   onSelect: (index: GroupedOptionIndex) => void;
   onClose: () => void;
 };
@@ -305,7 +305,7 @@ const SelectOption = (props: OptionProps) => {
   const optionIndex = [props.groupIndex, props.itemIndex] as GroupedOptionIndex;
 
   const onHover = () => props.onHover(optionIndex);
-  const onClick = (event: React.SyntheticEvent<HTMLElement>) => {
+  const onClick = (event: SyntheticEvent<HTMLElement>) => {
     // this is to stop click propagation in the react event system
     event.stopPropagation();
     // this is to stop click propagation to the native document

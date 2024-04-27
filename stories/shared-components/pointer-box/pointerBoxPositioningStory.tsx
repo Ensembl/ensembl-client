@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react';
-
-import * as React from 'react';
+import { useState, useRef, type RefObject } from 'react';
 import classNames from 'classnames';
 
 import PointerBox, {
@@ -26,7 +24,7 @@ import PointerBox, {
 import styles from './PointerBox.stories.module.css';
 
 type ItemsProps = {
-  container: React.RefObject<HTMLElement>;
+  container: RefObject<HTMLElement>;
   position: Position;
 };
 

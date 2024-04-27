@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, useRef } from 'react';
-
-import * as React from 'react';
+import { useContext, useRef, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { TableContext } from 'src/shared/components/data-table/DataTable';
@@ -25,10 +23,7 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 import styles from './PopupPanel.module.css';
 
-const PopupPanel = (props: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+const PopupPanel = (props: { children: ReactNode; className?: string }) => {
   const { dispatch } = useContext(TableContext) || {};
 
   const ref = useRef(null);

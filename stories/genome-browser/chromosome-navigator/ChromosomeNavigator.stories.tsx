@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react';
-
-import * as React from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
@@ -37,8 +35,7 @@ export const ChromosomeNavigatorStory = () => {
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
   const updateValue =
-    (updater: (...args: any) => void) =>
-    (e: React.FormEvent<HTMLInputElement>) => {
+    (updater: (...args: any) => void) => (e: FormEvent<HTMLInputElement>) => {
       const value = parseInt(e.currentTarget.value);
       updater(value);
     };

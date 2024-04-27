@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
+import type { FunctionComponent } from 'react';
 
 import {
   GenomeBrowserIcon,
@@ -36,7 +36,7 @@ type Props = {
   size?: Size;
 };
 
-const appNameToIcon: Record<AppName, React.FunctionComponent> = {
+const appNameToIcon: Record<AppName, FunctionComponent> = {
   speciesSelector: SpeciesSelectorIcon,
   genomeBrowser: GenomeBrowserIcon,
   entityViewer: EntityViewerIcon,

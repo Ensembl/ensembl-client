@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from 'react';
-
-import * as React from 'react';
+import { useContext, type ChangeEvent } from 'react';
 
 import Input from 'src/shared/components/input/Input';
 import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
@@ -37,7 +35,7 @@ const FindInTable = () => {
     });
   };
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch({
       type: 'set_search_text',
       payload: event.target.value

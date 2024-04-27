@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import type { HTMLAttributes } from 'react';
 
-export type DivAttributes = React.HTMLAttributes<HTMLDivElement>;
+export type DivAttributes = HTMLAttributes<HTMLDivElement>;

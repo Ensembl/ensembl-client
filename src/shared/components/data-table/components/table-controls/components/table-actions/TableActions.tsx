@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useState } from 'react';
-
-import * as React from 'react';
+import { useContext, useEffect, useState, type ChangeEvent } from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
@@ -99,7 +97,7 @@ const TableActions = () => {
     return null;
   }
 
-  const onSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onSelect = (event: ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === TableAction.RESTORE_DEFAULTS) {
       dispatch({
         type: 'restore_defaults',

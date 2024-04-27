@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef, useEffect } from 'react';
-
-import * as React from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { splitFromSelected } from './helpers/select-helpers';
@@ -28,7 +26,7 @@ import styles from './Select.module.css';
 
 export type Option = {
   value: any;
-  label: React.ReactNode;
+  label: ReactNode;
   isSelected: boolean;
   isDisabled?: boolean;
 };

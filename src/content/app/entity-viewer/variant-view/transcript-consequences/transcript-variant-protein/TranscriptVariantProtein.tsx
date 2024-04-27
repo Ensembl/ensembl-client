@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import {
   DISPLAYED_REFERENCE_SEQUENCE_LENGTH,
@@ -220,8 +220,8 @@ const ProteinImpact = (props: Props) => {
     (conseq) => conseq.value === 'inframe_insertion'
   );
 
-  let changedSequence: React.ReactNode; // can show modified amino acids, number of amino acids, or a special label such as "uncertain" depending on situation
-  let modificationTypeLabel: React.ReactNode = null;
+  let changedSequence: ReactNode; // can show modified amino acids, number of amino acids, or a special label such as "uncertain" depending on situation
+  let modificationTypeLabel: ReactNode = null;
 
   if (!variantSequence || variantSequence.match(/X/i)) {
     // A sequence containing the letter X is interpreted as an unknown sequence.

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
+import type { MouseEvent } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
@@ -54,7 +54,7 @@ export const PreviouslyViewedLinks = () => {
           focusObjectId === previouslyViewedObject.object_id;
 
         const onClick = isFocusCurrentlyActive
-          ? (event: React.MouseEvent<HTMLAnchorElement>) => {
+          ? (event: MouseEvent<HTMLAnchorElement>) => {
               changeFocusObject(focusObjectId);
               event.preventDefault();
             }

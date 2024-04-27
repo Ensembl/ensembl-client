@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
-
-import * as React from 'react';
+import {
+  useState,
+  createContext,
+  type Dispatch,
+  type SetStateAction,
+  type ReactNode
+} from 'react';
 
 import type { EnsemblGenomeBrowser } from 'src/content/app/genome-browser/services/genome-browser-service/types/ensemblGenomeBrowser';
 import type { Zmenus } from '../components/zmenu/ZmenuController';
@@ -27,23 +31,19 @@ type GenomeBrowserService =
 type GenomeBrowserContextType = {
   genomeBrowser: EnsemblGenomeBrowser | null;
   genomeBrowserService: GenomeBrowserService | null;
-  setGenomeBrowser: React.Dispatch<
-    React.SetStateAction<EnsemblGenomeBrowser | null>
-  >;
-  setGenomeBrowserService: React.Dispatch<
-    React.SetStateAction<GenomeBrowserService | null>
+  setGenomeBrowser: Dispatch<SetStateAction<EnsemblGenomeBrowser | null>>;
+  setGenomeBrowserService: Dispatch<
+    SetStateAction<GenomeBrowserService | null>
   >;
   zmenus: Zmenus;
   setZmenus: (zmenus: Zmenus) => void;
 };
 
-export const GenomeBrowserContext = React.createContext<
+export const GenomeBrowserContext = createContext<
   GenomeBrowserContextType | undefined
 >(undefined);
 
-export const GenomeBrowserProvider = (props: {
-  children?: React.ReactNode;
-}) => {
+export const GenomeBrowserProvider = (props: { children?: ReactNode }) => {
   const [genomeBrowser, setGenomeBrowser] =
     useState<EnsemblGenomeBrowser | null>(null);
   const [genomeBrowserService, setGenomeBrowserService] =

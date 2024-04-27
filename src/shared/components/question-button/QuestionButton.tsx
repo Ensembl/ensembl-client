@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import { useShowTooltip } from 'src/shared/hooks/useShowTooltip';
 
@@ -29,7 +29,7 @@ import defaultStyles from './QuestionButton.module.css';
 type QuestionButtonStyleOption = 'inline' | 'in-input-field';
 
 type Props = {
-  helpText: React.ReactNode;
+  helpText: ReactNode;
   styleOption?: QuestionButtonStyleOption;
   className?: Partial<Record<QuestionButtonStyleOption, string>>;
 };

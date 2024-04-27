@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import type { ReactNode } from 'react';
+
 import { DivAttributes } from '../helpers/types';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'children'>> & {
-  children(
-    args: Partial<{ expanded: boolean; disabled: boolean }>
-  ): React.ReactNode;
+  children(args: Partial<{ expanded: boolean; disabled: boolean }>): ReactNode;
 };
 
 const AccordionItemState = (props: Props) => {

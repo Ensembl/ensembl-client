@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-
-import * as React from 'react';
+import { useState, useEffect, type RefObject } from 'react';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
@@ -31,7 +29,7 @@ import type { TrackLegendHotspotPayload } from 'src/content/app/genome-browser/s
 import styles from './BrowserTrackLegend.module.css';
 
 type Props = {
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement>;
 };
 
 type Position = {

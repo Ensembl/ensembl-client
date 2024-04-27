@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
+import type { ChangeEvent } from 'react';
 
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import Input from 'src/shared/components/input/Input';
@@ -29,7 +29,7 @@ export type PaginationProps = {
 const Pagination = (props: PaginationProps) => {
   const { currentPageNumber, lastPageNumber } = props;
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const pageNumberFromInput = Number(event.target.value);
 
     if (

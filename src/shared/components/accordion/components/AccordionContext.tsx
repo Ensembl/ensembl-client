@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import {
+  createContext,
+  useState,
+  useEffect,
+  PureComponent,
+  type ReactNode
+} from 'react';
 
-import * as React from 'react';
 import AccordionStore, {
   InjectedButtonAttributes,
   InjectedHeadingAttributes,
@@ -28,7 +33,7 @@ export interface ProviderProps {
   preExpanded?: UUID[];
   allowMultipleExpanded?: boolean;
   allowZeroExpanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
   onChange?(args: UUID[]): void;
 }
 
@@ -43,7 +48,7 @@ export interface AccordionContext {
   getButtonAttributes(uuid: UUID): InjectedButtonAttributes;
 }
 
-const Context = React.createContext(null as AccordionContext | null);
+const Context = createContext(null as AccordionContext | null);
 
 export const Provider = (props: ProviderProps) => {
   const { preExpanded = [] } = props;
@@ -115,12 +120,10 @@ export const Provider = (props: ProviderProps) => {
   );
 };
 
-export class Consumer extends React.PureComponent<{
-  children(container: AccordionContext): React.ReactNode;
+export class Consumer extends PureComponent<{
+  children(container: AccordionContext): ReactNode;
 }> {
-  public renderChildren = (
-    container: AccordionContext | null
-  ): React.ReactNode => {
+  public renderChildren = (container: AccordionContext | null): ReactNode => {
     return container ? this.props.children(container) : null;
   };
 

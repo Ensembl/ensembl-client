@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useReducer, useCallback, useRef, FormEvent } from 'react';
-
-import * as React from 'react';
+import {
+  useState,
+  useReducer,
+  useCallback,
+  useRef,
+  type FormEvent
+} from 'react';
 import classNames from 'classnames';
 
 import { submitForm } from '../submitForm';
@@ -215,7 +219,7 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'remove-file', payload: index });
   };
 
-  const handleSubmit = useCallback((e: React.SyntheticEvent) => {
+  const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (!stateRef.current) {
       return; // shouldn't happen, but makes Typescript happy

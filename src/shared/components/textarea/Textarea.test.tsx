@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { useState, useRef, MutableRefObject } from 'react';
-
-import * as React from 'react';
+import {
+  useState,
+  useRef,
+  type MutableRefObject,
+  type ChangeEvent
+} from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
@@ -85,7 +88,7 @@ describe('<Textarea />', () => {
       const StatefulTextareaWrapper = () => {
         const [text, setText] = useState(initialText);
 
-        const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
           const value = e.target.value;
           spy(e);
           setText(value);

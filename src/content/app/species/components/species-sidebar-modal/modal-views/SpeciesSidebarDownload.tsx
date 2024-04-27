@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
+import type { ReactNode } from 'react';
 
 import { useAppSelector } from 'src/store';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
@@ -89,7 +89,7 @@ const SpeciesSidebarDownload = () => {
 const SpeciesFtpLink = (props: {
   title: string;
   link: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => {
   return (
     <div className={styles.SpeciesFtpLink}>

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
+import { useRef, type RefObject } from 'react';
 
-import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
@@ -81,7 +80,7 @@ export const ChromosomeNavigatorWrapper = () => {
   };
 
   return (
-    <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+    <div ref={containerRef as RefObject<HTMLDivElement>}>
       {containerWidth && length ? (
         <ChromosomeNavigator {...{ ...props, containerWidth }} />
       ) : null}
