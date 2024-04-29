@@ -47,6 +47,15 @@ For the reference (from Andrea)
   font-weight: var(--font-weight-light);
 }
 
+/* space between a score and the sequence of the respective allele */
+.alleleSequenceOffset {
+  margin-left: 8px;
+}
+
+.wrappableSequence {
+  word-break: break-all;
+}
+
 .withSpaceLeft {
   margin-left: 12px;
 }
@@ -58,6 +67,10 @@ For the reference (from Andrea)
 
 .variantSequenceBlock {
   max-width: 60ch;
+}
+
+.caddScore {
+  display: block;
 }
 
 .phenotypeAssociations {

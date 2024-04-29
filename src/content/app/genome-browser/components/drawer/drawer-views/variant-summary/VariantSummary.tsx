@@ -115,8 +115,16 @@ const VariantSummary = (props: Props) => {
         <div className={classNames(styles.row, styles.newRowGroup)}>
           <div className={styles.label}>MAF</div>
           <div className={styles.value}>
-            {preparedSummaryData.minorAlleleFrequency.frequency} (
-            {preparedSummaryData.minorAlleleFrequency.sequence})
+            {preparedSummaryData.minorAlleleFrequency.frequency}
+            <span
+              className={classNames(
+                styles.light,
+                styles.wrappableSequence,
+                styles.alleleSequenceOffset
+              )}
+            >
+              {preparedSummaryData.minorAlleleFrequency.sequence}
+            </span>
           </div>
         </div>
       )}
@@ -228,11 +236,22 @@ export const VariantDB = (props: {
 export const CADDScores = (props: {
   data: { sequence: string; score: number }[];
 }) => {
-  const caddScoreString = props.data
-    .map((data) => `${data.score} (${data.sequence})`)
-    .join(', ');
+  const caddScores = props.data.map((data) => (
+    <div className={styles.caddScore} key={data.sequence}>
+      <span>{data.score}</span>{' '}
+      <span
+        className={classNames(
+          styles.light,
+          styles.wrappableSequence,
+          styles.alleleSequenceOffset
+        )}
+      >
+        {data.sequence}
+      </span>
+    </div>
+  ));
 
-  return <span>{caddScoreString}</span>;
+  return <div>{caddScores}</div>;
 };
 
 // FIXME: links should be grouped by sources. Does ExternalReference component do this?
