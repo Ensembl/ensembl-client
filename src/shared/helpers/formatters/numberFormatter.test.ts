@@ -153,9 +153,17 @@ describe('formatSmallNumber', () => {
       );
     });
 
-    test('0.00000123 is formatted as 1.23e-6', () => {
-      expect(formatSmallNumber(0.00000123, commonFormattingOptions)).toBe(
-        '1.23e-6'
+    test('0.000123 is formatted as 0.000123', () => {
+      // By default, the value below which the formatter will switch to scientific notation is 0.0001
+      // Therefore, given 0.000123 as an input, the formatter should return this number unchanged
+      expect(formatSmallNumber(0.000123, commonFormattingOptions)).toBe(
+        '0.000123'
+      );
+    });
+
+    test('0.0000123 is formatted as 1.23e-5', () => {
+      expect(formatSmallNumber(0.0000123, commonFormattingOptions)).toBe(
+        '1.23e-5'
       );
     });
 
