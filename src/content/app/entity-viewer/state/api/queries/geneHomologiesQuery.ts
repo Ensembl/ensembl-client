@@ -67,6 +67,12 @@ export const geneHomologiesQuery = gql`
   }
 `;
 
+/**
+ * When the `homologies` field is null, it means that compara pipelines
+ * have not been run for the current genome.
+ * Note that this is different from the scenario in which the pipelines were run,
+ * but no homologies were found. In that case, the homologies field will resolve to an empty array.
+ */
 export type EntityViewerGeneHomologiesQueryResult = {
-  homologies: GeneHomology[];
+  homologies: GeneHomology[] | null;
 };
