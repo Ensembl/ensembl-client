@@ -68,8 +68,6 @@ const TranscriptConsequences = (props: Props) => {
     alleleId: activeAlleleId
   });
 
-  const transcriptConseqeuencesToExpandByDefault: string[] = [];
-
   if (isLoading) {
     const panelHeader = (
       <div className={styles.panelHeader}>
@@ -105,10 +103,7 @@ const TranscriptConsequences = (props: Props) => {
     );
   }
 
-  const geneDataWithTranscriptConsequences: GeneDataWithTranscriptConsequencesType[] =
-    [];
-
-  geneData.map((gene) => {
+  const geneDataWithTranscriptConsequences = geneData.map((gene) => {
     const transcriptConsequencesWithTranscript: Array<
       (typeof transcriptConsequences)[number] & {
         transcript: (typeof gene)['transcripts'][number];
@@ -133,13 +128,11 @@ const TranscriptConsequences = (props: Props) => {
         });
       }
     }
-    geneDataWithTranscriptConsequences.push({
+
+    return {
       ...gene,
       transcriptConsequences: transcriptConsequencesWithTranscript
-    });
-    transcriptConseqeuencesToExpandByDefault.push(
-      transcriptConsequencesWithTranscript[0].stable_id
-    );
+    };
   });
 
   return (
@@ -371,12 +364,12 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
   const expandedIds = new Set<string>(expandedTranscriptIds || []);
 
   const handleTranscriptConsequenceClick = (transcriptId: string) => {
-    const reduxActionCreator = expandedIds.has(transcriptId)
+    const toggleTranscript = expandedIds.has(transcriptId)
       ? collapseTranscript
       : expandTranscript;
 
     dispatch(
-      reduxActionCreator({
+      toggleTranscript({
         genomeId,
         variantId,
         alleleId,

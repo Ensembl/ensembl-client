@@ -25,6 +25,6 @@ export const getExpandedTranscriptConseqeuenceIds = (
   return (
     state.entityViewer.variantView.transcriptConsequences[genomeId]?.[
       variantId
-    ]?.[alleleId].expandedIds ?? null
+    ]?.[alleleId]?.expandedIds ?? null
   );
 };
