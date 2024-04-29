@@ -153,7 +153,7 @@ type TranscriptInGene = Pick<
     product_generating_contexts: ProductGeneratingContextInTranscriptInGene[];
   };
 
-type GeneInResponse = Pick<
+export type GeneInResponse = Pick<
   FullGene,
   'stable_id' | 'unversioned_stable_id' | 'symbol'
 > &

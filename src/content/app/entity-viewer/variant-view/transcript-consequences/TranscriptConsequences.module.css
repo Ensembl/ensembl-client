@@ -28,7 +28,7 @@
 
 .transcriptId {
   color: var(--color-blue);
-  cursor: pointer;
+  width: fit-content;
   padding-top: 8px;
 }
 

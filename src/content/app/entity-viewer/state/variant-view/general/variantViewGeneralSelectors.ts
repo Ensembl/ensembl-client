@@ -48,5 +48,5 @@ export const getExpandedTranscriptConseqeuenceIds = (
   variantId: string
 ) => {
   const transcriptsSlice = getSliceForVariant(state, genomeId, variantId);
-  return transcriptsSlice?.expandedTranscriptConseqeuenceIds ?? [];
+  return transcriptsSlice?.expandTranscriptIds ?? [];
 };
