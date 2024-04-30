@@ -31,40 +31,58 @@ export const getNumberWithoutCommas = (input: string) => {
   return +inputWithoutCommas;
 };
 
-export const formatSmallNumber = (
-  num: number,
+export const createSmallNumberFormatter = (
   options?: Intl.NumberFormatOptions & {
     scientificNotation?:
       | {
-          cutoff?: number; // number below which we should format the input using scientific notation
           maximumSignificantDigits?: number;
+          cutoff?: number; // number below which we should format the input using scientific notation
         }
       | boolean;
   }
 ) => {
-  options = options ?? {};
-  options = {
+  let {
+    // eslint-disable-next-line prefer-const
+    scientificNotation = true, // use scientific notation unless explicitly told not to
+    ...intlOptions
+  } = options ?? {};
+  intlOptions = {
     ...defaultSmallNumberFormatterOptions,
-    ...options
+    ...intlOptions
   };
-  options.scientificNotation = options.scientificNotation ?? true; // use scientific notation unless explicitly told not to
 
-  if (options.scientificNotation) {
+  const regularFormatter = new Intl.NumberFormat('en-GB', intlOptions);
+  let scientificNotationFormatter: Intl.NumberFormat | undefined;
+
+  if (scientificNotation) {
     const scientificNotationConfig =
-      options.scientificNotation === true ? {} : options.scientificNotation;
-    const { cutoff = 0.0001 } = scientificNotationConfig;
-    const numAbs = Math.abs(num);
-    if (numAbs > 0 && numAbs < cutoff) {
-      options.notation = 'scientific';
-      options.maximumSignificantDigits =
-        scientificNotationConfig.maximumSignificantDigits ??
-        defaultSmallNumberFormatterOptions.maximumSignificantDigits;
-    }
+      scientificNotation === true ? {} : scientificNotation;
+    intlOptions.notation = 'scientific';
+    intlOptions.maximumSignificantDigits =
+      scientificNotationConfig.maximumSignificantDigits ??
+      defaultSmallNumberFormatterOptions.maximumSignificantDigits;
+    scientificNotationFormatter = new Intl.NumberFormat('en-GB', intlOptions);
   }
 
-  const formatter = new Intl.NumberFormat('en-GB', options);
+  return {
+    format: (num: number) => {
+      if (scientificNotation) {
+        const defaultCutoff = DEFAULT_CUTOFF_FOR_SMALL_NUMBERS;
+        const cutoff =
+          typeof scientificNotation === 'object'
+            ? scientificNotation.cutoff ?? defaultCutoff
+            : defaultCutoff;
 
-  return formatter.format(num).toLocaleLowerCase();
+        const absNum = Math.abs(num);
+        if (absNum > 0 && absNum < cutoff) {
+          // Intl.NumberFormatter uses capital "E" in the output
+          return scientificNotationFormatter!.format(num).toLowerCase();
+        }
+      }
+
+      return regularFormatter.format(num);
+    }
+  };
 };
 
 // FIXME: Intl.NumberFormatOptions type doesn't seem to include "roundingMode"?
@@ -72,3 +90,6 @@ const defaultSmallNumberFormatterOptions = {
   maximumSignificantDigits: 21,
   roundingMode: 'trunc'
 };
+
+// the value below which a default small number formatter would switch to scientific notation
+const DEFAULT_CUTOFF_FOR_SMALL_NUMBERS = 0.0001;

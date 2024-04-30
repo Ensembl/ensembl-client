@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { formatNumber, formatSmallNumber } from './numberFormatter';
+import { formatNumber, createSmallNumberFormatter } from './numberFormatter';
 
 import { faker } from '@faker-js/faker';
 
@@ -139,76 +139,61 @@ describe('formatNumber', () => {
   });
 });
 
-describe('formatSmallNumber', () => {
-  describe('with truncation and scientific notation', () => {
+describe('createSmallNumberFormatter', () => {
+  describe('when formatted number should be truncated, and scientific notation applied', () => {
     const commonFormattingOptions = {
-      maximumSignificantDigits: 5,
-      scientificNotation: true
+      maximumSignificantDigits: 5
     };
 
     test('0.999959690 is formatted as 0.99995', () => {
+      const formatter = createSmallNumberFormatter(commonFormattingOptions);
       // Notice that the number is truncated rather than rounded!
-      expect(formatSmallNumber(0.99995969, commonFormattingOptions)).toBe(
-        '0.99995'
-      );
+      expect(formatter.format(0.99995969)).toBe('0.99995');
     });
 
     test('0.000123 is formatted as 0.000123', () => {
+      const formatter = createSmallNumberFormatter(commonFormattingOptions);
+
       // By default, the value below which the formatter will switch to scientific notation is 0.0001
       // Therefore, given 0.000123 as an input, the formatter should return this number unchanged
-      expect(formatSmallNumber(0.000123, commonFormattingOptions)).toBe(
-        '0.000123'
-      );
+      expect(formatter.format(0.000123)).toBe('0.000123');
     });
 
     test('0.0000123 is formatted as 1.23e-5', () => {
-      expect(formatSmallNumber(0.0000123, commonFormattingOptions)).toBe(
-        '1.23e-5'
-      );
+      const formatter = createSmallNumberFormatter(commonFormattingOptions);
+      expect(formatter.format(0.0000123)).toBe('1.23e-5');
     });
 
     test('0.0000012395 is formatted as 1.23e-6', () => {
+      const formattingOptions = {
+        ...commonFormattingOptions,
+        scientificNotation: {
+          maximumSignificantDigits: 3
+        }
+      };
+      const formatter = createSmallNumberFormatter(formattingOptions);
       // Notice that the number got truncated rather than rounded!
-      expect(
-        formatSmallNumber(0.0000012395, {
-          ...commonFormattingOptions,
-          scientificNotation: {
-            maximumSignificantDigits: 3
-          }
-        })
-      ).toBe('1.23e-6');
+      expect(formatter.format(0.0000012395)).toBe('1.23e-6');
     });
   });
 
   describe('with scientific notation, but without truncation', () => {
-    const commonFormattingOptions = {
-      maximumSignificantDigits: 21, // this is the maximum number allowed
-      scientificNotation: true
-    };
-
     test('0.999959690 is formatted as 0.99995969', () => {
+      const formatter = createSmallNumberFormatter();
+
       // Note that the trailing zero is removed,
       // because the Number type has no memory of its literal representation.
-      expect(formatSmallNumber(0.99995969, commonFormattingOptions)).toBe(
-        '0.99995969'
-      );
+      expect(formatter.format(0.99995969)).toBe('0.99995969');
     });
 
     test('0.00000123 is formatted as 1.23e-6', () => {
-      expect(formatSmallNumber(0.00000123, commonFormattingOptions)).toBe(
-        '1.23e-6'
-      );
+      const formatter = createSmallNumberFormatter();
+      expect(formatter.format(0.00000123)).toBe('1.23e-6');
     });
 
     test('0.0000012395 is formatted as 1.2395e-6', () => {
-      expect(
-        formatSmallNumber(0.0000012395, {
-          ...commonFormattingOptions,
-          scientificNotation: {
-            maximumSignificantDigits: 21 // i.e. as many as possible
-          }
-        })
-      ).toBe('1.2395e-6');
+      const formatter = createSmallNumberFormatter();
+      expect(formatter.format(0.0000012395)).toBe('1.2395e-6');
     });
   });
 });
