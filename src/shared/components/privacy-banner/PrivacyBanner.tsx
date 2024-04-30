@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { FunctionComponent } from 'react';
 import privacyConfig from './privacyConfig';
 
 import styles from './PrivacyBanner.module.css';
@@ -23,9 +22,7 @@ type PrivacyBannerProps = {
   closeBanner: () => void;
 };
 
-export const PrivacyBanner: FunctionComponent<PrivacyBannerProps> = (
-  props: PrivacyBannerProps
-) => {
+export const PrivacyBanner = (props: PrivacyBannerProps) => {
   return (
     <section className={styles.privacyBanner}>
       <p>

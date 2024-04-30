@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { TOOLTIP_TIMEOUT } from './tooltip-constants';

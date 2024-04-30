@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, MutableRefObject } from 'react';
+import { useRef, type MutableRefObject } from 'react';
 import { render } from '@testing-library/react';
 
 import ShadedTextarea from './ShadedTextarea';

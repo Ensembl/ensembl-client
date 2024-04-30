@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, ForwardedRef } from 'react';
+import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import Textarea, { Props as TextareaProps } from './Textarea';
