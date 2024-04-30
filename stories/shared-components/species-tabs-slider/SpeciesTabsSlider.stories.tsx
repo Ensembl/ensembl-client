@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';

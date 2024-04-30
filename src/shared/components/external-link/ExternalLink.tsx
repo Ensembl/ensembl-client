@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import LinkIcon from 'static/icons/icon_xlink.svg';
 

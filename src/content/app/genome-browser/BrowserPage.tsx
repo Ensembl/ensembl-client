@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
@@ -23,7 +23,7 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LazilyLoadedBrowser = React.lazy(() => import('./Browser'));
+const LazilyLoadedBrowser = lazy(() => import('./Browser'));
 
 const pageTitle = 'Genome browser — Ensembl';
 const pageDescription = 'Ensembl genome browser';

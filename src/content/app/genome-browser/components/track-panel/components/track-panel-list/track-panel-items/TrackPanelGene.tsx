@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
@@ -76,8 +76,8 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const geneVisibilityStatus = !visibleTranscriptIds?.length
     ? Status.UNSELECTED
     : visibleTranscriptIds.length === gene.transcripts.length
-    ? Status.SELECTED
-    : Status.PARTIALLY_SELECTED;
+      ? Status.SELECTED
+      : Status.PARTIALLY_SELECTED;
 
   const onGeneVisibilityChange = () => {
     let visibleTranscriptIds: string[];

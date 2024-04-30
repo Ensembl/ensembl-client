@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { useAppDispatch } from 'src/store';
 

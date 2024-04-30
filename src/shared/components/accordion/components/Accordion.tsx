@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { DivAttributes } from '../helpers/types';
 import { Consumer, Provider } from './AccordionContext';
 import { UUID } from './ItemContext';

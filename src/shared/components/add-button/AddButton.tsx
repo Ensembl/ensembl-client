@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import classNames from 'classnames';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import PlusIcon from 'static/icons/icon_plus_circle.svg';
 

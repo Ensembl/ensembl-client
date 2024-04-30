@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import defaultStyles from './RoundButton.module.css';
 

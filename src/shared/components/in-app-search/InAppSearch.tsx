@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 import noop from 'lodash/noop';

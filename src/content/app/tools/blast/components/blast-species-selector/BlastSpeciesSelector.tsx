@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useDeferredValue, type FormEvent } from 'react';
+import { useState, useDeferredValue, type FormEvent } from 'react';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 

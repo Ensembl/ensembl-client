@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { lazy } from 'react';
 
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
@@ -29,7 +29,7 @@ import {
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LazilyLoadedAbout = React.lazy(() => import('./About'));
+const LazilyLoadedAbout = lazy(() => import('./About'));
 
 const AboutPage = () => {
   const hasMounted = useHasMounted();

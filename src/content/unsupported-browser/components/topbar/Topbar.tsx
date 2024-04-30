@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Logotype from 'static/img/brand/logotype.svg';
 import HomeIcon from 'static/icons/icon_home.svg';
 

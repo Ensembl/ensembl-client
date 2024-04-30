@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getSelectedSpeciesList } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';

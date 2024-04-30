@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Pick2 } from 'ts-multipick';
 
 import VariantColour from 'src/content/app/genome-browser/components/drawer/components/variant-colour/VariantColour';

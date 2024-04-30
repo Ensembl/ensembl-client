@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import noop from 'lodash/noop';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';

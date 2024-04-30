@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 import { Pick2, Pick3 } from 'ts-multipick';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 import classNames from 'classnames';
 

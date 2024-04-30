@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import AddButton from 'src/shared/components/add-button/AddButton';
 
 export const AddButtonStory = {

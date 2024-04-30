@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type HTMLAttributes } from 'react';
 import classNames from 'classnames';
+import type { HTMLAttributes } from 'react';
 
 import styles from './InfoPill.module.css';
 

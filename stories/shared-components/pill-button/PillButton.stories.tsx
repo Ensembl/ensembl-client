@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import PillButton from 'src/shared/components/pill-button/PillButton';
 
 export default {

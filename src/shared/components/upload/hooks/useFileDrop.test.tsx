@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import noop from 'lodash/noop';
 import classNames from 'classnames';

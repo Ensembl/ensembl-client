@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import classNames from 'classnames';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import styles from './TextButton.module.css';
 

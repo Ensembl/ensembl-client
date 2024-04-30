@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { setTimeout } from 'timers/promises';
 import { render, fireEvent, createEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

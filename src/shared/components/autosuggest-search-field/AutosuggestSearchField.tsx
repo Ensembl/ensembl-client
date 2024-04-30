@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  type KeyboardEvent,
+  type ChangeEvent
+} from 'react';
 import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
@@ -172,7 +178,7 @@ const AutosuggestSearchField = (props: Props) => {
     props.onFocus && props.onFocus();
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
 
     event.preventDefault();
@@ -190,7 +196,7 @@ const AutosuggestSearchField = (props: Props) => {
     setHighlightedItemIndex(itemIndex);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
 
     if (value !== props.search) {

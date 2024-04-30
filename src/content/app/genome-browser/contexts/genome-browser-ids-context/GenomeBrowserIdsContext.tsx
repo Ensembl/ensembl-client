@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createContext, type ReactNode } from 'react';
 import noop from 'lodash/noop';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
@@ -76,11 +76,9 @@ const defaultContext: GenomeBrowserIdsContextType = {
 };
 
 export const GenomeBrowserIdsContext =
-  React.createContext<GenomeBrowserIdsContextType>(defaultContext);
+  createContext<GenomeBrowserIdsContextType>(defaultContext);
 
-export const GenomeBrowserIdsProvider = (props: {
-  children?: React.ReactNode;
-}) => {
+export const GenomeBrowserIdsProvider = (props: { children?: ReactNode }) => {
   const {
     genomeIdInUrl,
     focusObjectIdInUrl,

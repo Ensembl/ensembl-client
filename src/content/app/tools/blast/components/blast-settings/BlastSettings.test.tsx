@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';

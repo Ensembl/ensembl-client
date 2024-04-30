@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createContext, type ReactNode } from 'react';
+
 import {
   InjectedButtonAttributes,
   InjectedHeadingAttributes,
@@ -28,7 +29,7 @@ import {
 export type UUID = string | number;
 
 type ProviderProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
   uuid: UUID;
   accordionContext: AccordionContext;
 };
@@ -48,7 +49,7 @@ export type ItemContext = {
   toggleExpanded(): void;
 };
 
-const Context = React.createContext(null as ItemContext | null);
+const Context = createContext(null as ItemContext | null);
 
 const Provider = (props: ProviderProps) => {
   const toggleExpanded = (): void => {
@@ -95,11 +96,11 @@ const ProviderWrapper = (props: ProviderWrapperProps) => (
 export { ProviderWrapper as Provider };
 
 type ConsumerProps = {
-  children(container: ItemContext): React.ReactNode;
+  children(container: ItemContext): ReactNode;
 };
 
 export const Consumer = (props: ConsumerProps) => {
-  const renderChildren = (container: ItemContext | null): React.ReactNode => {
+  const renderChildren = (container: ItemContext | null): ReactNode => {
     return container ? props.children(container) : null;
   };
 

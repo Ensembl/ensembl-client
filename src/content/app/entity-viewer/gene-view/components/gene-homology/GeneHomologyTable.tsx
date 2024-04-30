@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { Link } from 'react-router-dom';
 

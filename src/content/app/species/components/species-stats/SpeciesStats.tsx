@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
+import type { ReactElement } from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
@@ -55,7 +55,7 @@ export type SpeciesStatsProps = PrimaryDataProps &
   ClassNamesProps & {
     preLabel?: string;
     label: string;
-    link?: React.ReactElement;
+    link?: ReactElement;
   };
 
 const SpeciesStats = (props: SpeciesStatsProps) => {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 

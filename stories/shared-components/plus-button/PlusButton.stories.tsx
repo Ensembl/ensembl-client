@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 
 export default {

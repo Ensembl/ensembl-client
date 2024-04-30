@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import * as SimpleInputStories from './SimpleInputStories';
 import { ShadedInputPlayground } from './ShadedInputStory';
 import { FlatInputPlayground } from './FlatInputStory';

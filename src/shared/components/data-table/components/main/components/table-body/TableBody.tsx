@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import TableRow from '../table-row/TableRow';
 
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';

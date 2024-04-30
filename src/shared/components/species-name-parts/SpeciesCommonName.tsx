@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 type Props = {
   common_name: string | null;

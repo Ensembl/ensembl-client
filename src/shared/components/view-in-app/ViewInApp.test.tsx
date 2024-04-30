@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { MemoryRouter, Location } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

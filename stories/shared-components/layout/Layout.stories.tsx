@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 

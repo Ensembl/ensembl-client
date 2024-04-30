@@ -10,7 +10,9 @@ module.exports = (api) => {
 
   return {
     presets: [
-      '@babel/react',
+      ['@babel/preset-react', {
+        'runtime': 'automatic' // Starting from Babel 8, "automatic" will be the default runtime
+      }],
       '@babel/typescript',
       [
         '@babel/env',

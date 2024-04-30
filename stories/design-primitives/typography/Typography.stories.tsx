@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import storyStyles from '../../common.module.css';
 import styles from './Typography.stories.module.css';
 import dummyText from 'tests/data/json/LoremIpsum.json';

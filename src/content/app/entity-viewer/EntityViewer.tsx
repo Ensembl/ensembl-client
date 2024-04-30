@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

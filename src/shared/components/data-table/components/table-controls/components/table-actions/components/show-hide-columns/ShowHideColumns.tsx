@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 import PopupPanel from '../popup-panel/PopupPanel';

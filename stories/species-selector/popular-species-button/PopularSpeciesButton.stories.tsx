@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import noop from 'lodash/noop';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';

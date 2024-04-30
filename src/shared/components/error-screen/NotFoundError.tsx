@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

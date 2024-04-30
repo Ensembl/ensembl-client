@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ComponentProps } from 'react';
 import classNames from 'classnames';
+import type { ComponentProps } from 'react';
 
 import { AssemblyName } from '../species-name-parts';
 

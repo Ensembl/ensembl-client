@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import AlternativeAllele from '../alternative-allele/AlternativeAllele';
 

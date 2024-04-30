@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
@@ -353,7 +353,7 @@ const BlastSubmissionName = () => {
   const submissionName = useAppSelector(getBlastSubmissionName);
   const { setBlastSubmissionName } = useBlastForm();
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.currentTarget.value;
     setBlastSubmissionName(name);
   };

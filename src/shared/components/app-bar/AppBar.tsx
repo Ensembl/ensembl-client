@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import type { ReactNode } from 'react';
 
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
 import styles from './AppBar.module.css';
 
 type AppBarProps = {
-  topLeft?: React.ReactNode;
-  topRight?: React.ReactNode;
-  mainContent: React.ReactNode;
-  aside?: React.ReactNode;
+  topLeft?: ReactNode;
+  topRight?: ReactNode;
+  mainContent: ReactNode;
+  aside?: ReactNode;
 };
 
 export const AppBar = (props: AppBarProps) => (
@@ -45,7 +45,7 @@ export const AppBar = (props: AppBarProps) => (
   </section>
 );
 
-export const AppName = ({ children }: { children: React.ReactNode }) => {
+export const AppName = ({ children }: { children: ReactNode }) => {
   return <span className={styles.appName}>{children}</span>;
 };
 

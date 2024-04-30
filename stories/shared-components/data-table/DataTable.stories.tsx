@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import type {

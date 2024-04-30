@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';

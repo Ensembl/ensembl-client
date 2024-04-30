@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './QuestionButton.stories.module.css';

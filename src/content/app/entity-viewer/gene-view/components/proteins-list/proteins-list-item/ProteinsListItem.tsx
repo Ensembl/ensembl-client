@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router';
 import classNames from 'classnames';
 

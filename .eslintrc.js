@@ -3,6 +3,7 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
     'plugin:prettier/recommended', // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
   ],
   plugins: ['react-hooks', 'jest'],

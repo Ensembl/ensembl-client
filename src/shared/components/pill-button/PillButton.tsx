@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  forwardRef,
-  type ComponentProps,
-  type ForwardedRef
-} from 'react';
+import { forwardRef, type ComponentProps, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './PillButton.module.css';

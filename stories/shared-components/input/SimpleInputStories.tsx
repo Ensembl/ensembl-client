@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Input from 'src/shared/components/input/Input';
 
 import styles from './Input.stories.module.css';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FormEvent, KeyboardEvent, useRef, useState } from 'react';
+import { FormEvent, KeyboardEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 

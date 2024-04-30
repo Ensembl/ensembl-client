@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { type FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
+
+import { memo } from 'react';
 import { NavLink, useMatch } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -65,7 +67,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   );
 };
 
-const LaunchbarButtonContent = React.memo(
+const LaunchbarButtonContent = memo(
   (props: Required<Omit<LaunchbarButtonProps, 'path'>>) => {
     const [hoverRef, isHovered] = useHover<HTMLDivElement>();
     const elementClasses = classNames(styles.launchbarButton, {

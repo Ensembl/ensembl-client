@@ -23,7 +23,7 @@
  * also allows space for a chevron that indicates whether all group elements are visible or not
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import classNames from 'classnames';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';

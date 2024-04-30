@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import styles from './PreformHeader.module.css';
 
 export const Invitation = () => (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, memo } from 'react';
+import { useEffect, memo, type RefObject } from 'react';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
@@ -24,7 +24,7 @@ import type { ZmenuPayload } from 'src/content/app/genome-browser/services/genom
 import type { HotspotMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 
 type Props = {
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement>;
 };
 
 // when a zmenu is created, it’s assigned an id,

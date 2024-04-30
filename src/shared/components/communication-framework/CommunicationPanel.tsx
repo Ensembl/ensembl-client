@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { CommunicationPanelContextProvider } from './communicationPanelContext';

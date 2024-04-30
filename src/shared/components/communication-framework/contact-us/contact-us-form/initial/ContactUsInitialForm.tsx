@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, {
+import {
   useState,
   useReducer,
   useCallback,
   useRef,
-  FormEvent
+  type FormEvent
 } from 'react';
 import classNames from 'classnames';
 
@@ -219,7 +219,7 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'remove-file', payload: index });
   };
 
-  const handleSubmit = useCallback((e: React.SyntheticEvent) => {
+  const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (!stateRef.current) {
       return; // shouldn't happen, but makes Typescript happy

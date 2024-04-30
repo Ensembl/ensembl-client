@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';

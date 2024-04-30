@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import AlertIcon from 'static/icons/icon_alert_circle.svg';
 
@@ -26,7 +26,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import styles from './AlertButton.module.css';
 
 type Props = {
-  tooltipContent?: React.ReactNode;
+  tooltipContent?: ReactNode;
   level?: 'red' | 'amber';
   className?: string;
 };

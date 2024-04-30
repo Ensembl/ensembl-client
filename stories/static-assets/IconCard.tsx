@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import styles from './Icons.stories.module.css';
 
 type Props = {

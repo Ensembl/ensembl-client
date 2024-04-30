@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';

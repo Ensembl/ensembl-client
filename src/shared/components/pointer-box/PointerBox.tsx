@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, type ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import once from 'lodash/once';

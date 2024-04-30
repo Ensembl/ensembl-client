@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';

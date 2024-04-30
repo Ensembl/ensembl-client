@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
 import styles from './Breadcrumbs.stories.module.css';

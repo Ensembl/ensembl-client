@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { useAppSelector } from 'src/store';
 
 import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';

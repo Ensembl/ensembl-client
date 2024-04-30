@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { wrap } from 'comlink';
 
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';

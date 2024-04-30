@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';

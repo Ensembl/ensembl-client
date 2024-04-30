@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Pagination from 'src/shared/components/pagination/Pagination';
 import RowsPerPageSelector from './components/rows-per-page-selector/RowsPerPageSelector';
 

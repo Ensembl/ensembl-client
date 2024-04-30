@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import chromeIconPath from './icons/chrome.svg?url';
 import edgeIconPath from './icons/edge.svg?url';
 import firefoxIconPath from './icons/firefox.svg?url';

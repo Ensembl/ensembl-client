@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import { createProteinCodingTranscript } from 'tests/fixtures/entity-viewer/transcript';

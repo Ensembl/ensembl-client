@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { MemoryRouter } from 'react-router';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';

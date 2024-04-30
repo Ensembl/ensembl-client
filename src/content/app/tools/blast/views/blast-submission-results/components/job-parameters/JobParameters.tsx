@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { useBlastConfigQuery } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 
 import Copy from 'src/shared/components/copy/Copy';

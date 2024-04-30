@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import classNames from 'classnames';
 
 import SVGIcon from 'static/icons/icon_search.svg';

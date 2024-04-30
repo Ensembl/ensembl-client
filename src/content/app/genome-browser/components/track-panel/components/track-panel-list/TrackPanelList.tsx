@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, type ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';

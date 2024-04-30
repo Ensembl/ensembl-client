@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 

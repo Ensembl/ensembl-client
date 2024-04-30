@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';

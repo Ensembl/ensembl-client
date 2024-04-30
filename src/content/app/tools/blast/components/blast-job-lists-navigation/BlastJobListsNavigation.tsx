@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -50,4 +50,4 @@ const BlastJobListsNavigation = () => {
   );
 };
 
-export default React.memo(BlastJobListsNavigation);
+export default memo(BlastJobListsNavigation);

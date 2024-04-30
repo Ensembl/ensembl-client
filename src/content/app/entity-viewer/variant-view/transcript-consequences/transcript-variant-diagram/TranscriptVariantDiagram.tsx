@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import { scaleLinear, interpolateRound } from 'd3';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';

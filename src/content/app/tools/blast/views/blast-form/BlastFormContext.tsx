@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useState } from 'react';
+import { createContext, ReactNode, useState } from 'react';
 
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
@@ -26,9 +26,9 @@ type BlastFormContextType = {
   sequenceValidityFlags: boolean[];
 };
 
-export const BlastFormContext = React.createContext<
-  BlastFormContextType | undefined
->(undefined);
+export const BlastFormContext = createContext<BlastFormContextType | undefined>(
+  undefined
+);
 
 type Props = {
   children: ReactNode;

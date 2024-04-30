@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import VariantsStory from './pointerBoxVariantsStory';
 import PositioningStory from './pointerBoxPositioningStory';
 import ScrollingStory from './pointerBoxScrollingStory';

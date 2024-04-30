@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -28,11 +28,11 @@ import type { ServerFetch } from 'src/routes/routesConfig';
 
 import styles from './BlastPage.module.css';
 
-const BlastForm = React.lazy(() => import('./views/blast-form/BlastForm'));
-const BlastSubmissions = React.lazy(
+const BlastForm = lazy(() => import('./views/blast-form/BlastForm'));
+const BlastSubmissions = lazy(
   () => import('./views/blast-submissions/BlastSubmissions')
 );
-const BlastSubmissionResults = React.lazy(
+const BlastSubmissionResults = lazy(
   () => import('./views/blast-submission-results/BlastSubmissionResults')
 );
 

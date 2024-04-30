@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 import classNames from 'classnames';
 
 import SVGIcon from 'static/icons/icon_launchbar_blast.svg';

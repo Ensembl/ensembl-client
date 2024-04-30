@@ -29,7 +29,7 @@ It follows the following rules for displaying labelled and unlabelled ticks
   b) half of this power of 10
 */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getTicks } from './featureLengthRulerHelper';

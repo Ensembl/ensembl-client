@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ContactUsInitialForm } from './contact-us-form';
 import { Invitation, Header } from './preform-header/PreformHeader';

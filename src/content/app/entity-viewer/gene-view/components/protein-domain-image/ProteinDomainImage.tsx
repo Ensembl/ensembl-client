@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef, type TouchEvent, type MouseEvent } from 'react';
+
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
@@ -247,7 +248,7 @@ const DomainBlock = (props: DomainBlockProps) => {
   const y = 3;
   const domainClasses = classNames(styles.domain, props.className);
 
-  const onClick = (event: React.TouchEvent | React.MouseEvent) => {
+  const onClick = (event: TouchEvent | MouseEvent) => {
     let clientX = 0;
     let clientY = 0;
     if ('touches' in event) {

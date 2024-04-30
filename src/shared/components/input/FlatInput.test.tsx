@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, MutableRefObject } from 'react';
+import { useRef, MutableRefObject } from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, type ForwardedRef } from 'react';
+import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';

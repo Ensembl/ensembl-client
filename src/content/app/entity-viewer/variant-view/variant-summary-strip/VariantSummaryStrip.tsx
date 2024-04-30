@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type ComponentProps } from 'react';
 import classNames from 'classnames';
+import type { ComponentProps } from 'react';
 import type { Pick2 } from 'ts-multipick';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';

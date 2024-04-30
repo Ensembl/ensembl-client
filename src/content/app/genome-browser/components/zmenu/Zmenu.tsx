@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect, type ReactNode, type RefObject } from 'react';
 import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
@@ -48,7 +48,7 @@ enum Direction {
 export type ZmenuProps = {
   zmenuId: string;
   payload: ZmenuPayload;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement>;
 };
 
 const Zmenu = (props: ZmenuProps) => {
@@ -79,7 +79,7 @@ const Zmenu = (props: ZmenuProps) => {
 
   const { variety } = props.payload;
 
-  let zmenuContent: React.ReactNode = null;
+  let zmenuContent: ReactNode = null;
 
   const zmenuType = variety.find((variety: ZmenuPayloadVariety) =>
     Boolean(variety.type)

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Pick2 } from 'ts-multipick';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';

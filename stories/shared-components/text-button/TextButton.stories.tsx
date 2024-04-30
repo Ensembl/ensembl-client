@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 export const TextButtonStory = {

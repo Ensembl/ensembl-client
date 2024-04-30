@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
 export default {

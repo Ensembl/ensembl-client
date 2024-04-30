@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import type { Pick2 } from 'ts-multipick';
 import { scaleLinear, interpolateRound, ScaleLinear } from 'd3';
 

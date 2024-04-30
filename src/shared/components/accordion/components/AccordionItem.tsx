@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { Provider as ItemProvider, UUID } from './ItemContext';
 import classNames from 'classnames';
 import { generateId } from 'src/shared/helpers/generateId';

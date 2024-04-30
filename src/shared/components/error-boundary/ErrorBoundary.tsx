@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PureComponent } from 'react';
+import { PureComponent, type ComponentType, type ReactNode } from 'react';
 
 import errorService from 'src/services/error-service';
 
@@ -23,8 +23,8 @@ type FallbackComponentProps = {
 };
 
 type Props = {
-  fallbackComponent: React.ComponentType<FallbackComponentProps>;
-  children: React.ReactNode | React.ReactNode[];
+  fallbackComponent: ComponentType<FallbackComponentProps>;
+  children: ReactNode;
 };
 
 type State = {

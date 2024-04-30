@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 
 import speciesData from './speciesData';

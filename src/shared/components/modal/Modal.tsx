@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
 import classNames from 'classnames';
+import { type ReactNode, type SyntheticEvent } from 'react';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -31,7 +31,7 @@ type Props = {
 };
 
 const Modal = (props: Props) => {
-  const preventEventBubbling = (event: React.SyntheticEvent) => {
+  const preventEventBubbling = (event: SyntheticEvent) => {
     event.stopPropagation();
   };
 

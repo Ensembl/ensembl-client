@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 

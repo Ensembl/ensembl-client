@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, MutableRefObject } from 'react';
+import { useState, useRef, MutableRefObject, type ChangeEvent } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { faker } from '@faker-js/faker';
@@ -93,7 +93,7 @@ describe('<Input />', () => {
       const StatefulWrapper = () => {
         const [inputValue, setInputValue] = useState(initialInputValue);
 
-        const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const onChange = (e: ChangeEvent<HTMLInputElement>) => {
           const value = e.target.value;
           commonInputProps.onChange(value);
           setInputValue(value);

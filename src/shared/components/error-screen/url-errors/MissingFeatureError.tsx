@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';

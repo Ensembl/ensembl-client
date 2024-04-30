@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { type SVGProps } from 'react';
 import classNames from 'classnames';
+import type { SVGProps } from 'react';
 
 import ChevronDown from 'static/icons/icon_chevron.svg';
 

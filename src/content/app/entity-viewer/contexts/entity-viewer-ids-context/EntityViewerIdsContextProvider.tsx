@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import type { ReactNode } from 'react';
 
 import {
   parseFocusObjectId,
@@ -42,9 +42,7 @@ import {
 
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
-const EntityViewerIdsContextProvider = (props: {
-  children: React.ReactNode;
-}) => {
+const EntityViewerIdsContextProvider = (props: { children: ReactNode }) => {
   const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
   const allActiveEntityIds = useAppSelector(getEntityViewerActiveEntityIds);
   const activeEntityId = useAppSelector(getEntityViewerActiveEntityId);

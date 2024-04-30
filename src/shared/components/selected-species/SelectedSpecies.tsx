@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { useAppSelector } from 'src/store';
 
 import SpeciesLozenge from './SpeciesLozenge';

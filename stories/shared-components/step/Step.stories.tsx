@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { Step } from 'src/shared/components/step/Step';
 
 import styles from './Step.stories.module.css';
