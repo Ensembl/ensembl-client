@@ -17,6 +17,8 @@
 import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
+import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
+
 import usePopulationAlleleFrequenciesData from './usePopulationAlleleFrequenciesData';
 
 import Panel from 'src/shared/components/panel/Panel';
@@ -153,18 +155,22 @@ const GlobalFrequenciesTable = (props: {
   );
 
   const tableClasses = classNames(styles.table, styles.tablePlain);
+  const smallNumberFormatter = createSmallNumberFormatter();
 
   const diagram = alleleGlobalFreq ? (
     <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
   ) : null;
+  const formattedFreq = alleleGlobalFreq
+    ? smallNumberFormatter.format(alleleGlobalFreq.allele_frequency)
+    : null;
 
   return (
     <table className={tableClasses}>
       <tbody>
         <tr>
           <td>Global</td>
-          <td>{alleleGlobalFreq?.allele_frequency}</td>
           <td>{diagram}</td>
+          <td>{formattedFreq}</td>
         </tr>
       </tbody>
     </table>
@@ -176,6 +182,7 @@ const PopulationFrequenciesTable = (props: {
   currentPopulationGroup: string;
 }) => {
   const { allele, currentPopulationGroup } = props;
+  const smallNumberFormatter = createSmallNumberFormatter();
 
   const allelePopFreqs = allele.populationFrequencies;
 
@@ -198,10 +205,10 @@ const PopulationFrequenciesTable = (props: {
         {filteredAllelePopFreqs.map((popFreq, index) => (
           <tr key={index}>
             <td>{popFreq.description}</td>
-            <td>{popFreq.allele_frequency}</td>
             <td>
               <CircleDiagram alleleFrequency={popFreq.allele_frequency} />
             </td>
+            <td>{smallNumberFormatter.format(popFreq.allele_frequency)}</td>
           </tr>
         ))}
       </tbody>
