@@ -202,6 +202,16 @@ const SelectedGenomesTable = () => {
     reduxDispatch(toggleSpeciesUseAndSave(genome.genome_id));
   };
 
+  const floatRightStyles = {
+    position: 'sticky',
+    right: '0'
+  } as const;
+
+  const floatRightStyles2 = {
+    position: 'sticky',
+    right: '113px'
+  } as const;
+
   return (
     <Table stickyHeader={true} className={styles.table}>
       <thead>
@@ -212,8 +222,8 @@ const SelectedGenomesTable = () => {
           <ColumnHead>Type</ColumnHead>
           <ColumnHead>Assembly</ColumnHead>
           <ColumnHead>Assembly accession</ColumnHead>
-          <ColumnHead>Remove from list</ColumnHead>
-          <ColumnHead>Use in apps</ColumnHead>
+          <ColumnHead style={floatRightStyles2}>Remove from list</ColumnHead>
+          <ColumnHead style={floatRightStyles}>Use in apps</ColumnHead>
         </tr>
       </thead>
       <tbody>
@@ -247,7 +257,7 @@ const SelectedGenomesTable = () => {
               <td>
                 <AssemblyAccessionId {...species} />
               </td>
-              <td className={styles.alignCenter}>
+              <td className={styles.alignCenter} style={floatRightStyles2}>
                 <DeleteButtonOrCheckbox
                   species={species}
                   isInDeletionMode={isInDeletionMode}
@@ -259,7 +269,7 @@ const SelectedGenomesTable = () => {
                   )}
                 />
               </td>
-              <td className={styles.alignCenter}>
+              <td className={styles.alignCenter} style={floatRightStyles}>
                 <SlideToggle
                   className={styles.toggle}
                   isOn={species.isEnabled}

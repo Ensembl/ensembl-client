@@ -1,5 +1,18 @@
 .table {
   --table-background: var(--color-light-grey);
+  table-layout: fixed;
+  /* width: 100%; */
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+.table th:nth-child(7),
+.table th:nth-child(8),
+.table td:nth-child(7),
+.table td:nth-child(8) {
+  background-color: var(--color-light-grey);
 }
 
 .disabledRow {
