@@ -25,13 +25,25 @@ const html = `
   </p>
 
   <p>
-    Suspendisse tempor dui sed blandit dignissim. Integer ut magna nulla.
-    Pellentesque porttitor eget erat sit amet tincidunt.
+    This is just a random paragraph with some words.
+    It is followed by another image.
     Suspendisse tempor dui sed blandit dignissim. Integer ut magna nulla.
     Pellentesque porttitor eget erat sit amet tincidunt.
   </p>
 
   <img src="https://github.com/Ensembl/ensembl-client/assets/6834224/491e0571-2e2d-4b88-8816-19f6b83192dd" />
+
+  <p>
+    Notice, too, that when, in a markdown file, you add an image using the markdown syntax like so:
+    <code>[!image_alt](/path-to-image)</code> on a separate line, the markdown parser will wrap this image
+    in a paragraph tag (as it does with any inline element written on its own line).
+    Therefore, we have a dedicated CSS rule that will prevent paragraphs with images from being narrow.
+    See example below.
+  </p>
+
+  <p>
+    <img src="https://github.com/Ensembl/ensembl-client/assets/6834224/491e0571-2e2d-4b88-8816-19f6b83192dd" />
+  </p>
 
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.

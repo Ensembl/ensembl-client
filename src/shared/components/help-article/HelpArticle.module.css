@@ -45,6 +45,11 @@
     margin: var(--line-height) 0;
   }
 
+  /* a paragraph with a single image in it is a typical outcome of markdown file parsing */
+  p:has(img:only-child) {
+    width: 100%;
+  }
+
   /* ==== LISTS ==== */
 
   ul, ol {
