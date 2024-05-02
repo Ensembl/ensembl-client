@@ -36,7 +36,7 @@ const SpeciesManager = () => {
         <div>
           <SpeciesLozengeDisplaySelector />
         </div>
-        <div>
+        <div className={styles.genomesTableContainer}>
           <SelectedGenomesTable />
         </div>
       </div>

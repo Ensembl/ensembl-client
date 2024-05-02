@@ -8,6 +8,7 @@
   position: sticky;
   top: 0;
   background-color: var(--table-head-background, var(--_table-background));
+  z-index: 1;
 }
 
 .table th {

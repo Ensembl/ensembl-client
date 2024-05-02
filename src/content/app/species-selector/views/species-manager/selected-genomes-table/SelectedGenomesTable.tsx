@@ -186,6 +186,11 @@ const SelectedGenomesTable = () => {
       type: 'update-deletion-list',
       genomeIds: updatedList
     });
+    if (!updatedList.length) {
+      tableDispatch({
+        type: 'exit-deletion-mode'
+      });
+    }
   };
 
   const deleteGenomes = () => {
@@ -202,16 +207,6 @@ const SelectedGenomesTable = () => {
     reduxDispatch(toggleSpeciesUseAndSave(genome.genome_id));
   };
 
-  const floatRightStyles = {
-    position: 'sticky',
-    right: '0'
-  } as const;
-
-  const floatRightStyles2 = {
-    position: 'sticky',
-    right: '113px'
-  } as const;
-
   return (
     <Table stickyHeader={true} className={styles.table}>
       <thead>
@@ -222,8 +217,8 @@ const SelectedGenomesTable = () => {
           <ColumnHead>Type</ColumnHead>
           <ColumnHead>Assembly</ColumnHead>
           <ColumnHead>Assembly accession</ColumnHead>
-          <ColumnHead style={floatRightStyles2}>Remove from list</ColumnHead>
-          <ColumnHead style={floatRightStyles}>Use in apps</ColumnHead>
+          <ColumnHead>Remove from list</ColumnHead>
+          <ColumnHead>Use in apps</ColumnHead>
         </tr>
       </thead>
       <tbody>
@@ -257,7 +252,7 @@ const SelectedGenomesTable = () => {
               <td>
                 <AssemblyAccessionId {...species} />
               </td>
-              <td className={styles.alignCenter} style={floatRightStyles2}>
+              <td className={styles.alignCenter}>
                 <DeleteButtonOrCheckbox
                   species={species}
                   isInDeletionMode={isInDeletionMode}
@@ -269,7 +264,7 @@ const SelectedGenomesTable = () => {
                   )}
                 />
               </td>
-              <td className={styles.alignCenter} style={floatRightStyles}>
+              <td className={styles.alignCenter}>
                 <SlideToggle
                   className={styles.toggle}
                   isOn={species.isEnabled}
@@ -283,7 +278,6 @@ const SelectedGenomesTable = () => {
                 species.genome_id && (
                 <ConfirmDeletion
                   species={species}
-                  tableColumnsCount={8}
                   onDelete={deleteGenomes}
                   onCancel={exitDeletionMode}
                 />
@@ -333,13 +327,13 @@ const DeleteButtonOrCheckbox = ({
  */
 const ConfirmDeletion = (props: {
   species: CommittedItem;
-  tableColumnsCount: number; // this will be different depending on whether showing all columns or is hiding some
   onDelete: (species: CommittedItem) => void;
   onCancel: () => void;
 }) => {
   // this row will use the two rightmost columns of the table,
   // but will merge all the columns to the left
-  const cpanColumnsCount = props.tableColumnsCount - 2;
+  const tableColumnsCount = 8;
+  const spanColumnsCount = tableColumnsCount - 2;
 
   const onDelete = () => {
     props.onDelete(props.species);
@@ -347,7 +341,7 @@ const ConfirmDeletion = (props: {
 
   return (
     <tr className={styles.removalRow}>
-      <td colSpan={cpanColumnsCount}>
+      <td colSpan={spanColumnsCount}>
         <div className={styles.removalRowContent}>
           <span className={styles.removalWarning}>{removalWarning}</span>
           <PrimaryButton onClick={onDelete}>Remove</PrimaryButton>
