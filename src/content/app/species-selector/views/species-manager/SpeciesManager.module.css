@@ -1,12 +1,43 @@
 .container {
   display: grid;
+  grid-template-columns: max-content;
   grid-template-rows: minmax(60px, auto) 1fr;
   height: 100%;
   padding-left: var(--double-standard-gutter);
+}
+
+.mainContentTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: calc(100vw - 130px);
+}
+
+.addSpeciesButton {
+  --add-button-icon-color: var(--color-green);
+  --add-button-label-color: var(--color-black);
+}
+
+.mainContentTopRight {
+  display: flex;
+  column-gap: var(--double-standard-gutter);
+}
+
+.filterFieldWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.labelText {
+  font-weight: var(--font-weight-light);
+  padding-right: 10px;
+  white-space: nowrap;
 }
 
 .genomesTableContainer {
   height: 100%;
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
+  max-width: calc(100vw - 90px);
+  padding-right: 20px;
 }

@@ -17,11 +17,9 @@
 import { Fragment, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
@@ -128,8 +126,11 @@ const reducer = (
   }
 };
 
-const SelectedGenomesTable = () => {
-  const selectedSpecies = useAppSelector(getCommittedSpecies);
+const SelectedGenomesTable = (props: {
+  allSelectedGenomes: CommittedItem[];
+  filteredGenomes: CommittedItem[];
+}) => {
+  const { allSelectedGenomes, filteredGenomes } = props;
   const [tableState, tableDispatch] = useReducer(reducer, initialState);
   const reduxDispatch = useAppDispatch();
 
@@ -138,7 +139,7 @@ const SelectedGenomesTable = () => {
     tableState.deletionModeSettings?.genomeIds ?? []
   );
 
-  if (!selectedSpecies.length) {
+  if (!allSelectedGenomes.length) {
     return <div>You have not selected any species</div>;
   }
 
@@ -222,62 +223,62 @@ const SelectedGenomesTable = () => {
         </tr>
       </thead>
       <tbody>
-        {selectedSpecies.map((species) => (
-          <Fragment key={species.genome_id}>
+        {filteredGenomes.map((genome) => (
+          <Fragment key={genome.genome_id}>
             <tr
-              key={species.genome_id}
+              key={genome.genome_id}
               className={isInDeletionMode ? styles.disabledRow : undefined}
             >
               <td className={styles.alignCenter}>
-                <Link to={getLinkToSpeciesPage(species)}>
+                <Link to={getLinkToSpeciesPage(genome)}>
                   <HomeIcon
                     className={styles.homeIcon}
                     role="img"
-                    aria-label={getSpeciesLinkAriaLabel(species)}
+                    aria-label={getSpeciesLinkAriaLabel(genome)}
                   />
                 </Link>
               </td>
               <td>
-                <CommonName {...species} />
+                <CommonName {...genome} />
               </td>
               <td>
-                <ScientificName {...species} />
+                <ScientificName {...genome} />
               </td>
               <td>
-                <SpeciesType {...species} />
+                <SpeciesType {...genome} />
               </td>
               <td>
-                <AssemblyName {...species} />
+                <AssemblyName {...genome} />
               </td>
               <td>
-                <AssemblyAccessionId {...species} />
+                <AssemblyAccessionId {...genome} />
               </td>
               <td className={styles.alignCenter}>
                 <DeleteButtonOrCheckbox
-                  species={species}
+                  species={genome}
                   isInDeletionMode={isInDeletionMode}
                   enterDeletionMode={enterDeletionMode}
                   addGenomeToDeleteList={addGenomeToDeleteList}
                   removeGenomeFromDeleteList={removeGenomeFromDeleteList}
                   isMarkedForDeletion={genomeIdsForDeletion.has(
-                    species.genome_id
+                    genome.genome_id
                   )}
                 />
               </td>
               <td className={styles.alignCenter}>
                 <SlideToggle
                   className={styles.toggle}
-                  isOn={species.isEnabled}
-                  onChange={() => toggleGenomeUse(species)}
+                  isOn={genome.isEnabled}
+                  onChange={() => toggleGenomeUse(genome)}
                   disabled={isInDeletionMode}
                 />
               </td>
             </tr>
             {isInDeletionMode &&
               tableState.deletionModeSettings?.initialGenomeId ===
-                species.genome_id && (
+                genome.genome_id && (
                 <ConfirmDeletion
-                  species={species}
+                  species={genome}
                   onDelete={deleteGenomes}
                   onCancel={exitDeletionMode}
                 />

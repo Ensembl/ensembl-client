@@ -1,15 +1,18 @@
 .button {
+  --_plus-icon-color: var(--add-button-icon-color, var(--color-blue));
+  --_plus-icon-diameter: var(--add-button-icon-size, 22px);
   display: inline-grid;
   grid-template-columns: [label] auto [icon] auto;
   align-items: center;
-  column-gap: 14px;
-  color: var(--color-blue);
+  column-gap: 10px;
+  color: var(--add-button-label-color, var(--color-blue));
+  white-space: nowrap;
 }
 
 .button svg {
-  height: var(--plus-icon-size, 22px);
-  width: var(--plus-icon-size, 22px);
-  fill: var(--color-blue);
+  height: var(--_plus-icon-diameter);
+  width: var(--_plus-icon-diameter);
+  fill: var(--_plus-icon-color);
 }
 
 .button:disabled {
