@@ -22,6 +22,21 @@
   font-weight: var(--font-weight-bold);
 }
 
+.transcriptConsqTitle {
+  margin-left: 20px;
+}
+
+.scrollToGeneSection {
+  display: inline-flex;
+  column-gap: 10px;
+  margin-left: 64px;
+}
+
+.geneButtons {
+  display: flex;
+  column-gap: 40px;
+}
+
 .transcriptLeftColumn {
   padding-top: 6px;
 }
@@ -45,10 +60,6 @@
 
 .value {
   padding-left: 10px;
-}
-
-.transcriptConsqTitle {
-  margin-left: 20px;
 }
 
 .geneSection:not(:first-child) {
