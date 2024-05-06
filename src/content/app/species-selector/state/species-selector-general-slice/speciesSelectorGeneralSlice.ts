@@ -23,6 +23,8 @@ import {
   type Action
 } from '@reduxjs/toolkit';
 
+import { defaultSpeciesNameDisplayOption } from 'src/content/app/species-selector/constants/speciesNameDisplayConstants';
+
 import {
   getAllSelectedSpecies,
   saveMultipleSelectedSpecies,
@@ -41,13 +43,7 @@ import {
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
-
-export type SpeciesNameDisplayOption =
-  | 'common-name_assembly-name'
-  | 'common-name_type_assembly-name'
-  | 'scientific-name_assembly-name'
-  | 'scientific-name_type_assembly-name'
-  | 'assembly-accession-id';
+import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/types/speciesNameDisplayOption';
 
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
@@ -106,7 +102,7 @@ export const deleteSpeciesAndSave =
 
 export const initialState: SpeciesSelectorState = {
   committedItems: [],
-  speciesNameDisplayOption: 'common-name_assembly-name'
+  speciesNameDisplayOption: defaultSpeciesNameDisplayOption
 };
 
 const prepareSelectedSpeciesForCommit = (
