@@ -40,7 +40,7 @@
 
 .geneButtons {
   display: flex;
-  column-gap: 30px;
+  column-gap: 25px;
 }
 
 .transcriptLeftColumn {
