@@ -448,7 +448,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                 </div>
               </div>
             </div>
-            <button
+            <TextButton
               className={classNames(styles.right, styles.transcriptId)}
               onClick={() =>
                 handleTranscriptConsequenceClick(
@@ -457,7 +457,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
               }
             >
               {consequencesForSingleTranscript.stable_id}
-            </button>
+            </TextButton>
           </div>
 
           {expandedIds.has(consequencesForSingleTranscript.stable_id) ? (

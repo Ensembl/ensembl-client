@@ -48,7 +48,6 @@
 }
 
 .transcriptId {
-  color: var(--color-blue);
   width: fit-content;
   padding-top: 8px;
 }
