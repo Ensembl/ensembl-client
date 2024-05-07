@@ -41,6 +41,7 @@ const SpeciesSelectorLaunchbarButton = () => {
       icon={SpeciesSelectorIcon}
       enabled={true}
       isActive={['species', 'species-selector'].includes(firstPathnamePart)}
+      isClickable={true}
     />
   );
 };
