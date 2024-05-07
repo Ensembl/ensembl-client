@@ -33,7 +33,7 @@ export type LaunchbarButtonProps = {
   icon: FunctionComponent<unknown>;
   enabled?: boolean;
   isActive?: boolean;
-  isClickable?: boolean | false;
+  isClickableWhenActive?: boolean;
 };
 
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
@@ -55,7 +55,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
     />
   );
 
-  return (isButtonEnabled && !isActive) || props.isClickable ? (
+  return (isButtonEnabled && !isActive) || props.isClickableWhenActive ? (
     <NavLink
       className={styles.launchbarButtonWrapperLink}
       to={props.path}
@@ -69,7 +69,11 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
 };
 
 const LaunchbarButtonContent = memo(
-  (props: Required<Omit<LaunchbarButtonProps, 'path' | 'isClickable'>>) => {
+  (
+    props: Required<
+      Omit<LaunchbarButtonProps, 'path' | 'isClickableWhenActive'>
+    >
+  ) => {
     const [hoverRef, isHovered] = useHover<HTMLDivElement>();
     const elementClasses = classNames(styles.launchbarButton, {
       [styles.launchbarButtonSelected]: props.isActive,
