@@ -68,8 +68,10 @@ const MainContentTop = (props: {
       <SpeciesLozengeDisplaySelector />
       <div className={styles.mainContentTopRight}>
         <label className={styles.filterFieldWrapper}>
-          <span className={styles.labelText}>Find in list</span>
-          <ShadedInput onChange={props.onFilterChange} />
+          <ShadedInput
+            onChange={props.onFilterChange}
+            placeholder="Find in list"
+          />
         </label>
         <AddButton
           onClick={onAddSpeciesClick}

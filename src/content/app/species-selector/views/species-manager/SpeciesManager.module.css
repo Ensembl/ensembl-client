@@ -8,9 +8,8 @@
 
 .mainContentTop {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  max-width: calc(100vw - 130px);
+  column-gap: 90px;
 }
 
 .addSpeciesButton {
@@ -21,17 +20,13 @@
 .mainContentTopRight {
   display: flex;
   column-gap: var(--double-standard-gutter);
+  justify-content: space-between;
+  flex-grow: 1;
 }
 
 .filterFieldWrapper {
   display: flex;
   align-items: center;
-}
-
-.labelText {
-  font-weight: var(--font-weight-light);
-  padding-right: 10px;
-  white-space: nowrap;
 }
 
 .genomesTableContainer {
