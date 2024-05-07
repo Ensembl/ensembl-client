@@ -28,13 +28,19 @@
 
 .scrollToGeneSection {
   display: inline-flex;
+  align-items: baseline;
   column-gap: 10px;
   margin-left: 64px;
 }
 
+.scrollToLabel {
+  font-weight: var(--font-weight-light);
+  font-size: 11px;
+}
+
 .geneButtons {
   display: flex;
-  column-gap: 40px;
+  column-gap: 30px;
 }
 
 .transcriptLeftColumn {

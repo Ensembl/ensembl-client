@@ -179,7 +179,7 @@ const PanelHeader = (props: {
 
       {genesCount > 1 && (
         <div className={styles.scrollToGeneSection}>
-          <span className={styles.label}>Scroll to</span>
+          <span className={styles.scrollToLabel}>Scroll to</span>
           <div className={styles.geneButtons}>
             {[...Array(genesCount)].map((_, index) => (
               <TextButton key={index} onClick={() => scrollToGene(index)}>
