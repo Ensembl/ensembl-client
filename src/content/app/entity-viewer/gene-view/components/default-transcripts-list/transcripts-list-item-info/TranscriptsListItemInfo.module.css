@@ -69,6 +69,10 @@
   font-weight: var(--font-weight-normal);
 }
 
+.wrapText {
+  word-wrap: break-word;
+}
+
 .moreInformation {
   grid-area: moreInformation;
   display: grid;

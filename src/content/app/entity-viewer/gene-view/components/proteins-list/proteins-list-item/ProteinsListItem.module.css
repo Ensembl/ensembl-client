@@ -19,3 +19,7 @@
 .transcriptId {
   font-weight: var(--font-weight-normal);
 }
+
+.wrapText {
+  word-wrap: break-word;
+}
