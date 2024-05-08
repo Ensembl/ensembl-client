@@ -19,6 +19,7 @@ import type { ExternalReference } from '../core-api/externalReference';
 import type { OntologyTermMetadata } from '../core-api/metadata';
 import type { VariantPredictionResult } from './variantPredictionResult';
 import type { VariantAllele } from './variantAllele';
+import type { VariantSummaryStatistics } from './variantSummaryStatistics';
 
 export type Variant = {
   type: 'Variant';
@@ -29,4 +30,5 @@ export type Variant = {
   primary_source: ExternalReference;
   prediction_results: VariantPredictionResult[];
   alleles: VariantAllele[];
+  ensembl_website_display_data: VariantSummaryStatistics;
 };

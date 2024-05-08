@@ -55,6 +55,9 @@ export const variantDefaultQuery = gql`
           tool
         }
       }
+      ensembl_website_display_data {
+        count_citations
+      }
       alleles {
         name
         allele_type {
@@ -86,6 +89,14 @@ export const variantDefaultQuery = gql`
           is_hpmaf
           allele_frequency
         }
+        ensembl_website_display_data {
+          count_transcript_consequences
+          count_overlapped_genes
+          count_regulatory_consequences
+          count_variant_phenotypes
+          count_gene_phenotypes
+          representative_population_allele_frequency
+        }
       }
     }
   }
@@ -93,7 +104,10 @@ export const variantDefaultQuery = gql`
 
 export type VariantDetailsAllele = Pick<
   VariantAllele,
-  'name' | 'allele_sequence' | 'reference_sequence'
+  | 'name'
+  | 'allele_sequence'
+  | 'reference_sequence'
+  | 'ensembl_website_display_data'
 > &
   Pick2<VariantAllele, 'allele_type', 'value'> &
   Pick3<VariantAllele, 'slice', 'location', 'start' | 'end'> & {
@@ -126,7 +140,10 @@ type VariantDetailsAllelePredictionResult = Pick<
 > &
   Pick2<VariantAllele['prediction_results'][number], 'analysis_method', 'tool'>;
 
-export type VariantDetails = Pick<Variant, 'name'> &
+export type VariantDetails = Pick<
+  Variant,
+  'name' | 'ensembl_website_display_data'
+> &
   Pick3<Variant, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<Variant, 'slice', 'region', 'name'> &
   Pick3<Variant, 'slice', 'strand', 'code'> &
