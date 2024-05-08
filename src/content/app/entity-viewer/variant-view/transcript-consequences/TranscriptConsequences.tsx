@@ -38,6 +38,7 @@ import Panel from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { CircleLoader } from 'src/shared/components/loader';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { GeneInResponse } from '../../state/api/queries/variantTranscriptConsequencesQueries';
 
@@ -93,7 +94,9 @@ const TranscriptConsequences = (props: Props) => {
   }
 
   const { variant, transcriptConsequences, allele, geneData } = currentData;
-  const panelHeader = <PanelHeader variant={variant} />;
+  const panelHeader = (
+    <PanelHeader variant={variant} genesCount={geneData.length} />
+  );
 
   if (!transcriptConsequences) {
     return (
@@ -149,8 +152,21 @@ const TranscriptConsequences = (props: Props) => {
 
 const PanelHeader = (props: {
   variant: TranscriptConsequencesData['variant'];
+  genesCount: number;
 }) => {
-  const { variant } = props;
+  const { variant, genesCount } = props;
+
+  const scrollToGene = (geneIndex: number) => {
+    const geneSections = document.querySelectorAll(`.${styles.geneDetails}`);
+    const geneSection = geneSections[geneIndex];
+
+    if (geneSection) {
+      // this should always be the case
+      geneSection.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <div className={styles.panelHeader}>
@@ -160,6 +176,19 @@ const PanelHeader = (props: {
       <span className={styles.transcriptConsqTitle}>
         Transcript consequences
       </span>
+
+      {genesCount > 1 && (
+        <div className={styles.scrollToGeneSection}>
+          <span className={styles.scrollToLabel}>Scroll to</span>
+          <div className={styles.geneButtons}>
+            {[...Array(genesCount)].map((_, index) => (
+              <TextButton key={index} onClick={() => scrollToGene(index)}>
+                Gene {index + 1}
+              </TextButton>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -419,7 +448,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
                 </div>
               </div>
             </div>
-            <button
+            <TextButton
               className={classNames(styles.right, styles.transcriptId)}
               onClick={() =>
                 handleTranscriptConsequenceClick(
@@ -428,7 +457,7 @@ const TranscriptConsequencesList = (props: TranscriptConsequencesListProps) => {
               }
             >
               {consequencesForSingleTranscript.stable_id}
-            </button>
+            </TextButton>
           </div>
 
           {expandedIds.has(consequencesForSingleTranscript.stable_id) ? (

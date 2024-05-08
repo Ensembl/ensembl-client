@@ -22,12 +22,32 @@
   font-weight: var(--font-weight-bold);
 }
 
+.transcriptConsqTitle {
+  margin-left: 20px;
+}
+
+.scrollToGeneSection {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 10px;
+  margin-left: 64px;
+}
+
+.scrollToLabel {
+  font-weight: var(--font-weight-light);
+  font-size: 11px;
+}
+
+.geneButtons {
+  display: flex;
+  column-gap: 25px;
+}
+
 .transcriptLeftColumn {
   padding-top: 6px;
 }
 
 .transcriptId {
-  color: var(--color-blue);
   width: fit-content;
   padding-top: 8px;
 }
@@ -45,10 +65,6 @@
 
 .value {
   padding-left: 10px;
-}
-
-.transcriptConsqTitle {
-  margin-left: 20px;
 }
 
 .geneSection:not(:first-child) {
