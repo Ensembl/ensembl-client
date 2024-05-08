@@ -31,7 +31,8 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
+import type { PreviouslyViewedEntity } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 import styles from './EntityViewerBookmarks.module.css';
 
@@ -54,13 +55,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   return (
     <div data-test-id="previously viewed links">
       {props.previouslyViewedEntities.map((entity, index) => {
-        const path = urlFor.entityViewer({
-          genomeId: genomeIdForUrl,
-          entityId: buildFocusIdForUrl({
-            type: 'gene',
-            objectId: entity.unversioned_stable_id
-          })
-        });
+        const path = buildEntityUrl(genomeIdForUrl as string, entity);
 
         return (
           <div key={index} className={styles.linkHolder}>
@@ -73,6 +68,26 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       })}
     </div>
   );
+};
+
+const buildEntityUrl = (genomeId: string, entity: PreviouslyViewedEntity) => {
+  if (entity.type === 'gene') {
+    return urlFor.entityViewer({
+      genomeId: genomeId,
+      entityId: buildFocusIdForUrl({
+        type: 'gene',
+        objectId: entity.urlId
+      })
+    });
+  } else if (entity.type === 'variant') {
+    return urlFor.entityViewerVariant({
+      genomeId: genomeId,
+      variantId: entity.id
+    });
+  } else {
+    // this should never happen; making typescript happy
+    return '';
+  }
 };
 
 export const EntityViewerSidebarBookmarks = () => {

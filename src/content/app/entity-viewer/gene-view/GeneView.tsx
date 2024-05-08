@@ -146,7 +146,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   };
 
   useEffect(() => {
-    if (!genomeId || !props.gene) {
+    const { gene } = props;
+    // TODO: check, isn't gene always supposed to be present?
+    if (!genomeId || !gene) {
       return;
     }
 
@@ -154,11 +156,16 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       dispatch(
         updatePreviouslyViewedEntities({
           genomeId,
-          gene: props.gene
+          entity: {
+            id: gene.stable_id,
+            urlId: gene.unversioned_stable_id,
+            label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
+            type: 'gene'
+          }
         })
       );
     };
-  }, [genomeId, geneStableId]);
+  }, [genomeId, props.gene]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>
