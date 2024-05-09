@@ -15,6 +15,8 @@
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
+  position: sticky;
+  right: calc(16px + 45px); /* 16px is the diameter of the close button; and 45px is minimum allowed distance between add button and close button */
 }
 
 .mainContentTopRight {
