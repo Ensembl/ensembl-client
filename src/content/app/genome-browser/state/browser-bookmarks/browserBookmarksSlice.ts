@@ -27,7 +27,10 @@ import {
 } from '../browser-general/browserGeneralSelectors';
 import { getPreviouslyViewedObjects } from './browserBookmarksSelectors';
 
-import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
+import {
+  savePreviouslyViewedGenomeBrowserObjects,
+  getAllPreviouslyViewedGenomeBrowserObjects
+} from 'src/shared/services/previouslyViewedObjectsStorageService';
 
 import type { RootState } from 'src/store';
 
@@ -104,9 +107,11 @@ export const updatePreviouslyViewedObjectsAndSave =
     // Limit the total number of previously viewed objects to 250
     const previouslyViewedObjectsSlice = updatedObjects.slice(-250);
 
-    browserBookmarksStorageService.updatePreviouslyViewedObjects({
-      [activeGenomeId]: previouslyViewedObjectsSlice
-    });
+    // side effect
+    savePreviouslyViewedGenomeBrowserObjects(
+      activeGenomeId,
+      previouslyViewedObjectsSlice
+    );
 
     dispatch(
       bookmarksSlice.actions.updatePreviouslyViewedObjects({
@@ -117,9 +122,10 @@ export const updatePreviouslyViewedObjectsAndSave =
   };
 
 export const loadPreviouslyViewedObjects =
-  (): ThunkAction<void, RootState, void, Action<string>> => (dispatch) => {
+  (): ThunkAction<void, RootState, void, Action<string>> =>
+  async (dispatch) => {
     const previouslyViewedObjects =
-      browserBookmarksStorageService.getPreviouslyViewedObjects();
+      await getAllPreviouslyViewedGenomeBrowserObjects();
 
     dispatch(bookmarksSlice.actions.setInitialState(previouslyViewedObjects));
   };

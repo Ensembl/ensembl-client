@@ -30,7 +30,9 @@ import {
   savePreviouslyViewedEntities,
   getPreviouslyViewedGenomeBrowserObjects,
   getPreviouslyViewedEntities,
-  deletePreviouslyViewedObjectsForGenome
+  deletePreviouslyViewedObjectsForGenome,
+  getAllPreviouslyViewedGenomeBrowserObjects,
+  getAllPreviouslyViewedEntities
 } from './previouslyViewedObjectsStorageService';
 
 import type { PreviouslyViewedObject as PreviouslyViewedGenomeBrowserObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
@@ -60,7 +62,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       label: ['MyGene', 'ENSG0000001']
     };
 
-    it('saves objects viewed in the genome browser', async () => {
+    test('save objects viewed in the genome browser', async () => {
       await savePreviouslyViewedGenomeBrowserObjects(genomeId, [
         previouslyViewedObject
       ]);
@@ -73,7 +75,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
 
-    it('retrieves stored objects viewed in the genome browser', async () => {
+    test('retrieve stored objects viewed in the genome browser', async () => {
       // write species name display option to indexed db directly, without using the service
       await IndexedDB.set(
         STORE_NAME,
@@ -86,7 +88,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
 
-    it('cleans up stored objects before returning them', async () => {
+    test('clean up stored objects before returning them', async () => {
       const invalidObject = {
         id: 'foo',
         label: 'I am invalid'
@@ -115,7 +117,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       label: ['MyGene', 'ENSG0000001']
     };
 
-    it('saves objects viewed in the entity viewer', async () => {
+    test('save objects viewed in the entity viewer', async () => {
       await savePreviouslyViewedEntities(genomeId, [previouslyViewedObject]);
 
       // now read back the stored option
@@ -126,7 +128,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
 
-    it('retrieves stored objects viewed in the entity viewer', async () => {
+    test('retrieve stored objects viewed in the entity viewer', async () => {
       // write species name display option to indexed db directly, without using the service
       await IndexedDB.set(
         STORE_NAME,
@@ -138,7 +140,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
 
-    it('cleans up stored objects before returning them', async () => {
+    test('clean up stored objects before returning them', async () => {
       const invalidObject = {
         id: 'foo',
         label: 'I am invalid'
@@ -155,8 +157,67 @@ describe('previouslyViewedObjectsStorageService', () => {
       // the invalid object should have been filtered out from the retrieved data
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
+  });
 
-    // TODO: test retrieval of invalid data
+  describe('retrieval of all objects per app', () => {
+    const humanGenomeId = 'human';
+    const mouseGenomeId = 'mouse';
+    const humanGenomeBrowserObject: PreviouslyViewedGenomeBrowserObject = {
+      genome_id: humanGenomeId,
+      object_id: 'ENSG0000001',
+      type: 'gene',
+      label: ['MyGene', 'ENSG0000001']
+    };
+    const humanEntityViewerObject: PreviouslyViewedEntity = {
+      id: 'ENSG0000001.1',
+      urlId: 'ENSG0000001',
+      type: 'gene',
+      label: ['MyGene', 'ENSG0000001']
+    };
+    const mouseGenomeBrowserObject = {
+      ...humanGenomeBrowserObject,
+      genome_id: mouseGenomeId,
+      object_id: 'ENSM0000001'
+    };
+    const mouseEntityViewerObject = {
+      ...humanEntityViewerObject,
+      id: 'ENSM0000001'
+    };
+
+    beforeEach(async () => {
+      await IndexedDB.set(
+        STORE_NAME,
+        [GENOME_BROWSER_PREFIX, humanGenomeId],
+        [humanGenomeBrowserObject]
+      );
+      await IndexedDB.set(
+        STORE_NAME,
+        [ENTITY_VIEWER_PREFIX, humanGenomeId],
+        [humanEntityViewerObject]
+      );
+      await IndexedDB.set(
+        STORE_NAME,
+        [GENOME_BROWSER_PREFIX, mouseGenomeId],
+        [mouseGenomeBrowserObject]
+      );
+      await IndexedDB.set(
+        STORE_NAME,
+        [ENTITY_VIEWER_PREFIX, mouseGenomeId],
+        [mouseEntityViewerObject]
+      );
+    });
+
+    test('retrieve all objects viewed in the genome browser', async () => {
+      const retrievedData = await getAllPreviouslyViewedGenomeBrowserObjects();
+      expect(retrievedData[humanGenomeId]).toEqual([humanGenomeBrowserObject]);
+      expect(retrievedData[mouseGenomeId]).toEqual([mouseGenomeBrowserObject]);
+    });
+
+    test('retrieve all objects viewed in the entity viewer', async () => {
+      const retrievedData = await getAllPreviouslyViewedEntities();
+      expect(retrievedData[humanGenomeId]).toEqual([humanEntityViewerObject]);
+      expect(retrievedData[mouseGenomeId]).toEqual([mouseEntityViewerObject]);
+    });
   });
 
   describe('deletePreviouslyViewedObjectsForGenome', () => {

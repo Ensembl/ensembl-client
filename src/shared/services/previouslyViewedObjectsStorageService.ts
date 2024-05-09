@@ -26,16 +26,11 @@ import {
 import type { PreviouslyViewedObject as PreviouslyViewedGenomeBrowserObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import type { PreviouslyViewedEntity } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
-/**
-store:
-previously-viewed-objects
-
-key: ['genome-browser', 'genome_id']: [{},{},{},,,]
- */
-
 type StoredObject =
   | PreviouslyViewedGenomeBrowserObject // from the Genome Browser
   | PreviouslyViewedEntity; // from EntityViewer
+
+type StoreKey = [string, string];
 
 // NOTE: you probably don't want to use this function directly.
 // Use the functions for specific apps below
@@ -66,6 +61,26 @@ export const getPreviouslyViewedObjects = async (
   }
 };
 
+// NOTE: you probably don't want to use this function directly.
+// Use the functions for specific apps below
+export const getAllPreviouslyViewedObjects = async (): Promise<
+  Map<StoreKey, StoredObject[]>
+> => {
+  const db = await IndexedDB.getDB();
+  const transaction = db.transaction(STORE_NAME);
+
+  const map = new Map<StoreKey, StoredObject[]>();
+
+  for await (const cursor of transaction.store) {
+    const cursorKey = cursor.key as StoreKey;
+    // const genomeId = getGenomeIdFromKey(cursorKey);
+    // const previouslyViewedObje
+    map.set(cursorKey, cursor.value);
+  }
+
+  return map;
+};
+
 // when a genome is removed, delete all previously viewed objects from all apps
 export const deletePreviouslyViewedObjectsForGenome = async (
   genomeId: string
@@ -84,10 +99,13 @@ export const deletePreviouslyViewedObjectsForGenome = async (
   await transaction.done;
 };
 
-const generateKey = (appPrefix: APP_PREFIX_TYPE, genomeId: string) => [
-  appPrefix,
-  genomeId
-];
+const generateKey = (
+  appPrefix: APP_PREFIX_TYPE,
+  genomeId: string
+): StoreKey => [appPrefix, genomeId];
+
+const getGenomeIdFromKey = (key: StoreKey) => key[1];
+const getAppNameFromKey = (key: StoreKey) => key[0];
 
 /**** App-specific functions ****/
 
@@ -112,6 +130,30 @@ export const getPreviouslyViewedGenomeBrowserObjects = async (
   ) as PreviouslyViewedGenomeBrowserObject[];
 };
 
+// at app startup, read all prevously viewed objects, and create a genome id to previously viewed objects map
+export const getAllPreviouslyViewedGenomeBrowserObjects = async (): Promise<
+  Record<string, PreviouslyViewedGenomeBrowserObject[]>
+> => {
+  const allViewedObjects = await getAllPreviouslyViewedObjects();
+  const objectsViewedInGenomeBrowser = [...allViewedObjects.entries()].filter(
+    ([key]) => getAppNameFromKey(key) === GENOME_BROWSER_PREFIX
+  );
+
+  const objectsByGenome: Record<string, PreviouslyViewedGenomeBrowserObject[]> =
+    {};
+
+  for (const [key, objects] of objectsViewedInGenomeBrowser) {
+    const genomeId = getGenomeIdFromKey(key);
+    // TODO: next line should not need the type assertion starting from typescript 5.5
+    const validObjects = objects.filter(
+      isPreviouslyViewedGenomeBrowserObject
+    ) as PreviouslyViewedGenomeBrowserObject[];
+    objectsByGenome[genomeId] = validObjects;
+  }
+
+  return objectsByGenome;
+};
+
 export const savePreviouslyViewedEntities = async (
   genomeId: string,
   objects: PreviouslyViewedEntity[]
@@ -131,6 +173,29 @@ export const getPreviouslyViewedEntities = async (
   return objects.filter((object) =>
     isPreviouslyViewedEntity(object)
   ) as PreviouslyViewedEntity[];
+};
+
+// at app startup, read all prevously viewed objects, and create a genome id to previously viewed objects map
+export const getAllPreviouslyViewedEntities = async (): Promise<
+  Record<string, PreviouslyViewedEntity[]>
+> => {
+  const allViewedObjects = await getAllPreviouslyViewedObjects();
+  const objectsViewedInGenomeBrowser = [...allViewedObjects.entries()].filter(
+    ([key]) => getAppNameFromKey(key) === ENTITY_VIEWER_PREFIX
+  );
+
+  const objectsByGenome: Record<string, PreviouslyViewedEntity[]> = {};
+
+  for (const [key, objects] of objectsViewedInGenomeBrowser) {
+    const genomeId = getGenomeIdFromKey(key);
+    // TODO: next line should not need the type assertion starting from typescript 5.5
+    const validObjects = objects.filter(
+      isPreviouslyViewedEntity
+    ) as PreviouslyViewedEntity[];
+    objectsByGenome[genomeId] = validObjects;
+  }
+
+  return objectsByGenome;
 };
 
 /**** Validators ****/

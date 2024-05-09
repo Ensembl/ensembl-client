@@ -16,8 +16,11 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+import {
+  savePreviouslyViewedEntities,
+  getAllPreviouslyViewedEntities
+} from 'src/shared/services/previouslyViewedObjectsStorageService';
 
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
@@ -90,9 +93,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     ].slice(0, 20);
 
     // side effect
-    entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-      [genomeId]: updatedEntities
-    });
+    savePreviouslyViewedEntities(genomeId, updatedEntities);
 
     return {
       genomeId,
@@ -103,7 +104,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
 
 export const loadPreviouslyViewedEntities = createAsyncThunk(
   'entity-viewer/loadPreviouslyViewedEntities',
-  () => entityViewerBookmarksStorageService.getPreviouslyViewedEntities()
+  () => getAllPreviouslyViewedEntities()
 );
 
 const initialState: EntityViewerBookmarksState = {

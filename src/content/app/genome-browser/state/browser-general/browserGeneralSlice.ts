@@ -208,6 +208,7 @@ export const deleteSpeciesInGenomeBrowser = (
     dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
 
     browserStorageService.deleteGenome(genomeIdToRemove);
+    // FIXME: remove
     browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
     await deleteStoredTrackSettingsForGenome(genomeIdToRemove);
     await deleteStoredFocusObjectsForGenome(genomeIdToRemove);
