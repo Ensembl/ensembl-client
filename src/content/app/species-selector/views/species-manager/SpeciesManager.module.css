@@ -1,5 +1,52 @@
 .container {
   display: grid;
+  grid-template-columns: max-content;
   grid-template-rows: minmax(60px, auto) 1fr;
+  height: 100%;
   padding-left: var(--double-standard-gutter);
+}
+
+.mainContentTop {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 90px;
+}
+
+.addSpeciesButton {
+  --add-button-icon-color: var(--color-green);
+  --add-button-label-color: var(--color-black);
+  position: sticky;
+  right: calc(16px + 45px); /* 16px is the diameter of the close button; and 45px is minimum allowed distance between add button and close button */
+}
+
+.mainContentTopRight {
+  display: flex;
+  column-gap: var(--double-standard-gutter);
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.filterFieldWrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* A vertically scrollable container, with a right padding
+   that puts some space between the table of genomes and the vertical scrollbar
+*/
+.genomesTableContainerOuter {
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: var(--global-padding-bottom);
+  max-width: calc(100vw - 90px);
+  padding-right: 20px;
+}
+
+/* A horizontally scrollable container.
+   It complements the .genomesTableContainerOuter such that
+   none of the table content can be seen crossing behind the right sticky columns
+   and into the right padding of the outer container.
+*/
+.genomesTableContainerInner {
+  overflow-x: auto;
 }

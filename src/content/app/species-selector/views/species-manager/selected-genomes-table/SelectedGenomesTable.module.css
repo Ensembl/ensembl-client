@@ -2,6 +2,43 @@
   --table-background: var(--color-light-grey);
 }
 
+.table th {
+  white-space: nowrap;
+}
+
+/* the first column contains just the home icon; no need for a regular wide padding */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  --table-column-head-padding-right: 10px;
+  --table-column-head-padding-left: 10px;
+  --table-cell-padding-left: 0;
+  --table-cell-padding-right: 0;
+}
+
+/* two last columns contain only narrow icons; no need for a regular wide padding */
+.table th:nth-child(7),
+.table th:nth-child(8),
+.table td:nth-child(7),
+.table td:nth-child(8) {
+  --table-column-head-padding-right: 10px;
+  --table-column-head-padding-left: 10px;
+  --table-cell-padding-left: 0;
+  --table-cell-padding-right: 0;
+  position: sticky;
+  background-color: var(--color-light-grey);
+}
+
+/* the second to last column should have a right offset that is equal to the width of the last column */
+.table th:nth-child(7),
+.table td:nth-child(7) {
+  right: 78px;
+}
+
+.table th:nth-child(8),
+.table td:nth-child(8) {
+  right: 0;
+}
+
 .disabledRow {
   color: var(--color-medium-dark-grey);
 }

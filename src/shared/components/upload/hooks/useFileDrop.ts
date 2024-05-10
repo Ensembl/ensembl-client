@@ -76,6 +76,8 @@ const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
     }
   };
 
+  // FIXME: starting from React 19, callback refs return a cleanup function
+  // whereas at some point thereafter, React will stop passing null to the ref function
   const ref = useCallback((element: HTMLElement | null) => {
     if (element === null) {
       // a function ref is called with null when a component that it is referencing unmounts
