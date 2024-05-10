@@ -43,11 +43,13 @@ const SpeciesManager = () => {
     <ModalView onClose={onClose}>
       <div className={styles.container}>
         <MainContentTop onFilterChange={onFilterChange} />
-        <div className={styles.genomesTableContainer}>
-          <SelectedGenomesTable
-            allSelectedGenomes={allSelectedGenomes}
-            filteredGenomes={filteredGenomes}
-          />
+        <div className={styles.genomesTableContainerOuter}>
+          <div className={styles.genomesTableContainerInner}>
+            <SelectedGenomesTable
+              allSelectedGenomes={allSelectedGenomes}
+              filteredGenomes={filteredGenomes}
+            />
+          </div>
         </div>
       </div>
     </ModalView>
