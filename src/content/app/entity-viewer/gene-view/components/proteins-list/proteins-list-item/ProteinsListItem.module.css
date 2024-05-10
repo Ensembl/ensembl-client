@@ -2,12 +2,11 @@
   scroll-margin-top: 90px;
 }
 
-
 .middle {
   cursor: pointer;
   display: grid;
-  grid-template-columns: 10% 50% 40%;
-  grid-column-gap: 10px;
+  grid-template-columns: 10% 50% 36%;
+  grid-column-gap: 2%;
 }
 
 .transcriptId {
