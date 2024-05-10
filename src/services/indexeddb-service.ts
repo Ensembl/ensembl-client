@@ -16,6 +16,7 @@
 
 import { openDB, IDBPDatabase } from 'idb';
 
+import { GENERAL_UI_STORE_NAME } from 'src/shared/services/generalUIStorageConstants';
 import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/services/speciesSelectorStorageConstants';
 import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageConstants';
 import { GB_FOCUS_OBJECTS_STORE_NAME } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageConstants';
@@ -31,6 +32,9 @@ const getDbPromise = () => {
       // FIXME use constants for object store names
       if (!db.objectStoreNames.contains('contact-forms')) {
         db.createObjectStore('contact-forms');
+      }
+      if (!db.objectStoreNames.contains(GENERAL_UI_STORE_NAME)) {
+        db.createObjectStore(GENERAL_UI_STORE_NAME);
       }
       if (!db.objectStoreNames.contains(SELECTED_SPECIES_STORE_NAME)) {
         db.createObjectStore(SELECTED_SPECIES_STORE_NAME);
