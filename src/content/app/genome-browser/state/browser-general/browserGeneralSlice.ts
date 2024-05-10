@@ -36,6 +36,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { deleteTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { deletePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 import {
   getBrowserActiveFocusObjectIds,
@@ -198,6 +199,7 @@ export const deleteSpeciesInGenomeBrowser = (
     dispatch(deleteBrowserDataForGenome(genomeIdToRemove));
     dispatch(deleteGenomeTrackPanelData(genomeIdToRemove));
     dispatch(deleteTrackSettingsForGenome(genomeIdToRemove));
+    dispatch(deletePreviouslyViewedObjects({ genomeId: genomeIdToRemove }));
 
     const updatedActiveFocusObjectIds = pickBy(
       getBrowserActiveFocusObjectIds(state),

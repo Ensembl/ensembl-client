@@ -16,6 +16,7 @@
 
 import {
   createSlice,
+  createAsyncThunk,
   type Action,
   type ThunkAction,
   type PayloadAction
@@ -30,6 +31,8 @@ import {
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+import { deletePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 import type { RootState } from 'src/store';
 
@@ -87,6 +90,8 @@ export const setActiveIds =
 // in time for navigating to EntityViewer interstitial (otherwise user will be redirected to the active entity page).
 // If/when we remove the redirect from /entity-viewer/:genomeId to /entity-viewer/:genomeId/:entityId,
 // the synchronous nature of this thunk will become irrelevant
+// Note also that this function is only needed to clean the active entity id that gets created
+// when user enters an invalid entity id. We should get rid of this function in due course.
 export const deleteActiveEntityIdAndSave =
   (): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {
@@ -121,6 +126,19 @@ export const setDefaultActiveGenomeId =
     activeGenomeId && dispatch(setActiveGenomeId(activeGenomeId));
   };
 
+export const deleteGenome = createAsyncThunk(
+  'entity-viewer-general/deleteGenome',
+  (genomeId: string, thunkAPI) => {
+    const { dispatch } = thunkAPI;
+    dispatch(deletePreviouslyViewedEntities({ genomeId }));
+
+    // Clean up indexedDB. No need to wait for result
+    entityViewerStorageService.deleteGenome(genomeId);
+
+    return genomeId;
+  }
+);
+
 const entityViewerGeneralSlice = createSlice({
   name: 'entity-viewer-general',
   initialState,
@@ -147,15 +165,17 @@ const entityViewerGeneralSlice = createSlice({
     deleteActiveEntityIdForGenome(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
       delete state.activeEntityIds[genomeId];
-    },
-    deleteGenome(state, action: PayloadAction<string>) {
+    }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(deleteGenome.fulfilled, (state, action) => {
       const genomeId = action.payload;
       delete state.activeEntityIds[genomeId];
       if (genomeId === state.activeGenomeId) {
         state.activeGenomeId = null;
       }
       entityViewerStorageService.deleteGenome(genomeId);
-    }
+    });
   }
 });
 
@@ -163,8 +183,7 @@ export const {
   loadInitialState,
   setActiveGenomeId,
   updateActiveEntityForGenome,
-  deleteActiveEntityIdForGenome,
-  deleteGenome
+  deleteActiveEntityIdForGenome
 } = entityViewerGeneralSlice.actions;
 
 export default entityViewerGeneralSlice.reducer;

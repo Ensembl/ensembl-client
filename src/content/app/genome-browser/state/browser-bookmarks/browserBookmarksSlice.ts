@@ -149,8 +149,17 @@ const bookmarksSlice = createSlice({
     ) {
       const { activeGenomeId, previouslyViewedObjects } = action.payload;
       state.previouslyViewedObjects[activeGenomeId] = previouslyViewedObjects;
+    },
+    deletePreviouslyViewedObjects(
+      state,
+      action: PayloadAction<{ genomeId: string }>
+    ) {
+      const { genomeId } = action.payload;
+      delete state.previouslyViewedObjects[genomeId];
     }
   }
 });
+
+export const { deletePreviouslyViewedObjects } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

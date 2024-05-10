@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 import {
@@ -114,7 +118,15 @@ const initialState: EntityViewerBookmarksState = {
 const bookmarksSlice = createSlice({
   name: 'entity-viewer-bookmarks',
   initialState,
-  reducers: {},
+  reducers: {
+    deletePreviouslyViewedEntities(
+      state,
+      action: PayloadAction<{ genomeId: string }>
+    ) {
+      const { genomeId } = action.payload;
+      delete state.previouslyViewed[genomeId];
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(
       updatePreviouslyViewedEntities.fulfilled,
@@ -129,5 +141,7 @@ const bookmarksSlice = createSlice({
     });
   }
 });
+
+export const { deletePreviouslyViewedEntities } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;
