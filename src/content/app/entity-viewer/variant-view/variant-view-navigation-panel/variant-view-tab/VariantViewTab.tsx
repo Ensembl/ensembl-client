@@ -71,14 +71,14 @@ const VariantViewTab = (props: Props) => {
 const BottomRow = (props: Props) => {
   const { labelText, pillContent } = props;
 
-  if (!labelText && !pillContent) {
+  if (!labelText && pillContent === undefined) {
     return null;
   }
 
   return (
     <div className={styles.bottomRow}>
       {labelText && <span className={styles.label}>{labelText}</span>}
-      {pillContent && (
+      {pillContent !== undefined && (
         <InfoPill className={styles.pill}>{pillContent}</InfoPill>
       )}
     </div>

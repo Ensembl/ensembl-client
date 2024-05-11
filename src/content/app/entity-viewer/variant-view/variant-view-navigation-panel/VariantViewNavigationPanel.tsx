@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
 
 import {
   getReferenceAndAltAlleles,
@@ -30,6 +31,10 @@ import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewe
 import VariantViewTab from './variant-view-tab/VariantViewTab';
 
 import type { ViewName } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
+import type {
+  VariantDetails,
+  VariantDetailsAllele
+} from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
 
 import styles from './VariantViewNavigationPanel.module.css';
 
@@ -51,7 +56,12 @@ const VariantViewNavigationPanel = (props: Props) => {
     return null;
   }
 
-  const { variant, alleleSequence, isReferenceAlleleActive } = currentData;
+  const {
+    variant,
+    alleleSequence,
+    isReferenceAlleleActive,
+    variantStatistics
+  } = currentData;
 
   const mostSevereVariantConsequence = getMostSevereVariantConsequence(variant);
   const variantGroupLabel = getVariantGroupLabel(mostSevereVariantConsequence);
@@ -87,7 +97,8 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="transcript-consequences"
         tabText="Transcript consequences"
         labelText="Features"
-        pillContent="0"
+        pillContent={variantStatistics.transcriptConsequencesCount}
+        disabled={!variantStatistics.transcriptConsequencesCount}
         pressed={view === 'transcript-consequences'}
         onClick={() => onViewChange('transcript-consequences')}
       />
@@ -95,7 +106,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="regulatory-consequences"
         tabText="Regulatory consequences"
         labelText="Features"
-        pillContent="0"
+        pillContent={variantStatistics.regulatoryConsequencesCount}
         pressed={false}
         disabled={true}
       />
@@ -103,15 +114,18 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="allele-frequencies"
         tabText="Allele frequency"
         labelText={isReferenceAlleleActive ? 'Ref allele' : alleleSequence}
-        pillContent="0"
+        pillContent={formatAlleleFrequency(
+          variantStatistics.representativeAlleleFrequency
+        )}
         onClick={() => onViewChange('allele-frequencies')}
         pressed={view === 'allele-frequencies'}
+        disabled={!variantStatistics.representativeAlleleFrequency}
       />
       <VariantViewTab
         viewId="genes"
         tabText="Genes"
         labelText="Features"
-        pillContent="0"
+        pillContent={variantStatistics.overlappedGenesCount}
         pressed={false}
         disabled={true}
       />
@@ -119,7 +133,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="variant-phenotypes"
         tabText="Variant phenotypes"
         labelText="Associations"
-        pillContent="0"
+        pillContent={variantStatistics.variantPhenotypesCount}
         pressed={false}
         disabled={true}
       />
@@ -127,7 +141,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="gene-phenotypes"
         tabText="Gene phenotypes"
         labelText="Associations"
-        pillContent="0"
+        pillContent={variantStatistics.genePhenotypesCount}
         pressed={false}
         disabled={true}
       />
@@ -135,7 +149,7 @@ const VariantViewNavigationPanel = (props: Props) => {
         viewId="publications"
         tabText="Citations"
         labelText="Publications"
-        pillContent="0"
+        pillContent={variantStatistics.citationsCount}
         pressed={false}
         disabled={true}
       />
@@ -180,16 +194,60 @@ const useVariantViewNavigationData = (params: Props) => {
     alleleSequence = `${truncatedSequence}${ellipsis}`;
   }
   const isReferenceAlleleActive = referenceAllele?.urlId === activeAlleleId;
+  const variantStatistics = getVariantStatistics({
+    variant,
+    allele: activeAllele as VariantDetailsAllele
+  });
 
   return {
     currentData: {
       variant: currentData.variant,
       alleleSequence,
-      isReferenceAlleleActive
+      isReferenceAlleleActive,
+      variantStatistics
     },
     isLoading,
     isError
   };
+};
+
+const getVariantStatistics = ({
+  variant,
+  allele
+}: {
+  variant: VariantDetails;
+  allele: VariantDetails['alleles'][number];
+}) => {
+  const variantLevelStatistics = variant.ensembl_website_display_data;
+  const alleleLevelStatistics = allele.ensembl_website_display_data;
+
+  return {
+    transcriptConsequencesCount:
+      alleleLevelStatistics.count_transcript_consequences,
+    regulatoryConsequencesCount:
+      alleleLevelStatistics.count_regulatory_consequences,
+    overlappedGenesCount: alleleLevelStatistics.count_overlapped_genes,
+    variantPhenotypesCount: alleleLevelStatistics.count_variant_phenotypes,
+    genePhenotypesCount: alleleLevelStatistics.count_gene_phenotypes,
+    citationsCount: variantLevelStatistics.count_citations,
+    representativeAlleleFrequency:
+      alleleLevelStatistics.representative_population_allele_frequency
+  };
+};
+
+const formatAlleleFrequency = (freq: number | null) => {
+  if (freq === null) {
+    return 'unknown';
+  }
+
+  const formatter = createSmallNumberFormatter({
+    maximumSignificantDigits: 5,
+    scientificNotation: {
+      maximumSignificantDigits: 3
+    }
+  });
+
+  return formatter.format(freq);
 };
 
 export default VariantViewNavigationPanel;

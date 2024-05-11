@@ -39,5 +39,5 @@ export type VariantAlleleSummaryStatistics = {
   count_regulatory_consequences: number;
   count_variant_phenotypes: number;
   count_gene_phenotypes: number;
-  representative_population_allele_frequency: number | null;
+  representative_population_allele_frequency: number | null; // global population allele frequency according to one of the studies
 };
