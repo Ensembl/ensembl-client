@@ -16,17 +16,17 @@
 
 /**
  * NOTE:
- * You will notice that the types described here
- * sit in the `ensembl_website_display_data` field
+ * You will notice that the data described by the types declared below
+ * sits in the `ensembl_website_display_data` field
  * of both the Variant type and the VariantAllele type.
  *
- * The reason for this is because the Variation team did not consider
- * the data in these types to be central to their data model, and
- * wanted to deprioritise is for other possible consumers of the variation api.
+ * The reason for this is that the Variation team preferred to deprioritise
+ * this data for other possible consumers of the variation api by indicating
+ * that it only serves the needs of the website.
  *
- * Meanwhile, in the web context, having a field called `ensembl_website_display_data`
- * is pretty meaningless; which is why I am calling the data inside of that field
- * variant summary statistics.
+ * Meanwhile, in the web context, having a type called EnsemblWebsiteDisplayData
+ * is pretty meaningless; which is why, for the purposes of this codebase,
+ * the types are named VariantSummaryStatistics and VariantAlleleSummaryStatistics.
  */
 
 export type VariantSummaryStatistics = {
