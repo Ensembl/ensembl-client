@@ -31,10 +31,7 @@ import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewe
 import VariantViewTab from './variant-view-tab/VariantViewTab';
 
 import type { ViewName } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
-import type {
-  VariantDetails,
-  VariantDetailsAllele
-} from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
+import type { VariantDetails } from 'src/content/app/entity-viewer/state/api/queries/variantDefaultQuery';
 
 import styles from './VariantViewNavigationPanel.module.css';
 
@@ -196,7 +193,7 @@ const useVariantViewNavigationData = (params: Props) => {
   const isReferenceAlleleActive = referenceAllele?.urlId === activeAlleleId;
   const variantStatistics = getVariantStatistics({
     variant,
-    allele: activeAllele as VariantDetailsAllele
+    allele: activeAllele
   });
 
   return {
@@ -216,22 +213,31 @@ const getVariantStatistics = ({
   allele
 }: {
   variant: VariantDetails;
-  allele: VariantDetails['alleles'][number];
+  allele?: VariantDetails['alleles'][number];
 }) => {
   const variantLevelStatistics = variant.ensembl_website_display_data;
-  const alleleLevelStatistics = allele.ensembl_website_display_data;
+  const alleleLevelStatistics = allele?.ensembl_website_display_data;
 
   return {
-    transcriptConsequencesCount:
-      alleleLevelStatistics.count_transcript_consequences,
-    regulatoryConsequencesCount:
-      alleleLevelStatistics.count_regulatory_consequences,
-    overlappedGenesCount: alleleLevelStatistics.count_overlapped_genes,
-    variantPhenotypesCount: alleleLevelStatistics.count_variant_phenotypes,
-    genePhenotypesCount: alleleLevelStatistics.count_gene_phenotypes,
+    transcriptConsequencesCount: alleleLevelStatistics
+      ? alleleLevelStatistics.count_transcript_consequences
+      : 0,
+    regulatoryConsequencesCount: alleleLevelStatistics
+      ? alleleLevelStatistics.count_regulatory_consequences
+      : 0,
+    overlappedGenesCount: alleleLevelStatistics
+      ? alleleLevelStatistics.count_overlapped_genes
+      : 0,
+    variantPhenotypesCount: alleleLevelStatistics
+      ? alleleLevelStatistics.count_variant_phenotypes
+      : 0,
+    genePhenotypesCount: alleleLevelStatistics
+      ? alleleLevelStatistics.count_gene_phenotypes
+      : 0,
     citationsCount: variantLevelStatistics.count_citations,
-    representativeAlleleFrequency:
-      alleleLevelStatistics.representative_population_allele_frequency
+    representativeAlleleFrequency: alleleLevelStatistics
+      ? alleleLevelStatistics.representative_population_allele_frequency
+      : null
   };
 };
 
