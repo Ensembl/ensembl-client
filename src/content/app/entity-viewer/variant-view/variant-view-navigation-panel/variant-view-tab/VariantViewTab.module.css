@@ -14,7 +14,7 @@
 }
 
 .bottomRow {
-  padding-left: 10px; /* same as TabButton default */
+  padding: 0 10px; /* same as TabButton default */
   display: flex;
   align-items: baseline;
   gap: 10px;
