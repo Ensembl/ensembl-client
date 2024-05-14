@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction
+} from '@reduxjs/toolkit';
 
-import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+import {
+  savePreviouslyViewedEntities,
+  getAllPreviouslyViewedEntities
+} from 'src/shared/services/previouslyViewedObjectsStorageService';
 
-import { getEntityViewerActiveEntityId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
 import { RootState } from 'src/store';
 
-type PreviouslyViewedEntity = {
-  entity_id: string;
-  unversioned_stable_id: string;
+export type PreviouslyViewedEntity = {
+  id: string;
+  urlId: string; // e.g. for genes, this is unversioned stable id rather than stable id
   label: string | string[];
-  type: 'gene';
+  type: 'gene' | 'variant';
 };
 
 export type PreviouslyViewedEntities = {
@@ -41,20 +47,15 @@ type EntityViewerBookmarksState = {
 
 type UpdatePreviouslyViewedPayload = {
   genomeId: string;
-  gene: {
-    symbol: string | null;
-    stable_id: string;
-    unversioned_stable_id: string;
-  };
+  entity: PreviouslyViewedEntity;
 };
 
 export const updatePreviouslyViewedEntities = createAsyncThunk(
   'entity-viewer/updatePreviouslyViewedEntities',
   (params: UpdatePreviouslyViewedPayload, thunkAPI) => {
-    const { genomeId, gene } = params;
+    const { genomeId, entity } = params;
     const { getState } = thunkAPI;
     const state = getState() as RootState;
-    const activeEntityId = getEntityViewerActiveEntityId(state) as string;
 
     const previouslyViewedEntities = getPreviouslyViewedEntities(
       state,
@@ -62,7 +63,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     );
 
     const isCurrentEntityPreviouslyViewed = previouslyViewedEntities?.some(
-      (entity) => entity.unversioned_stable_id === gene.unversioned_stable_id
+      (previouslyViewedEntity) => previouslyViewedEntity.id === entity.id
     );
 
     if (isCurrentEntityPreviouslyViewed) {
@@ -79,15 +80,15 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
 
       entityViewerStorageService.clearGeneViewTranscriptsState({
         genomeId,
-        entityId: oldestPreviouslyViewedEntity.entity_id
+        entityId: oldestPreviouslyViewedEntity.id
       });
     }
 
-    const newPreviouslyViewedEntity = {
-      entity_id: activeEntityId,
-      unversioned_stable_id: gene.unversioned_stable_id,
-      label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
-      type: 'gene' as const
+    const newPreviouslyViewedEntity: PreviouslyViewedEntity = {
+      id: entity.id,
+      urlId: entity.urlId,
+      label: entity.label,
+      type: entity.type
     };
 
     const updatedEntities = [
@@ -96,9 +97,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
     ].slice(0, 20);
 
     // side effect
-    entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-      [genomeId]: updatedEntities
-    });
+    savePreviouslyViewedEntities(genomeId, updatedEntities);
 
     return {
       genomeId,
@@ -109,7 +108,7 @@ export const updatePreviouslyViewedEntities = createAsyncThunk(
 
 export const loadPreviouslyViewedEntities = createAsyncThunk(
   'entity-viewer/loadPreviouslyViewedEntities',
-  () => entityViewerBookmarksStorageService.getPreviouslyViewedEntities()
+  () => getAllPreviouslyViewedEntities()
 );
 
 const initialState: EntityViewerBookmarksState = {
@@ -119,7 +118,15 @@ const initialState: EntityViewerBookmarksState = {
 const bookmarksSlice = createSlice({
   name: 'entity-viewer-bookmarks',
   initialState,
-  reducers: {},
+  reducers: {
+    deletePreviouslyViewedEntities(
+      state,
+      action: PayloadAction<{ genomeId: string }>
+    ) {
+      const { genomeId } = action.payload;
+      delete state.previouslyViewed[genomeId];
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(
       updatePreviouslyViewedEntities.fulfilled,
@@ -134,5 +141,7 @@ const bookmarksSlice = createSlice({
     });
   }
 });
+
+export const { deletePreviouslyViewedEntities } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

@@ -28,6 +28,7 @@ import {
   saveMultipleSelectedSpecies,
   deleteSelectedSpeciesById
 } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
+import { deletePreviouslyViewedObjectsForGenome } from 'src/shared/services/previouslyViewedObjectsStorageService';
 
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
@@ -97,7 +98,10 @@ export const deleteSpeciesAndSave =
     dispatch(updateCommittedSpecies(updatedCommittedSpecies));
     dispatch(deleteSpeciesInGenomeBrowser(genomeId));
     dispatch(deleteSpeciesInEntityViewer(genomeId));
+
+    // remove genome-associated data from persistent browser storage
     deleteSelectedSpeciesById(genomeId);
+    deletePreviouslyViewedObjectsForGenome(genomeId);
   };
 
 export const initialState: SpeciesSelectorState = {

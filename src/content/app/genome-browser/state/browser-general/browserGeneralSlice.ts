@@ -25,7 +25,6 @@ import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
-import browserBookmarksStorageService from 'src/content/app/genome-browser/services/browser-bookmarks/browserBookmarksStorageService';
 import { deleteTrackSettingsForGenome as deleteStoredTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 import { deleteAllFocusObjectsForGenome as deleteStoredFocusObjectsForGenome } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
@@ -37,6 +36,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { deleteTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import { deletePreviouslyViewedObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 
 import {
   getBrowserActiveFocusObjectIds,
@@ -199,6 +199,7 @@ export const deleteSpeciesInGenomeBrowser = (
     dispatch(deleteBrowserDataForGenome(genomeIdToRemove));
     dispatch(deleteGenomeTrackPanelData(genomeIdToRemove));
     dispatch(deleteTrackSettingsForGenome(genomeIdToRemove));
+    dispatch(deletePreviouslyViewedObjects({ genomeId: genomeIdToRemove }));
 
     const updatedActiveFocusObjectIds = pickBy(
       getBrowserActiveFocusObjectIds(state),
@@ -207,8 +208,8 @@ export const deleteSpeciesInGenomeBrowser = (
 
     dispatch(updateBrowserActiveFocusObjectIds(updatedActiveFocusObjectIds));
 
+    // delete genome-related data from persistent browser storage
     browserStorageService.deleteGenome(genomeIdToRemove);
-    browserBookmarksStorageService.deleteGenome(genomeIdToRemove);
     await deleteStoredTrackSettingsForGenome(genomeIdToRemove);
     await deleteStoredFocusObjectsForGenome(genomeIdToRemove);
   };

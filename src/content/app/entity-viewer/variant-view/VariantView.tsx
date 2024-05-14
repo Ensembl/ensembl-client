@@ -34,6 +34,7 @@ import {
   type ViewName as VariantViewName
 } from 'src/content/app/entity-viewer/state/variant-view/general/variantViewGeneralSlice';
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 import VariantViewNavigationPanel from './variant-view-navigation-panel/VariantViewNavigationPanel';
 import VariantImage from './variant-image/VariantImage';
@@ -48,6 +49,7 @@ const VariantView = () => {
   const { genomeId, genomeIdForUrl, parsedEntityId } = useEntityViewerIds();
   const navigate = useNavigate();
   const { search: urlQuery } = useLocation();
+  const dispatch = useAppDispatch();
 
   const { objectId: variantId } = parsedEntityId ?? {};
   const urlSearchParams = new URLSearchParams(urlQuery);
@@ -74,6 +76,27 @@ const VariantView = () => {
     viewInUrl: view,
     variant: variantData
   });
+
+  useEffect(() => {
+    if (!genomeId || !variantId || !currentData) {
+      return;
+    }
+
+    return () => {
+      const { variant } = currentData;
+      dispatch(
+        updatePreviouslyViewedEntities({
+          genomeId,
+          entity: {
+            id: variantId,
+            urlId: variantId,
+            label: variant.name,
+            type: 'variant'
+          }
+        })
+      );
+    };
+  }, [genomeId, variantId, currentData]);
 
   const onAlleleChange = (alleleId: string) => {
     const url = urlFor.entityViewerVariant({
