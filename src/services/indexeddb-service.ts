@@ -24,7 +24,7 @@ import { BLAST_SUBMISSIONS_STORE_NAME } from 'src/content/app/tools/blast/servic
 import { PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME } from 'src/shared/services/previouslyViewedObjectsStorageConstants';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
