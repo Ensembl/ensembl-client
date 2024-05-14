@@ -126,7 +126,7 @@ const SpeciesType = (props: GenomeInfo) => {
       <span className={styles.label}>Type</span>
       <span>
         {typeTextElement}
-        {typeTextElement ? ', ' : ''}
+        {typeTextElement && referenceTextElement ? ', ' : ''}
         {referenceTextElement}
       </span>
     </div>
