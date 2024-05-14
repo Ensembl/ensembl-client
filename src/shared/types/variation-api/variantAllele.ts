@@ -21,6 +21,7 @@ import type { VariantAllelePopulationFrequency } from './variantAllelePopulation
 import type { VariantAllelePhenotypeAssertion } from './variantAllelePhenotypeAssertion';
 import type { VariantPredictedMolecularConsequence } from './variantPredictedMolecularConsequence';
 import type { OntologyTermMetadata } from '../core-api/metadata';
+import type { VariantAlleleSummaryStatistics } from './variantSummaryStatistics';
 
 export type VariantAllele = {
   type: 'VariantAllele';
@@ -35,4 +36,5 @@ export type VariantAllele = {
   phenotype_assertions: VariantAllelePhenotypeAssertion[];
   predicted_molecular_consequences: VariantPredictedMolecularConsequence[];
   citations: unknown[]; // will be an array of Publication data types submitted to CDM
+  ensembl_website_display_data: VariantAlleleSummaryStatistics;
 };

@@ -14,14 +14,19 @@
 }
 
 .bottomRow {
-  padding-left: 10px; /* same as TabButton default */
+  padding: 0 10px; /* same as TabButton default */
   display: flex;
   align-items: baseline;
   gap: 10px;
 }
 
 .label {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12px;
+  flex-shrink: 1;
 }
 
 .disabled .label {
