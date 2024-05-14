@@ -23,12 +23,18 @@ import {
   type Action
 } from '@reduxjs/toolkit';
 
+import { defaultSpeciesNameDisplayOption } from 'src/content/app/species-selector/constants/speciesNameDisplayConstants';
+
 import {
   getAllSelectedSpecies,
   saveMultipleSelectedSpecies,
   deleteSelectedSpeciesById
 } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 import { deletePreviouslyViewedObjectsForGenome } from 'src/shared/services/previouslyViewedObjectsStorageService';
+import {
+  saveSpeciesNameDisplayOption,
+  getSpeciesNameDisplayOption
+} from 'src/shared/services/generalUIStorageService';
 
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
@@ -41,13 +47,7 @@ import {
 import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
-
-export type SpeciesNameDisplayOption =
-  | 'common-name_assembly-name'
-  | 'common-name_type_assembly-name'
-  | 'scientific-name_assembly-name'
-  | 'scientific-name_type_assembly-name'
-  | 'assembly-accession-id';
+import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/types/speciesNameDisplayOption';
 
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
@@ -106,7 +106,7 @@ export const deleteSpeciesAndSave =
 
 export const initialState: SpeciesSelectorState = {
   committedItems: [],
-  speciesNameDisplayOption: 'common-name_assembly-name'
+  speciesNameDisplayOption: defaultSpeciesNameDisplayOption
 };
 
 const prepareSelectedSpeciesForCommit = (
@@ -147,6 +147,19 @@ export const commitSelectedSpeciesAndSave = createAsyncThunk(
   }
 );
 
+export const setSpeciesNameDisplayOption = createAsyncThunk(
+  'species-selector/setSpeciesNameDisplayOption',
+  (option: SpeciesNameDisplayOption) => {
+    saveSpeciesNameDisplayOption(option); // this is asynchronous; but there is no need to await this
+    return option;
+  }
+);
+
+export const loadSpeciesNameDisplayOption = createAsyncThunk(
+  'species-selector/loadSpeciesNameDisplayOption',
+  () => getSpeciesNameDisplayOption()
+);
+
 const speciesSelectorGeneralSlice = createSlice({
   name: 'species-selector-general',
   initialState,
@@ -165,10 +178,17 @@ const speciesSelectorGeneralSlice = createSlice({
     builder.addCase(loadStoredSpecies.fulfilled, (state, action) => {
       state.committedItems = action.payload;
     });
+    builder.addCase(setSpeciesNameDisplayOption.fulfilled, (state, action) => {
+      state.speciesNameDisplayOption = action.payload;
+    });
+    builder.addCase(loadSpeciesNameDisplayOption.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.speciesNameDisplayOption = action.payload;
+      }
+    });
   }
 });
 
-export const { updateCommittedSpecies, setSpeciesNameDisplayOption } =
-  speciesSelectorGeneralSlice.actions;
+export const { updateCommittedSpecies } = speciesSelectorGeneralSlice.actions;
 
 export default speciesSelectorGeneralSlice.reducer;

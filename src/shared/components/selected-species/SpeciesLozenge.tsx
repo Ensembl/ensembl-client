@@ -29,7 +29,7 @@ import {
 } from '../species-name-parts';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/types/speciesNameDisplayOption';
 
 import styles from './SpeciesLozenge.module.css';
 

@@ -18,7 +18,10 @@ import { useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
-import { loadStoredSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import {
+  loadStoredSpecies,
+  loadSpeciesNameDisplayOption
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { loadPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import { restoreUI as restoreSpeciesPageUI } from 'src/content/app/species/state/general/speciesGeneralSlice';
 import { loadInitialState as loadEntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
@@ -33,6 +36,7 @@ const useRestoredReduxState = () => {
   useEffect(() => {
     // Species Selector
     dispatch(loadStoredSpecies());
+    dispatch(loadSpeciesNameDisplayOption());
 
     // Species Page
     dispatch(restoreSpeciesPageUI());

@@ -20,11 +20,10 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
-import {
-  setSpeciesNameDisplayOption,
-  type SpeciesNameDisplayOption
-} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
+import { setSpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { getSpeciesNameDisplayOption } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/types/speciesNameDisplayOption';
 
 import styles from './SpeciesLozengeDisplaySelector.module.css';
 
