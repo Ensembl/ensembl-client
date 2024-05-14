@@ -123,7 +123,7 @@ const ProteinsListItem = (props: Props) => {
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>
           <div>{getProteinDescription()}</div>
-          <div className={styles.middleStableID}>{product?.stable_id}</div>
+          <div className={styles.productStableId}>{product?.stable_id}</div>
         </div>
         <div
           className={transcriptsListStyles.right}
