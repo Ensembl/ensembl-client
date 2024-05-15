@@ -200,7 +200,7 @@ export const TranscriptsListItemInfo = (
       </>
     );
   };
-
+  const proteinIdClasses = classNames(styles.normalText, styles.wrapText);
   const product = transcript.product_generating_contexts[0].product;
   return (
     <div className={mainStyles}>
@@ -221,7 +221,7 @@ export const TranscriptsListItemInfo = (
               <div className={styles.normalText} data-test-id="proteinLength">
                 {aminoAcidLength} aa
               </div>
-              <div className={styles.normalText}>
+              <div className={proteinIdClasses}>
                 {product && getLinkToProteinView(product?.stable_id)}
               </div>
             </>

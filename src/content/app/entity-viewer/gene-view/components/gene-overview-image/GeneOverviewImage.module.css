@@ -28,6 +28,7 @@
   text-align: right;
   font-size: 13px;
   font-weight: var(--font-weight-bold);
+  word-break: break-all;
 }
 
 .directionIndicator {

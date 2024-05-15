@@ -2,12 +2,11 @@
   scroll-margin-top: 90px;
 }
 
-
 .middle {
   cursor: pointer;
   display: grid;
-  grid-template-columns: 75px 450px 150px;
-  grid-column-gap: 10px;
+  grid-template-columns: 10% 43% 43%;
+  grid-column-gap: 2%;
 }
 
 .transcriptId {
@@ -18,4 +17,11 @@
 .middle,
 .transcriptId {
   font-weight: var(--font-weight-normal);
+}
+
+.productStableId {
+  word-wrap: break-word;
+  justify-self: end;
+  word-break: break-word;
+  text-align: right;
 }
