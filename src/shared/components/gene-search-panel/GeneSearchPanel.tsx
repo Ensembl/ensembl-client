@@ -22,8 +22,6 @@ import {
   type ChangeEvent,
   type ReactNode
 } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import noop from 'lodash/noop';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -52,13 +50,15 @@ import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type Props = {
+  query: string;
   onClose: () => void;
+  onSearchSubmit: (query: string) => void;
 };
 
 const GeneSearchPanel = (props: Props) => {
   return (
     <Panel {...props}>
-      <Main />
+      <Main {...props} />
     </Panel>
   );
 };
@@ -77,30 +77,32 @@ const Panel = (props: { onClose: () => void; children: ReactNode }) => {
   );
 };
 
-const Main = () => {
-  const [searchParams] = useSearchParams();
+const Main = (props: Props) => {
+  const { query, onSearchSubmit } = props;
   const [searchTrigger, searchResult] = useLazySearchGenesQuery();
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
-  const searchQuery = searchParams.get('query') || '';
   const { currentData: currentSearchResults } = searchResult;
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
   useEffect(() => {
+    if (!query) {
+      return;
+    }
     searchTrigger({
       genome_ids: genomeIds,
-      query: searchQuery,
+      query,
       page: 1,
       per_page: 50
     });
-  }, [searchQuery]);
+  }, [query]);
 
   return (
     <div className={styles.main}>
       <GeneSearchForm
-        onSearch={searchTrigger}
+        onSearchSubmit={onSearchSubmit}
         species={committedSpecies}
-        query={searchQuery}
+        query={query}
       />
       {!!currentSearchResults?.matches.length && (
         <GeneSearchResults
@@ -108,35 +110,37 @@ const Main = () => {
           searchResults={currentSearchResults}
         />
       )}
+      {currentSearchResults?.matches.length === 0 && <NoResults />}
     </div>
   );
 };
 
 const GeneSearchForm = (props: {
   species: CommittedItem[];
-  onSearch: ReturnType<typeof useLazySearchGenesQuery>[0];
-  query?: string;
+  onSearchSubmit: (query: string) => void;
+  query: string;
 }) => {
-  const navigate = useNavigate();
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState(props.query);
+  const [shouldDisableSubmit, setShouldDisableSubmit] = useState(false);
 
   useEffect(() => {
-    setSearchInput(props.query || '');
-  }, []);
+    if (props.query !== searchInput) {
+      setSearchInput(props.query);
+    }
+  }, [props.query]);
 
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setShouldDisableSubmit(true);
 
-    navigate(urlFor.speciesSelectorGeneSearch(searchInput), {
-      replace: true
-    });
+    props.onSearchSubmit(searchInput);
   };
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
+    setShouldDisableSubmit(false);
   };
 
-  // FIXME: update the Button component to not require onClick property
   return (
     <div>
       <form className={styles.geneSearchForm} onSubmit={onFormSubmit}>
@@ -146,8 +150,14 @@ const GeneSearchForm = (props: {
           size="large"
           onChange={onQueryChange}
           value={searchInput || ''}
+          help="Find a gene using a stable ID (versioned or un-versioned), symbol or synonym"
+          type="search"
         />
-        <PrimaryButton type="submit" className={styles.submit} onClick={noop}>
+        <PrimaryButton
+          type="submit"
+          className={styles.submit}
+          disabled={shouldDisableSubmit}
+        >
           Go
         </PrimaryButton>
       </form>
@@ -342,6 +352,20 @@ const getGroupedSearchMatches = (
   // return only those species/search matches combos that actually have search matches
   return [...searchMatchesMap.values()].filter(
     ({ searchMatches }) => searchMatches.length
+  );
+};
+
+const NoResults = () => {
+  return (
+    <div className={styles.noResults}>
+      <p>
+        Found in <span className={styles.speciesCount}>0</span> species
+      </p>
+      <p className={styles.warning}>
+        Sorry, we can’t find this gene in any of your species in use
+      </p>
+      <p>Please use a different gene identifier</p>
+    </div>
   );
 };
 

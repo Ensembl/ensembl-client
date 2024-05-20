@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import styles from './GeneSearchButton.module.css';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 type Props = {
   onClick: () => void;
 };
 
 const GeneSearchButton = (props: Props) => {
-  return (
-    <button onClick={props.onClick} className={styles.geneSearchButton}>
-      <CloseIcon className={styles.closeIcon} />
-      <span>Find a Gene</span>
-    </button>
-  );
+  return <CloseButtonWithLabel onClick={props.onClick} />;
 };
 
 export default GeneSearchButton;

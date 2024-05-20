@@ -20,11 +20,6 @@
   border-radius: 5px;
 }
 
-.closeIcon {
-  fill: var(--color-blue);
-  height: 16px;
-}
-
 .searchIcon {
   fill: var(--color-white);
   height: 14px;

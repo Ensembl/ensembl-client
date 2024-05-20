@@ -14,18 +14,42 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import { useAppDispatch } from 'src/store';
+
+import { setQuery as storeGeneQuery } from 'src/content/app/species-selector/state/species-selector-gene-search-slice/speciesSelectorGeneSearchSlice';
 
 import GeneSearchPanel from 'src/shared/components/gene-search-panel/GeneSearchPanel';
 
 const SpeciesSelectorGeneSearchView = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const queryFromParams = searchParams.get('query') ?? '';
 
   const onClose = () => {
     navigate(-1);
   };
 
-  return <GeneSearchPanel onClose={onClose} />;
+  const onSearchSubmit = (query: string) => {
+    updateSearchParams(query);
+    dispatch(storeGeneQuery(query));
+  };
+
+  const updateSearchParams = (query: string) => {
+    searchParams.set('query', query);
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  return (
+    <GeneSearchPanel
+      query={queryFromParams}
+      onSearchSubmit={onSearchSubmit}
+      onClose={onClose}
+    />
+  );
 };
 
 export default SpeciesSelectorGeneSearchView;
