@@ -29,17 +29,12 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
-import SearchIcon from 'static/icons/icon_search.svg';
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import { useSpeciesDetailsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
-import {
-  SpeciesSidebarModalView,
-  updateSpeciesSidebarModalForGenome
-} from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import type { RootState } from 'src/store';
@@ -91,15 +86,6 @@ const SpeciesTitleArea = () => {
     return null;
   }
 
-  const openSearch = () => {
-    dispatch(
-      updateSpeciesSidebarModalForGenome({
-        activeGenomeId,
-        fragment: { sidebarModalView: SpeciesSidebarModalView.SEARCH }
-      })
-    );
-  };
-
   const navigateToAssemblies = () => {
     navigate(
       urlFor.speciesSelectorSearch({
@@ -143,10 +129,6 @@ const SpeciesTitleArea = () => {
         )}
         <div className={styles.speciesToggle}>
           <SpeciesUsageToggle />
-        </div>
-        <div className={styles.geneSearchWrapper} onClick={openSearch}>
-          <span>Find a gene</span>
-          <SearchIcon />
         </div>
         <div className={styles.speciesRemove}>
           <SecondaryButton

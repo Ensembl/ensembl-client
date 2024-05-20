@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
+
 import SearchIcon from 'static/icons/icon_search.svg';
 
 import styles from './GeneSearchButton.module.css';
 
 type Props = {
   onClick: () => void;
+  className?: string;
 };
 
 const GeneSearchButton = (props: Props) => {
+  const componentClasses = classNames(styles.geneSearchButton, props.className);
+
   return (
-    <button onClick={props.onClick} className={styles.geneSearchButton}>
-      <span>Find a Gene</span>
+    <button onClick={props.onClick} className={componentClasses}>
+      <span>Find a gene</span>
       <span className={styles.searchIconWrapper}>
         <SearchIcon className={styles.searchIcon} />
       </span>

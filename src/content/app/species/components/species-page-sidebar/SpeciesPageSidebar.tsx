@@ -26,6 +26,7 @@ import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/stat
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
 import DownloadIcon from 'static/icons/icon_download.svg';
 
@@ -40,6 +41,17 @@ type Props = {
 
 const SpeciesPageSidebar = (props: Props) => {
   const { data } = props;
+  const activeGenomeId = useAppSelector(getActiveGenomeId) as string;
+  const dispatch = useAppDispatch();
+
+  const onGeneSearchClick = () => {
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: SpeciesSidebarModalView.SEARCH }
+      })
+    );
+  };
 
   return (
     <Sidebar>
@@ -55,9 +67,11 @@ const SpeciesPageSidebar = (props: Props) => {
           </div>
           <SpeciesType {...data} />
         </div>
-      </section>
 
-      {/*  There will be buttons to find a gene here */}
+        <div className={styles.topSectionButtonsContainer}>
+          <GeneSearchButton onClick={onGeneSearchClick} />
+        </div>
+      </section>
 
       <div className={styles.sectionHead}>Assembly</div>
       <section className={styles.section}>

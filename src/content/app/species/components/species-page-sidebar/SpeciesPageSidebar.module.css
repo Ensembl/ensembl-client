@@ -59,6 +59,10 @@
   font-weight: var(--font-weight-bold);
 }
 
+.topSectionButtonsContainer {
+  margin: 36px 0;
+}
+
 .getFilesSection {
   margin-top: 40px;
 }

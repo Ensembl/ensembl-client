@@ -129,6 +129,11 @@ const GeneSearchForm = (props: {
     }
   }, [props.query]);
 
+  // NOTE: future versions of React will stop passing null to ref callbacks; so update function signature when this happens
+  const focusInput = (input: HTMLInputElement | null) => {
+    input && input.focus();
+  };
+
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setShouldDisableSubmit(true);
@@ -152,6 +157,7 @@ const GeneSearchForm = (props: {
           value={searchInput || ''}
           help="Find a gene using a stable ID (versioned or un-versioned), symbol or synonym"
           type="search"
+          ref={focusInput}
         />
         <PrimaryButton
           type="submit"
