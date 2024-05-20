@@ -85,18 +85,6 @@
   padding: 15px;
 }
 
-
-.findAGene {
-  color: var(--color-blue);
-  cursor: pointer;
+.geneSearchButton {
   margin: 30px 0 20px;
-  display: inline-flex;
-  align-items: center;
-  column-gap: 12px;
-  font-size: 12px;
-}
-
-.findAGene svg {
-  fill: var(--color-blue);
-  width: 13px;
 }
