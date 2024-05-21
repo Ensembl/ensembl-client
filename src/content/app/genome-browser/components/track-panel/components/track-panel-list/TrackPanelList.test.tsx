@@ -135,11 +135,9 @@ describe('<TrackPanelList />', () => {
     });
 
     it('opens the relevant modal when modal link is clicked', async () => {
-      const { container, store } = renderComponent();
+      const { store, getByText } = renderComponent();
 
-      const geneSearchLink = container.querySelector(
-        '.modalLink:nth-child(1)'
-      ) as HTMLElement;
+      const geneSearchLink = getByText('Find a gene');
 
       await userEvent.click(geneSearchLink);
 
@@ -148,9 +146,7 @@ describe('<TrackPanelList />', () => {
         BrowserSidebarModalView.SEARCH
       );
 
-      const navigateLocationLink = container.querySelector(
-        '.modalLink:nth-child(2)'
-      ) as HTMLElement;
+      const navigateLocationLink = getByText('Change location');
 
       await userEvent.click(navigateLocationLink);
 
