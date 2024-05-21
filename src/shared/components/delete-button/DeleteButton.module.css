@@ -17,7 +17,7 @@
 .deleteButtonWithLabel {
   --_label-font-size: var(--delete-button-label-font-size, 11px);
   --_label-font-weight: var(--delete-button-label-font-weight, var(--font-weight-light));
-  --_button-to-label-gap: var(--delete-button-to-label-gap, 18px);
+  --_button-to-label-gap: var(--delete-button-to-label-gap, 10px);
   display: flex;
   align-items: flex-end;
   column-gap: var(--_button-to-label-gap);

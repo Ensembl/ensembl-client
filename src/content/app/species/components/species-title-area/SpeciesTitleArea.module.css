@@ -46,6 +46,7 @@
   grid-area: assembly-count;
   column-gap: 12px;
   flex-wrap: nowrap;
+  margin-left: 20px;
 }
 
 .assembliesLink {
@@ -61,18 +62,14 @@
   grid-area: remove;
   justify-self: end;
   white-space: nowrap;
+  padding-right: 35px;
 }
 
 .speciesRemoveMessage {
   grid-area: remove-message;
   justify-content: end;
   margin-bottom: 20px;
-}
-
-.remove {
-  grid-area: remove;
-  align-self: start;
-  white-space: nowrap;
+  padding-right: 35px;
 }
 
 @container species-page-title-area (min-width: 761px) {
@@ -81,66 +78,38 @@
     grid-template-areas:
       'icon species-name assembly-count usage-toggle remove'
       '. remove-message remove-message remove-message remove-message';
-    grid-template-columns: 60px fit-content(60%) 1fr minmax(auto, 284px) auto;
+    grid-template-columns: 60px auto minmax(180px, 1fr) minmax(auto, 284px) auto;
     grid-template-rows: 80px auto;
   }
 
-  .speciesToggle {
-    padding-left: 25px;
+  .grid:not(:has(.assemblyCountWrapper)) {
+    grid-template-areas:
+      'icon species-name usage-toggle remove'
+      '. remove-message remove-message remove-message';
+    grid-template-columns: 60px minmax(auto, 1fr) minmax(auto, 284px) auto;
   }
 }
 
 
-@container species-page-title-area (min-width: 641px) and (max-width: 760px) {
+@container species-page-title-area (max-width: 830px) {
   .grid {
     grid-template-areas:
-      'icon species-name assembly-count usage-toggle remove'
-      '. remove-message remove-message remove-message .';
-    grid-template-columns: 60px min-content auto 1fr;
-    grid-template-rows: 80px auto auto;
-    margin-bottom: 20px;
-  }
-
-  .speciesNameWrapper {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-  }
-
-  .assemblyName {
-    padding-top: 3px;
-    white-space: nowrap;
-  }
-
-  .speciesToggle {
-    padding: 0;
-  }
-
-  /* .speciesRemove {
-    white-space: normal;
-  } */
-
-  .speciesRemoveMessage {
-    grid-area: remove-message;
-    justify-content: start;
-  }
-}
-
-@container species-page-title-area (max-width: 640px) {
-  .grid {
-    grid-template-areas:
-      'icon species-name assembly-count .'
-      '. usage-toggle remove .'
-      '. remove-message remove-message .';
-    grid-template-columns: 60px 150px 1fr;
-    grid-template-rows: 80px 0 auto 40px;
+      'icon species-name assembly-count'
+      '. usage-toggle remove'
+      '. remove-message remove-message';
+    grid-template-columns: 60px auto minmax(min-content, 1fr);
+    grid-template-rows: minmax(80px, auto) auto auto;
     grid-row-gap: 10px;
     margin-bottom: 20px;
   }
 
+  .assemblyCountWrapper {
+    margin-left: 20px;
+  }
 
   .speciesRemoveMessage {
     margin-top: 20px;
+    margin-bottom: 0;
     justify-content: start;
   }
 
