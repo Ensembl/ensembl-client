@@ -87,9 +87,11 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
       <SelectedSpeciesList selectedSpecies={props.selectedSpecies} />
       <div className={styles.aside}>
         {geneSearchButton}
-        <span className={styles.selectTabMessage}>
-          Select a tab to see a Species home page
-        </span>
+        {!isInGeneSearchMode && (
+          <span className={styles.selectTabMessage}>
+            Select a tab to see a Species home page
+          </span>
+        )}
       </div>
     </div>
   );

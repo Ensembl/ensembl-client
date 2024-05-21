@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+import DeleteButton, {
+  DeleteButtonWithLabel
+} from 'src/shared/components/delete-button/DeleteButton';
 
 export default {
   title: 'Components/Shared Components/Delete button'
@@ -28,4 +30,9 @@ export const DefaultDeleteButtonStory = {
 export const DisabledDeleteButtonStory = {
   name: 'disabled',
   render: () => <DeleteButton disabled={true} />
+};
+
+export const DeleteButtonWithLabelStory = {
+  name: 'with label',
+  render: () => <DeleteButtonWithLabel />
 };

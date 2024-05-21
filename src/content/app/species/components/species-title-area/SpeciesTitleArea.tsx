@@ -25,15 +25,15 @@ import { getDisplayName } from 'src/shared/components/selected-species/selectedS
 
 import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
-import { SecondaryButton } from 'src/shared/components/button/Button';
-import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
-import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
-import InfoPill from 'src/shared/components/info-pill/InfoPill';
-
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import { useSpeciesDetailsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
+
+import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
+import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
+import InfoPill from 'src/shared/components/info-pill/InfoPill';
+import { DeleteButtonWithLabel } from 'src/shared/components/delete-button/DeleteButton';
 
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
@@ -131,15 +131,14 @@ const SpeciesTitleArea = () => {
           <SpeciesUsageToggle />
         </div>
         <div className={styles.speciesRemove}>
-          <SecondaryButton
+          <DeleteButtonWithLabel
+            label="Remove from list"
             onClick={toggleRemovalDialog}
             disabled={isRemoving}
             className={classNames({
               [styles.disabledRemoveButton]: isRemoving
             })}
-          >
-            Remove species
-          </SecondaryButton>
+          />
         </div>
         {isRemoving && (
           <DeletionConfirmation

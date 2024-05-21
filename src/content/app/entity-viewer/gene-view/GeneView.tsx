@@ -106,7 +106,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 
   const isFilterPanelOpen = useAppSelector(getFilterPanelOpen);
   const sortingRule = useAppSelector(getSortingRule);
-  const filters = useAppSelector(getFilters);
+  const filters = useAppSelector(getFilters); // A problem with this selector (not memoized?
   const dispatch = useAppDispatch();
   const { search } = useLocation();
   const { trackFiltersPanelOpen } = useEntityViewerAnalytics();

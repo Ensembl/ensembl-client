@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+import { useAppDispatch } from 'src/store';
+
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
+
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const EntityViewerSidebarSearch = () => {
   const { activeGenomeId, genomeIdForUrl } = useEntityViewerIds();
+  const dispatch = useAppDispatch();
+
+  const onSearchMatchNavigation = () => {
+    dispatch(closeSidebarModal());
+  };
 
   return (
     <section>
@@ -30,6 +39,7 @@ const EntityViewerSidebarSearch = () => {
             genomeId={activeGenomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             mode="sidebar"
+            onMatchNavigation={onSearchMatchNavigation}
           />
         )}
       </div>

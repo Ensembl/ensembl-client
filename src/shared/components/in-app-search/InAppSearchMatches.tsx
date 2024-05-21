@@ -47,6 +47,7 @@ type InAppSearchMatchesProps = SearchResults & {
   app: AppName;
   mode: InAppSearchMode;
   genomeIdForUrl: string; // TODO: remove this when backend starts including this id in the response
+  onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
 const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
@@ -60,6 +61,7 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
           mode={props.mode}
           genomeIdForUrl={props.genomeIdForUrl}
           position={index + 1}
+          onMatchNavigation={props.onMatchNavigation}
         />
       ))}
     </div>
@@ -72,6 +74,7 @@ type InAppSearchMatchProps = {
   mode: InAppSearchMode;
   genomeIdForUrl: string;
   position: number;
+  onMatchNavigation?: () => void;
 };
 
 const InAppSearchMatch = (props: InAppSearchMatchProps) => {
@@ -112,6 +115,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
     }
 
     setShouldShowTooltip(!shouldShowTooltip);
+    props.onMatchNavigation?.();
   };
 
   const hideTooltip = () => setShouldShowTooltip(false);

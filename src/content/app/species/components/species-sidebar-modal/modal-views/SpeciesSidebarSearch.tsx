@@ -14,18 +14,34 @@
  * limitations under the License.
  */
 
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 
+import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const SpeciesSidebarSearch = () => {
-  const activeGenomeId = useSelector(getActiveGenomeId);
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
   const { genomeId: genomeIdForUrl } =
     useUrlParams<'genomeId'>('/species/:genomeId');
+  const dispatch = useAppDispatch();
+
+  const onSearchMatchNavigation = () => {
+    if (!activeGenomeId) {
+      return; // should not happen
+    }
+
+    dispatch(
+      updateSpeciesSidebarModalForGenome({
+        activeGenomeId,
+        fragment: { sidebarModalView: null }
+      })
+    );
+  };
 
   return (
     <section className="searchModal">
@@ -36,6 +52,7 @@ const SpeciesSidebarSearch = () => {
             genomeId={activeGenomeId}
             genomeIdForUrl={genomeIdForUrl as string}
             mode="sidebar"
+            onMatchNavigation={onSearchMatchNavigation}
           />
         )}
       </div>

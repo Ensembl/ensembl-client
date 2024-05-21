@@ -1,14 +1,26 @@
 .deleteButton {
-  background: transparent;
-  border: none;
+  /* background: transparent;
+  border: none; */
   height: var(--delete-button-size, 18px);
   width: var(--delete-button-size, 18px);
+  fill: var(--delete-button-color, var(--color-blue));
 }
 
-.deleteButton svg {
-  fill: var(--delete-button-background, var(--color-blue));
-}
+/* .deleteButton {
+
+} */
 
 .deleteButtonDisabled {
-  --delete-button-background: var(--color-grey);
+  --delete-button-color: var(--color-grey);
+}
+
+.deleteButtonWithLabel {
+  --_label-font-size: var(--delete-button-label-font-size, 11px);
+  --_label-font-weight: var(--delete-button-label-font-weight, var(--font-weight-light));
+  --_button-to-label-gap: var(--delete-button-to-label-gap, 18px);
+  display: flex;
+  align-items: flex-end;
+  column-gap: var(--_button-to-label-gap);
+  font-size: var(--_label-font-size);
+  font-weight: var(--_label-font-weight);
 }

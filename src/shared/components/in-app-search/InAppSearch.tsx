@@ -54,6 +54,7 @@ export type Props = {
   genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   mode: InAppSearchMode;
   onSearchSubmit?: (query: string) => void;
+  onMatchNavigation?: () => void; // currently, there are no requirements to this callback to pass any data
 };
 
 const InAppSearch = (props: Props) => {
@@ -152,6 +153,7 @@ const InAppSearch = (props: Props) => {
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
+            onMatchNavigation={props.onMatchNavigation}
           />
         )
       )}

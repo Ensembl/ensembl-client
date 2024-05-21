@@ -9,14 +9,14 @@
   align-items: center;
   grid-column-gap: 20px;
   padding-right: 20px;
+  justify-content: start;
 }
 
 .speciesIcon {
   grid-area: icon;
-  width: 60px;
-  height: 60px;
+  width: 57px;
+  height: 57px;
   border: 1px solid var(--color-blue);
-  padding: 6px;
 }
 
 .speciesIcon img {
@@ -44,7 +44,8 @@
   align-items: center;
   display: inline-flex;
   grid-area: assembly-count;
-  justify-content: space-around;
+  column-gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .assembliesLink {
@@ -60,13 +61,6 @@
   grid-area: remove;
   justify-self: end;
   white-space: nowrap;
-}
-
-.disabledRemoveButton {
-  background-color: var(--color-grey);
-  color: var(--color-white);
-  border: 1px solid var(--color-grey);
-  cursor: default;
 }
 
 .speciesRemoveMessage {
@@ -87,7 +81,7 @@
     grid-template-areas:
       'icon species-name assembly-count usage-toggle remove'
       '. remove-message remove-message remove-message remove-message';
-    grid-template-columns: 60px fit-content(60%) 110px minmax(200px, 680px) auto 1fr;
+    grid-template-columns: 60px fit-content(60%) 1fr minmax(auto, 284px) auto;
     grid-template-rows: 80px auto;
   }
 
@@ -122,9 +116,9 @@
     padding: 0;
   }
 
-  .speciesRemove {
+  /* .speciesRemove {
     white-space: normal;
-  }
+  } */
 
   .speciesRemoveMessage {
     grid-area: remove-message;
