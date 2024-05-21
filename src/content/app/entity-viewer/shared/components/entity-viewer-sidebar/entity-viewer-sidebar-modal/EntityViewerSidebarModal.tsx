@@ -41,7 +41,7 @@ const entityViewerSidebarModals: Record<
 };
 
 const entityViewerSidebarModalTitles = {
-  [SidebarModalView.SEARCH]: 'Search',
+  [SidebarModalView.SEARCH]: 'Search this species',
   [SidebarModalView.BOOKMARKS]: 'Previously viewed',
   [SidebarModalView.DOWNLOAD]: 'Download'
 };
