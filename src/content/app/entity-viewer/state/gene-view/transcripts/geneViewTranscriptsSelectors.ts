@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
@@ -26,18 +28,19 @@ import {
   SortingRule
 } from './geneViewTranscriptsSlice';
 
-const getSliceForGene = (
-  state: RootState
-): TranscriptsStatePerGene | undefined => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeEntityId) {
-    return;
+const getSliceForGene = createSelector(
+  [
+    getEntityViewerActiveGenomeId,
+    getEntityViewerActiveEntityId,
+    (state: RootState) => state
+  ],
+  (genomeId, entityId, state): TranscriptsStatePerGene | undefined => {
+    if (!genomeId || !entityId) {
+      return;
+    }
+    return state.entityViewer.geneView.transcripts[genomeId]?.[entityId];
   }
-  return state.entityViewer.geneView.transcripts[activeGenomeId]?.[
-    activeEntityId
-  ];
-};
+);
 
 export const getExpandedTranscriptIds = (state: RootState): string[] => {
   const transcriptsSlice = getSliceForGene(state);
@@ -58,10 +61,12 @@ export const getExpandedTranscriptMoreInfoIds = (
   return transcriptsSlice?.expandedMoreInfoIds ?? [];
 };
 
-export const getFilters = (state: RootState): Filters => {
-  const transcriptsSlice = getSliceForGene(state);
-  return transcriptsSlice?.filters ?? {};
-};
+export const getFilters = createSelector(
+  [getSliceForGene],
+  (transcriptsSlice): Filters => {
+    return transcriptsSlice?.filters ?? {};
+  }
+);
 
 export const getSortingRule = (state: RootState): SortingRule => {
   const transcriptsSlice = getSliceForGene(state);
