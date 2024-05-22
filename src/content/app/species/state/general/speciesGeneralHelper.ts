@@ -17,8 +17,6 @@
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
@@ -619,14 +617,12 @@ const getExampleLinks = (props: {
           focus: focusId
         })
       },
-      entityViewer: !isEnvironment([Environment.PRODUCTION])
-        ? {
-            url: urlFor.entityViewerVariant({
-              genomeId: genomeIdForUrl,
-              variantId: exampleVariant.id
-            })
-          }
-        : undefined
+      entityViewer: {
+        url: urlFor.entityViewerVariant({
+          genomeId: genomeIdForUrl,
+          variantId: exampleVariant.id
+        })
+      }
     };
   }
 
