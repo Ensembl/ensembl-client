@@ -121,11 +121,11 @@
   margin: 0;
 }
 
+/* Using the :where selector to drop selector specificity, so that it does not compete with .speciesCount class */
 :where(.noResults p:first-child) {
   font-size: 12px;
   font-weight: var(--font-weight-light);
 }
-
 
 .warning {
   color: var(--color-red);

@@ -1,14 +1,8 @@
 .deleteButton {
-  /* background: transparent;
-  border: none; */
   height: var(--delete-button-size, 18px);
   width: var(--delete-button-size, 18px);
   fill: var(--delete-button-color, var(--color-blue));
 }
-
-/* .deleteButton {
-
-} */
 
 .deleteButtonDisabled {
   --delete-button-color: var(--color-grey);
