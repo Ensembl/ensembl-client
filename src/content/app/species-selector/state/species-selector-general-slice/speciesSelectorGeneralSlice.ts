@@ -137,8 +137,8 @@ export const commitSelectedSpeciesAndSave = createAsyncThunk(
     const newSpeciesToCommit = prepareSelectedSpeciesForCommit(selectedSpecies);
 
     const newCommittedSpecies = [
-      ...alreadyCommittedSpecies,
-      ...newSpeciesToCommit
+      ...newSpeciesToCommit,
+      ...alreadyCommittedSpecies
     ];
 
     dispatch(updateCommittedSpecies(newCommittedSpecies));
