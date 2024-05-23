@@ -18,7 +18,6 @@ import { Link } from 'react-router-dom';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
@@ -47,40 +46,31 @@ const ExampleLinks = () => {
     );
   }
 
-  const exampleLinks = (currentData ?? [])
-    .filter((exampleObject) => {
-      // TODO: remove this filter when variant view is ready for production
-      if (isEnvironment([Environment.PRODUCTION])) {
-        return exampleObject.type === 'gene';
-      } else {
-        return true;
-      }
-    })
-    .map((exampleObject) => {
-      let path = '';
+  const exampleLinks = (currentData ?? []).map((exampleObject) => {
+    let path = '';
 
-      if (exampleObject.type === 'gene') {
-        const geneUrlId = buildFocusIdForUrl({
-          type: 'gene',
-          objectId: exampleObject.id
-        });
-        path = urlHelper.entityViewer({
-          genomeId: genomeIdForUrl,
-          entityId: geneUrlId
-        });
-      } else if (exampleObject.type === 'variant') {
-        path = urlHelper.entityViewerVariant({
-          genomeId: genomeIdForUrl,
-          variantId: exampleObject.id
-        });
-      }
+    if (exampleObject.type === 'gene') {
+      const geneUrlId = buildFocusIdForUrl({
+        type: 'gene',
+        objectId: exampleObject.id
+      });
+      path = urlHelper.entityViewer({
+        genomeId: genomeIdForUrl,
+        entityId: geneUrlId
+      });
+    } else if (exampleObject.type === 'variant') {
+      path = urlHelper.entityViewerVariant({
+        genomeId: genomeIdForUrl,
+        variantId: exampleObject.id
+      });
+    }
 
-      return path ? (
-        <Link key={path} to={path}>
-          Example {exampleObject.type}
-        </Link>
-      ) : null;
-    });
+    return path ? (
+      <Link key={path} to={path}>
+        Example {exampleObject.type}
+      </Link>
+    ) : null;
+  });
 
   return <div className={styles.exampleLinks}>{exampleLinks}</div>;
 };
