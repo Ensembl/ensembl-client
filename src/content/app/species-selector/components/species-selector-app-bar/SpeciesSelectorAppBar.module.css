@@ -1,8 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: 1fr max-content;
+  grid-template-columns: auto minmax(max-content, 1fr);
   align-items: center;
-  column-gap: 46px;
+  column-gap: 4px;
 }
 
 .aside {

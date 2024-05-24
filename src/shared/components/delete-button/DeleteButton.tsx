@@ -26,17 +26,69 @@ type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'> & {
 };
 
 const DeleteButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
-  const { className, ...otherProps } = props;
-
-  const elementClasses = classNames(
-    styles.deleteButton,
-    { [styles.deleteButtonDisabled]: props.disabled },
-    className
-  );
+  const iconClasses = classNames(styles.deleteButton, {
+    [styles.deleteButtonDisabled]: props.disabled
+  });
 
   return (
-    <button {...otherProps} ref={ref} className={elementClasses}>
-      <TrashcanIcon />
+    <button {...props} ref={ref}>
+      <TrashcanIcon className={iconClasses} />
+    </button>
+  );
+};
+
+/**
+ * Design mock-ups are showing a common pattern of a delete button
+ * accompanied by a short label typically to the left of the button.
+ * Both the label and the button are clickable.
+ * This component captures this simple arrangement.
+ * For anything more complicated, please use constituent components separately.
+ */
+export const DeleteButtonWithLabel = (
+  props: Props & {
+    label?: string;
+    labelPosition?: 'left' | 'right';
+  }
+) => {
+  const {
+    label = 'Remove',
+    labelPosition = 'left',
+    onClick,
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
+
+  const componentClasses = classNames(
+    styles.deleteButtonWithLabel,
+    classNameFromProps
+  );
+
+  const iconClasses = classNames(styles.deleteButton, {
+    [styles.deleteButtonDisabled]: props.disabled
+  });
+  const deleteIcon = <TrashcanIcon className={iconClasses} />;
+
+  const buttonContent =
+    labelPosition === 'left' ? (
+      <>
+        <span>{label}</span>
+        {deleteIcon}
+      </>
+    ) : (
+      <>
+        {deleteIcon}
+        <span>{label}</span>
+      </>
+    );
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={componentClasses}
+      {...otherProps}
+    >
+      {buttonContent}
     </button>
   );
 };

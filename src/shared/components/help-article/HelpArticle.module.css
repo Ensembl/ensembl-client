@@ -3,6 +3,8 @@
   defined in helpArticleVariables.module.css
 */
 
+/* stylelint-disable no-descending-specificity */
+
 .textArticle {
   --text-column-width: 450px;
   height: 100%;

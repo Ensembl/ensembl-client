@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import SearchIcon from 'static/icons/icon_search.svg';
-
-import styles from './GeneSearchButton.module.css';
-
-type Props = {
-  onClick: () => void;
-  className?: string;
+type SpeciesSelectorGeneSearchState = {
+  query: string;
 };
 
-const GeneSearchButton = (props: Props) => {
-  const componentClasses = classNames(styles.geneSearchButton, props.className);
-
-  return (
-    <button onClick={props.onClick} className={componentClasses}>
-      <span>Find a gene</span>
-      <span className={styles.searchIconWrapper}>
-        <SearchIcon className={styles.searchIcon} />
-      </span>
-    </button>
-  );
+const initialState: SpeciesSelectorGeneSearchState = {
+  query: ''
 };
 
-export default GeneSearchButton;
+const speciesSelectorGeneSearchSlice = createSlice({
+  name: 'species-selector-gene-search',
+  initialState,
+  reducers: {
+    setQuery: (state, action: PayloadAction<string>) => {
+      state.query = action.payload;
+    }
+  },
+  selectors: {
+    getQuery: (state) => state.query
+  }
+});
+
+export const { setQuery } = speciesSelectorGeneSearchSlice.actions;
+
+export default speciesSelectorGeneSearchSlice.reducer;

@@ -9,14 +9,14 @@
   align-items: center;
   grid-column-gap: 20px;
   padding-right: 20px;
+  justify-content: start;
 }
 
 .speciesIcon {
   grid-area: icon;
-  width: 60px;
-  height: 60px;
+  width: 57px;
+  height: 57px;
   border: 1px solid var(--color-blue);
-  padding: 6px;
 }
 
 .speciesIcon img {
@@ -44,7 +44,9 @@
   align-items: center;
   display: inline-flex;
   grid-area: assembly-count;
-  justify-content: space-around;
+  column-gap: 12px;
+  flex-wrap: nowrap;
+  margin-left: 20px;
 }
 
 .assembliesLink {
@@ -60,116 +62,54 @@
   grid-area: remove;
   justify-self: end;
   white-space: nowrap;
-}
-
-.disabledRemoveButton {
-  background-color: var(--color-grey);
-  color: var(--color-white);
-  border: 1px solid var(--color-grey);
-  cursor: default;
+  padding-right: 35px;
 }
 
 .speciesRemoveMessage {
   grid-area: remove-message;
   justify-content: end;
   margin-bottom: 20px;
-}
-
-.geneSearchWrapper {
-  grid-area: search;
-  color: var(--color-blue);
-  cursor: pointer;
-  display: inline-flex;
-  column-gap: 12px;
-  white-space: nowrap;
-  justify-self: start;
-}
-
-.geneSearchWrapper svg {
-  fill: var(--color-blue);
-  width: 13px;
-}
-
-.remove {
-  grid-area: remove;
-  align-self: start;
-  white-space: nowrap;
+  padding-right: 35px;
 }
 
 @container species-page-title-area (min-width: 761px) {
   .grid {
     display: grid;
     grid-template-areas:
-      'icon species-name assembly-count usage-toggle search remove'
-      '. remove-message remove-message remove-message remove-message remove-message';
-    grid-template-columns: 60px fit-content(60%) 110px minmax(200px, 680px) auto 1fr;
+      'icon species-name assembly-count usage-toggle remove'
+      '. remove-message remove-message remove-message remove-message';
+    grid-template-columns: 60px auto minmax(180px, 1fr) minmax(auto, 284px) auto;
     grid-template-rows: 80px auto;
   }
 
-  .speciesToggle {
-    padding-left: 25px;
+  .grid:not(:has(.assemblyCountWrapper)) {
+    grid-template-areas:
+      'icon species-name usage-toggle remove'
+      '. remove-message remove-message remove-message';
+    grid-template-columns: 60px minmax(auto, 1fr) minmax(auto, 284px) auto;
   }
 }
 
 
-@container species-page-title-area (min-width: 641px) and (max-width: 760px) {
+@container species-page-title-area (max-width: 830px) {
   .grid {
     grid-template-areas:
-      'icon species-name assembly-count usage-toggle remove'
-      '. remove-message remove-message remove-message .'
-      '. search . . .';
-    grid-template-columns: 60px min-content auto 1fr;
-    grid-template-rows: 80px auto auto;
-    margin-bottom: 20px;
-  }
-
-  .speciesNameWrapper {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-  }
-
-  .assemblyName {
-    padding-top: 3px;
-    white-space: nowrap;
-  }
-
-  .speciesToggle {
-    padding: 0;
-  }
-
-  .speciesRemove {
-    white-space: normal;
-  }
-
-  .speciesRemoveMessage {
-    grid-area: remove-message;
-    justify-content: start;
-  }
-
-  .geneSearchWrapper {
-    grid-area: search;
-    margin: 0;
-  }
-
-}
-
-@container species-page-title-area (max-width: 640px) {
-  .grid {
-    grid-template-areas:
-      'icon species-name assembly-count .'
-      '. usage-toggle remove .'
-      '. remove-message remove-message .'
-      '. search . .';
-    grid-template-columns: 60px 150px 1fr;
-    grid-template-rows: 80px 0 auto 40px;
+      'icon species-name assembly-count'
+      '. usage-toggle remove'
+      '. remove-message remove-message';
+    grid-template-columns: 60px auto minmax(min-content, 1fr);
+    grid-template-rows: minmax(80px, auto) auto auto;
     grid-row-gap: 10px;
     margin-bottom: 20px;
   }
 
+  .assemblyCountWrapper {
+    margin-left: 20px;
+  }
 
   .speciesRemoveMessage {
     margin-top: 20px;
+    margin-bottom: 0;
     justify-content: start;
   }
 

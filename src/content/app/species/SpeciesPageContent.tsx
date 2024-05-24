@@ -38,10 +38,11 @@ import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import SpeciesPageSidebar from './components/species-page-sidebar/SpeciesPageSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
-import Chevron from 'src/shared/components/chevron/Chevron';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import SpeciesSidebarModal from './components/species-sidebar-modal/SpeciesSidebarModal';
 import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/SpeciesSidebarToolstrip';
+import AddButton from 'src/shared/components/add-button/AddButton';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -144,10 +145,16 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <div className={styles.topbarLeft} onClick={returnToSpeciesSelector}>
-        <Chevron direction="left" animate={false} />
-        <span className={styles.pageTitle}>Find a Species</span>
-      </div>
+      <CloseButtonWithLabel
+        className={styles.closeButton}
+        onClick={returnToSpeciesSelector}
+      />
+      <AddButton
+        onClick={returnToSpeciesSelector}
+        className={styles.addSpeciesButton}
+      >
+        Add a species
+      </AddButton>
     </div>
   );
 };

@@ -24,7 +24,7 @@ import { useAppDispatch } from 'src/store';
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import SearchIcon from 'static/icons/icon_search.svg';
+import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
 import {
   openSidebarModal,
@@ -130,10 +130,10 @@ const GeneOverview = () => {
 
       <section>
         <div className={styles.sectionContent}>
-          <div className={styles.findAGene} onClick={openSearch}>
-            <span>Find a gene</span>
-            <SearchIcon />
-          </div>
+          <GeneSearchButton
+            className={styles.geneSearchButton}
+            onClick={openSearch}
+          />
         </div>
       </section>
 

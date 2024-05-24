@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
+import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
+
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const SearchModal = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const { genomeIdForUrl } = useGenomeBrowserIds();
   const { trackSidebarSearch } = useGenomeBrowserAnalytics();
+  const dispatch = useAppDispatch();
+
+  const onSearchMatchNavigation = () => {
+    dispatch(closeBrowserSidebarModal());
+  };
 
   return (
     <section className="searchModal">
@@ -38,6 +45,7 @@ const SearchModal = () => {
             genomeIdForUrl={genomeIdForUrl as string}
             mode="sidebar"
             onSearchSubmit={trackSidebarSearch}
+            onMatchNavigation={onSearchMatchNavigation}
           />
         )}
       </div>

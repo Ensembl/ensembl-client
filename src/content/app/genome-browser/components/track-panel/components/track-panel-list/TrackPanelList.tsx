@@ -41,12 +41,11 @@ import {
   AccordionItemButton,
   AccordionItemPanel
 } from 'src/shared/components/accordion';
-
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
+import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
-import SearchIcon from 'static/icons/icon_search.svg';
 import ResetIcon from 'static/icons/icon_reset.svg';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
@@ -90,14 +89,11 @@ export const TrackPanelList = () => {
     <div className={styles.trackPanelList}>
       <FocusObject focusObject={activeFocusObject} />
       <div className={styles.modalLinksWrapper}>
-        <div className={styles.modalLink} onClick={openSearch}>
-          <span>Find a gene</span>
-          <SearchIcon />
-        </div>
-        <div className={styles.modalLink} onClick={openNavigateModal}>
+        <GeneSearchButton onClick={openSearch} />
+        <button className={styles.modalLink} onClick={openNavigateModal}>
           <span>Change location</span>
           <ResetIcon />
-        </div>
+        </button>
       </div>
 
       <div className={styles.accordionContainer}>
