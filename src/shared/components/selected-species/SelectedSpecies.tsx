@@ -50,11 +50,7 @@ const SelectedSpecies = (props: Props) => {
 };
 
 const getSpeciesLozengeProps = (props: Props) => {
-  const {
-    isActive = false,
-    species: { isEnabled },
-    disabled
-  } = props;
+  const { isActive = false, disabled } = props;
 
   // TODO: add invalid (red) species when we start having them
 
@@ -66,25 +62,15 @@ const getSpeciesLozengeProps = (props: Props) => {
     } as const;
   }
 
-  if (isActive && isEnabled) {
+  if (isActive) {
     return {
       theme: 'black',
       disabled: true,
       'data-active': true
     } as const;
-  } else if (isActive && !isEnabled) {
-    return {
-      theme: 'grey',
-      disabled: true,
-      'data-active': true
-    } as const;
-  } else if (!isActive && isEnabled) {
-    return {
-      theme: 'blue'
-    } as const;
   } else {
     return {
-      theme: 'ice-blue'
+      theme: 'blue'
     } as const;
   }
 };

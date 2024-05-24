@@ -33,7 +33,7 @@ import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/
 
 import styles from './SpeciesLozenge.module.css';
 
-type SpeciesLozengeTheme = 'blue' | 'black' | 'ice-blue' | 'grey' | 'red';
+type SpeciesLozengeTheme = 'blue' | 'black' | 'grey' | 'red';
 
 export type Props = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,

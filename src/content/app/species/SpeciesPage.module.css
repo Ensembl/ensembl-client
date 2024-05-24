@@ -13,10 +13,6 @@
   padding-left: 30px;
 }
 
-.closeButton {
-  /* margin-left: var(--double-standard-gutter); */
-}
-
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);

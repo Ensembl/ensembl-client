@@ -52,15 +52,6 @@ const SpeciesLozengeThemes = () => {
         <div className={styles.innerWrapper}>
           <SpeciesLozenge
             speciesNameDisplayOption={displayOption}
-            theme="ice-blue"
-            species={species}
-          />
-          <span>ice-blue theme</span>
-        </div>
-
-        <div className={styles.innerWrapper}>
-          <SpeciesLozenge
-            speciesNameDisplayOption={displayOption}
             theme="grey"
             species={species}
           />
