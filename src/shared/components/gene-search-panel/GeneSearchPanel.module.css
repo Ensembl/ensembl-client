@@ -1,5 +1,5 @@
 .main {
-  --inner-block-offset-left: 25px;
+  --inner-block-offset-left: 20px;
   padding-bottom: var(--global-padding-bottom);
   padding-left: var(--global-padding-left);
   padding-top: 12px;
@@ -24,7 +24,7 @@
 
 .searchLabel {
   grid-area: label;
-  margin-left: 25px;
+  margin-left: var(--inner-block-offset-left);
 }
 
 .searchField {

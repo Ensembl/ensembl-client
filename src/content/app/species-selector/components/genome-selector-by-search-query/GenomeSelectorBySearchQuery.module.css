@@ -18,6 +18,10 @@
 
 .searchFieldWrapper {
   grid-area: search-field;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 30px;
+  align-items: center;
 }
 
 .resultsSummaryWrapper {

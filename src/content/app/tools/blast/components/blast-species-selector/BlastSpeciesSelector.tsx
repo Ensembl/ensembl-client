@@ -166,7 +166,7 @@ const TopSection = (props: TopSectionProps) => {
           query={props.query}
           canAdd={false}
           onAdd={props.onGenomesAdd}
-          onCancel={props.onClose}
+          onClose={props.onClose}
         />
         <CircleLoader className={styles.loader} />
       </>
@@ -182,7 +182,7 @@ const TopSection = (props: TopSectionProps) => {
             query={props.query}
             canAdd={props.canAddGenomes}
             onAdd={props.onGenomesAdd}
-            onCancel={props.onClose}
+            onClose={props.onClose}
           />
         </div>
         <div className={styles.resultsSummaryWrapper}>

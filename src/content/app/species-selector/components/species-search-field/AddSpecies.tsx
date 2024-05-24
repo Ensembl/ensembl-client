@@ -18,7 +18,7 @@ import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import TextButton from 'src/shared/components/text-button/TextButton';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 import styles from './SpeciesSearchField.module.css';
 
@@ -26,15 +26,15 @@ export type Props = {
   query: string;
   canAdd: boolean;
   onAdd: () => void;
-  onCancel: () => void;
+  onClose: () => void;
 };
 
 const AddSpecies = (props: Props) => {
-  const { query, canAdd, onAdd, onCancel } = props;
+  const { query, canAdd, onAdd, onClose } = props;
 
   return (
     <div className={styles.grid}>
-      <label>Find a species</label>
+      <label className={styles.label}>Find a species</label>
       <ShadedInput
         size="large"
         className={styles.input}
@@ -45,7 +45,7 @@ const AddSpecies = (props: Props) => {
         <PrimaryButton disabled={!canAdd} onClick={onAdd}>
           Add
         </PrimaryButton>
-        <TextButton onClick={onCancel}>Cancel</TextButton>
+        <CloseButtonWithLabel onClick={onClose} />
       </div>
     </div>
   );

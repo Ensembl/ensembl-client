@@ -5,10 +5,16 @@
     'input controls';
   grid-template-columns: 486px max-content;
   row-gap: 10px;
-  column-gap: 45px;
+  column-gap: 30px;
 }
 
-.speciesSearchField label {
+.grid:has(.close) {
+  grid-template-areas:
+    'label . .'
+    'input controls close';
+}
+
+.label {
   grid-area: label;
   margin-left: 20px;
 }
@@ -20,6 +26,7 @@
 .controls {
   grid-area: controls;
   align-self: center;
+  margin-left: 15px;
 }
 
 .submit {
@@ -30,4 +37,9 @@
   display: flex;
   align-items: center;
   gap: 30px;
+}
+
+.close {
+  grid-area: close;
+  align-self: center;
 }
