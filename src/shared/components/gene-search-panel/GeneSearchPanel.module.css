@@ -1,13 +1,8 @@
-.panel {
-  height: 100%;
-  background-color: var(--color-light-grey);
-  padding: 65px 0 var(--global-padding-bottom) var(--global-padding-left); /* TODO: the 65px on top looks like it is something repeatable between components? */
-  position: relative;
-  overflow: hidden;
-}
-
 .main {
   --inner-block-offset-left: 25px;
+  padding-bottom: var(--global-padding-bottom);
+  padding-left: var(--global-padding-left);
+  padding-top: 12px;
   height: 100%;
   display: grid;
   grid-template-rows: [search-form] auto [search-results] 1fr;

@@ -19,8 +19,7 @@ import {
   useRef,
   useEffect,
   type FormEvent,
-  type ChangeEvent,
-  type ReactNode
+  type ChangeEvent
 } from 'react';
 import classNames from 'classnames';
 
@@ -35,11 +34,11 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
+import ModalView from 'src/shared/components/modal-view/ModalView';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
@@ -57,23 +56,9 @@ type Props = {
 
 const GeneSearchPanel = (props: Props) => {
   return (
-    <Panel {...props}>
+    <ModalView {...props}>
       <Main {...props} />
-    </Panel>
-  );
-};
-
-/**
- * This component will likely be extracted into its own shared component.
- * Its responsibility is to create a 100%-high grey div with a close button and space for children
- * I am not sure what its name is going to be. "Panel" is taken (not that it's a very descriptive name anyway).
- */
-const Panel = (props: { onClose: () => void; children: ReactNode }) => {
-  return (
-    <div className={styles.panel}>
-      {props.children}
-      <CloseButton className={styles.closeButton} onClick={props.onClose} />
-    </div>
+    </ModalView>
   );
 };
 
@@ -121,7 +106,7 @@ const GeneSearchForm = (props: {
   query: string;
 }) => {
   const [searchInput, setSearchInput] = useState(props.query);
-  const [shouldDisableSubmit, setShouldDisableSubmit] = useState(false);
+  const [shouldDisableSubmit, setShouldDisableSubmit] = useState(true);
 
   useEffect(() => {
     if (props.query !== searchInput) {
@@ -142,8 +127,9 @@ const GeneSearchForm = (props: {
   };
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(event.target.value);
-    setShouldDisableSubmit(false);
+    const newQuery = event.target.value;
+    setSearchInput(newQuery);
+    setShouldDisableSubmit(!newQuery);
   };
 
   return (
