@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
@@ -31,6 +32,7 @@ import SpeciesSearchResultsTable from 'src/content/app/species-selector/componen
 import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
@@ -110,9 +112,14 @@ type TopSectionProps = Props & {
 
 const TopSection = (props: TopSectionProps) => {
   const { genomes, stagedGenomes, speciesImageUrl } = props;
+  const navigate = useNavigate();
 
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);
+  };
+
+  const onClose = () => {
+    navigate(-1);
   };
 
   const selectedGenomesCount = genomes.filter(
@@ -140,6 +147,7 @@ const TopSection = (props: TopSectionProps) => {
       >
         Add
       </PrimaryButton>
+      <CloseButtonWithLabel className={styles.closeButton} onClick={onClose} />
       <div className={styles.filterWrapper}>
         <GenomesFilterField onFilterChange={props.onFilterChange} />
       </div>
