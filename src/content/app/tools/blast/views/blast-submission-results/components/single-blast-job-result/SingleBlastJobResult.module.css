@@ -8,8 +8,15 @@
     'sequence-label hits-diagram species'
     'table table table';
 
-  gap: 20px;
-  padding-bottom: 20px;
+  column-gap: 20px;
+  padding-bottom: 45px;
+}
+
+.resultsSummaryRow:has(.hitLabel:not(:first-child)) {
+  grid-template-areas:
+    'sequence-label hits-diagram species'
+    'sequence-label-2 hits-diagram-2 .'
+    'table table table';
 }
 
 .resultsSummaryRow:first-of-type {
@@ -36,15 +43,25 @@
 }
 
 .hitLabel {
+  grid-area: sequence-label;
   text-align: right;
   padding-right: 20px;
 }
 
+.hitLabel:not(:first-child) {
+  grid-area: sequence-label-2;
+}
+
 .summaryPlot {
-  grid-column: hits-diagram;
+  grid-area: hits-diagram;
+}
+
+.summaryPlot:not(:nth-child(2)) {
+  grid-area: hits-diagram-2;
 }
 
 .blastSpecies {
+  grid-area: species;
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -78,6 +95,7 @@
 }
 
 .hitsTable {
+  margin-top: 20px;
   padding: 20px;
   border-top: 1px solid var(--color-grey);
   border-bottom: 1px solid var(--color-grey);

@@ -23,6 +23,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getStructuredContentFromCellInRow } from 'src/shared/components/data-table/dataTableHelpers';
 
+import useGroupedBlastHits from './useGroupedBlastHits';
+
 import DataTable from 'src/shared/components/data-table/DataTable';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
@@ -220,8 +222,6 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   const shouldUseGenomicHitsDiagram =
     blastDatabase === 'dna_sm' || blastDatabase === 'dna'; // NOTE: works for now; but likely to expand in the future
 
-  const alignmentsCount = countAlignments(jobResult.data);
-
   if (jobResult.status === 'FAILURE') {
     return (
       <div
@@ -242,21 +242,18 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
   } else {
     return (
       <div className={styles.resultsSummaryRow}>
-        <div className={styles.hitLabel}>
-          <span>{alignmentsCount} </span>
-          <span>{pluralise('hit', alignmentsCount)}</span>
-        </div>
-        <div className={styles.summaryPlot}>
-          {shouldUseGenomicHitsDiagram ? (
-            <BlastGenomicHitsDiagram
-              genomeId={speciesInfo.genome_id}
-              job={jobResult.data}
-              width={diagramWidth}
-            />
-          ) : (
-            <BlastHitsDiagram job={jobResult.data} width={diagramWidth} />
-          )}
-        </div>
+        {shouldUseGenomicHitsDiagram ? (
+          <GenomicHitsDiagramContainer
+            genomeId={speciesInfo.genome_id}
+            job={jobResult.data}
+            diagramWidth={diagramWidth}
+          />
+        ) : (
+          <NonGenomicHitsDiagramContainer
+            job={jobResult.data}
+            diagramWidth={diagramWidth}
+          />
+        )}
         <BlastSpecies
           species={speciesInfo}
           isExpanded={isExpanded}
@@ -273,6 +270,102 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
       </div>
     );
   }
+};
+
+const GenomicHitsDiagramContainer = (props: {
+  genomeId: string;
+  job: BlastJobResult;
+  diagramWidth: number;
+}) => {
+  const { genomeId, job, diagramWidth } = props;
+
+  const { currentData, isFetching, isError } = useGroupedBlastHits({
+    genomeId,
+    job
+  });
+
+  if (isFetching) {
+    // perhaps show some kind of loading indicator?
+    return null;
+  }
+  if (isError) {
+    return (
+      <div className={styles.summaryPlot}>
+        There has been an error retrieving BLAST results data
+      </div>
+    );
+  }
+  if (!currentData) {
+    return null;
+  }
+
+  const { chromosomeHits, nonChromosomeHits, topMatches } = currentData;
+  const chromosomeAlignmentsCount = countAlignments(chromosomeHits);
+  const nonChromosomeAlignmentsCount = countAlignments(nonChromosomeHits);
+
+  const chromosomeHitsSection = chromosomeHits.length ? (
+    <>
+      <div className={styles.hitLabel}>
+        <span>{chromosomeAlignmentsCount} </span>
+        <span>{pluralise('hit', chromosomeAlignmentsCount)}</span>
+      </div>
+      <div className={styles.summaryPlot}>
+        <BlastGenomicHitsDiagram
+          genomeId={genomeId}
+          hits={chromosomeHits}
+          width={diagramWidth}
+          topMatches={topMatches}
+        />
+      </div>
+    </>
+  ) : null;
+
+  const nonChromosomeHitsSection = nonChromosomeHits.length ? (
+    <>
+      <div className={styles.hitLabel}>
+        <span>{nonChromosomeAlignmentsCount} </span>
+        <span>{pluralise('hit', nonChromosomeAlignmentsCount)}</span>
+      </div>
+      <div className={styles.summaryPlot}>
+        in {nonChromosomeHits.length} unassembled regions
+      </div>
+    </>
+  ) : null;
+
+  if (!chromosomeHitsSection && !nonChromosomeHitsSection) {
+    return (
+      <div className={styles.hitLabel}>
+        <span>0 </span>
+        <span>hits</span>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {chromosomeHitsSection}
+      {nonChromosomeHitsSection}
+    </>
+  );
+};
+
+const NonGenomicHitsDiagramContainer = (props: {
+  job: BlastJobResult;
+  diagramWidth: number;
+}) => {
+  const { job, diagramWidth } = props;
+  const alignmentsCount = countAlignments(job.hits);
+  return (
+    <>
+      <div className={styles.hitLabel}>
+        <span>{alignmentsCount} </span>
+        <span>{pluralise('hit', alignmentsCount)}</span>
+      </div>
+      <div className={styles.summaryPlot}>
+        <BlastHitsDiagram job={job} width={diagramWidth} />
+      </div>
+    </>
+  );
 };
 
 const BlastSpecies = (props: {
@@ -584,8 +677,8 @@ const renderGenomicLocation = (
   return <Link to={genomeBrowserLink}>{locationString}</Link>;
 };
 
-const countAlignments = (blastJob: BlastJobResult) => {
-  return blastJob.hits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
+const countAlignments = (blastHits: BlastHit[]) => {
+  return blastHits.reduce((count, hit) => count + hit.hit_hsps.length, 0);
 };
 
 export default SingleBlastJobResult;
