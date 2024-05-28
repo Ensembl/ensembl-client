@@ -47,6 +47,7 @@
   grid-area: sequence-label;
   text-align: right;
   font-size: 12px;
+  font-weight: var(--font-weight-bold);
   padding-right: 20px;
 }
 
