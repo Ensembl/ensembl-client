@@ -46,12 +46,6 @@ const useGroupedBlastHits = (params: {
     };
   }
 
-  /**
-   * If no chromosomeHits and no nonChromosomeHits, output 0 hits
-   * If chromosomeHits and no nonChromosomeHits, output only chromosome hits
-   * If no chromosomeHits, but some nonChromosomeHits, output only nonChromosomeHits
-   */
-
   const { chromosomeHits, nonChromosomeHits } = partitionBlastHits({
     karyotype: genomeKaryotype,
     job
