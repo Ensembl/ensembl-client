@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 .resultsSummaryRow {
   display: grid;
   grid-template-columns:
@@ -9,10 +11,13 @@
     'table table table';
 
   column-gap: 20px;
-  padding-bottom: 45px;
+  padding-bottom: 46px;
 }
 
-.resultsSummaryRow:has(.hitLabel:not(:first-child)) {
+/* Change the grid for cases when there are two pieces of information about BLAST hit counts
+ * (i.e. number of BLAST hits against chromosomes vs against other top-level regions)
+ */
+.resultsSummaryRow:has(.hitLabel ~ .hitLabel) {
   grid-template-areas:
     'sequence-label hits-diagram species'
     'sequence-label-2 hits-diagram-2 .'
@@ -21,10 +26,6 @@
 
 .resultsSummaryRow:first-of-type {
   padding-top: 24px;
-}
-
-.resultsSummaryRow:last-of-type {
-  padding-bottom: 46px;
 }
 
 .tableWrapper {
@@ -45,18 +46,26 @@
 .hitLabel {
   grid-area: sequence-label;
   text-align: right;
+  font-size: 12px;
   padding-right: 20px;
 }
 
-.hitLabel:not(:first-child) {
+/* There will only be at most two elements with .hitLabel class;
+ * but they will be separated by an element with the .summaryPlot class
+ */
+.hitLabel ~ .hitLabel {
   grid-area: sequence-label-2;
 }
 
 .summaryPlot {
   grid-area: hits-diagram;
+  font-size: 12px;
 }
 
-.summaryPlot:not(:nth-child(2)) {
+/* There will only be at most two elements with .summaryPlot class;
+ * but they will be separated by an element with the .hitLabel class
+ */
+.summaryPlot ~ .summaryPlot {
   grid-area: hits-diagram-2;
 }
 
@@ -122,4 +131,12 @@
   grid-column: failed-status;
   justify-self: end;
   color: var(--color-red);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.strong {
+
 }

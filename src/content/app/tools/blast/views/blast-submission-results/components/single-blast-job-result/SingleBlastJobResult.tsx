@@ -307,7 +307,9 @@ const GenomicHitsDiagramContainer = (props: {
     <>
       <div className={styles.hitLabel}>
         <span>{chromosomeAlignmentsCount} </span>
-        <span>{pluralise('hit', chromosomeAlignmentsCount)}</span>
+        <span className={styles.light}>
+          {pluralise('hit', nonChromosomeAlignmentsCount)}
+        </span>
       </div>
       <div className={styles.summaryPlot}>
         <BlastGenomicHitsDiagram
@@ -324,10 +326,14 @@ const GenomicHitsDiagramContainer = (props: {
     <>
       <div className={styles.hitLabel}>
         <span>{nonChromosomeAlignmentsCount} </span>
-        <span>{pluralise('hit', nonChromosomeAlignmentsCount)}</span>
+        <span className={styles.light}>
+          {pluralise('hit', nonChromosomeAlignmentsCount)}
+        </span>
       </div>
       <div className={styles.summaryPlot}>
-        in {nonChromosomeHits.length} unassembled regions
+        <span className={styles.light}>in</span>
+        {` ${nonChromosomeHits.length} `}
+        <span className={styles.light}>unassembled regions</span>
       </div>
     </>
   ) : null;
