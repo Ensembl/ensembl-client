@@ -64,11 +64,11 @@ const useGroupedBlastHits = (params: {
 };
 
 /**
- * Separate BLAST hits into the ones that occurred on chromosomes
+ * Separate BLAST hits into the ones that matched chromosomes
  * (as defined by whatever our apis include in the "karyotype" response),
- * and the rest.
+ * and the ones that matched other top-level regions.
  *
- * Only the hits against chromosomes will be drawn in the diagram.
+ * Only the hits that matched chromosomes will be drawn in the diagram.
  */
 const partitionBlastHits = ({
   karyotype,
