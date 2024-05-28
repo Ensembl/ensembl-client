@@ -17,7 +17,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
-import SpeciesSearchResultsModalAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
+import SpeciesSearchResultsAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';
 import SpeciesManagerAppBar from './views/species-manager/species-manager-app-bar/SpeciesManagerAppBar';
 import SpeciesSelectorResultsView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
@@ -30,7 +30,7 @@ const SpeciesSelector = () => {
   const appBar = (
     <Routes>
       <Route index element={<SpeciesSelectorAppBar />} />
-      <Route path="/search" element={<SpeciesSearchResultsModalAppBar />} />
+      <Route path="/search" element={<SpeciesSearchResultsAppBar />} />
       <Route path="/search/gene" element={<SpeciesSelectorAppBar />} />
       <Route path="/manage" element={<SpeciesManagerAppBar />} />
     </Routes>

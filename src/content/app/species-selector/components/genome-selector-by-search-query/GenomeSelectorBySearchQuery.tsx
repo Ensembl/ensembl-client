@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useDeferredValue } from 'react';
+import { useState, useLayoutEffect, useDeferredValue } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
@@ -49,7 +49,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData, isLoading } = result;
+  const { currentData, isFetching } = result;
 
   const query = searchParams.get('query') as string;
 
@@ -69,7 +69,8 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
 
   const deferredGenomes = useDeferredValue(genomes);
 
-  useEffect(() => {
+  // trigger the query before the component had a chance to render
+  useLayoutEffect(() => {
     searchTrigger({ query });
   }, [query]);
 
@@ -94,7 +95,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     <div className={styles.main}>
       <TopSection
         query={query}
-        isLoading={isLoading}
+        isLoading={isFetching}
         searchResults={currentData}
         canAddGenomes={stagedGenomes.length > 0}
         canSubmitSearch={canSubmitSearch}
@@ -143,7 +144,7 @@ const TopSection = (props: TopSectionProps) => {
           query={props.query}
           canAdd={false}
           onAdd={props.onGenomesAdd}
-          onCancel={props.onClose}
+          onClose={props.onClose}
         />
         <CircleLoader className={styles.loader} />
       </>
@@ -159,7 +160,7 @@ const TopSection = (props: TopSectionProps) => {
             query={props.query}
             canAdd={props.canAddGenomes}
             onAdd={props.onGenomesAdd}
-            onCancel={props.onClose}
+            onClose={props.onClose}
           />
         </div>
         <div className={styles.resultsSummaryWrapper}>
@@ -181,6 +182,7 @@ const TopSection = (props: TopSectionProps) => {
             onInput={props.onSearchInput}
             canSubmit={props.canSubmitSearch}
             onSearchSubmit={props.onSearchSubmit}
+            onClose={props.onClose}
           />
         </div>
         <div className={styles.resultsSummaryWrapper}>

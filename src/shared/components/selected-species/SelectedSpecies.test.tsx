@@ -18,7 +18,6 @@ import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
-import merge from 'lodash/fp/merge';
 import createRootReducer from 'src/root/rootReducer';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -44,15 +43,9 @@ const minimalProps = {
   onClick: jest.fn()
 };
 
-const mockState = {
-  committedItems: [],
-  speciesNameDisplayOption: 'assembly-accession-id'
-};
-
 describe('<SelectedSpecies />', () => {
   const store = configureStore({
-    reducer: createRootReducer(),
-    preloadedState: mockState as any
+    reducer: createRootReducer()
   });
   const renderSelectedSpecies = (props: SelectedSpeciesProps) =>
     render(
@@ -68,13 +61,6 @@ describe('<SelectedSpecies />', () => {
       expect(lozenge.classList.contains('themeBlack')).toBe(true);
     });
 
-    it('has correct classes when active and not enabled', () => {
-      const props = set('species.isEnabled', false, minimalProps);
-      const { container } = renderSelectedSpecies(props);
-      const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('themeGrey')).toBe(true);
-    });
-
     it('has correct classes when inactive and enabled', () => {
       const props = set('isActive', false, minimalProps);
       const { container } = renderSelectedSpecies(props);
@@ -82,14 +68,11 @@ describe('<SelectedSpecies />', () => {
       expect(lozenge.classList.contains('themeBlue')).toBe(true);
     });
 
-    it('has correct classes when inactive and not enabled', () => {
-      const props = merge(minimalProps, {
-        isActive: false,
-        species: { isEnabled: false }
-      });
+    it('has correct classes when disabled', () => {
+      const props = { ...minimalProps, disabled: true };
       const { container } = renderSelectedSpecies(props);
       const lozenge = container.firstChild as HTMLElement;
-      expect(lozenge.classList.contains('themeIceBlue')).toBe(true);
+      expect(lozenge.classList.contains('themeGrey')).toBe(true);
     });
   });
 

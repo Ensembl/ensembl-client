@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -35,9 +35,9 @@ type SpeciesAppBarProps = {
 
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
   const activeGenomeId = useSelector(getActiveGenomeId);
-  const species = useSelector(getCommittedSpecies);
+  const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
 
-  const speciesTabs = species.map((species, index) => (
+  const speciesTabs = enabledCommittedSpecies.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}

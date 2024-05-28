@@ -20,7 +20,7 @@ import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getQuery as readStoredGeneQuery } from 'src/content/app/species-selector/state/species-selector-gene-search-slice/speciesSelectorGeneSearchSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
@@ -38,16 +38,16 @@ import styles from './SpeciesSelectorAppBar.module.css';
 export const placeholderMessage =
   'Find and add your favourite species to use them across the site';
 
-const PlaceholderMessage = () => (
+export const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
 export const SpeciesSelectorAppBar = () => {
-  const selectedSpecies = useAppSelector(getCommittedSpecies);
+  const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
 
   const mainContent =
-    selectedSpecies.length > 0 ? (
-      <AppBarMainContent selectedSpecies={selectedSpecies} />
+    enabledCommittedSpecies.length > 0 ? (
+      <AppBarMainContent selectedSpecies={enabledCommittedSpecies} />
     ) : (
       <PlaceholderMessage />
     );

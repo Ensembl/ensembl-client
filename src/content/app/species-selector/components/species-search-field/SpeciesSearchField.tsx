@@ -20,6 +20,7 @@ import classNames from 'classnames';
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 import styles from './SpeciesSearchField.module.css';
 
@@ -28,10 +29,11 @@ export type Props = {
   onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
   onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
+  onClose?: () => void;
 };
 
 export const SpeciesSearchField = (props: Props) => {
-  const { query, onInput, canSubmit = true } = props;
+  const { query, onInput, canSubmit = true, onClose } = props;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,7 +42,7 @@ export const SpeciesSearchField = (props: Props) => {
 
   return (
     <form className={styles.grid} onSubmit={onSubmit}>
-      <label>Find a species</label>
+      <label className={styles.label}>Find a species</label>
       <ShadedInput
         size="large"
         type="search"
@@ -57,6 +59,9 @@ export const SpeciesSearchField = (props: Props) => {
       >
         Find
       </PrimaryButton>
+      {onClose && (
+        <CloseButtonWithLabel className={styles.close} onClick={onClose} />
+      )}
     </form>
   );
 };

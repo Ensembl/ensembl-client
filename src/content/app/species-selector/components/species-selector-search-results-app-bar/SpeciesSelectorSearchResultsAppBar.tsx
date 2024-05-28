@@ -14,36 +14,40 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'src/store';
+
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
+import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import { PlaceholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
-const SpeciesSearchResultsModalAppBar = () => {
+const SpeciesSearchResultsAppBar = () => {
+  const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
+
+  const mainContent = enabledCommittedSpecies.length ? (
+    <SpeciesTabsSlider>
+      {enabledCommittedSpecies.map((species) => (
+        <SelectedSpecies
+          key={species.genome_id}
+          species={species}
+          disabled={true}
+        />
+      ))}
+    </SpeciesTabsSlider>
+  ) : (
+    <PlaceholderMessage />
+  );
+
   return (
     <AppBar
       topLeft={<AppName>Species Selector</AppName>}
-      mainContent={<CloseModalView />}
+      mainContent={mainContent}
       aside={<HelpPopupButton slug="species-selector-intro" />}
     />
   );
 };
 
-const CloseModalView = () => {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(-1);
-  };
-
-  return (
-    <CloseButtonWithLabel
-      label="Find a species"
-      labelPosition="right"
-      onClick={handleClick}
-    />
-  );
-};
-
-export default SpeciesSearchResultsModalAppBar;
+export default SpeciesSearchResultsAppBar;
