@@ -342,7 +342,7 @@ const GenomicHitsDiagramContainer = (props: {
     return (
       <div className={styles.hitLabel}>
         <span>0 </span>
-        <span>hits</span>
+        <span className={styles.light}>hits</span>
       </div>
     );
   }
