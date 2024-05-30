@@ -15,7 +15,6 @@
  */
 
 import { useState } from 'react';
-import sortBy from 'lodash/sortBy';
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
@@ -24,26 +23,29 @@ import RegionWithoutMatches from './BlastGenomicRegionWithoutMatches';
 import PillButton from 'src/shared/components/pill-button/PillButton';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import type { BlastJobResult } from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastHit } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastGenomicHitsDiagram.module.css';
 
 type Props = {
   genomeId: string;
-  job: BlastJobResult;
+  hits: BlastHit[];
+  topMatches: {
+    start: number;
+    end: number;
+    regionName: string;
+  }[];
   width: number;
 };
 
 const BlastGenomicHitsDiagram = (props: Props) => {
-  const { genomeId, job, width } = props;
+  const { genomeId, hits, topMatches, width } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const { currentData: genomeKaryotype } = useGenomeKaryotypeQuery(genomeId); // the karyotype data has properly sorted top-level sequences
 
   if (!genomeKaryotype) {
     return null;
   }
-
-  const topMatches = getTopMatchesWithRegionNames(job);
 
   // For the compact view, select regions with top five matches, and deduplicate them
   const regionNamesForCompactView = new Set(
@@ -53,9 +55,7 @@ const BlastGenomicHitsDiagram = (props: Props) => {
     .map(({ name }) => name)
     .filter((name) => regionNamesForCompactView.has(name));
 
-  const regionNamesForExpandedView = new Set(
-    job.hits.map((hit) => hit.hit_acc)
-  );
+  const regionNamesForExpandedView = new Set(hits.map((hit) => hit.hit_acc));
   const sortedRegionNamesForExpandedView = genomeKaryotype
     .map(({ name }) => name)
     .filter((name) => regionNamesForExpandedView.has(name));
@@ -77,7 +77,7 @@ const BlastGenomicHitsDiagram = (props: Props) => {
       {regionNamesForDisplay.map((name) => (
         <BlastGenomicRegionHeatmap
           key={name}
-          job={job}
+          hits={hits}
           width={width}
           regionName={name}
           topHits={topMatches.filter((match) => match.regionName === name)}
@@ -116,23 +116,6 @@ const RegionsExpandToggle = (props: {
       )}
     </div>
   );
-};
-
-const getTopMatchesWithRegionNames = (job: BlastJobResult) => {
-  // order all hit_hsps by their e-value, and return regions containing the top five
-
-  const hitHspsWithRegionName = job.hits.flatMap((hit) => {
-    return hit.hit_hsps.map((hit_hsp) => ({
-      start: Math.min(hit_hsp.hsp_hit_from, hit_hsp.hsp_hit_to),
-      end: Math.max(hit_hsp.hsp_hit_from, hit_hsp.hsp_hit_to),
-      eValue: hit_hsp.hsp_expect,
-      regionName: hit.hit_acc
-    }));
-  });
-
-  const sortedHsps = sortBy(hitHspsWithRegionName, 'eValue');
-
-  return sortedHsps.slice(0, 5);
 };
 
 export default BlastGenomicHitsDiagram;

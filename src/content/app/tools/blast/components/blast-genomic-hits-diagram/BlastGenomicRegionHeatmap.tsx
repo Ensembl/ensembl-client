@@ -25,10 +25,7 @@ import {
   ELEMENT_HEIGHT
 } from './blastGenomicHitsDiagramConstants';
 
-import type {
-  BlastHit,
-  BlastJobResult
-} from 'src/content/app/tools/blast/types/blastJob';
+import type { BlastHit } from 'src/content/app/tools/blast/types/blastJob';
 
 import styles from './BlastGenomicHitsDiagram.module.css';
 
@@ -38,15 +35,15 @@ type HitLocation = {
 };
 
 type Props = {
-  job: BlastJobResult;
+  hits: BlastHit[];
   width: number;
   regionName: string; // name of the genomic region (chromosome) that the heatmap is built for
   topHits?: HitLocation[];
 };
 
 const BlastGenomicRegionHeatmap = (props: Props) => {
-  const { width, job, regionName } = props;
-  const region = job.hits.find((hit) => hit.hit_acc === regionName) as BlastHit;
+  const { width, hits, regionName } = props;
+  const region = hits.find((hit) => hit.hit_acc === regionName) as BlastHit;
   const regionLength = region.hit_len;
 
   const scale = scaleLinear()
