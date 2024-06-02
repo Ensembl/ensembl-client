@@ -1,0 +1,6 @@
+.container {
+  margin-top: 22px;
+  margin-left: var(--double-standard-gutter);
+  margin-bottom: var(--global-padding-bottom);
+  max-width: 1160px;
+}

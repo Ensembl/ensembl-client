@@ -16,11 +16,7 @@
 
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
-export enum Environment {
-  DEVELOPMENT = 'development',
-  INTERNAL = 'internal',
-  PRODUCTION = 'production'
-}
+type DeploymentEnvironment = 'development' | 'internal' | 'production';
 
 const defaultEnvironment = {
   buildEnvironment: 'production',
@@ -42,14 +38,14 @@ export const readEnvironment = (): typeof defaultEnvironment => {
   }
 };
 
-// Deployment environment
-export const isEnvironment = (environment: Environment[]): boolean => {
+// Deployment environment check
+export const isProductionEnvironment = () => {
   const currentEnvironment = getDeploymentEnvironment();
-  return environment.includes(currentEnvironment);
+  return currentEnvironment === 'production';
 };
 
 const getDeploymentEnvironment = () =>
-  readEnvironment().deploymentEnvironment as Environment;
+  readEnvironment().deploymentEnvironment as DeploymentEnvironment;
 
 export const isServer = (): boolean => {
   return typeof window === 'undefined';

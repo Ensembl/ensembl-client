@@ -34,6 +34,9 @@ import EntityViewerPage, {
 import BlastPage, {
   serverFetch as blastServerFetch
 } from 'src/content/app/tools/blast/BlastPage';
+import VepPage, {
+  serverFetch as vepServerFetch
+} from 'src/content/app/tools/vep/VepPage';
 import AboutPage, {
   serverFetch as aboutPageServerFetch
 } from 'src/content/app/about/AboutPage';
@@ -84,6 +87,11 @@ const routes: RouteConfig[] = [
     path: '/blast/*',
     element: <BlastPage />,
     serverFetch: blastServerFetch
+  },
+  {
+    path: '/vep/*',
+    element: <VepPage />,
+    serverFetch: vepServerFetch
   },
   {
     path: '/about/*',

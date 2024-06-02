@@ -1,0 +1,9 @@
+.container {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--form-section-border-color, var(--color-medium-light-grey));
+}
+
+.container + .container {
+  border-top: none;
+}

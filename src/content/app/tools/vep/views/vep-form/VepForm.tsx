@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as VEPIcon } from './VEPIcon';
+import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
+
+import styles from './VepForm.module.css';
+
+const VepForm = () => {
+  return (
+    <div className={styles.container}>
+      <FormSection>Select species</FormSection>
+      <FormSection>Add variants</FormSection>
+    </div>
+  );
+};
+
+export default VepForm;
