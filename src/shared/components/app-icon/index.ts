@@ -20,4 +20,4 @@ export { default as GlobalSearchIcon } from './GlobalSearchIcon';
 export { default as EntityViewerIcon } from './EntityViewerIcon';
 export { default as BlastIcon } from './BlastIcon';
 export { default as HelpIcon } from './HelpIcon';
-export { default as VEPIcon } from './VEPIcon';
+export { default as VepIcon } from './VepIcon';

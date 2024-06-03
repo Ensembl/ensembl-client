@@ -17,7 +17,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import VepAppBar from './components/vep-app-bar/VepAppBar';
-import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import VepTopBar from './components/vep-top-bar/VepTopBar';
 import VepForm from './views/vep-form/VepForm';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
@@ -33,7 +33,7 @@ const VepPageContent = () => {
 const Main = () => {
   return (
     <div>
-      <ToolsTopBar>Tools top bar content</ToolsTopBar>
+      <VepTopBar />
 
       <Routes>
         <Route index={true} element={<VepForm />} />

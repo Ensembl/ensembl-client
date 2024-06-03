@@ -20,6 +20,7 @@ import {
   GlobalSearchIcon,
   EntityViewerIcon,
   BlastIcon,
+  VepIcon,
   HelpIcon
 } from 'src/shared/components/app-icon';
 
@@ -46,6 +47,10 @@ export const AppIconStory = () => (
     <div className={styles.appIconWrapper}>
       <BlastIcon />
       <div>Blast</div>
+    </div>
+    <div className={styles.appIconWrapper}>
+      <VepIcon />
+      <div>VEP</div>
     </div>
     <div className={styles.appIconWrapper}>
       <HelpIcon />

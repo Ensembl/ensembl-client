@@ -15,14 +15,48 @@
  */
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
+import PlusButton from 'src/shared/components/plus-button/PlusButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
+import { DeleteButtonWithLabel } from 'src/shared/components/delete-button/DeleteButton';
 
 import styles from './VepForm.module.css';
 
 const VepForm = () => {
   return (
     <div className={styles.container}>
-      <FormSection>Select species</FormSection>
-      <FormSection>Add variants</FormSection>
+      <div className={styles.topmostAreaGrid}>
+        <div className={styles.submissionName}>
+          <label>Submission name</label>
+          <ShadedInput placeholder="Optional" />
+        </div>
+        <div className={styles.resetForm}>
+          <DeleteButtonWithLabel label="Reset" disabled={true} />
+        </div>
+      </div>
+
+      <FormSection className={styles.formSection}>
+        <div className={styles.topFormSectionRegularGrid}>
+          <div className={styles.topFormSectionName}>Species</div>
+          <div className={styles.topFormSectionMain}>
+            <TextButton>Select a species / assembly</TextButton>
+          </div>
+          <div className={styles.topFormSectionToggle}>
+            <PlusButton />
+          </div>
+        </div>
+      </FormSection>
+      <FormSection className={styles.formSection}>
+        <div className={styles.topFormSectionRegularGrid}>
+          <div className={styles.topFormSectionName}>Variants</div>
+          <div className={styles.topFormSectionMain}>
+            <TextButton disabled={true}>Add variants</TextButton>
+          </div>
+          <div className={styles.topFormSectionToggle}>
+            <PlusButton disabled={true} />
+          </div>
+        </div>
+      </FormSection>
     </div>
   );
 };

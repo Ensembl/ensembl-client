@@ -17,7 +17,7 @@
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
-import { VEPIcon } from 'src/shared/components/app-icon';
+import { VepIcon } from 'src/shared/components/app-icon';
 
 /**
  * Similarly to BlastLaunchbarButton, this button will show a dot
@@ -34,7 +34,7 @@ const VepLaunchbarButton = () => {
     <LaunchbarButtonWithNotification
       path={'/vep'}
       description="VEP"
-      icon={VEPIcon}
+      icon={VepIcon}
       notification={null}
     />
   );

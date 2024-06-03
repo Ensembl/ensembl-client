@@ -43,3 +43,11 @@
     50% 100%
   ); /* idea from https://moderncss.dev/custom-select-styles-with-pure-css */
 }
+
+.disabled select {
+  border: var(--simple-select-disabled-border, 1px solid var(--color-grey));
+}
+
+.disabled::after {
+  background-color: var(--simple-select-disabled-arrowhead-color, var(--color-grey));
+}

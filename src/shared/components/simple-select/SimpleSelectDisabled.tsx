@@ -13,22 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { memo } from 'react';
-import classNames from 'classnames';
-
-import SVGIcon from 'static/icons/icon_launchbar_vep.svg';
-
-import styles from './AppIcon.module.css';
-
-const BlastIcon = () => {
-  const elementClasses = classNames(styles.appIcon, styles.vep);
-
-  return (
-    <div className={elementClasses}>
-      <SVGIcon />
-    </div>
-  );
-};
-
-export default memo(BlastIcon);

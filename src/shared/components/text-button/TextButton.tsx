@@ -25,7 +25,11 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
 };
 
 export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(styles.textButton, props.className);
+  const buttonClasses = classNames(
+    styles.textButton,
+    { [styles.disabled]: props.disabled },
+    props.className
+  );
 
   return (
     <button {...props} className={buttonClasses}>

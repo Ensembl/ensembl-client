@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
+
 import type { ReactNode } from 'react';
 
 import styles from './FormSection.module.css';
@@ -42,10 +44,13 @@ import styles from './FormSection.module.css';
 
 type Props = {
   children: ReactNode;
+  className?: string;
 };
 
 const FormSection = (props: Props) => {
-  return <div className={styles.container}>{props.children}</div>;
+  const componentClasses = classNames(styles.container, props.className);
+
+  return <div className={componentClasses}>{props.children}</div>;
 };
 
 export default FormSection;

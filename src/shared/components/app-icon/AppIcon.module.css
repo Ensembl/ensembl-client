@@ -49,6 +49,13 @@ get used when AppIcon is placed inside of the ImageButton component */
   height: 75%;
 }
 
+.vep svg {
+  --image-button-svg-width: 95%;
+  --image-button-svg-height: 95%;
+  width: 95%;
+  height: 95%;
+}
+
 .help svg {
   --image-button-svg-width: 70%;
   --image-button-svg-height: 70%;

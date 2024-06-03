@@ -4,3 +4,70 @@
   margin-bottom: var(--global-padding-bottom);
   max-width: 1160px;
 }
+
+/*
+*  THE TOPMOST AREA, ABOVE OTHER FORM SECTIONS
+*/
+.topmostAreaGrid {
+  --padding-side: 42px;
+  display: grid;
+  grid-template-columns: [submission-name-field] 1fr [form-reset] max-content;
+  align-items: end;
+  padding-left: var(--padding-side);
+  padding-right: var(--padding-side);
+  margin-bottom: 20px;
+}
+
+.submissionName {
+  grid-column: submission-name-field;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+  font-weight: var(--font-weight-light);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.resetForm {
+  grid-column: form-reset;
+}
+
+
+.formSection {
+  min-height: 62px;
+}
+
+/*
+*  TOP SECTIONS OF THE FORM
+*/
+
+/* Grid to use to display the regular content of the section, i.e. not the expanded content */
+.topFormSectionRegularGrid {
+  --column-gap: 20px;
+  --padding-side: 42px;
+  display: grid;
+  grid-template-columns:
+    [section-name] calc(152px - var(--column-gap))
+    [section-main-content] 1fr
+    [section-toggle] auto;
+  column-gap: var(--column-gap);
+  align-items: center;
+  height: 62px;
+}
+
+.topFormSectionName {
+  grid-column: section-name;
+  font-weight: var(--font-weight-light);
+  padding-left: var(--padding-side);
+}
+
+.topFormSectionMain {
+  grid-column: section-main-content;
+}
+
+.topFormSectionToggle {
+  grid-column: section-toggle;
+  padding-right: var(--padding-side);
+  display: flex;
+}

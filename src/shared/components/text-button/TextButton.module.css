@@ -1,3 +1,7 @@
 .textButton {
   color: var(--text-button-color, var(--color-blue));
 }
+
+.disabled {
+  color: var(--text-button-disabled-color, var(--color-medium-dark-grey));
+}
