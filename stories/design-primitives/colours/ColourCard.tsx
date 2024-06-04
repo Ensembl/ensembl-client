@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FunctionComponent } from 'react';
+import { useState, useEffect } from 'react';
 
 import styles from './ColourCard.module.css';
 
@@ -23,7 +23,21 @@ type Props = {
   variableName: string;
 };
 
-const ColourCard: FunctionComponent<Props> = (props) => {
+const ColourCard = (props: Props) => {
+  const [color, setColor] = useState<string | null>(null);
+
+  useEffect(() => {
+    // read back from the DOM the color value
+    // encoded by the color name custom property
+    const rootElement = document.querySelector('html') as HTMLElement;
+    const color = getComputedStyle(rootElement)
+      .getPropertyValue(props.variableName)
+      .trim();
+    if (color) {
+      setColor(color);
+    }
+  }, []);
+
   return (
     <div className={styles.colourCard}>
       <div
@@ -33,6 +47,7 @@ const ColourCard: FunctionComponent<Props> = (props) => {
       <div className={styles.colourInfo}>
         <div className={styles.colourName}>{props.name}</div>
         <div>{props.variableName}</div>
+        {!!color && <div>{color}</div>}
       </div>
     </div>
   );
