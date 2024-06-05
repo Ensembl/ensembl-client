@@ -1,0 +1,11 @@
+.grid {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  margin-left: var(--global-padding-left);
+  height: 100%;
+}
+
+.tableContainer {
+  overflow: auto;
+  padding-bottom: var(--global-padding-bottom);
+}

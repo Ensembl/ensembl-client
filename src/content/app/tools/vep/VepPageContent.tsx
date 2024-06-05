@@ -19,12 +19,16 @@ import { Route, Routes } from 'react-router-dom';
 import VepAppBar from './components/vep-app-bar/VepAppBar';
 import VepTopBar from './components/vep-top-bar/VepTopBar';
 import VepForm from './views/vep-form/VepForm';
+import VepSpeciesSelector from './views/vep-species-selector/VepSpeciesSelector';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
+
+import styles from './VepPageContent.module.css';
 
 const VepPageContent = () => {
   return (
-    <div>
+    <div className={styles.grid}>
       <VepAppBar />
+      <VepTopBar />
       <Main />
     </div>
   );
@@ -32,25 +36,25 @@ const VepPageContent = () => {
 
 const Main = () => {
   return (
-    <div>
-      <VepTopBar />
-
-      <Routes>
-        <Route index={true} element={<VepForm />} />
+    <Routes>
+      <Route index={true} element={<VepForm />} />
+      <Route
+        path="species-selector"
+        element={<VepSpeciesSelector />}
+      />
+      <Route
+        path="unviewed-submissions"
+        element={<div>List of unviewed submissions</div>}
+      />
+      <Route path="submissions">
+        <Route index={true} element={<div>List of viewed submissions</div>} />
         <Route
-          path="unviewed-submissions"
-          element={<div>List of unviewed submissions</div>}
+          path=":submissionId"
+          element={<div>Results of a single VEP analysis</div>}
         />
-        <Route path="submissions">
-          <Route index={true} element={<div>List of viewed submissions</div>} />
-          <Route
-            path=":submissionId"
-            element={<div>Results of a single VEP analysis</div>}
-          />
-        </Route>
-        <Route path="*" element={<NotFoundErrorScreen />} />
-      </Routes>
-    </div>
+      </Route>
+      <Route path="*" element={<NotFoundErrorScreen />} />
+    </Routes>
   );
 };
 
