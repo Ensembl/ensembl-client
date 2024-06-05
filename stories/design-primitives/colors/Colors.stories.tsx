@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import ColourCard from './ColourCard';
+import ColorCard from './ColorCard';
 
-const colours = [
+const colors = [
   {
     name: 'Black',
     variableName: '--color-black'
@@ -111,15 +111,15 @@ const colours = [
   }
 ];
 
-export const ColoursStory = () => (
+export const ColorsStory = () => (
   <>
-    {colours.map((colourData, index) => (
-      <ColourCard key={index} {...colourData} />
+    {colors.map((colorData, index) => (
+      <ColorCard key={index} {...colorData} />
     ))}
   </>
 );
 
-ColoursStory.storyName = 'colour palette';
+ColorsStory.storyName = 'colour palette';
 
 export default {
   title: 'Design Primitives/Colours'

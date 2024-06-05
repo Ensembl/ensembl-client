@@ -16,14 +16,14 @@
 
 import { useState, useEffect } from 'react';
 
-import styles from './ColourCard.module.css';
+import styles from './ColorCard.module.css';
 
 type Props = {
   name: string;
   variableName: string;
 };
 
-const ColourCard = (props: Props) => {
+const ColorCard = (props: Props) => {
   const [color, setColor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,13 +39,13 @@ const ColourCard = (props: Props) => {
   }, []);
 
   return (
-    <div className={styles.colourCard}>
+    <div className={styles.colorCard}>
       <div
-        className={styles.colourArea}
+        className={styles.colorArea}
         style={{ backgroundColor: `var(${props.variableName})` }}
       />
-      <div className={styles.colourInfo}>
-        <div className={styles.colourName}>{props.name}</div>
+      <div className={styles.colorInfo}>
+        <div className={styles.colorName}>{props.name}</div>
         <div>{props.variableName}</div>
         {!!color && <div>{color}</div>}
       </div>
@@ -53,4 +53,4 @@ const ColourCard = (props: Props) => {
   );
 };
 
-export default ColourCard;
+export default ColorCard;
