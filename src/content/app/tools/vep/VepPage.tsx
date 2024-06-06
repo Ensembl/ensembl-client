@@ -32,14 +32,6 @@ VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or
 on genes, transcripts, and protein sequence, as well as regulatory regions.
 `;
 
-/**
- * TODO:
- * - The two sections (both inactive)
- *   - Add styles and buttons
- * - Add Ensembl VEP logotype
- * - Submission name and reset button?
- */
-
 const VepPage = () => {
   const hasMounted = useHasMounted();
   const dispatch = useAppDispatch();
