@@ -14,28 +14,43 @@
  * limitations under the License.
  */
 
-import { FunctionComponent } from 'react';
+import { useState, useEffect } from 'react';
 
-import styles from './ColourCard.module.css';
+import styles from './ColorCard.module.css';
 
 type Props = {
   name: string;
   variableName: string;
 };
 
-const ColourCard: FunctionComponent<Props> = (props) => {
+const ColorCard = (props: Props) => {
+  const [color, setColor] = useState<string | null>(null);
+
+  useEffect(() => {
+    // read back from the DOM the color value
+    // encoded by the color name custom property
+    const rootElement = document.querySelector('html') as HTMLElement;
+    const color = getComputedStyle(rootElement)
+      .getPropertyValue(props.variableName)
+      .trim();
+    if (color) {
+      setColor(color);
+    }
+  }, []);
+
   return (
-    <div className={styles.colourCard}>
+    <div className={styles.colorCard}>
       <div
-        className={styles.colourArea}
+        className={styles.colorArea}
         style={{ backgroundColor: `var(${props.variableName})` }}
       />
-      <div className={styles.colourInfo}>
-        <div className={styles.colourName}>{props.name}</div>
+      <div className={styles.colorInfo}>
+        <div className={styles.colorName}>{props.name}</div>
         <div>{props.variableName}</div>
+        {!!color && <div>{color}</div>}
       </div>
     </div>
   );
 };
 
-export default ColourCard;
+export default ColorCard;
