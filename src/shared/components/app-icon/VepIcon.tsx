@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
 import classNames from 'classnames';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import styles from './TextButton.module.css';
+import SVGIcon from 'static/icons/icon_launchbar_vep.svg';
 
-// same props as for a button; but children are required
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
-  children: ReactNode;
-};
+import styles from './AppIcon.module.css';
 
-export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(
-    styles.textButton,
-    { [styles.disabled]: props.disabled },
-    props.className
-  );
+const BlastIcon = () => {
+  const elementClasses = classNames(styles.appIcon, styles.vep);
 
   return (
-    <button {...props} className={buttonClasses}>
-      {props.children}
-    </button>
+    <div className={elementClasses}>
+      <SVGIcon />
+    </div>
   );
 };
 
-export default TextButton;
+export default memo(BlastIcon);

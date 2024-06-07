@@ -1,0 +1,64 @@
+.grid {
+  display: grid;
+  flex-grow: 1;
+  align-items: center;
+  grid-template-columns:
+    [vep-logo] max-content
+    [form-title] max-content
+    [transcript-set] auto
+    [submit-button] min-content
+    [vep-version] auto
+    [job-lists-navigation] auto;
+  column-gap: 32px;
+  white-space: nowrap;
+}
+
+.logo {
+  grid-column: vep-logo;
+  height: 16px;
+}
+
+.runAJob {
+  grid-column: form-title;
+  margin-left: 20px;
+  font-weight: var(--font-weight-bold);
+}
+
+.transcriptSet {
+  grid-column: transcript-set;
+  justify-self: end;
+}
+
+.transcriptSetSelector {
+  margin-left: 20px;
+  min-width: 300px;
+}
+
+.submit {
+  grid-column: submit-button;
+}
+
+.vepVersion {
+  grid-column: vep-version;
+  justify-self: end;
+  display: flex;
+  align-items: baseline;
+  white-space: pre;
+  color: var(--color-medium-dark-grey);
+}
+
+.vepVersion svg {
+  height: 11px;
+  margin-right: 0.6ch;
+  fill: var(--color-medium-dark-grey);
+}
+
+.vepVersion span {
+  color: var(--color-black);
+}
+
+.jobListsNavigation {
+  grid-column: job-lists-navigation;
+  display: flex;
+  column-gap: 12px;
+}

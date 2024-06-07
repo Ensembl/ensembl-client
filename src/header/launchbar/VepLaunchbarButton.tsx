@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
-import styles from './TextButton.module.css';
+import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
+import { VepIcon } from 'src/shared/components/app-icon';
 
-// same props as for a button; but children are required
-type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
-  children: ReactNode;
-};
+/**
+ * Similarly to BlastLaunchbarButton, this button will show a dot
+ * to indicate presence of running or unviewed jobs.
+ */
 
-export const TextButton = (props: Props) => {
-  const buttonClasses = classNames(
-    styles.textButton,
-    { [styles.disabled]: props.disabled },
-    props.className
-  );
+const VepLaunchbarButton = () => {
+  if (isProductionEnvironment()) {
+    return null;
+  }
 
+  // TODO: add the code to enable notifications after submissions have been enabled
   return (
-    <button {...props} className={buttonClasses}>
-      {props.children}
-    </button>
+    <LaunchbarButtonWithNotification
+      path={'/vep'}
+      description="VEP"
+      icon={VepIcon}
+      notification={null}
+    />
   );
 };
 
-export default TextButton;
+export default VepLaunchbarButton;

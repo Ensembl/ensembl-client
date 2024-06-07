@@ -63,8 +63,7 @@ type OptionsSelectProps = CommonProps & OptionsSpecificProps;
 type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
 
 export type SimpleSelectProps = HTMLSelectProps &
-  (OptionsSelectProps | OptionGroupsSelectProps) &
-  CommonProps;
+  (OptionsSelectProps | OptionGroupsSelectProps);
 
 export type SimpleSelectMethods = {
   clear: () => void;
@@ -74,7 +73,12 @@ const SimpleSelect = (
   props: SimpleSelectProps,
   ref: ForwardedRef<{ clear: () => void }>
 ) => {
-  const { className, placeholder, ...otherProps } = props;
+  const {
+    className: classNameFromProps,
+    placeholder,
+    disabled,
+    ...otherProps
+  } = props;
   const selectRef = useRef<HTMLSelectElement | null>(null);
 
   useImperativeHandle(ref, () => ({
@@ -92,7 +96,11 @@ const SimpleSelect = (
     }
   }));
 
-  const selectClassnames = classNames(styles.select, className);
+  const selectClassnames = classNames(
+    styles.select,
+    { [styles.disabled]: disabled },
+    classNameFromProps
+  );
   const selectProps = pickBy(
     otherProps,
     (_, key) => !['options', 'optionGroups'].includes(key)
@@ -125,6 +133,7 @@ const SimpleSelect = (
       <select
         ref={selectRef}
         className={styles.selectResetDefaults}
+        disabled={disabled}
         {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}
