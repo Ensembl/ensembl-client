@@ -17,7 +17,10 @@
 import { useState, useDeferredValue, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 
+import { useAppDispatch } from 'src/store';
+
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { setSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -29,15 +32,8 @@ import ModalView from 'src/shared/components/modal-view/ModalView';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 import styles from './VepSpeciesSelector.module.css';
-
-type Props = {
-  // selectedSpecies: Array<{ genome_id: string }>;
-  // onSpeciesAdd: (genomes: SpeciesSearchMatch[]) => void;
-  // onClose: () => void;
-};
 
 /**
  * NOTE
@@ -46,7 +42,6 @@ type Props = {
  * - The view might have a list of popular species if/when we figure out where to get it from
  */
 
-
 /**
  * TODO:
  * - Store selected species in redux state
@@ -54,16 +49,13 @@ type Props = {
  * - Possibly, enable the "Add variants" box after species is selected
  */
 
-
-const VepSpeciesSelector = (
-  props: Props
-) => {
-  // const { selectedSpecies } = props;
+const VepSpeciesSelector = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData, isLoading, isError } = result;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const {
     genomes,
@@ -75,7 +67,7 @@ const VepSpeciesSelector = (
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
-    selectedGenomes: [],
+    selectedGenomes: []
   });
 
   const deferredGenomes = useDeferredValue(genomes);
@@ -88,8 +80,10 @@ const VepSpeciesSelector = (
   };
 
   const onSpeciesAdd = () => {
-    console.log({ stagedGenomes });
-    // props.onSpeciesAdd(stagedGenomes);
+    const selectedGenome = stagedGenomes[0]; // user can select only one genome VEP analysis at a time
+
+    dispatch(setSelectedSpecies({ species: selectedGenome }));
+    onClose();
   };
 
   const onSearchSubmit = () => {
@@ -189,8 +183,8 @@ const TopSection = (props: TopSectionProps) => {
   // search returned no results
   if (!props.searchResults || props.searchResults?.matches.length === 0) {
     return (
-      <section className={styles.topSection}>
-        <div className={styles.searchFieldWrapper}>
+      <section>
+        <div>
           <SpeciesSearchField
             query={props.query}
             onInput={props.onSearchInput}
@@ -199,7 +193,7 @@ const TopSection = (props: TopSectionProps) => {
           />
         </div>
         {props.searchResults && (
-          <div className={styles.resultsSummaryWrapper}>
+          <div>
             <SpeciesSearchResultsSummary searchResults={props.searchResults} />
           </div>
         )}

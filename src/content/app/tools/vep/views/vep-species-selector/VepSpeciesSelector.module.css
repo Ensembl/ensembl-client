@@ -9,3 +9,21 @@
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
 }
+
+/* Question to consider: is the top section of a species selector
+   a sufficiently stable and repeatable component
+   to be extracted into a shared component?
+   Note: so far, the top section in vep species selector
+   does not have a filter element in the design.
+   We will see if we will need to bring it in.
+*/
+.topSection {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+}
+
+.loader {
+  margin-top: 40px;
+  margin-left: 60px;
+}

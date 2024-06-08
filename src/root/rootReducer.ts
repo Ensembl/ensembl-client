@@ -26,6 +26,7 @@ import speciesSelector from 'src/content/app/species-selector/state/speciesSelec
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
+import vep from 'src/content/app/tools/vep/state/vepReducer';
 
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -42,6 +43,7 @@ const createRootReducer = () =>
     speciesPage,
     entityViewer,
     blast,
+    vep,
     [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
+import {
+  VepFormSpecies,
+  VepSpeciesSelectorNavButton
+} from './vep-form-species-section/VepFormSpeciesSection';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -42,14 +42,10 @@ const VepForm = () => {
       <FormSection className={styles.formSection}>
         <div className={styles.topFormSectionRegularGrid}>
           <div className={styles.topFormSectionName}>Species</div>
-          <div className={styles.topFormSectionMain}>
-            <Link to={urlFor.vepSpeciesSelector()}>
-              Select a species / assembly
-            </Link>
-          </div>
-          <Link to={urlFor.vepSpeciesSelector()} className={styles.topFormSectionToggle}>
-            <PlusButton />
-          </Link>
+          <VepFormSpecies className={styles.topFormSectionMain} />
+          <VepSpeciesSelectorNavButton
+            className={styles.topFormSectionToggle}
+          />
         </div>
       </FormSection>
       <FormSection className={styles.formSection}>
