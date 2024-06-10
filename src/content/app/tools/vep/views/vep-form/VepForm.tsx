@@ -18,9 +18,8 @@ import {
   VepFormSpecies,
   VepSpeciesSelectorNavButton
 } from './vep-form-species-section/VepFormSpeciesSection';
+import VepFormVariantsSection from './vep-form-variants-section/VepFormVariantsSection';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
-import PlusButton from 'src/shared/components/plus-button/PlusButton';
-import TextButton from 'src/shared/components/text-button/TextButton';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { DeleteButtonWithLabel } from 'src/shared/components/delete-button/DeleteButton';
 
@@ -48,17 +47,7 @@ const VepForm = () => {
           />
         </div>
       </FormSection>
-      <FormSection className={styles.formSection}>
-        <div className={styles.topFormSectionRegularGrid}>
-          <div className={styles.topFormSectionName}>Variants</div>
-          <div className={styles.topFormSectionMain}>
-            <TextButton disabled={true}>Add variants</TextButton>
-          </div>
-          <div className={styles.topFormSectionToggle}>
-            <PlusButton disabled={true} />
-          </div>
-        </div>
-      </FormSection>
+      <VepFormVariantsSection />
     </div>
   );
 };
