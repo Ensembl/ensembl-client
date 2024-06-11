@@ -176,6 +176,12 @@ export const blastSubmissionsList = () => '/blast/submissions';
 export const blastSubmission = (submissionId: string) =>
   `/blast/submissions/${submissionId}`;
 
+export const vepForm = () => '/vep';
+
+export const vepSpeciesSelector = () => '/vep/species-selector';
+
+
+
 type RefgetUrlParams = {
   checksum: string;
   start?: number;

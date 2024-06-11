@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  VepFormSpecies,
+  VepSpeciesSelectorNavButton
+} from './vep-form-species-section/VepFormSpeciesSection';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -38,12 +42,10 @@ const VepForm = () => {
       <FormSection className={styles.formSection}>
         <div className={styles.topFormSectionRegularGrid}>
           <div className={styles.topFormSectionName}>Species</div>
-          <div className={styles.topFormSectionMain}>
-            <TextButton>Select a species / assembly</TextButton>
-          </div>
-          <div className={styles.topFormSectionToggle}>
-            <PlusButton />
-          </div>
+          <VepFormSpecies className={styles.topFormSectionMain} />
+          <VepSpeciesSelectorNavButton
+            className={styles.topFormSectionToggle}
+          />
         </div>
       </FormSection>
       <FormSection className={styles.formSection}>
