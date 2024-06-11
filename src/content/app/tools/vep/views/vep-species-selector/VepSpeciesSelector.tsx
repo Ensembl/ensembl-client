@@ -42,13 +42,6 @@ import styles from './VepSpeciesSelector.module.css';
  * - The view might have a list of popular species if/when we figure out where to get it from
  */
 
-/**
- * TODO:
- * - Store selected species in redux state
- * - Display species information in the form
- * - Possibly, enable the "Add variants" box after species is selected
- */
-
 const VepSpeciesSelector = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
