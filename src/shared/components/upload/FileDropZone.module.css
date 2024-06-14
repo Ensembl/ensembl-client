@@ -1,5 +1,5 @@
 .fileDropZone {
-  display: inline-block; /* not sure whether block or inline-block is more appropriate */
+  display: block; /* not sure whether block or inline-block is more appropriate */
   padding-top: var(--drop-zone-padding-top, 12px);
   padding-bottom: var(--drop-zone-padding-bottom, 12px);
   padding-left: var(--drop-zone-padding-left, 20px);

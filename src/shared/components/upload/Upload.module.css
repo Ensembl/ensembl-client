@@ -1,17 +1,24 @@
+/**
+Variables that need checking across the codebase:
+
+--drop-zone-height
+--drop-zone-width
+--drop-zone-bg-color
+--highlighted-upload-button-background
+
+*/
+
 .upload {
-  display: inline-flex;
+  height: var(--drop-zone-height, var(--upload-button-taller-height));
+  width: var(--drop-zone-width, 200px);
+}
+
+.label {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: var(--drop-zone-height, var(--upload-button-taller-height));
-  width: var(--drop-zone-width, 200px);
-  background-color: var(--drop-zone-bg-color, var(--color-white));
-  position: relative;
-  border: 1px dashed var(--color-blue);
-  color: var(--color-blue);
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.4s, border-color 0.4s, background-color 0.4s;
+  height: 100%;
 }
 
 .uploadIcon {
@@ -20,40 +27,11 @@
   fill: var(--color-blue);
 }
 
-/* this will prevent dragenter and dragleave events emitted by children of the drop area
-  (although it doesn't remove the need for a javascript solution when other components are used as drop areas) */
-.upload > * {
-  pointer-events: none;
-}
-
-.uploadDragOver {
-  background-color: var(--drop-zone-bg-color, var(--highlighted-upload-button-background));
-}
-
-.uploadDisabled {
-  border: 1px dashed var(--color-grey);
-  color: var(--color-grey);
-  pointer-events: none;
-}
-
-.uploadDisabled .uploadIcon {
+.disabled .uploadIcon {
   fill: var(--color-grey);
 }
 
-.fileInput {
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-  height: 1px;
-  width: 1px;
-}
-
-.defaultUpload:focus-within {
-  background: 1px dashed var(--color-black);
-}
-
-.label {
+.labelText {
   width: var(--upload-label-width, var(--upload-button-two-line-label-width));
   font-size: 12px; /* TODO: make customizable? */
   text-align: center;
