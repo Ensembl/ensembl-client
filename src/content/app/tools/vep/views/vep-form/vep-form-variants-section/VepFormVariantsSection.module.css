@@ -54,6 +54,12 @@
   margin-right: 50px;
 }
 
+.fileDropZoneOutline {
+  display: flex;
+  align-items: center;
+  height: 58px;
+}
+
 .alignSelfCenter {
   align-self: center;
 }

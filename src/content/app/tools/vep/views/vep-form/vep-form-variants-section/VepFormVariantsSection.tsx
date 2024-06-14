@@ -26,7 +26,8 @@ import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import Textarea from 'src/shared/components/textarea/Textarea';
-import FiledropZone from 'src/shared/components/upload/FileDropZone';
+import FileDropZone from 'src/shared/components/upload/FileDropZone';
+import FileDropZoneOutline from 'src/shared/components/upload/FileDropZoneOutline';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 import UploadIcon from 'static/icons/icon_upload.svg';
@@ -35,20 +36,8 @@ import commonFormStyles from '../VepForm.module.css';
 import styles from './VepFormVariantsSection.module.css';
 import uploadStyles from 'src/shared/components/upload/Upload.module.css';
 
-/**
- * TODO:
- * - Enable the "Add variants" and the plus button if species is selected
- * - Pressing the button should show the grey-backgrounded contents of the section
- *   - The open/closed state should probably be stored in redux
- * - Show textarea and the file upload button
- * - Initially, the Add button should be disabled
- * - If text entered into the textarea, hide file upload button
- * - If file uploaded, disable the textarea
- * - If either text entered into textarea or file uploaded, enable the Add button, and show the Clear button under it
- */
-
 const VepFormVariantsSection = () => {
-  const [isExpanded, setIsExpanded] = useState(true); // FIXME: initialize to false
+  const [isExpanded, setIsExpanded] = useState(true);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const [inputString, setInputString] = useState('');
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -147,9 +136,18 @@ const ExpandedContents = (props: {
             or
           </div>
           <div className={styles.gridColumnMiddle}>
-            <FiledropZone className={styles.fileDropZone} onUpload={onFileDrop}>
-              <FileDropZoneLabel />
-            </FiledropZone>
+            {!inputFile ? (
+              <FileDropZone
+                className={styles.fileDropZone}
+                onUpload={onFileDrop}
+              >
+                <FileDropZoneLabel />
+              </FileDropZone>
+            ) : (
+              <FileDropZoneOutline className={styles.fileDropZoneOutline}>
+                {inputFile.name}
+              </FileDropZoneOutline>
+            )}
           </div>
         </>
       )}

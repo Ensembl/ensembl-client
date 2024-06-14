@@ -27,12 +27,6 @@
   border: var(--border);
 }
 
-/* FIXME: this is a hack */
-.body [class*='defaultUpload'] {
-  width: 112px;
-  margin-left: 18px;
-}
-
 .textarea {
   font-family: var(--font-family-monospace);
   font-size: 12px;

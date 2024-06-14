@@ -1,0 +1,8 @@
+.container {
+  padding-top: var(--drop-zone-outline-padding-top, 12px);
+  padding-bottom: var(--drop-zone-outline-padding-bottom, 12px);
+  padding-left: var(--drop-zone-outline-padding-left, 20px);
+  padding-right: var(--drop-zone-outline-padding-right, 20px);
+  border: 1px dashed var(--color-blue);
+  background-color: var(--drop-zone-bg-color, var(--color-white));
+}
