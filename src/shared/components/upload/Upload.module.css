@@ -6,6 +6,9 @@ Variables that need checking across the codebase:
 --drop-zone-bg-color
 --highlighted-upload-button-background
 
+Remove
+.body [class*='defaultUpload']
+
 */
 
 .upload {
