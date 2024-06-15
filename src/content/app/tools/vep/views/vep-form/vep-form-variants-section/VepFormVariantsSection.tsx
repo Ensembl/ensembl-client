@@ -37,7 +37,7 @@ import styles from './VepFormVariantsSection.module.css';
 import uploadStyles from 'src/shared/components/upload/Upload.module.css';
 
 const VepFormVariantsSection = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const [inputString, setInputString] = useState('');
   const [inputFile, setInputFile] = useState<File | null>(null);
