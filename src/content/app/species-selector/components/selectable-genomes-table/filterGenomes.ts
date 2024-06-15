@@ -39,6 +39,10 @@ const filterGenomes = ({
   });
 };
 
+// Strings in modern javascript have a .localeCompare method
+// that can do case-insensitive string comparison;
+// but it does not check whether a string contains a substring.
+// The function below is an old an not very elegant way of checking this.
 const isSubstringOf = (
   string: string | undefined | null,
   candidateSubstring: string
