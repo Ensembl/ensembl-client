@@ -24,24 +24,31 @@ const filterGenomes = ({
   genomes: SpeciesSearchMatch[];
 }) => {
   return genomes.filter((genome) => {
-    const queryRegex = getQueryRegex(query);
-
     return (
-      genome.common_name?.match(queryRegex) ||
-      genome.scientific_name.match(queryRegex) ||
-      genome.type?.kind.match(queryRegex) ||
-      genome.type?.value.match(queryRegex) ||
-      (genome.is_reference && 'reference'.match(queryRegex)) ||
-      genome.assembly.accession_id.match(queryRegex) ||
-      genome.assembly.name.match(queryRegex) ||
-      genome.annotation_provider.match(queryRegex) ||
-      genome.annotation_method.match(queryRegex)
+      isSubstringOf(genome.common_name, query) ||
+      isSubstringOf(genome.scientific_name, query) ||
+      isSubstringOf(genome.type?.kind, query) ||
+      isSubstringOf(genome.type?.value, query) ||
+      (genome.is_reference && isSubstringOf('reference', query)) ||
+      isSubstringOf(genome.assembly.accession_id, query) ||
+      isSubstringOf(genome.assembly.name, query) ||
+      isSubstringOf(genome.assembly.name, query) ||
+      isSubstringOf(genome.annotation_provider, query) ||
+      isSubstringOf(genome.annotation_method, query)
     );
   });
 };
 
-const getQueryRegex = (query: string) => {
-  return new RegExp(query, 'i');
+const isSubstringOf = (
+  string: string | undefined | null,
+  candidateSubstring: string
+) => {
+  if (typeof string !== 'string') {
+    return false;
+  }
+  const normalizedString = string.toUpperCase();
+  const normalizedCandidateString = candidateSubstring.toUpperCase();
+  return normalizedString.includes(normalizedCandidateString);
 };
 
 export default filterGenomes;
