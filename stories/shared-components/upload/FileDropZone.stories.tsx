@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
+import { action } from '@storybook/addon-actions';
 
 import useDisabledDocumentDragover from 'src/root/useDisabledDocumentDragover';
 
 import FiledropZone from 'src/shared/components/upload/FileDropZone';
 
-const FileDropZoneContainer = () => {
+import styles from './FileDropZone.stories.module.css';
+
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
+
+const FileDropZoneContainer = (props: DefaultArgs) => {
   useDisabledDocumentDragover();
 
-  return <FiledropZone onUpload={noop}>Hello?</FiledropZone>;
+  return (
+    <div className={styles.container}>
+      <FiledropZone onUpload={props.onChange}>
+        Click me or drop a file on me
+      </FiledropZone>
+    </div>
+  );
 };
 
 export const FileDropZoneStory = {
   name: 'default',
-  render: () => <FileDropZoneContainer />
+  render: (args: DefaultArgs) => <FileDropZoneContainer {...args} />,
+  args: {
+    onChange: action('uploaded')
+  }
 };
 
 export default {
