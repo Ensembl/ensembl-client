@@ -18,39 +18,39 @@ import classNames from 'classnames';
 
 import variantGroups from 'src/content/app/genome-browser/constants/variantGroups';
 
-import styles from './VariantColour.module.css';
+import styles from './VariantColor.module.css';
 
 type Props = {
   variantType: string;
 };
 
-const VariantColour = (props: Props) => {
-  const colourId = colourToIdMap.get(props.variantType);
+const VariantColor = (props: Props) => {
+  const colorId = colorToIdMap.get(props.variantType);
 
-  if (!colourId) {
+  if (!colorId) {
     return null;
   }
 
   const elementClasses = classNames(
-    styles.variantColour,
-    styles[`colour${colourId}`]
+    styles.variantColor,
+    styles[`color${colorId}`]
   );
 
   return <div className={elementClasses} />;
 };
 
-const buildColourToIdMap = () => {
-  const colourMap = new Map<string, number>();
+const buildColorToIdMap = () => {
+  const colorMap = new Map<string, number>();
 
   for (const group of variantGroups) {
     for (const variantType of group.variant_types) {
-      colourMap.set(variantType.label, group.id);
+      colorMap.set(variantType.label, group.id);
     }
   }
 
-  return colourMap;
+  return colorMap;
 };
 
-const colourToIdMap = buildColourToIdMap();
+const colorToIdMap = buildColorToIdMap();
 
-export default VariantColour;
+export default VariantColor;

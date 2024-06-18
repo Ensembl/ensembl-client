@@ -17,6 +17,7 @@
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
+import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 
 import type {
   VEPResultsResponse,
@@ -63,6 +64,7 @@ const VepResultsTable = (props: {
           <ColumnHead>Alt allele</ColumnHead>
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
+          <ColumnHead>Consequences</ColumnHead>
         </tr>
       </thead>
       <tbody>
@@ -140,8 +142,19 @@ const VariantRow = (props: {
           {cons.gene.symbol} {cons.gene.stableId}
         </td>
       )}
-      <td>{cons.stable_id}</td>
+      <td style={{ verticalAlign: 'top' }}>{cons.stable_id}</td>
+      <td>
+        <VariantConsequences consequences={cons.consequences} />
+      </td>
     </tr>
+  ));
+};
+
+const VariantConsequences = ({ consequences }: { consequences: string[] }) => {
+  return consequences.map((consequence) => (
+    <div key={consequence}>
+      <VariantConsequence consequence={consequence} />
+    </div>
   ));
 };
 

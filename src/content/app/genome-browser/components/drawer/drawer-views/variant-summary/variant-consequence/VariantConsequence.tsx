@@ -16,7 +16,7 @@
 
 import type { Pick2 } from 'ts-multipick';
 
-import VariantColour from 'src/content/app/genome-browser/components/drawer/components/variant-colour/VariantColour';
+import VariantColour from 'src/shared/components/variant-color/VariantColor';
 
 import type { Variant } from 'src/shared/types/variation-api/variant';
 
