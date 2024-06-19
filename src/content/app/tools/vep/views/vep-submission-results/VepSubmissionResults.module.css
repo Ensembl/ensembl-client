@@ -1,0 +1,30 @@
+.container {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  height: 100%;
+  margin-top: 20px;
+  margin-left: var(--double-standard-gutter);
+  margin-right: var(--double-standard-gutter);
+}
+
+.resultsBox {
+  border: 1px solid var(--color-grey);
+  padding: 22px;
+}
+
+.table {
+  width: 100%;
+}
+
+.table td:nth-child(2), th:nth-child(2) {
+  max-width: 50px;
+}
+
+.table td:nth-child(3), th:nth-child(3) {
+  max-width: 100px;
+}
+
+.smallLight {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+}

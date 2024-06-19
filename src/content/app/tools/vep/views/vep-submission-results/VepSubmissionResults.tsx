@@ -18,12 +18,16 @@ import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepA
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
+import VepResultsGene from './components/vep-results-gene/VepResultsGene';
+import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 
 import type {
   VEPResultsResponse,
   AlternativeVariantAllele,
   PredictedTranscriptConsequence
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
+
+import styles from './VepSubmissionResults.module.css';
 
 /**
  * - Request vep results
@@ -33,16 +37,26 @@ import type {
  *   - predicted molecular consequences
  *     - transcripts can expand
  *   - Consider pagination (should be part of url?)
+ *
+ * - Special elements
+ *  - Location
+ *    - Format start coordinate using commas
+ *    - Add a ViewInApp tooltip
+ *  - Gene
+ *    - Symbol in bold if present
+ *    - Stable id with "show in app" popup
+ * - Make the table scrollable
+ * - Collapse rows
  */
 
 const VepSubmissionResults = () => {
   const { currentData: vepResults } = useVepResultsQuery();
 
   return (
-    <div>
+    <div className={styles.container}>
       <div>Vep analysis</div>
-      <div>
-        <div>Above the table</div>
+      <div className={styles.resultsBox}>
+        <div>Area above the table</div>
         {vepResults && <VepResultsTable variants={vepResults.variants} />}
       </div>
     </div>
@@ -55,7 +69,7 @@ const VepResultsTable = (props: {
   const { variants } = props;
 
   return (
-    <Table>
+    <Table className={styles.table}>
       <thead>
         <tr>
           <ColumnHead>Variant</ColumnHead>
@@ -102,7 +116,7 @@ const VariantRow = (props: {
             }
             style={{ verticalAlign: 'top' }}
           >
-            {cons.variant.name}
+            <VariantName variant={cons.variant} />
           </td>
           <td
             rowSpan={
@@ -118,7 +132,10 @@ const VariantRow = (props: {
             }
             style={{ verticalAlign: 'top' }}
           >
-            {`${cons.variant.location.region_name}:${cons.variant.location.start}`}
+            <VepResultsLocation
+              genomeId="grch38"
+              location={cons.variant.location}
+            />
           </td>
         </>
       )}
@@ -139,15 +156,42 @@ const VariantRow = (props: {
           rowSpan={cons.gene.rowspan > 1 ? cons.gene.rowspan : undefined}
           style={{ verticalAlign: 'top' }}
         >
-          {cons.gene.symbol} {cons.gene.stableId}
+          <VepResultsGene {...cons.gene} genomeId="grch38" />
         </td>
       )}
-      <td style={{ verticalAlign: 'top' }}>{cons.stable_id}</td>
+      <td style={{ verticalAlign: 'top' }}>
+        <VariantTranscript transcript={cons} />
+      </td>
       <td>
         <VariantConsequences consequences={cons.consequences} />
       </td>
     </tr>
   ));
+};
+
+const VariantName = (props: {
+  variant: NonNullable<TranscriptConsequenceForTable['variant']>;
+}) => {
+  return (
+    <>
+      <div>{props.variant.name}</div>
+      <div className={styles.smallLight}>{props.variant.allele_type}</div>
+    </>
+  );
+};
+
+const VariantTranscript = (props: {
+  transcript: {
+    stable_id: string;
+    biotype: string;
+  };
+}) => {
+  return (
+    <>
+      <div>{props.transcript.stable_id}</div>
+      <div className={styles.smallLight}>{props.transcript.biotype}</div>
+    </>
+  );
 };
 
 const VariantConsequences = ({ consequences }: { consequences: string[] }) => {
@@ -217,6 +261,7 @@ type TranscriptConsequenceForTable = PredictedTranscriptConsequence & {
   gene: {
     stableId: string;
     symbol: string | null;
+    strand: 'forward' | 'reverse';
     rowspan: number;
   } | null;
   alternativeAllele: {
@@ -226,6 +271,7 @@ type TranscriptConsequenceForTable = PredictedTranscriptConsequence & {
   variant: {
     name: string;
     referenceAllele: string;
+    allele_type: string;
     location: {
       region_name: string;
       start: number;
@@ -258,6 +304,7 @@ const getTranscriptConsequences = (
         if (!result.length) {
           consequenceForTable.variant = {
             name: variant.name,
+            allele_type: variant.allele_type,
             referenceAllele: variant.reference_allele.allele_sequence,
             location: variant.location,
             rowspan: getTotalRowsForVariant(updatedVariant)
@@ -273,6 +320,7 @@ const getTranscriptConsequences = (
           consequenceForTable.gene = {
             stableId: gene.stable_id,
             symbol: gene.symbol,
+            strand: transcriptConsequence.strand,
             rowspan: Math.max(gene.transcripts.length, 1)
           };
         }
