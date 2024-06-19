@@ -22,7 +22,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     vepResults: builder.query<VEPResultsResponse, void>({
       queryFn: async () => {
-        // TODO: the query function will acceps a submission id,
+        // TODO: the query function will accept a submission id,
         // and will send request to:
         // `${config.toolsApiBaseUrl}/vep/submissions/${submissionId}/results`
         // to fetch data.

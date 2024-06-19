@@ -28,7 +28,7 @@ export type VEPResultsResponseMetadata = {
 };
 
 export type Variant = {
-  name: string; // This will be the variant name entered by the user
+  name: string; // This is a string with which user identifies a variant; in a VCF input, this can be a dot if user does not provide a name
   allele_type: string;
   location: {
     region_name: string;
@@ -55,7 +55,7 @@ export type AlternativeVariantAllele = {
 export type PredictedTranscriptConsequence = {
   feature_type: 'transcript';
   stable_id: string; // transcript stable id, versioned
-  gene_stable_id: string; // gene stable id, versioned
+  gene_stable_id: string; // ideally, versioned; but ultimately, as stored in the vcfs
   gene_symbol: string | null;
   is_canonical: boolean;
   biotype: string;

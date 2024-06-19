@@ -30,23 +30,12 @@ import type {
 import styles from './VepSubmissionResults.module.css';
 
 /**
- * - Request vep results
+ * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
- * - Draw the table
- *   - Population frequencies column is optional
- *   - predicted molecular consequences
- *     - transcripts can expand
- *   - Consider pagination (should be part of url?)
- *
- * - Special elements
- *  - Location
- *    - Format start coordinate using commas
- *    - Add a ViewInApp tooltip
- *  - Gene
- *    - Symbol in bold if present
- *    - Stable id with "show in app" popup
+ * - Enable expansion/collapsing of transcripts of a given gene
+ * - Show intergenic variants as predicted consequences alongside transcript consequences
+ * - Consider pagination (should it be part of url?)
  * - Make the table scrollable
- * - Collapse rows
  */
 
 const VepSubmissionResults = () => {
@@ -101,11 +90,6 @@ const VariantRow = (props: {
     props.variant
   );
 
-  // if (props.variant.location.start === 378149) {
-  //   console.log(props.variant);
-  //   console.log(transcriptConsequencesForTable);
-  // }
-
   return transcriptConsequencesForTable.map((cons, index) => (
     <tr key={index}>
       {cons.variant && (
@@ -114,7 +98,6 @@ const VariantRow = (props: {
             rowSpan={
               cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
             }
-            style={{ verticalAlign: 'top' }}
           >
             <VariantName variant={cons.variant} />
           </td>
@@ -122,7 +105,6 @@ const VariantRow = (props: {
             rowSpan={
               cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
             }
-            style={{ verticalAlign: 'top' }}
           >
             {cons.variant.referenceAllele}
           </td>
@@ -130,7 +112,6 @@ const VariantRow = (props: {
             rowSpan={
               cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
             }
-            style={{ verticalAlign: 'top' }}
           >
             <VepResultsLocation
               genomeId="grch38"
@@ -146,20 +127,16 @@ const VariantRow = (props: {
               ? cons.alternativeAllele.rowspan
               : undefined
           }
-          style={{ verticalAlign: 'top' }}
         >
           {cons.alternativeAllele.allele_sequence}
         </td>
       )}
       {cons.gene && (
-        <td
-          rowSpan={cons.gene.rowspan > 1 ? cons.gene.rowspan : undefined}
-          style={{ verticalAlign: 'top' }}
-        >
+        <td rowSpan={cons.gene.rowspan > 1 ? cons.gene.rowspan : undefined}>
           <VepResultsGene {...cons.gene} genomeId="grch38" />
         </td>
       )}
-      <td style={{ verticalAlign: 'top' }}>
+      <td>
         <VariantTranscript transcript={cons} />
       </td>
       <td>
@@ -222,7 +199,7 @@ const updateVariant = (variant: VEPResultsResponse['variants'][number]) => {
           (cons) => cons.feature_type === 'transcript'
         ) as PredictedTranscriptConsequence[];
 
-      // make sure canonical transcripts are the first
+      // make sure canonical transcripts go first
       transcriptConsequences.sort((a, b) => {
         const aScore = a.is_canonical ? 0 : 1;
         const bScore = b.is_canonical ? 0 : 1;
@@ -280,6 +257,15 @@ type TranscriptConsequenceForTable = PredictedTranscriptConsequence & {
   } | null;
 };
 
+/**
+ * The data fetched from the api is shaped in a logical way,
+ * where top-level items are variants, each of which has an array of alt alleles,
+ * each of which has an array of predicted consequences...
+ * In order to represent this data in a table, it has to be inverted
+ * to become an array of elements associated with a single row.
+ * The most appropriate candidate for such data seems to be a predicted molecular consequence
+ * of a variant allele.
+ */
 const getTranscriptConsequences = (
   variant: VEPResultsResponse['variants'][number]
 ): TranscriptConsequenceForTable[] => {

@@ -16,6 +16,13 @@
   width: 100%;
 }
 
+.table th,
+.table td {
+  vertical-align: top;
+}
+
+
+/* The styling of column widths below will probably need to be adjusted */
 .table td:nth-child(2), th:nth-child(2) {
   max-width: 50px;
 }
