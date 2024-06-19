@@ -20,7 +20,7 @@ import type { ReactNode } from 'react';
 import styles from './FileDropZoneOutline.module.css';
 
 /**
- * This component has a certain visual resemplance to the FileDropZone,
+ * This component has a certain visual resemblance to the FileDropZone,
  * and is used to display the names of files that have been appended via FileDropZone
  */
 
