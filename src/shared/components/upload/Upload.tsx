@@ -14,75 +14,48 @@
  * limitations under the License.
  */
 
-import { useRef, type ChangeEvent } from 'react';
 import classNames from 'classnames';
 
-import useFileDrop from './hooks/useFileDrop';
-import { transformFiles, transformFile } from './helpers/uploadHelpers';
-
+import FiledropZone, { type FiledropZoneProps } from './FileDropZone';
 import UploadIcon from 'static/icons/icon_upload.svg';
 
-import type { FileUploadParams, Options, Result } from './types';
+import type { FileUploadParams, Options } from './types';
 
 import styles from './Upload.module.css';
 
 export type UploadProps<T extends Options> = FileUploadParams<T> & {
-  name?: string; // FIXME: do we really need this?
-  label?: string;
+  name?: string; // Could be useful if the filedrop zone were inside a form submitted without help of javascript (unlikely)
   disabled?: boolean;
+  label?: string;
+  className?: string;
 };
 
 const defaultLabel = 'Click or drag a file here to upload';
 
+/**
+ * NOTE:
+ * This component puts an upload icon with the default or slightly customizable label text
+ * inside of the FileDropZone.
+ * If you need more flexibility for your upload button, use FileDropZone directly to create it.
+ */
+
 const Upload = <T extends Options>(props: UploadProps<T>) => {
-  const { allowMultiple, transformTo } = props;
-  const { ref, isDraggedOver } = useFileDrop(props);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleSelectedFiles = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = [...(event.target.files as FileList)];
-
-    if (transformTo) {
-      const result = allowMultiple
-        ? await transformFiles(files, transformTo)
-        : await transformFile(files[0], transformTo);
-      props.onUpload(result as Result<T>);
-    } else if (allowMultiple) {
-      props.onUpload([...files] as Result<T>);
-    } else {
-      props.onUpload(files[0] as Result<T>);
-    }
-
-    clearInput();
-  };
-
-  const clearInput = () => {
-    const inputElement = inputRef.current;
-    if (inputElement) {
-      inputElement.value = '';
-    }
-  };
-
-  const dropAreaClasses = classNames(
+  const componentClasses = classNames(
     styles.upload,
-    { [styles.uploadDisabled]: props.disabled },
-    { [styles.uploadDragOver]: isDraggedOver }
+    { [styles.disabled]: props.disabled },
+    props.className
   );
 
   return (
-    <label ref={ref} className={dropAreaClasses}>
-      <span className={styles.label}>{props.label || defaultLabel}</span>
-      <UploadIcon className={styles.uploadIcon} />
-      <input
-        type="file"
-        ref={inputRef}
-        name={props.name}
-        className={styles.fileInput}
-        onChange={(e) => handleSelectedFiles(e)}
-        multiple={props.allowMultiple}
-      />
-      {props.label}
-    </label>
+    <FiledropZone
+      {...(props as FiledropZoneProps<T>)}
+      className={componentClasses}
+    >
+      <div className={styles.label}>
+        <span className={styles.labelText}>{props.label || defaultLabel}</span>
+        <UploadIcon className={styles.uploadIcon} />
+      </div>
+    </FiledropZone>
   );
 };
 

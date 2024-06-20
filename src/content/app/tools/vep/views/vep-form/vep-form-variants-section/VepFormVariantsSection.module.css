@@ -1,0 +1,65 @@
+/*
+  For consideration:
+  Is it worth extracting the background color and the top/bottom padding
+  into some subcomponent of the FormSection component,
+  and if yes, then what would it be called?
+*/
+.expandedContentGrid {
+  --column-gap: 12px;
+  display: grid;
+  grid-template-columns: [left] 120px [middle] 450px [right] auto;
+  column-gap: var(--column-gap);
+  background-color: var(--color-light-grey);
+  padding: 24px 0;
+}
+
+.gridColumnLeft {
+  grid-column: left;
+  justify-self: end;
+  text-align: right;
+}
+
+.gridColumnMiddle {
+  grid-column: middle;
+}
+
+.gridColumnRight {
+  grid-column: right;
+  justify-self: start;
+}
+
+.inputControlButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 24px;
+  padding-top: var(--standard-gutter);
+  padding-left: calc(var(--standard-gutter) - var(--column-gap)); /* to achieve the same distance from textarea as the width of the standard gutter */
+}
+
+.textarea {
+  --textarea-height: 142px;
+}
+
+.fileDropZone {
+  width: 100%;
+}
+
+.fileDropZoneLabel {
+  display: flex;
+  align-items: center;  
+}
+
+.fileDropZoneLabel > span {
+  margin-right: 50px;
+}
+
+.fileDropZoneOutline {
+  display: flex;
+  align-items: center;
+  height: 58px;
+}
+
+.alignSelfCenter {
+  align-self: center;
+}

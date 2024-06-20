@@ -1,0 +1,35 @@
+.fileDropZone {
+  display: block; /* not sure whether block or inline-block is more appropriate */
+  padding-top: var(--drop-zone-padding-top, 12px);
+  padding-bottom: var(--drop-zone-padding-bottom, 12px);
+  padding-left: var(--drop-zone-padding-left, 20px);
+  padding-right: var(--drop-zone-padding-right, 20px);
+  border: 1px dashed var(--color-blue);
+  background-color: var(--drop-zone-bg-color, var(--color-white));
+  color: var(--color-blue);
+  cursor: pointer;
+  transition: color 0.4s, border-color 0.4s, background-color 0.4s;
+}
+
+.fileDropZone:focus-visible {
+  background-color: red;
+}
+
+.disabled {
+  border: 1px dashed var(--color-grey);
+  color: var(--color-grey);
+  pointer-events: none;
+}
+
+.draggedOver {
+  background-color: var(--drop-zone-dragover-bg-color, var(--highlighted-upload-button-background));
+}
+
+.fileInput {
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+  height: 1px;
+  width: 1px;
+}

@@ -16,7 +16,7 @@
 
 import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import noop from 'lodash/noop';
-import Upload from './Upload';
+import FileDropZone from './FileDropZone';
 
 import type { FileTransformedToString } from './types';
 
@@ -35,19 +35,19 @@ describe('Upload', () => {
 
   describe('rendering', () => {
     it('renders an input of type file', () => {
-      const { container } = render(<Upload onUpload={noop} />);
+      const { container } = render(<FileDropZone onUpload={noop} />);
       expect(container.querySelectorAll('input[type="file"]')).toHaveLength(1);
     });
 
-    it('allows upload of only a single file by default', () => {
-      const { container } = render(<Upload onUpload={noop} />);
+    it('accepts only a single file by default', () => {
+      const { container } = render(<FileDropZone onUpload={noop} />);
       const input = container.querySelector('input');
       expect(input?.hasAttribute('multiple')).toBe(false);
     });
 
-    it('allows upload of multiple files', () => {
+    it('can accept multiple files', () => {
       const { container } = render(
-        <Upload onUpload={noop} allowMultiple={true} />
+        <FileDropZone onUpload={noop} allowMultiple={true} />
       );
       const input = container.querySelector('input');
       expect(input?.hasAttribute('multiple')).toBe(true);
@@ -58,7 +58,7 @@ describe('Upload', () => {
     const onUpload = jest.fn();
 
     it('uploads a single file', () => {
-      const { container } = render(<Upload onUpload={onUpload} />);
+      const { container } = render(<FileDropZone onUpload={onUpload} />);
 
       fireEvent.change(container.querySelector('input') as HTMLElement, {
         target: { files: [file1] }
@@ -71,7 +71,7 @@ describe('Upload', () => {
 
     it('uploads multiple files', () => {
       const { container } = render(
-        <Upload onUpload={onUpload} allowMultiple={true} />
+        <FileDropZone onUpload={onUpload} allowMultiple={true} />
       );
 
       fireEvent.change(container.querySelector('input') as HTMLElement, {
@@ -94,7 +94,7 @@ describe('Upload', () => {
         (textFromFile = result.content as string);
 
       const { container } = render(
-        <Upload onUpload={onUpload} transformTo="text" />
+        <FileDropZone onUpload={onUpload} transformTo="text" />
       );
 
       await act(async () => {
@@ -114,7 +114,11 @@ describe('Upload', () => {
         (textFromFile = results.map((result) => result.content).join(' '));
 
       const { container } = render(
-        <Upload onUpload={onUpload} allowMultiple={true} transformTo="text" />
+        <FileDropZone
+          onUpload={onUpload}
+          allowMultiple={true}
+          transformTo="text"
+        />
       );
 
       await act(async () => {
@@ -140,21 +144,21 @@ describe('Upload', () => {
     };
     const onUpload = jest.fn();
 
-    it('changes drop zone class when a file is dragged over', () => {
-      const { container } = render(<Upload onUpload={onUpload} />);
+    it('changes styles when a file is dragged over', () => {
+      const { container } = render(<FileDropZone onUpload={onUpload} />);
       const label = container.querySelector('label') as HTMLElement;
 
       fireEvent.dragEnter(label, mockDragEvent);
 
-      expect(label.classList.contains('uploadDragOver')).toBe(true);
+      expect(label.classList.contains('draggedOver')).toBe(true);
 
       fireEvent.dragLeave(label, mockDragEvent);
 
-      expect(label.classList.contains('uploadDragOver')).toBe(false);
+      expect(label.classList.contains('draggedOver')).toBe(false);
     });
 
     it('uploads a single file', () => {
-      const { container } = render(<Upload onUpload={onUpload} />);
+      const { container } = render(<FileDropZone onUpload={onUpload} />);
       const label = container.querySelector('label') as HTMLElement;
 
       fireEvent.drop(label, mockDragEvent);
@@ -166,7 +170,7 @@ describe('Upload', () => {
 
     it('uploads multiple files', () => {
       const { container } = render(
-        <Upload allowMultiple={true} onUpload={onUpload} />
+        <FileDropZone allowMultiple={true} onUpload={onUpload} />
       );
       const label = container.querySelector('label') as HTMLElement;
 
