@@ -33,7 +33,7 @@ export type ViewInAppPopupProps = {
 const ViewInAppPopup = (props: ViewInAppPopupProps) => {
   const { links, position = Position.BOTTOM_RIGHT, children } = props;
   const [showPointerBox, setShowPointerBox] = useState(false);
-  const anchorRef = useRef<HTMLSpanElement>(null);
+  const anchorRef = useRef<HTMLButtonElement>(null);
 
   const onAnchorClick = () => {
     setShowPointerBox(!showPointerBox);
@@ -56,9 +56,13 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
 
   return (
     <>
-      <span className={styles.wrapper} ref={anchorRef} onClick={onAnchorClick}>
+      <button
+        className={styles.wrapper}
+        ref={anchorRef}
+        onClick={onAnchorClick}
+      >
         {children}
-      </span>
+      </button>
       {showPointerBox && anchorRef.current && (
         <PointerBox
           anchor={anchorRef.current}

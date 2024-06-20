@@ -20,8 +20,6 @@ import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
-import styles from './VepResultsLocation.module.css';
-
 type Props = {
   genomeId: string;
   location: {
@@ -59,9 +57,7 @@ const VepResultsLocation = (props: Props) => {
   const formattedVariantLocation = `${location.region_name}:${formattedStart}`;
 
   return (
-    <ViewInAppPopup links={links}>
-      <span className={styles.location}>{formattedVariantLocation}</span>
-    </ViewInAppPopup>
+    <ViewInAppPopup links={links}>{formattedVariantLocation}</ViewInAppPopup>
   );
 };
 

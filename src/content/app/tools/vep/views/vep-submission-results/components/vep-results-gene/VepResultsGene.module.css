@@ -1,14 +1,3 @@
-/**
-- It should probably be responsibility of ViewInAppPopup to turn the text that it wraps around blue
-- Change span in ViewInAppPopup to button
-- Then the .stableId class below can be deleted
-*/
-
-.stableId {
-  color: var(--color-blue);
-  cursor: pointer;
-}
-
 .symbol {
   font-weight: var(--font-weight-bold);
   margin-right: 1ch;

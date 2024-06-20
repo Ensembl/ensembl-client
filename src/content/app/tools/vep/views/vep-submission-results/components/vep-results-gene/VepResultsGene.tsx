@@ -59,9 +59,7 @@ const VepResultsGene = (props: Props) => {
     <>
       <div>
         {symbol && <span className={styles.symbol}>{symbol} </span>}
-        <ViewInAppPopup links={links}>
-          <span className={styles.stableId}>{stableId}</span>
-        </ViewInAppPopup>
+        <ViewInAppPopup links={links}>{stableId}</ViewInAppPopup>
       </div>
       <div className={commonStyles.smallLight}>
         {getStrandDisplayName(strand as Strand)}
