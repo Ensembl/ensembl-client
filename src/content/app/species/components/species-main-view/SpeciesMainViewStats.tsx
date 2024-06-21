@@ -58,9 +58,7 @@ type ExampleLinkPopupProps = {
 const ExampleLinkWithPopup = (props: ExampleLinkPopupProps) => {
   return (
     <div className={styles.exampleLink}>
-      <ViewInAppPopup links={props.links}>
-        <span className={styles.exampleLinkText}>{props.children}</span>
-      </ViewInAppPopup>
+      <ViewInAppPopup links={props.links}>{props.children}</ViewInAppPopup>
     </div>
   );
 };

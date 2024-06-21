@@ -17,12 +17,6 @@
   padding: 5px 20px var(--global-padding-bottom) 140px;
 }
 
-.exampleLinkText {
-  cursor: pointer;
-  color: var(--color-blue);
-  position: relative;
-}
-
 .pointerBox {
   padding: 6px 12px;
   background: var(--color-black);
