@@ -89,7 +89,7 @@ export const createSmallNumberFormatter = (
 const defaultSmallNumberFormatterOptions = {
   maximumSignificantDigits: 21,
   roundingMode: 'trunc'
-};
+} as const;
 
 // the value below which a default small number formatter would switch to scientific notation
 const DEFAULT_CUTOFF_FOR_SMALL_NUMBERS = 0.0001;
