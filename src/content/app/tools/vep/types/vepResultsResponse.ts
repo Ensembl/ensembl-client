@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export type VEPResultsResponse = {
-  metadata: VEPResultsResponseMetadata;
+export type VepResultsResponse = {
+  metadata: VepResultsResponseMetadata;
   variants: Variant[];
 };
 
-export type VEPResultsResponseMetadata = {
+export type VepResultsResponseMetadata = {
   pagination: {
     page: number;
     per_page: number;
@@ -46,11 +46,13 @@ export type ReferenceVariantAllele = {
 export type AlternativeVariantAllele = {
   allele_sequence: string;
   allele_type: string;
-  predicted_molecular_consequences: Array<
-    PredictedTranscriptConsequence | PredictedIntergenicConsequence
-  >;
-  representative_population_allele_frequency?: number | null;
+  predicted_molecular_consequences: PredictedMolecularConsequence[];
+  representative_population_allele_frequency?: number | null; // FIXME: remove? not part of VEP Phase 1
 };
+
+export type PredictedMolecularConsequence =
+  | PredictedTranscriptConsequence
+  | PredictedIntergenicConsequence;
 
 export type PredictedTranscriptConsequence = {
   feature_type: 'transcript';

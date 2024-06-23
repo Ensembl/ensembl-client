@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { VEPResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 const mockVepResults = {
   metadata: {
@@ -4503,6 +4503,6 @@ const mockVepResults = {
       ]
     }
   ]
-} satisfies VEPResultsResponse;
+} satisfies VepResultsResponse;
 
 export default mockVepResults;
