@@ -62,6 +62,7 @@ type VariantAffectedGene = {
   stable_id: string;
   symbol: string | null;
   transcripts: PredictedTranscriptConsequence[];
+  transcriptsCount: number;
 };
 
 type UpdatedAlternativeAllele = AlternativeVariantAllele & {
@@ -92,6 +93,8 @@ const reshapeVariant = ({
         allele.predicted_molecular_consequences
       );
 
+      const allTranscriptConsequences = transcriptConsequences;
+
       const genesMap = new Map<string, VariantAffectedGene>();
 
       if (onlyCanonicalTranscripts) {
@@ -117,7 +120,11 @@ const reshapeVariant = ({
           const gene: VariantAffectedGene = {
             stable_id: geneId,
             symbol: consequence.gene_symbol,
-            transcripts: [consequence]
+            transcripts: [consequence],
+            transcriptsCount: getTotalTranscriptsCountForGene({
+              transcriptConsequences: allTranscriptConsequences,
+              geneId
+            })
           };
           genesMap.set(geneId, gene);
         }
@@ -134,6 +141,22 @@ const reshapeVariant = ({
     ...variant,
     alternative_alleles: alternativeAlleles
   };
+};
+
+const getTotalTranscriptsCountForGene = ({
+  transcriptConsequences,
+  geneId
+}: {
+  transcriptConsequences: PredictedTranscriptConsequence[];
+  geneId: string;
+}) => {
+  let count = 0;
+  for (let i = 0; i < transcriptConsequences.length; i++) {
+    if (transcriptConsequences[i].gene_stable_id === geneId) {
+      count++;
+    }
+  }
+  return count;
 };
 
 type ConsequenceGroups = {
@@ -161,11 +184,17 @@ const groupAlleleConsequencesByType = (
 };
 
 export type VepResultsTableRowData = {
-  consequence: PredictedMolecularConsequence;
+  consequence:
+    | PredictedIntergenicConsequence
+    | (PredictedTranscriptConsequence & {
+        totalTranscriptsCount: number;
+        isLastTranscript: boolean;
+      });
   gene: {
     stableId: string;
     symbol: string | null;
     strand: 'forward' | 'reverse';
+    transcriptsCount: number;
     rowspan: number;
   } | null;
   alternativeAllele: {
@@ -208,7 +237,11 @@ const getTabularData = ({
       for (let i = 0; i < gene.transcripts.length; i++) {
         const transcriptConsequence = gene.transcripts[i];
         const tableRowData: VepResultsTableRowData = {
-          consequence: transcriptConsequence,
+          consequence: {
+            ...transcriptConsequence,
+            totalTranscriptsCount: gene.transcriptsCount,
+            isLastTranscript: i === gene.transcripts.length - 1
+          },
           gene: null,
           alternativeAllele: null,
           variant: null
@@ -233,6 +266,7 @@ const getTabularData = ({
             stableId: gene.stable_id,
             symbol: gene.symbol,
             strand: transcriptConsequence.strand,
+            transcriptsCount: gene.transcriptsCount,
             rowspan: Math.max(gene.transcripts.length, 1)
           };
         }

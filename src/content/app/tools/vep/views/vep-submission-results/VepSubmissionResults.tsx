@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
+
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
 import useVepVariantTabularData, {
@@ -24,6 +26,8 @@ import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
+import Pill from 'src/shared/components/pill/Pill';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
@@ -32,7 +36,6 @@ import styles from './VepSubmissionResults.module.css';
 /**
  * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
- * - Enable expansion/collapsing of transcripts of a given gene
  * - Consider pagination (should it be part of url?)
  */
 
@@ -81,10 +84,16 @@ const VepResultsTable = (props: {
 const VariantRow = (props: {
   variant: VepResultsResponse['variants'][number];
 }) => {
+  const [showAllTranscripts, setShowAllTranscripts] = useState(false);
+
   const tabularData = useVepVariantTabularData({
     variant: props.variant,
-    showAllTranscripts: true
+    showAllTranscripts
   });
+
+  const toggleExpandedTranscripts = () => {
+    setShowAllTranscripts(!showAllTranscripts);
+  };
 
   return tabularData.map((row, index) => (
     <tr key={index}>
@@ -122,7 +131,11 @@ const VariantRow = (props: {
         </td>
       )}
       <GeneTableCell row={row} />
-      <TranscriptTableCell row={row} />
+      <TranscriptTableCell
+        row={row}
+        isCollapsed={!showAllTranscripts}
+        toggleExpanded={toggleExpandedTranscripts}
+      />
       <td>
         <VariantConsequences consequences={row.consequence.consequences} />
       </td>
@@ -147,13 +160,35 @@ const GeneTableCell = (props: { row: VepResultsTableRowData }) => {
   }
 };
 
-const TranscriptTableCell = (props: { row: VepResultsTableRowData }) => {
-  const { row } = props;
+const TranscriptTableCell = (props: {
+  row: VepResultsTableRowData;
+  isCollapsed: boolean;
+  toggleExpanded: () => void;
+}) => {
+  const { row, isCollapsed, toggleExpanded } = props;
 
   if (row.consequence.feature_type === 'transcript') {
+    const { totalTranscriptsCount, isLastTranscript } = row.consequence;
+
     return (
       <td>
         <VariantTranscript transcript={row.consequence} />
+        {isCollapsed && totalTranscriptsCount > 1 && (
+          <div>
+            <button onClick={toggleExpanded} className={styles.expandButton}>
+              <Pill>+ {totalTranscriptsCount - 1}</Pill>
+              <span className={styles.smallLight}>transcripts</span>
+            </button>
+          </div>
+        )}
+        {!isCollapsed && totalTranscriptsCount > 1 && isLastTranscript && (
+          <div>
+            <CloseButton
+              onClick={toggleExpanded}
+              className={styles.collapseButton}
+            />
+          </div>
+        )}
       </td>
     );
   } else {

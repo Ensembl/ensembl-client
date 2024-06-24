@@ -35,6 +35,17 @@
   max-width: 100px;
 }
 
+.expandButton {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  margin-top: 12px;
+}
+
+.collapseButton {
+  margin-top: 24px;
+}
+
 .smallLight {
   font-size: 11px;
   font-weight: var(--font-weight-light);
