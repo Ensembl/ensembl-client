@@ -312,7 +312,9 @@ const getTabularData = ({
   return result;
 };
 
-// FIXME! Consider that transcripts can be collapsed
+// Note: the number of transcripts in variant->alternative_allele->gene
+// will depend on whether the list of transcripts is collapsed or expanded
+// (see how transcripts are filtered out in the reshapeVariant function)
 const getTotalRowsForVariant = (variant: ReshapedVariant) => {
   let count = 0;
 
@@ -330,7 +332,9 @@ const getTotalRowsForVariant = (variant: ReshapedVariant) => {
   return Math.max(count, 1);
 };
 
-// FIXME! Consider that transcripts can be collapsed
+// Note: the number of transcripts in allele->gene
+// will depend on whether the list of transcripts is collapsed or expanded
+// (see how transcripts are filtered out in the reshapeVariant function)
 const getTotalRowsForAltAllele = (allele: UpdatedAlternativeAllele) => {
   let count = 0;
 
