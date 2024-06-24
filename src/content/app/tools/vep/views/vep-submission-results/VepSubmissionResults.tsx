@@ -44,7 +44,7 @@ const VepSubmissionResults = () => {
 
   return (
     <div className={styles.container}>
-      <div>Vep analysis</div>
+      <div>VEP analysis</div>
       <div className={styles.resultsBox}>
         <div>Area above the table</div>
         {vepResults && <VepResultsTable variants={vepResults.variants} />}
