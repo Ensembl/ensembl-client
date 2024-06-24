@@ -16,11 +16,11 @@
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { VEPResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    vepResults: builder.query<VEPResultsResponse, void>({
+    vepResults: builder.query<VepResultsResponse, void>({
       queryFn: async () => {
         // TODO: the query function will accept a submission id,
         // and will send request to:

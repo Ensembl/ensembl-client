@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
+
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+
+import useVepVariantTabularData, {
+  type VepResultsTableRowData
+} from './useVepVariantTabularData';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
+import Pill from 'src/shared/components/pill/Pill';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import type {
-  VEPResultsResponse,
-  AlternativeVariantAllele,
-  PredictedTranscriptConsequence
-} from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 import styles from './VepSubmissionResults.module.css';
 
 /**
  * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
- * - Enable expansion/collapsing of transcripts of a given gene
- * - Show intergenic variants as predicted consequences alongside transcript consequences
  * - Consider pagination (should it be part of url?)
- * - Make the table scrollable
  */
 
 const VepSubmissionResults = () => {
@@ -53,7 +54,7 @@ const VepSubmissionResults = () => {
 };
 
 const VepResultsTable = (props: {
-  variants: VEPResultsResponse['variants'];
+  variants: VepResultsResponse['variants'];
 }) => {
   const { variants } = props;
 
@@ -81,73 +82,122 @@ const VepResultsTable = (props: {
 };
 
 const VariantRow = (props: {
-  variant: VEPResultsResponse['variants'][number];
+  variant: VepResultsResponse['variants'][number];
 }) => {
-  // group transcript consequences by gene
-  // const variant = updateVariant(props.variant);
+  const [showAllTranscripts, setShowAllTranscripts] = useState(false);
 
-  const transcriptConsequencesForTable = getTranscriptConsequences(
-    props.variant
-  );
+  const tabularData = useVepVariantTabularData({
+    variant: props.variant,
+    showAllTranscripts
+  });
 
-  return transcriptConsequencesForTable.map((cons, index) => (
+  const toggleExpandedTranscripts = () => {
+    setShowAllTranscripts(!showAllTranscripts);
+  };
+
+  return tabularData.map((row, index) => (
     <tr key={index}>
-      {cons.variant && (
+      {row.variant && (
         <>
           <td
-            rowSpan={
-              cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
-            }
+            rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
           >
-            <VariantName variant={cons.variant} />
+            <VariantName variant={row.variant} />
           </td>
           <td
-            rowSpan={
-              cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
-            }
+            rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
           >
-            {cons.variant.referenceAllele}
+            {row.variant.referenceAllele}
           </td>
           <td
-            rowSpan={
-              cons.variant.rowspan > 1 ? cons.variant.rowspan : undefined
-            }
+            rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
           >
             <VepResultsLocation
               genomeId="grch38"
-              location={cons.variant.location}
+              location={row.variant.location}
             />
           </td>
         </>
       )}
-      {cons.alternativeAllele && (
+      {row.alternativeAllele && (
         <td
           rowSpan={
-            cons.alternativeAllele.rowspan > 1
-              ? cons.alternativeAllele.rowspan
+            row.alternativeAllele.rowspan > 1
+              ? row.alternativeAllele.rowspan
               : undefined
           }
         >
-          {cons.alternativeAllele.allele_sequence}
+          {row.alternativeAllele.allele_sequence}
         </td>
       )}
-      {cons.gene && (
-        <td rowSpan={cons.gene.rowspan > 1 ? cons.gene.rowspan : undefined}>
-          <VepResultsGene {...cons.gene} genomeId="grch38" />
-        </td>
-      )}
+      <GeneTableCell row={row} />
+      <TranscriptTableCell
+        row={row}
+        isCollapsed={!showAllTranscripts}
+        toggleExpanded={toggleExpandedTranscripts}
+      />
       <td>
-        <VariantTranscript transcript={cons} />
-      </td>
-      <td>
-        <VariantConsequences consequences={cons.consequences} />
+        <VariantConsequences consequences={row.consequence.consequences} />
       </td>
     </tr>
   ));
 };
 
+const GeneTableCell = (props: { row: VepResultsTableRowData }) => {
+  const { row } = props;
+
+  if (row.gene) {
+    return (
+      <td rowSpan={row.gene.rowspan > 1 ? row.gene.rowspan : undefined}>
+        <VepResultsGene {...row.gene} genomeId="grch38" />
+      </td>
+    );
+  } else if (row.consequence.feature_type === null) {
+    // for an intergenic consequence, render an empty cell
+    return <td />;
+  } else {
+    return null;
+  }
+};
+
+const TranscriptTableCell = (props: {
+  row: VepResultsTableRowData;
+  isCollapsed: boolean;
+  toggleExpanded: () => void;
+}) => {
+  const { row, isCollapsed, toggleExpanded } = props;
+
+  if (row.consequence.feature_type === 'transcript') {
+    const { totalTranscriptsCount, isLastTranscript } = row.consequence;
+
+    return (
+      <td>
+        <VariantTranscript transcript={row.consequence} />
+        {isCollapsed && totalTranscriptsCount > 1 && (
+          <div>
+            <button onClick={toggleExpanded} className={styles.expandButton}>
+              <Pill>+ {totalTranscriptsCount - 1}</Pill>
+              <span className={styles.smallLight}>transcripts</span>
+            </button>
+          </div>
+        )}
+        {!isCollapsed && totalTranscriptsCount > 1 && isLastTranscript && (
+          <div>
+            <CloseButton
+              onClick={toggleExpanded}
+              className={styles.collapseButton}
+            />
+          </div>
+        )}
+      </td>
+    );
+  } else {
+    return <td />;
+  }
+};
+
 const VariantName = (props: {
-  variant: NonNullable<TranscriptConsequenceForTable['variant']>;
+  variant: NonNullable<VepResultsTableRowData['variant']>;
 }) => {
   return (
     <>
@@ -177,174 +227,6 @@ const VariantConsequences = ({ consequences }: { consequences: string[] }) => {
       <VariantConsequence consequence={consequence} />
     </div>
   ));
-};
-
-type VariantAffectedGene = {
-  stable_id: string;
-  symbol: string | null;
-  transcripts: PredictedTranscriptConsequence[];
-};
-
-type UpdatedAlternativeAllele = AlternativeVariantAllele & {
-  genes: VariantAffectedGene[];
-};
-
-const updateVariant = (variant: VEPResultsResponse['variants'][number]) => {
-  const alternativeAlleles: UpdatedAlternativeAllele[] =
-    variant.alternative_alleles.map((allele) => {
-      const genesMap = new Map<string, VariantAffectedGene>();
-      // NOTE: typescript 5.5 should be able to infer the PredictedTranscriptConsequence type on its own
-      const transcriptConsequences =
-        allele.predicted_molecular_consequences.filter(
-          (cons) => cons.feature_type === 'transcript'
-        ) as PredictedTranscriptConsequence[];
-
-      // make sure canonical transcripts go first
-      transcriptConsequences.sort((a, b) => {
-        const aScore = a.is_canonical ? 0 : 1;
-        const bScore = b.is_canonical ? 0 : 1;
-        return aScore - bScore;
-      });
-
-      for (const consequence of transcriptConsequences) {
-        const geneId = consequence.gene_stable_id;
-        const storedGene = genesMap.get(geneId);
-
-        if (storedGene) {
-          storedGene.transcripts.push(consequence);
-        } else {
-          const gene: VariantAffectedGene = {
-            stable_id: geneId,
-            symbol: consequence.gene_symbol,
-            transcripts: [consequence]
-          };
-          genesMap.set(geneId, gene);
-        }
-      }
-
-      return {
-        ...allele,
-        genes: [...genesMap.values()]
-      };
-    });
-
-  return {
-    ...variant,
-    alternative_alleles: alternativeAlleles
-  };
-};
-
-type TranscriptConsequenceForTable = PredictedTranscriptConsequence & {
-  gene: {
-    stableId: string;
-    symbol: string | null;
-    strand: 'forward' | 'reverse';
-    rowspan: number;
-  } | null;
-  alternativeAllele: {
-    allele_sequence: string;
-    rowspan: number;
-  } | null;
-  variant: {
-    name: string;
-    referenceAllele: string;
-    allele_type: string;
-    location: {
-      region_name: string;
-      start: number;
-    };
-    rowspan: number;
-  } | null;
-};
-
-/**
- * The data fetched from the api is shaped in a logical way,
- * where top-level items are variants, each of which has an array of alt alleles,
- * each of which has an array of predicted consequences...
- * In order to represent this data in a table, it has to be inverted
- * to become an array of elements associated with a single row.
- * The most appropriate candidate for such data seems to be a predicted molecular consequence
- * of a variant allele.
- */
-const getTranscriptConsequences = (
-  variant: VEPResultsResponse['variants'][number]
-): TranscriptConsequenceForTable[] => {
-  const result: TranscriptConsequenceForTable[] = [];
-  const updatedVariant = updateVariant(variant);
-
-  for (const altAllele of updatedVariant.alternative_alleles) {
-    // FIXME: should not just throw away all other consequences
-    // also, manual type casting will be unnecessary in typescript 5.5
-
-    for (let geneIndex = 0; geneIndex < altAllele.genes.length; geneIndex++) {
-      const gene = altAllele.genes[geneIndex];
-
-      for (let i = 0; i < gene.transcripts.length; i++) {
-        const transcriptConsequence = gene.transcripts[i];
-        const consequenceForTable: TranscriptConsequenceForTable = {
-          ...transcriptConsequence,
-          gene: null,
-          alternativeAllele: null,
-          variant: null
-        };
-        if (!result.length) {
-          consequenceForTable.variant = {
-            name: variant.name,
-            allele_type: variant.allele_type,
-            referenceAllele: variant.reference_allele.allele_sequence,
-            location: variant.location,
-            rowspan: getTotalRowsForVariant(updatedVariant)
-          };
-        }
-        if (geneIndex === 0 && i === 0) {
-          consequenceForTable.alternativeAllele = {
-            allele_sequence: altAllele.allele_sequence,
-            rowspan: getTotalRowsForAltAllele(altAllele)
-          };
-        }
-        if (i === 0) {
-          consequenceForTable.gene = {
-            stableId: gene.stable_id,
-            symbol: gene.symbol,
-            strand: transcriptConsequence.strand,
-            rowspan: Math.max(gene.transcripts.length, 1)
-          };
-        }
-
-        result.push(consequenceForTable);
-      }
-    }
-  }
-
-  return result;
-};
-
-const getTotalRowsForVariant = (variant: ReturnType<typeof updateVariant>) => {
-  let count = 0;
-
-  for (const altAllele of variant.alternative_alleles) {
-    for (const gene of altAllele.genes) {
-      for (let i = 0; i < gene.transcripts.length; i++) {
-        count++;
-      }
-    }
-  }
-
-  return Math.max(count, 1);
-};
-
-const getTotalRowsForAltAllele = (
-  allele: ReturnType<typeof updateVariant>['alternative_alleles'][number]
-) => {
-  let count = 0;
-
-  for (const gene of allele.genes) {
-    for (let i = 0; i < gene.transcripts.length; i++) {
-      count++;
-    }
-  }
-
-  return Math.max(count, 1);
 };
 
 export default VepSubmissionResults;

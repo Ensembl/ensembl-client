@@ -1,0 +1,9 @@
+.pill {
+  background: var(--pill-color, var(--color-blue));
+  color: var(--pill-text-color, var(--color-white));
+  font-size: var(--pill-font-size, 12px);
+  font-weight: var(--pill-font-weight, var(--font-weight-bold));
+  padding: var(--pill-padding, 2px 8px);
+  border-radius: var(--pill-border-radius, 14px);
+  white-space: nowrap;
+}
