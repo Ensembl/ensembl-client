@@ -26,12 +26,6 @@ import type {
 
 type VariantInResponse = VepResultsResponse['variants'][number];
 
-/**
- * TODO:
- * - Be able to expand/collapse transcripts
- * - Be able to show intergenic variants
- */
-
 type Params = {
   variant: VariantInResponse;
   showAllTranscripts: boolean;
@@ -46,7 +40,7 @@ type Params = {
  * The data is transformed into an array in which any given element
  * is associated with a single table row.
  * The most appropriate candidate for row-level elements
- * seem to be predicted molecular consequences of a variant allele.
+ * seems to be predicted molecular consequences of a variant allele.
  */
 const useVepVariantTabularData = (params: Params) => {
   const { variant, showAllTranscripts } = params;
