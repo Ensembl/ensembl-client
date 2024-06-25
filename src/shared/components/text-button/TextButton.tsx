@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+  type ForwardedRef
+} from 'react';
 import classNames from 'classnames';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import styles from './TextButton.module.css';
 
@@ -24,7 +29,10 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
   children: ReactNode;
 };
 
-export const TextButton = (props: Props) => {
+export const TextButton = (
+  props: Props,
+  ref: ForwardedRef<HTMLButtonElement>
+) => {
   const buttonClasses = classNames(
     styles.textButton,
     { [styles.disabled]: props.disabled },
@@ -32,10 +40,10 @@ export const TextButton = (props: Props) => {
   );
 
   return (
-    <button {...props} className={buttonClasses}>
+    <button {...props} ref={ref} className={buttonClasses}>
       {props.children}
     </button>
   );
 };
 
-export default TextButton;
+export default forwardRef(TextButton);

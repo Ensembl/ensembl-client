@@ -1,0 +1,52 @@
+.container {
+  display: grid;
+  grid-template-rows: 40px minmax(0, 1fr);
+  height: 100%;
+  padding-top: 20px;
+  margin-left: var(--double-standard-gutter);
+  margin-right: var(--double-standard-gutter);
+  overflow: hidden;
+}
+
+.resultsBox {
+  border: 1px solid var(--color-grey);
+  padding: 22px;
+  max-height: 100%;
+  align-self: start;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+}
+
+.table th,
+.table td {
+  vertical-align: top;
+}
+
+
+/* The styling of column widths below will probably need to be adjusted */
+.table td:nth-child(2), th:nth-child(2) {
+  max-width: 50px;
+}
+
+.table td:nth-child(3), th:nth-child(3) {
+  max-width: 100px;
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  column-gap: 1ch;
+  margin-top: 12px;
+}
+
+.collapseButton {
+  margin-top: 24px;
+}
+
+.smallLight {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+}

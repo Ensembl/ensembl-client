@@ -20,6 +20,7 @@ import VepAppBar from './components/vep-app-bar/VepAppBar';
 import VepTopBar from './components/vep-top-bar/VepTopBar';
 import VepForm from './views/vep-form/VepForm';
 import VepSpeciesSelector from './views/vep-species-selector/VepSpeciesSelector';
+import VepSubmissionResults from './views/vep-submission-results/VepSubmissionResults';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import styles from './VepPageContent.module.css';
@@ -38,20 +39,14 @@ const Main = () => {
   return (
     <Routes>
       <Route index={true} element={<VepForm />} />
-      <Route
-        path="species-selector"
-        element={<VepSpeciesSelector />}
-      />
+      <Route path="species-selector" element={<VepSpeciesSelector />} />
       <Route
         path="unviewed-submissions"
         element={<div>List of unviewed submissions</div>}
       />
       <Route path="submissions">
         <Route index={true} element={<div>List of viewed submissions</div>} />
-        <Route
-          path=":submissionId"
-          element={<div>Results of a single VEP analysis</div>}
-        />
+        <Route path=":submissionId" element={<VepSubmissionResults />} />
       </Route>
       <Route path="*" element={<NotFoundErrorScreen />} />
     </Routes>

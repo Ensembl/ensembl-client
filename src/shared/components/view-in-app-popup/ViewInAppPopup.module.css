@@ -1,5 +1,6 @@
 .wrapper {
   position: relative;
+  color: var(--color-blue); /* should be overridable by setting color on the child, if necessary */
 }
 
 .pointerBox {

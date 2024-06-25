@@ -1,0 +1,5 @@
+.container {
+  display: inline-flex;
+  column-gap: 12px;
+  align-items: baseline;   
+}
