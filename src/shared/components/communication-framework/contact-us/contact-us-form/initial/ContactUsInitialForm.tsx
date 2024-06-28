@@ -400,7 +400,7 @@ const getTotalFilesSize = (formState: State) => {
 };
 
 const exceedsAttachmentsSizeLimit = (formState: State) => {
-  const attachmentsSizeLimit = 10e6; // 10 MB according to SI units (where 1 megabyte is exactly 1 million bytes)
+  const attachmentsSizeLimit = 251e6; // 10 MB according to SI units (where 1 megabyte is exactly 1 million bytes)
   const totalFileSize = getTotalFilesSize(formState);
   return totalFileSize > attachmentsSizeLimit;
 };

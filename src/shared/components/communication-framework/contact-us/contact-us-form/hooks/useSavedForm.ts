@@ -95,7 +95,7 @@ const useSavedForm: UseSavedForm = (params) => {
   const withoutHugeFiles = (state: Form) => {
     // the user isn't allowed to submit files larger than 10MB anyway;
     // so there is no point is saving such files to IndexedDB
-    const fileSizeLimit = 10e6;
+    const fileSizeLimit = 251e6;
     const clonedState = { ...state };
     for (const [fieldName, fieldValue] of Object.entries(clonedState)) {
       if (fieldValue instanceof File && fieldValue.size > fileSizeLimit) {
