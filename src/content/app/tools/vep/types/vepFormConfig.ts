@@ -14,19 +14,33 @@
  * limitations under the License.
  */
 
-import type { RootState } from 'src/store';
+type CommonParameterFields = {
+  label: string;
+  description: string | null;
+};
 
-export const getSelectedSpecies = (state: RootState) =>
-  state.vep.vepForm.selectedSpecies;
+type SelectParameterOption = {
+  label: string;
+  value: string;
+};
 
-export const getVepFormParameters = (state: RootState) =>
-  state.vep.vepForm.parameters;
+type SelectParameter = CommonParameterFields & {
+  type: 'select';
+  options: SelectParameterOption[];
+  default_value: string;
+};
 
-export const getVepFormInputText = (state: RootState) =>
-  state.vep.vepForm.inputText;
+type BooleanParameter = CommonParameterFields & {
+  type: 'boolean';
+  default_value: boolean;
+};
 
-export const getVepFormInputFile = (state: RootState) =>
-  state.vep.vepForm.inputFile;
+export type VepFormConfig = {
+  parameters: {
+    transcript_set: SelectParameter;
+    symbol: BooleanParameter;
+    biotype: BooleanParameter;
+  };
+};
 
-export const getVepFormInputCommittedFlag = (state: RootState) =>
-  state.vep.vepForm.isInputCommitted;
+export type VepFormParameterName = keyof VepFormConfig['parameters'];

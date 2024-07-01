@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import type { RootState } from 'src/store';
+/**
+ * Schema of the data that will be persisted in indexedDB.
+ */
+export type VEPSubmission = {
+  id: string;
+  genome_id: string; // <-- should be the whole CommittedItem rather than a string
+  input_text: string | null;
+  input_file: File | null;
+  submission_name: string | null;
+  parameters: Record<string, unknown>;
+  created_at: string;
+  submitted_at: string | null; // <-- can get the unsubmitted submission
+  status: string; // <-- a member of a closed dictionary of words
+};
 
-export const getSelectedSpecies = (state: RootState) =>
-  state.vep.vepForm.selectedSpecies;
-
-export const getVepFormParameters = (state: RootState) =>
-  state.vep.vepForm.parameters;
-
-export const getVepFormInputText = (state: RootState) =>
-  state.vep.vepForm.inputText;
-
-export const getVepFormInputFile = (state: RootState) =>
-  state.vep.vepForm.inputFile;
-
-export const getVepFormInputCommittedFlag = (state: RootState) =>
-  state.vep.vepForm.isInputCommitted;
+/**
+ * Schema of the payload submitted to the server.
+ */
+export type VEPSubmissionPayload = {
+  genome_id: string;
+  input_file: File;
+  parameters: string;
+};

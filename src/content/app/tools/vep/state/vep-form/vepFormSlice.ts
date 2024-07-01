@@ -16,16 +16,30 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type {
+  VepFormConfig,
+  VepFormParameterName
+} from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { VepSelectedSpecies } from 'src/content/app/tools/vep/types/vepSubmission';
 
-type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
+type VepFormParameters = Partial<
+  Record<VepFormParameterName, string | boolean>
+>;
 
 export type VepFormState = {
   selectedSpecies: VepSelectedSpecies | null;
+  inputText: string;
+  inputFile: File | null; // <-- this is temporary; we should not store potentially huge files in-memory
+  isInputCommitted: boolean;
+  parameters: VepFormParameters;
 };
 
 export const initialState: VepFormState = {
-  selectedSpecies: null
+  selectedSpecies: null,
+  inputText: '',
+  inputFile: null,
+  isInputCommitted: false,
+  parameters: {}
 };
 
 const vepFormSlice = createSlice({
@@ -37,10 +51,46 @@ const vepFormSlice = createSlice({
       action: PayloadAction<{ species: VepSelectedSpecies }>
     ) => {
       state.selectedSpecies = action.payload.species;
+    },
+    // replace the whole parameters object in the state
+    setDefaultParameters: (state, action: PayloadAction<VepFormConfig>) => {
+      const defaultParameters: VepFormParameters = {};
+
+      for (const [parameterName, parameter] of Object.entries(
+        action.payload.parameters
+      )) {
+        defaultParameters[parameterName as VepFormParameterName] =
+          parameter.default_value;
+      }
+
+      state.parameters = defaultParameters;
+    },
+    // update one or more of the parameters object in the state
+    updateParameters: (state, action: PayloadAction<VepFormParameters>) => {
+      state.parameters = {
+        ...state.parameters,
+        ...action.payload
+      };
+    },
+    updateInputText: (state, action: PayloadAction<string>) => {
+      state.inputText = action.payload;
+    },
+    updateInputFile: (state, action: PayloadAction<File>) => {
+      state.inputFile = action.payload;
+    },
+    updateInputCommittedFlag: (state, action: PayloadAction<boolean>) => {
+      state.isInputCommitted = action.payload;
     }
   }
 });
 
-export const { setSelectedSpecies } = vepFormSlice.actions;
+export const {
+  setSelectedSpecies,
+  setDefaultParameters,
+  updateParameters,
+  updateInputText,
+  updateInputFile,
+  updateInputCommittedFlag
+} = vepFormSlice.actions;
 
 export default vepFormSlice.reducer;

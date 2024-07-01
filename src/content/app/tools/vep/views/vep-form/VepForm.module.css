@@ -1,3 +1,15 @@
+/*
+ * The purpose of this container is to make the main area of the page scrollable.
+ * The scrollbar should be at the right edge of the page; therefore, this container has a default (100%) width.
+ */
+.outerContainer {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/*
+ * This container has a max width.
+ */
 .container {
   margin-top: 22px;
   margin-left: var(--double-standard-gutter);
@@ -33,10 +45,6 @@
   grid-column: form-reset;
 }
 
-
-.formSection {
-  min-height: 62px;
-}
 
 /*
 *  TOP SECTIONS OF THE FORM

@@ -68,7 +68,7 @@ const VepResultsTable = (props: {
           <ColumnHead>Alt allele</ColumnHead>
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
-          <ColumnHead>Consequences</ColumnHead>
+          <ColumnHead>Predicted molecular consequence</ColumnHead>
         </tr>
       </thead>
       <tbody>

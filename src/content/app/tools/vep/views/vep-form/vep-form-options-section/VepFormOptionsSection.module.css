@@ -1,0 +1,43 @@
+.container {
+  margin-top: 50px;
+}
+
+.sectionTitleContainer {
+  --padding-side: 42px; /* Note that this is the same as in other VEP form sections. Perhaps this is something that should live in the FormSection component? */
+  display: flex;
+  align-items: center;
+  height: var(--form-section-min-height);
+  padding-left: var(--padding-side);
+  padding-right: var(--padding-side);
+}
+
+.disabledSectionTitle {
+  color: var(--color-medium-dark-grey);
+}
+
+
+/*
+  For consideration:
+  - The background is the same as in vep-form-variants section. What's a good way of extracting that?
+  - Not sure about the padding (is it the same as in vep-form-variants section?
+  - It is unclear from designs what the rules for the grid are (column width, gap width).
+    Should ask Andrea
+*/
+.optionsGrid {
+  --padding-side: 42px; /* same as for the title container? */
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  column-gap: 1.5rem;
+  background-color: var(--color-light-grey);
+  padding-left: var(--padding-side);
+  padding-right: var(--padding-side);
+  padding-top: 12px;
+}
+
+.optionsContainerCollapsed {
+  padding-bottom: 12px;
+}
+
+.optionsContainerExpanded {
+  padding-bottom: 22px;
+}

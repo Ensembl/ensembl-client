@@ -17,9 +17,17 @@
 import { useState, type FormEvent } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import {
+  getSelectedSpecies,
+  getVepFormInputText
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import {
+  updateInputText,
+  updateInputCommittedFlag
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
@@ -37,24 +45,29 @@ import styles from './VepFormVariantsSection.module.css';
 import uploadStyles from 'src/shared/components/upload/Upload.module.css';
 
 const VepFormVariantsSection = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
-  const [inputString, setInputString] = useState('');
   const [inputFile, setInputFile] = useState<File | null>(null);
+  const inputText = useAppSelector(getVepFormInputText);
+  const dispatch = useAppDispatch();
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
   const onReset = () => {
-    setInputString('');
+    dispatch(updateInputText(''));
     setInputFile(null);
+  };
+
+  const onInputTextUpdate = (text: string) => {
+    dispatch(updateInputText(text));
   };
 
   const canExpand = !!selectedSpecies;
 
   return (
-    <FormSection className={commonFormStyles.formSection}>
+    <FormSection>
       <div className={commonFormStyles.topFormSectionRegularGrid}>
         <div className={commonFormStyles.topFormSectionName}>Variants</div>
         <div className={commonFormStyles.topFormSectionMain}>
@@ -72,8 +85,8 @@ const VepFormVariantsSection = () => {
       </div>
       {isExpanded && (
         <ExpandedContents
-          inputString={inputString}
-          setInputString={setInputString}
+          inputString={inputText}
+          setInputString={onInputTextUpdate}
           inputFile={inputFile}
           setInputFile={setInputFile}
           onReset={onReset}
@@ -92,6 +105,7 @@ const ExpandedContents = (props: {
 }) => {
   const { inputString, inputFile, setInputString, setInputFile, onReset } =
     props;
+  const dispatch = useAppDispatch();
 
   const onTextareaContentChange = (event: FormEvent<HTMLTextAreaElement>) => {
     setInputString(event.currentTarget.value);
@@ -99,6 +113,10 @@ const ExpandedContents = (props: {
 
   const onFileDrop = (file: File) => {
     setInputFile(file);
+  };
+
+  const onCommitInput = () => {
+    dispatch(updateInputCommittedFlag(true));
   };
 
   const hasTextInput = !!inputString;
@@ -121,7 +139,9 @@ const ExpandedContents = (props: {
       </div>
       <div className={styles.gridColumnRight}>
         <div className={styles.inputControlButtons}>
-          <PrimaryButton disabled={!canCommitInput}>Add</PrimaryButton>
+          <PrimaryButton disabled={!canCommitInput} onClick={onCommitInput}>
+            Add
+          </PrimaryButton>
           {canCommitInput && <TextButton onClick={onReset}>Clear</TextButton>}
         </div>
       </div>
