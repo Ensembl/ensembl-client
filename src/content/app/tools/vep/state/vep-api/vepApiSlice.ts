@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import config from 'config';
+
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import { setDefaultParameters } from '../vep-form/vepFormSlice';
 
@@ -56,9 +58,22 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       { submissionId: string },
       VEPSubmissionPayload
     >({
+      // FIXME: uncomment when the back-end endpoint is ready
+      // query: (payload) => ({
+      //   url: `${config.toolsApiBaseUrl}/vep/submission`,
+      //   method: 'POST',
+      //   body: prepareSubmissionFormData(payload)
+      // }),
+
+      // TODO: remove when the back-end endpoint is ready
       queryFn: async (payload) => {
-        // TODO: actually submit the payload when the BE endpoint is ready
-        console.log('payload', payload); // eslint-disable-line
+        const submissionUrl = `${config.toolsApiBaseUrl}/vep/submission`;
+        console.log(
+          'url',
+          submissionUrl,
+          'payload',
+          prepareSubmissionFormData(payload)
+        ); // eslint-disable-line
 
         return {
           data: { submissionId: 'fake-id' }
@@ -84,6 +99,22 @@ const vepApiSlice = restApiSlice.injectEndpoints({
     })
   })
 });
+
+/**
+ * This function transforms the JSON payload passed into vepFormSubmission function
+ * into a FormData object necessary to submit a multipart/form-data request.
+ * While vepFormSubmission could have received a FormData object as its argument in the first place,
+ * the presence of this function allows us to type-check the payload.
+ */
+const prepareSubmissionFormData = (payload: VEPSubmissionPayload) => {
+  const formData = new FormData();
+
+  for (const [key, value] of Object.entries(payload)) {
+    formData.append(key, value);
+  }
+
+  return formData;
+};
 
 export const {
   useVepFormConfigQuery,
