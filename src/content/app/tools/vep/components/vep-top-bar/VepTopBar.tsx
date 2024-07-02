@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
+import { useAppSelector } from 'src/store';
+
+import { getVepFormParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
-import { PrimaryButton } from 'src/shared/components/button/Button';
 import Logotype from 'static/img/brand/logotype.svg';
-import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import SimpleSelect, {
+  type Option
+} from 'src/shared/components/simple-select/SimpleSelect';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
+import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
 
 import logoUrl from 'static/img/tools/vep/ensembl-vep.svg?url';
 
@@ -30,15 +38,8 @@ const VepTopBar = () => {
       <div className={styles.grid}>
         <img src={logoUrl} alt="Ensembl VEP logo" className={styles.logo} />
         <div className={styles.runAJob}>Run a job</div>
-        <div className={styles.transcriptSet}>
-          Transcript set
-          <SimpleSelect
-            options={[{ label: 'Select', value: 'none' }]}
-            disabled={true}
-            className={styles.transcriptSetSelector}
-          />
-        </div>
-        <PrimaryButton disabled={true}>Run</PrimaryButton>
+        <TranscriptSetSelector />
+        <VepSubmitButton />
         <div className={styles.vepVersion}>
           <Logotype />
           <span>Variant effect predictor </span>
@@ -54,6 +55,33 @@ const VepTopBar = () => {
         </div>
       </div>
     </ToolsTopBar>
+  );
+};
+
+const TranscriptSetSelector = () => {
+  const vepFormParameters = useAppSelector(getVepFormParameters);
+  const { currentData: vepFormConfig } = useVepFormConfigQuery();
+
+  let options: Option[] = [];
+
+  if (!vepFormConfig) {
+    options = [{ label: 'Select', value: 'none' }];
+  } else {
+    options = vepFormConfig.parameters.transcript_set.options;
+  }
+
+  const selectedValue = (vepFormParameters.transcript_set as string) ?? 'none';
+
+  return (
+    <div className={styles.transcriptSet}>
+      Transcript set
+      <SimpleSelect
+        options={options}
+        disabled={!vepFormConfig}
+        className={styles.transcriptSetSelector}
+        value={selectedValue}
+      />
+    </div>
   );
 };
 

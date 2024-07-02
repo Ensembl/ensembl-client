@@ -60,8 +60,10 @@
     [section-main-content] 1fr
     [section-toggle] auto;
   column-gap: var(--column-gap);
-  align-items: center;
-  height: 62px;
+  align-items: start;
+  min-height: 62px;
+  padding-top: 26px;
+  padding-bottom: 22px;
 }
 
 .topFormSectionName {

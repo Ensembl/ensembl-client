@@ -24,6 +24,8 @@ import {
   getVepFormInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
+import { useVepFormSubmissionMutation } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type {
@@ -37,6 +39,7 @@ const VepSubmitButton = () => {
   const inputFile = useAppSelector(getVepFormInputFile);
   const formParameters = useAppSelector(getVepFormParameters);
   const isInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
+  const [submitVepForm] = useVepFormSubmissionMutation();
 
   const canSubmit = Boolean(
     selectedSpecies &&
@@ -53,7 +56,7 @@ const VepSubmitButton = () => {
       parameters: formParameters
     });
 
-    console.log('payload', payload); // eslint-disable-line
+    submitVepForm(payload);
   };
 
   return (
@@ -75,7 +78,7 @@ const preparePayload = ({
   parameters: Record<string, unknown>;
 }): VEPSubmissionPayload => {
   if (inputText) {
-    new File([inputText], 'input.txt', {
+    inputFile = new File([inputText], 'input.txt', {
       type: 'text/plain'
     });
   }

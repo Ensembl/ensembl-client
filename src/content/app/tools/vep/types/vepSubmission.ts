@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
+export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
+
 /**
  * Schema of the data that will be persisted in indexedDB.
  */

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { useAppSelector } from 'src/store';
+
+import { getVepFormInputCommittedFlag } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
 import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
@@ -40,14 +44,12 @@ import styles from './VepFormOptionsSection.module.css';
  */
 
 const VepFormOptionsSection = () => {
+  const isVariantsInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
+
   // FIXME: remember that useVepFormConfigQuery will need a genome id when request is sent to backend for real
   const { currentData: formConfig } = useVepFormConfigQuery();
 
-  // FIXME:
-  // - return null if there is no selected species
-  // - return null if there is no variants input
-
-  if (!formConfig) {
+  if (!isVariantsInputCommitted || !formConfig) {
     // TODO: handle the loading state?
     return null;
   }

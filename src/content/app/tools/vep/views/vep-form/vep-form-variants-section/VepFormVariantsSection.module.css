@@ -1,3 +1,7 @@
+.variantsSection {
+  --variants-raw-input-height: 142px;
+}
+
 /*
   For consideration:
   Is it worth extracting the background color and the top/bottom padding
@@ -38,7 +42,15 @@
 }
 
 .textarea {
-  --textarea-height: 142px;
+  --textarea-height: var(--variants-raw-input-height);
+}
+
+.rawVariantsTextContainer {
+  font-family: var(--font-family-monospace);
+  max-height: var(--variants-raw-input-height);
+  width: 450px;
+  overflow: auto;
+  white-space: pre;
 }
 
 .fileDropZone {

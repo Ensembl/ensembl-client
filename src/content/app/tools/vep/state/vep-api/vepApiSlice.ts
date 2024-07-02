@@ -21,6 +21,7 @@ import { getVepFormParameters } from '../vep-form/vepFormSelectors';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { VEPSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
@@ -51,6 +52,19 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         };
       }
     }),
+    vepFormSubmission: builder.mutation<
+      { submissionId: string },
+      VEPSubmissionPayload
+    >({
+      queryFn: async (payload) => {
+        // TODO: actually submit the payload when the BE endpoint is ready
+        console.log('payload', payload); // eslint-disable-line
+
+        return {
+          data: { submissionId: 'fake-id' }
+        };
+      }
+    }),
     vepResults: builder.query<VepResultsResponse, void>({
       queryFn: async () => {
         // TODO: the query function will accept a submission id,
@@ -71,4 +85,8 @@ const vepApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useVepFormConfigQuery, useVepResultsQuery } = vepApiSlice;
+export const {
+  useVepFormConfigQuery,
+  useVepResultsQuery,
+  useVepFormSubmissionMutation
+} = vepApiSlice;
