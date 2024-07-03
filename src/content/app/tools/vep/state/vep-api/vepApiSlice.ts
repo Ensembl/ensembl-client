@@ -68,12 +68,13 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       // TODO: remove when the back-end endpoint is ready
       queryFn: async (payload) => {
         const submissionUrl = `${config.toolsApiBaseUrl}/vep/submission`;
+        // eslint-disable-next-line
         console.log(
           'url',
           submissionUrl,
           'payload',
           prepareSubmissionFormData(payload)
-        ); // eslint-disable-line
+        );
 
         return {
           data: { submissionId: 'fake-id' }
