@@ -8,7 +8,7 @@
 }
 
 /*
- * This container has a max width.
+ * The purpose of this container is to set a max width to the form.
  */
 .container {
   margin-top: 22px;
@@ -61,7 +61,7 @@
     [section-toggle] auto;
   column-gap: var(--column-gap);
   align-items: start;
-  min-height: 62px;
+  min-height: var(--form-section-min-height);
   padding-top: 26px;
   padding-bottom: 22px;
 }
