@@ -60,14 +60,14 @@ const vepApiSlice = restApiSlice.injectEndpoints({
     >({
       // FIXME: uncomment when the back-end endpoint is ready
       // query: (payload) => ({
-      //   url: `${config.toolsApiBaseUrl}/vep/submission`,
+      //   url: `${config.toolsApiBaseUrl}/vep/submissions`,
       //   method: 'POST',
       //   body: prepareSubmissionFormData(payload)
       // }),
 
       // TODO: remove when the back-end endpoint is ready
       queryFn: async (payload) => {
-        const submissionUrl = `${config.toolsApiBaseUrl}/vep/submission`;
+        const submissionUrl = `${config.toolsApiBaseUrl}/vep/submissions`;
         // eslint-disable-next-line
         console.log(
           'url',
