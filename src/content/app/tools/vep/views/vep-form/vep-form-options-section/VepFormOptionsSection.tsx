@@ -36,8 +36,14 @@ const VepFormOptionsSection = () => {
     return null;
   }
 
+  // FIXME: just for development; remember to remove
+  // if (!formConfig) {
+  //   return null;
+  // }
+
   return (
     <div className={styles.container}>
+      <SectionHeader />
       <VepFormGeneOptions config={formConfig} />
       <FormSection>
         <div className={styles.sectionTitleContainer}>
@@ -86,6 +92,10 @@ const VepFormOptionsSection = () => {
       </FormSection>
     </div>
   );
+};
+
+const SectionHeader = () => {
+  return <div className={styles.sectionHeader}>Job options</div>;
 };
 
 export default VepFormOptionsSection;

@@ -43,6 +43,8 @@
 
 .textarea {
   --textarea-height: var(--variants-raw-input-height);
+  font-family: var(--font-family-monospace);
+  line-height: var(--body-line-height);
 }
 
 .rawVariantsTextContainer {

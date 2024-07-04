@@ -21,9 +21,9 @@
 *  THE TOPMOST AREA, ABOVE OTHER FORM SECTIONS
 */
 .topmostAreaGrid {
-  --padding-side: 42px;
+  --padding-side: 40px;
   display: grid;
-  grid-template-columns: [submission-name-field] 1fr [form-reset] max-content;
+  grid-template-columns: [submission-name-field] 400px [form-reset] 1fr;
   align-items: end;
   padding-left: var(--padding-side);
   padding-right: var(--padding-side);
@@ -32,7 +32,6 @@
 
 .submissionName {
   grid-column: submission-name-field;
-  justify-self: start;
   display: flex;
   align-items: center;
   column-gap: 12px;
@@ -43,6 +42,7 @@
 
 .resetForm {
   grid-column: form-reset;
+  justify-self: end;
 }
 
 
@@ -53,7 +53,7 @@
 /* Grid to use to display the regular content of the section, i.e. not the expanded content */
 .topFormSectionRegularGrid {
   --column-gap: 20px;
-  --padding-side: 42px;
+  --padding-side: 40px;
   display: grid;
   grid-template-columns:
     [section-name] calc(152px - var(--column-gap))

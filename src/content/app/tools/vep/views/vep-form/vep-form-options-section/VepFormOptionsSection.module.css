@@ -2,8 +2,13 @@
   margin-top: 50px;
 }
 
+.sectionHeader {
+  margin-bottom: 24px;
+  padding-left: 40px;
+}
+
 .sectionTitleContainer {
-  --padding-side: 42px; /* Note that this is the same as in other VEP form sections. Perhaps this is something that should live in the FormSection component? */
+  --padding-side: 40px; /* Note that this is the same as in other VEP form sections. Perhaps this is something that should live in the FormSection component? */
   display: flex;
   align-items: center;
   height: var(--form-section-min-height);

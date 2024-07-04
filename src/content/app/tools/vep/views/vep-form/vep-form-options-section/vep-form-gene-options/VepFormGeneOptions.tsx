@@ -68,7 +68,7 @@ const VepFormGeneOptions = (props: Props) => {
       </div>
       <div className={optionsContainerClasses}>
         {/* show only the selected options in the collapsed view */}
-        {'symbol' in vepFormParameters && (
+        {'symbol' in vepFormParameters && isGeneSectionExpanded && (
           <Checkbox
             label={config.parameters.symbol.label}
             checked={vepFormParameters.symbol as boolean}
