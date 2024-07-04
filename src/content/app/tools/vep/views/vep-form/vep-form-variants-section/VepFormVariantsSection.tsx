@@ -17,9 +17,17 @@
 import { useState, type FormEvent } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import {
+  getSelectedSpecies,
+  getVepFormInputText
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import {
+  updateInputText,
+  updateInputCommittedFlag
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
@@ -39,32 +47,43 @@ import uploadStyles from 'src/shared/components/upload/Upload.module.css';
 const VepFormVariantsSection = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
-  const [inputString, setInputString] = useState('');
   const [inputFile, setInputFile] = useState<File | null>(null);
+  const inputText = useAppSelector(getVepFormInputText);
+  const dispatch = useAppDispatch();
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
   const onReset = () => {
-    setInputString('');
+    dispatch(updateInputText(''));
     setInputFile(null);
+  };
+
+  const onInputTextUpdate = (text: string) => {
+    dispatch(updateInputText(text));
   };
 
   const canExpand = !!selectedSpecies;
 
   return (
-    <FormSection className={commonFormStyles.formSection}>
+    <FormSection className={styles.variantsSection}>
       <div className={commonFormStyles.topFormSectionRegularGrid}>
         <div className={commonFormStyles.topFormSectionName}>Variants</div>
         <div className={commonFormStyles.topFormSectionMain}>
-          <TextButton disabled={!canExpand} onClick={toggleExpanded}>
-            Add variants
-          </TextButton>
+          <MainContentCollapsed
+            isExpanded={isExpanded}
+            canExpand={canExpand}
+            inputText={inputText}
+            inputFile={inputFile}
+            toggleExpanded={toggleExpanded}
+          />
         </div>
         <div className={commonFormStyles.topFormSectionToggle}>
           {isExpanded ? (
             <CloseButtonWithLabel onClick={toggleExpanded} />
+          ) : inputText || inputFile ? (
+            <TextButton onClick={toggleExpanded}>Change</TextButton>
           ) : (
             <PlusButton disabled={!canExpand} onClick={toggleExpanded} />
           )}
@@ -72,10 +91,11 @@ const VepFormVariantsSection = () => {
       </div>
       {isExpanded && (
         <ExpandedContents
-          inputString={inputString}
-          setInputString={setInputString}
+          inputString={inputText}
+          setInputString={onInputTextUpdate}
           inputFile={inputFile}
           setInputFile={setInputFile}
+          toggleExpanded={toggleExpanded}
           onReset={onReset}
         />
       )}
@@ -83,15 +103,51 @@ const VepFormVariantsSection = () => {
   );
 };
 
-const ExpandedContents = (props: {
+const MainContentCollapsed = ({
+  inputText,
+  inputFile,
+  isExpanded,
+  canExpand,
+  toggleExpanded
+}: {
+  inputText: string;
+  inputFile: File | null;
+  isExpanded: boolean;
+  canExpand: boolean;
+  toggleExpanded: () => void;
+}) => {
+  if (isExpanded || (!inputText && !inputFile)) {
+    return (
+      <TextButton disabled={!canExpand} onClick={toggleExpanded}>
+        Add variants
+      </TextButton>
+    );
+  } else if (inputText) {
+    return <div className={styles.rawVariantsTextContainer}>{inputText}</div>;
+  } else if (inputFile) {
+    return <span>{inputFile.name}</span>;
+  } else {
+    // this branch should be unreachable
+    return null;
+  }
+};
+
+const ExpandedContents = ({
+  inputString,
+  inputFile,
+  setInputString,
+  setInputFile,
+  toggleExpanded,
+  onReset
+}: {
   inputString: string;
   setInputString: (val: string) => void;
   inputFile: File | null;
   setInputFile: (file: File) => void;
+  toggleExpanded: () => void;
   onReset: () => void;
 }) => {
-  const { inputString, inputFile, setInputString, setInputFile, onReset } =
-    props;
+  const dispatch = useAppDispatch();
 
   const onTextareaContentChange = (event: FormEvent<HTMLTextAreaElement>) => {
     setInputString(event.currentTarget.value);
@@ -99,6 +155,11 @@ const ExpandedContents = (props: {
 
   const onFileDrop = (file: File) => {
     setInputFile(file);
+  };
+
+  const onCommitInput = () => {
+    dispatch(updateInputCommittedFlag(true));
+    toggleExpanded();
   };
 
   const hasTextInput = !!inputString;
@@ -121,7 +182,9 @@ const ExpandedContents = (props: {
       </div>
       <div className={styles.gridColumnRight}>
         <div className={styles.inputControlButtons}>
-          <PrimaryButton disabled={!canCommitInput}>Add</PrimaryButton>
+          <PrimaryButton disabled={!canCommitInput} onClick={onCommitInput}>
+            Add
+          </PrimaryButton>
           {canCommitInput && <TextButton onClick={onReset}>Clear</TextButton>}
         </div>
       </div>

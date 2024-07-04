@@ -1,6 +1,5 @@
 .grid {
   display: grid;
-  flex-grow: 1;
   align-items: center;
   grid-template-columns:
     [vep-logo] max-content

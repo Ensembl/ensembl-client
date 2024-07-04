@@ -1,7 +1,9 @@
 .container {
+  --form-section-min-height: 62px; /* declaring it as a custom property so that children of FormSection could use it */
   border-width: 1px;
   border-style: solid;
   border-color: var(--form-section-border-color, var(--color-medium-light-grey));
+  min-height: var(--form-section-min-height);
 }
 
 .container + .container {

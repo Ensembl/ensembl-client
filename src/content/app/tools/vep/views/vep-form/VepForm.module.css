@@ -1,3 +1,15 @@
+/*
+ * The purpose of this container is to make the main area of the page scrollable.
+ * The scrollbar should be at the right edge of the page; therefore, this container has a default (100%) width.
+ */
+.outerContainer {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/*
+ * The purpose of this container is to set a max width to the form.
+ */
 .container {
   margin-top: 22px;
   margin-left: var(--double-standard-gutter);
@@ -34,10 +46,6 @@
 }
 
 
-.formSection {
-  min-height: 62px;
-}
-
 /*
 *  TOP SECTIONS OF THE FORM
 */
@@ -52,8 +60,10 @@
     [section-main-content] 1fr
     [section-toggle] auto;
   column-gap: var(--column-gap);
-  align-items: center;
-  height: 62px;
+  align-items: start;
+  min-height: var(--form-section-min-height);
+  padding-top: 26px;
+  padding-bottom: 22px;
 }
 
 .topFormSectionName {

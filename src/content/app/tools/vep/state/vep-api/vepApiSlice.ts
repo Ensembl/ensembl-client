@@ -14,12 +14,56 @@
  * limitations under the License.
  */
 
+import config from 'config';
+
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import { setDefaultParameters } from '../vep-form/vepFormSlice';
+
+import { getVepFormParameters } from '../vep-form/vepFormSelectors';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { VEPSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
+import type { RootState } from 'src/store';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    vepFormConfig: builder.query<VepFormConfig, void>({
+      queryFn: async (_, { dispatch, getState }) => {
+        // TODO: the query function will accept a genome id,
+        // and will send request to:
+        // `${config.toolsApiBaseUrl}/vep/config?genome_id=${genomeId}`
+        // to fetch data.
+        // Meanwhile, until the back-end endpoint is developed,
+        // this function returns hard-coded response payload.
+        const mockResponseModule = await import(
+          'src/content/app/tools/vep/state/vep-api/fixtures/mockVepFormConfig'
+        );
+        const vepFormConfig = mockResponseModule.default;
+
+        const vepFormParametersInState = getVepFormParameters(
+          getState() as RootState
+        );
+
+        if (!Object.keys(vepFormParametersInState).length) {
+          dispatch(setDefaultParameters(vepFormConfig));
+        }
+
+        return {
+          data: vepFormConfig
+        };
+      }
+    }),
+    vepFormSubmission: builder.mutation<
+      { submission_id: string },
+      VEPSubmissionPayload
+    >({
+      query: (payload) => ({
+        url: `${config.toolsApiBaseUrl}/vep/submissions`,
+        method: 'POST',
+        body: prepareSubmissionFormData(payload)
+      })
+    }),
     vepResults: builder.query<VepResultsResponse, void>({
       queryFn: async () => {
         // TODO: the query function will accept a submission id,
@@ -40,4 +84,24 @@ const vepApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useVepResultsQuery } = vepApiSlice;
+/**
+ * This function transforms the JSON payload passed into vepFormSubmission function
+ * into a FormData object necessary to submit a multipart/form-data request.
+ * While vepFormSubmission could have received a FormData object as its argument in the first place,
+ * the presence of this function allows us to type-check the payload.
+ */
+const prepareSubmissionFormData = (payload: VEPSubmissionPayload) => {
+  const formData = new FormData();
+
+  for (const [key, value] of Object.entries(payload)) {
+    formData.append(key, value);
+  }
+
+  return formData;
+};
+
+export const {
+  useVepFormConfigQuery,
+  useVepResultsQuery,
+  useVepFormSubmissionMutation
+} = vepApiSlice;
