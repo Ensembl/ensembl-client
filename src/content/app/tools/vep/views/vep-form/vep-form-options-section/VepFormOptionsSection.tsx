@@ -25,24 +25,6 @@ import VepFormGeneOptions from './vep-form-gene-options/VepFormGeneOptions';
 
 import styles from './VepFormOptionsSection.module.css';
 
-/**
- * TODO:
- * - Show a pseudo-toggle between short variants and structural variants.
- * - Move Genes & transcripts section to its own directory?
- * - Display options
- *
- * IDEAS:
- * - Should user's file be stored in IndexedDB before submission?
- *  - This means, VEP isn't going to be usable in FF private mode
- *    - But it won't be usable in that mode anyway
- *
- * OTHER STUFF:
- * - Make sure only the main content can scroll on the VEP form page
- * - Change PlusButton to PlusIcon in Vep Species Selection section
- * - Show transcript set in the top bar
- * - Handle error message for too large file that user tries to attach
- */
-
 const VepFormOptionsSection = () => {
   const isVariantsInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
 
