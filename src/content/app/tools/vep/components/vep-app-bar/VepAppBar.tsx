@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { getSelectedSpecies as getSelectedSpeciesForVep } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import { setSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import { AppName as AppNameText } from 'src/global/globalConfig';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const VepAppBar = () => {
   return (
@@ -35,12 +41,21 @@ const VepAppBar = () => {
 
 const SpeciesTabs = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
+  const speciesSelectedForVep = useAppSelector(getSelectedSpeciesForVep);
+  const dispatch = useAppDispatch();
+
+  const hasSelectedSpeciesForVep = !!speciesSelectedForVep;
+
+  const onSpeciesSelect = (species: CommittedItem) => {
+    dispatch(setSelectedSpecies({ species }));
+  };
 
   const speciesTabs = speciesList.map((species) => (
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      disabled={true}
+      onClick={onSpeciesSelect}
+      disabled={hasSelectedSpeciesForVep}
     />
   ));
 
