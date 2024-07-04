@@ -28,6 +28,7 @@ type VepFormParameters = Partial<
 
 export type VepFormState = {
   selectedSpecies: VepSelectedSpecies | null;
+  submissionName: string | null;
   inputText: string;
   inputFile: File | null; // <-- this is temporary; we should not store potentially huge files in-memory
   isInputCommitted: boolean;
@@ -36,6 +37,7 @@ export type VepFormState = {
 
 export const initialState: VepFormState = {
   selectedSpecies: null,
+  submissionName: null,
   inputText: '',
   inputFile: null,
   isInputCommitted: false,
@@ -72,6 +74,9 @@ const vepFormSlice = createSlice({
         ...action.payload
       };
     },
+    updateSubmissionName: (state, action: PayloadAction<string>) => {
+      state.submissionName = action.payload;
+    },
     updateInputText: (state, action: PayloadAction<string>) => {
       state.inputText = action.payload;
     },
@@ -88,6 +93,7 @@ export const {
   setSelectedSpecies,
   setDefaultParameters,
   updateParameters,
+  updateSubmissionName,
   updateInputText,
   updateInputFile,
   updateInputCommittedFlag

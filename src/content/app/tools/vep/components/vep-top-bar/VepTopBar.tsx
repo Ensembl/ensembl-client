@@ -16,7 +16,10 @@
 
 import { useAppSelector } from 'src/store';
 
-import { getVepFormParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import {
+  getSelectedSpecies,
+  getVepFormParameters
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
@@ -59,12 +62,15 @@ const VepTopBar = () => {
 };
 
 const TranscriptSetSelector = () => {
+  const selectedSpecies = useAppSelector(getSelectedSpecies); // TODO: use genome id of the species to fetch the form config
   const vepFormParameters = useAppSelector(getVepFormParameters);
   const { currentData: vepFormConfig } = useVepFormConfigQuery();
 
+  const canPopulateSelect = selectedSpecies && vepFormConfig;
+
   let options: Option[] = [];
 
-  if (!vepFormConfig) {
+  if (!canPopulateSelect) {
     options = [{ label: 'Select', value: 'none' }];
   } else {
     options = vepFormConfig.parameters.transcript_set.options;
@@ -77,7 +83,7 @@ const TranscriptSetSelector = () => {
       Transcript set
       <SimpleSelect
         options={options}
-        disabled={!vepFormConfig}
+        disabled={!canPopulateSelect}
         className={styles.transcriptSetSelector}
         value={selectedValue}
       />

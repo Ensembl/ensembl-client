@@ -19,6 +19,9 @@ import type { RootState } from 'src/store';
 export const getSelectedSpecies = (state: RootState) =>
   state.vep.vepForm.selectedSpecies;
 
+export const getVepSubmissionName = (state: RootState) =>
+  state.vep.vepForm.submissionName;
+
 export const getVepFormParameters = (state: RootState) =>
   state.vep.vepForm.parameters;
 

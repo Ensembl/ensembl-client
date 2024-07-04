@@ -55,31 +55,14 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       }
     }),
     vepFormSubmission: builder.mutation<
-      { submissionId: string },
+      { submission_id: string },
       VEPSubmissionPayload
     >({
-      // FIXME: uncomment when the back-end endpoint is ready
-      // query: (payload) => ({
-      //   url: `${config.toolsApiBaseUrl}/vep/submissions`,
-      //   method: 'POST',
-      //   body: prepareSubmissionFormData(payload)
-      // }),
-
-      // TODO: remove when the back-end endpoint is ready
-      queryFn: async (payload) => {
-        const submissionUrl = `${config.toolsApiBaseUrl}/vep/submissions`;
-        // eslint-disable-next-line
-        console.log(
-          'url',
-          submissionUrl,
-          'payload',
-          prepareSubmissionFormData(payload)
-        );
-
-        return {
-          data: { submissionId: 'fake-id' }
-        };
-      }
+      query: (payload) => ({
+        url: `${config.toolsApiBaseUrl}/vep/submissions`,
+        method: 'POST',
+        body: prepareSubmissionFormData(payload)
+      })
     }),
     vepResults: builder.query<VepResultsResponse, void>({
       queryFn: async () => {
