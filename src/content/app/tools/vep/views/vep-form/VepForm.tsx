@@ -22,7 +22,7 @@ import VepFormVariantsSection from './vep-form-variants-section/VepFormVariantsS
 import VepFormOptionsSection from './vep-form-options-section/VepFormOptionsSection';
 import VepSubmissionName from './vep-submission-name/VepSubmissionName';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
-import { DeleteButtonWithLabel } from 'src/shared/components/delete-button/DeleteButton';
+import VepFormResetButton from './vep-form-reset-button/VepFormResetButton';
 
 import styles from './VepForm.module.css';
 
@@ -32,9 +32,7 @@ const VepForm = () => {
       <div className={styles.container}>
         <div className={styles.topmostAreaGrid}>
           <VepSubmissionName />
-          <div className={styles.resetForm}>
-            <DeleteButtonWithLabel label="Reset" disabled={true} />
-          </div>
+          <VepFormResetButton className={styles.resetForm} />
         </div>
 
         <FormSection>
