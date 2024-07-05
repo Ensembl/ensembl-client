@@ -1,0 +1,6 @@
+.container {
+  --radio-label-font-weight: var(--font-weight-normal);
+  display: flex;
+  column-gap: var(--pseudo-radio-buttons-column-gap, 34px);
+  /* margin-left: var(--inner-block-offset-left); */
+}

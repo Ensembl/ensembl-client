@@ -22,6 +22,10 @@ import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/v
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import VepFormGeneOptions from './vep-form-gene-options/VepFormGeneOptions';
+import {
+  PseudoRadioButton,
+  PseudoRadioButtonGroup
+} from 'src/shared/components/pseudo-radio-button';
 
 import styles from './VepFormOptionsSection.module.css';
 
@@ -35,11 +39,6 @@ const VepFormOptionsSection = () => {
     // TODO: handle the loading state?
     return null;
   }
-
-  // FIXME: just for development; remember to remove
-  // if (!formConfig) {
-  //   return null;
-  // }
 
   return (
     <div className={styles.container}>
@@ -95,7 +94,15 @@ const VepFormOptionsSection = () => {
 };
 
 const SectionHeader = () => {
-  return <div className={styles.sectionHeader}>Job options</div>;
+  return (
+    <div className={styles.sectionHeader}>
+      <span>Job options</span>
+      <PseudoRadioButtonGroup>
+        <PseudoRadioButton label="Short variants" />
+        <PseudoRadioButton label="Structural variants" disabled={true} />
+      </PseudoRadioButtonGroup>
+    </div>
+  );
 };
 
 export default VepFormOptionsSection;

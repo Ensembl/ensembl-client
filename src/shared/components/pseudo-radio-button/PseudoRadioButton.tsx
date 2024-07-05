@@ -21,7 +21,7 @@ import styles from './PseudoRadioButton.module.css';
 
 type Props = {
   label: string;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 /**
@@ -30,9 +30,13 @@ type Props = {
  * will actually do something useful.
  */
 const PseudoRadioButton = (props: Props) => {
-  const componentClasses = classNames(radioStyles.radioGroupItem, {
-    [styles.pseudoRadioDisabled]: props.disabled
-  });
+  const componentClasses = classNames(
+    radioStyles.radioGroupItem,
+    styles.pseudoRadioButton,
+    {
+      [styles.pseudoRadioDisabled]: props.disabled
+    }
+  );
   const radioClasses = classNames(radioStyles.radio, {
     [radioStyles.radioChecked]: !props.disabled
   });
@@ -40,7 +44,7 @@ const PseudoRadioButton = (props: Props) => {
   return (
     <div className={componentClasses}>
       <span className={classNames(radioClasses)} />
-      <span className={radioStyles.label}>Only species in list</span>
+      <span className={radioStyles.label}>{props.label}</span>
     </div>
   );
 };

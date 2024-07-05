@@ -3,6 +3,10 @@
 }
 
 .sectionHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 60px;
+  align-items: center;
   margin-bottom: 24px;
   padding-left: 40px;
 }
@@ -37,6 +41,10 @@
   padding-left: var(--padding-side);
   padding-right: var(--padding-side);
   padding-top: 12px;
+}
+
+.optionsGrid:empty {
+  display: none;
 }
 
 .optionsContainerCollapsed {

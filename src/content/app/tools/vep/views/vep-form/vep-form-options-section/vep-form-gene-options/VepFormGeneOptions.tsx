@@ -52,6 +52,14 @@ const VepFormGeneOptions = (props: Props) => {
     dispatch(updateParameters({ [parameter]: !vepFormParameters[parameter] }));
   };
 
+  const shouldShowOptionCheckbox = (optionName: VepFormParameterName) => {
+    if (isGeneSectionExpanded) {
+      return optionName in vepFormParameters;
+    } else {
+      return optionName in vepFormParameters && vepFormParameters[optionName];
+    }
+  };
+
   const optionsContainerClasses = classNames(commonStyles.optionsGrid, {
     [commonStyles.optionsContainerCollapsed]: !isGeneSectionExpanded,
     [commonStyles.optionsContainerExpanded]: isGeneSectionExpanded
@@ -68,14 +76,14 @@ const VepFormGeneOptions = (props: Props) => {
       </div>
       <div className={optionsContainerClasses}>
         {/* show only the selected options in the collapsed view */}
-        {'symbol' in vepFormParameters && isGeneSectionExpanded && (
+        {shouldShowOptionCheckbox('symbol') && (
           <Checkbox
             label={config.parameters.symbol.label}
             checked={vepFormParameters.symbol as boolean}
             onChange={() => onCheckboxChange('symbol')}
           />
         )}
-        {'biotype' in vepFormParameters && (
+        {shouldShowOptionCheckbox('biotype') && (
           <Checkbox
             label={config.parameters.biotype.label}
             checked={vepFormParameters.biotype as boolean}

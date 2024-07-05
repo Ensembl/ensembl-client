@@ -80,7 +80,7 @@ const vepFormSlice = createSlice({
     updateInputText: (state, action: PayloadAction<string>) => {
       state.inputText = action.payload;
     },
-    updateInputFile: (state, action: PayloadAction<File>) => {
+    updateInputFile: (state, action: PayloadAction<File | null>) => {
       state.inputFile = action.payload;
     },
     updateInputCommittedFlag: (state, action: PayloadAction<boolean>) => {

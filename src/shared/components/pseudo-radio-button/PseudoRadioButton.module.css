@@ -1,12 +1,8 @@
-.pseudoRadioGroup {
-  --radio-label-font-weight: var(--font-weight-normal);
-  display: flex;
-  column-gap: 2rem;
-  margin-left: var(--inner-block-offset-left);
+.pseudoRadioButton > * {
+  cursor: default !important; /* yes, !important is a bad smell; but this is just a dummy component; and no parent will need to override this */
 }
 
 .pseudoRadioDisabled > * {
   --radio-background-color: var(--color-light-grey);
   --radio-label-font-weight: var(--font-weight-light);
-  cursor: default !important; /* yes, !important is terrible; but this is just a dummy component; no parent will need to override this */
 }

@@ -21,11 +21,13 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import {
   getSelectedSpecies,
-  getVepFormInputText
+  getVepFormInputText,
+  getVepFormInputFile
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import {
   updateInputText,
+  updateInputFile,
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
@@ -47,8 +49,8 @@ import uploadStyles from 'src/shared/components/upload/Upload.module.css';
 const VepFormVariantsSection = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
-  const [inputFile, setInputFile] = useState<File | null>(null);
   const inputText = useAppSelector(getVepFormInputText);
+  const inputFile = useAppSelector(getVepFormInputFile);
   const dispatch = useAppDispatch();
 
   const toggleExpanded = () => {
@@ -57,11 +59,15 @@ const VepFormVariantsSection = () => {
 
   const onReset = () => {
     dispatch(updateInputText(''));
-    setInputFile(null);
+    dispatch(updateInputFile(null));
   };
 
   const onInputTextUpdate = (text: string) => {
     dispatch(updateInputText(text));
+  };
+
+  const onInputFileUpdate = (file: File) => {
+    dispatch(updateInputFile(file));
   };
 
   const canExpand = !!selectedSpecies;
@@ -94,7 +100,7 @@ const VepFormVariantsSection = () => {
           inputString={inputText}
           setInputString={onInputTextUpdate}
           inputFile={inputFile}
-          setInputFile={setInputFile}
+          setInputFile={onInputFileUpdate}
           toggleExpanded={toggleExpanded}
           onReset={onReset}
         />
