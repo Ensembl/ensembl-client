@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import { useMatch } from 'react-router';
+
 import { useAppDispatch, useAppSelector } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getSelectedSpecies as getSelectedSpeciesForVep } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
@@ -40,11 +44,14 @@ const VepAppBar = () => {
 };
 
 const SpeciesTabs = () => {
+  const vepFormPath = urlFor.vepForm();
+  const isVepFormView = useMatch({ path: vepFormPath, end: true });
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const speciesSelectedForVep = useAppSelector(getSelectedSpeciesForVep);
   const dispatch = useAppDispatch();
 
   const hasSelectedSpeciesForVep = !!speciesSelectedForVep;
+  const shouldEnableSpeciesTabs = isVepFormView && !hasSelectedSpeciesForVep;
 
   const onSpeciesSelect = (species: CommittedItem) => {
     dispatch(setSelectedSpecies({ species }));
@@ -55,7 +62,7 @@ const SpeciesTabs = () => {
       key={species.genome_id}
       species={species}
       onClick={onSpeciesSelect}
-      disabled={hasSelectedSpeciesForVep}
+      disabled={!shouldEnableSpeciesTabs}
     />
   ));
 
