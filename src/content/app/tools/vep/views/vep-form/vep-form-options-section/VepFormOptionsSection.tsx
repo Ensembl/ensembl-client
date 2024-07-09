@@ -16,7 +16,10 @@
 
 import { useAppSelector } from 'src/store';
 
-import { getVepFormInputCommittedFlag } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import {
+  getSelectedSpecies,
+  getVepFormInputCommittedFlag
+} from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
@@ -26,17 +29,33 @@ import {
   PseudoRadioButton,
   PseudoRadioButtonGroup
 } from 'src/shared/components/pseudo-radio-button';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './VepFormOptionsSection.module.css';
 
 const VepFormOptionsSection = () => {
+  const selectedSpecies = useAppSelector(getSelectedSpecies);
   const isVariantsInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
 
-  // FIXME: remember that useVepFormConfigQuery will need a genome id when request is sent to backend for real
-  const { currentData: formConfig } = useVepFormConfigQuery();
+  const { currentData: formConfig, isFetching } = useVepFormConfigQuery(
+    {
+      genome_id: selectedSpecies?.genome_id ?? ''
+    },
+    {
+      skip: !selectedSpecies
+    }
+  );
+
+  if (isFetching) {
+    return (
+      <div className={styles.container}>
+        <CircleLoader />
+      </div>
+    );
+  }
 
   if (!isVariantsInputCommitted || !formConfig) {
-    // TODO: handle the loading state?
+    // TODO: should we handle the error state somehow?
     return null;
   }
 

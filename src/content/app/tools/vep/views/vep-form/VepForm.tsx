@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import useVepFormConfig from './useVepFormConfig';
+
 import {
   VepFormSpecies,
   VepSpeciesSelectorNavButton
@@ -27,6 +29,8 @@ import VepFormResetButton from './vep-form-reset-button/VepFormResetButton';
 import styles from './VepForm.module.css';
 
 const VepForm = () => {
+  useVepFormConfig();
+
   return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
