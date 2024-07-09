@@ -67,6 +67,7 @@ const VepFormVariantsSection = () => {
   const onReset = () => {
     dispatch(updateInputText(''));
     dispatch(updateInputFile(null));
+    dispatch(updateInputCommittedFlag(false));
   };
 
   const onInputTextUpdate = (text: string) => {
