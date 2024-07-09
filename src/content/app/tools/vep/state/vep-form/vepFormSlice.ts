@@ -52,7 +52,11 @@ const vepFormSlice = createSlice({
       state,
       action: PayloadAction<{ species: VepSelectedSpecies }>
     ) => {
+      // NOTE: selecting a new species means that form parameters,
+      // whose values might remain from previously selected species,
+      // should be reset
       state.selectedSpecies = action.payload.species;
+      state.parameters = {};
     },
     // replace the whole parameters object in the state
     setDefaultParameters: (state, action: PayloadAction<VepFormConfig>) => {
@@ -80,11 +84,14 @@ const vepFormSlice = createSlice({
     updateInputText: (state, action: PayloadAction<string>) => {
       state.inputText = action.payload;
     },
-    updateInputFile: (state, action: PayloadAction<File>) => {
+    updateInputFile: (state, action: PayloadAction<File | null>) => {
       state.inputFile = action.payload;
     },
     updateInputCommittedFlag: (state, action: PayloadAction<boolean>) => {
       state.isInputCommitted = action.payload;
+    },
+    resetForm: () => {
+      return initialState;
     }
   }
 });
@@ -96,7 +103,8 @@ export const {
   updateSubmissionName,
   updateInputText,
   updateInputFile,
-  updateInputCommittedFlag
+  updateInputCommittedFlag,
+  resetForm
 } = vepFormSlice.actions;
 
 export default vepFormSlice.reducer;

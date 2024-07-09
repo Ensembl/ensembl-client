@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import noop from 'lodash/noop';
+
 import { useAppSelector } from 'src/store';
 
 import {
@@ -62,9 +64,16 @@ const VepTopBar = () => {
 };
 
 const TranscriptSetSelector = () => {
-  const selectedSpecies = useAppSelector(getSelectedSpecies); // TODO: use genome id of the species to fetch the form config
+  const selectedSpecies = useAppSelector(getSelectedSpecies);
   const vepFormParameters = useAppSelector(getVepFormParameters);
-  const { currentData: vepFormConfig } = useVepFormConfigQuery();
+  const { currentData: vepFormConfig } = useVepFormConfigQuery(
+    {
+      genome_id: selectedSpecies?.genome_id ?? ''
+    },
+    {
+      skip: !selectedSpecies
+    }
+  );
 
   const canPopulateSelect = selectedSpecies && vepFormConfig;
 
@@ -86,6 +95,7 @@ const TranscriptSetSelector = () => {
         disabled={!canPopulateSelect}
         className={styles.transcriptSetSelector}
         value={selectedValue}
+        onChange={noop}
       />
     </div>
   );

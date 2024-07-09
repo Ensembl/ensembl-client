@@ -2,7 +2,10 @@
   border-color: var(--textarea-border-color, var(--color-grey));
   border-width: var(--textarea-border-width, 1px);
   border-style: var(--textarea-border-style, solid);
-  padding: 7px;
+  padding-left: var(--textarea-padding-left, 15px);
+  padding-right: var(--textarea-padding-right, 15px);
+  padding-top: var(--textarea-padding-top, 7px);
+  padding-bottom: var(--textarea-padding-bottom, 7px);
   width: 100%;
   height: var(--textarea-height, 85px); /* To display 5 lines of text */
 }
@@ -24,6 +27,5 @@
 .shadedTextarea {
   --textarea-border-style: none;
   box-shadow: var(--form-field-shadow);
-  padding: 7px 15px;
   border: none;
 }

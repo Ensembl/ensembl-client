@@ -30,6 +30,7 @@
 .gridColumnRight {
   grid-column: right;
   justify-self: start;
+  padding-left: calc(var(--standard-gutter) - var(--column-gap)); /* to achieve the same distance from textarea as the width of the standard gutter */
 }
 
 .inputControlButtons {
@@ -38,11 +39,12 @@
   align-items: start;
   row-gap: 24px;
   padding-top: var(--standard-gutter);
-  padding-left: calc(var(--standard-gutter) - var(--column-gap)); /* to achieve the same distance from textarea as the width of the standard gutter */
 }
 
 .textarea {
   --textarea-height: var(--variants-raw-input-height);
+  font-family: var(--font-family-monospace);
+  line-height: var(--body-line-height);
 }
 
 .rawVariantsTextContainer {
@@ -70,6 +72,26 @@
   display: flex;
   align-items: center;
   height: 58px;
+}
+
+.maxUploadSize {
+  display: flex;
+  flex-direction: column;
+  font-weight: var(--font-weight-light);
+  margin-top: 26px;
+}
+
+.maxUploadSizeNumber {
+  font-weight: initial;
+}
+
+.maxUploadSizeError {
+  color: var(--color-red);
+}
+
+.invisible {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .alignSelfCenter {

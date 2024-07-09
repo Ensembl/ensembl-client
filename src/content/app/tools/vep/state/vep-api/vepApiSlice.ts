@@ -17,19 +17,16 @@
 import config from 'config';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
-import { setDefaultParameters } from '../vep-form/vepFormSlice';
-
-import { getVepFormParameters } from '../vep-form/vepFormSelectors';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { VEPSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
-import type { RootState } from 'src/store';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    vepFormConfig: builder.query<VepFormConfig, void>({
-      queryFn: async (_, { dispatch, getState }) => {
+    vepFormConfig: builder.query<VepFormConfig, { genome_id: string }>({
+      // eslint-disable-next-line
+      queryFn: async (params) => {
         // TODO: the query function will accept a genome id,
         // and will send request to:
         // `${config.toolsApiBaseUrl}/vep/config?genome_id=${genomeId}`
@@ -41,13 +38,10 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         );
         const vepFormConfig = mockResponseModule.default;
 
-        const vepFormParametersInState = getVepFormParameters(
-          getState() as RootState
-        );
-
-        if (!Object.keys(vepFormParametersInState).length) {
-          dispatch(setDefaultParameters(vepFormConfig));
-        }
+        // simulate network delay
+        await new Promise((resolve) => {
+          setTimeout(resolve, 200);
+        });
 
         return {
           data: vepFormConfig
