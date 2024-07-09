@@ -46,7 +46,7 @@ const VepFormOptionsSection = () => {
     }
   );
 
-  if (isFetching) {
+  if (isFetching && isVariantsInputCommitted) {
     return (
       <div className={styles.container}>
         <CircleLoader />
