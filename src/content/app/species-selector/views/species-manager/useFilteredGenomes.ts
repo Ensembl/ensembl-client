@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -25,13 +25,29 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 const useFilteredGenomes = () => {
   const selectedGenomes = useAppSelector(getCommittedSpecies);
   const [filteredGenomes, setFilteredGenomes] = useState(selectedGenomes);
+  const filterStringRef = useRef('');
+
+  // If the list of selected genomes changes (e.g. a species has been deleted),
+  // this should be reflected in the list of filtered genomes
+  useEffect(() => {
+    const filterString = filterStringRef.current;
+    const filteredGenomes = applyFilter(selectedGenomes, filterString);
+    setFilteredGenomes(filteredGenomes);
+  }, [selectedGenomes]);
 
   const onFilterChange = (event: FormEvent<HTMLInputElement>) => {
     const filterString = event.currentTarget.value;
-    const filteredGenomes = selectedGenomes.filter((genome) => {
-      return doesGenomeMatchQuery(genome, filterString);
-    });
+    filterStringRef.current = filterString;
+
+    const filteredGenomes = applyFilter(selectedGenomes, filterString);
+
     setFilteredGenomes(filteredGenomes);
+  };
+
+  const applyFilter = (genomes: CommittedItem[], filter: string) => {
+    return genomes.filter((genome) => {
+      return doesGenomeMatchQuery(genome, filter);
+    });
   };
 
   return {
