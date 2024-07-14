@@ -22,12 +22,13 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   getSelectedSpecies,
   getVepFormInputText,
-  getVepFormInputFile
+  getVepFormInputFileName
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import {
   updateInputText,
   updateInputFile,
+  clearVariantsInput,
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
@@ -50,7 +51,7 @@ const VepFormVariantsSection = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const inputText = useAppSelector(getVepFormInputText);
-  const inputFile = useAppSelector(getVepFormInputFile);
+  const inputFileName = useAppSelector(getVepFormInputFileName);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -60,13 +61,14 @@ const VepFormVariantsSection = () => {
     setIsExpanded(false);
   }, [selectedSpecies]);
 
+  // TODO: create a useEffect for component unmount, which will update stored VEP form
+
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
 
   const onReset = () => {
-    dispatch(updateInputText(''));
-    dispatch(updateInputFile(null));
+    dispatch(clearVariantsInput());
     dispatch(updateInputCommittedFlag(false));
   };
 
@@ -89,14 +91,14 @@ const VepFormVariantsSection = () => {
             isExpanded={isExpanded}
             canExpand={canExpand}
             inputText={inputText}
-            inputFile={inputFile}
+            inputFileName={inputFileName}
             toggleExpanded={toggleExpanded}
           />
         </div>
         <div className={commonFormStyles.topFormSectionToggle}>
           {isExpanded ? (
             <CloseButtonWithLabel onClick={toggleExpanded} />
-          ) : inputText || inputFile ? (
+          ) : inputText || inputFileName ? (
             <TextButton onClick={toggleExpanded}>Change</TextButton>
           ) : (
             <PlusButton disabled={!canExpand} onClick={toggleExpanded} />
@@ -107,7 +109,7 @@ const VepFormVariantsSection = () => {
         <ExpandedContents
           inputString={inputText}
           setInputString={onInputTextUpdate}
-          inputFile={inputFile}
+          inputFileName={inputFileName}
           setInputFile={onInputFileUpdate}
           toggleExpanded={toggleExpanded}
           onReset={onReset}
@@ -119,18 +121,18 @@ const VepFormVariantsSection = () => {
 
 const MainContentCollapsed = ({
   inputText,
-  inputFile,
+  inputFileName,
   isExpanded,
   canExpand,
   toggleExpanded
 }: {
-  inputText: string;
-  inputFile: File | null;
+  inputText: string | null;
+  inputFileName: string | null;
   isExpanded: boolean;
   canExpand: boolean;
   toggleExpanded: () => void;
 }) => {
-  if (isExpanded || (!inputText && !inputFile)) {
+  if (isExpanded || (!inputText && !inputFileName)) {
     return (
       <TextButton disabled={!canExpand} onClick={toggleExpanded}>
         Add variants
@@ -138,8 +140,8 @@ const MainContentCollapsed = ({
     );
   } else if (inputText) {
     return <div className={styles.rawVariantsTextContainer}>{inputText}</div>;
-  } else if (inputFile) {
-    return <span>{inputFile.name}</span>;
+  } else if (inputFileName) {
+    return <span>{inputFileName}</span>;
   } else {
     // this branch should be unreachable
     return null;
@@ -148,15 +150,15 @@ const MainContentCollapsed = ({
 
 const ExpandedContents = ({
   inputString,
-  inputFile,
+  inputFileName,
   setInputString,
   setInputFile,
   toggleExpanded,
   onReset
 }: {
-  inputString: string;
+  inputString: string | null;
   setInputString: (val: string) => void;
-  inputFile: File | null;
+  inputFileName: string | null;
   setInputFile: (file: File) => void;
   toggleExpanded: () => void;
   onReset: () => void;
@@ -190,13 +192,13 @@ const ExpandedContents = ({
   };
 
   const hasTextInput = !!inputString;
-  const hasFileInput = !!inputFile;
+  const hasFileInput = !!inputFileName;
   const hasOversizedFile = !!oversizedFileName;
   const shouldDisableTextInput = hasFileInput || hasOversizedFile;
   const shouldDisableFileInput = hasTextInput;
   const canCommitInput = hasTextInput || hasFileInput;
   const canClearInput = hasTextInput || hasFileInput || hasOversizedFile;
-  const attachedFileName = inputFile?.name || oversizedFileName;
+  const attachedFileName = inputFileName || oversizedFileName;
 
   return (
     <div className={styles.expandedContentGrid}>
@@ -204,7 +206,7 @@ const ExpandedContents = ({
       <div className={styles.gridColumnMiddle}>
         <Textarea
           className={styles.textarea}
-          value={inputString}
+          value={inputString ?? ''}
           onChange={onTextareaContentChange}
           placeholder="Paste data"
           disabled={shouldDisableTextInput}

@@ -16,8 +16,13 @@
 
 import type { RootState } from 'src/store';
 
+export const getVepFormState = (state: RootState) => state.vep.vepForm;
+
 export const getSelectedSpecies = (state: RootState) =>
   state.vep.vepForm.selectedSpecies;
+
+export const getTemporaryVepSubmissionId = (state: RootState) =>
+  state.vep.vepForm.submissionId;
 
 export const getVepSubmissionName = (state: RootState) =>
   state.vep.vepForm.submissionName;
@@ -28,8 +33,8 @@ export const getVepFormParameters = (state: RootState) =>
 export const getVepFormInputText = (state: RootState) =>
   state.vep.vepForm.inputText;
 
-export const getVepFormInputFile = (state: RootState) =>
-  state.vep.vepForm.inputFile;
+export const getVepFormInputFileName = (state: RootState) =>
+  state.vep.vepForm.inputFileName;
 
 export const getVepFormInputCommittedFlag = (state: RootState) =>
   state.vep.vepForm.isInputCommitted;

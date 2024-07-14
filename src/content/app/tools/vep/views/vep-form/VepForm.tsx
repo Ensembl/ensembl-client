@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
+import { useEffect, useRef } from 'react';
+
+import { useAppDispatch } from 'src/store';
+
 import useVepFormConfig from './useVepFormConfig';
+
+import { initialiseVepForm } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import {
   VepFormSpecies,
@@ -30,6 +36,16 @@ import styles from './VepForm.module.css';
 
 const VepForm = () => {
   useVepFormConfig();
+  const dispatch = useAppDispatch();
+  const isInitialisedRef = useRef(false);
+
+  useEffect(() => {
+    if (isInitialisedRef.current) {
+      return;
+    }
+    dispatch(initialiseVepForm());
+    isInitialisedRef.current = true;
+  }, []);
 
   return (
     <div className={styles.outerContainer}>

@@ -1,0 +1,169 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import 'fake-indexeddb/auto';
+import { openDB } from 'idb';
+
+import IndexedDB from 'src/services/indexeddb-service';
+
+import { VEP_SUBMISSIONS_STORE_NAME } from './vepStorageServiceConstants';
+
+import {
+  saveVepSubmission,
+  getVepSubmission,
+  updateVepSubmission,
+  getUncompletedVepSubmission
+} from './vepStorageService';
+
+import { createVepSubmission } from 'tests/fixtures/vep/vepSubmission';
+
+const getDatabase = async () => {
+  return await openDB('test-db', 1, {
+    upgrade(db) {
+      db.createObjectStore(VEP_SUBMISSIONS_STORE_NAME);
+    }
+  });
+};
+
+jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
+
+describe('vepStorageService', () => {
+  afterEach(async () => {
+    await IndexedDB.clear(VEP_SUBMISSIONS_STORE_NAME);
+  });
+
+  describe('saveVepSubmission', () => {
+    it('saves a VEP submission', async () => {
+      const vepSubmission = createVepSubmission();
+      await saveVepSubmission(vepSubmission);
+
+      // check that the submission has been saved
+      const db = await getDatabase();
+      const savedSubmission = await db.get(
+        VEP_SUBMISSIONS_STORE_NAME,
+        vepSubmission.id
+      );
+
+      expect(savedSubmission).toEqual(vepSubmission);
+    });
+  });
+
+  describe('getVepSubmission', () => {
+    // Note that fake-indexeddb doesn't seem to properly support the storage of Files
+
+    it('retrieves a VEP submission', async () => {
+      const vepSubmission = createVepSubmission();
+      vepSubmission.inputText = 'hello world';
+
+      const db = await getDatabase();
+      await db.put(VEP_SUBMISSIONS_STORE_NAME, vepSubmission, vepSubmission.id);
+
+      const storedVepSubmission = await getVepSubmission(vepSubmission.id);
+
+      expect(storedVepSubmission).toEqual(vepSubmission);
+    });
+
+    // it.only('works with files?', async () => {
+    //   const vepSubmission = createVepSubmission();
+    //   const text = 'hello world';
+    //   const blob = new Blob([text], {
+    //     type: "text/plain",
+    //   });
+
+    //   const file = new File([text], 'test.txt');
+
+    //   const testObj = {
+    //     foo: 'foo',
+    //     file,
+    //     blob
+    //   };
+
+    //   console.log({ file });
+
+    //   const db = await getDatabase();
+    //   await db.put(VEP_SUBMISSIONS_STORE_NAME, testObj, 'test');
+    //   const storedKeys = await db.getAllKeys(VEP_SUBMISSIONS_STORE_NAME);
+    //   const result = await db.get(VEP_SUBMISSIONS_STORE_NAME, 'test');
+
+    //   console.log('storedKeys', storedKeys);
+    //   console.log('result', result);
+    // });
+  });
+
+  describe('updateVepSubmission', () => {
+    it('updates stored VEP submission', async () => {
+      // arrange
+      const vepSubmission = createVepSubmission();
+      vepSubmission.status = 'NOT_SUBMITTED';
+      vepSubmission.parameters.symbol = false;
+      await saveVepSubmission(vepSubmission);
+
+      // act
+      await updateVepSubmission(vepSubmission.id, {
+        status: 'SUBMITTED',
+        parameters: {
+          ...vepSubmission.parameters,
+          symbol: true
+        }
+      });
+
+      // check that the submission has been updated
+      const db = await getDatabase();
+      const savedSubmission = await db.get(
+        VEP_SUBMISSIONS_STORE_NAME,
+        vepSubmission.id
+      );
+
+      const expectedSubmission = {
+        ...structuredClone(vepSubmission),
+        status: 'SUBMITTED',
+        parameters: {
+          ...vepSubmission.parameters,
+          symbol: true
+        }
+      };
+
+      expect(savedSubmission).toEqual(expectedSubmission);
+    });
+  });
+
+  describe('getUncompletedVepSubmission', () => {
+    it('retrieves VEP submission data that have not yet been submitted', async () => {
+      // arrange
+      const submission1 = createVepSubmission();
+      const submission2 = createVepSubmission();
+      const submission3 = createVepSubmission();
+      submission1.submittedAt = Date.now();
+      submission2.submittedAt = null;
+      submission3.submittedAt = Date.now();
+      await saveVepSubmission(submission1);
+      await saveVepSubmission(submission2);
+      await saveVepSubmission(submission3);
+
+      const uncompletedSubmission = await getUncompletedVepSubmission();
+
+      expect(uncompletedSubmission).toEqual(submission2);
+    });
+  });
+
+  describe('getUnviewedVepSubmissions', () => {});
+
+  describe('getViewedVepSubmissions', () => {});
+
+  describe('deleteVepSubmission', () => {});
+
+  describe('deleteExpiredVepSubmissions', () => {});
+});

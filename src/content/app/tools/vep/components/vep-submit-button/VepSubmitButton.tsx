@@ -14,48 +14,57 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { getVepSubmission } from 'src/content/app/tools/vep/services/vepStorageService';
 
 import {
+  getTemporaryVepSubmissionId,
   getSelectedSpecies,
   getVepFormParameters,
   getVepFormInputText,
-  getVepFormInputFile,
+  getVepFormInputFileName,
   getVepFormInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { useVepFormSubmissionMutation } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+import { onVepFormSubmission } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type {
-  VEPSubmissionPayload,
+  VepSubmissionPayload,
   VepSelectedSpecies
 } from 'src/content/app/tools/vep/types/vepSubmission';
 
 const VepSubmitButton = () => {
+  const submissionId = useAppSelector(getTemporaryVepSubmissionId);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const inputText = useAppSelector(getVepFormInputText);
-  const inputFile = useAppSelector(getVepFormInputFile);
+  const inputFileName = useAppSelector(getVepFormInputFileName);
   const formParameters = useAppSelector(getVepFormParameters);
   const isInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
   const [submitVepForm] = useVepFormSubmissionMutation();
+  const dispatch = useAppDispatch();
 
   const canSubmit = Boolean(
     selectedSpecies &&
-      (inputText || inputFile) &&
+      (inputText || inputFileName) &&
       Object.keys(formParameters).length &&
       isInputCommitted
   );
 
-  const onSubmit = () => {
-    const payload = preparePayload({
+  const onSubmit = async () => {
+    const payload = await preparePayload({
+      submissionId: submissionId as string,
       species: selectedSpecies as VepSelectedSpecies,
       inputText,
-      inputFile,
       parameters: formParameters
     });
 
+    await dispatch(
+      onVepFormSubmission({ submissionId: submissionId as string })
+    );
     submitVepForm(payload);
   };
 
@@ -66,21 +75,31 @@ const VepSubmitButton = () => {
   );
 };
 
-const preparePayload = ({
+const preparePayload = async ({
+  submissionId,
   species,
   inputText,
-  inputFile,
   parameters
 }: {
+  submissionId: string;
   species: VepSelectedSpecies;
-  inputText: string;
-  inputFile: File | null;
+  inputText: string | null;
   parameters: Record<string, unknown>;
-}): VEPSubmissionPayload => {
+}): Promise<VepSubmissionPayload> => {
+  let inputFile: File;
+
   if (inputText) {
     inputFile = new File([inputText], 'input.txt', {
       type: 'text/plain'
     });
+  } else {
+    const storedSubmission = await getVepSubmission(submissionId);
+    if (!storedSubmission) {
+      throw new Error(
+        `Submission with id ${submissionId} does not exist in browser storage`
+      );
+    }
+    inputFile = storedSubmission.inputFile as File;
   }
 
   return {
