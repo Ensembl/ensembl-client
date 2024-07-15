@@ -19,13 +19,20 @@ import { openDB } from 'idb';
 
 import IndexedDB from 'src/services/indexeddb-service';
 
-import { VEP_SUBMISSIONS_STORE_NAME } from './vepStorageServiceConstants';
+import {
+  VEP_SUBMISSIONS_STORE_NAME,
+  VEP_SUBMISSION_STORAGE_DURATION
+} from './vepStorageServiceConstants';
 
 import {
   saveVepSubmission,
   getVepSubmission,
   updateVepSubmission,
-  getUncompletedVepSubmission
+  getUncompletedVepSubmission,
+  getUnviewedVepSubmissions,
+  getViewedVepSubmissions,
+  deleteVepSubmission,
+  deleteExpiredVepSubmissions
 } from './vepStorageService';
 
 import { createVepSubmission } from 'tests/fixtures/vep/vepSubmission';
@@ -153,17 +160,124 @@ describe('vepStorageService', () => {
       await saveVepSubmission(submission2);
       await saveVepSubmission(submission3);
 
+      // act
       const uncompletedSubmission = await getUncompletedVepSubmission();
 
+      // assert
       expect(uncompletedSubmission).toEqual(submission2);
     });
   });
 
-  describe('getUnviewedVepSubmissions', () => {});
+  describe('getUnviewedVepSubmissions', () => {
+    it('retrieves VEP submissions whose results have not been viewed', async () => {
+      // arrange
+      const submission1 = createVepSubmission({
+        fragment: { resultsSeen: true }
+      });
+      const submission2 = createVepSubmission({
+        fragment: { resultsSeen: false }
+      });
+      const submission3 = createVepSubmission({
+        fragment: { resultsSeen: true }
+      });
+      const submission4 = createVepSubmission({
+        fragment: { resultsSeen: false }
+      });
+      await saveVepSubmission(submission1);
+      await saveVepSubmission(submission2);
+      await saveVepSubmission(submission3);
+      await saveVepSubmission(submission4);
 
-  describe('getViewedVepSubmissions', () => {});
+      // act
+      const unviewedSubmissions = await getUnviewedVepSubmissions();
 
-  describe('deleteVepSubmission', () => {});
+      // assert
+      expect(unviewedSubmissions.length).toBe(2);
+      expect(
+        unviewedSubmissions.map((submission) => submission.id).toSorted()
+      ).toEqual([submission2.id, submission4.id].toSorted());
+    });
+  });
 
-  describe('deleteExpiredVepSubmissions', () => {});
+  describe('getViewedVepSubmissions', () => {
+    it('retrieves VEP submissions whose results have been viewed', async () => {
+      // arrange
+      const submission1 = createVepSubmission({
+        fragment: { resultsSeen: true }
+      });
+      const submission2 = createVepSubmission({
+        fragment: { resultsSeen: false }
+      });
+      const submission3 = createVepSubmission({
+        fragment: { resultsSeen: true }
+      });
+      const submission4 = createVepSubmission({
+        fragment: { resultsSeen: false }
+      });
+      await saveVepSubmission(submission1);
+      await saveVepSubmission(submission2);
+      await saveVepSubmission(submission3);
+      await saveVepSubmission(submission4);
+
+      // act
+      const unviewedSubmissions = await getViewedVepSubmissions();
+
+      // assert
+      expect(unviewedSubmissions.length).toBe(2);
+      expect(
+        unviewedSubmissions.map((submission) => submission.id).toSorted()
+      ).toEqual([submission1.id, submission3.id].toSorted());
+    });
+  });
+
+  describe('deleteVepSubmission', () => {
+    it('deletes VEP submission from persistent browser storage', async () => {
+      // arrange
+      const submission1 = createVepSubmission();
+      const submission2 = createVepSubmission();
+      await saveVepSubmission(submission1);
+      await saveVepSubmission(submission2);
+
+      // act
+      await deleteVepSubmission(submission1.id);
+
+      // assert
+      const db = await IndexedDB.getDB();
+      const storedSubmissions = await db.getAll(VEP_SUBMISSIONS_STORE_NAME);
+
+      expect(storedSubmissions.length).toBe(1);
+      expect(storedSubmissions[0].id).toBe(submission2.id);
+    });
+  });
+
+  describe('deleteExpiredVepSubmissions', () => {
+    it('removes old VEP submissions from persistent browser storage', async () => {
+      // arrange
+      const oldDate = Date.now() - VEP_SUBMISSION_STORAGE_DURATION + 1;
+      const submission1 = createVepSubmission();
+      const submission2 = createVepSubmission({
+        fragment: { submittedAt: oldDate }
+      });
+      const submission3 = createVepSubmission();
+      const submission4 = createVepSubmission({
+        fragment: { submittedAt: oldDate }
+      });
+      await saveVepSubmission(submission1);
+      await saveVepSubmission(submission2);
+      await saveVepSubmission(submission3);
+      await saveVepSubmission(submission4);
+
+      // act
+      await deleteExpiredVepSubmissions();
+
+      // assert
+      const db = await IndexedDB.getDB();
+      const storedSubmissions = await db.getAll(VEP_SUBMISSIONS_STORE_NAME);
+
+      expect(storedSubmissions.length).toBe(2);
+      expect(
+        storedSubmissions.map((submission) => submission.id).toSorted()
+      ).toEqual([submission1.id, submission3.id].toSorted());
+    });
+  });
 });

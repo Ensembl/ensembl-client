@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { nanoid } from '@reduxjs/toolkit';
-
 import IndexedDB from 'src/services/indexeddb-service';
 
-import { VEP_SUBMISSIONS_STORE_NAME as STORE_NAME } from './vepStorageServiceConstants';
+import {
+  VEP_SUBMISSIONS_STORE_NAME as STORE_NAME,
+  VEP_SUBMISSION_STORAGE_DURATION
+} from './vepStorageServiceConstants';
 
 import type {
   VepSubmission,
@@ -61,15 +62,7 @@ export const getVepSubmissionWithoutVariantsInput = async (
     return;
   }
 
-  const inputFile = storedSubmission.inputFile;
-  const inputFileName = inputFile?.name ?? null;
-
-  delete (storedSubmission as Partial<VepSubmission>).inputFile;
-
-  return {
-    ...storedSubmission,
-    inputFileName
-  };
+  return removeInputFileFromSubmission(storedSubmission);
 };
 
 export const updateVepSubmission = async (
@@ -115,46 +108,82 @@ export const getUncompletedVepSubmissionWithoutVariantsInput = async () => {
     return;
   }
 
-  const inputFile = storedSubmission.inputFile;
-  const inputFileName = inputFile?.name ?? null;
-
-  delete (storedSubmission as Partial<VepSubmission>).inputFile;
-
-  return {
-    ...storedSubmission,
-    inputFileName
-  };
-};
-
-/**
- * Create and save initial and mostly empty VEP form data,
- * which can then be updated to store form data
- */
-export const initialiseTemporarySubmissionData = async () => {
-  const initialSubmissionData: VepSubmission = {
-    id: `temporary-${nanoid}`,
-    species: null,
-    submissionName: null,
-    inputText: null,
-    inputFile: null,
-    parameters: {},
-    createdAt: Date.now(),
-    submittedAt: null,
-    status: 'NOT_SUBMITTED',
-    resultsSeen: false
-  };
-
-  await saveVepSubmission(initialSubmissionData);
+  return removeInputFileFromSubmission(storedSubmission);
 };
 
 // Submissions whose results users have not yet viewed
-export const getUnviewedVepSubmissions = async () => {};
+export const getUnviewedVepSubmissions = async (): Promise<
+  VepSubmissionWithoutVariantsInput[]
+> => {
+  const db = await IndexedDB.getDB();
+  let cursor = await db.transaction(STORE_NAME).store.openCursor();
+
+  const submissions: VepSubmissionWithoutVariantsInput[] = [];
+
+  while (cursor) {
+    const storedSubmission: VepSubmission = cursor.value;
+
+    if (!storedSubmission.resultsSeen) {
+      submissions.push(removeInputFileFromSubmission(storedSubmission));
+    }
+    cursor = await cursor.continue();
+  }
+
+  return submissions;
+};
 
 // Submissions whose results users have already viewed
-export const getViewedVepSubmissions = async () => {};
+export const getViewedVepSubmissions = async (): Promise<
+  VepSubmissionWithoutVariantsInput[]
+> => {
+  const db = await IndexedDB.getDB();
+  let cursor = await db.transaction(STORE_NAME).store.openCursor();
+
+  const submissions: VepSubmissionWithoutVariantsInput[] = [];
+
+  while (cursor) {
+    const storedSubmission: VepSubmission = cursor.value;
+
+    if (storedSubmission.resultsSeen) {
+      submissions.push(removeInputFileFromSubmission(storedSubmission));
+    }
+    cursor = await cursor.continue();
+  }
+
+  return submissions;
+};
 
 export const deleteVepSubmission = async (submissionId: string) => {
   await IndexedDB.delete(STORE_NAME, submissionId);
 };
 
-export const deleteExpiredVepSubmissions = async () => {};
+export const deleteExpiredVepSubmissions = async () => {
+  const db = await IndexedDB.getDB();
+  // Delete all expired BLAST jobs in one transaction
+  const transaction = db.transaction(STORE_NAME, 'readwrite');
+  for await (const cursor of transaction.store) {
+    const submission: VepSubmission = cursor.value;
+    const { submittedAt } = submission;
+    if (
+      submittedAt &&
+      submittedAt < Date.now() - VEP_SUBMISSION_STORAGE_DURATION
+    ) {
+      cursor.delete();
+    }
+  }
+  await transaction.done;
+};
+
+const removeInputFileFromSubmission = (
+  submission: VepSubmission
+): VepSubmissionWithoutVariantsInput => {
+  const result = { ...submission };
+  const fileName = submission.inputFile?.name ?? null;
+
+  delete (result as Partial<VepSubmission>).inputFile;
+
+  return {
+    ...result,
+    inputFileName: fileName
+  };
+};
