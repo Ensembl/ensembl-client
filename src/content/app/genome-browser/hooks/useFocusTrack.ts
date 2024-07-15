@@ -179,7 +179,10 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     const lozengeClicksSubscription = genomeBrowserService.subscribe(
       'hotspot',
       (message: HotspotMessage) => {
-        if (isLozengeClickMessage(message.payload)) {
+        if (
+          isLozengeClickMessage(message.payload) &&
+          isFocusGeneLozenge(message.payload)
+        ) {
           onLozengeClick();
         }
       }
@@ -385,5 +388,8 @@ const isLozengeClickMessage = (payload: {
 }): payload is TranscriptsLozengePayload => {
   return payload.variety[0].type === 'lozenge';
 };
+
+const isFocusGeneLozenge = (payload: TranscriptsLozengePayload) =>
+  payload.content[0].focus;
 
 export default useFocusTrack;
