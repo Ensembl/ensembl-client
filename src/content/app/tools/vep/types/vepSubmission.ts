@@ -56,7 +56,7 @@ export type VepSubmission = {
   status: SubmissionStatus; // <-- a member of a closed dictionary of words
 };
 
-export type VepSubmissionWithoutVariantsInput = Omit<
+export type VepSubmissionWithoutInputFile = Omit<
   VepSubmission,
   'inputText' | 'inputFile'
 > & {

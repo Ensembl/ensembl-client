@@ -23,7 +23,7 @@ import {
 
 import type {
   VepSubmission,
-  VepSubmissionWithoutVariantsInput
+  VepSubmissionWithoutInputFile
 } from 'src/content/app/tools/vep/types/vepSubmission';
 
 /**
@@ -53,9 +53,9 @@ export const getVepSubmission = async (
  * unless we are restoring the input form or preparing the payload to send to the server,
  * is not needed for any UI purposes
  */
-export const getVepSubmissionWithoutVariantsInput = async (
+export const getVepSubmissionWithoutInputFile = async (
   submissionId: string
-): Promise<VepSubmissionWithoutVariantsInput | undefined> => {
+): Promise<VepSubmissionWithoutInputFile | undefined> => {
   const storedSubmission = await getVepSubmission(submissionId);
 
   if (!storedSubmission) {
@@ -100,8 +100,8 @@ export const getUncompletedVepSubmission = async () => {
   }
 };
 
-// Similarly to getVepSubmissionWithoutVariantsInput, strips potentially heavy input fields before returning
-export const getUncompletedVepSubmissionWithoutVariantsInput = async () => {
+// Similarly to getVepSubmissionWithoutInputFile, strips potentially heavy input fields before returning
+export const getUncompletedVepSubmissionWithoutInputFile = async () => {
   const storedSubmission = await getUncompletedVepSubmission();
 
   if (!storedSubmission) {
@@ -111,14 +111,35 @@ export const getUncompletedVepSubmissionWithoutVariantsInput = async () => {
   return removeInputFileFromSubmission(storedSubmission);
 };
 
-// Submissions whose results users have not yet viewed
-export const getUnviewedVepSubmissions = async (): Promise<
-  VepSubmissionWithoutVariantsInput[]
+// Excluding the submission that has not been completed/submitted
+export const getVepSubmissions = async (): Promise<
+  VepSubmissionWithoutInputFile[]
 > => {
   const db = await IndexedDB.getDB();
   let cursor = await db.transaction(STORE_NAME).store.openCursor();
 
-  const submissions: VepSubmissionWithoutVariantsInput[] = [];
+  const submissions: VepSubmissionWithoutInputFile[] = [];
+
+  while (cursor) {
+    const storedSubmission: VepSubmission = cursor.value;
+
+    if (!storedSubmission.submittedAt) {
+      submissions.push(removeInputFileFromSubmission(storedSubmission));
+    }
+    cursor = await cursor.continue();
+  }
+
+  return submissions;
+};
+
+// Submissions whose results users have not yet viewed
+export const getUnviewedVepSubmissions = async (): Promise<
+  VepSubmissionWithoutInputFile[]
+> => {
+  const db = await IndexedDB.getDB();
+  let cursor = await db.transaction(STORE_NAME).store.openCursor();
+
+  const submissions: VepSubmissionWithoutInputFile[] = [];
 
   while (cursor) {
     const storedSubmission: VepSubmission = cursor.value;
@@ -134,12 +155,12 @@ export const getUnviewedVepSubmissions = async (): Promise<
 
 // Submissions whose results users have already viewed
 export const getViewedVepSubmissions = async (): Promise<
-  VepSubmissionWithoutVariantsInput[]
+  VepSubmissionWithoutInputFile[]
 > => {
   const db = await IndexedDB.getDB();
   let cursor = await db.transaction(STORE_NAME).store.openCursor();
 
-  const submissions: VepSubmissionWithoutVariantsInput[] = [];
+  const submissions: VepSubmissionWithoutInputFile[] = [];
 
   while (cursor) {
     const storedSubmission: VepSubmission = cursor.value;
@@ -176,7 +197,7 @@ export const deleteExpiredVepSubmissions = async () => {
 
 const removeInputFileFromSubmission = (
   submission: VepSubmission
-): VepSubmissionWithoutVariantsInput => {
+): VepSubmissionWithoutInputFile => {
   const result = { ...submission };
   const fileName = submission.inputFile?.name ?? null;
 

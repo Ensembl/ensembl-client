@@ -20,7 +20,6 @@ import { useAppDispatch } from 'src/store';
 
 import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
 import { updateBreakpointWidth } from 'src/global/globalSlice';
-import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 
@@ -55,7 +54,6 @@ export const Root = () => {
 
   useEffect(() => {
     setShowPrivacyBanner(privacyBannerService.shouldShowBanner());
-    dispatch(restoreBlastSubmissions());
     setScrollbarWidth();
   }, []);
 

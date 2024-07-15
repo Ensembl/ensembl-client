@@ -24,7 +24,7 @@ import {
 import {
   getVepSubmission,
   saveVepSubmission,
-  getUncompletedVepSubmissionWithoutVariantsInput,
+  getUncompletedVepSubmissionWithoutInputFile,
   updateVepSubmission
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
@@ -66,7 +66,7 @@ export const initialState: VepFormState = {
 };
 
 /**
- * This action checks if there is already saved, but unsubmitted VEP form data.
+ * This action checks if there is an already saved, but unsubmitted, VEP form data.
  *   - If yes, it copies its information into redux state
  *   - If not, it creates and saves a data container for VEP form data
  */
@@ -82,7 +82,7 @@ export const initialiseVepForm = createAsyncThunk(
     }
 
     const storedVepFormData =
-      await getUncompletedVepSubmissionWithoutVariantsInput();
+      await getUncompletedVepSubmissionWithoutInputFile();
 
     if (storedVepFormData) {
       return {
