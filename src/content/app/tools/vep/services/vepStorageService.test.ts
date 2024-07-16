@@ -29,8 +29,7 @@ import {
   getVepSubmission,
   updateVepSubmission,
   getUncompletedVepSubmission,
-  getUnviewedVepSubmissions,
-  getViewedVepSubmissions,
+  getVepSubmissions,
   deleteVepSubmission,
   deleteExpiredVepSubmissions
 } from './vepStorageService';
@@ -168,65 +167,28 @@ describe('vepStorageService', () => {
     });
   });
 
-  describe('getUnviewedVepSubmissions', () => {
-    it('retrieves VEP submissions whose results have not been viewed', async () => {
+  describe('getVepSubmissions', () => {
+    it('retrieves all VEP submissions other than the uncompleted one', async () => {
       // arrange
       const submission1 = createVepSubmission({
-        fragment: { resultsSeen: true }
+        fragment: { status: 'NOT_SUBMITTED', submittedAt: null }
       });
-      const submission2 = createVepSubmission({
-        fragment: { resultsSeen: false }
-      });
-      const submission3 = createVepSubmission({
-        fragment: { resultsSeen: true }
-      });
-      const submission4 = createVepSubmission({
-        fragment: { resultsSeen: false }
-      });
+      const submission2 = createVepSubmission();
+      const submission3 = createVepSubmission();
+      const submission4 = createVepSubmission();
       await saveVepSubmission(submission1);
       await saveVepSubmission(submission2);
       await saveVepSubmission(submission3);
       await saveVepSubmission(submission4);
 
       // act
-      const unviewedSubmissions = await getUnviewedVepSubmissions();
+      const retrievedSubmissions = await getVepSubmissions();
 
       // assert
-      expect(unviewedSubmissions.length).toBe(2);
+      expect(retrievedSubmissions.length).toBe(3); // without the unsubmitted one
       expect(
-        unviewedSubmissions.map((submission) => submission.id).toSorted()
-      ).toEqual([submission2.id, submission4.id].toSorted());
-    });
-  });
-
-  describe('getViewedVepSubmissions', () => {
-    it('retrieves VEP submissions whose results have been viewed', async () => {
-      // arrange
-      const submission1 = createVepSubmission({
-        fragment: { resultsSeen: true }
-      });
-      const submission2 = createVepSubmission({
-        fragment: { resultsSeen: false }
-      });
-      const submission3 = createVepSubmission({
-        fragment: { resultsSeen: true }
-      });
-      const submission4 = createVepSubmission({
-        fragment: { resultsSeen: false }
-      });
-      await saveVepSubmission(submission1);
-      await saveVepSubmission(submission2);
-      await saveVepSubmission(submission3);
-      await saveVepSubmission(submission4);
-
-      // act
-      const unviewedSubmissions = await getViewedVepSubmissions();
-
-      // assert
-      expect(unviewedSubmissions.length).toBe(2);
-      expect(
-        unviewedSubmissions.map((submission) => submission.id).toSorted()
-      ).toEqual([submission1.id, submission3.id].toSorted());
+        retrievedSubmissions.map((submission) => submission.id).toSorted()
+      ).toEqual([submission2.id, submission3.id, submission4.id].toSorted());
     });
   });
 
