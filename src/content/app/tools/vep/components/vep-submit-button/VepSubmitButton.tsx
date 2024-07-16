@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import { useNavigate } from 'react-router-dom';
+
 import { useAppDispatch, useAppSelector } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getVepSubmission } from 'src/content/app/tools/vep/services/vepStorageService';
 
@@ -45,6 +49,7 @@ const VepSubmitButton = () => {
   const formParameters = useAppSelector(getVepFormParameters);
   const isInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
   const [submitVepForm] = useVepFormSubmissionMutation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const canSubmit = Boolean(
@@ -65,6 +70,9 @@ const VepSubmitButton = () => {
     await dispatch(
       onVepFormSubmission({ submissionId: submissionId as string })
     );
+
+    navigate(urlFor.vepSubmissionsList());
+
     submitVepForm(payload);
   };
 

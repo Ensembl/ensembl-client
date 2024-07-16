@@ -18,12 +18,20 @@ import { useAppSelector } from 'src/store';
 
 import { getUnviewedVepSubmissions } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
+import ListedVepSubmission from './listed-vep-submission/ListedVepSubmission';
+
+import styles from './VepSubmissions.module.css';
+
 const VepSubmissions = () => {
   const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
 
-  return unviewedVepSubmissions.map((submission) => (
-    <div key={submission.id}>Submission {submission.id}</div>
-  ));
+  return (
+    <div className={styles.container}>
+      {unviewedVepSubmissions.map((submission) => (
+        <ListedVepSubmission key={submission.id} submission={submission} />
+      ))}
+    </div>
+  );
 };
 
 export default VepSubmissions;

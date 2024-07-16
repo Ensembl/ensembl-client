@@ -107,4 +107,6 @@ const vepSubmissionsSlice = createSlice({
   }
 });
 
+export const { addSubmission } = vepSubmissionsSlice.actions;
+
 export default vepSubmissionsSlice.reducer;

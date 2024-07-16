@@ -24,6 +24,7 @@ import {
 import {
   getVepSubmission,
   saveVepSubmission,
+  getVepSubmissionWithoutInputFile,
   getUncompletedVepSubmissionWithoutInputFile,
   updateVepSubmission
 } from 'src/content/app/tools/vep/services/vepStorageService';
@@ -33,12 +34,17 @@ import {
   getVepFormState
 } from './vepFormSelectors';
 
+import { addSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
+
 import type {
   VepFormConfig,
   VepFormParameterName
 } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { VepSelectedSpecies } from 'src/content/app/tools/vep/types/vepSubmission';
-import type { VepSubmission as StoredVepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
+import type {
+  VepSubmission as StoredVepSubmission,
+  VepSubmissionWithoutInputFile
+} from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
 
 type VepFormParameters = Partial<
@@ -177,6 +183,7 @@ export const onVepFormSubmission = createAsyncThunk(
   'vep-form/onVepFormSubmission',
   async ({ submissionId }: { submissionId: string }, thunkApi) => {
     const state = thunkApi.getState() as RootState;
+    const dispatch = thunkApi.dispatch;
     const vepFormState = getVepFormState(state);
 
     await updateVepSubmission(submissionId, {
@@ -187,6 +194,13 @@ export const onVepFormSubmission = createAsyncThunk(
       submittedAt: Date.now(),
       status: 'SUBMITTING'
     });
+
+    const updatedStoredSubmission =
+      await getVepSubmissionWithoutInputFile(submissionId);
+
+    dispatch(
+      addSubmission(updatedStoredSubmission as VepSubmissionWithoutInputFile)
+    );
   }
 );
 

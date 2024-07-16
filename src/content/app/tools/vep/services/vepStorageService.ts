@@ -123,7 +123,7 @@ export const getVepSubmissions = async (): Promise<
   while (cursor) {
     const storedSubmission: VepSubmission = cursor.value;
 
-    if (!storedSubmission.submittedAt) {
+    if (storedSubmission.submittedAt) {
       submissions.push(removeInputFileFromSubmission(storedSubmission));
     }
     cursor = await cursor.continue();

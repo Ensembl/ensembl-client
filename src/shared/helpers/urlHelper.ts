@@ -180,7 +180,7 @@ export const vepForm = () => '/vep';
 
 export const vepSpeciesSelector = () => '/vep/species-selector';
 
-
+export const vepSubmissionsList = () => '/vep/submissions';
 
 type RefgetUrlParams = {
   checksum: string;
