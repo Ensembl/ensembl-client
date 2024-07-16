@@ -46,6 +46,19 @@ const getDatabase = async () => {
 
 jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
 
+/**
+ * NOTE:
+ * The tests below do not test file manipulation. There are two reasons for this:
+ * - Our tests do not run in the real browser, but instead in Node with Node with jsdom and some Jest shenanigans.
+ *   This is bad; but it isn't clear what the way out is. Perhaps in the future we will be able to migrate to Vitest,
+ *   which can run tests in the browser; or perhaps Playwright will mature to the point where it can run component tests.
+ * - As a result, we do not have access to the real indexedDB in tests, and have to use the `fake-indexeddb` polyfill.
+ *   However, at the moment, it does not support files.
+ *
+ * Thus, the behaviour of some functions that return VEP submission information without the attached file
+ * has been left untested.
+ */
+
 describe('vepStorageService', () => {
   afterEach(async () => {
     await IndexedDB.clear(VEP_SUBMISSIONS_STORE_NAME);
@@ -68,8 +81,6 @@ describe('vepStorageService', () => {
   });
 
   describe('getVepSubmission', () => {
-    // Note that fake-indexeddb doesn't seem to properly support the storage of Files
-
     it('retrieves a VEP submission', async () => {
       const vepSubmission = createVepSubmission();
       vepSubmission.inputText = 'hello world';
@@ -81,32 +92,6 @@ describe('vepStorageService', () => {
 
       expect(storedVepSubmission).toEqual(vepSubmission);
     });
-
-    // it.only('works with files?', async () => {
-    //   const vepSubmission = createVepSubmission();
-    //   const text = 'hello world';
-    //   const blob = new Blob([text], {
-    //     type: "text/plain",
-    //   });
-
-    //   const file = new File([text], 'test.txt');
-
-    //   const testObj = {
-    //     foo: 'foo',
-    //     file,
-    //     blob
-    //   };
-
-    //   console.log({ file });
-
-    //   const db = await getDatabase();
-    //   await db.put(VEP_SUBMISSIONS_STORE_NAME, testObj, 'test');
-    //   const storedKeys = await db.getAllKeys(VEP_SUBMISSIONS_STORE_NAME);
-    //   const result = await db.get(VEP_SUBMISSIONS_STORE_NAME, 'test');
-
-    //   console.log('storedKeys', storedKeys);
-    //   console.log('result', result);
-    // });
   });
 
   describe('updateVepSubmission', () => {
