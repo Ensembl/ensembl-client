@@ -54,6 +54,9 @@ jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
  *   which can run tests in the browser; or perhaps Playwright will mature to the point where it can run component tests.
  * - As a result, we do not have access to the real indexedDB in tests, and have to use the `fake-indexeddb` polyfill.
  *   However, at the moment, it does not support files.
+ *   - The reason `fake-indexeddb` does not support saving and restoring files is because it relies on the `structuredClone`
+ *     function to clone the data; and it seems that there is a bug with Node's implementation of `structuredClone`.
+ *     See Node issue https://github.com/nodejs/node/issues/47612
  *
  * Thus, the behaviour of some functions that return VEP submission information without the attached file
  * has been left untested.

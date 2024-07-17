@@ -26,12 +26,6 @@ import type {
   VepSubmissionWithoutInputFile
 } from 'src/content/app/tools/vep/types/vepSubmission';
 
-/**
- * - Find unsubmitted VEP form data — there should only be one
- * - Find all unseen VEP submissions
- * - Find all seen VEP submissions
- */
-
 export const saveVepSubmission = async (submission: VepSubmission) => {
   const submissionId = submission.id;
   await IndexedDB.set(STORE_NAME, submissionId, submission);
