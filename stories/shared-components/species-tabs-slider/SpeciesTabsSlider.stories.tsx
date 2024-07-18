@@ -18,6 +18,7 @@ import { useState } from 'react';
 
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
+import WrapInRedux from '../../shared-components/species-lozenge/SpeciesLozengeReduxWrapper';
 
 import speciesData from './speciesData';
 
@@ -34,16 +35,17 @@ const SpeciesTabsSliderStory = () => {
         key={index}
         theme={index === selectedSpeciesIndex ? 'black' : 'blue'}
         species={item}
-        speciesNameDisplayOption="common-name_assembly-name"
         onClick={() => setSelectedSpeciesIndex(index)}
       />
     );
   });
 
   return (
-    <div className={styles.container}>
-      <SpeciesTabsSlider>{speciesLozenges}</SpeciesTabsSlider>
-    </div>
+    <WrapInRedux>
+      <div className={styles.container}>
+        <SpeciesTabsSlider>{speciesLozenges}</SpeciesTabsSlider>
+      </div>
+    </WrapInRedux>
   );
 };
 

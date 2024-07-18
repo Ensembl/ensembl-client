@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-type Props = {
-  assembly: {
-    accession_id: string;
-    name: string;
-  };
-  className?: string;
-};
+import Logotype from 'static/img/brand/logotype.svg';
 
-const SpeciesAssemblyName = (props: Props) => {
-  const {
-    assembly: { name: assemblyName }
-  } = props;
+import styles from './VepTopBar.module.css';
 
+const EnsemblVepVersion = () => {
   return (
-    <span className={props.className} data-part="assembly-name">
-      {assemblyName}
-    </span>
+    <div className={styles.vepVersion}>
+      <Logotype />
+      <span>Variant effect predictor </span>
+      v111
+    </div>
   );
 };
 
-export default SpeciesAssemblyName;
+export default EnsemblVepVersion;

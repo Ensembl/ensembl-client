@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-
 type Props = {
   assembly: {
     accession_id: string;
@@ -29,9 +27,11 @@ const SpeciesAssemblyId = (props: Props) => {
     assembly: { accession_id: accessionId }
   } = props;
 
-  const componentClasses = classNames(props.className);
-
-  return <span className={componentClasses}>{accessionId}</span>;
+  return (
+    <span className={props.className} data-part="assembly-id">
+      {accessionId}
+    </span>
+  );
 };
 
 export default SpeciesAssemblyId;

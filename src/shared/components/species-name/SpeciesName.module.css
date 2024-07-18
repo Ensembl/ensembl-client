@@ -1,0 +1,17 @@
+/* 
+  To style individual parts of the species name from the parent, use the following selectors:
+  - [data-part="common-name"] for species common name
+  - [data-part="scientific-name"] for species scientific name
+  - [data-part="assembly-name"] for assembly name
+  - [data-part="assembly-id"] for assembly accession id
+  - [data-part="reference"] for the element indicating whether this is a reference assembly
+  - [data-part="type"] for the element displaying the type information (e.g. strain, cultivar, population) of the genome/assembly
+ */
+
+@layer components {
+
+  .speciesName > span:not(:last-child) {
+    margin-right: 8px;
+  }
+
+}

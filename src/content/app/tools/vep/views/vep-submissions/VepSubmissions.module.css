@@ -1,6 +1,7 @@
 .container {
   height: 100%;
   padding-left: var(--double-standard-gutter);
+  padding-right: var(--standard-gutter);  
   padding-top: 20px;
   padding-bottom: var(--global-padding-bottom);
   max-width: 1770px;

@@ -1,7 +1,11 @@
-.scientificName {
-  font-style: italic;
-}
+@layer components {
 
-.reference {
-  font-style: var(--species-reference-font-style, italic);
+  .scientificName {
+    font-style: italic;
+  }
+  
+  .reference {
+    font-style: var(--species-reference-font-style, italic);
+  }
+
 }

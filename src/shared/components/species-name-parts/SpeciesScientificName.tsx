@@ -28,7 +28,11 @@ const SpeciesScientificName = (props: Props) => {
 
   const componentClasses = classNames(styles.scientificName, props.className);
 
-  return <span className={componentClasses}>{scientific_name}</span>;
+  return (
+    <span className={componentClasses} data-part="scientific-name">
+      {scientific_name}
+    </span>
+  );
 };
 
 export default SpeciesScientificName;

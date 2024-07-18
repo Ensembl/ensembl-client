@@ -32,7 +32,11 @@ const SpeciesReference = (props: Props) => {
 
   const componentClasses = classNames(styles.reference, props.className);
 
-  return <span className={componentClasses}>Reference</span>;
+  return (
+    <span className={componentClasses} data-part="reference">
+      Reference
+    </span>
+  );
 };
 
 export default SpeciesReference;

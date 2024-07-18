@@ -17,6 +17,17 @@
   padding-bottom: 24px;
 }
 
+.bodyLoading {
+  display: grid;
+  grid-template-columns: [species-name] 300px [spinner] 1fr [status] auto;
+  align-items: center;
+}
+
+.spinner {
+  grid-column: spinner;
+  justify-self: center;
+}
+
 .labelLeft {
   margin-right: 10px;
 }

@@ -41,7 +41,7 @@ import type {
   VepSelectedSpecies
 } from 'src/content/app/tools/vep/types/vepSubmission';
 
-const VepSubmitButton = () => {
+const VepSubmitButton = (props: { className?: string }) => {
   const submissionId = useAppSelector(getTemporaryVepSubmissionId);
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const inputText = useAppSelector(getVepFormInputText);
@@ -77,7 +77,11 @@ const VepSubmitButton = () => {
   };
 
   return (
-    <PrimaryButton disabled={!canSubmit} onClick={onSubmit}>
+    <PrimaryButton
+      disabled={!canSubmit}
+      onClick={onSubmit}
+      className={props.className}
+    >
       Run
     </PrimaryButton>
   );

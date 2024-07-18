@@ -1,4 +1,4 @@
-.grid {
+.vepFormGrid {
   display: grid;
   align-items: center;
   grid-template-columns:
@@ -6,6 +6,20 @@
     [form-title] max-content
     [transcript-set] auto
     [submit-button] min-content
+    [vep-version] auto
+    [job-lists-navigation] auto;
+  column-gap: 32px;
+  white-space: nowrap;  
+}
+
+
+.vepGenericGrid {
+  display: grid;
+  align-items: center;
+  grid-template-columns:
+    [vep-logo] max-content
+    [new-job-button] max-content
+    [results-availability] auto
     [vep-version] auto
     [job-lists-navigation] auto;
   column-gap: 32px;
@@ -60,4 +74,12 @@
   grid-column: job-lists-navigation;
   display: flex;
   column-gap: 12px;
+}
+
+.newJobButton {
+  grid-column: new-job-button;
+}
+
+.resultsAvailabilityNotice {
+  grid-column: results-availability;
 }

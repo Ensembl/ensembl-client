@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
 import type { ReactNode } from 'react';
 
 type Props = {
@@ -30,11 +29,13 @@ const SpeciesCommonName = (props: Props) => {
     return null;
   }
 
-  const componentClasses = classNames(props.className);
-
   const content = common_name ?? fallback;
 
-  return <span className={componentClasses}>{content}</span>;
+  return (
+    <span className={props.className} data-part="common-name">
+      {content}
+    </span>
+  );
 };
 
 export default SpeciesCommonName;

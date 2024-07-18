@@ -1,0 +1,56 @@
+/*
+Note that the grid will have to be consistent with the grid
+for ListedVepSubmission, and for the VEP results
+*/
+
+
+.container {
+  display: grid;
+  grid-template-columns: [title] 300px [submission-id] 200px [rerun] auto [submission-date] auto [controls] 1fr; /* the grid will need updating */
+  align-items: center;
+  column-gap: var(--standard-gutter);
+  padding-left: var(--standard-gutter);
+  padding-bottom: 12px;
+}
+
+.submissionId {
+  grid-column: submission-id;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rerun {
+  grid-column: rerun;
+}
+
+.submissionDate {
+  grid-column: submission-date;
+  font-size: 12px;
+}
+
+.timezone {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+}
+
+.controls {
+  grid-column: controls;
+  display: grid;
+  grid-template-columns: repeat(3, min-content);
+  column-gap: 42px;
+  align-items: center;
+  justify-self: end;
+}
+
+.labelLeft {
+  margin-right: 10px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.smallLight {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
