@@ -298,7 +298,8 @@ const GeneMatch = (props: { match: SearchMatch; species: CommittedItem }) => {
   return (
     <>
       <span className={styles.geneMatch} ref={anchorRef} onClick={handleClick}>
-        {props.match.stable_id}
+        <span className={styles.geneSymbol}>{props.match.symbol}</span>
+        <span className={styles.stableId}>{props.match.stable_id}</span>
       </span>
       {shouldShowTooltip && anchorRef.current && (
         <PointerBox
