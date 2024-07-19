@@ -96,7 +96,6 @@
 
 .geneSymbol {
   font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
   padding-right: 8px;
 }
 
