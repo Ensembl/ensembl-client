@@ -21,8 +21,7 @@ export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
 type ClientSideSubmissionStatus =
   | 'NOT_SUBMITTED' // initial status of a submission while it is being prepared by the user
   | 'SUBMITTING' // during the time between user clicking the submit button, and the submission being accepted by the backend
-  | 'FAILED_ON_SUBMISSION' // some unspecified (most likely network timeout) error happened during submission
-  | 'REJECTED'; // somehow, the payload sent to the server was so incorrect that the server rejected it outright without even bothering to start a job
+  | 'UNSUCCESSFUL_SUBMISSION'; // some unspecified (most likely network timeout) error happened during submission
 
 /**
  * Note: Seqera also has an UNKNOWN status, which it explains as "an indeterminate status";
