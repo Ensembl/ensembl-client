@@ -203,7 +203,7 @@ describe('vepStorageService', () => {
   describe('deleteExpiredVepSubmissions', () => {
     it('removes old VEP submissions from persistent browser storage', async () => {
       // arrange
-      const oldDate = Date.now() - VEP_SUBMISSION_STORAGE_DURATION + 1;
+      const oldDate = Date.now() - (VEP_SUBMISSION_STORAGE_DURATION + 1);
       const submission1 = createVepSubmission();
       const submission2 = createVepSubmission({
         fragment: { submittedAt: oldDate }
