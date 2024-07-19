@@ -1,0 +1,31 @@
+.container + .container {
+  margin-top: 46px;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: [title] 300px 1fr; /* the grid will need updating */
+  padding-left: var(--standard-gutter);
+  padding-bottom: 12px;
+}
+
+.body {
+  border: 1px solid var(--color-grey);
+  padding-left: var(--standard-gutter);
+  padding-right: var(--standard-gutter);
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.labelLeft {
+  margin-right: 10px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.smallLight {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}

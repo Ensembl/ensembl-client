@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { useAppSelector } from 'src/store';
 
-import vepFormReducer from './vep-form/vepFormSlice';
-import vepSubmissionsReducer from './vep-submissions/vepSubmissionsSlice';
+import { getUnviewedVepSubmissions } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
-export default combineReducers({
-  vepForm: vepFormReducer,
-  vepSubmissions: vepSubmissionsReducer
-});
+import ListedVepSubmission from './listed-vep-submission/ListedVepSubmission';
+
+import styles from './VepSubmissions.module.css';
+
+const VepSubmissions = () => {
+  const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
+
+  return (
+    <div className={styles.container}>
+      {unviewedVepSubmissions.map((submission) => (
+        <ListedVepSubmission key={submission.id} submission={submission} />
+      ))}
+    </div>
+  );
+};
+
+export default VepSubmissions;

@@ -20,7 +20,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
-import type { VEPSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
+import type { VepSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -34,7 +34,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         // Meanwhile, until the back-end endpoint is developed,
         // this function returns hard-coded response payload.
         const mockResponseModule = await import(
-          'src/content/app/tools/vep/state/vep-api/fixtures/mockVepFormConfig'
+          'tests/fixtures/vep/mockVepFormConfig'
         );
         const vepFormConfig = mockResponseModule.default;
 
@@ -50,7 +50,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
     }),
     vepFormSubmission: builder.mutation<
       { submission_id: string },
-      VEPSubmissionPayload
+      VepSubmissionPayload
     >({
       query: (payload) => ({
         url: `${config.toolsApiBaseUrl}/vep/submissions`,
@@ -67,7 +67,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         // Meanwhile, until the back-end endpoint is developed,
         // this function returns hard-coded response payload.
         const mockResponseModule = await import(
-          'src/content/app/tools/vep/state/vep-api/fixtures/mockVepResults'
+          'tests/fixtures/vep/mockVepResults'
         );
         const mockResponse = mockResponseModule.default;
         return {
@@ -84,7 +84,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
  * While vepFormSubmission could have received a FormData object as its argument in the first place,
  * the presence of this function allows us to type-check the payload.
  */
-const prepareSubmissionFormData = (payload: VEPSubmissionPayload) => {
+const prepareSubmissionFormData = (payload: VepSubmissionPayload) => {
   const formData = new FormData();
 
   for (const [key, value] of Object.entries(payload)) {

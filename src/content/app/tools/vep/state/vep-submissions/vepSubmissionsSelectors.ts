@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { createSelector } from '@reduxjs/toolkit';
 
-import vepFormReducer from './vep-form/vepFormSlice';
-import vepSubmissionsReducer from './vep-submissions/vepSubmissionsSlice';
+import type { RootState } from 'src/store';
 
-export default combineReducers({
-  vepForm: vepFormReducer,
-  vepSubmissions: vepSubmissionsReducer
-});
+const getVepSubmissionsState = (state: RootState) => state.vep.vepSubmissions;
+
+export const getUnviewedVepSubmissions = createSelector(
+  [getVepSubmissionsState],
+  (vepSubmissionsState) => {
+    return [...Object.values(vepSubmissionsState)].filter(
+      (submission) => !submission.resultsSeen
+    );
+  }
+);
+
+export const getViewedVepSubmissions = createSelector(
+  [getVepSubmissionsState],
+  (vepSubmissionsState) => {
+    return [...Object.values(vepSubmissionsState)].filter(
+      (submission) => submission.resultsSeen
+    );
+  }
+);

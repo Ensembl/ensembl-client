@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import {
+  ONE_HOUR_IN_MILLISECONDS,
+  ONE_DAY_IN_MILLISECONDS
+} from 'src/shared/constants/timeConstants';
 
-import vepFormReducer from './vep-form/vepFormSlice';
-import vepSubmissionsReducer from './vep-submissions/vepSubmissionsSlice';
+export const VEP_SUBMISSIONS_STORE_NAME = 'vep-submissions';
 
-export default combineReducers({
-  vepForm: vepFormReducer,
-  vepSubmissions: vepSubmissionsReducer
-});
+export const VEP_RESULTS_AVAILABILITY_DURATION =
+  ONE_DAY_IN_MILLISECONDS * 7 - ONE_HOUR_IN_MILLISECONDS;
+export const VEP_SUBMISSION_STORAGE_DURATION = ONE_DAY_IN_MILLISECONDS * 28;

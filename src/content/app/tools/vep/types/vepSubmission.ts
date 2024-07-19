@@ -18,25 +18,54 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 
 export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
 
+type ClientSideSubmissionStatus =
+  | 'NOT_SUBMITTED' // initial status of a submission while it is being prepared by the user
+  | 'SUBMITTING' // during the time between user clicking the submit button, and the submission being accepted by the backend
+  | 'UNSUCCESSFUL_SUBMISSION'; // some unspecified (most likely network timeout) error happened during submission
+
+/**
+ * Note: Seqera also has an UNKNOWN status, which it explains as "an indeterminate status";
+ * but we don't know either when it can occur or what to do with it. Currently the expectation is
+ * that if it ever occurs, tools api will report this submission as failed.
+ */
+type ServerSideSubmissionStatus =
+  | 'SUBMITTED' // Pending execution
+  | 'RUNNING'
+  | 'SUCCEEDED'
+  | 'FAILED' // Executed, but at least one task failed with a terminate error strategy
+  | 'CANCELLED'; // Stopped manually during execution
+
+export type SubmissionStatus =
+  | ClientSideSubmissionStatus
+  | ServerSideSubmissionStatus;
+
 /**
  * Schema of the data that will be persisted in indexedDB.
  */
-export type VEPSubmission = {
+export type VepSubmission = {
   id: string;
-  genome_id: string; // <-- should be the whole CommittedItem rather than a string
-  input_text: string | null;
-  input_file: File | null;
-  submission_name: string | null;
+  species: VepSelectedSpecies | null;
+  inputText: string | null;
+  inputFile: File | null;
+  submissionName: string | null;
   parameters: Record<string, unknown>;
-  created_at: string;
-  submitted_at: string | null; // <-- can get the unsubmitted submission
-  status: string; // <-- a member of a closed dictionary of words
+  createdAt: number; // <-- to allow enable the submissions list
+  submittedAt: number | null; // <-- can get the unsubmitted submission
+  resultsSeen: boolean;
+  status: SubmissionStatus; // <-- a member of a closed dictionary of words
+};
+
+export type VepSubmissionWithoutInputFile = Omit<
+  VepSubmission,
+  'inputText' | 'inputFile'
+> & {
+  inputFileName: string | null;
 };
 
 /**
  * Schema of the payload submitted to the server.
  */
-export type VEPSubmissionPayload = {
+export type VepSubmissionPayload = {
   genome_id: string;
   input_file: File;
   parameters: string;

@@ -28,6 +28,8 @@ import { loadInitialState as loadEntityViewerGeneralState } from 'src/content/ap
 import { restoreGeneViewTranscripts } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { loadBrowserGeneralState } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { loadPreviouslyViewedObjects as loadPreviouslyViewedGenomeBrowserObjects } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
+import { restoreBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
+import { restoreVepSubmissions } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 // load redux state from browser storage once when the application mounts
 const useRestoredReduxState = () => {
@@ -49,6 +51,12 @@ const useRestoredReduxState = () => {
     dispatch(loadPreviouslyViewedEntities());
     dispatch(loadEntityViewerGeneralState());
     dispatch(restoreGeneViewTranscripts());
+
+    // BLAST
+    dispatch(restoreBlastSubmissions());
+
+    // VEP
+    dispatch(restoreVepSubmissions());
   }, []);
 };
 
