@@ -96,7 +96,7 @@
 
 .geneSymbol {
   font-weight: var(--font-weight-bold);
-  padding-right: 8px;
+  margin-right: 8px;
 }
 
 .closeButton {
