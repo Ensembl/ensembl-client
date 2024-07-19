@@ -94,6 +94,11 @@
   cursor: pointer;
 }
 
+.geneSymbol {
+  font-weight: var(--font-weight-bold);
+  margin-right: 8px;
+}
+
 .closeButton {
   position: absolute;
   right: var(--standard-gutter);
