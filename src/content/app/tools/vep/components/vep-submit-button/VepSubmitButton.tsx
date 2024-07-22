@@ -115,6 +115,7 @@ const preparePayload = async ({
   }
 
   return {
+    submission_id: submissionId,
     genome_id: species.genome_id,
     input_file: inputFile as File,
     parameters: JSON.stringify(parameters)

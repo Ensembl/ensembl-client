@@ -23,7 +23,8 @@ import {
 import {
   getVepSubmissions,
   updateVepSubmission as updateStoredVepSubmission,
-  deleteVepSubmission as deleteStoredVepSubmission
+  deleteVepSubmission as deleteStoredVepSubmission,
+  changeVepSubmissionId as changeStoredVepSubmissionId
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
@@ -54,6 +55,31 @@ export const updateSubmission = createAsyncThunk(
 
     return {
       submissionId,
+      fragment
+    };
+  }
+);
+
+/**
+ * The purpose of this function is to change the id of a submission,
+ * which should only happen when the client submits VEP form to the server,
+ * and receives back an id associated with this submission.
+ * Changing an id of a submission means that both the redux state
+ * and the browser storage must be updated.
+ */
+export const changeSubmissionId = createAsyncThunk(
+  'vep-submissions/updateSubmissionId',
+  async (params: {
+    oldId: string;
+    newId: string;
+    fragment?: Partial<Omit<VepSubmissionWithoutInputFile, 'inputFileName'>>;
+  }) => {
+    const { oldId, newId, fragment } = params;
+    await changeStoredVepSubmissionId(oldId, newId, fragment);
+
+    return {
+      oldId,
+      newId,
       fragment
     };
   }
@@ -98,6 +124,24 @@ const vepSubmissionsSlice = createSlice({
         };
         state[submissionId] = updatedSubmission;
       }
+    });
+
+    builder.addCase(changeSubmissionId.fulfilled, (state, action) => {
+      const { oldId, newId, fragment } = action.payload;
+      const submission = state[oldId];
+
+      if (!submission) {
+        // this shouldn't happen
+        return;
+      }
+
+      state[newId] = {
+        ...submission,
+        ...fragment,
+        id: newId
+      };
+
+      delete state[oldId];
     });
 
     builder.addCase(deleteSubmission.fulfilled, (state, action) => {

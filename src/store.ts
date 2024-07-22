@@ -33,6 +33,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import createRootReducer from './root/rootReducer';
 import rootEpic from './root/rootEpic';
+import listenerMiddleware, { startListeners } from './listenerMiddleware';
 
 const epicMiddleware = createEpicMiddleware<Action, Action, RootState>();
 
@@ -50,12 +51,15 @@ export default function getReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(middleware),
+      getDefaultMiddleware()
+        .prepend(listenerMiddleware.middleware)
+        .concat(middleware),
     devTools: config.isDevelopment,
     preloadedState
   });
 
   epicMiddleware.run(rootEpic);
+  startListeners();
 
   return store;
 }

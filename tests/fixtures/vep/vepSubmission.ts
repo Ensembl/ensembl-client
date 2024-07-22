@@ -19,7 +19,10 @@ import { faker } from '@faker-js/faker';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 import mockVepFormConfig from './mockVepFormConfig';
 
-import type { VepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
+import type {
+  VepSubmission,
+  VepSubmissionPayload
+} from 'src/content/app/tools/vep/types/vepSubmission';
 
 export const createVepSubmission = (params?: {
   fragment?: Partial<VepSubmission>;
@@ -53,4 +56,20 @@ const getDefaultParameters = () => {
       [key]: mockVepFormConfig.parameters[key].default_value
     };
   }, {});
+};
+
+export const createVepSubmissionPayload = (params?: {
+  fragment?: Partial<VepSubmissionPayload>;
+}): VepSubmissionPayload => {
+  const { fragment = {} } = params ?? {};
+  const parameters = getDefaultParameters();
+  const file = new File(['hello world'], 'input.txt');
+
+  return {
+    submission_id: faker.string.uuid(),
+    genome_id: faker.string.uuid(),
+    input_file: file,
+    parameters: JSON.stringify(parameters),
+    ...fragment
+  };
 };

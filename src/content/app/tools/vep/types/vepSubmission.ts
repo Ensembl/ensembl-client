@@ -63,6 +63,7 @@ export type VepSubmissionWithoutInputFile = Omit<VepSubmission, 'inputFile'> & {
  * Schema of the payload submitted to the server.
  */
 export type VepSubmissionPayload = {
+  submission_id: string; // temporary client-side id under which the submission is stored
   genome_id: string;
   input_file: File;
   parameters: string;
