@@ -23,9 +23,21 @@
   align-items: center;
 }
 
+.bodyAccepted {
+  display: grid;
+  grid-template-columns: [species-name] 300px [input-summary] 1fr [status] auto;
+  column-gap: var(--standard-gutter);
+  align-items: center;
+}
+
+.bodyAccepted:has(.submissionName) {
+  grid-template-columns: [species-name] 300px [input-summary] 292px [submission-name] 1fr [status] auto;
+}
+
 .spinner {
   grid-column: spinner;
   justify-self: center;
+  transform: translateX(calc(50% - 150px));
 }
 
 .labelLeft {
@@ -39,4 +51,22 @@
 .smallLight {
   font-size: 12px;
   font-weight: var(--font-weight-light);
+}
+
+.inputSummary {
+  grid-column: input-summary;
+}
+
+.submissionName {
+  grid-column: submission-name;
+}
+
+.status {
+  grid-column: status;
+  font-weight: var(--font-weight-bold);
+}
+
+.statusRunning,
+.statusFailed {
+  color: var(--color-red);
 }

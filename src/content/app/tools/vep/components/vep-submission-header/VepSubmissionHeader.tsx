@@ -64,11 +64,17 @@ const VepSubmissionHeader = (props: Props) => {
 
 // eslint-disable-next-line  -- FIXME use the props for the buttons
 const ControlButtons = (props: Props) => {
+  const {
+    submission: { status }
+  } = props;
+
+  const canGetResults = status === 'SUCCEEDED';
+
   return (
     <div className={styles.controls}>
       <DeleteButton />
-      <DownloadButton onClick={noop} />
-      <ButtonLink isDisabled={true} to="/">
+      <DownloadButton onClick={noop} disabled={!canGetResults} />
+      <ButtonLink isDisabled={!canGetResults} to="/">
         Results
       </ButtonLink>
     </div>
