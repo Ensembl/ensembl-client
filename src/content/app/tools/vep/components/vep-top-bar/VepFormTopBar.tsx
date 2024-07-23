@@ -42,8 +42,10 @@ const VepFormTopBar = () => {
       <div className={styles.vepFormGrid}>
         <EnsemblVepLogo />
         <div className={styles.runAJob}>Run a job</div>
-        <TranscriptSetSelector />
-        <VepSubmitButton className={styles.submit} />
+        <div className={styles.transcriptSetAndSubmit}>
+          <TranscriptSetSelector />
+          <VepSubmitButton />
+        </div>
         <EnsemblVepVersion />
         <VepTopBarNavButtons />
       </div>
@@ -76,8 +78,8 @@ const TranscriptSetSelector = () => {
   const selectedValue = (vepFormParameters.transcript_set as string) ?? 'none';
 
   return (
-    <div className={styles.transcriptSet}>
-      Transcript set
+    <div>
+      <span>Transcript set</span>
       <SimpleSelect
         options={options}
         disabled={!canPopulateSelect}
