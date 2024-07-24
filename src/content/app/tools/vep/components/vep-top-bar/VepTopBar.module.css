@@ -16,8 +16,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1440px) {
-
+@media (width <= 1440px) {
   .vepFormGrid {
     grid-template-columns:
       [vep-logo] max-content
@@ -29,7 +28,6 @@
       'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
     row-gap: 16px;
   }
-
 }
 
 
@@ -49,8 +47,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1500px) {
-
+@media (width <= 1500px) {
   .vepGenericGrid {
     grid-template-columns:
       [vep-logo] max-content
@@ -62,7 +59,6 @@
       'results-availability results-availability results-availability .';
     row-gap: 18px;
   }
-
 }
 
 .logo {
@@ -84,22 +80,18 @@
   padding-right: 80px;
 }
 
-@media (max-width: 1440px) {
-
+@media (width <= 1440px) {
   .transcriptSetAndSubmit {
     padding-left: var(--standard-gutter);
     justify-self: start;
   }
-
 }
 
-@media (max-width: 1530px) {
-
+@media (width <= 1530px) {
   .transcriptSetAndSubmit {
     padding-left: var(--standard-gutter);
     padding-right: clamp(0px, 18% - 80px, 80px);
   }
-
 }
 
 .transcriptSetSelector {
