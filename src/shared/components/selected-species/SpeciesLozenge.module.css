@@ -48,15 +48,13 @@
   line-height: 1;
 }
 
-.prominent {
+.inner [data-part="common-name"],
+.inner [data-part="scientific-name"] {
   font-size: 16px;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);  
 }
 
-.italic {
-  font-style: italic;
-}
-
-.assembly {
+.inner [data-part="assembly-name"],
+.inner [data-part="assembly-id"] {
   font-size: 11px;
 }

@@ -1,5 +1,6 @@
 .grid {
+  --vep-container-max-width: 1800px; /* same as for BLAST */
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto max-content 1fr;
   height: 100%;
 }

@@ -14,90 +14,17 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
+import { Routes, Route } from 'react-router';
 
-import { useAppSelector } from 'src/store';
-
-import {
-  getSelectedSpecies,
-  getVepFormParameters
-} from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
-
-import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
-
-import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
-import Logotype from 'static/img/brand/logotype.svg';
-import SimpleSelect, {
-  type Option
-} from 'src/shared/components/simple-select/SimpleSelect';
-import ButtonLink from 'src/shared/components/button-link/ButtonLink';
-import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
-
-import logoUrl from 'static/img/tools/vep/ensembl-vep.svg?url';
-
-import styles from './VepTopBar.module.css';
+import VepFormTopBar from './VepFormTopBar';
+import VepGenericTopBar from './VepGenericTopBar';
 
 const VepTopBar = () => {
   return (
-    <ToolsTopBar>
-      <div className={styles.grid}>
-        <img src={logoUrl} alt="Ensembl VEP logo" className={styles.logo} />
-        <div className={styles.runAJob}>Run a job</div>
-        <TranscriptSetSelector />
-        <VepSubmitButton />
-        <div className={styles.vepVersion}>
-          <Logotype />
-          <span>Variant effect predictor </span>
-          v111
-        </div>
-        <div className={styles.jobListsNavigation}>
-          <ButtonLink to="" isDisabled={true}>
-            Unviewed jobs
-          </ButtonLink>
-          <ButtonLink to="" isDisabled={true}>
-            Jobs list
-          </ButtonLink>
-        </div>
-      </div>
-    </ToolsTopBar>
-  );
-};
-
-const TranscriptSetSelector = () => {
-  const selectedSpecies = useAppSelector(getSelectedSpecies);
-  const vepFormParameters = useAppSelector(getVepFormParameters);
-  const { currentData: vepFormConfig } = useVepFormConfigQuery(
-    {
-      genome_id: selectedSpecies?.genome_id ?? ''
-    },
-    {
-      skip: !selectedSpecies
-    }
-  );
-
-  const canPopulateSelect = selectedSpecies && vepFormConfig;
-
-  let options: Option[] = [];
-
-  if (!canPopulateSelect) {
-    options = [{ label: 'Select', value: 'none' }];
-  } else {
-    options = vepFormConfig.parameters.transcript_set.options;
-  }
-
-  const selectedValue = (vepFormParameters.transcript_set as string) ?? 'none';
-
-  return (
-    <div className={styles.transcriptSet}>
-      Transcript set
-      <SimpleSelect
-        options={options}
-        disabled={!canPopulateSelect}
-        className={styles.transcriptSetSelector}
-        value={selectedValue}
-        onChange={noop}
-      />
-    </div>
+    <Routes>
+      <Route index element={<VepFormTopBar />} />
+      <Route path="*" element={<VepGenericTopBar />} />
+    </Routes>
   );
 };
 

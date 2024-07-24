@@ -1,31 +1,97 @@
-.grid {
+/* FIXME: add max-width: 1800px (via CSS variable) */
+
+.vepFormGrid {
   display: grid;
   align-items: center;
   grid-template-columns:
     [vep-logo] max-content
     [form-title] max-content
-    [transcript-set] auto
-    [submit-button] min-content
-    [vep-version] auto
-    [job-lists-navigation] auto;
+    [transcript-set-and-submit] 1fr
+    [vep-version] max-content
+    [job-lists-navigation] max-content;
+  grid-template-areas:
+    'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation';
   column-gap: 32px;
+  max-width: var(--vep-container-max-width);
   white-space: nowrap;
 }
 
+@media (width <= 1440px) {
+  .vepFormGrid {
+    grid-template-columns:
+      [vep-logo] max-content
+      [form-title] 1fr
+      [vep-version] max-content
+      [job-lists-navigation] auto;
+    grid-template-areas:
+      'vep-logo form-title vep-version job-lists-navigation'
+      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
+    row-gap: 16px;
+  }
+}
+
+
+.vepGenericGrid {
+  display: grid;
+  align-items: center;
+  grid-template-columns:
+    [vep-logo] max-content
+    [new-job-button] max-content
+    [results-availability] auto
+    [vep-version] auto
+    [job-lists-navigation] auto;
+  grid-template-areas:
+    'vep-logo new-job-button results-availability vep-version job-lists-navigation';
+  column-gap: 32px;
+  max-width: var(--vep-container-max-width);
+  white-space: nowrap;
+}
+
+@media (width <= 1500px) {
+  .vepGenericGrid {
+    grid-template-columns:
+      [vep-logo] max-content
+      [new-job-button] 1fr
+      [vep-version] auto
+      [job-lists-navigation] auto;
+    grid-template-areas:
+      'vep-logo new-job-button vep-version job-lists-navigation'
+      'results-availability results-availability results-availability .';
+    row-gap: 18px;
+  }
+}
+
 .logo {
-  grid-column: vep-logo;
+  grid-area: vep-logo;
   height: 16px;
 }
 
 .runAJob {
-  grid-column: form-title;
+  grid-area: form-title;
   margin-left: 20px;
   font-weight: var(--font-weight-bold);
 }
 
-.transcriptSet {
-  grid-column: transcript-set;
+.transcriptSetAndSubmit {
+  grid-area: transcript-set-and-submit;
   justify-self: end;
+  display: flex;
+  column-gap: var(--standard-gutter);
+  padding-right: 80px;
+}
+
+@media (width <= 1440px) {
+  .transcriptSetAndSubmit {
+    padding-left: var(--standard-gutter);
+    justify-self: start;
+  }
+}
+
+@media (width <= 1530px) {
+  .transcriptSetAndSubmit {
+    padding-left: var(--standard-gutter);
+    padding-right: clamp(0px, 18% - 80px, 80px);
+  }
 }
 
 .transcriptSetSelector {
@@ -33,12 +99,8 @@
   min-width: 300px;
 }
 
-.submit {
-  grid-column: submit-button;
-}
-
 .vepVersion {
-  grid-column: vep-version;
+  grid-area: vep-version;
   justify-self: end;
   display: flex;
   align-items: baseline;
@@ -57,7 +119,18 @@
 }
 
 .jobListsNavigation {
-  grid-column: job-lists-navigation;
+  grid-area: job-lists-navigation;
   display: flex;
   column-gap: 12px;
+  justify-self: end;
+}
+
+.newJobButton {
+  grid-area: new-job-button;
+  justify-self: start;
+}
+
+.resultsAvailabilityNotice {
+  grid-area: results-availability;
+  justify-self: end;
 }

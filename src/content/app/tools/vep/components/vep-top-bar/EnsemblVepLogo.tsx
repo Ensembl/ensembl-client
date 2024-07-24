@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-type Props = {
-  assembly: {
-    accession_id: string;
-    name: string;
-  };
-  className?: string;
+import logoUrl from 'static/img/tools/vep/ensembl-vep.svg?url';
+
+import styles from './VepTopBar.module.css';
+
+const EnsemblVepLogo = () => {
+  return <img src={logoUrl} alt="Ensembl VEP logo" className={styles.logo} />;
 };
 
-const SpeciesAssemblyName = (props: Props) => {
-  const {
-    assembly: { name: assemblyName }
-  } = props;
-
-  return (
-    <span className={props.className} data-part="assembly-name">
-      {assemblyName}
-    </span>
-  );
-};
-
-export default SpeciesAssemblyName;
+export default EnsemblVepLogo;

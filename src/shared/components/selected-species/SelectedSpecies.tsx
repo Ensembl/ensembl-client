@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
-
 import SpeciesLozenge from './SpeciesLozenge';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import { getSpeciesNameDisplayOption } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 export type Props = {
   species: CommittedItem;
@@ -36,12 +33,9 @@ const SelectedSpecies = (props: Props) => {
     props.onClick?.(props.species);
   };
 
-  const speciesNameDisplayOption = useAppSelector(getSpeciesNameDisplayOption);
-
   return (
     <SpeciesLozenge
       species={props.species}
-      speciesNameDisplayOption={speciesNameDisplayOption}
       className={props.className}
       onClick={onClick}
       {...getSpeciesLozengeProps(props)}

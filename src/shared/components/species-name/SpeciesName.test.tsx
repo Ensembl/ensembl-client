@@ -19,15 +19,14 @@ import upperFirst from 'lodash/upperFirst';
 
 import { humanGenome } from './fixtures/speciesTestData';
 
-import SpeciesLozenge from './SpeciesLozenge';
+import { SpeciesName } from './SpeciesName';
 
-describe('<SpeciesLozenge />', () => {
+describe('<SpeciesName />', () => {
   describe('common-name_assembly-name', () => {
     it('Displays common name and assembly name if common name is available', () => {
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={humanGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_assembly-name"
         />
       );
@@ -44,9 +43,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_assembly-name"
         />
       );
@@ -60,9 +58,8 @@ describe('<SpeciesLozenge />', () => {
   describe('common-name_type_assembly-name', () => {
     it('Shows common name, type, reference and assembly name if all present', () => {
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={humanGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -84,9 +81,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -108,9 +104,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -131,9 +126,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -153,9 +147,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -177,9 +170,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -199,9 +191,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -224,9 +215,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="common-name_type_assembly-name"
         />
       );
@@ -244,9 +234,8 @@ describe('<SpeciesLozenge />', () => {
       const testGenome = humanGenome;
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="scientific-name_assembly-name"
         />
       );
@@ -263,9 +252,8 @@ describe('<SpeciesLozenge />', () => {
     it('Shows scientific name, type, reference and assembly name when all present', () => {
       const testGenome = humanGenome;
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="scientific-name_type_assembly-name"
         />
       );
@@ -287,9 +275,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="scientific-name_type_assembly-name"
         />
       );
@@ -311,9 +298,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="scientific-name_type_assembly-name"
         />
       );
@@ -332,9 +318,8 @@ describe('<SpeciesLozenge />', () => {
       };
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="scientific-name_type_assembly-name"
         />
       );
@@ -353,9 +338,8 @@ describe('<SpeciesLozenge />', () => {
       const testGenome = humanGenome;
 
       const { container } = render(
-        <SpeciesLozenge
+        <SpeciesName
           species={testGenome}
-          theme="blue"
           speciesNameDisplayOption="assembly-accession-id"
         />
       );

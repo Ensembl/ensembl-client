@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 import type { ReactNode } from 'react';
 
@@ -34,8 +33,6 @@ const SpeciesType = (props: Props) => {
     return null;
   }
 
-  const componentClasses = classNames(props.className);
-
   const content = speciesType ? (
     <span>
       {upperFirst(speciesType.kind)}
@@ -46,7 +43,11 @@ const SpeciesType = (props: Props) => {
     fallback
   );
 
-  return <span className={componentClasses}>{content}</span>;
+  return (
+    <span className={props.className} data-part="type">
+      {content}
+    </span>
+  );
 };
 
 export default SpeciesType;

@@ -22,23 +22,9 @@ import { useAppSelector } from 'src/store';
 
 import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
-import {
-  ScientificName,
-  AssemblyName
-} from 'src/shared/components/species-name-parts';
+import SpeciesName from 'src/shared/components/species-name/SpeciesName';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
-
-import styles from './VepFormSpeciesSection.module.css';
-
-/**
- * TODO: Consider the following
- * The component below displays a species label after a species has been selected for VEP analysis.
- *   - Is this going to be a recurring pattern of displaying species info outside of tables?
- *   - Does it need to show the type information for the selected assembly (is reference, population)?
- *   - Does it need to consider user's selection of species info display (as chosen in species manager)
- * The answer may justify exxtracting this into a reusable component.
- */
 
 const vepSpeciesSelectorUrl = urlFor.vepSpeciesSelector();
 
@@ -51,11 +37,7 @@ export const VepFormSpecies = (props: { className?: string }) => {
 
   return (
     <div className={props.className}>
-      {selectedSpecies.common_name && (
-        <span className={styles.commonName}>{selectedSpecies.common_name}</span>
-      )}
-      {!selectedSpecies.common_name && <ScientificName {...selectedSpecies} />}{' '}
-      <AssemblyName {...selectedSpecies} />
+      <SpeciesName species={selectedSpecies} />
     </div>
   );
 };
