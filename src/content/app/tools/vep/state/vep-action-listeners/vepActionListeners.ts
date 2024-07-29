@@ -16,15 +16,14 @@
 
 import { type PayloadAction } from '@reduxjs/toolkit';
 
-import config from 'config';
-
 import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 import {
   updateSubmission,
   changeSubmissionId
 } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
-import type { AppDispatch } from 'src/store';
+import VepSubmissionStatusPolling from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
+
 import type {
   AppStartListening,
   AppListenerEffectAPI
@@ -37,17 +36,22 @@ import type {
  * 2. Change submission status:
  *   - SUBMITTED if submitted
  *   - UNSUCCESSFUL_SUBMISSION if failed to submit
- * - Start polling for submission status
+ * 3. Start polling for submission status
  *   - SUBMITTED — continue polling
  *   - RUNNING - update status (in redux and in indexedDB); but continue polling
  *   - SUCCEEDED, FAILED, CANCELLED - update status (in redux and in indexedDB), and stop polling
+ * 4. Note that user can refresh (or close/open) the browser while there are still some submissions pending.
+ *    Therefore, listen to the restore VEP submissions event, filter unfinished submissions, and poll for their status.
+ * 5. Note that user can delete a submission while polling is still in progress.
+ *    Thus, listen to delete submission actions, and remove deleted submissions from polling.
  */
+
+const vepSubmissionStatusPolling = new VepSubmissionStatusPolling();
 
 const vepFormSuccessfulSubmissionListener = {
   matcher: vepFormSubmit.matchFulfilled,
   effect: async (
     action: PayloadAction<{
-      // submission_id: string;
       old_submission_id: string;
       new_submission_id: string;
     }>,
@@ -63,8 +67,11 @@ const vepFormSuccessfulSubmissionListener = {
       })
     );
 
-    pollForSubmissionStatus({
-      submissionId: new_submission_id,
+    vepSubmissionStatusPolling.enqueueSubmission({
+      submission: {
+        id: new_submission_id,
+        status: 'SUBMITTED'
+      },
       dispatch
     });
   }
@@ -88,55 +95,6 @@ const vepFormUnsuccessfulSubmissionListener = {
       })
     );
   }
-};
-
-const temporaryVepSubmissionStatuses = ['RUNNING'] as const;
-
-const finalVepSubmissionStatuses = [
-  'SUCCEEDED',
-  'FAILED',
-  'CANCELLED'
-] as const;
-
-const pollForSubmissionStatus = async ({
-  submissionId,
-  dispatch
-}: {
-  submissionId: string;
-  dispatch: AppDispatch;
-}) => {
-  const url = `${config.toolsApiBaseUrl}/vep/submissions/${submissionId}/status`;
-
-  let lastSubmissionStatus = 'SUBMITTED';
-  let continuePolling = true;
-
-  while (continuePolling) {
-    await pause(15);
-    const response = await fetch(url);
-    if (!response.ok) {
-      continue;
-    }
-
-    const { status } = await response.json();
-
-    if (
-      temporaryVepSubmissionStatuses.includes(status) &&
-      status !== lastSubmissionStatus
-    ) {
-      lastSubmissionStatus = status;
-      await dispatch(updateSubmission({ submissionId, fragment: { status } }));
-    } else if (finalVepSubmissionStatuses.includes(status)) {
-      continuePolling = false;
-      await dispatch(updateSubmission({ submissionId, fragment: { status } }));
-    }
-  }
-};
-
-const pause = async (seconds: number) => {
-  const milliseconds = seconds * 1000;
-  await new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
-  });
 };
 
 export const startVepListeners = (startListening: AppStartListening) => {
