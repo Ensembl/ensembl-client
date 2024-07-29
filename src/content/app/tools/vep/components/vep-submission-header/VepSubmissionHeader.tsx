@@ -17,7 +17,11 @@
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
+import { useAppDispatch } from 'src/store';
+
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
+
+import { deleteSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -62,17 +66,19 @@ const VepSubmissionHeader = (props: Props) => {
   );
 };
 
-// eslint-disable-next-line  -- FIXME use the props for the buttons
 const ControlButtons = (props: Props) => {
-  const {
-    submission: { status }
-  } = props;
+  const { submission } = props;
+  const dispatch = useAppDispatch();
 
-  const canGetResults = status === 'SUCCEEDED';
+  const canGetResults = submission.status === 'SUCCEEDED';
+
+  const onDelete = () => {
+    dispatch(deleteSubmission({ submissionId: submission.id }));
+  };
 
   return (
     <div className={styles.controls}>
-      <DeleteButton />
+      <DeleteButton onClick={onDelete} />
       <DownloadButton onClick={noop} disabled={!canGetResults} />
       <ButtonLink isDisabled={!canGetResults} to="/">
         Results

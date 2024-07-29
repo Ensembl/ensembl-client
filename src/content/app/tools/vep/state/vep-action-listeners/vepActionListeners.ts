@@ -19,7 +19,8 @@ import { type PayloadAction } from '@reduxjs/toolkit';
 import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 import {
   updateSubmission,
-  changeSubmissionId
+  changeSubmissionId,
+  deleteSubmission
 } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import VepSubmissionStatusPolling from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
@@ -97,8 +98,21 @@ const vepFormUnsuccessfulSubmissionListener = {
   }
 };
 
+const vepSubmissionDeleteListener = {
+  actionCreator: deleteSubmission.fulfilled,
+  effect: async (
+    action: PayloadAction<{
+      submissionId: string;
+    }>
+  ) => {
+    const { submissionId } = action.payload;
+    vepSubmissionStatusPolling.removeSubmission(submissionId);
+  }
+};
+
 export const startVepListeners = (startListening: AppStartListening) => {
   // startListening(vepFormConfigQueryListener);
   startListening(vepFormSuccessfulSubmissionListener);
   startListening(vepFormUnsuccessfulSubmissionListener as any);
+  startListening(vepSubmissionDeleteListener);
 };
