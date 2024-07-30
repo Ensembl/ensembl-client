@@ -17,23 +17,29 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import type { RootState } from 'src/store';
+import type { VepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
 
 const getVepSubmissionsState = (state: RootState) => state.vep.vepSubmissions;
 
 export const getUnviewedVepSubmissions = createSelector(
   [getVepSubmissionsState],
   (vepSubmissionsState) => {
-    return [...Object.values(vepSubmissionsState)].filter(
-      (submission) => !submission.resultsSeen
-    );
+    return [...Object.values(vepSubmissionsState)]
+      .filter((submission) => !submission.resultsSeen)
+      .toSorted(sortSubmissionsChronologically);
   }
 );
 
 export const getViewedVepSubmissions = createSelector(
   [getVepSubmissionsState],
   (vepSubmissionsState) => {
-    return [...Object.values(vepSubmissionsState)].filter(
-      (submission) => submission.resultsSeen
-    );
+    return [...Object.values(vepSubmissionsState)]
+      .filter((submission) => submission.resultsSeen)
+      .toSorted(sortSubmissionsChronologically);
   }
 );
+
+const sortSubmissionsChronologically = (
+  submission1: Pick<VepSubmission, 'createdAt'>,
+  submission2: Pick<VepSubmission, 'createdAt'>
+) => submission2.createdAt - submission1.createdAt;
