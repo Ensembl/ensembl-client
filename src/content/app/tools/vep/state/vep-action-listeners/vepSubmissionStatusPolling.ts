@@ -153,13 +153,10 @@ class VepSubmissionStatusPolling {
       })
     );
 
-    // FIXME:
-    // if not final status, add back to queue
+    // if status is not final status, add submission back to the queue; otherwise, clear the submission
     if (unsettledSubmissionsStatuses.includes(submission.status)) {
-      // put submission id back in the queue to query its status again later
       this.queue.unshift(submission.submissionId);
     } else {
-      // if the status is final, remove the submission
       this.removeSubmission(submission.submissionId);
     }
   };
