@@ -54,3 +54,19 @@ for ListedVepSubmission, and for the VEP results
   font-size: 12px;
   font-weight: var(--font-weight-light);
 }
+
+.deletionConfirmationContainer {
+  display: flex;
+  justify-content: right;
+  padding-bottom: 12px;
+}
+
+.deletionConfirmation {
+  display: flex;
+  align-items: center;
+  column-gap: var(--standard-gutter);
+}
+
+.deletionConfirmationMessage {
+  color: var(--color-red);
+}
