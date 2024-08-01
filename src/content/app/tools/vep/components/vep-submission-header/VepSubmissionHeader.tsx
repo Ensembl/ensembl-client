@@ -23,12 +23,15 @@ import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatte
 
 import { deleteSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
+import {
+  serverSideSubmissionStatuses,
+  type VepSubmission
+} from 'src/content/app/tools/vep/types/vepSubmission';
+
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
-
-import type { VepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
 
 import styles from './VepSubmissionHeader.module.css';
 
@@ -50,10 +53,14 @@ const VepSubmissionHeader = (props: Props) => {
     <div className={styles.container}>
       <div className={styles.light}>Vep analysis</div>
       <div className={styles.submissionId}>
-        <span className={classNames(styles.labelLeft, styles.smallLight)}>
-          Submission
-        </span>
-        {submission.id}
+        {hasServerSideSubmissionId(submission) && (
+          <>
+            <span className={classNames(styles.labelLeft, styles.smallLight)}>
+              Submission
+            </span>
+            {submission.id}
+          </>
+        )}
       </div>
       <div className={styles.rerun}>
         <TextButton onClick={noop}>Edit/rerun</TextButton>
@@ -63,6 +70,14 @@ const VepSubmissionHeader = (props: Props) => {
       </div>
       <ControlButtons {...props} />
     </div>
+  );
+};
+
+const hasServerSideSubmissionId = (submission: { status: string }) => {
+  // Only submissions with a server-side status will have an id assigned by the server
+  // (temporary client-side ids aren't helpful for users; so there's no point in displaying those)
+  return (serverSideSubmissionStatuses as readonly string[]).includes(
+    submission.status
   );
 };
 
