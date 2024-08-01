@@ -6,7 +6,7 @@ for ListedVepSubmission, and for the VEP results
 
 .container {
   display: grid;
-  grid-template-columns: [title] 300px [submission-id] 200px [rerun] auto [submission-date] auto [controls] 1fr; /* the grid will need updating */
+  grid-template-columns: [title] minmax(auto, 300px) [submission-id] 200px [rerun] auto [submission-date] auto [controls] 1fr; /* the grid will need updating */
   align-items: center;
   column-gap: var(--standard-gutter);
   padding-left: var(--standard-gutter);
