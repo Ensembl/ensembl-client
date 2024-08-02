@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import { request } from 'graphql-request';
+
 import config from 'config';
+
+import {
+  variantDefaultQuery,
+  type VepExampleVariantQueryResult
+} from './queries/vepExampleVariantQuery';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiSlice';
-import { fetchDefaultEntityViewerVariant } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
@@ -74,18 +80,19 @@ const vepApiSlice = restApiSlice.injectEndpoints({
           throw new Error(); // FIXME
         }
 
-        const { data: exampleVariantData } = await dispatch(
-          fetchDefaultEntityViewerVariant.initiate(
-            { genomeId, variantId: exampleVariant.id },
-            { subscribe: false }
-          )
-        );
+        const { variant } = await request<VepExampleVariantQueryResult>({
+          url: config.variationApiUrl,
+          document: variantDefaultQuery,
+          variables: {
+            genomeId,
+            variantId: exampleVariant.id
+          }
+        });
 
-        if (!exampleVariantData) {
+        if (!variant) {
           throw new Error(); // FIXME
         }
 
-        const { variant } = exampleVariantData;
         const firstAltAllele = variant.alleles[0];
         const regionName = variant.slice.region.name;
         const start = firstAltAllele.slice.location.start;

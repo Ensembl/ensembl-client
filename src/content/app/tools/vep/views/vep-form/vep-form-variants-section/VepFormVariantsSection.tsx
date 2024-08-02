@@ -55,6 +55,13 @@ const VepFormVariantsSection = () => {
   const inputFileName = useAppSelector(getVepFormInputFileName);
   const dispatch = useAppDispatch();
 
+  const { currentData: exampleInputs } = useVepFormExampleInputQuery(
+    { genomeId: selectedSpecies?.genome_id ?? '' },
+    {
+      skip: !selectedSpecies?.genome_id
+    }
+  );
+
   useEffect(() => {
     // if the input form is reset (and thus the selected species is deleted)
     // when this section is expanded,
@@ -108,10 +115,10 @@ const VepFormVariantsSection = () => {
       </div>
       {isExpanded && (
         <ExpandedContents
-          genomeId={selectedSpecies?.genome_id ?? ''}
           inputString={inputText}
           setInputString={onInputTextUpdate}
           inputFileName={inputFileName}
+          exampleInputs={exampleInputs}
           setInputFile={onInputFileUpdate}
           toggleExpanded={toggleExpanded}
           onReset={onReset}
@@ -151,30 +158,26 @@ const MainContentCollapsed = ({
 };
 
 const ExpandedContents = ({
-  genomeId,
   inputString,
   inputFileName,
+  exampleInputs,
   setInputString,
   setInputFile,
   toggleExpanded,
   onReset
 }: {
-  genomeId: string;
   inputString: string | null;
   setInputString: (val: string) => void;
   inputFileName: string | null;
   setInputFile: (file: File) => void;
+  exampleInputs?: {
+    vcfString?: string;
+  };
   toggleExpanded: () => void;
   onReset: () => void;
 }) => {
   const [oversizedFileName, setOversizedFileName] = useState<string | null>(
     null
-  );
-  const { currentData: exampleInputs } = useVepFormExampleInputQuery(
-    { genomeId },
-    {
-      skip: !genomeId
-    }
   );
   const dispatch = useAppDispatch();
 
