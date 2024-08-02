@@ -28,6 +28,7 @@ import {
   saveVepSubmission,
   getVepSubmission,
   updateVepSubmission,
+  changeVepSubmissionId,
   getUncompletedVepSubmission,
   getVepSubmissions,
   deleteVepSubmission,
@@ -131,6 +132,44 @@ describe('vepStorageService', () => {
       };
 
       expect(savedSubmission).toEqual(expectedSubmission);
+    });
+  });
+
+  describe('changeVepSubmissionId', () => {
+    it('updates the submission and stores it under new key', async () => {
+      // arrange
+      const oldSubmissionId = 'old-id';
+      const oldSubmissionStatus = 'SUBMITTING';
+      const newSubmissionId = 'new-id';
+      const newSubmissionStatus = 'SUBMITTED';
+      const submission = createVepSubmission({
+        fragment: {
+          id: oldSubmissionId,
+          status: oldSubmissionStatus
+        }
+      });
+      await saveVepSubmission(submission);
+
+      // act
+      await changeVepSubmissionId(oldSubmissionId, newSubmissionId, {
+        status: newSubmissionStatus
+      });
+
+      // assert
+      const db = await IndexedDB.getDB();
+      const oldSubmission = await db.get(
+        VEP_SUBMISSIONS_STORE_NAME,
+        oldSubmissionId
+      );
+      const newSubmission = await db.get(
+        VEP_SUBMISSIONS_STORE_NAME,
+        newSubmissionId
+      );
+
+      expect(oldSubmission).toBeFalsy();
+      expect(newSubmission).toBeTruthy();
+      expect(newSubmission.id).toBe(newSubmissionId);
+      expect(newSubmission.status).toBe(newSubmissionStatus);
     });
   });
 

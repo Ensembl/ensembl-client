@@ -49,14 +49,28 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       }
     }),
     vepFormSubmission: builder.mutation<
-      { submission_id: string },
+      {
+        old_submission_id: string;
+        new_submission_id: string;
+      },
       VepSubmissionPayload
     >({
       query: (payload) => ({
         url: `${config.toolsApiBaseUrl}/vep/submissions`,
         method: 'POST',
         body: prepareSubmissionFormData(payload)
-      })
+      }),
+      transformResponse: (response: { submission_id: string }, _, params) => {
+        return {
+          old_submission_id: params.submission_id,
+          new_submission_id: response.submission_id
+        };
+      },
+      transformErrorResponse: (response, meta, params) => {
+        return {
+          submission_id: params.submission_id
+        };
+      }
     }),
     vepResults: builder.query<VepResultsResponse, void>({
       queryFn: async () => {
@@ -99,3 +113,8 @@ export const {
   useVepResultsQuery,
   useVepFormSubmissionMutation
 } = vepApiSlice;
+
+export const {
+  vepFormConfig: vepFormConfigQuery,
+  vepFormSubmission: vepFormSubmit
+} = vepApiSlice.endpoints;

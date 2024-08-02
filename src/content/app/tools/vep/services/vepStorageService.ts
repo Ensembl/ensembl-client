@@ -77,6 +77,36 @@ export const updateVepSubmission = async (
   await saveVepSubmission(updatedSubmission);
 };
 
+/**
+ * The purpose of this function is to change the id of a submission,
+ * which should only happen when the client submits VEP form data
+ * (which is stored in the browser under temporary client-side-generated id),
+ * and receives from the server a permanent id associated with this submission.
+ */
+export const changeVepSubmissionId = async (
+  oldId: string,
+  newId: string,
+  fragment: Partial<VepSubmission> = {}
+) => {
+  const db = await IndexedDB.getDB();
+
+  // Update submission, save it under a new id, and delete the submission stored under old id,
+  // all in one transaction.
+  const transaction = db.transaction(STORE_NAME, 'readwrite');
+  const store = transaction.store;
+
+  const storedSubmission: VepSubmission = await store.get(oldId);
+  const updatedSubmission = {
+    ...storedSubmission,
+    id: newId,
+    ...fragment
+  };
+  await store.put(updatedSubmission, newId);
+  await store.delete(oldId);
+
+  await transaction.done;
+};
+
 // Returns the data for a VEP submission that the user is still preparing and has not yet submitted.
 // There should only ever be one such submission.
 export const getUncompletedVepSubmission = async () => {
@@ -133,7 +163,7 @@ export const deleteVepSubmission = async (submissionId: string) => {
 
 export const deleteExpiredVepSubmissions = async () => {
   const db = await IndexedDB.getDB();
-  // Delete all expired BLAST jobs in one transaction
+  // Delete all expired VEP jobs in one transaction
   const transaction = db.transaction(STORE_NAME, 'readwrite');
   for await (const cursor of transaction.store) {
     const submission: VepSubmission = cursor.value;
