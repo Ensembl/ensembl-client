@@ -214,7 +214,7 @@ const ExpandedContents = ({
     <div className={styles.expandedContentGrid}>
       <div className={styles.gridColumnLeft}>
         {exampleInputs && (
-          <>
+          <div className={styles.exampleInputsContainer}>
             <span className={styles.labelThin}>Example data</span>
             {exampleInputs.vcfString && (
               <ExampleVariantInput
@@ -224,7 +224,7 @@ const ExpandedContents = ({
                 VCF
               </ExampleVariantInput>
             )}
-          </>
+          </div>
         )}
       </div>
       <div className={styles.gridColumnMiddle}>
