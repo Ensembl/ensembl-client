@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+import { request } from 'graphql-request';
+
 import config from 'config';
 
+import {
+  variantDefaultQuery,
+  type VepExampleVariantQueryResult
+} from './queries/vepExampleVariantQuery';
+
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+
+import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
@@ -45,6 +54,56 @@ const vepApiSlice = restApiSlice.injectEndpoints({
 
         return {
           data: vepFormConfig
+        };
+      }
+    }),
+    vepFormExampleInput: builder.query<
+      { vcfString?: string },
+      // { submission_id: string },
+      { genomeId: string }
+    >({
+      queryFn: async (params, { dispatch }) => {
+        const { genomeId } = params;
+        const { data: exampleObjects } = await dispatch(
+          fetchExampleObjectsForGenome.initiate(genomeId, { subscribe: false })
+        );
+
+        if (!exampleObjects) {
+          throw new Error(); // FIXME
+        }
+
+        const exampleVariant = exampleObjects.find(
+          (item) => item.type === 'variant'
+        );
+
+        if (!exampleVariant) {
+          throw new Error(); // FIXME
+        }
+
+        const { variant } = await request<VepExampleVariantQueryResult>({
+          url: config.variationApiUrl,
+          document: variantDefaultQuery,
+          variables: {
+            genomeId,
+            variantId: exampleVariant.id
+          }
+        });
+
+        if (!variant) {
+          throw new Error(); // FIXME
+        }
+
+        const firstAltAllele = variant.alleles[0];
+        const regionName = variant.slice.region.name;
+        const start = firstAltAllele.slice.location.start;
+        const refSeq = firstAltAllele.reference_sequence;
+        const altSeq = firstAltAllele.allele_sequence;
+        const vcfString = `${regionName} ${start} . ${refSeq} ${altSeq}`;
+
+        return {
+          data: {
+            vcfString
+          }
         };
       }
     }),
@@ -110,6 +169,7 @@ const prepareSubmissionFormData = (payload: VepSubmissionPayload) => {
 
 export const {
   useVepFormConfigQuery,
+  useVepFormExampleInputQuery,
   useVepResultsQuery,
   useVepFormSubmissionMutation
 } = vepApiSlice;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -31,6 +31,7 @@ import {
   clearVariantsInput,
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
+import { useVepFormExampleInputQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
@@ -53,6 +54,13 @@ const VepFormVariantsSection = () => {
   const inputText = useAppSelector(getVepFormInputText);
   const inputFileName = useAppSelector(getVepFormInputFileName);
   const dispatch = useAppDispatch();
+
+  const { currentData: exampleInputs } = useVepFormExampleInputQuery(
+    { genomeId: selectedSpecies?.genome_id ?? '' },
+    {
+      skip: !selectedSpecies?.genome_id
+    }
+  );
 
   useEffect(() => {
     // if the input form is reset (and thus the selected species is deleted)
@@ -110,6 +118,7 @@ const VepFormVariantsSection = () => {
           inputString={inputText}
           setInputString={onInputTextUpdate}
           inputFileName={inputFileName}
+          exampleInputs={exampleInputs}
           setInputFile={onInputFileUpdate}
           toggleExpanded={toggleExpanded}
           onReset={onReset}
@@ -151,6 +160,7 @@ const MainContentCollapsed = ({
 const ExpandedContents = ({
   inputString,
   inputFileName,
+  exampleInputs,
   setInputString,
   setInputFile,
   toggleExpanded,
@@ -160,6 +170,9 @@ const ExpandedContents = ({
   setInputString: (val: string) => void;
   inputFileName: string | null;
   setInputFile: (file: File) => void;
+  exampleInputs?: {
+    vcfString?: string;
+  };
   toggleExpanded: () => void;
   onReset: () => void;
 }) => {
@@ -202,7 +215,21 @@ const ExpandedContents = ({
 
   return (
     <div className={styles.expandedContentGrid}>
-      <div className={styles.gridColumnLeft}>Example data</div>
+      <div className={styles.gridColumnLeft}>
+        {exampleInputs && (
+          <div className={styles.exampleInputsContainer}>
+            <span className={styles.labelThin}>Example data</span>
+            {exampleInputs.vcfString && (
+              <ExampleVariantInput
+                input={exampleInputs.vcfString}
+                onClick={setInputString}
+              >
+                VCF
+              </ExampleVariantInput>
+            )}
+          </div>
+        )}
+      </div>
       <div className={styles.gridColumnMiddle}>
         <Textarea
           className={styles.textarea}
@@ -279,6 +306,18 @@ const MaxUploadSize = (props: { isError: boolean }) => {
       </span>
     </div>
   );
+};
+
+const ExampleVariantInput = (props: {
+  input: string;
+  onClick: (input: string) => void;
+  children: ReactNode;
+}) => {
+  const onClick = () => {
+    props.onClick(props.input);
+  };
+
+  return <TextButton onClick={onClick}>{props.children}</TextButton>;
 };
 
 const isBelowMaxFileSize = (file: File) => {
