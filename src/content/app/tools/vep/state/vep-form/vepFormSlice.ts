@@ -247,8 +247,11 @@ const vepFormSlice = createSlice({
     updateInputCommittedFlag: (state, action: PayloadAction<boolean>) => {
       state.isInputCommitted = action.payload;
     },
-    resetForm: () => {
-      return initialState;
+    resetForm: (state) => {
+      return {
+        ...initialState,
+        submissionId: state.submissionId
+      };
     }
   },
   extraReducers: (builder) => {
