@@ -4,7 +4,7 @@
 
 .head {
   display: grid;
-  grid-template-columns: [title] 300px 1fr; /* the grid will need updating */
+  grid-template-columns: [title] 300px 1fr;
   padding-left: var(--standard-gutter);
   padding-bottom: 12px;
 }
@@ -31,7 +31,7 @@
 }
 
 .bodyAccepted:has(.submissionName) {
-  grid-template-columns: [species-name] 300px [input-summary] 292px [submission-name] 1fr [status] auto;
+  grid-template-columns: [species-name] 300px [input-summary] minmax(20%, 292px) [submission-name] minmax(200px, 1fr) [status] auto;
 }
 
 .spinner {
@@ -55,6 +55,7 @@
 
 .inputSummary {
   grid-column: input-summary;
+  word-wrap: break-word;
 }
 
 .submissionName {

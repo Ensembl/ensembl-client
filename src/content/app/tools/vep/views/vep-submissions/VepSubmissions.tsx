@@ -26,10 +26,12 @@ const VepSubmissions = () => {
   const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
 
   return (
-    <div className={styles.container}>
-      {unviewedVepSubmissions.map((submission) => (
-        <ListedVepSubmission key={submission.id} submission={submission} />
-      ))}
+    <div className={styles.scrollContainer}>
+      <div className={styles.container}>
+        {unviewedVepSubmissions.map((submission) => (
+          <ListedVepSubmission key={submission.id} submission={submission} />
+        ))}
+      </div>
     </div>
   );
 };

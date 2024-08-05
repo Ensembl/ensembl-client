@@ -4,3 +4,9 @@
   grid-template-rows: auto max-content 1fr;
   height: 100%;
 }
+
+.speciesSelectorGrid {
+  display: grid;
+  grid-template-rows: auto 1fr; /* No grey bar at the top of the species selector */
+  height: 100%;
+}

@@ -1,5 +1,12 @@
-.container {
+/* This container takes full width of the page and enables scrolling,
+   with the scrollbar at the right edge of the window */
+.scrollContainer {
   height: 100%;
+  overflow-y: auto;
+}
+
+/* This container ensures the maximum width of the content */
+.container {
   padding-left: var(--double-standard-gutter);
   padding-right: var(--standard-gutter);  
   padding-top: 20px;

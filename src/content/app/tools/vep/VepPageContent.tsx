@@ -28,6 +28,24 @@ import styles from './VepPageContent.module.css';
 
 const VepPageContent = () => {
   return (
+    <Routes>
+      <Route path="species-selector" element={<SpeciesSelectorWrapper />} />
+      <Route path="*" element={<MainWrapper />} />
+    </Routes>
+  );
+};
+
+const SpeciesSelectorWrapper = () => {
+  return (
+    <div className={styles.speciesSelectorGrid}>
+      <VepAppBar />
+      <VepSpeciesSelector />
+    </div>
+  );
+};
+
+const MainWrapper = () => {
+  return (
     <div className={styles.grid}>
       <VepAppBar />
       <VepTopBar />
@@ -40,7 +58,6 @@ const Main = () => {
   return (
     <Routes>
       <Route index={true} element={<VepForm />} />
-      <Route path="species-selector" element={<VepSpeciesSelector />} />
       <Route
         path="unviewed-submissions"
         element={<div>List of unviewed submissions</div>}

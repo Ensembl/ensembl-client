@@ -18,22 +18,29 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 
 export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
 
-type ClientSideSubmissionStatus =
-  | 'NOT_SUBMITTED' // initial status of a submission while it is being prepared by the user
-  | 'SUBMITTING' // during the time between user clicking the submit button, and the submission being accepted by the backend
-  | 'UNSUCCESSFUL_SUBMISSION'; // some unspecified (most likely network timeout) error happened during submission
+export const clientSideSubmissionStatuses = [
+  'NOT_SUBMITTED', // initial status of a submission while it is being prepared by the user
+  'SUBMITTING', // during the time between user clicking the submit button, and the submission being accepted by the backend
+  'UNSUCCESSFUL_SUBMISSION' // some unspecified (most likely network timeout) error happened during submission
+] as const;
 
 /**
  * Note: Seqera also has an UNKNOWN status, which it explains as "an indeterminate status";
  * but we don't know either when it can occur or what to do with it. Currently the expectation is
  * that if it ever occurs, tools api will report this submission as failed.
  */
-type ServerSideSubmissionStatus =
-  | 'SUBMITTED' // Pending execution
-  | 'RUNNING'
-  | 'SUCCEEDED'
-  | 'FAILED' // Executed, but at least one task failed with a terminate error strategy
-  | 'CANCELLED'; // Stopped manually during execution
+export const serverSideSubmissionStatuses = [
+  'SUBMITTED', // Pending execution
+  'RUNNING',
+  'SUCCEEDED',
+  'FAILED', // Executed, but at least one task failed with a terminate error strategy
+  'CANCELLED' // Stopped manually during execution
+] as const;
+
+export type ClientSideSubmissionStatus =
+  (typeof clientSideSubmissionStatuses)[number];
+export type ServerSideSubmissionStatus =
+  (typeof serverSideSubmissionStatuses)[number];
 
 export type SubmissionStatus =
   | ClientSideSubmissionStatus
