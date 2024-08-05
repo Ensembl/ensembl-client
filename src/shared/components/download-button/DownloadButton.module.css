@@ -1,8 +1,9 @@
 .downloadButton {
   --_download-button-size: var(--download-button-size, 18px);
   background-color: var(--download-button-background, var(--color-blue));
-  border: none;
-  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: var(--_download-button-size);
   width: var(--_download-button-size);
 }
