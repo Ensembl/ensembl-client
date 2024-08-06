@@ -23,7 +23,7 @@ import type { SubmissionStatus } from 'src/content/app/tools/vep/types/vepSubmis
 
 export const POLLING_INTERVAL = 15 * 1000;
 
-type PolledSubmission = {
+export type PolledSubmission = {
   id: string;
   status: SubmissionStatus;
 };
@@ -109,12 +109,14 @@ class VepSubmissionStatusPolling {
       if (response.status >= 500) {
         // try later
         this.queue.unshift(submissionId);
-      } else if (response.status === 404)
+      } else if (response.status === 404) {
         // fail submission
         this.reportSubmissionStatus({
           submissionId,
           status: 'FAILED'
         });
+      }
+      return;
     }
 
     const { status } = await response.json();

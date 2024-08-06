@@ -29,7 +29,7 @@ import {
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
-type VepSubmissionsState = Record<string, VepSubmissionWithoutInputFile>;
+export type VepSubmissionsState = Record<string, VepSubmissionWithoutInputFile>;
 
 export const restoreVepSubmissions = createAsyncThunk(
   'vep-submissions/restoreSubmissions',
