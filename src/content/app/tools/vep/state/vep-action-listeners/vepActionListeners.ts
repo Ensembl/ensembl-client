@@ -20,11 +20,14 @@ import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSli
 import {
   updateSubmission,
   changeSubmissionId,
-  deleteSubmission
+  deleteSubmission,
+  restoreVepSubmissions,
+  type VepSubmissionsState
 } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import VepSubmissionStatusPolling from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
 
+import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   AppStartListening,
   AppListenerEffectAPI
@@ -98,6 +101,48 @@ const vepFormUnsuccessfulSubmissionListener = {
   }
 };
 
+const vepSubmissionsRestoreListener = {
+  actionCreator: restoreVepSubmissions.fulfilled,
+  effect: async (
+    action: PayloadAction<VepSubmissionsState>,
+    listenerApi: AppListenerEffectAPI
+  ) => {
+    // only respond to the first action
+    // (this action should happen only once over the lifetime of the page; but due to double execution useEffect in React StrictMode, it will be called twice in dev)
+    listenerApi.unsubscribe();
+    const { dispatch } = listenerApi;
+
+    const unresolvedSubmissions: VepSubmissionWithoutInputFile[] = [];
+    const interruptedSubmissions: VepSubmissionWithoutInputFile[] = [];
+
+    for (const submission of Object.values(action.payload)) {
+      if (submission.status === 'SUBMITTING') {
+        interruptedSubmissions.push(submission);
+      } else if (['SUBMITTED', 'RUNNING'].includes(submission.status)) {
+        unresolvedSubmissions.push(submission);
+      }
+    }
+
+    vepSubmissionStatusPolling.processSubmissionsOnStartup({
+      submissions: unresolvedSubmissions,
+      dispatch
+    });
+
+    // If at startup there are submissions with a "SUBMITTING" status,
+    // it means that the browser was refreshed/closed
+    // before submission data has been successfully transmitted to the server.
+    // Mark these submissions as failed.
+    for (const submission of interruptedSubmissions) {
+      await dispatch(
+        updateSubmission({
+          submissionId: submission.id,
+          fragment: { status: 'UNSUCCESSFUL_SUBMISSION' }
+        })
+      );
+    }
+  }
+};
+
 const vepSubmissionDeleteListener = {
   actionCreator: deleteSubmission.fulfilled,
   effect: async (
@@ -111,8 +156,8 @@ const vepSubmissionDeleteListener = {
 };
 
 export const startVepListeners = (startListening: AppStartListening) => {
-  // startListening(vepFormConfigQueryListener);
   startListening(vepFormSuccessfulSubmissionListener);
   startListening(vepFormUnsuccessfulSubmissionListener as any);
   startListening(vepSubmissionDeleteListener);
+  startListening(vepSubmissionsRestoreListener);
 };

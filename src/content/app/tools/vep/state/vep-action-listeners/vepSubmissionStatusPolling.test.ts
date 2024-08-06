@@ -174,6 +174,83 @@ describe('getSubmissionStatusFetcher', () => {
     });
   });
 
+  it('continues polling if server responds with a 500 error', async () => {
+    // Arrange
+    const submissionId = 'my-submission';
+    let actualStatusPollCount = 0;
+
+    server.use(
+      http.get(
+        'http://tools-api-url/vep/submissions/:submissionId/status',
+        () => {
+          actualStatusPollCount++;
+
+          if (actualStatusPollCount === 1) {
+            // return a 500 error
+            return new HttpResponse(null, { status: 500 });
+          } else {
+            return HttpResponse.json({ status: 'SUCCEEDED' });
+          }
+        }
+      )
+    );
+
+    // Act
+    const vepStatusPolling = new VepSubmissionStatusPolling();
+    vepStatusPolling.enqueueSubmission({
+      submission: { id: submissionId, status: 'SUBMITTED' },
+      dispatch: jest.fn()
+    });
+
+    // Assert
+    await jest.runAllTimersAsync();
+
+    expect(actualStatusPollCount).toBe(2);
+    expect(updateSubmission as any).toHaveBeenCalledWith({
+      submissionId,
+      fragment: { status: 'SUCCEEDED' }
+    });
+  });
+
+  it('fails submission if server responds with a 404 error', async () => {
+    // Arrange
+    const submissionId = 'my-submission';
+    let actualStatusPollCount = 0;
+
+    server.use(
+      http.get(
+        'http://tools-api-url/vep/submissions/:submissionId/status',
+        () => {
+          actualStatusPollCount++;
+
+          if (actualStatusPollCount === 1) {
+            // return a 404 error
+            return new HttpResponse(null, { status: 404 });
+          } else {
+            // this should not be reached
+            return HttpResponse.json({ status: 'SUCCEEDED' });
+          }
+        }
+      )
+    );
+
+    // Act
+    const vepStatusPolling = new VepSubmissionStatusPolling();
+    vepStatusPolling.enqueueSubmission({
+      submission: { id: submissionId, status: 'SUBMITTED' },
+      dispatch: jest.fn()
+    });
+
+    // Assert
+    await jest.runAllTimersAsync();
+
+    expect(actualStatusPollCount).toBe(1);
+    expect(updateSubmission as any).toHaveBeenCalledWith({
+      submissionId,
+      fragment: { status: 'FAILED' }
+    });
+  });
+
   it('checks statuses of all submissions without artificial delay when they are submitted as a batch', async () => {
     // Arrange
     const lateSubmissionId = 'late-submission-id';
