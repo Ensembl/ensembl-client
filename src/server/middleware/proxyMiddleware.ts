@@ -56,7 +56,7 @@ const serverConfig = getConfigForServer();
 const createApiProxyMiddleware = () => {
   const apiProxyMiddleware = createHttpProxyMiddleware({
     pathFilter: '/api',
-    target: 'https://staging-2020.ensembl.org',
+    target: 'https://dev-2020.ensembl.org',
     changeOrigin: true,
     secure: false
   });

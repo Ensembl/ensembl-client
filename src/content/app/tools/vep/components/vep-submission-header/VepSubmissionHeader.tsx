@@ -18,6 +18,8 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
+import config from 'config';
+
 import { useAppDispatch } from 'src/store';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
@@ -33,7 +35,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import DownloadLink from 'src/shared/components/download-button/DownloadLink';
 
 import styles from './VepSubmissionHeader.module.css';
 
@@ -111,11 +113,15 @@ const ControlButtons = (
   const { submission, isDeleting, onDelete } = props;
 
   const canGetResults = submission.status === 'SUCCEEDED';
+  const downloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
 
   return (
     <div className={styles.controls}>
       <DeleteButton onClick={onDelete} disabled={isDeleting} />
-      <DownloadButton onClick={noop} disabled={isDeleting || !canGetResults} />
+      <DownloadLink
+        href={downloadLink}
+        disabled={isDeleting || !canGetResults}
+      />
       <ButtonLink isDisabled={isDeleting || !canGetResults} to="/">
         Results
       </ButtonLink>
