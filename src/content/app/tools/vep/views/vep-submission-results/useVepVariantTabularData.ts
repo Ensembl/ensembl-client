@@ -92,9 +92,12 @@ const reshapeVariant = ({
       const genesMap = new Map<string, VariantAffectedGene>();
 
       if (onlyCanonicalTranscripts) {
-        transcriptConsequences = transcriptConsequences.filter(
+        const candidateTranscriptConsequences = transcriptConsequences.filter(
           (cons) => cons.is_canonical
         );
+        transcriptConsequences = candidateTranscriptConsequences.length
+          ? candidateTranscriptConsequences
+          : [transcriptConsequences[0]];
       } else {
         // make sure canonical transcripts go first
         transcriptConsequences.sort((a, b) => {

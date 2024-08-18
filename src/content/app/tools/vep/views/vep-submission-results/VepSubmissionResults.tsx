@@ -15,6 +15,11 @@
  */
 
 import { useState } from 'react';
+import { useParams } from 'react-router';
+
+import { useAppSelector } from 'src/store';
+
+import { getVepSubmissionById } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
@@ -22,12 +27,15 @@ import useVepVariantTabularData, {
   type VepResultsTableRowData
 } from './useVepVariantTabularData';
 
+import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
+import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
@@ -40,11 +48,23 @@ import styles from './VepSubmissionResults.module.css';
  */
 
 const VepSubmissionResults = () => {
-  const { currentData: vepResults } = useVepResultsQuery();
+  const { submissionId } = useParams() as { submissionId: string };
+  const { currentData: vepResults } = useVepResultsQuery({
+    submission_id: submissionId,
+    page: 1, // FIXME
+    per_page: 100
+  });
+  const submission = useAppSelector((state) =>
+    getVepSubmissionById(state, submissionId)
+  );
+
+  if (!vepResults) {
+    return <CircleLoader />;
+  }
 
   return (
     <div className={styles.container}>
-      <div>VEP analysis</div>
+      {submission && <VepSubmissionHeader submission={submission} />}
       <div className={styles.resultsBox}>
         <div>Area above the table</div>
         {vepResults && <VepResultsTable variants={vepResults.variants} />}
@@ -107,7 +127,7 @@ const VariantRow = (props: {
           <td
             rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
           >
-            {row.variant.referenceAllele}
+            <VepResultsAllele sequence={row.variant.referenceAllele} />
           </td>
           <td
             rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
@@ -127,7 +147,7 @@ const VariantRow = (props: {
               : undefined
           }
         >
-          {row.alternativeAllele.allele_sequence}
+          <VepResultsAllele sequence={row.alternativeAllele.allele_sequence} />
         </td>
       )}
       <GeneTableCell row={row} />

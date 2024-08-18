@@ -182,6 +182,9 @@ export const vepSpeciesSelector = () => '/vep/species-selector';
 
 export const vepSubmissionsList = () => '/vep/submissions';
 
+export const vepResults = ({ submissionId }: { submissionId: string }) =>
+  `/vep/submissions/${submissionId}`;
+
 type RefgetUrlParams = {
   checksum: string;
   start?: number;
