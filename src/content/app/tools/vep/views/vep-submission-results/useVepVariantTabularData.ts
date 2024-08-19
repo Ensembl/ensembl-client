@@ -73,10 +73,10 @@ type ReshapedVariant = Omit<VariantInResponse, 'alternative_alleles'> & {
  */
 const reshapeVariant = ({
   variant,
-  onlyCanonicalTranscripts
+  oneTranscriptPerGene // rename to one transcript per gene
 }: {
   variant: VariantInResponse;
-  onlyCanonicalTranscripts: boolean;
+  oneTranscriptPerGene: boolean;
 }) => {
   const alternativeAlleles: UpdatedAlternativeAllele[] =
     variant.alternative_alleles.map((allele) => {
@@ -91,13 +91,10 @@ const reshapeVariant = ({
 
       const genesMap = new Map<string, VariantAffectedGene>();
 
-      if (onlyCanonicalTranscripts) {
-        const candidateTranscriptConsequences = transcriptConsequences.filter(
-          (cons) => cons.is_canonical
+      if (oneTranscriptPerGene) {
+        transcriptConsequences = selectSingleTranscriptConsequencePerGene(
+          transcriptConsequences
         );
-        transcriptConsequences = candidateTranscriptConsequences.length
-          ? candidateTranscriptConsequences
-          : [transcriptConsequences[0]];
       } else {
         // make sure canonical transcripts go first
         transcriptConsequences.sort((a, b) => {
@@ -138,6 +135,31 @@ const reshapeVariant = ({
     ...variant,
     alternative_alleles: alternativeAlleles
   };
+};
+
+/**
+ * Consider:
+ * - A variant may affect transcripts from more than one gene.
+ *   In that case, return an array containing one transcript consequence per gene.
+ * - A variant may not affect the canonical transcript of a gene.
+ *   In that case, return an array containing the first transcript per gene
+ */
+const selectSingleTranscriptConsequencePerGene = (
+  transcriptConsequences: PredictedTranscriptConsequence[]
+) => {
+  const transcriptsGeneMap = new Map<string, PredictedTranscriptConsequence>();
+
+  for (const transcriptConsequence of transcriptConsequences) {
+    const { gene_stable_id } = transcriptConsequence;
+    if (
+      !transcriptsGeneMap.get(gene_stable_id) ||
+      transcriptConsequence.is_canonical
+    ) {
+      transcriptsGeneMap.set(gene_stable_id, transcriptConsequence);
+    }
+  }
+
+  return [...transcriptsGeneMap.values()];
 };
 
 const getTotalTranscriptsCountForGene = ({
@@ -223,7 +245,7 @@ const getTabularData = ({
   const result: VepResultsTableRowData[] = [];
   const reshapedVariant = reshapeVariant({
     variant,
-    onlyCanonicalTranscripts: !showAllTranscripts
+    oneTranscriptPerGene: !showAllTranscripts
   });
 
   // First, start by creating table row data for transcript consequences of each of variant's alt alleles
