@@ -34,12 +34,10 @@ const VepTopBarNavButtons = () => {
   const hasUnviewedVepSubmissions = unviewedVepSubmissions.length > 0;
   const hasViewedVepSubmissions = viewedVepSubmissions.length > 0;
 
-  // TODO: use different destinations for the two buttons (link to unviewed submissions list vs viewed submissions)
-
   return (
     <div className={styles.jobListsNavigation}>
       <ButtonLink
-        to={urlFor.vepSubmissionsList()}
+        to={urlFor.vepUnviewedSubmissionsList()}
         isDisabled={!hasUnviewedVepSubmissions}
       >
         Unviewed jobs

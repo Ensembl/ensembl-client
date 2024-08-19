@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getVepSubmissionById } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import useVepVariantTabularData, {
   type VepResultsTableRowData
@@ -57,6 +58,18 @@ const VepSubmissionResults = () => {
   const submission = useAppSelector((state) =>
     getVepSubmissionById(state, submissionId)
   );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (vepResults && submission && !submission.resultsSeen) {
+      dispatch(
+        updateSubmission({
+          submissionId: submission.id,
+          fragment: { resultsSeen: true }
+        })
+      );
+    }
+  }, [submission, vepResults]);
 
   if (!vepResults) {
     return <CircleLoader />;

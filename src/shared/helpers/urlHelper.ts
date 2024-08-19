@@ -180,6 +180,8 @@ export const vepForm = () => '/vep';
 
 export const vepSpeciesSelector = () => '/vep/species-selector';
 
+export const vepUnviewedSubmissionsList = () => '/vep/unviewed-submissions';
+
 export const vepSubmissionsList = () => '/vep/submissions';
 
 export const vepResults = ({ submissionId }: { submissionId: string }) =>
