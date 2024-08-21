@@ -26,9 +26,21 @@ import type {
 
 type VariantInResponse = VepResultsResponse['variants'][number];
 
+/**
+ * The UI allows the user to expand or collapse transcripts
+ * that are the part of transcript consequences of an alternative allele.
+ * Hierarchically, a transcript belongs to a gene;
+ * and both are within the scope of an alternative allele.
+ * This is reflected in the ExpandedTranscriptsPath below.
+ */
+export type ExpandedTranscriptsPath = {
+  altAllele: string;
+  geneId: string;
+};
+
 type Params = {
   variant: VariantInResponse;
-  showAllTranscripts: boolean;
+  expandedTranscriptPaths: ExpandedTranscriptsPath[];
 };
 
 /**
@@ -43,11 +55,11 @@ type Params = {
  * seems to be predicted molecular consequences of a variant allele.
  */
 const useVepVariantTabularData = (params: Params) => {
-  const { variant, showAllTranscripts } = params;
+  const { variant, expandedTranscriptPaths } = params;
 
   const tabularData = useMemo(() => {
     return getTabularData(params);
-  }, [variant, showAllTranscripts]);
+  }, [variant, expandedTranscriptPaths]);
 
   return tabularData;
 };
@@ -73,60 +85,25 @@ type ReshapedVariant = Omit<VariantInResponse, 'alternative_alleles'> & {
  */
 const reshapeVariant = ({
   variant,
-  oneTranscriptPerGene // rename to one transcript per gene
+  expandedTranscriptPaths
 }: {
   variant: VariantInResponse;
-  oneTranscriptPerGene: boolean;
+  expandedTranscriptPaths: ExpandedTranscriptsPath[];
 }) => {
   const alternativeAlleles: UpdatedAlternativeAllele[] =
     variant.alternative_alleles.map((allele) => {
-      let {
+      const { transcriptConsequences, intergenicConsequences } =
+        groupAlleleConsequencesByType(allele.predicted_molecular_consequences);
+
+      const genes = buildGeneData({
         transcriptConsequences,
-        intergenicConsequences // eslint-disable-line prefer-const
-      } = groupAlleleConsequencesByType(
-        allele.predicted_molecular_consequences
-      );
-
-      const allTranscriptConsequences = transcriptConsequences;
-
-      const genesMap = new Map<string, VariantAffectedGene>();
-
-      if (oneTranscriptPerGene) {
-        transcriptConsequences = selectSingleTranscriptConsequencePerGene(
-          transcriptConsequences
-        );
-      } else {
-        // make sure canonical transcripts go first
-        transcriptConsequences.sort((a, b) => {
-          const aScore = a.is_canonical ? 0 : 1;
-          const bScore = b.is_canonical ? 0 : 1;
-          return aScore - bScore;
-        });
-      }
-
-      for (const consequence of transcriptConsequences) {
-        const geneId = consequence.gene_stable_id;
-        const visitedGene = genesMap.get(geneId);
-
-        if (visitedGene) {
-          visitedGene.transcripts.push(consequence);
-        } else {
-          const gene: VariantAffectedGene = {
-            stable_id: geneId,
-            symbol: consequence.gene_symbol,
-            transcripts: [consequence],
-            transcriptsCount: getTotalTranscriptsCountForGene({
-              transcriptConsequences: allTranscriptConsequences,
-              geneId
-            })
-          };
-          genesMap.set(geneId, gene);
-        }
-      }
+        altAllele: allele,
+        expandedTranscriptPaths
+      });
 
       return {
         ...allele,
-        genes: [...genesMap.values()],
+        genes,
         intergenicConsequences
       };
     });
@@ -144,38 +121,58 @@ const reshapeVariant = ({
  * - A variant may not affect the canonical transcript of a gene.
  *   In that case, return an array containing the first transcript per gene
  */
-const selectSingleTranscriptConsequencePerGene = (
-  transcriptConsequences: PredictedTranscriptConsequence[]
-) => {
-  const transcriptsGeneMap = new Map<string, PredictedTranscriptConsequence>();
-
-  for (const transcriptConsequence of transcriptConsequences) {
-    const { gene_stable_id } = transcriptConsequence;
-    if (
-      !transcriptsGeneMap.get(gene_stable_id) ||
-      transcriptConsequence.is_canonical
-    ) {
-      transcriptsGeneMap.set(gene_stable_id, transcriptConsequence);
-    }
-  }
-
-  return [...transcriptsGeneMap.values()];
-};
-
-const getTotalTranscriptsCountForGene = ({
+const buildGeneData = ({
   transcriptConsequences,
-  geneId
+  expandedTranscriptPaths,
+  altAllele
 }: {
   transcriptConsequences: PredictedTranscriptConsequence[];
-  geneId: string;
+  expandedTranscriptPaths: ExpandedTranscriptsPath[];
+  altAllele: AlternativeVariantAllele;
 }) => {
-  let count = 0;
-  for (let i = 0; i < transcriptConsequences.length; i++) {
-    if (transcriptConsequences[i].gene_stable_id === geneId) {
-      count++;
+  const genesMap = new Map<string, VariantAffectedGene>();
+
+  // transform transcript paths array into a set for faster access
+  const transcriptPathAccessor = (transcriptPath: ExpandedTranscriptsPath) =>
+    `${transcriptPath.altAllele}-${transcriptPath.geneId}`;
+  const transcriptPathsSet = new Set(
+    expandedTranscriptPaths.map(transcriptPathAccessor)
+  );
+
+  // sort transcript consequences such that canonical transcripts go first
+  // (note that it is possible for a variant to not affect any of the canonical transcripts,
+  // in which case the sort shouldn't change the transcript order)
+  transcriptConsequences.sort((a, b) => {
+    const aScore = a.is_canonical ? 0 : 1;
+    const bScore = b.is_canonical ? 0 : 1;
+    return aScore - bScore;
+  });
+
+  for (const consequence of transcriptConsequences) {
+    const geneId = consequence.gene_stable_id;
+    const visitedGene = genesMap.get(geneId);
+    const shouldShowOneTranscriptPerGene = !transcriptPathsSet.has(
+      transcriptPathAccessor({ geneId, altAllele: altAllele.allele_sequence })
+    );
+
+    if (visitedGene) {
+      if (!shouldShowOneTranscriptPerGene) {
+        visitedGene.transcripts.push(consequence);
+      }
+      visitedGene.transcriptsCount++;
+    } else {
+      // after transcript consequences have been sorted, canonical transcripts, if they exist, will be first
+      const gene: VariantAffectedGene = {
+        stable_id: geneId,
+        symbol: consequence.gene_symbol,
+        transcripts: [consequence],
+        transcriptsCount: 1
+      };
+      genesMap.set(geneId, gene);
     }
   }
-  return count;
+
+  return [...genesMap.values()];
 };
 
 type ConsequenceGroups = {
@@ -208,6 +205,7 @@ export type VepResultsTableRowData = {
     | (PredictedTranscriptConsequence & {
         totalTranscriptsCount: number;
         isLastTranscript: boolean;
+        altAlleleSequence: string;
       });
   gene: {
     stableId: string;
@@ -237,15 +235,15 @@ export type VepResultsTableRowData = {
  */
 const getTabularData = ({
   variant,
-  showAllTranscripts
+  expandedTranscriptPaths
 }: {
   variant: VariantInResponse;
-  showAllTranscripts: boolean;
+  expandedTranscriptPaths: ExpandedTranscriptsPath[];
 }): VepResultsTableRowData[] => {
   const result: VepResultsTableRowData[] = [];
   const reshapedVariant = reshapeVariant({
     variant,
-    oneTranscriptPerGene: !showAllTranscripts
+    expandedTranscriptPaths
   });
 
   // First, start by creating table row data for transcript consequences of each of variant's alt alleles
@@ -259,7 +257,8 @@ const getTabularData = ({
           consequence: {
             ...transcriptConsequence,
             totalTranscriptsCount: gene.transcriptsCount,
-            isLastTranscript: i === gene.transcripts.length - 1
+            isLastTranscript: i === gene.transcripts.length - 1,
+            altAlleleSequence: altAllele.allele_sequence
           },
           gene: null,
           alternativeAllele: null,

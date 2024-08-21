@@ -25,7 +25,8 @@ import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepA
 import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import useVepVariantTabularData, {
-  type VepResultsTableRowData
+  type VepResultsTableRowData,
+  type ExpandedTranscriptsPath
 } from './useVepVariantTabularData';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
@@ -117,15 +118,32 @@ const VepResultsTable = (props: {
 const VariantRow = (props: {
   variant: VepResultsResponse['variants'][number];
 }) => {
-  const [showAllTranscripts, setShowAllTranscripts] = useState(false);
+  const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
+    ExpandedTranscriptsPath[]
+  >([]);
 
   const tabularData = useVepVariantTabularData({
     variant: props.variant,
-    showAllTranscripts
+    expandedTranscriptPaths
   });
 
-  const toggleExpandedTranscripts = () => {
-    setShowAllTranscripts(!showAllTranscripts);
+  const toggleExpandedTranscripts = (
+    altAllele: string,
+    geneId: string,
+    action: 'expand' | 'collapse'
+  ) => {
+    if (action === 'expand') {
+      const newTranscriptPath = { altAllele, geneId };
+      setExpandedTranscriptPaths([
+        ...expandedTranscriptPaths,
+        newTranscriptPath
+      ]);
+    } else {
+      const updatedPaths = expandedTranscriptPaths.filter((path) => {
+        return path.altAllele !== altAllele || path.geneId !== geneId;
+      });
+      setExpandedTranscriptPaths(updatedPaths);
+    }
   };
 
   return tabularData.map((row, index) => (
@@ -166,7 +184,7 @@ const VariantRow = (props: {
       <GeneTableCell row={row} />
       <TranscriptTableCell
         row={row}
-        isCollapsed={!showAllTranscripts}
+        expandedTranscriptPaths={expandedTranscriptPaths}
         toggleExpanded={toggleExpandedTranscripts}
       />
       <td>
@@ -195,38 +213,59 @@ const GeneTableCell = (props: { row: VepResultsTableRowData }) => {
 
 const TranscriptTableCell = (props: {
   row: VepResultsTableRowData;
-  isCollapsed: boolean;
-  toggleExpanded: () => void;
+  expandedTranscriptPaths: ExpandedTranscriptsPath[];
+  toggleExpanded: (
+    altAllele: string,
+    geneId: string,
+    action: 'expand' | 'collapse'
+  ) => void;
 }) => {
-  const { row, isCollapsed, toggleExpanded } = props;
+  const { row, expandedTranscriptPaths, toggleExpanded } = props;
 
-  if (row.consequence.feature_type === 'transcript') {
-    const { totalTranscriptsCount, isLastTranscript } = row.consequence;
-
-    return (
-      <td>
-        <VariantTranscript transcript={row.consequence} />
-        {isCollapsed && totalTranscriptsCount > 1 && (
-          <div>
-            <button onClick={toggleExpanded} className={styles.expandButton}>
-              <Pill>+ {totalTranscriptsCount - 1}</Pill>
-              <span className={styles.smallLight}>transcripts</span>
-            </button>
-          </div>
-        )}
-        {!isCollapsed && totalTranscriptsCount > 1 && isLastTranscript && (
-          <div>
-            <CloseButton
-              onClick={toggleExpanded}
-              className={styles.collapseButton}
-            />
-          </div>
-        )}
-      </td>
-    );
-  } else {
+  if (row.consequence.feature_type !== 'transcript') {
     return <td />;
   }
+
+  const transcriptConsequence = row.consequence;
+  const { totalTranscriptsCount, isLastTranscript } = transcriptConsequence;
+  const isExpanded = Boolean(
+    expandedTranscriptPaths.find(({ altAllele, geneId }) => {
+      return (
+        altAllele === transcriptConsequence.altAlleleSequence &&
+        geneId === transcriptConsequence.gene_stable_id
+      );
+    })
+  );
+
+  const onTranscriptClick = () => {
+    toggleExpanded(
+      transcriptConsequence.altAlleleSequence,
+      transcriptConsequence.gene_stable_id,
+      isExpanded ? 'collapse' : 'expand'
+    );
+  };
+
+  return (
+    <td>
+      <VariantTranscript transcript={row.consequence} />
+      {!isExpanded && totalTranscriptsCount > 1 && (
+        <div>
+          <button onClick={onTranscriptClick} className={styles.expandButton}>
+            <Pill>+ {totalTranscriptsCount - 1}</Pill>
+            <span className={styles.smallLight}>transcripts</span>
+          </button>
+        </div>
+      )}
+      {isExpanded && totalTranscriptsCount > 1 && isLastTranscript && (
+        <div>
+          <CloseButton
+            onClick={onTranscriptClick}
+            className={styles.collapseButton}
+          />
+        </div>
+      )}
+    </td>
+  );
 };
 
 const VariantName = (props: {
