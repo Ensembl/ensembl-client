@@ -142,23 +142,6 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       query: ({ submission_id, page, per_page }) => ({
         url: `${config.toolsApiBaseUrl}/vep/submissions/${submission_id}/results?page=${page}&per_page=${per_page}`
       })
-      // queryFn: async ({ submission_id, page, per_page }) => {
-      //   // TODO: the query function will accept a submission id,
-      //   // and will send request to:
-      //   //
-      //   // to fetch data.
-      //   // Meanwhile, until the back-end endpoint is developed,
-      //   // this function returns hard-coded response payload.
-
-      //   const url = `${config.toolsApiBaseUrl}/vep/submissions/${submission_id}/results?page=${page}&per_page=${per_page}`;
-      //   const mockResponseModule = await import(
-      //     'tests/fixtures/vep/mockVepResults'
-      //   );
-      //   const mockResponse = mockResponseModule.default;
-      //   return {
-      //     data: mockResponse
-      //   };
-      // }
     })
   })
 });
