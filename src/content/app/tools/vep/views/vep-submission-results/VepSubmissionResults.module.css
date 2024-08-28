@@ -4,8 +4,8 @@
   height: 100%;
   padding-top: 20px;
   margin-left: var(--double-standard-gutter);
-  margin-right: var(--double-standard-gutter);
-  overflow: hidden;
+  margin-right: var(--standard-gutter);
+  max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
 }
 
 .resultsBox {

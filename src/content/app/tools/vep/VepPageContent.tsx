@@ -60,10 +60,10 @@ const Main = () => {
       <Route index={true} element={<VepForm />} />
       <Route
         path="unviewed-submissions"
-        element={<div>List of unviewed submissions</div>}
+        element={<VepSubmissions unviewed={true} />}
       />
       <Route path="submissions">
-        <Route index={true} element={<VepSubmissions />} />
+        <Route index={true} element={<VepSubmissions unviewed={false} />} />
         <Route path=":submissionId" element={<VepSubmissionResults />} />
       </Route>
       <Route path="*" element={<NotFoundErrorScreen />} />

@@ -71,7 +71,7 @@ const VepSubmitButton = (props: { className?: string }) => {
       onVepFormSubmission({ submissionId: submissionId as string })
     );
 
-    navigate(urlFor.vepSubmissionsList());
+    navigate(urlFor.vepUnviewedSubmissionsList());
 
     submitVepForm(payload);
   };

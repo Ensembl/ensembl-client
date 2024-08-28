@@ -19,6 +19,7 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import config from 'config';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch } from 'src/store';
 
@@ -67,7 +68,7 @@ const VepSubmissionHeader = (props: Props) => {
             <>
               <span className={classNames(styles.labelLeft, styles.smallLight)}>
                 Submission
-              </span>
+              </span>{' '}
               {submission.id}
             </>
           )}
@@ -114,6 +115,9 @@ const ControlButtons = (
 
   const canGetResults = submission.status === 'SUCCEEDED';
   const downloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  const vepResultsLink = urlFor.vepResults({
+    submissionId: props.submission.id
+  });
 
   return (
     <div className={styles.controls}>
@@ -122,7 +126,7 @@ const ControlButtons = (
         href={downloadLink}
         disabled={isDeleting || !canGetResults}
       />
-      <ButtonLink isDisabled={isDeleting || !canGetResults} to="/">
+      <ButtonLink isDisabled={isDeleting || !canGetResults} to={vepResultsLink}>
         Results
       </ButtonLink>
     </div>
