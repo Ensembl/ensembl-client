@@ -14,30 +14,4 @@
  * limitations under the License.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
-
-type State = {
-  isCommunicationPanelOpen: boolean;
-};
-
-const initialState: State = {
-  isCommunicationPanelOpen: false
-};
-
-const communicationSlice = createSlice({
-  name: 'communication',
-  initialState,
-  reducers: {
-    openCommunicationPanel(state) {
-      state.isCommunicationPanelOpen = true;
-    },
-    toggleCommunicationPanel(state) {
-      state.isCommunicationPanelOpen = !state.isCommunicationPanelOpen;
-    }
-  }
-});
-
-export const { openCommunicationPanel, toggleCommunicationPanel } =
-  communicationSlice.actions;
-
-export default communicationSlice.reducer;
+export const NOTIFICATIONS_STORE_NAME = 'notifications';

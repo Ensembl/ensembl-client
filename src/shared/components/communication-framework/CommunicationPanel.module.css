@@ -19,10 +19,6 @@
 .panel {
   position: relative;
   display: grid;
-  grid-template-areas:
-          'conversation tabs close'
-          '. main main';
-  grid-template-columns: 67px 1fr 46px;
   grid-template-rows: auto 1fr;
   max-height: calc(100vh - 110px - 5vh);
   height: auto;
@@ -38,15 +34,25 @@
 }
 
 .panelHeader {
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: [conversation-icon] 90px [tabs] 1fr [close] 46px;
+  align-items: center;
 }
 
-.panelTabs {
-  grid-area: tabs;
+.conversationIcon {
+  justify-self: center;
+}
+
+.headerNav {
+  grid-column: tabs;
   display: flex;
   align-items: center;
-  gap: 30px;
-  margin-left: 28px;
+  column-gap: 30px;
+  font-size: 12px;
+}
+
+.headerNav .tabActive {
+  --text-button-disabled-color: var(--color-black);
 }
 
 .panelTabs .tab {
@@ -58,25 +64,15 @@
 }
 
 .panelBody {
-  grid-area: main;
   padding-top: 30px;
-  padding-left: 28px;
+  padding-left: 90px;
+  padding-right: 46px;
   overflow: auto;
   height: 100%;
 }
 
 .panelCloseButton {
-  grid-area: close;
-  align-self: center;
-  margin-bottom: 3px;
-}
-
-.conversationIcon {
-  grid-area: conversation;
-  width: 40px;
-  align-self: center;
-  justify-self: right;
-  cursor: pointer;
+  grid-column: close;
 }
 
 .overlay {
