@@ -30,7 +30,7 @@ import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
 import { createHelpPageMeta } from './helpers/helpPageMetaHelpers';
 import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
 
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 import HelpMenu from './components/help-menu/HelpMenu';
 import HelpLanding from './components/help-landing/HelpLanding';
 import {
@@ -126,7 +126,7 @@ const AppBar = () => {
     <div className={styles.appBar}>
       Help
       <div className={styles.conversationIcon}>
-        <ConversationIcon withLabel={true} />
+        <CommunicationPanelButton withLabel={true} />
       </div>
     </div>
   );

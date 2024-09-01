@@ -1,0 +1,9 @@
+.strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.buttons {
+  display: flex;
+  column-gap: var(--standard-gutter);
+  margin-top: var(--standard-gutter);
+}
