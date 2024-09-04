@@ -8,12 +8,30 @@
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
 }
 
+.fullPageSpinnerContainer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 150px;
+}
+
 .resultsBox {
   border: 1px solid var(--color-grey);
   padding: 22px;
   max-height: 100%;
   align-self: start;
   overflow: auto;
+}
+
+.resultsBoxHeader {
+  display: grid;
+  grid-template-columns: [species-name] 300px 1fr;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pagination {
+  justify-self: end;
 }
 
 .table {
@@ -33,6 +51,31 @@
 
 .table td:nth-child(3), th:nth-child(3) {
   max-width: 100px;
+}
+
+/*
+  a wrapper around the table of results,
+  which allows positioning the loading overlay over the table
+*/
+.tableWrapper {
+  position: relative;
+}
+
+.tableLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(255 255 255 / 30%);
+  backdrop-filter: blur(2px); /* this CSS rule reqires a vendor -webkit prefix in Safari; hopefully postCSS knows this */
+}
+
+.tableLoadingSpinner {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .expandButton {

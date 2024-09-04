@@ -37,8 +37,11 @@ import VepResultsLocation from './components/vep-results-location/VepResultsLoca
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import Pagination from 'src/shared/components/pagination/Pagination';
 import { CircleLoader } from 'src/shared/components/loader';
 
+import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 import styles from './VepSubmissionResults.module.css';
@@ -51,9 +54,14 @@ import styles from './VepSubmissionResults.module.css';
 
 const VepSubmissionResults = () => {
   const { submissionId } = useParams() as { submissionId: string };
-  const { currentData: vepResults } = useVepResultsQuery({
+  const [page, setPage] = useState(1); // FIXME: read page number from url params, and validate
+  const {
+    data: vepResults,
+    isLoading,
+    isFetching
+  } = useVepResultsQuery({
     submission_id: submissionId,
-    page: 1, // FIXME
+    page,
     per_page: 100
   });
   const submission = useAppSelector((state) =>
@@ -72,17 +80,89 @@ const VepSubmissionResults = () => {
     }
   }, [submission, vepResults]);
 
-  if (!vepResults) {
-    return <CircleLoader />;
+  const onPageChange = (page: number) => {
+    setPage(page);
+  };
+
+  if (!submission) {
+    // TODO:
+    // - Submission may not exist; in which case we should show an error screen
+    // - However, note that reading submissions from IndexedDB will take time;
+    //   so will need some way to detect in the component that IndexedDB read has finished
+    return null;
+  } else if (isLoading) {
+    // fetching data for the first time
+    return (
+      <div className={styles.fullPageSpinnerContainer}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!vepResults) {
+    // TODO: handle errors
+    return null;
   }
+
+  const {
+    metadata: { pagination: paginationMetadata }
+  } = vepResults;
+  const { per_page, total } = paginationMetadata;
+  const maxPage = Math.ceil(total / per_page);
 
   return (
     <div className={styles.container}>
-      {submission && <VepSubmissionHeader submission={submission} />}
+      <VepSubmissionHeader submission={submission} />
       <div className={styles.resultsBox}>
-        <div>Area above the table</div>
-        {vepResults && <VepResultsTable variants={vepResults.variants} />}
+        <VepResultsHeader
+          submission={submission}
+          page={page}
+          maxPage={maxPage}
+          onPageChange={onPageChange}
+        />
+        <div className={styles.tableWrapper}>
+          {isFetching && (
+            <div className={styles.tableLoadingOverlay}>
+              <CircleLoader className={styles.tableLoadingSpinner} />
+            </div>
+          )}
+          <VepResultsTable variants={vepResults.variants} />
+        </div>
       </div>
+    </div>
+  );
+};
+
+/**
+ * A component that sits inside of the results box above the table of results,
+ * and contains the species name, paginator, and other stuff
+ */
+const VepResultsHeader = ({
+  submission,
+  page,
+  maxPage,
+  onPageChange
+}: {
+  submission: VepSubmissionWithoutInputFile;
+  page: number;
+  maxPage: number;
+  onPageChange: (page: number) => void;
+}) => {
+  const { species } = submission;
+
+  // TODO: decide what to do with the pagination component when all results can fit in one page
+
+  return (
+    <div className={styles.resultsBoxHeader}>
+      <SpeciesName
+        species={
+          species as NonNullable<VepSubmissionWithoutInputFile['species']>
+        }
+      />
+      <Pagination
+        onChange={onPageChange}
+        currentPageNumber={page}
+        lastPageNumber={maxPage}
+        className={styles.pagination}
+      />
     </div>
   );
 };

@@ -34,7 +34,11 @@ const CircleLoader = (props: Props) => {
     props.className
   );
 
-  return <div className={className} />;
+  return (
+    <div className={className}>
+      <div className={styles.spinner} />
+    </div>
+  );
 };
 
 export default CircleLoader;
