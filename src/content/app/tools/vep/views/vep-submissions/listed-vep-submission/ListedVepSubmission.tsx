@@ -18,6 +18,7 @@ import classNames from 'classnames';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type {
@@ -100,27 +101,6 @@ const SubmissionStatus = (props: Props) => {
     return <span className={styles.statusFailed}>FAILED</span>;
   } else {
     return null;
-  }
-};
-
-const VepInputSummary = (props: Props) => {
-  const { submission } = props;
-
-  if (submission.inputText) {
-    return (
-      <span className={classNames(styles.inputSummary, styles.smallLight)}>
-        Pasted data
-      </span>
-    );
-  } else if (submission.inputFileName) {
-    return (
-      <span className={styles.inputSummary}>
-        <span className={classNames(styles.smallLight, styles.labelLeft)}>
-          From file
-        </span>
-        <span>{submission.inputFileName}</span>
-      </span>
-    );
   }
 };
 

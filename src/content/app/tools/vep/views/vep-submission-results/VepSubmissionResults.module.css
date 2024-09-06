@@ -17,7 +17,7 @@
 
 .resultsBox {
   border: 1px solid var(--color-grey);
-  padding: 22px;
+  padding: 22px var(--standard-gutter);
   max-height: 100%;
   align-self: start;
   overflow: auto;
@@ -25,7 +25,8 @@
 
 .resultsBoxHeader {
   display: grid;
-  grid-template-columns: [species-name] 300px 1fr;
+  grid-template-columns: [species-name] minmax(auto, 300px) auto 1fr;
+  column-gap: var(--standard-gutter);
   align-items: center;
   margin-bottom: 16px;
 }
@@ -59,6 +60,7 @@
 */
 .tableWrapper {
   position: relative;
+  overflow-x: auto;
 }
 
 .tableLoadingOverlay {

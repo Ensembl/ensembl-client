@@ -1,10 +1,18 @@
-.topBar {
-  min-height: 74px;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-light-grey);
-  padding: 24px 30px 20px;
-  box-shadow: 0 3px 5px var(--global-box-shadow-color);
-  position: relative;
-  z-index: 2;
+/*
+  Wrap ToolsTopBar's styles in a components layer
+  to allow overrides from consuming components.
+  (E.g. in the top bar in VEP.)
+*/
+
+@layer components {
+  .topBar {
+    min-height: 74px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-light-grey);
+    padding: 24px 30px 20px;
+    box-shadow: 0 3px 5px var(--global-box-shadow-color);
+    position: relative;
+    z-index: 2;
+  }
 }

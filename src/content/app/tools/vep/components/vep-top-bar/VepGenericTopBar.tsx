@@ -26,7 +26,7 @@ import styles from './VepTopBar.module.css';
 
 const VepGenericTopBar = () => {
   return (
-    <ToolsTopBar>
+    <ToolsTopBar className={styles.vepGenericTopBar}>
       <div className={styles.vepGenericGrid}>
         <EnsemblVepLogo />
         <ButtonLink to={urlFor.vepForm()} className={styles.newJobButton}>

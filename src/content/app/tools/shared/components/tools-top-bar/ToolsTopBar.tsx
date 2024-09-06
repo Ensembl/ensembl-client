@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
 import type { ReactNode } from 'react';
 
 import styles from './ToolsTopBar.module.css';
 
 type Props = {
   children: ReactNode;
+  className?: string;
 };
 
 const ToolsTopBar = (props: Props) => {
-  return <div className={styles.topBar}>{props.children}</div>;
+  const componentClasses = classNames(styles.topBar, props.className);
+
+  return <div className={componentClasses}>{props.children}</div>;
 };
 
 export default ToolsTopBar;

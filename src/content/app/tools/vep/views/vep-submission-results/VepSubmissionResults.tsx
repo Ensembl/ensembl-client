@@ -30,6 +30,7 @@ import useVepVariantTabularData, {
 } from './useVepVariantTabularData';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
+import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
@@ -157,6 +158,7 @@ const VepResultsHeader = ({
           species as NonNullable<VepSubmissionWithoutInputFile['species']>
         }
       />
+      <VepInputSummary submission={submission} />
       <Pagination
         onChange={onPageChange}
         currentPageNumber={page}
