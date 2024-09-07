@@ -25,14 +25,38 @@
 
 .resultsBoxHeader {
   display: grid;
-  grid-template-columns: [species-name] minmax(auto, 300px) auto 1fr;
+  grid-template-columns:
+    [species-name] minmax(auto, 300px)
+    [input-summary] auto
+    [per-page] 1fr
+    [pagination] auto
+    [filters-toggle] auto;
   column-gap: var(--standard-gutter);
   align-items: center;
   margin-bottom: 16px;
 }
 
-.pagination {
+.perPage {
+  grid-column: per-page;
+  display: flex;
+  column-gap: 14px;
+  align-items: center;
   justify-self: end;
+}
+
+.perPageLabel {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.pagination {
+  grid-column: pagination;
+}
+
+.mockFiltersToggle {
+  --show-hide-label-color: var(--color-grey);
+  --chevron-fill: var(--color-grey);
+  pointer-events: none;
 }
 
 .table {

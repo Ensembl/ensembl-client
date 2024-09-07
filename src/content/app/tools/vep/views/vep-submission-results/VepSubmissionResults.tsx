@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import { useParams } from 'react-router';
+import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import useVepResultsPagination, {
+  PER_PAGE_OPTIONS
+} from './hooks/useVepResultsPagination';
 
 import { getVepSubmissionById } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
@@ -40,6 +44,8 @@ import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
 import Pagination from 'src/shared/components/pagination/Pagination';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
@@ -55,7 +61,8 @@ import styles from './VepSubmissionResults.module.css';
 
 const VepSubmissionResults = () => {
   const { submissionId } = useParams() as { submissionId: string };
-  const [page, setPage] = useState(1); // FIXME: read page number from url params, and validate
+  const { page, perPage, setPage, setPerPage } = useVepResultsPagination();
+  // const [page, setPage] = useState(1); // FIXME: read page number from url params, and validate
   const {
     data: vepResults,
     isLoading,
@@ -63,7 +70,7 @@ const VepSubmissionResults = () => {
   } = useVepResultsQuery({
     submission_id: submissionId,
     page,
-    per_page: 100
+    per_page: perPage
   });
   const submission = useAppSelector((state) =>
     getVepSubmissionById(state, submissionId)
@@ -118,6 +125,8 @@ const VepSubmissionResults = () => {
           page={page}
           maxPage={maxPage}
           onPageChange={onPageChange}
+          perPage={perPage}
+          onPerPageChange={setPerPage}
         />
         <div className={styles.tableWrapper}>
           {isFetching && (
@@ -139,15 +148,28 @@ const VepSubmissionResults = () => {
 const VepResultsHeader = ({
   submission,
   page,
+  perPage,
   maxPage,
-  onPageChange
+  onPageChange,
+  onPerPageChange
 }: {
   submission: VepSubmissionWithoutInputFile;
   page: number;
+  perPage: number;
   maxPage: number;
   onPageChange: (page: number) => void;
+  onPerPageChange: (page: number) => void;
 }) => {
   const { species } = submission;
+  const perPageOptions = PER_PAGE_OPTIONS.map((option) => ({
+    label: `${option}`,
+    value: `${option}`
+  }));
+
+  const handlePerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.currentTarget.value;
+    onPerPageChange(Number(value));
+  };
 
   // TODO: decide what to do with the pagination component when all results can fit in one page
 
@@ -159,13 +181,35 @@ const VepResultsHeader = ({
         }
       />
       <VepInputSummary submission={submission} />
+      <div className={styles.perPage}>
+        <SimpleSelect
+          options={perPageOptions}
+          value={`${perPage}`}
+          onChange={handlePerPageChange}
+        />
+        <span className={styles.perPageLabel}>per page</span>
+      </div>
       <Pagination
         onChange={onPageChange}
         currentPageNumber={page}
         lastPageNumber={maxPage}
         className={styles.pagination}
       />
+      <div>
+        <MockFiltersToggle />
+      </div>
     </div>
+  );
+};
+
+const MockFiltersToggle = () => {
+  return (
+    <ShowHide
+      className={styles.mockFiltersToggle}
+      onClick={noop}
+      isExpanded={false}
+      label="Filters"
+    />
   );
 };
 
