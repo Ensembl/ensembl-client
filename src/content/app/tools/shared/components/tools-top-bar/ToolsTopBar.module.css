@@ -1,6 +1,6 @@
 /*
-  Wrap ToolsTopBar's styles in a components layer
-  to allow overrides from consuming components.
+  Wrap ToolsTopBar's styles in the components layer
+  to enable overrides from consuming components.
   (E.g. in the top bar in VEP.)
 */
 

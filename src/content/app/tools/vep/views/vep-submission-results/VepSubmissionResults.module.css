@@ -94,7 +94,7 @@
   right: 0;
   bottom: 0;
   background-color: rgb(255 255 255 / 30%);
-  backdrop-filter: blur(2px); /* this CSS rule reqires a vendor -webkit prefix in Safari; hopefully postCSS knows this */
+  backdrop-filter: blur(2px); /* this CSS rule requires a vendor -webkit prefix in Safari; postCSS adds it */
 }
 
 .tableLoadingSpinner {

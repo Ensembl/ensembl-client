@@ -18,12 +18,6 @@
   animation: loader-spin 1.3s linear infinite;  
 }
 
-/* .circleLoader {
-  display: var(--circle-loader-display, inline-block);
-
-
-} */
-
 .circleLoaderDefault {
   width: var(--circle-loader-diameter, 40px);
   height: var(--circle-loader-diameter, 40px);

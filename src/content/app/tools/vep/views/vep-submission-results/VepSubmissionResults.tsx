@@ -56,13 +56,11 @@ import styles from './VepSubmissionResults.module.css';
 /**
  * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
- * - Consider pagination (should it be part of url?)
  */
 
 const VepSubmissionResults = () => {
   const { submissionId } = useParams() as { submissionId: string };
   const { page, perPage, setPage, setPerPage } = useVepResultsPagination();
-  // const [page, setPage] = useState(1); // FIXME: read page number from url params, and validate
   const {
     data: vepResults,
     isLoading,

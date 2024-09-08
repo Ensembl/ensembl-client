@@ -32,7 +32,7 @@
 .vepGenericTopBar {
   padding-top: 0;
   padding-bottom: 0;
-  justify-content: center; /* For vertical alignment; ToolsTopBar is a flex box with flex-direction column */
+  justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
 }
 
 .vepGenericGrid {
