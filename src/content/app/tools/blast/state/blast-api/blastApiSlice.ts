@@ -18,7 +18,7 @@ import { nanoid } from '@reduxjs/toolkit';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 import config from 'config';
-import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import type { BaseQueryFn } from '@reduxjs/toolkit/dist/query';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
