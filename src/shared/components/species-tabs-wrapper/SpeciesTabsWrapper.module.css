@@ -1,6 +1,0 @@
-.grid {
-  display: grid;
-  grid-template-columns: auto minmax(max-content, 1fr);
-  column-gap: 30px;
-  align-items: center;
-}
