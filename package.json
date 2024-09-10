@@ -33,7 +33,7 @@
     "@ensembl/ensembl-genome-browser": "0.6.10",
     "@react-spring/web": "9.7.4",
     "@reduxjs/toolkit": "2.2.7",
-    "@sentry/browser": "8.29.0",
+    "@sentry/browser": "8.30.0",
     "@storybook/addon-essentials": "8.2.9",
     "classnames": "2.5.1",
     "comlink": "4.4.1",
