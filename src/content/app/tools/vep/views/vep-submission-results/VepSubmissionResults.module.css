@@ -6,6 +6,7 @@
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
+  overflow: hidden;
 }
 
 .fullPageSpinnerContainer {
@@ -16,11 +17,12 @@
 }
 
 .resultsBox {
+  display: grid;
+  grid-template-rows: auto 1fr;
   border: 1px solid var(--color-grey);
   padding: 22px var(--standard-gutter);
   max-height: 100%;
   align-self: start;
-  overflow: auto;
 }
 
 .resultsBoxHeader {
@@ -84,7 +86,9 @@
 */
 .tableWrapper {
   position: relative;
-  overflow-x: auto;
+  overflow: auto;
+  padding-right: 1rem;
+  margin-right: -1rem;
 }
 
 .tableLoadingOverlay {
