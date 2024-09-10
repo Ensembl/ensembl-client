@@ -30,19 +30,28 @@ const DEFAULT_PER_PAGE = PER_PAGE_OPTIONS.at(-1) as number;
 
 const useVepResultsPagination = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { page, perPage } = validateSearchParams(searchParams);
 
   const setPage = (page: number) => {
     searchParams.set('page', `${page}`);
     setSearchParams(searchParams);
   };
 
-  const setPerPage = (perPage: number) => {
-    searchParams.set('per_page', `${perPage}`);
+  const setPerPage = (newPerPage: number) => {
+    // also update the page the make sure that with the new number of items per page,
+    const firstItemCount = (page - 1) * perPage + 1;
+    const newPage = Math.floor(firstItemCount / newPerPage) + 1;
+
+    if (page !== newPage) {
+      searchParams.set('page', `${newPage}`);
+    }
+    searchParams.set('per_page', `${newPerPage}`);
     setSearchParams(searchParams);
   };
 
   return {
-    ...validateSearchParams(searchParams),
+    page,
+    perPage,
     setPage,
     setPerPage
   };
