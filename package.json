@@ -110,7 +110,7 @@
     "licence-manager": "git+https://github.com/Ensembl/ensembl-licence-manager.git#36b534d28ff26d345b4ba4da0cbc18e1e0f7a6b7",
     "lint-staged": "15.2.10",
     "mini-css-extract-plugin": "2.9.1",
-    "msw": "2.4.4",
+    "msw": "2.4.5",
     "nodemon": "3.1.4",
     "postcss": "8.4.45",
     "postcss-loader": "8.1.1",
