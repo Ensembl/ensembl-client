@@ -97,7 +97,7 @@ const Pagination = (props: PaginationProps) => {
       <ChevronButton
         direction="right"
         className={styles.showHide}
-        disabled={pageNumberFromProps === lastPageNumber}
+        disabled={pageNumberFromProps >= lastPageNumber}
         onClick={() => props.onChange(pageNumberFromProps + 1)}
       />
     </div>
