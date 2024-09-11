@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 /**
@@ -30,7 +31,21 @@ const DEFAULT_PER_PAGE = PER_PAGE_OPTIONS.at(-1) as number;
 
 const useVepResultsPagination = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { page, perPage } = validateSearchParams(searchParams);
+  const { page, perPage, isValidPage, isValidPerPage } =
+    validateSearchParams(searchParams);
+
+  useEffect(() => {
+    if (isValidPage && isValidPerPage) {
+      return;
+    }
+    if (!isValidPage) {
+      searchParams.delete('page');
+    }
+    if (!isValidPerPage) {
+      searchParams.delete('per_page');
+    }
+    setSearchParams(searchParams);
+  }, [isValidPage, isValidPerPage]);
 
   const setPage = (page: number) => {
     searchParams.set('page', `${page}`);
@@ -64,13 +79,19 @@ const validateSearchParams = (searchParams: URLSearchParams) => {
   const parsedPage = parseInt(pageParam || '');
   const parsedPerPage = parseInt(perPageParam || '');
 
-  const page = isNaN(parsedPage) ? DEFAULT_PAGE : parsedPage;
-  const perPage =
-    !isNaN(parsedPerPage) && PER_PAGE_OPTIONS.includes(parsedPerPage)
-      ? parsedPerPage
-      : DEFAULT_PER_PAGE;
+  const isValidPage = !isNaN(parsedPage) && parsedPage > 0;
+  const isValidPerPage =
+    !isNaN(parsedPerPage) && PER_PAGE_OPTIONS.includes(parsedPerPage);
 
-  return { page, perPage };
+  const page = isValidPage ? parsedPage : DEFAULT_PAGE;
+  const perPage = isValidPerPage ? parsedPerPage : DEFAULT_PER_PAGE;
+
+  return {
+    page,
+    perPage,
+    isValidPage: pageParam ? isValidPage : true,
+    isValidPerPage: perPageParam ? isValidPerPage : true
+  };
 };
 
 export default useVepResultsPagination;
