@@ -36,8 +36,6 @@
 }
 
 .editSubmission {
-  color: var(--color-blue);
-  cursor: pointer;
   margin: 0 32px;
 }
 

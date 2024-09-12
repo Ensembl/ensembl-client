@@ -15,8 +15,8 @@
  */
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -25,6 +25,7 @@ import { useAppDispatch } from 'src/store';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
+import { fillVepFormWithExistingSubmissionData } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 import { deleteSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import {
@@ -54,9 +55,18 @@ const VepSubmissionHeader = (props: Props) => {
   const submissionTime = submission.submittedAt
     ? getFormattedDateTime(new Date(submission.submittedAt))
     : null;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const toggleDeletionConfirmation = () => {
     setIsDeleting(!isDeleting);
+  };
+
+  const onEditSubmission = () => {
+    dispatch(
+      fillVepFormWithExistingSubmissionData({ submissionId: submission.id })
+    );
+    navigate(urlFor.vepForm());
   };
 
   return (
@@ -74,7 +84,7 @@ const VepSubmissionHeader = (props: Props) => {
           )}
         </div>
         <div className={styles.rerun}>
-          <TextButton onClick={noop}>Edit/rerun</TextButton>
+          <TextButton onClick={onEditSubmission}>Edit/rerun</TextButton>
         </div>
         <div className={styles.submissionDate}>
           {submissionTime} <span className={styles.timezone}>GMT</span>

@@ -71,6 +71,8 @@ export const initialState: VepFormState = {
   parameters: {}
 };
 
+const createTemporarySubmissionId = () => `temporary-${nanoid()}`;
+
 /**
  * This action checks if there is an already saved, but unsubmitted, VEP form data.
  *   - If yes, it copies its information into redux state
@@ -96,7 +98,7 @@ export const initialiseVepForm = createAsyncThunk(
       };
     }
 
-    const temporaryId = `temporary-${nanoid()}`;
+    const temporaryId = createTemporarySubmissionId();
 
     const initialSubmissionData: StoredVepSubmission = {
       id: temporaryId,
@@ -170,6 +172,41 @@ export const clearVariantsInput = createAsyncThunk(
       inputText: null,
       fileName: null
     };
+  }
+);
+
+export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
+  'vep-form/fillWithExistingSubmissionData',
+  async (params: { submissionId: string }) => {
+    // read submission data from the database
+    const storedSubmission = await getVepSubmission(params.submissionId);
+    if (!storedSubmission) {
+      // this shouldn't happen; after all, in order to initiate the action of rerunning a VEP submission,
+      // the user should have this submission displayed on the screen;
+      // and for that, the submission needs to be present in browser storage
+      return;
+    }
+    const newSubmissionId = createTemporarySubmissionId();
+
+    storedSubmission.id = newSubmissionId;
+    storedSubmission.createdAt = Date.now();
+    storedSubmission.submittedAt = null;
+    storedSubmission.resultsSeen = false;
+    storedSubmission.status = 'NOT_SUBMITTED';
+
+    await saveVepSubmission(storedSubmission);
+
+    const newFormState: VepFormState = {
+      submissionId: newSubmissionId,
+      submissionName: storedSubmission.submissionName,
+      selectedSpecies: storedSubmission.species,
+      inputFileName: storedSubmission.inputFile?.name ?? null,
+      inputText: storedSubmission.inputText,
+      parameters: storedSubmission.parameters,
+      isInputCommitted: true
+    };
+
+    return newFormState;
   }
 );
 
@@ -275,6 +312,13 @@ const vepFormSlice = createSlice({
     builder.addCase(onVepFormSubmission.fulfilled, () => {
       return initialState;
     });
+
+    builder.addCase(
+      fillVepFormWithExistingSubmissionData.fulfilled,
+      (_, action) => {
+        return action.payload;
+      }
+    );
   }
 });
 
