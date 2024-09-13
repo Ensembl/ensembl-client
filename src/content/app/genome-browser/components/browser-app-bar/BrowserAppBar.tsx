@@ -16,10 +16,8 @@
 
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -31,7 +29,6 @@ import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -44,8 +41,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
-  const { trackSpeciesChange, trackGenomeChanged } =
-    useGenomeBrowserAnalytics();
+  const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
   const onSpeciesSelect = (species: CommittedItem) => {
     props.onSpeciesSelect(species.genome_id);
@@ -64,14 +60,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     ));
   }, [enabledCommittedSpecies.length, activeGenomeId]);
 
-  const tabsSlider = (
-    <SpeciesTabsWrapper>
-      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
-      <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
-        Change
-      </Link>
-    </SpeciesTabsWrapper>
-  );
+  const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 
   const mainContent = enabledCommittedSpecies.length
     ? tabsSlider

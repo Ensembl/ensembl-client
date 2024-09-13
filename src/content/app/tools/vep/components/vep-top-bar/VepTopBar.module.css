@@ -1,5 +1,3 @@
-/* FIXME: add max-width: 1800px (via CSS variable) */
-
 .vepFormGrid {
   display: grid;
   align-items: center;
@@ -30,6 +28,12 @@
   }
 }
 
+/* Style overrides for some of the ToolsTopBar styles */
+.vepGenericTopBar {
+  padding-top: 0;
+  padding-bottom: 0;
+  justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
+}
 
 .vepGenericGrid {
   display: grid;
@@ -37,7 +41,7 @@
   grid-template-columns:
     [vep-logo] max-content
     [new-job-button] max-content
-    [results-availability] auto
+    [results-availability] minmax(0, 1fr)
     [vep-version] auto
     [job-lists-navigation] auto;
   grid-template-areas:
@@ -47,7 +51,7 @@
   white-space: nowrap;
 }
 
-@media (width <= 1500px) {
+@media (width <= 1210px) {
   .vepGenericGrid {
     grid-template-columns:
       [vep-logo] max-content
@@ -57,7 +61,11 @@
     grid-template-areas:
       'vep-logo new-job-button vep-version job-lists-navigation'
       'results-availability results-availability results-availability .';
-    row-gap: 18px;
+    row-gap: 3px;
+  }
+
+  .resultsAvailabilityNotice {
+      justify-self: end;
   }
 }
 
@@ -132,5 +140,7 @@
 
 .resultsAvailabilityNotice {
   grid-area: results-availability;
-  justify-self: end;
+  display: flex;
+  font-weight: var(--font-weight-light);
+  white-space: normal;
 }

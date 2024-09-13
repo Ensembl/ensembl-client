@@ -15,7 +15,7 @@
  */
 
 import { memo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import { useAppSelector } from 'src/store';
@@ -33,13 +33,10 @@ import {
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getAllGeneViews } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
-import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
-
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -51,7 +48,6 @@ const EntityViewerAppBar = () => {
   const allActiveEntityIds = useAppSelector(getEntityViewerActiveEntityIds);
   const allGeneViews = useAppSelector(getAllGeneViews) ?? {};
 
-  const { trackSpeciesChange } = useEntityViewerAnalytics();
   const onSpeciesTabClick = (species: CommittedItem) => {
     const genomeId = species.genome_id;
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -85,12 +81,7 @@ const EntityViewerAppBar = () => {
   ));
 
   const speciesTabsSlider = (
-    <SpeciesTabsWrapper>
-      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
-      <Link to={urlFor.speciesSelector()} onClick={trackSpeciesChange}>
-        Change
-      </Link>
-    </SpeciesTabsWrapper>
+    <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
   );
 
   const mainContent = activeGenomeId

@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import { useParams } from 'react-router';
+import noop from 'lodash/noop';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+import useVepResultsPagination, {
+  PER_PAGE_OPTIONS
+} from './hooks/useVepResultsPagination';
 
 import { getVepSubmissionById } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
@@ -30,6 +34,7 @@ import useVepVariantTabularData, {
 } from './useVepVariantTabularData';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
+import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
@@ -37,8 +42,13 @@ import VepResultsLocation from './components/vep-results-location/VepResultsLoca
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import Pagination from 'src/shared/components/pagination/Pagination';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { CircleLoader } from 'src/shared/components/loader';
 
+import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 import styles from './VepSubmissionResults.module.css';
@@ -46,15 +56,19 @@ import styles from './VepSubmissionResults.module.css';
 /**
  * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
- * - Consider pagination (should it be part of url?)
  */
 
 const VepSubmissionResults = () => {
   const { submissionId } = useParams() as { submissionId: string };
-  const { currentData: vepResults } = useVepResultsQuery({
+  const { page, perPage, setPage, setPerPage } = useVepResultsPagination();
+  const {
+    data: vepResults,
+    isLoading,
+    isFetching
+  } = useVepResultsQuery({
     submission_id: submissionId,
-    page: 1, // FIXME
-    per_page: 100
+    page,
+    per_page: perPage
   });
   const submission = useAppSelector((state) =>
     getVepSubmissionById(state, submissionId)
@@ -72,18 +86,128 @@ const VepSubmissionResults = () => {
     }
   }, [submission, vepResults]);
 
-  if (!vepResults) {
-    return <CircleLoader />;
+  const onPageChange = (page: number) => {
+    setPage(page);
+  };
+
+  if (!submission) {
+    // TODO:
+    // - Submission may not exist; in which case we should show an error screen
+    // - However, note that reading submissions from IndexedDB will take time;
+    //   so will need some way to detect in the component that IndexedDB read has finished
+    return null;
+  } else if (isLoading) {
+    // fetching data for the first time
+    return (
+      <div className={styles.fullPageSpinnerContainer}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!vepResults) {
+    // TODO: handle errors
+    return null;
   }
+
+  const {
+    metadata: { pagination: paginationMetadata }
+  } = vepResults;
+  const { per_page, total } = paginationMetadata;
+  const maxPage = Math.ceil(total / per_page);
 
   return (
     <div className={styles.container}>
-      {submission && <VepSubmissionHeader submission={submission} />}
+      <VepSubmissionHeader submission={submission} />
       <div className={styles.resultsBox}>
-        <div>Area above the table</div>
-        {vepResults && <VepResultsTable variants={vepResults.variants} />}
+        <VepResultsHeader
+          submission={submission}
+          page={page}
+          maxPage={maxPage}
+          onPageChange={onPageChange}
+          perPage={perPage}
+          onPerPageChange={setPerPage}
+        />
+        <div className={styles.tableWrapper}>
+          {isFetching && (
+            <div className={styles.tableLoadingOverlay}>
+              <CircleLoader className={styles.tableLoadingSpinner} />
+            </div>
+          )}
+          <VepResultsTable variants={vepResults.variants} />
+        </div>
       </div>
     </div>
+  );
+};
+
+/**
+ * A component that sits inside of the results box above the table of results,
+ * and contains the species name, paginator, and other stuff
+ */
+const VepResultsHeader = ({
+  submission,
+  page,
+  perPage,
+  maxPage,
+  onPageChange,
+  onPerPageChange
+}: {
+  submission: VepSubmissionWithoutInputFile;
+  page: number;
+  perPage: number;
+  maxPage: number;
+  onPageChange: (page: number) => void;
+  onPerPageChange: (page: number) => void;
+}) => {
+  const { species } = submission;
+  const perPageOptions = PER_PAGE_OPTIONS.map((option) => ({
+    label: `${option}`,
+    value: `${option}`
+  }));
+
+  const handlePerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.currentTarget.value;
+    onPerPageChange(Number(value));
+  };
+
+  // TODO: decide what to do with the pagination component when all results can fit in one page
+
+  return (
+    <div className={styles.resultsBoxHeader}>
+      <SpeciesName
+        species={
+          species as NonNullable<VepSubmissionWithoutInputFile['species']>
+        }
+      />
+      <VepInputSummary submission={submission} />
+      <div className={styles.perPage}>
+        <SimpleSelect
+          options={perPageOptions}
+          value={`${perPage}`}
+          onChange={handlePerPageChange}
+        />
+        <span className={styles.perPageLabel}>per page</span>
+      </div>
+      <Pagination
+        onChange={onPageChange}
+        currentPageNumber={page}
+        lastPageNumber={maxPage}
+        className={styles.pagination}
+      />
+      <div>
+        <MockFiltersToggle />
+      </div>
+    </div>
+  );
+};
+
+const MockFiltersToggle = () => {
+  return (
+    <ShowHide
+      className={styles.mockFiltersToggle}
+      onClick={noop}
+      isExpanded={false}
+      label="Filters"
+    />
   );
 };
 

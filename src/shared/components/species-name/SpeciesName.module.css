@@ -12,4 +12,8 @@
   .speciesName > span:not(:last-child) {
     margin-right: 8px;
   }
+
+  .prominent {
+    font-weight: var(--font-weight-bold);
+  }
 }

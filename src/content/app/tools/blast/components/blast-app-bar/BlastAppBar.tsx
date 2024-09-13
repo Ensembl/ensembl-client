@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
 
@@ -38,7 +34,6 @@ import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
@@ -105,10 +100,7 @@ const BlastAppBar = () => {
       ));
 
   const speciesTabsSlider = (
-    <SpeciesTabsWrapper>
-      <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
-      <Link to={urlFor.speciesSelector()}>Change</Link>
-    </SpeciesTabsWrapper>
+    <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>
   );
 
   return (

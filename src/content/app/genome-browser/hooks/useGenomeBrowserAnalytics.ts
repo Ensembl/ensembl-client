@@ -190,13 +190,6 @@ const useGenomeBrowserAnalytics = () => {
     });
   };
 
-  const trackSpeciesChange = () => {
-    sendTrackEvent({
-      category: 'app_bar',
-      action: 'change_link_clicked'
-    });
-  };
-
   const trackGenomeChanged = () => {
     sendTrackEvent({
       category: 'app_bar',
@@ -274,7 +267,6 @@ const useGenomeBrowserAnalytics = () => {
     trackDrawerSequenceCopied,
     trackDrawerSequenceDownloaded,
     trackDrawerOpened,
-    trackSpeciesChange,
     trackGenomeChanged,
     trackInterstitialPageNavigation,
     trackInterstitialPageSearch,

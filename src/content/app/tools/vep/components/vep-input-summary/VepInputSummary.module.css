@@ -1,0 +1,8 @@
+.label {
+  margin-right: 10px;
+}
+
+.smallLight {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}

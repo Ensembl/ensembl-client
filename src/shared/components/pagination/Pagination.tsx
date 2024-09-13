@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ChangeEvent } from 'react';
+import {
+  useState,
+  type ChangeEvent,
+  type FocusEvent,
+  type FormEvent
+} from 'react';
+import classNames from 'classnames';
 
 import ChevronButton from 'src/shared/components/chevron-button/ChevronButton';
 import Input from 'src/shared/components/input/Input';
@@ -24,46 +30,75 @@ export type PaginationProps = {
   currentPageNumber: number;
   lastPageNumber: number;
   onChange: (pageNumber: number) => void;
+  className?: string;
 };
 
 const Pagination = (props: PaginationProps) => {
-  const { currentPageNumber, lastPageNumber } = props;
+  const { currentPageNumber: pageNumberFromProps, lastPageNumber } = props;
+  const [pageNumber, setPageNumber] = useState<string | number>(
+    pageNumberFromProps
+  );
+  const [previousPageNumberFromProps, setPreviousPageNumberFromProps] =
+    useState(pageNumberFromProps);
+
+  if (pageNumberFromProps !== previousPageNumberFromProps) {
+    setPageNumber(pageNumberFromProps);
+    setPreviousPageNumberFromProps(pageNumberFromProps);
+  }
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const pageNumberFromInput = Number(event.target.value);
+    setPageNumber(event.target.value);
+  };
 
-    if (
-      isNaN(pageNumberFromInput) ||
-      pageNumberFromInput > lastPageNumber ||
-      pageNumberFromInput < 1
-    ) {
-      event.preventDefault();
+  const onInputBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value;
+    const parsedInputValue = Number(inputValue);
+    if (!isValidPageNumber(parsedInputValue)) {
+      setPageNumber(pageNumberFromProps);
+    }
+  };
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const parsedPageNumber = Number(pageNumber);
+
+    if (!isValidPageNumber(parsedPageNumber)) {
       return;
     }
 
-    props.onChange(pageNumberFromInput);
+    props.onChange(parsedPageNumber);
   };
 
+  const isValidPageNumber = (value: number) => {
+    return !isNaN(value) && value <= lastPageNumber && value > 0;
+  };
+
+  const componentClasses = classNames(styles.pagination, props.className);
+
   return (
-    <div className={styles.pagination}>
+    <div className={componentClasses}>
       <ChevronButton
         direction="left"
         className={styles.showHide}
-        disabled={currentPageNumber === 1}
-        onClick={() => props.onChange(currentPageNumber - 1)}
+        disabled={pageNumberFromProps === 1}
+        onClick={() => props.onChange(pageNumberFromProps - 1)}
       />
-      <Input
-        value={currentPageNumber}
-        onChange={onChange}
-        className={styles.inputBox}
-        disabled={lastPageNumber === 1}
-      />
+      <form onSubmit={onSubmit}>
+        <Input
+          value={pageNumber}
+          onChange={onChange}
+          onBlur={onInputBlur}
+          className={styles.inputBox}
+          disabled={lastPageNumber === 1}
+        />
+      </form>
       of {lastPageNumber}
       <ChevronButton
         direction="right"
         className={styles.showHide}
-        disabled={currentPageNumber === lastPageNumber}
-        onClick={() => props.onChange(currentPageNumber + 1)}
+        disabled={pageNumberFromProps >= lastPageNumber}
+        onClick={() => props.onChange(pageNumberFromProps + 1)}
       />
     </div>
   );

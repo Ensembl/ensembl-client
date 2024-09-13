@@ -6,14 +6,59 @@
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
+  overflow: hidden;
+}
+
+.fullPageSpinnerContainer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 150px;
 }
 
 .resultsBox {
+  display: grid;
+  grid-template-rows: auto 1fr;
   border: 1px solid var(--color-grey);
-  padding: 22px;
+  padding: 22px var(--standard-gutter);
   max-height: 100%;
   align-self: start;
-  overflow: auto;
+}
+
+.resultsBoxHeader {
+  display: grid;
+  grid-template-columns:
+    [species-name] minmax(auto, 300px)
+    [input-summary] auto
+    [per-page] 1fr
+    [pagination] auto
+    [filters-toggle] auto;
+  column-gap: var(--standard-gutter);
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.perPage {
+  grid-column: per-page;
+  display: flex;
+  column-gap: 14px;
+  align-items: center;
+  justify-self: end;
+}
+
+.perPageLabel {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.pagination {
+  grid-column: pagination;
+}
+
+.mockFiltersToggle {
+  --show-hide-label-color: var(--color-grey);
+  --chevron-fill: var(--color-grey);
+  pointer-events: none;
 }
 
 .table {
@@ -33,6 +78,34 @@
 
 .table td:nth-child(3), th:nth-child(3) {
   max-width: 100px;
+}
+
+/*
+  a wrapper around the table of results,
+  which allows positioning the loading overlay over the table
+*/
+.tableWrapper {
+  position: relative;
+  overflow: auto;
+  padding-right: 1rem;
+  margin-right: -1rem;
+}
+
+.tableLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(255 255 255 / 30%);
+  backdrop-filter: blur(2px); /* this CSS rule requires a vendor -webkit prefix in Safari; postCSS adds it */
+}
+
+.tableLoadingSpinner {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .expandButton {

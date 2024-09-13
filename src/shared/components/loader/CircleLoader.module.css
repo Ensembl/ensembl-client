@@ -1,21 +1,38 @@
 .circleLoader {
-  display: var(--circle-loader-display, inline-block);
+  display: var(--circle-loader-display, inline-flex);
+}
+
+/*
+  The part of the component that is actually rotating.
+  The rotation is enabled through animating the transform property;
+  so keeping it to this internal element allows the component as a whole
+  to accept classes with their own transform rules.
+*/
+.spinner {
+  height: 100%;
+  width: 100%;
   border-radius: 100%;
-  animation: loader-spin 1.3s linear infinite;
   border-style: solid;
   border-color: var(--color-grey);
   border-top-color: var(--color-red);
+  animation: loader-spin 1.3s linear infinite;  
 }
 
 .circleLoaderDefault {
   width: var(--circle-loader-diameter, 40px);
   height: var(--circle-loader-diameter, 40px);
+}
+
+.circleLoaderDefault .spinner {
   border-width: var(--circle-loader-border-width, 3px);
 }
 
 .circleLoaderSmall {
   width: var(--circle-loader-diameter, 30px);
   height: var(--circle-loader-diameter, 30px);
+}
+
+.circleLoaderSmall .spinner {
   border-width: var(--circle-loader-border-width, 2px);
 }
 
