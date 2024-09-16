@@ -51,9 +51,7 @@ const VariantVCF = (props: Props) => {
 
   return (
     <div className={componentClasses}>
-      {props.withCopy && (
-        <Copy value={vcfSequenceParts.vcfString} align="left" />
-      )}
+      {props.withCopy && <Copy value={vcfSequenceParts.vcfString} />}
       <span className={styles.vcfString}>
         <span>{vcfSequenceParts.regionName}</span>
         <span>{vcfSequenceParts.startCoordinate}</span>
