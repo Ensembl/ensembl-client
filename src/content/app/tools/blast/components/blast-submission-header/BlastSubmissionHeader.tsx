@@ -46,6 +46,7 @@ import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
@@ -144,9 +145,12 @@ export const BlastSubmissionHeader = (props: Props) => {
               </>
             )
           }
-          <span className={styles.editSubmission} onClick={editSubmission}>
+          <TextButton
+            className={styles.editSubmission}
+            onClick={editSubmission}
+          >
             Edit/rerun
-          </span>
+          </TextButton>
           <span className={styles.timeStamp}>
             <span>{submissionTime}</span>
             <span className={styles.timeZone}>GMT</span>
