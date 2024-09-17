@@ -30,7 +30,7 @@
     "coverage": "jest --coverage"
   },
   "dependencies": {
-    "@ensembl/ensembl-genome-browser": "0.6.10",
+    "@ensembl/ensembl-genome-browser": "0.6.11",
     "@react-spring/web": "9.7.4",
     "@reduxjs/toolkit": "2.2.7",
     "@sentry/browser": "8.30.0",
