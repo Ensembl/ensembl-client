@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  VEP_RESULTS_AVAILABILITY_DURATION,
-  VEP_SUBMISSION_STORAGE_DURATION
-} from 'src/content/app/tools/vep/services/vepStorageServiceConstants';
+import { VEP_RESULTS_AVAILABILITY_DURATION } from 'src/content/app/tools/vep/services/vepStorageServiceConstants';
 
 import type { VepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
 
@@ -30,19 +27,6 @@ export const areVepSubmissionResultsExpired = (
 
   if (submittedAt) {
     return Date.now() - submittedAt > VEP_RESULTS_AVAILABILITY_DURATION;
-  }
-
-  return false;
-};
-
-// Submission is too old, and should be removed from the client
-export const isVepSubmissionExpired = (
-  submission: Pick<VepSubmission, 'submittedAt'>
-) => {
-  const { submittedAt } = submission;
-
-  if (submittedAt) {
-    return Date.now() - submittedAt > VEP_SUBMISSION_STORAGE_DURATION;
   }
 
   return false;
