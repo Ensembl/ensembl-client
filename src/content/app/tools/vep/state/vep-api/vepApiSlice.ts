@@ -34,28 +34,9 @@ import type { VepSubmissionPayload } from 'src/content/app/tools/vep/types/vepSu
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     vepFormConfig: builder.query<VepFormConfig, { genome_id: string }>({
-      // eslint-disable-next-line
-      queryFn: async (params) => {
-        // TODO: the query function will accept a genome id,
-        // and will send request to:
-        // `${config.toolsApiBaseUrl}/vep/config?genome_id=${genomeId}`
-        // to fetch data.
-        // Meanwhile, until the back-end endpoint is developed,
-        // this function returns hard-coded response payload.
-        const mockResponseModule = await import(
-          'tests/fixtures/vep/mockVepFormConfig'
-        );
-        const vepFormConfig = mockResponseModule.default;
-
-        // simulate network delay
-        await new Promise((resolve) => {
-          setTimeout(resolve, 200);
-        });
-
-        return {
-          data: vepFormConfig
-        };
-      }
+      query: (params) => ({
+        url: `${config.toolsApiBaseUrl}/vep/form_config/${params.genome_id}`
+      })
     }),
     vepFormExampleInput: builder.query<
       { vcfString?: string },
