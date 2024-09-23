@@ -21,6 +21,8 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
+
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 import { areSubmissionResultsAvailable } from 'src/content/app/tools/blast/utils/blastResultsAvailability';
 import {
@@ -48,12 +50,12 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
+import UnavailableResults from 'src/content/app/tools/shared/components/help-messages/UnavailableResults';
 
 import type { BlastProgram } from 'src/content/app/tools/blast/types/blastSettings';
 
 import styles from './BlastSubmissionHeader.module.css';
 
-export const UNAVAILABLE_RESULTS_WARNING = 'Results no longer available';
 export const FAILED_SUBMISSION_WARNING = 'Submission failed';
 
 export type Props = {
@@ -213,7 +215,7 @@ const ControlsSection = (props: {
         <DeleteButton onClick={onDelete} disabled={isInDeleteMode} />
         <div className={styles.errorMessage}>
           <span>{UNAVAILABLE_RESULTS_WARNING}</span>
-          <QuestionButton helpText={<UnavailableResultsHelpText />} />
+          <QuestionButton helpText={<UnavailableResults />} />
         </div>
       </div>
     );
@@ -235,20 +237,6 @@ const ControlsSection = (props: {
     );
   }
 };
-
-const UnavailableResultsHelpText = () => (
-  <>
-    <p>Results are stored for 7 days from submission</p>
-    <p>
-      Use 'Edit/rerun' to start a new job with the same configuration as the
-      original submission
-    </p>
-    <p>
-      Configurations are stored for 28 days after submission, then removed from
-      the jobs list
-    </p>
-  </>
-);
 
 const FailedSubmissionHelpText = () => (
   <>
