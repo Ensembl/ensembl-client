@@ -22,7 +22,7 @@ import userEvent from '@testing-library/user-event';
 
 import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
 import { BLAST_RESULTS_AVAILABILITY_DURATION } from 'src/content/app/tools/blast/services/blastStorageServiceConstants';
-import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/blast/components/blast-submission-header/BlastSubmissionHeader';
+import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
 
 import ListedBlastSubmission, {
   type Props as ListedBlastSubmissionProps

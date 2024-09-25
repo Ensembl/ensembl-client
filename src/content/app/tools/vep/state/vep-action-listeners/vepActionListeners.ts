@@ -41,7 +41,7 @@ import type {
  *   - SUBMITTED if submitted
  *   - UNSUCCESSFUL_SUBMISSION if failed to submit
  * 3. Start polling for submission status
- *   - SUBMITTED — continue polling
+ *   - SUBMITTED — continue polling
  *   - RUNNING - update status (in redux and in indexedDB); but continue polling
  *   - SUCCEEDED, FAILED, CANCELLED - update status (in redux and in indexedDB), and stop polling
  * 4. Note that user can refresh (or close/open) the browser while there are still some submissions pending.

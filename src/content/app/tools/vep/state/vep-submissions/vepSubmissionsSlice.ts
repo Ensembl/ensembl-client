@@ -24,7 +24,8 @@ import {
   getVepSubmissions,
   updateVepSubmission as updateStoredVepSubmission,
   deleteVepSubmission as deleteStoredVepSubmission,
-  changeVepSubmissionId as changeStoredVepSubmissionId
+  changeVepSubmissionId as changeStoredVepSubmissionId,
+  deleteExpiredVepSubmissions
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
@@ -34,6 +35,7 @@ export type VepSubmissionsState = Record<string, VepSubmissionWithoutInputFile>;
 export const restoreVepSubmissions = createAsyncThunk(
   'vep-submissions/restoreSubmissions',
   async () => {
+    await deleteExpiredVepSubmissions();
     const storedSubmissions = await getVepSubmissions();
     const newState: VepSubmissionsState = {};
     for (const submission of storedSubmissions) {

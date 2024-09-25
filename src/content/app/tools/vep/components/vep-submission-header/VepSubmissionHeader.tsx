@@ -24,6 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { useAppDispatch } from 'src/store';
 
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
+import { areVepSubmissionResultsExpired } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
 
 import { fillVepFormWithExistingSubmissionData } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 import { deleteSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
@@ -38,6 +39,10 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import DownloadLink from 'src/shared/components/download-button/DownloadLink';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import UnavailableResults from 'src/content/app/tools/shared/components/help-messages/UnavailableResults';
+
+import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
 
 import styles from './VepSubmissionHeader.module.css';
 
@@ -128,19 +133,35 @@ const ControlButtons = (
   const vepResultsLink = urlFor.vepResults({
     submissionId: props.submission.id
   });
+  const isExpiredSubmission = areVepSubmissionResultsExpired(submission);
 
-  return (
-    <div className={styles.controls}>
-      <DeleteButton onClick={onDelete} disabled={isDeleting} />
-      <DownloadLink
-        href={downloadLink}
-        disabled={isDeleting || !canGetResults}
-      />
-      <ButtonLink isDisabled={isDeleting || !canGetResults} to={vepResultsLink}>
-        Results
-      </ButtonLink>
-    </div>
-  );
+  if (isExpiredSubmission) {
+    return (
+      <div className={styles.controls}>
+        <DeleteButton onClick={onDelete} disabled={isDeleting} />
+        <div className={styles.errorMessage}>
+          <span>{UNAVAILABLE_RESULTS_WARNING}</span>
+          <QuestionButton helpText={<UnavailableResults />} />
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.controls}>
+        <DeleteButton onClick={onDelete} disabled={isDeleting} />
+        <DownloadLink
+          href={downloadLink}
+          disabled={isDeleting || !canGetResults}
+        />
+        <ButtonLink
+          isDisabled={isDeleting || !canGetResults}
+          to={vepResultsLink}
+        >
+          Results
+        </ButtonLink>
+      </div>
+    );
+  }
 };
 
 const DeletionConfirmation = (

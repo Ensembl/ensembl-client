@@ -56,7 +56,7 @@ export type VepSubmission = {
   inputFile: File | null;
   submissionName: string | null;
   parameters: Record<string, unknown>;
-  createdAt: number; // <-- to allow enable the submissions list
+  createdAt: number; // <-- to enable chronological sorting of VEP submissions in the submissions list
   submittedAt: number | null; // <-- can get the unsubmitted submission
   resultsSeen: boolean;
   status: SubmissionStatus; // <-- a member of a closed dictionary of words

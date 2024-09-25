@@ -35,8 +35,7 @@ for ListedVepSubmission, and for the VEP results
 
 .controls {
   grid-column: controls;
-  display: grid;
-  grid-template-columns: repeat(3, min-content);
+  display: flex;
   column-gap: 42px;
   align-items: center;
   justify-self: end;
@@ -69,4 +68,13 @@ for ListedVepSubmission, and for the VEP results
 
 .deletionConfirmationMessage {
   color: var(--color-red);
+}
+
+/* Same as in BLAST submissions header */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  column-gap: 0.6rem;
+  color: var(--color-red);
+  margin-right: 16px;
 }
