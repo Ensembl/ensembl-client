@@ -23,31 +23,37 @@ const textToCopy = 'Hello world!';
 const DefaultCopyButtonStory = () => (
   <>
     <section className={styles.section}>
-      <p>Middle alignment of the "Copy" label (default)</p>
       <div className={styles.frame}>
         <div className={styles.inFrameContainer}>
           <Copy value={textToCopy} />
-          <span>Some text to the right</span>
+          <div>Some text below</div>
         </div>
       </div>
     </section>
 
     <section className={styles.section}>
-      <p>Left alignment of the "Copy" label</p>
       <div className={styles.frame}>
         <div className={styles.inFrameContainer}>
-          <Copy value={textToCopy} align="left" />
-          <span>Some text to the right</span>
+          <Copy value={textToCopy} />
+          <span style={{ marginLeft: '1rem' }}>Some text to the right</span>
         </div>
       </div>
     </section>
 
     <section className={styles.section}>
-      <p>Right alignment of the "Copy" label</p>
       <div className={styles.frame}>
         <div className={styles.inFrameContainer}>
-          <span>Some text to the left</span>
-          <Copy value={textToCopy} align="right" />
+          <span style={{ marginRight: '1rem' }}>Some text to the left</span>
+          <Copy value={textToCopy} />
+        </div>
+      </div>
+    </section>
+
+    <section className={styles.section}>
+      <div className={styles.frame}>
+        <div className={styles.inFrameContainer}>
+          <div>Some text above</div>
+          <Copy value={textToCopy} />
         </div>
       </div>
     </section>

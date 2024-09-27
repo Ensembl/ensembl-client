@@ -17,15 +17,14 @@
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-import styles from './Copy.module.css';
+import Checkmark from 'static/icons/icon_tick.svg';
 
-type Alignment = 'left' | 'middle' | 'right';
+import styles from './Copy.module.css';
 
 type Props = {
   value: string;
   onCopy?: () => void;
   className?: string;
-  align?: Alignment; // by default, the component aligns the text "Copy" to middle
 };
 
 const Copy = (props: Props) => {
@@ -42,7 +41,7 @@ const Copy = (props: Props) => {
     props.onCopy?.();
     navigator.clipboard.writeText(props.value);
 
-    timeout = setTimeout(() => setCopied(false), 1500);
+    timeout = setTimeout(() => setCopied(false), 2000);
   };
 
   // check if the browser exposes the clipboard api (it won't be available e.g. over http)
@@ -53,26 +52,18 @@ const Copy = (props: Props) => {
   }
 
   const componentStyles = classNames(
-    styles.copyLozenge,
+    styles.copy,
     {
-      [styles.alignLeft]: props.align === 'left' && !copied,
-      [styles.alignMiddle]: props.align === 'middle' || !props.align || copied,
-      [styles.alignRight]: props.align === 'right' && !copied,
-      [styles.copyLozengeCopied]: copied
+      [styles.copied]: copied
     },
     props.className
   );
 
   return (
-    <span className={componentStyles}>
-      {copied ? (
-        'Copied'
-      ) : (
-        <button className={styles.copy} onClick={copy}>
-          Copy
-        </button>
-      )}
-    </span>
+    <button className={componentStyles} onClick={copy}>
+      <span className={styles.copyText}>Copy</span>
+      {copied && <Checkmark className={styles.checkmark} />}
+    </button>
   );
 };
 

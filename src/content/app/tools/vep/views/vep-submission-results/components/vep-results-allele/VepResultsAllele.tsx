@@ -20,6 +20,7 @@ import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
+import Copy from 'src/shared/components/copy/Copy';
 
 import styles from './VepResultsAllele.module.css';
 
@@ -49,13 +50,15 @@ const AlleleSequence = ({ sequence }: Props) => {
 
   return (
     <div>
-      <TextButton
-        ref={setAnchorRef}
-        onClick={onClick}
-        style={{ position: 'relative' }}
-      >
-        {displaySequence}
-      </TextButton>
+      {/* Wrapping TextButton into a span to use the span as an anchor,
+          because can't render PointerBox directly inside TextButton,
+          because the pointer box will contain the Copy button,
+          and having a button inside another button is invalid html.
+        */}
+      <span ref={setAnchorRef} style={{ position: 'relative' }}>
+        <TextButton onClick={onClick}>{displaySequence}</TextButton>
+      </span>
+
       <div className={styles.sequenceLength}>{sequence.length}</div>
       {anchorRef.current && shouldShowTooltip && (
         <Toolbox
@@ -64,6 +67,7 @@ const AlleleSequence = ({ sequence }: Props) => {
           position={ToolboxPosition.RIGHT}
         >
           <div className={styles.toolboxContents}>
+            <Copy value={sequence} className={styles.copy} />
             <div className={styles.sequence}>{sequence}</div>
           </div>
         </Toolbox>
