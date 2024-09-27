@@ -41,7 +41,7 @@ const Copy = (props: Props) => {
     props.onCopy?.();
     navigator.clipboard.writeText(props.value);
 
-    timeout = setTimeout(() => setCopied(false), 1500);
+    timeout = setTimeout(() => setCopied(false), 2000);
   };
 
   // check if the browser exposes the clipboard api (it won't be available e.g. over http)

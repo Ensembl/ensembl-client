@@ -1,5 +1,6 @@
 .copy {
   position: relative;
+  font-size: var(--copy-button-font-size, 12px);
 }
 
 .copyText {
