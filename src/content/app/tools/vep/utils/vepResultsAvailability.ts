@@ -16,7 +16,10 @@
 
 import { VEP_RESULTS_AVAILABILITY_DURATION } from 'src/content/app/tools/vep/services/vepStorageServiceConstants';
 
-import type { VepSubmission } from 'src/content/app/tools/vep/types/vepSubmission';
+import type {
+  VepSubmission,
+  SubmissionStatus
+} from 'src/content/app/tools/vep/types/vepSubmission';
 
 // Results of the submission will no longer be available from the backend;
 // but the submission parameters may still be available on the client; so that the submission may be resubmitted
@@ -31,3 +34,12 @@ export const areVepSubmissionResultsExpired = (
 
   return false;
 };
+
+const failedVepSubmissionStatuses: SubmissionStatus[] = [
+  'FAILED',
+  'UNSUCCESSFUL_SUBMISSION'
+];
+
+export const isFailedVepSubmission = (
+  submission: Pick<VepSubmission, 'status'>
+) => failedVepSubmissionStatuses.includes(submission.status);

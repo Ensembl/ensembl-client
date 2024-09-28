@@ -16,15 +16,14 @@
 
 import classNames from 'classnames';
 
+import { isFailedVepSubmission } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
+
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import type {
-  VepSubmissionWithoutInputFile,
-  SubmissionStatus as SubmissionStatusType
-} from 'src/content/app/tools/vep/types/vepSubmission';
+import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
 import styles from './ListedVepSubmission.module.css';
 
@@ -84,20 +83,13 @@ const SubmissionAccepted = (props: Props) => {
 };
 
 const SubmissionStatus = (props: Props) => {
-  const {
-    submission: { status: submissionStatus }
-  } = props;
+  const { submission } = props;
 
-  const failedStatuses: SubmissionStatusType[] = [
-    'FAILED',
-    'UNSUCCESSFUL_SUBMISSION'
-  ];
-
-  if (submissionStatus === 'SUBMITTED') {
+  if (submission.status === 'SUBMITTED') {
     return <span>Queued</span>;
-  } else if (submissionStatus === 'RUNNING') {
+  } else if (submission.status === 'RUNNING') {
     return <span className={styles.statusRunning}>Running...</span>;
-  } else if (failedStatuses.includes(submissionStatus)) {
+  } else if (isFailedVepSubmission(submission)) {
     return <span className={styles.statusFailed}>FAILED</span>;
   } else {
     return null;
