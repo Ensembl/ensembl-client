@@ -30,14 +30,22 @@ import {
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
-export type VepSubmissionsState = Record<string, VepSubmissionWithoutInputFile>;
+type VepSubmissionsState = {
+  areSubmissionsRestored: boolean; // <-- this field tracks whether VEP client-side-stored VEP submissions have been read from IndexedDB
+  submissions: VepSubmissionsInState;
+};
+
+export type VepSubmissionsInState = Record<
+  string,
+  VepSubmissionWithoutInputFile
+>;
 
 export const restoreVepSubmissions = createAsyncThunk(
   'vep-submissions/restoreSubmissions',
   async () => {
     await deleteExpiredVepSubmissions();
     const storedSubmissions = await getVepSubmissions();
-    const newState: VepSubmissionsState = {};
+    const newState: VepSubmissionsInState = {};
     for (const submission of storedSubmissions) {
       newState[submission.id] = submission;
     }
@@ -98,57 +106,63 @@ export const deleteSubmission = createAsyncThunk(
   }
 );
 
+const initialState: VepSubmissionsState = {
+  areSubmissionsRestored: false,
+  submissions: {}
+};
+
 const vepSubmissionsSlice = createSlice({
   name: 'vep-submissions',
-  initialState: {} as VepSubmissionsState,
+  initialState,
   reducers: {
     addSubmission: (
       state,
       action: PayloadAction<VepSubmissionWithoutInputFile>
     ) => {
       const submission = action.payload;
-      state[submission.id] = submission;
+      state.submissions[submission.id] = submission;
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(restoreVepSubmissions.fulfilled, (_, action) => {
-      return action.payload;
+    builder.addCase(restoreVepSubmissions.fulfilled, (state, action) => {
+      state.areSubmissionsRestored = true;
+      state.submissions = action.payload;
     });
 
     builder.addCase(updateSubmission.fulfilled, (state, action) => {
       const { submissionId, fragment } = action.payload;
-      const submission = state[submissionId];
+      const submission = state.submissions[submissionId];
 
       if (submission) {
         const updatedSubmission = {
           ...submission,
           ...fragment
         };
-        state[submissionId] = updatedSubmission;
+        state.submissions[submissionId] = updatedSubmission;
       }
     });
 
     builder.addCase(changeSubmissionId.fulfilled, (state, action) => {
       const { oldId, newId, fragment } = action.payload;
-      const submission = state[oldId];
+      const submission = state.submissions[oldId];
 
       if (!submission) {
         // this shouldn't happen
         return;
       }
 
-      state[newId] = {
+      state.submissions[newId] = {
         ...submission,
         ...fragment,
         id: newId
       };
 
-      delete state[oldId];
+      delete state.submissions[oldId];
     });
 
     builder.addCase(deleteSubmission.fulfilled, (state, action) => {
       const { submissionId } = action.payload;
-      delete state[submissionId];
+      delete state.submissions[submissionId];
     });
   }
 });

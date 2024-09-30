@@ -22,7 +22,7 @@ import {
   changeSubmissionId,
   deleteSubmission,
   restoreVepSubmissions,
-  type VepSubmissionsState
+  type VepSubmissionsInState
 } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import VepSubmissionStatusPolling from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
@@ -104,7 +104,7 @@ const vepFormUnsuccessfulSubmissionListener = {
 const vepSubmissionsRestoreListener = {
   actionCreator: restoreVepSubmissions.fulfilled,
   effect: async (
-    action: PayloadAction<VepSubmissionsState>,
+    action: PayloadAction<VepSubmissionsInState>,
     listenerApi: AppListenerEffectAPI
   ) => {
     // only respond to the first action

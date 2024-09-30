@@ -24,8 +24,14 @@ import type {
 
 const getVepSubmissionsState = (state: RootState) => state.vep.vepSubmissions;
 
+export const getAllVepSubmissions = (state: RootState) =>
+  getVepSubmissionsState(state).submissions;
+
+export const getVepSubmissionsRestoredFlag = (state: RootState) =>
+  getVepSubmissionsState(state).areSubmissionsRestored;
+
 export const getUnviewedVepSubmissions = createSelector(
-  [getVepSubmissionsState],
+  [getAllVepSubmissions],
   (vepSubmissionsState) => {
     return [...Object.values(vepSubmissionsState)]
       .filter((submission) => !submission.resultsSeen)
@@ -34,7 +40,7 @@ export const getUnviewedVepSubmissions = createSelector(
 );
 
 export const getViewedVepSubmissions = createSelector(
-  [getVepSubmissionsState],
+  [getAllVepSubmissions],
   (vepSubmissionsState) => {
     return [...Object.values(vepSubmissionsState)]
       .filter((submission) => submission.resultsSeen)
@@ -46,7 +52,7 @@ export const getVepSubmissionById = (
   state: RootState,
   submissionId: string
 ): VepSubmissionWithoutInputFile | null => {
-  const vepSubmissionsState = getVepSubmissionsState(state);
+  const vepSubmissionsState = getAllVepSubmissions(state);
   return vepSubmissionsState[submissionId] ?? null;
 };
 

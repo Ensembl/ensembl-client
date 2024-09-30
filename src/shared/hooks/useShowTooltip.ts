@@ -74,7 +74,9 @@ export const useShowTooltip = () => {
     }
 
     return () => {
-      timeoutId && clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [isHovered]);
 
@@ -88,7 +90,9 @@ export const useShowTooltip = () => {
   };
 
   const cancelTimeout = () => {
-    timeoutId && clearTimeout(timeoutId);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
     timeoutId = null;
   };
 

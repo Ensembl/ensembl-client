@@ -23,7 +23,10 @@ import useVepResultsPagination, {
   PER_PAGE_OPTIONS
 } from './hooks/useVepResultsPagination';
 
-import { getVepSubmissionById } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
+import {
+  getVepSubmissionsRestoredFlag,
+  getVepSubmissionById
+} from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
@@ -32,6 +35,11 @@ import useVepVariantTabularData, {
   type VepResultsTableRowData,
   type ExpandedTranscriptsPath
 } from './useVepVariantTabularData';
+
+import {
+  areVepSubmissionResultsExpired,
+  isFailedVepSubmission
+} from 'src/content/app/tools/vep/utils/vepResultsAvailability';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
@@ -47,6 +55,7 @@ import Pagination from 'src/shared/components/pagination/Pagination';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { CircleLoader } from 'src/shared/components/loader';
+import MissingVepSubmissionError from 'src/content/app/tools/vep/components/missing-vep-submission-error/MissingVepSubmissionError';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
@@ -70,12 +79,14 @@ const VepSubmissionResults = () => {
     page,
     per_page: perPage
   });
+  const areSubmissionsRestored = useAppSelector(getVepSubmissionsRestoredFlag);
   const submission = useAppSelector((state) =>
     getVepSubmissionById(state, submissionId)
   );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // When user views a VEP submission for the first time, mark it as seen
     if (vepResults && submission && !submission.resultsSeen) {
       dispatch(
         updateSubmission({
@@ -90,12 +101,14 @@ const VepSubmissionResults = () => {
     setPage(page);
   };
 
-  if (!submission) {
-    // TODO:
-    // - Submission may not exist; in which case we should show an error screen
-    // - However, note that reading submissions from IndexedDB will take time;
-    //   so will need some way to detect in the component that IndexedDB read has finished
+  if (!areSubmissionsRestored) {
+    // Reading data from IndexedDB is an asynchronous process that takes some time;
+    // so it is possible for this component to render before VEP submissions stored in IndexedDB have been read
     return null;
+  } else if (!submission || isFailedVepSubmission(submission)) {
+    return <MissingVepSubmissionError isExpiredSubmission={false} />;
+  } else if (areVepSubmissionResultsExpired(submission)) {
+    return <MissingVepSubmissionError isExpiredSubmission={true} />;
   } else if (isLoading) {
     // fetching data for the first time
     return (
