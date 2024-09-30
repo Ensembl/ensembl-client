@@ -99,6 +99,7 @@
   bottom: 0;
   background-color: rgb(255 255 255 / 30%);
   backdrop-filter: blur(2px); /* this CSS rule requires a vendor -webkit prefix in Safari; postCSS adds it */
+  z-index: 1;
 }
 
 .tableLoadingSpinner {

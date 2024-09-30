@@ -25,7 +25,7 @@ import { VEP_SUBMISSIONS_STORE_NAME } from 'src/content/app/tools/vep/services/v
 import { PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME } from 'src/shared/services/previouslyViewedObjectsStorageConstants';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
