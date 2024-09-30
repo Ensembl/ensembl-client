@@ -15,7 +15,6 @@
  */
 
 import classNames from 'classnames';
-import upperFirst from 'lodash/upperFirst';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getSortOrderForColumn } from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
@@ -26,6 +25,13 @@ import SolidDot from 'src/shared/components/table/dot/SolidDot';
 import EmptyDot from 'src/shared/components/table/dot/EmptyDot';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import DisabledExternalLink from 'src/shared/components/external-link/DisabledExternalLink';
+import {
+  CommonName,
+  ScientificName,
+  AssemblyName,
+  AssemblyAccessionId,
+  SpeciesType
+} from 'src/shared/components/species-name-parts-for-table';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 import type { SelectableGenome } from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
@@ -162,20 +168,26 @@ const SpeciesSearchResultsTable = (props: Props) => {
                 onChange={() => onSpeciesPreselect(searchMatch)}
               />
             </td>
-            <td>{searchMatch.common_name ?? '-'}</td>
-            <td>{searchMatch.scientific_name}</td>
             <td>
-              <SpeciesType species={searchMatch} />
+              <CommonName {...searchMatch} />
             </td>
-            <td className={styles.assemblyName}>{searchMatch.assembly.name}</td>
             <td>
+              <ScientificName {...searchMatch} />
+            </td>
+            <td>
+              <SpeciesType {...searchMatch} />
+            </td>
+            <td>
+              <AssemblyName {...searchMatch} />
+            </td>
+            <td className={styles.assemblyAccessionId}>
               {!shouldDisableRow(searchMatch, canAddToStaged) ? (
                 <ExternalLink to={searchMatch.assembly.url}>
-                  {searchMatch.assembly.accession_id}
+                  <AssemblyAccessionId {...searchMatch} />
                 </ExternalLink>
               ) : (
                 <DisabledExternalLink>
-                  {searchMatch.assembly.accession_id}
+                  <AssemblyAccessionId {...searchMatch} />
                 </DisabledExternalLink>
               )}
             </td>
@@ -216,30 +228,6 @@ const ShowMore = (props: Props) => {
     <button className={styles.showMore} onClick={onTableExpandToggle}>
       {text}
     </button>
-  );
-};
-
-const SpeciesType = (props: { species: SpeciesSearchMatch }) => {
-  const { type: speciesType, is_reference } = props.species;
-
-  const referenceElement = is_reference ? (
-    <span className={styles.referenceGenome}>Reference</span>
-  ) : null;
-
-  const speciesTypeText = speciesType
-    ? `${upperFirst(speciesType.kind)} - ${speciesType.value}`
-    : null;
-
-  if (!referenceElement && !speciesTypeText) {
-    return '-';
-  }
-
-  return (
-    <>
-      {speciesTypeText}
-      {speciesTypeText && referenceElement && ', '}
-      {referenceElement}
-    </>
   );
 };
 

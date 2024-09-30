@@ -17,8 +17,8 @@
   text-align: center;
 }
 
-.assemblyName {
-  font-weight: var(--font-weight-light);
+.assemblyAccessionId {
+  --assembly-accession-table-font-weight: var(--font-weight-normal);
 }
 
 .showMore {
