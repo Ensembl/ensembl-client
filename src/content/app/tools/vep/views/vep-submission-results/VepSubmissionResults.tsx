@@ -139,13 +139,15 @@ const VepSubmissionResults = () => {
           perPage={perPage}
           onPerPageChange={setPerPage}
         />
-        <div className={styles.tableWrapper}>
+        <div className={styles.tableViewportWrapper}>
           {isFetching && (
             <div className={styles.tableLoadingOverlay}>
               <CircleLoader className={styles.tableLoadingSpinner} />
             </div>
           )}
-          <VepResultsTable variants={vepResults.variants} />
+          <div className={styles.tableViewport}>
+            <VepResultsTable variants={vepResults.variants} />
+          </div>
         </div>
       </div>
     </div>
