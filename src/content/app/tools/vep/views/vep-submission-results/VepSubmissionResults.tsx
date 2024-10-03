@@ -62,6 +62,10 @@ import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResu
 
 import styles from './VepSubmissionResults.module.css';
 
+type RestoredVepSubmission = Omit<VepSubmissionWithoutInputFile, 'species'> & {
+  species: NonNullable<VepSubmissionWithoutInputFile['species']>;
+};
+
 /**
  * TODO:
  * - Add unique id to variants after they are requested (to use for keys)
@@ -126,6 +130,9 @@ const VepSubmissionResults = () => {
   } = vepResults;
   const { per_page, total } = paginationMetadata;
   const maxPage = Math.ceil(total / per_page);
+  const genomeIdForUrl =
+    submission.species?.genome_tag ??
+    (submission as RestoredVepSubmission).species.genome_id;
 
   return (
     <div className={styles.container}>
@@ -146,7 +153,10 @@ const VepSubmissionResults = () => {
             </div>
           )}
           <div className={styles.tableViewport}>
-            <VepResultsTable variants={vepResults.variants} />
+            <VepResultsTable
+              genomeId={genomeIdForUrl}
+              variants={vepResults.variants}
+            />
           </div>
         </div>
       </div>
@@ -228,8 +238,9 @@ const MockFiltersToggle = () => {
 
 const VepResultsTable = (props: {
   variants: VepResultsResponse['variants'];
+  genomeId: string;
 }) => {
-  const { variants } = props;
+  const { variants, genomeId } = props;
 
   return (
     <Table className={styles.table}>
@@ -247,7 +258,7 @@ const VepResultsTable = (props: {
       <tbody>
         {/* Use something more reliable for key than index */}
         {variants.map((variant, index) => (
-          <VariantRow variant={variant} key={index} />
+          <VariantRow variant={variant} genomeId={genomeId} key={index} />
         ))}
       </tbody>
     </Table>
@@ -256,13 +267,15 @@ const VepResultsTable = (props: {
 
 const VariantRow = (props: {
   variant: VepResultsResponse['variants'][number];
+  genomeId: string;
 }) => {
+  const { genomeId, variant } = props;
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
   >([]);
 
   const tabularData = useVepVariantTabularData({
-    variant: props.variant,
+    variant,
     expandedTranscriptPaths
   });
 
@@ -303,7 +316,7 @@ const VariantRow = (props: {
             rowSpan={row.variant.rowspan > 1 ? row.variant.rowspan : undefined}
           >
             <VepResultsLocation
-              genomeId="grch38"
+              genomeId={genomeId}
               location={row.variant.location}
             />
           </td>
@@ -320,7 +333,7 @@ const VariantRow = (props: {
           <VepResultsAllele sequence={row.alternativeAllele.allele_sequence} />
         </td>
       )}
-      <GeneTableCell row={row} />
+      <GeneTableCell row={row} genomeId={genomeId} />
       <TranscriptTableCell
         row={row}
         expandedTranscriptPaths={expandedTranscriptPaths}
@@ -333,13 +346,16 @@ const VariantRow = (props: {
   ));
 };
 
-const GeneTableCell = (props: { row: VepResultsTableRowData }) => {
-  const { row } = props;
+const GeneTableCell = (props: {
+  row: VepResultsTableRowData;
+  genomeId: string;
+}) => {
+  const { row, genomeId } = props;
 
   if (row.gene) {
     return (
       <td rowSpan={row.gene.rowspan > 1 ? row.gene.rowspan : undefined}>
-        <VepResultsGene {...row.gene} genomeId="grch38" />
+        <VepResultsGene {...row.gene} genomeId={genomeId} />
       </td>
     );
   } else if (row.consequence.feature_type === null) {

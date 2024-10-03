@@ -123,8 +123,17 @@ const vepSubmissionsRestoreListener = {
       }
     }
 
+    // Make sure to not pass the actual submission objects to VepSubmissionStatusPolling,
+    // because the submission objects belong to the redux state, and are therefore immutable
+    const submissionsDataForPolling = unresolvedSubmissions.map(
+      (submission) => ({
+        id: submission.id,
+        status: submission.status
+      })
+    );
+
     vepSubmissionStatusPolling.processSubmissionsOnStartup({
-      submissions: unresolvedSubmissions,
+      submissions: submissionsDataForPolling,
       dispatch
     });
 
