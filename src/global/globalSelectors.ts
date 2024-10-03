@@ -17,6 +17,9 @@
 import { RootState } from '../store';
 import { BreakpointWidth, ScrollPosition } from './globalConfig';
 
+export const getBrowserTabId = (state: RootState) =>
+  state.global.browserTabId || '';
+
 export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
   state.global.breakpointWidth;
 

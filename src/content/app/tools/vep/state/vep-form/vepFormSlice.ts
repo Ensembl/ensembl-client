@@ -17,7 +17,6 @@
 import {
   createSlice,
   createAsyncThunk,
-  nanoid,
   type PayloadAction
 } from '@reduxjs/toolkit';
 
@@ -29,6 +28,7 @@ import {
   updateVepSubmission
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
+import { getBrowserTabId } from 'src/global/globalSelectors';
 import {
   getTemporaryVepSubmissionId,
   getVepFormState
@@ -71,7 +71,7 @@ export const initialState: VepFormState = {
   parameters: {}
 };
 
-const createTemporarySubmissionId = () => `temporary-${nanoid()}`;
+const createTemporarySubmissionId = (tabId: string) => `temporary-${tabId}`;
 
 /**
  * This action checks if there is an already saved, but unsubmitted, VEP form data.
@@ -98,7 +98,8 @@ export const initialiseVepForm = createAsyncThunk(
       };
     }
 
-    const temporaryId = createTemporarySubmissionId();
+    const browserTabId = getBrowserTabId(state);
+    const temporaryId = createTemporarySubmissionId(browserTabId);
 
     const initialSubmissionData: StoredVepSubmission = {
       id: temporaryId,
@@ -177,7 +178,9 @@ export const clearVariantsInput = createAsyncThunk(
 
 export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
   'vep-form/fillWithExistingSubmissionData',
-  async (params: { submissionId: string }) => {
+  async (params: { submissionId: string }, thunkAPI) => {
+    const state = thunkAPI.getState() as RootState;
+
     // read submission data from the database
     const storedSubmission = await getVepSubmission(params.submissionId);
     if (!storedSubmission) {
@@ -186,7 +189,9 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
       // and for that, the submission needs to be present in browser storage
       return;
     }
-    const newSubmissionId = createTemporarySubmissionId();
+
+    const browserTabId = getBrowserTabId(state);
+    const newSubmissionId = createTemporarySubmissionId(browserTabId);
 
     storedSubmission.id = newSubmissionId;
     storedSubmission.createdAt = Date.now();

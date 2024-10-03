@@ -16,6 +16,8 @@
 
 import {
   createSlice,
+  createAsyncThunk,
+  nanoid,
   type Action,
   type PayloadAction,
   type ThunkAction,
@@ -28,12 +30,14 @@ import { BreakpointWidth, type ScrollPosition } from './globalConfig';
 import type { RootState } from 'src/store';
 
 export type GlobalState = Readonly<{
+  browserTabId: string | null;
   breakpointWidth: BreakpointWidth;
   scrollPosition: ScrollPosition;
   currentApp: string;
 }>;
 
 export const defaultState: GlobalState = {
+  browserTabId: null,
   breakpointWidth: BreakpointWidth.DESKTOP,
   scrollPosition: {},
   currentApp: ''
@@ -50,6 +54,24 @@ export const updateBreakpointWidth: ActionCreator<
   }
 };
 
+/**
+ *
+ */
+export const setBrowserTabId = createAsyncThunk(
+  'global/set-browser-tab-id',
+  () => {
+    // TODO: read tab id from somewhere
+    // - session storage?
+    // - window.name?
+
+    const browserTabId = nanoid();
+
+    return {
+      browserTabId
+    };
+  }
+);
+
 const globalSlice = createSlice({
   name: 'global',
   initialState: defaultState,
@@ -63,6 +85,11 @@ const globalSlice = createSlice({
     changeCurrentApp(state, action: PayloadAction<string>) {
       state.currentApp = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(setBrowserTabId.fulfilled, (state, action) => {
+      state.browserTabId = action.payload.browserTabId;
+    });
   }
 });
 

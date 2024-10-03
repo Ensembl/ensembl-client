@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
+import { setBrowserTabId } from 'src/global/globalSlice';
 import {
   loadStoredSpecies,
   loadSpeciesNameDisplayOption
@@ -36,6 +37,9 @@ const useRestoredReduxState = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // Global app concerns
+    dispatch(setBrowserTabId());
+
     // Species Selector
     dispatch(loadStoredSpecies());
     dispatch(loadSpeciesNameDisplayOption());
