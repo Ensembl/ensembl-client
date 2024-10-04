@@ -18,7 +18,8 @@ import IndexedDB from 'src/services/indexeddb-service';
 
 import {
   VEP_SUBMISSIONS_STORE_NAME as STORE_NAME,
-  VEP_SUBMISSION_STORAGE_DURATION
+  VEP_SUBMISSION_STORAGE_DURATION,
+  TEMPORARY_VEP_SUBMISSION_STORAGE_DURATION
 } from './vepStorageServiceConstants';
 
 import type {
@@ -107,34 +108,6 @@ export const changeVepSubmissionId = async (
   await transaction.done;
 };
 
-// Returns the data for a VEP submission that the user is still preparing and has not yet submitted.
-// There should only ever be one such submission.
-export const getUncompletedVepSubmission = async () => {
-  const db = await IndexedDB.getDB();
-  let cursor = await db.transaction(STORE_NAME).store.openCursor();
-
-  while (cursor) {
-    const storedSubmission: VepSubmission = cursor.value;
-
-    if (!storedSubmission.submittedAt) {
-      return storedSubmission;
-    } else {
-      cursor = await cursor.continue();
-    }
-  }
-};
-
-// Similarly to getVepSubmissionWithoutInputFile, strips potentially heavy input fields before returning
-export const getUncompletedVepSubmissionWithoutInputFile = async () => {
-  const storedSubmission = await getUncompletedVepSubmission();
-
-  if (!storedSubmission) {
-    return;
-  }
-
-  return removeInputFileFromSubmission(storedSubmission);
-};
-
 // Excluding the submission that has not been completed/submitted
 // And removing the input file from every submission in the return value
 export const getVepSubmissions = async (): Promise<
@@ -167,11 +140,15 @@ export const deleteExpiredVepSubmissions = async () => {
   const transaction = db.transaction(STORE_NAME, 'readwrite');
   for await (const cursor of transaction.store) {
     const submission: VepSubmission = cursor.value;
-    const { submittedAt } = submission;
-    if (
-      submittedAt &&
-      submittedAt < Date.now() - VEP_SUBMISSION_STORAGE_DURATION
-    ) {
+    const { submittedAt, createdAt } = submission;
+
+    const isOldTemporarySubmission =
+      !submittedAt &&
+      createdAt < Date.now() - TEMPORARY_VEP_SUBMISSION_STORAGE_DURATION;
+    const isExpiredSubmission =
+      submittedAt && submittedAt < Date.now() - VEP_SUBMISSION_STORAGE_DURATION;
+
+    if (isOldTemporarySubmission || isExpiredSubmission) {
       cursor.delete();
     }
   }

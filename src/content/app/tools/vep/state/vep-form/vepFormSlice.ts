@@ -25,7 +25,6 @@ import {
   getVepSubmission,
   saveVepSubmission,
   getVepSubmissionWithoutInputFile,
-  getUncompletedVepSubmissionWithoutInputFile,
   updateVepSubmission,
   changeVepSubmissionId
 } from 'src/content/app/tools/vep/services/vepStorageService';
@@ -97,17 +96,17 @@ export const initialiseVepForm = createAsyncThunk(
       return;
     }
 
+    const browserTabId = getBrowserTabId(state);
+    const temporaryId = createTemporarySubmissionId(browserTabId);
+
     const storedVepFormData =
-      await getUncompletedVepSubmissionWithoutInputFile();
+      await getVepSubmissionWithoutInputFile(temporaryId);
 
     if (storedVepFormData) {
       return {
         submissionId: storedVepFormData.id
       };
     }
-
-    const browserTabId = getBrowserTabId(state);
-    const temporaryId = createTemporarySubmissionId(browserTabId);
 
     const initialSubmissionData: StoredVepSubmission = {
       id: temporaryId,

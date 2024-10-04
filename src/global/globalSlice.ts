@@ -55,15 +55,14 @@ export const updateBreakpointWidth: ActionCreator<
 };
 
 /**
- *
+ * Creates a unique id for the browser tab.
+ * NOTE: Consider if it is possible to persist the id between page refreshes.
+ * See https://stackoverflow.com/a/61415444/3925302, which discusses
+ * how to distinguish between page reloads and tab duplication
  */
 export const setBrowserTabId = createAsyncThunk(
   'global/set-browser-tab-id',
   () => {
-    // TODO: read tab id from somewhere
-    // - session storage?
-    // - window.name?
-
     const browserTabId = nanoid();
 
     return {
