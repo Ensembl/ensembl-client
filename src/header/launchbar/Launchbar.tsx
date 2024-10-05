@@ -61,6 +61,27 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
+            {/* Temporarily, add inline styles until icon is ready */}
+            <LaunchbarButton
+              path="/activity-viewer"
+              description="Activity viewer"
+              icon={() => (
+                <div
+                  style={{
+                    display: 'flex',
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px',
+                    lineHeight: 1,
+                    color: 'white'
+                  }}
+                >
+                  R
+                </div>
+              )}
+              enabled={true}
+            />
           </div>
           <div className={styles.category}>
             <BlastLaunchbarButton />
