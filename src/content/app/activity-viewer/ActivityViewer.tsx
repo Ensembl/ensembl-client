@@ -17,6 +17,7 @@
 import noop from 'lodash/noop';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
+import RegionOverview from './components/region-overview/RegionOverview';
 
 const ActivityViewer = () => {
   return (
@@ -33,7 +34,12 @@ const ActivityViewer = () => {
 };
 
 const MainContent = () => {
-  return <div style={{ paddingTop: '90px' }}>Hello activity viewer</div>;
+  return (
+    <div>
+      Hello activity viewer
+      <RegionOverview />
+    </div>
+  );
 };
 
 const SidebarContent = () => {

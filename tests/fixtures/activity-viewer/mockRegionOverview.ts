@@ -74,6 +74,10 @@ const regionOverview = {
       ],
       merged_exons: [
         {
+          start: 84491985,
+          end: 84493549
+        },
+        {
           start: 84495672,
           end: 84495844
         },
@@ -234,6 +238,30 @@ const regionOverview = {
       ],
       merged_exons: [
         {
+          start: 84638924,
+          end: 84638992
+        },
+        {
+          start: 84640838,
+          end: 84640990
+        },
+        {
+          start: 84643024,
+          end: 84643143
+        },
+        {
+          start: 84645222,
+          end: 84645325
+        },
+        {
+          start: 84648557,
+          end: 84651334
+        },
+        {
+          start: 84583127,
+          end: 84583518
+        },
+        {
           start: 84604243,
           end: 84604370
         },
@@ -260,26 +288,6 @@ const regionOverview = {
         {
           start: 84635264,
           end: 84635351
-        },
-        {
-          start: 84638924,
-          end: 84638992
-        },
-        {
-          start: 84640838,
-          end: 84640990
-        },
-        {
-          start: 84643024,
-          end: 84643143
-        },
-        {
-          start: 84645222,
-          end: 84645325
-        },
-        {
-          start: 84648557,
-          end: 84651334
         }
       ],
       cds_counts: [
@@ -902,6 +910,10 @@ const regionOverview = {
         }
       ],
       merged_exons: [
+        {
+          start: 84669597,
+          end: 84672991
+        },
         {
           start: 84677199,
           end: 84677396
@@ -1605,6 +1617,10 @@ const regionOverview = {
       ],
       merged_exons: [
         {
+          start: 85475150,
+          end: 85475559
+        },
+        {
           start: 85570522,
           end: 85570721
         },
@@ -1630,7 +1646,7 @@ const regionOverview = {
         },
         {
           start: 85972036,
-          end: 85972168
+          end: 85972367
         },
         {
           start: 85974888,
@@ -2014,12 +2030,16 @@ const regionOverview = {
       ],
       merged_exons: [
         {
+          start: 85990007,
+          end: 85992163
+        },
+        {
           start: 85999848,
           end: 86001477
         },
         {
           start: 86010395,
-          end: 86017370
+          end: 86017375
         },
         {
           start: 86023931,
@@ -2027,7 +2047,7 @@ const regionOverview = {
         },
         {
           start: 86026436,
-          end: 86029274
+          end: 86029287
         },
         {
           start: 86031368,
@@ -2123,15 +2143,15 @@ const regionOverview = {
         },
         {
           start: 86357638,
-          end: 86357732
+          end: 86357895
         },
         {
           start: 86358081,
-          end: 86358128
+          end: 86358874
         },
         {
           start: 86359658,
-          end: 86360058
+          end: 86360222
         },
         {
           start: 86370714,
@@ -2151,11 +2171,11 @@ const regionOverview = {
         },
         {
           start: 86453030,
-          end: 86453203
+          end: 86453436
         },
         {
           start: 86593733,
-          end: 86594062
+          end: 86594625
         }
       ],
       cds_counts: [

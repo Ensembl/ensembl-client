@@ -89,7 +89,7 @@ type OpenChromatinRegion = MinimalRegulatoryFeatureData;
 
 type CTCFBindingSite = StrandSpecificRegulatoryFeature;
 
-type RegulatoryFeature =
+export type RegulatoryFeature =
   | Promoter
   | Enhancer
   | CTCFBindingSite
