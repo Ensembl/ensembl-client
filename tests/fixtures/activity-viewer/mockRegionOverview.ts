@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OverviewRegion } from 'src/content/app/activity-viewer/types/regionOverview';
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 const regionOverview = {
   assembly: 'GRCh38',

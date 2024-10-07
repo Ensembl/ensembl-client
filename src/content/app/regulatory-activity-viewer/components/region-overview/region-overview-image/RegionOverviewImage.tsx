@@ -28,7 +28,7 @@ type Props = {
 // const REGULATION_TRACKS_TOP_OFFSET = 28;
 const REGULATORY_FEATURE_TRACKS_TOP_OFFSET = 90;
 const DISTANCE_BETWEEN_REGULATORY_TRACKS = 20;
-const REGULATORY_FEATURE_RADIUS = 8;
+const REGULATORY_FEATURE_RADIUS = 4;
 
 /**
  * Q: what do "gaps" of "boring regions" mean for the creation of scales?

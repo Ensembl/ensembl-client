@@ -16,9 +16,9 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 
-import { useRegionOverviewQuery } from 'src/content/app/activity-viewer/state/api/activityViewerApiSlice';
+import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
-import prepareRegionOverviewTracks from 'src/content/app/activity-viewer/components/region-overview/prepareRegionOverviewTracks';
+import prepareRegionOverviewTracks from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewTracks';
 
 import RegionOverviewImage from './region-overview-image/RegionOverviewImage';
 

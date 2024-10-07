@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useRegionOverviewQuery } from 'src/content/app/activity-viewer/state/api/activityViewerApiSlice';
+import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
-import type { OverviewRegion } from 'src/content/app/activity-viewer/types/regionOverview';
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './ActivityViewerSidebar.module.css';
 

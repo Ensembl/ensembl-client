@@ -17,7 +17,7 @@
 import type {
   OverviewRegion,
   RegulatoryFeature
-} from 'src/content/app/activity-viewer/types/regionOverview';
+} from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 /**
  * The purpose of this function is to group the region overview data into tracks.
@@ -37,23 +37,16 @@ type InputData = Pick<
 >;
 
 type Params = {
-  data: InputData | null;
+  data: InputData;
 };
 
-// TODO: delete?
-
-const useRegionOverviewImageData = (params: Params) => {
+const prepareRegionOverviewTracks = (params: Params) => {
   const { data } = params;
-
-  if (!data) {
-    return {
-      data: null
-    };
-  }
 
   const regulatoryFeatureTracks = buildRegulatoryFeatureTracks(data);
 
   return {
+    locations: data.locations,
     regulatoryFeatureTracks
   };
 };
@@ -84,4 +77,6 @@ const buildRegulatoryFeatureTracks = (input: NonNullable<Params['data']>) => {
   return regFeatureTracks;
 };
 
-export default useRegionOverviewImageData;
+export type PreparedTrackData = ReturnType<typeof prepareRegionOverviewTracks>;
+
+export default prepareRegionOverviewTracks;

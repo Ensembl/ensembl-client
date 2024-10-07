@@ -31,7 +31,7 @@ import GenomeBrowserPage, {
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
-import ActivityViewerPage from 'src/content/app/activity-viewer/ActivityViewerPage';
+import ActivityViewerPage from 'src/content/app/regulatory-activity-viewer/RegulatoryActivityViewerPage';
 import BlastPage, {
   serverFetch as blastServerFetch
 } from 'src/content/app/tools/blast/BlastPage';

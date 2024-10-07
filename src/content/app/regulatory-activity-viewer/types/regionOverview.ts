@@ -17,7 +17,7 @@
 type Strand = 'forward' | 'reverse' | 'independent'; // <-- ask to remove 'independent'?
 
 export type GeneInRegionOverview = {
-  symbol: string;
+  symbol?: string;
   stable_id: string;
   unversioned_stable_id: string;
   biotype: string;

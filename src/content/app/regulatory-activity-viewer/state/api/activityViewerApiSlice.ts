@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-const LazilyLoadedActivityViewer = React.lazy(() => import('./ActivityViewer'));
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
-const ActivityViewerPage = () => {
-  const hasMounted = useHasMounted();
+const activityViewerApiSlice = restApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    regionOverview: builder.query<OverviewRegion, void>({
+      queryFn: async () => {
+        const module = await import(
+          'tests/fixtures/activity-viewer/mockRegionOverview'
+        );
+        const data = module.default;
 
-  return hasMounted ? <LazilyLoadedActivityViewer /> : null;
-};
+        return { data };
+      }
+    })
+  })
+});
 
-export default ActivityViewerPage;
+export const { useRegionOverviewQuery } = activityViewerApiSlice;
