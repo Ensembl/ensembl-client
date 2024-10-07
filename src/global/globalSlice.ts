@@ -17,12 +17,13 @@
 import {
   createSlice,
   createAsyncThunk,
-  nanoid,
   type Action,
   type PayloadAction,
   type ThunkAction,
   type ActionCreator
 } from '@reduxjs/toolkit';
+
+import BrowserTabIdService from 'src/services/browser-tab-id-service';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
@@ -63,7 +64,7 @@ export const updateBreakpointWidth: ActionCreator<
 export const setBrowserTabId = createAsyncThunk(
   'global/set-browser-tab-id',
   () => {
-    const browserTabId = nanoid();
+    const browserTabId = BrowserTabIdService.getBrowserTabId();
 
     return {
       browserTabId
