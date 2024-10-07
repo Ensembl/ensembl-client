@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 import { useRegionOverviewQuery } from 'src/content/app/activity-viewer/state/api/activityViewerApiSlice';
 
@@ -40,9 +40,18 @@ import styles from './RegionOverview.module.css';
  */
 
 const RegionOverview = () => {
+  const [width, setWidth] = useState(0);
   const { currentData } = useRegionOverviewQuery();
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  const regionOverviewImageWidth = 740; // FIXME: make calculations based on whether the sidebar is open or closed
+  // TODO: width should be recalculated on resize
+  // Consider if this is appropriate component for doing this.
+  useEffect(() => {
+    const imageContainer = imageContainerRef.current as HTMLDivElement;
+    const { width: imageContainerWidth } =
+      imageContainer.getBoundingClientRect();
+    setWidth(imageContainerWidth);
+  }, []);
 
   const trackData = useMemo(() => {
     if (!currentData) {
@@ -54,13 +63,8 @@ const RegionOverview = () => {
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>Left</div>
-      <div className={styles.middleColumn}>
-        {trackData && (
-          <RegionOverviewImage
-            width={regionOverviewImageWidth}
-            data={trackData}
-          />
-        )}
+      <div className={styles.middleColumn} ref={imageContainerRef}>
+        {trackData && <RegionOverviewImage width={width} data={trackData} />}
       </div>
       <div className={styles.rightColumn}>Right</div>
     </div>

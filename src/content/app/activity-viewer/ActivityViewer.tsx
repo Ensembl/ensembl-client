@@ -18,12 +18,13 @@ import noop from 'lodash/noop';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
+import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
 
 const ActivityViewer = () => {
   return (
     <StandardAppLayout
       mainContent={<MainContent />}
-      sidebarContent={<SidebarContent />}
+      sidebarContent={<ActivityViewerSidebar />}
       isSidebarOpen={true}
       topbarContent={null}
       sidebarNavigation={null}
@@ -40,10 +41,6 @@ const MainContent = () => {
       <RegionOverview />
     </div>
   );
-};
-
-const SidebarContent = () => {
-  return <div style={{ margin: '90px 0 0 20px' }}>Hello sidebar</div>;
 };
 
 export default ActivityViewer;
