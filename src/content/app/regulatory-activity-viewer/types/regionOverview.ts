@@ -61,46 +61,24 @@ type OverlappingCDSFragment = {
   count: number;
 };
 
-type RegulatoryFeatureType =
-  | 'promoter'
-  | 'enhancer'
-  | 'CTCF_binding_site'
-  | 'open_chromatin_region';
-
-type MinimalRegulatoryFeatureData = {
+export type RegulatoryFeature = {
   id: string;
-  feature_type: RegulatoryFeatureType;
+  feature_type: string; // promoter, enhancer, open_chromatin_region, CTCF_binding_site, etc. – Regulation doesn't want client to be aware of specific values
   start: number;
   end: number;
-};
-
-type StrandSpecificRegulatoryFeature = MinimalRegulatoryFeatureData & {
   strand: Strand;
+  extended_start?: number; // <-- may have the same value as start
+  extended_end?: number; // <-- may have the same value as end
 };
-
-type Promoter = MinimalRegulatoryFeatureData & {
-  extended_start: number;
-  extended_end: number;
-};
-
-type Enhancer = MinimalRegulatoryFeatureData;
-
-type OpenChromatinRegion = MinimalRegulatoryFeatureData;
-
-type CTCFBindingSite = StrandSpecificRegulatoryFeature;
-
-export type RegulatoryFeature =
-  | Promoter
-  | Enhancer
-  | CTCFBindingSite
-  | OpenChromatinRegion;
 
 export type OverviewRegion = {
-  seqid: string; // <-- should rename to region name?
+  region_name: string;
+  coordinate_system: string; // <-- "chromosome", "contig", etc.; should probably be a union type of possible strings
   locations: {
     start: number;
     end: number;
   }[]; // <-- identifies parts of the region that will be included in the diagram
   genes: GeneInRegionOverview[];
+  // default_gene_index: number; // <-- which gene to pick by default in absence of other indicators
   regulatory_features: RegulatoryFeature[];
 };
