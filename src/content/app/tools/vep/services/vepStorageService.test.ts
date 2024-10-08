@@ -29,7 +29,6 @@ import {
   getVepSubmission,
   updateVepSubmission,
   changeVepSubmissionId,
-  getUncompletedVepSubmission,
   getVepSubmissions,
   deleteVepSubmission,
   deleteExpiredVepSubmissions
@@ -170,27 +169,6 @@ describe('vepStorageService', () => {
       expect(newSubmission).toBeTruthy();
       expect(newSubmission.id).toBe(newSubmissionId);
       expect(newSubmission.status).toBe(newSubmissionStatus);
-    });
-  });
-
-  describe('getUncompletedVepSubmission', () => {
-    it('retrieves VEP submission data that have not yet been submitted', async () => {
-      // arrange
-      const submission1 = createVepSubmission();
-      const submission2 = createVepSubmission();
-      const submission3 = createVepSubmission();
-      submission1.submittedAt = Date.now();
-      submission2.submittedAt = null;
-      submission3.submittedAt = Date.now();
-      await saveVepSubmission(submission1);
-      await saveVepSubmission(submission2);
-      await saveVepSubmission(submission3);
-
-      // act
-      const uncompletedSubmission = await getUncompletedVepSubmission();
-
-      // assert
-      expect(uncompletedSubmission).toEqual(submission2);
     });
   });
 

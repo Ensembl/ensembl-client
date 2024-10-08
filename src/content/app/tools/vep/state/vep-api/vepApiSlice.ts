@@ -48,9 +48,10 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         const { data: exampleObjects } = await dispatch(
           fetchExampleObjectsForGenome.initiate(genomeId, { subscribe: false })
         );
+        const emptyResults = { data: {} };
 
         if (!exampleObjects) {
-          throw new Error(); // FIXME
+          return emptyResults;
         }
 
         const exampleVariant = exampleObjects.find(
@@ -58,7 +59,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         );
 
         if (!exampleVariant) {
-          throw new Error(); // FIXME
+          return emptyResults;
         }
 
         const { variant } = await request<VepExampleVariantQueryResult>({
@@ -71,7 +72,7 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         });
 
         if (!variant) {
-          throw new Error(); // FIXME
+          return emptyResults;
         }
 
         const firstAltAllele = variant.alleles[0];

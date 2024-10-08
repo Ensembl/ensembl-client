@@ -25,16 +25,18 @@ import {
   getVepSubmission,
   saveVepSubmission,
   getVepSubmissionWithoutInputFile,
-  getUncompletedVepSubmissionWithoutInputFile,
-  updateVepSubmission
+  updateVepSubmission,
+  changeVepSubmissionId
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
+import { getBrowserTabId } from 'src/global/globalSelectors';
 import {
   getTemporaryVepSubmissionId,
   getVepFormState
 } from './vepFormSelectors';
 
 import { addSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
+import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
 import type {
   VepFormConfig,
@@ -43,6 +45,7 @@ import type {
 import type { VepSelectedSpecies } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepSubmission as StoredVepSubmission,
+  VepSubmissionPayload as VepSubmissionRequestPayload,
   VepSubmissionWithoutInputFile
 } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
@@ -71,7 +74,11 @@ export const initialState: VepFormState = {
   parameters: {}
 };
 
-const createTemporarySubmissionId = () => `temporary-${nanoid()}`;
+// Creates an id that is used to identify the submission that is being filled in the form
+const createTemporarySubmissionId = (tabId: string) => `temporary-${tabId}`;
+
+// Creates an id used to keep track of a VEP submission while it is in process of being sent to the server
+const createInFlightSubmissionId = () => `submitting-${nanoid()}`;
 
 /**
  * This action checks if there is an already saved, but unsubmitted, VEP form data.
@@ -89,16 +96,17 @@ export const initialiseVepForm = createAsyncThunk(
       return;
     }
 
+    const browserTabId = getBrowserTabId(state);
+    const temporaryId = createTemporarySubmissionId(browserTabId);
+
     const storedVepFormData =
-      await getUncompletedVepSubmissionWithoutInputFile();
+      await getVepSubmissionWithoutInputFile(temporaryId);
 
     if (storedVepFormData) {
       return {
         submissionId: storedVepFormData.id
       };
     }
-
-    const temporaryId = createTemporarySubmissionId();
 
     const initialSubmissionData: StoredVepSubmission = {
       id: temporaryId,
@@ -177,7 +185,9 @@ export const clearVariantsInput = createAsyncThunk(
 
 export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
   'vep-form/fillWithExistingSubmissionData',
-  async (params: { submissionId: string }) => {
+  async (params: { submissionId: string }, thunkAPI) => {
+    const state = thunkAPI.getState() as RootState;
+
     // read submission data from the database
     const storedSubmission = await getVepSubmission(params.submissionId);
     if (!storedSubmission) {
@@ -186,7 +196,9 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
       // and for that, the submission needs to be present in browser storage
       return;
     }
-    const newSubmissionId = createTemporarySubmissionId();
+
+    const browserTabId = getBrowserTabId(state);
+    const newSubmissionId = createTemporarySubmissionId(browserTabId);
 
     storedSubmission.id = newSubmissionId;
     storedSubmission.createdAt = Date.now();
@@ -218,12 +230,30 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
  */
 export const onVepFormSubmission = createAsyncThunk(
   'vep-form/onVepFormSubmission',
-  async ({ submissionId }: { submissionId: string }, thunkApi) => {
+  async (_, thunkApi) => {
     const state = thunkApi.getState() as RootState;
     const dispatch = thunkApi.dispatch;
     const vepFormState = getVepFormState(state);
 
+    const submissionId = vepFormState.submissionId as string;
+    const species = vepFormState.selectedSpecies as VepSelectedSpecies;
+    const inputText = vepFormState.inputText;
+    const parameters = vepFormState.parameters;
+
+    const requestPayload = await prepareRequestPayload({
+      submissionId,
+      species,
+      inputText,
+      parameters
+    });
+
+    // "Detach" the submission from the VEP form by assigning it another temporary id.
+    // The id will be eventually finalized to a permanent one after the server response
+    const updatedSubmissionId = createInFlightSubmissionId();
+    requestPayload.submission_id = updatedSubmissionId;
+
     await updateVepSubmission(submissionId, {
+      id: submissionId,
       species: vepFormState.selectedSpecies,
       submissionName: vepFormState.submissionName,
       inputText: vepFormState.inputText,
@@ -232,14 +262,53 @@ export const onVepFormSubmission = createAsyncThunk(
       status: 'SUBMITTING'
     });
 
+    await changeVepSubmissionId(submissionId, updatedSubmissionId);
+
     const updatedStoredSubmission =
-      await getVepSubmissionWithoutInputFile(submissionId);
+      await getVepSubmissionWithoutInputFile(updatedSubmissionId);
 
     dispatch(
       addSubmission(updatedStoredSubmission as VepSubmissionWithoutInputFile)
     );
+
+    dispatch(vepFormSubmit.initiate(requestPayload, { track: false }));
   }
 );
+
+const prepareRequestPayload = async ({
+  submissionId,
+  species,
+  inputText,
+  parameters
+}: {
+  submissionId: string;
+  species: VepSelectedSpecies;
+  inputText: string | null;
+  parameters: Record<string, unknown>;
+}): Promise<VepSubmissionRequestPayload> => {
+  let inputFile: File;
+
+  if (inputText) {
+    inputFile = new File([inputText], 'input.txt', {
+      type: 'text/plain'
+    });
+  } else {
+    const storedSubmission = await getVepSubmission(submissionId);
+    if (!storedSubmission) {
+      throw new Error(
+        `Submission with id ${submissionId} does not exist in browser storage`
+      );
+    }
+    inputFile = storedSubmission.inputFile as File;
+  }
+
+  return {
+    submission_id: submissionId,
+    genome_id: species.genome_id,
+    input_file: inputFile as File,
+    parameters: JSON.stringify(parameters)
+  };
+};
 
 const vepFormSlice = createSlice({
   name: 'vep-form',
