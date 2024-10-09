@@ -260,6 +260,7 @@ Pub:Live:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
+    - Test_N_Build
     - Pub:Staging
 
 
@@ -293,6 +294,7 @@ Pub::LiveFallback:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
+    - Test_N_Build
     - Pub:Staging
 
 
