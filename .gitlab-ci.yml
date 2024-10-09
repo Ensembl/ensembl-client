@@ -260,7 +260,7 @@ Pub:Live:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
     - Pub:Staging
 
 
@@ -294,7 +294,7 @@ Pub::LiveFallback:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
     - Pub:Staging
 
 
@@ -327,7 +327,7 @@ Pub:Staging:
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   needs:
-    - Test_N_Build
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
     - Node:Live
 
 
@@ -363,7 +363,7 @@ Pub:Dev:
   rules:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   needs:
-    - Test_N_Build
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
     - Node:Live
 
 
