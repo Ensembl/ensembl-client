@@ -12,13 +12,13 @@ stages:
   - test
   - test_build_static
   - build_docker_images
-  - deploy
+  - deploy-preview
+  - deploy-live
 
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
   CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
   KUBE_CONTEXT: ens-dev-ctx
-  DEPLOYENV: dev
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
@@ -79,7 +79,7 @@ variables:
 # Template for publishing static assets for the new kubernetes cluster
 .publish_assets:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
-  stage: deploy
+  stage: deploy-live
   environment:
     name: jobs/k8s-job
 
@@ -114,10 +114,10 @@ variables:
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template for deployment to the new kubernetes cluster
-# For live deployment, it does not need to deploy a static assets container
+# Template for deployment to "stable" (non-review) environments that have static assets on a mounted drive
+# (therefore, does not need to deploy a static assets container)
 .deploy:
-  stage: deploy
+  stage: deploy-live # is overwritten in some of the jobs that are extending this template
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -130,7 +130,7 @@ variables:
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
-  stage: deploy
+  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -147,7 +147,7 @@ variables:
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
-  stage: deploy
+  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - kubectl config use-context ${AGENT}
@@ -210,7 +210,6 @@ Node:Live:
 Nginx:review:
   extends: .build-nginx
   variables:
-    DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
@@ -222,7 +221,6 @@ Nginx:review:
 Node:review:
   extends: .build-node
   variables:
-    DEPLOYENV: dev
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
@@ -248,8 +246,7 @@ Live:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Staging
 
 # Publish static assets
 Pub:Live:
@@ -263,8 +260,7 @@ Pub:Live:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Pub:Staging
 
 
 # DEPLOYMENT TO THE LIVE (PRODUCTION) FALLBACK ENVIRONMENT (beta.ensembl.org, running in Hinxton)
@@ -283,8 +279,7 @@ LiveFallback:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Staging
 
 # Publish static assets
 Pub::LiveFallback:
@@ -298,8 +293,7 @@ Pub::LiveFallback:
     - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Pub:Staging
 
 
 # DEPLOYMENT TO THE STAGING ENVIRONMENT (staging-2020.ensembl.org)
@@ -307,6 +301,7 @@ Pub::LiveFallback:
 # Deploy the Node server
 Staging:
   extends: .deploy
+  stage: deploy-preview
   environment:
     name: staging
   rules:
@@ -321,6 +316,7 @@ Staging:
 # Publish static assets
 Pub:Staging:
   extends: .publish_assets
+  stage: deploy-preview
   environment:
     name: staging
   variables:
@@ -338,6 +334,7 @@ Pub:Staging:
 # Deploy the Node server
 Dev:
   extends: .deploy
+  stage: deploy-preview
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
     AGENT: ${DEV_AGENT}
@@ -355,6 +352,7 @@ Dev:
 # Publish static assets
 Pub:Dev:
   extends: .publish_assets
+  stage: deploy-preview
   environment:
     name: development
   variables:
