@@ -134,3 +134,15 @@
   font-size: 11px;
   font-weight: var(--font-weight-light);
 }
+
+.speciesName [data-part="common-name"] {
+  font-size: 14px;
+}
+
+.speciesName [data-part="scientific-name"] {
+  font-size: 14px;
+}
+
+.speciesName [data-part="assembly-name"] {
+  font-size: 11px;
+}

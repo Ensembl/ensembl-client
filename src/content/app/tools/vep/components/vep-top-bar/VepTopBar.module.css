@@ -51,6 +51,10 @@
   white-space: nowrap;
 }
 
+.vepGenericGrid .ensemblLogo {
+  width: 130px;
+}
+
 @media (width <= 1210px) {
   .vepGenericGrid {
     grid-template-columns:

@@ -13,8 +13,7 @@
   border: 1px solid var(--color-grey);
   padding-left: var(--standard-gutter);
   padding-right: var(--standard-gutter);
-  padding-top: 24px;
-  padding-bottom: 24px;
+  line-height: 60px;
 }
 
 .bodyLoading {
@@ -70,4 +69,16 @@
 .statusRunning,
 .statusFailed {
   color: var(--color-red);
+}
+
+.speciesName [data-part="common-name"] {
+  font-size: 14px;
+}
+
+.speciesName [data-part="scientific-name"] {
+  font-size: 14px;
+}
+
+.speciesName [data-part="assembly-name"] {
+  font-size: 11px;
 }
