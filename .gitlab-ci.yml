@@ -1,7 +1,7 @@
 # CI/CD Pipeline
-# dev branch -> staging (runs exactly the same code as live; opportunity to inspect the site before pushing to production)
-# master branch -> internal (runs from the same master branch as live; but with flags enabled for seeing the latest UI changes that may not be ready for production)
-# master branch -> live
+# - Live deployment (runs the latest code, with unfinished features hidden from the user; requires manual deployment)
+# - Staging deployment (runs exactly the same code as live; opportunity to inspect the site before pushing to production)
+# - Development deployment (runs the latest code, has all in-progress features enabled)
 
 # include template to setup review app
 include: '/gitlab-ci-templates/.setup-review-template.yaml'
@@ -12,13 +12,12 @@ stages:
   - test
   - test_build_static
   - build_docker_images
-  - deploy
+  - deploy-preview
+  - deploy-live
 
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
   CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
-  KUBE_CONTEXT: ens-dev-ctx
-  DEPLOYENV: dev
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
@@ -79,7 +78,7 @@ variables:
 # Template for publishing static assets for the new kubernetes cluster
 .publish_assets:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
-  stage: deploy
+  stage: deploy-live
   environment:
     name: jobs/k8s-job
 
@@ -114,10 +113,10 @@ variables:
     - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template for deployment to the new kubernetes cluster
-# For live deployment, it does not need to deploy a static assets container
+# Template for deployment to "stable" (non-review) environments that have static assets on a mounted drive
+# (therefore, does not need to deploy a static assets container)
 .deploy:
-  stage: deploy
+  stage: deploy-live # is overwritten in some of the jobs that are extending this template
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -130,7 +129,7 @@ variables:
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
-  stage: deploy
+  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -147,7 +146,7 @@ variables:
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
-  stage: deploy
+  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - kubectl config use-context ${AGENT}
@@ -179,90 +178,49 @@ Test:
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
 
-# Job to build static assets for staging and live environment
-# dev branch -> Staging
-# master branch -> Live
+# Job to build static assets for staging, live, and dev environments
+# from the main branch
 Test_N_Build:
   extends: .build-static
-  variables:
-    GOOGLE_ANALYTICS_KEY: ${GA_KEY}
-    ENVIRONMENT: production
-    API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "main"
 
-# Job to build static assets for internal environment
-# master branch -> Internal
-Test_N_Build:internal:
-  extends: .build-static
-  variables:
-    GOOGLE_ANALYTICS_KEY: ${GA_KEY}
-    ENVIRONMENT: internal
-    API_HOST: ""
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-
+# Job to build static assets for review deployments
+# Should run after commits to feature branches.
+# If, for whatever reason, we do not need deployment on a feature branch, we prefix branch name with "nodeploy"
 Test_N_Build:review:
   extends: .build-static
-  variables:
-    ENVIRONMENT: development
-    API_HOST: ""
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
 
-# Job to build node docker image for staging environment
-# dev branch -> Staging
-Node:Staging:
-  extends: .build-node
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-  needs:
-    - Test_N_Build
-
-# Job to build node docker image for live environment
-# master branch -> Live
+# Job to build node docker image for staging, live, and dev environments
+# main branch -> Staging, Live
 Node:Live:
   extends: .build-node
-  variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == "main"
   needs:
     - Test_N_Build
 
-# Job to build node docker image for internal environment
-# master branch -> internal
-Node:Internal:
-  extends: .build-node
-  variables:
-    DEPLOYENV: internal
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-  needs:
-    - Test_N_Build:internal
-
 # Job to build nginx docker image for review environment
-# all other branch -> dev
+# Runs after commits to feature branches
 Nginx:review:
   extends: .build-nginx
   variables:
-    DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
 # Job to build node docker image for review environment
-# all other branch -> dev
+# Runs after commits to feature branches
 Node:review:
   extends: .build-node
   variables:
-    DEPLOYENV: dev
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
 
@@ -276,16 +234,15 @@ Node:review:
 Live:
   extends: .deploy
   variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
     AGENT: ${PROD_AGENT}
     NAMESPACE: ${PROD_NS}
   environment:
     name: production
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+  when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Staging
 
 # Publish static assets
 Pub:Live:
@@ -296,10 +253,11 @@ Pub:Live:
     AGENT: ${PROD_AGENT}
     NAMESPACE: ${PROD_NS}
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+  when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
+    - Pub:Staging
 
 
 # DEPLOYMENT TO THE LIVE (PRODUCTION) FALLBACK ENVIRONMENT (beta.ensembl.org, running in Hinxton)
@@ -308,17 +266,15 @@ Pub:Live:
 LiveFallback:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
     AGENT: ${FALLBACK_AGENT}
     NAMESPACE: ${FALLBACK_NS}
   environment:
     name: fallback
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+  when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Staging
 
 # Publish static assets
 Pub::LiveFallback:
@@ -329,10 +285,11 @@ Pub::LiveFallback:
     AGENT: ${FALLBACK_AGENT}
     NAMESPACE: ${FALLBACK_NS}
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
+  when: manual
   needs:
-    - Test_N_Build
-    - Node:Live
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
+    - Pub:Staging
 
 
 # DEPLOYMENT TO THE STAGING ENVIRONMENT (staging-2020.ensembl.org)
@@ -340,13 +297,14 @@ Pub::LiveFallback:
 # Deploy the Node server
 Staging:
   extends: .deploy
+  stage: deploy-preview
   environment:
     name: staging
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "main"
   needs:
     - Test_N_Build
-    - Node:Staging
+    - Node:Live
   variables:
     AGENT: ${STAGING_AGENT}
     NAMESPACE: ${STAGING_NS}
@@ -354,49 +312,17 @@ Staging:
 # Publish static assets
 Pub:Staging:
   extends: .publish_assets
+  stage: deploy-preview
   environment:
     name: staging
   variables:
     AGENT: ${STAGING_AGENT}
     NAMESPACE: ${STAGING_NS}
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "main"
   needs:
-    - Test_N_Build
-    - Node:Staging
-
-
-# DEPLOYMENT TO THE INTERNAL ENVIRONMENT (internal-2020.ensembl.org)
-
-# Deploy the Node server
-Internal:
-  extends: .deploy
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
-    AGENT: ${INTERNAL_AGENT}
-    NAMESPACE: ${INTERNAL_NS}
-  environment:
-    name: internal
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-  needs:
-    - Test_N_Build:internal
-    - Node:Internal
-
-# Publish static assets
-Pub:Internal:
-  extends: .publish_assets
-  environment:
-    name: internal
-  variables:
-    AGENT: ${INTERNAL_AGENT}
-    NAMESPACE: ${INTERNAL_NS}
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-  needs:
-    - Test_N_Build:internal
-    - Node:Internal
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
+    - Node:Live
 
 
 # DEPLOYMENT TO THE DEVELOPMENT ENVIRONMENT (dev-2020.ensembl.org)
@@ -404,8 +330,8 @@ Pub:Internal:
 # Deploy the Node server
 Dev:
   extends: .deploy
+  stage: deploy-preview
   variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
     AGENT: ${DEV_AGENT}
     NAMESPACE: ${DEV_NS}
   environment:
@@ -413,7 +339,7 @@ Dev:
     kubernetes:
       namespace: ensembl-dev
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   needs:
     - Test_N_Build
     - Node:Live
@@ -421,15 +347,16 @@ Dev:
 # Publish static assets
 Pub:Dev:
   extends: .publish_assets
+  stage: deploy-preview
   environment:
     name: development
   variables:
     AGENT: ${DEV_AGENT}
     NAMESPACE: ${DEV_NS}
   rules:
-    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_DEPLOY_FREEZE == null && $CI_COMMIT_BRANCH == "main"'
   needs:
-    - Test_N_Build
+    - Test_N_Build # The reason this job has to be in dependencies array is so that the Publish job can recover its BUILD_JOB_ID
     - Node:Live
 
 
@@ -449,7 +376,7 @@ Review:
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
@@ -466,8 +393,9 @@ CleanUpReview:
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
   except:
-    - dev
-    - master
+    - dev # keep temporarily until we delete the dev branch
+    - master # keep temporarily until we delete the master branch
+    - main
 
 
 # Create a review deployment (runs once per new branch)
