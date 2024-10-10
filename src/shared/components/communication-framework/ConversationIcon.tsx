@@ -14,55 +14,35 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
-
-import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
+import classNames from 'classnames';
 
 import ConversationImageIcon from 'static/icons/icon_conversation.svg';
 
 import styles from './ConversationIcon.module.css';
 
+type Notification = 'green';
+
 type Props = {
-  withLabel?: boolean;
+  notification?: Notification;
+  className?: string;
 };
 
 const ConversationIcon = (props: Props) => {
-  const dispatch = useDispatch();
-  const elementRef = useRef<HTMLButtonElement | null>(null);
+  const componentClasses = classNames(
+    styles.conversationIconWrapper,
+    props.className
+  );
 
-  const onClick = () => {
-    dispatch(toggleCommunicationPanel());
-    trackButtonClick();
-  };
-
-  // dispatches an event that the conversation button has been clicked; used for analytics purposes
-  const trackButtonClick = () => {
-    const event = new CustomEvent('analytics', {
-      detail: {
-        category: 'communication_panel',
-        action: 'opened'
-      },
-      bubbles: true
-    });
-
-    elementRef.current?.dispatchEvent(event);
-  };
+  const notificationClasses = classNames(
+    styles.notification,
+    styles.notificationGreen
+  );
 
   return (
-    <>
-      <CommunicationPanel />
-      <button
-        className={styles.communicationPanelToggle}
-        onClick={onClick}
-        ref={elementRef}
-      >
-        {props.withLabel && 'Contact us'}
-        <ConversationImageIcon className={styles.conversationIcon} />
-      </button>
-    </>
+    <div className={componentClasses}>
+      <ConversationImageIcon className={styles.conversationIcon} />
+      {props.notification && <span className={notificationClasses} />}
+    </div>
   );
 };
 

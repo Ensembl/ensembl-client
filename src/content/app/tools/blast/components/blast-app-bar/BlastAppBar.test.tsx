@@ -16,23 +16,20 @@
 
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import blastFormReducer, {
-  initialState as initialBlastFormState
-} from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
+import createRootReducer from 'src/root/rootReducer';
 
-import speciesSelectorReducer from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
-import blastGeneralReducer from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
+import { initialState as initialBlastFormState } from 'src/content/app/tools/blast/state/blast-form/blastFormSlice';
 
 import BlastAppBar from './BlastAppBar';
 
 jest.mock(
-  'src/shared/components/communication-framework/ConversationIcon',
-  () => () => <div>ConversationIcon</div>
+  'src/shared/components/communication-framework/CommunicationPanelButton',
+  () => () => <div>CommunicationPanelButton</div>
 );
 
 jest.mock(
@@ -68,16 +65,8 @@ const initialState = {
   }
 };
 
-const rootReducer = combineReducers({
-  blast: combineReducers({
-    blastForm: blastFormReducer,
-    blastGeneral: blastGeneralReducer
-  }),
-  speciesSelector: speciesSelectorReducer
-});
-
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: createRootReducer(),
   preloadedState: initialState as any
 });
 

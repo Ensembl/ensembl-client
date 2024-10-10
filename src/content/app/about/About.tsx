@@ -41,7 +41,7 @@ import {
 import HelpMenu from 'src/content/app/help/components/help-menu/HelpMenu';
 import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import { CircleLoader } from 'src/shared/components/loader';
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import helpStyles from '../help/Help.module.css';
@@ -118,7 +118,7 @@ const AppBar = () => {
     <div className={styles.appBar}>
       About Ensembl
       <div className={styles.conversationIcon}>
-        <ConversationIcon withLabel={true} />
+        <CommunicationPanelButton withLabel={true} />
       </div>
     </div>
   );

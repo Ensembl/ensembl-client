@@ -14,36 +14,50 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect, useRef } from 'react';
+
+import { useAppDispatch } from 'src/store';
+
+import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 
 import { CommunicationPanelContextProvider } from './communicationPanelContext';
 import Overlay from 'src/shared/components/overlay/Overlay';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ContactUs from './contact-us/ContactUs';
+import TextButton from 'src/shared/components/text-button/TextButton';
+import Notifications from 'src/shared/components/communication-framework/notifications/Notifications';
+import ConversationIcon from './ConversationIcon';
 
-import ConversationIcon from 'static/icons/icon_conversation.svg';
-
-import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
-import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';
+import type { IncomingNotification } from './hooks/useNotifications';
 
 import styles from './CommunicationPanel.module.css';
 
-const CommunicationPanel = () => {
-  const showCommunicationPanel = useSelector(isCommunicationPanelOpen);
+type Props = {
+  notifications: IncomingNotification[];
+  onNotificationSeen: (id: string) => void;
+  onNotificationDismissed: (id: string) => void;
+};
+
+type CommunicationPanelView = 'notifications' | 'contact-us';
+
+const CommunicationPanel = (props: Props) => {
+  const { notifications } = props;
+  const initialView = notifications.length ? 'notifications' : 'contact-us';
+  const [view, setView] = useState<CommunicationPanelView>(initialView);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const panelWrapperRef = useRef<HTMLDivElement>(null);
   const panelBodyRef = useRef<HTMLDivElement>(null);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (showCommunicationPanel) {
-      wrapperRef.current?.addEventListener('wheel', preventScroll, {
-        passive: false
-      });
-    }
-  }, [showCommunicationPanel]);
+    wrapperRef.current?.addEventListener('wheel', preventScroll, {
+      passive: false
+    });
+    return () => {
+      wrapperRef.current?.removeEventListener('wheel', preventScroll);
+    };
+  }, []);
 
   const onClose = () => {
     dispatch(toggleCommunicationPanel());
@@ -58,38 +72,96 @@ const CommunicationPanel = () => {
     }
   };
 
-  if (!showCommunicationPanel) {
-    return null;
-  }
-
   return (
     <CommunicationPanelContextProvider value={{ panelBody: panelBodyRef }}>
       <div className={styles.wrapper} ref={wrapperRef}>
         <Overlay className={styles.overlay} />
         <div ref={panelWrapperRef} className={styles.panelWrapper}>
           <div className={styles.panel}>
-            <ConversationIcon
-              className={styles.conversationIcon}
-              onClick={onClose}
-            />
-            {/* TODO: switch to the proper Tabs component when the tabs become functional */}
-            <nav className={styles.panelTabs}>
-              <span className={`${styles.tab} ${styles.tabDisabled}`}>
-                Messages
-              </span>
-              <span className={styles.tab}>Contact us</span>
-            </nav>
-            <CloseButton
-              className={styles.panelCloseButton}
-              onClick={onClose}
+            <CommunicationPanelHeader
+              notifications={notifications}
+              view={view}
+              onViewChange={setView}
+              onClose={onClose}
             />
             <div className={styles.panelBody} ref={panelBodyRef}>
-              <ContactUs />
+              {view === 'notifications' ? (
+                <Notifications
+                  notifications={notifications}
+                  onClose={onClose}
+                  onNotificationSeen={props.onNotificationSeen}
+                  onNotificationDismissed={props.onNotificationDismissed}
+                />
+              ) : (
+                <ContactUs />
+              )}
             </div>
           </div>
         </div>
       </div>
     </CommunicationPanelContextProvider>
+  );
+};
+
+const CommunicationPanelHeader = (props: {
+  notifications: Props['notifications'];
+  view: CommunicationPanelView;
+  onViewChange: (view: CommunicationPanelView) => void;
+  onClose: () => void;
+}) => {
+  const { notifications, onClose } = props;
+  const shouldShowNotifications = notifications.length > 0;
+
+  return (
+    <div className={styles.panelHeader}>
+      <ConversationIcon
+        className={styles.conversationIcon}
+        notification={shouldShowNotifications ? 'green' : undefined}
+      />
+      <CommunicationPanelHeaderNav {...props} />
+      <CloseButton className={styles.panelCloseButton} onClick={onClose} />
+    </div>
+  );
+};
+
+const CommunicationPanelHeaderNav = ({
+  notifications,
+  view,
+  onViewChange
+}: {
+  notifications: Props['notifications'];
+  view: CommunicationPanelView;
+  onViewChange: (view: CommunicationPanelView) => void;
+}) => {
+  const isNotificationsTabDisabled =
+    view === 'contact-us' && !notifications.length;
+  const isNotificationsTabActive = view === 'notifications';
+  const isContactUsTabActive = view === 'contact-us';
+
+  const notificationsTabStyles = isNotificationsTabActive
+    ? styles.tabActive
+    : undefined;
+  const contactUsTabStyles = isContactUsTabActive
+    ? styles.tabActive
+    : undefined;
+
+  return (
+    <nav className={styles.headerNav}>
+      <TextButton
+        onClick={() => onViewChange('notifications')}
+        disabled={isNotificationsTabDisabled || isNotificationsTabActive}
+        className={notificationsTabStyles}
+      >
+        Messages
+      </TextButton>
+      <TextButton
+        onClick={() => onViewChange('contact-us')}
+        disabled={isContactUsTabActive}
+        className={contactUsTabStyles}
+      >
+        Contact us
+      </TextButton>
+    </nav>
   );
 };
 
