@@ -47,7 +47,7 @@ const SubmissionInProgress = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.head}>
-        <div className={styles.light}>Vep analysis</div>
+        <div className={styles.light}>Ensembl VEP analysis</div>
       </div>
       <div className={classNames(styles.body, styles.bodyLoading)}>
         <div>
@@ -70,7 +70,12 @@ const SubmissionAccepted = (props: Props) => {
       <VepSubmissionHeader {...props} />
       <div className={classNames(styles.body, styles.bodyAccepted)}>
         <div>
-          {submission.species && <SpeciesName species={submission.species} />}
+          {submission.species && (
+            <SpeciesName
+              species={submission.species}
+              className={styles.speciesName}
+            />
+          )}
         </div>
         <VepInputSummary submission={submission} />
         <SubmissionName submission={submission} />

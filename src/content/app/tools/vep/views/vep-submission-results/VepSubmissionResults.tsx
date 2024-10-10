@@ -202,6 +202,7 @@ const VepResultsHeader = ({
         species={
           species as NonNullable<VepSubmissionWithoutInputFile['species']>
         }
+        className={styles.speciesName}
       />
       <VepInputSummary submission={submission} />
       <div className={styles.perPage}>
