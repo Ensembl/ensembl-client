@@ -18,7 +18,6 @@ stages:
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
   CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
-  KUBE_CONTEXT: ens-dev-ctx
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
@@ -198,8 +197,6 @@ Test_N_Build:review:
 # main branch -> Staging, Live
 Node:Live:
   extends: .build-node
-  variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   needs:
@@ -237,7 +234,6 @@ Node:review:
 Live:
   extends: .deploy
   variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
     AGENT: ${PROD_AGENT}
     NAMESPACE: ${PROD_NS}
   environment:
@@ -270,8 +266,6 @@ Pub:Live:
 LiveFallback:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
     AGENT: ${FALLBACK_AGENT}
     NAMESPACE: ${FALLBACK_NS}
   environment:
@@ -338,7 +332,6 @@ Dev:
   extends: .deploy
   stage: deploy-preview
   variables:
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
     AGENT: ${DEV_AGENT}
     NAMESPACE: ${DEV_NS}
   environment:
