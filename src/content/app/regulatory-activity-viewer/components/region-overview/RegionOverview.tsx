@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
-
-import prepareRegionOverviewTracks from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewTracks';
 
 import RegionOverviewImage from './region-overview-image/RegionOverviewImage';
 
@@ -53,18 +51,13 @@ const RegionOverview = () => {
     setWidth(imageContainerWidth);
   }, []);
 
-  const trackData = useMemo(() => {
-    if (!currentData) {
-      return null;
-    }
-    return prepareRegionOverviewTracks({ data: currentData });
-  }, [currentData]);
-
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>Left</div>
       <div className={styles.middleColumn} ref={imageContainerRef}>
-        {trackData && <RegionOverviewImage width={width} data={trackData} />}
+        {currentData && (
+          <RegionOverviewImage width={width} data={currentData} />
+        )}
       </div>
       <div className={styles.rightColumn}>Right</div>
     </div>

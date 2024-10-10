@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+type ForwardOrReverseStrand = 'forward' | 'reverse';
 type Strand = 'forward' | 'reverse' | 'independent'; // <-- ask to remove 'independent'?
 
 export type GeneInRegionOverview = {
@@ -23,7 +24,7 @@ export type GeneInRegionOverview = {
   biotype: string;
   start: number;
   end: number;
-  strand: Strand;
+  strand: ForwardOrReverseStrand;
   representative_transcript: RepresentativeTranscriptInRegionOverview;
   tss: TranscriptionStartSite[];
   merged_exons: ExonInRegionOverview[];
@@ -35,13 +36,13 @@ type RepresentativeTranscriptInRegionOverview = {
   cds: CDSFragment[];
 };
 
-type ExonInRegionOverview = {
+export type ExonInRegionOverview = {
   start: number;
   end: number;
 };
 
 // Section of a CDS within an exon
-type CDSFragment = {
+export type CDSFragment = {
   start: number;
   end: number;
 };

@@ -20,15 +20,15 @@ import type {
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 /**
- * The purpose of this function is to group the region overview data into tracks.
- * Note that the elements outside of the RegionOverviewImage will need to be aware about the number of the tracks
- * for appropriate positioning next to the image (see e.g. the "Regulatory features" label)
- *
  * For regulatory features
  *  - distribute between three tracks
  *    - promoters and enhancers at the top
  *    - open chromatin in the middle
  *    - CTCF-binding sites in the bottom
+ *
+ * NOTE: expect this function to become unnecessary,
+ * since the Regulation team wants to control the distribution of features across tracks
+ * via the api.
  */
 
 type InputData = Pick<
