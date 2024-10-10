@@ -9,7 +9,6 @@ include: '/gitlab-ci-templates/.setup-review-template.yaml'
 # Define stages for the CI/CD pipeline
 stages:
   - setup
-  - test
   - test_build_static
   - build_docker_images
   - deploy-preview
@@ -166,18 +165,6 @@ variables:
     - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete namespace ${NAMESPACE}
 
-Test:
-  image: node:20.9.0
-  stage: test
-  before_script:
-    - npm install --global npm@8.1.0
-    - npm ci --loglevel warn
-  script:
-    - npm run check-types
-    - npm run test
-  rules:
-    - if: $CI_COMMIT_BRANCH =~ /^nodeploy\/.*$/
-
 # Job to build static assets for staging, live, and dev environments
 # from the main branch
 Test_N_Build:
@@ -187,11 +174,10 @@ Test_N_Build:
 
 # Job to build static assets for review deployments
 # Should run after commits to feature branches.
-# If, for whatever reason, we do not need deployment on a feature branch, we prefix branch name with "nodeploy"
 Test_N_Build:review:
   extends: .build-static
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main"
 
 # Job to build node docker image for staging, live, and dev environments
 # main branch -> Staging, Live
@@ -209,7 +195,7 @@ Nginx:review:
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main"
   needs:
     - Test_N_Build:review
 
@@ -220,7 +206,7 @@ Node:review:
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main"
   needs:
     - Test_N_Build:review
 
@@ -376,7 +362,7 @@ Review:
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
   rules:
-    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH !~ /^nodeploy\/.*$/
+    - if: $CI_COMMIT_BRANCH != "main"
   needs:
     - Test_N_Build:review
     - Nginx:review
@@ -410,6 +396,6 @@ SetupReview:
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && 
-          $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && 
-          $CI_COMMIT_REF_NAME !~  "/^nodeploy\/.*$/"
+          $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" &&
+          $CI_COMMIT_BRANCH != "main"
       when: always
