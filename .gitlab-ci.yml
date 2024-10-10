@@ -17,7 +17,6 @@ stages:
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
   CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
-  ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
 # The `before_script` commands for deployment jobs that are used to set up gitlab agent
