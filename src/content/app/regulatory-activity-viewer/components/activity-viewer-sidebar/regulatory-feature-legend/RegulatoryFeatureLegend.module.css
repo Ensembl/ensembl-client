@@ -1,0 +1,19 @@
+.item {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: baseline;
+}
+
+.colorKey {
+  width: 10px;
+  height: 10px;
+}
+
+.secondaryText {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+}
+
+.label:has(.secondaryText) .primaryText {
+  margin-right: 0.6rem;
+}

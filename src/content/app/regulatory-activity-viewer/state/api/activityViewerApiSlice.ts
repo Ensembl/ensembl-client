@@ -22,8 +22,11 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     regionOverview: builder.query<OverviewRegion, void>({
       queryFn: async () => {
+        // const module = await import(
+        //   'tests/fixtures/activity-viewer/mockRegionOverviewSparse'
+        // );
         const module = await import(
-          'tests/fixtures/activity-viewer/mockRegionOverview'
+          'tests/fixtures/activity-viewer/mockRegionOverviewDense'
         );
         const data = module.default;
 

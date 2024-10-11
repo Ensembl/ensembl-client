@@ -16,9 +16,10 @@
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import RegulatoryFeatureLegend from './regulatory-feature-legend/RegulatoryFeatureLegend';
 
-import styles from './ActivityViewerSidebar.module.css';
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 const ActivityViewerSidebar = () => {
   const { currentData } = useRegionOverviewQuery();
@@ -28,10 +29,14 @@ const ActivityViewerSidebar = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <Genes genes={currentData.genes} />
-      <RegulatoryFeatures features={currentData.regulatory_features} />
-    </div>
+    <Sidebar>
+      <div>
+        <Genes genes={currentData.genes} />
+        <RegulatoryFeatureLegendSection
+          featureTypes={currentData.regulatory_features.feature_types}
+        />
+      </div>
+    </Sidebar>
   );
 };
 
@@ -53,22 +58,14 @@ const Genes = (props: { genes: OverviewRegion['genes'] }) => {
   );
 };
 
-const RegulatoryFeatures = (props: {
-  features: OverviewRegion['regulatory_features'];
+const RegulatoryFeatureLegendSection = (props: {
+  featureTypes: OverviewRegion['regulatory_features']['feature_types'];
 }) => {
-  const genes = props.features.map((feature) => (
-    <div key={feature.id}>
-      {feature.feature_type}
-      {'  '}
-      {feature.id}
-    </div>
-  ));
-
   // TODO: change this into an accordion
   return (
     <div style={{ marginTop: '1.5rem' }}>
       <div style={{ fontWeight: 'bold' }}>Regulatory features</div>
-      {genes}
+      <RegulatoryFeatureLegend featureTypes={props.featureTypes} />
     </div>
   );
 };

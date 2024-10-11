@@ -72,6 +72,18 @@ export type RegulatoryFeature = {
   extended_end?: number; // <-- may have the same value as end
 };
 
+export type RegulatoryFeatureMetadata = {
+  label: string; // <-- human-readable label
+  description?: string; // if there is any extra information to go along with the label
+  color: string; // <-- a hexadecimal colour string
+  track_index: number; // <-- where to display a feature relative to others; 0-based
+};
+
+// TODO: check if this is really needed
+// type RegulatoryFeatureMetadataWithFeatureType = RegulatoryFeatureMetadata & {
+//   feature_type: string;
+// };
+
 export type OverviewRegion = {
   region_name: string;
   coordinate_system: string; // <-- "chromosome", "contig", etc.; should probably be a union type of possible strings
@@ -80,6 +92,9 @@ export type OverviewRegion = {
     end: number;
   }[]; // <-- identifies parts of the region that will be included in the diagram
   genes: GeneInRegionOverview[];
-  // default_gene_index: number; // <-- which gene to pick by default in absence of other indicators
-  regulatory_features: RegulatoryFeature[];
+  selected_gene_index: number; // <-- which gene to pick by default in absence of other indicators; 0-based
+  regulatory_features: {
+    feature_types: Record<string, RegulatoryFeatureMetadata>;
+    data: RegulatoryFeature[];
+  };
 };

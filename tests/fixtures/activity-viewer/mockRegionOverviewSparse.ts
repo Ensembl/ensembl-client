@@ -1023,930 +1023,1689 @@ const regionOverview = {
       cds_counts: []
     }
   ],
-  regulatory_features: [
-    {
-      id: 'ENSR4_84HTKJ',
-      feature_type: 'enhancer',
-      start: 85500537,
-      end: 85500754,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q56GZ',
-      feature_type: 'CTCF_binding_site',
-      start: 85529074,
-      end: 85529095,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_84HWHM',
-      feature_type: 'enhancer',
-      start: 85543895,
-      end: 85544135,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938XTL',
-      feature_type: 'enhancer',
-      start: 85555173,
-      end: 85555590,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_772SKT',
-      feature_type: 'enhancer',
-      start: 85557411,
-      end: 85557534,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938XZQ',
-      feature_type: 'enhancer',
-      start: 85566146,
-      end: 85566445,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938Z94',
-      feature_type: 'enhancer',
-      start: 85591409,
-      end: 85591759,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938ZDP',
-      feature_type: 'enhancer',
-      start: 85604012,
-      end: 85604276,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938ZFR',
-      feature_type: 'enhancer',
-      start: 85607683,
-      end: 85608024,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84HXX8',
-      feature_type: 'enhancer',
-      start: 85610609,
-      end: 85610855,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_938ZZM',
-      feature_type: 'enhancer',
-      start: 85658992,
-      end: 85659349,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q5ZRN',
-      feature_type: 'CTCF_binding_site',
-      start: 85659260,
-      end: 85659281,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_938ZZT',
-      feature_type: 'enhancer',
-      start: 85659722,
-      end: 85660189,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_939226',
-      feature_type: 'enhancer',
-      start: 85660830,
-      end: 85661235,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93925F',
-      feature_type: 'enhancer',
-      start: 85672144,
-      end: 85672455,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J2CT',
-      feature_type: 'enhancer',
-      start: 85677328,
-      end: 85677582,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM253',
-      feature_type: 'enhancer',
-      start: 85681068,
-      end: 85681840,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q66G2',
-      feature_type: 'CTCF_binding_site',
-      start: 85686326,
-      end: 85686347,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_5Q67S2',
-      feature_type: 'CTCF_binding_site',
-      start: 85694318,
-      end: 85694339,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_BM282',
-      feature_type: 'enhancer',
-      start: 85701702,
-      end: 85702384,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J2WR',
-      feature_type: 'enhancer',
-      start: 85703175,
-      end: 85703345,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392HP',
-      feature_type: 'enhancer',
-      start: 85707689,
-      end: 85708040,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_6D465P',
-      feature_type: 'CTCF_binding_site',
-      start: 85708671,
-      end: 85708703,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392L5',
-      feature_type: 'enhancer',
-      start: 85716064,
-      end: 85716336,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392LJ',
-      feature_type: 'enhancer',
-      start: 85717345,
-      end: 85717751,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_7734GM',
-      feature_type: 'enhancer',
-      start: 85717946,
-      end: 85718072,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J3B2',
-      feature_type: 'enhancer',
-      start: 85720808,
-      end: 85721037,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392N5',
-      feature_type: 'enhancer',
-      start: 85722872,
-      end: 85723219,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J3DC',
-      feature_type: 'enhancer',
-      start: 85724850,
-      end: 85725020,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2CG',
-      feature_type: 'enhancer',
-      start: 85725326,
-      end: 85726252,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J3GJ',
-      feature_type: 'enhancer',
-      start: 85728603,
-      end: 85728825,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392RG',
-      feature_type: 'enhancer',
-      start: 85734453,
-      end: 85734858,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_6D48PM',
-      feature_type: 'CTCF_binding_site',
-      start: 85738865,
-      end: 85738904,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q6HGM',
-      feature_type: 'CTCF_binding_site',
-      start: 85738955,
-      end: 85738976,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_9392T7',
-      feature_type: 'enhancer',
-      start: 85740430,
-      end: 85740829,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392TM',
-      feature_type: 'enhancer',
-      start: 85741986,
-      end: 85742287,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2G2',
-      feature_type: 'enhancer',
-      start: 85743041,
-      end: 85743827,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J3S2',
-      feature_type: 'enhancer',
-      start: 85745022,
-      end: 85745273,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9392XD',
-      feature_type: 'enhancer',
-      start: 85747870,
-      end: 85748350,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q6K2S',
-      feature_type: 'CTCF_binding_site',
-      start: 85748064,
-      end: 85748085,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_84J3W7',
-      feature_type: 'enhancer',
-      start: 85748797,
-      end: 85748961,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J43Z',
-      feature_type: 'open_chromatin_region',
-      start: 85757043,
-      end: 85757255,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_6D4BB2',
-      feature_type: 'CTCF_binding_site',
-      start: 85757173,
-      end: 85757205,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_BM2JH',
-      feature_type: 'enhancer',
-      start: 85760349,
-      end: 85760879,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_CBHQT',
-      feature_type: 'enhancer',
-      start: 85761848,
-      end: 85762883,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J4H3',
-      feature_type: 'enhancer',
-      start: 85776210,
-      end: 85776400,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93938N',
-      feature_type: 'enhancer',
-      start: 85776610,
-      end: 85776954,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_939396',
-      feature_type: 'promoter',
-      start: 85778277,
-      end: 85778716,
-      strand: 'independent',
-      extended_start: 85778278,
-      extended_end: 85778716
-    },
-    {
-      id: 'ENSR4_BM2M6',
-      feature_type: 'enhancer',
-      start: 85778717,
-      end: 85779578,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q6QDK',
-      feature_type: 'CTCF_binding_site',
-      start: 85779329,
-      end: 85779350,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_93939S',
-      feature_type: 'enhancer',
-      start: 85780566,
-      end: 85781066,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393BN',
-      feature_type: 'enhancer',
-      start: 85783469,
-      end: 85783954,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2NC',
-      feature_type: 'enhancer',
-      start: 85786949,
-      end: 85787538,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2NT',
-      feature_type: 'enhancer',
-      start: 85790547,
-      end: 85791136,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393F9',
-      feature_type: 'enhancer',
-      start: 85792585,
-      end: 85792904,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2P9',
-      feature_type: 'enhancer',
-      start: 85793315,
-      end: 85793872,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2PQ',
-      feature_type: 'enhancer',
-      start: 85796522,
-      end: 85797235,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q6TFS',
-      feature_type: 'CTCF_binding_site',
-      start: 85797094,
-      end: 85797115,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_84J4XX',
-      feature_type: 'enhancer',
-      start: 85798433,
-      end: 85798684,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2RB',
-      feature_type: 'enhancer',
-      start: 85807405,
-      end: 85808098,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J599',
-      feature_type: 'enhancer',
-      start: 85812882,
-      end: 85813042,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393Q7',
-      feature_type: 'enhancer',
-      start: 85823310,
-      end: 85823807,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393QF',
-      feature_type: 'enhancer',
-      start: 85824193,
-      end: 85824498,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2W2',
-      feature_type: 'enhancer',
-      start: 85826015,
-      end: 85826786,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_CBHXL',
-      feature_type: 'enhancer',
-      start: 85827264,
-      end: 85828850,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM2WH',
-      feature_type: 'enhancer',
-      start: 85829374,
-      end: 85829999,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393W8',
-      feature_type: 'enhancer',
-      start: 85837331,
-      end: 85837613,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393X3',
-      feature_type: 'enhancer',
-      start: 85840143,
-      end: 85840449,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9393XQ',
-      feature_type: 'enhancer',
-      start: 85842523,
-      end: 85842971,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93945S',
-      feature_type: 'enhancer',
-      start: 85860091,
-      end: 85860557,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J6BF',
-      feature_type: 'enhancer',
-      start: 85861495,
-      end: 85861642,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93947W',
-      feature_type: 'enhancer',
-      start: 85867308,
-      end: 85867620,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J6GX',
-      feature_type: 'enhancer',
-      start: 85869317,
-      end: 85869450,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9394KR',
-      feature_type: 'enhancer',
-      start: 85901552,
-      end: 85901817,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9394W2',
-      feature_type: 'promoter',
-      start: 85929783,
-      end: 85930283,
-      strand: 'independent',
-      extended_start: 85928784,
-      extended_end: 85930283
-    },
-    {
-      id: 'ENSR4_9394W5',
-      feature_type: 'enhancer',
-      start: 85930284,
-      end: 85930563,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM3GF',
-      feature_type: 'enhancer',
-      start: 85932511,
-      end: 85933462,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93955K',
-      feature_type: 'enhancer',
-      start: 85952536,
-      end: 85952891,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM3KF',
-      feature_type: 'enhancer',
-      start: 85953431,
-      end: 85954056,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J8C5',
-      feature_type: 'enhancer',
-      start: 85956018,
-      end: 85956247,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93959K',
-      feature_type: 'enhancer',
-      start: 85966385,
-      end: 85966784,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J8L4',
-      feature_type: 'enhancer',
-      start: 85968008,
-      end: 85968258,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9395BB',
-      feature_type: 'enhancer',
-      start: 85968913,
-      end: 85969314,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q7XXG',
-      feature_type: 'CTCF_binding_site',
-      start: 85969169,
-      end: 85969190,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_9395BG',
-      feature_type: 'enhancer',
-      start: 85969475,
-      end: 85969751,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM3TQ',
-      feature_type: 'enhancer',
-      start: 86011036,
-      end: 86011653,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84J9KJ',
-      feature_type: 'enhancer',
-      start: 86013762,
-      end: 86013911,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9395RJ',
-      feature_type: 'enhancer',
-      start: 86014644,
-      end: 86014959,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_CBJHG',
-      feature_type: 'enhancer',
-      start: 86032470,
-      end: 86033816,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JB3B',
-      feature_type: 'enhancer',
-      start: 86035847,
-      end: 86036008,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93962X',
-      feature_type: 'enhancer',
-      start: 86036739,
-      end: 86037120,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_939652',
-      feature_type: 'enhancer',
-      start: 86043899,
-      end: 86044403,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q8FRQ',
-      feature_type: 'CTCF_binding_site',
-      start: 86044184,
-      end: 86044205,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_93966B',
-      feature_type: 'enhancer',
-      start: 86048470,
-      end: 86048758,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JBGZ',
-      feature_type: 'enhancer',
-      start: 86055992,
-      end: 86056193,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9396G8',
-      feature_type: 'open_chromatin_region',
-      start: 86075806,
-      end: 86076065,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9396M5',
-      feature_type: 'enhancer',
-      start: 86092738,
-      end: 86093060,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM4G7',
-      feature_type: 'enhancer',
-      start: 86117583,
-      end: 86118520,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JF6P',
-      feature_type: 'enhancer',
-      start: 86181675,
-      end: 86181891,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM4ZS',
-      feature_type: 'enhancer',
-      start: 86218715,
-      end: 86219442,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_939822',
-      feature_type: 'enhancer',
-      start: 86220149,
-      end: 86220485,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_93982Z',
-      feature_type: 'open_chromatin_region',
-      start: 86223449,
-      end: 86223852,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5Q9KKG',
-      feature_type: 'CTCF_binding_site',
-      start: 86223617,
-      end: 86223638,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_5Q9KKW',
-      feature_type: 'CTCF_binding_site',
-      start: 86223714,
-      end: 86223735,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_5Q9KLT',
-      feature_type: 'CTCF_binding_site',
-      start: 86223920,
-      end: 86223941,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_BM53Z',
-      feature_type: 'enhancer',
-      start: 86233635,
-      end: 86234149,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9398BM',
-      feature_type: 'enhancer',
-      start: 86250021,
-      end: 86250324,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9398TQ',
-      feature_type: 'open_chromatin_region',
-      start: 86302262,
-      end: 86302625,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9398X4',
-      feature_type: 'enhancer',
-      start: 86306777,
-      end: 86307215,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JHTK',
-      feature_type: 'enhancer',
-      start: 86307576,
-      end: 86307732,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM5M6',
-      feature_type: 'enhancer',
-      start: 86338692,
-      end: 86339392,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JJZ2',
-      feature_type: 'promoter',
-      start: 86358499,
-      end: 86358676,
-      strand: 'independent',
-      extended_start: 86358500,
-      extended_end: 86358676
-    },
-    {
-      id: 'ENSR4_9399H9',
-      feature_type: 'enhancer',
-      start: 86359239,
-      end: 86359720,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9399HF',
-      feature_type: 'promoter',
-      start: 86359721,
-      end: 86360187,
-      strand: 'independent',
-      extended_start: 86359722,
-      extended_end: 86360187
-    },
-    {
-      id: 'ENSR4_9399HJ',
-      feature_type: 'promoter',
-      start: 86360212,
-      end: 86360627,
-      strand: 'independent',
-      extended_start: 86360213,
-      extended_end: 86360627
-    },
-    {
-      id: 'ENSR4_9399KN',
-      feature_type: 'enhancer',
-      start: 86367643,
-      end: 86367939,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_9399PC',
-      feature_type: 'enhancer',
-      start: 86380285,
-      end: 86380617,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JKT7',
-      feature_type: 'enhancer',
-      start: 86400260,
-      end: 86400464,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5QBPNC',
-      feature_type: 'CTCF_binding_site',
-      start: 86405036,
-      end: 86405057,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_5QBSHD',
-      feature_type: 'CTCF_binding_site',
-      start: 86421460,
-      end: 86421481,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_BM672',
-      feature_type: 'enhancer',
-      start: 86441144,
-      end: 86441858,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5QBXZK',
-      feature_type: 'CTCF_binding_site',
-      start: 86441800,
-      end: 86441821,
-      strand: 'forward'
-    },
-    {
-      id: 'ENSR4_BM68H',
-      feature_type: 'enhancer',
-      start: 86451570,
-      end: 86452137,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_BM68P',
-      feature_type: 'promoter',
-      start: 86453065,
-      end: 86453926,
-      strand: 'independent',
-      extended_start: 86453066,
-      extended_end: 86454143
-    },
-    {
-      id: 'ENSR4_BM6F2',
-      feature_type: 'enhancer',
-      start: 86482709,
-      end: 86483359,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_939BSF',
-      feature_type: 'enhancer',
-      start: 86484301,
-      end: 86484570,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_84JMT7',
-      feature_type: 'enhancer',
-      start: 86493554,
-      end: 86493787,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_CBKQ2',
-      feature_type: 'enhancer',
-      start: 86496162,
-      end: 86497596,
-      strand: 'independent'
-    },
-    {
-      id: 'ENSR4_5QCBBR',
-      feature_type: 'CTCF_binding_site',
-      start: 86496283,
-      end: 86496304,
-      strand: 'reverse'
-    },
-    {
-      id: 'ENSR4_CBKQ5',
-      feature_type: 'enhancer',
-      start: 86497984,
-      end: 86499019,
-      strand: 'independent'
-    }
-  ],
+  regulatory_features: {
+    feature_types: {
+      promoter: {
+        label: 'Promoter',
+        track_index: 0,
+        color: '#d90000'
+      },
+      ctcf: {
+        label: 'CTCF',
+        track_index: 2,
+        color: '#8ef4f8',
+        description: 'CCCTC-binding factor'
+      },
+      enhancer: {
+        label: 'Enhancer',
+        track_index: 0,
+        color: '#f8c041'
+      },
+      emar: {
+        label: 'EMAR',
+        track_index: 1,
+        color: '#004d40',
+        description: 'Epigenetically-modified accessible region'
+      },
+      open_chromatin_region: {
+        label: 'Open chromatin',
+        track_index: 0,
+        color: '#b7c0c8'
+      }
+    },
+    data: [
+      {
+        id: 'ENSR00001517763',
+        feature_type: 'emar',
+        start: 85500537,
+        end: 85500754,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84HTKJ',
+        feature_type: 'enhancer',
+        start: 85500537,
+        end: 85500754,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q56GZ',
+        feature_type: 'ctcf',
+        start: 85529074,
+        end: 85529095,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR00001517764',
+        feature_type: 'emar',
+        start: 85543895,
+        end: 85544135,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84HWHM',
+        feature_type: 'enhancer',
+        start: 85543895,
+        end: 85544135,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517766',
+        feature_type: 'emar',
+        start: 85555173,
+        end: 85555590,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938XTL',
+        feature_type: 'enhancer',
+        start: 85555173,
+        end: 85555590,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517768',
+        feature_type: 'emar',
+        start: 85557411,
+        end: 85557534,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938XZQ',
+        feature_type: 'enhancer',
+        start: 85566146,
+        end: 85566445,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517770',
+        feature_type: 'emar',
+        start: 85591409,
+        end: 85591759,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938Z94',
+        feature_type: 'enhancer',
+        start: 85591409,
+        end: 85591759,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517772',
+        feature_type: 'emar',
+        start: 85604012,
+        end: 85604276,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938ZDP',
+        feature_type: 'enhancer',
+        start: 85604012,
+        end: 85604276,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517774',
+        feature_type: 'emar',
+        start: 85607683,
+        end: 85608024,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938ZFR',
+        feature_type: 'enhancer',
+        start: 85607683,
+        end: 85608024,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517775',
+        feature_type: 'emar',
+        start: 85610609,
+        end: 85610855,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84HXX8',
+        feature_type: 'enhancer',
+        start: 85610609,
+        end: 85610855,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517777',
+        feature_type: 'emar',
+        start: 85658992,
+        end: 85659349,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938ZZM',
+        feature_type: 'enhancer',
+        start: 85658992,
+        end: 85659349,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q5ZRN',
+        feature_type: 'ctcf',
+        start: 85659260,
+        end: 85659281,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR00001517779',
+        feature_type: 'emar',
+        start: 85659722,
+        end: 85660189,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_938ZZT',
+        feature_type: 'enhancer',
+        start: 85659722,
+        end: 85660189,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517781',
+        feature_type: 'emar',
+        start: 85660830,
+        end: 85661235,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_939226',
+        feature_type: 'enhancer',
+        start: 85660830,
+        end: 85661235,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517783',
+        feature_type: 'emar',
+        start: 85672144,
+        end: 85672455,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517785',
+        feature_type: 'emar',
+        start: 85677328,
+        end: 85677582,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J2CT',
+        feature_type: 'enhancer',
+        start: 85677328,
+        end: 85677582,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517787',
+        feature_type: 'emar',
+        start: 85681068,
+        end: 85681840,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM253',
+        feature_type: 'enhancer',
+        start: 85681068,
+        end: 85681840,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q66G2',
+        feature_type: 'ctcf',
+        start: 85686326,
+        end: 85686347,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517789',
+        feature_type: 'emar',
+        start: 85701702,
+        end: 85702384,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM282',
+        feature_type: 'enhancer',
+        start: 85701702,
+        end: 85702384,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517791',
+        feature_type: 'emar',
+        start: 85703175,
+        end: 85703345,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J2WR',
+        feature_type: 'enhancer',
+        start: 85703175,
+        end: 85703345,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517793',
+        feature_type: 'emar',
+        start: 85707689,
+        end: 85708040,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_6D465P',
+        feature_type: 'ctcf',
+        start: 85708671,
+        end: 85708703,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517795',
+        feature_type: 'emar',
+        start: 85716064,
+        end: 85716336,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392L5',
+        feature_type: 'enhancer',
+        start: 85716064,
+        end: 85716336,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517797',
+        feature_type: 'emar',
+        start: 85717345,
+        end: 85717751,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392LJ',
+        feature_type: 'enhancer',
+        start: 85717345,
+        end: 85717751,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517799',
+        feature_type: 'emar',
+        start: 85717946,
+        end: 85718072,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_7734GM',
+        feature_type: 'enhancer',
+        start: 85717946,
+        end: 85718072,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517800',
+        feature_type: 'emar',
+        start: 85720808,
+        end: 85721037,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J3B2',
+        feature_type: 'enhancer',
+        start: 85720808,
+        end: 85721037,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517801',
+        feature_type: 'emar',
+        start: 85722872,
+        end: 85723219,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392N5',
+        feature_type: 'enhancer',
+        start: 85722872,
+        end: 85723219,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517803',
+        feature_type: 'emar',
+        start: 85724850,
+        end: 85725020,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J3DC',
+        feature_type: 'enhancer',
+        start: 85724850,
+        end: 85725020,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517805',
+        feature_type: 'emar',
+        start: 85725326,
+        end: 85726252,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2CG',
+        feature_type: 'enhancer',
+        start: 85725326,
+        end: 85726252,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517807',
+        feature_type: 'emar',
+        start: 85728603,
+        end: 85728825,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517808',
+        feature_type: 'emar',
+        start: 85734453,
+        end: 85734858,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392RG',
+        feature_type: 'enhancer',
+        start: 85734453,
+        end: 85734858,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_6D48PM',
+        feature_type: 'ctcf',
+        start: 85738865,
+        end: 85738904,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q6HGM',
+        feature_type: 'ctcf',
+        start: 85738955,
+        end: 85738976,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517810',
+        feature_type: 'emar',
+        start: 85740430,
+        end: 85740829,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392T7',
+        feature_type: 'enhancer',
+        start: 85740430,
+        end: 85740829,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517812',
+        feature_type: 'emar',
+        start: 85741986,
+        end: 85742287,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392TM',
+        feature_type: 'enhancer',
+        start: 85741986,
+        end: 85742287,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517814',
+        feature_type: 'emar',
+        start: 85743041,
+        end: 85743827,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2G2',
+        feature_type: 'enhancer',
+        start: 85743041,
+        end: 85743827,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517816',
+        feature_type: 'emar',
+        start: 85745022,
+        end: 85745273,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J3S2',
+        feature_type: 'enhancer',
+        start: 85745022,
+        end: 85745273,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517818',
+        feature_type: 'emar',
+        start: 85747870,
+        end: 85748350,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392XD',
+        feature_type: 'enhancer',
+        start: 85747870,
+        end: 85748350,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q6K2S',
+        feature_type: 'ctcf',
+        start: 85748064,
+        end: 85748085,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517820',
+        feature_type: 'emar',
+        start: 85748797,
+        end: 85748961,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J3W7',
+        feature_type: 'enhancer',
+        start: 85748797,
+        end: 85748961,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J43Z',
+        feature_type: 'open_chromatin_region',
+        start: 85757043,
+        end: 85757255,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_6D4BB2',
+        feature_type: 'ctcf',
+        start: 85757173,
+        end: 85757205,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR00001517822',
+        feature_type: 'emar',
+        start: 85760349,
+        end: 85760879,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517824',
+        feature_type: 'emar',
+        start: 85761848,
+        end: 85762883,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_CBHQT',
+        feature_type: 'enhancer',
+        start: 85761848,
+        end: 85762883,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517826',
+        feature_type: 'emar',
+        start: 85776210,
+        end: 85776400,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J4H3',
+        feature_type: 'enhancer',
+        start: 85776210,
+        end: 85776400,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517828',
+        feature_type: 'emar',
+        start: 85776610,
+        end: 85776954,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93938N',
+        feature_type: 'enhancer',
+        start: 85776610,
+        end: 85776954,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_939396',
+        feature_type: 'promoter',
+        start: 85778277,
+        end: 85778716,
+        strand: 'independent',
+        extended_start: 85778278,
+        extended_end: 85778716
+      },
+      {
+        id: 'ENSR00001517829',
+        feature_type: 'emar',
+        start: 85778277,
+        end: 85779578,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2M6',
+        feature_type: 'enhancer',
+        start: 85778717,
+        end: 85779578,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93939S',
+        feature_type: 'enhancer',
+        start: 85780566,
+        end: 85781066,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393BN',
+        feature_type: 'enhancer',
+        start: 85783469,
+        end: 85783954,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517836',
+        feature_type: 'emar',
+        start: 85786949,
+        end: 85787538,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2NC',
+        feature_type: 'enhancer',
+        start: 85786949,
+        end: 85787538,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517838',
+        feature_type: 'emar',
+        start: 85790547,
+        end: 85791136,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2NT',
+        feature_type: 'enhancer',
+        start: 85790547,
+        end: 85791136,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517840',
+        feature_type: 'emar',
+        start: 85792585,
+        end: 85792904,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393F9',
+        feature_type: 'enhancer',
+        start: 85792585,
+        end: 85792904,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517842',
+        feature_type: 'emar',
+        start: 85793315,
+        end: 85793872,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2P9',
+        feature_type: 'enhancer',
+        start: 85793315,
+        end: 85793872,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517844',
+        feature_type: 'emar',
+        start: 85796522,
+        end: 85797235,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2PQ',
+        feature_type: 'enhancer',
+        start: 85796522,
+        end: 85797235,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q6TFS',
+        feature_type: 'ctcf',
+        start: 85797094,
+        end: 85797115,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517846',
+        feature_type: 'emar',
+        start: 85798433,
+        end: 85798684,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J4XX',
+        feature_type: 'enhancer',
+        start: 85798433,
+        end: 85798684,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517847',
+        feature_type: 'emar',
+        start: 85807405,
+        end: 85808098,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2RB',
+        feature_type: 'enhancer',
+        start: 85807405,
+        end: 85808098,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517848',
+        feature_type: 'emar',
+        start: 85812882,
+        end: 85813042,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J599',
+        feature_type: 'enhancer',
+        start: 85812882,
+        end: 85813042,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517850',
+        feature_type: 'emar',
+        start: 85823310,
+        end: 85823807,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393Q7',
+        feature_type: 'enhancer',
+        start: 85823310,
+        end: 85823807,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517852',
+        feature_type: 'emar',
+        start: 85824193,
+        end: 85824498,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393QF',
+        feature_type: 'enhancer',
+        start: 85824193,
+        end: 85824498,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517854',
+        feature_type: 'emar',
+        start: 85826015,
+        end: 85826786,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2W2',
+        feature_type: 'enhancer',
+        start: 85826015,
+        end: 85826786,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_CBHXL',
+        feature_type: 'enhancer',
+        start: 85827264,
+        end: 85828850,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517858',
+        feature_type: 'emar',
+        start: 85829374,
+        end: 85829999,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2WH',
+        feature_type: 'enhancer',
+        start: 85829374,
+        end: 85829999,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393W8',
+        feature_type: 'enhancer',
+        start: 85837331,
+        end: 85837613,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517861',
+        feature_type: 'emar',
+        start: 85840143,
+        end: 85840449,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517863',
+        feature_type: 'emar',
+        start: 85842523,
+        end: 85842971,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393XQ',
+        feature_type: 'enhancer',
+        start: 85842523,
+        end: 85842971,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93945S',
+        feature_type: 'enhancer',
+        start: 85860091,
+        end: 85860557,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517867',
+        feature_type: 'emar',
+        start: 85861495,
+        end: 85861642,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J6BF',
+        feature_type: 'enhancer',
+        start: 85861495,
+        end: 85861642,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517868',
+        feature_type: 'emar',
+        start: 85867308,
+        end: 85867620,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93947W',
+        feature_type: 'enhancer',
+        start: 85867308,
+        end: 85867620,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J6GX',
+        feature_type: 'enhancer',
+        start: 85869317,
+        end: 85869450,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517871',
+        feature_type: 'emar',
+        start: 85928761,
+        end: 85930563,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9394W2',
+        feature_type: 'promoter',
+        start: 85929783,
+        end: 85930283,
+        strand: 'independent',
+        extended_start: 85928784,
+        extended_end: 85930283
+      },
+      {
+        id: 'ENSR4_9394W5',
+        feature_type: 'enhancer',
+        start: 85930284,
+        end: 85930563,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517874',
+        feature_type: 'emar',
+        start: 85932511,
+        end: 85933462,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM3GF',
+        feature_type: 'enhancer',
+        start: 85932511,
+        end: 85933462,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517876',
+        feature_type: 'emar',
+        start: 85952536,
+        end: 85952891,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93955K',
+        feature_type: 'enhancer',
+        start: 85952536,
+        end: 85952891,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517878',
+        feature_type: 'emar',
+        start: 85953431,
+        end: 85954056,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM3KF',
+        feature_type: 'enhancer',
+        start: 85953431,
+        end: 85954056,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517879',
+        feature_type: 'emar',
+        start: 85956018,
+        end: 85956247,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J8C5',
+        feature_type: 'enhancer',
+        start: 85956018,
+        end: 85956247,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517880',
+        feature_type: 'emar',
+        start: 85966385,
+        end: 85966784,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93959K',
+        feature_type: 'enhancer',
+        start: 85966385,
+        end: 85966784,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517882',
+        feature_type: 'emar',
+        start: 85968008,
+        end: 85968258,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J8L4',
+        feature_type: 'enhancer',
+        start: 85968008,
+        end: 85968258,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517884',
+        feature_type: 'emar',
+        start: 85968913,
+        end: 85969314,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9395BB',
+        feature_type: 'enhancer',
+        start: 85968913,
+        end: 85969314,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q7XXG',
+        feature_type: 'ctcf',
+        start: 85969169,
+        end: 85969190,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517886',
+        feature_type: 'emar',
+        start: 85969475,
+        end: 85969751,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517887',
+        feature_type: 'emar',
+        start: 86011036,
+        end: 86011653,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM3TQ',
+        feature_type: 'enhancer',
+        start: 86011036,
+        end: 86011653,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517888',
+        feature_type: 'emar',
+        start: 86013762,
+        end: 86013911,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84J9KJ',
+        feature_type: 'enhancer',
+        start: 86013762,
+        end: 86013911,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517889',
+        feature_type: 'emar',
+        start: 86014644,
+        end: 86014959,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9395RJ',
+        feature_type: 'enhancer',
+        start: 86014644,
+        end: 86014959,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_CBJHG',
+        feature_type: 'enhancer',
+        start: 86032470,
+        end: 86033816,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517893',
+        feature_type: 'emar',
+        start: 86035847,
+        end: 86036008,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JB3B',
+        feature_type: 'enhancer',
+        start: 86035847,
+        end: 86036008,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517895',
+        feature_type: 'emar',
+        start: 86036739,
+        end: 86037120,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93962X',
+        feature_type: 'enhancer',
+        start: 86036739,
+        end: 86037120,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517896',
+        feature_type: 'emar',
+        start: 86043899,
+        end: 86044403,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_939652',
+        feature_type: 'enhancer',
+        start: 86043899,
+        end: 86044403,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q8FRQ',
+        feature_type: 'ctcf',
+        start: 86044184,
+        end: 86044205,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517897',
+        feature_type: 'emar',
+        start: 86048470,
+        end: 86048758,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93966B',
+        feature_type: 'enhancer',
+        start: 86048470,
+        end: 86048758,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517898',
+        feature_type: 'emar',
+        start: 86055992,
+        end: 86056193,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JBGZ',
+        feature_type: 'enhancer',
+        start: 86055992,
+        end: 86056193,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517900',
+        feature_type: 'emar',
+        start: 86075806,
+        end: 86076065,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9396G8',
+        feature_type: 'open_chromatin_region',
+        start: 86075806,
+        end: 86076065,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517901',
+        feature_type: 'emar',
+        start: 86092738,
+        end: 86093060,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9396M5',
+        feature_type: 'enhancer',
+        start: 86092738,
+        end: 86093060,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517903',
+        feature_type: 'emar',
+        start: 86117583,
+        end: 86118520,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM4G7',
+        feature_type: 'enhancer',
+        start: 86117583,
+        end: 86118520,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517905',
+        feature_type: 'emar',
+        start: 86181675,
+        end: 86181891,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JF6P',
+        feature_type: 'enhancer',
+        start: 86181675,
+        end: 86181891,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517907',
+        feature_type: 'emar',
+        start: 86218715,
+        end: 86219442,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM4ZS',
+        feature_type: 'enhancer',
+        start: 86218715,
+        end: 86219442,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_939822',
+        feature_type: 'enhancer',
+        start: 86220149,
+        end: 86220485,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93982Z',
+        feature_type: 'open_chromatin_region',
+        start: 86223449,
+        end: 86223852,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q9KKG',
+        feature_type: 'ctcf',
+        start: 86223617,
+        end: 86223638,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR4_5Q9KKW',
+        feature_type: 'ctcf',
+        start: 86223714,
+        end: 86223735,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR4_5Q9KLT',
+        feature_type: 'ctcf',
+        start: 86223920,
+        end: 86223941,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR4_BM53Z',
+        feature_type: 'enhancer',
+        start: 86233635,
+        end: 86234149,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517911',
+        feature_type: 'emar',
+        start: 86250021,
+        end: 86250324,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9398BM',
+        feature_type: 'enhancer',
+        start: 86250021,
+        end: 86250324,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517912',
+        feature_type: 'emar',
+        start: 86302262,
+        end: 86302625,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9398TQ',
+        feature_type: 'open_chromatin_region',
+        start: 86302262,
+        end: 86302625,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517914',
+        feature_type: 'emar',
+        start: 86306777,
+        end: 86307215,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9398X4',
+        feature_type: 'enhancer',
+        start: 86306777,
+        end: 86307215,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517916',
+        feature_type: 'emar',
+        start: 86307576,
+        end: 86307732,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM5M6',
+        feature_type: 'enhancer',
+        start: 86338692,
+        end: 86339392,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517918',
+        feature_type: 'emar',
+        start: 86358421,
+        end: 86358586,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JJZ2',
+        feature_type: 'promoter',
+        start: 86358499,
+        end: 86358676,
+        strand: 'independent',
+        extended_start: 86358500,
+        extended_end: 86358676
+      },
+      {
+        id: 'ENSR4_9399H9',
+        feature_type: 'enhancer',
+        start: 86359239,
+        end: 86359720,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517921',
+        feature_type: 'emar',
+        start: 86359239,
+        end: 86360627,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9399HF',
+        feature_type: 'promoter',
+        start: 86359721,
+        end: 86360187,
+        strand: 'independent',
+        extended_start: 86359722,
+        extended_end: 86360187
+      },
+      {
+        id: 'ENSR4_9399HJ',
+        feature_type: 'promoter',
+        start: 86360212,
+        end: 86360627,
+        strand: 'independent',
+        extended_start: 86360213,
+        extended_end: 86360627
+      },
+      {
+        id: 'ENSR00001517924',
+        feature_type: 'emar',
+        start: 86367643,
+        end: 86367939,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9399KN',
+        feature_type: 'enhancer',
+        start: 86367643,
+        end: 86367939,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517926',
+        feature_type: 'emar',
+        start: 86380285,
+        end: 86380617,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9399PC',
+        feature_type: 'enhancer',
+        start: 86380285,
+        end: 86380617,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517927',
+        feature_type: 'emar',
+        start: 86400260,
+        end: 86400464,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JKT7',
+        feature_type: 'enhancer',
+        start: 86400260,
+        end: 86400464,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5QBPNC',
+        feature_type: 'ctcf',
+        start: 86405036,
+        end: 86405057,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR4_5QBSHD',
+        feature_type: 'ctcf',
+        start: 86421460,
+        end: 86421481,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517929',
+        feature_type: 'emar',
+        start: 86441144,
+        end: 86441858,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM672',
+        feature_type: 'enhancer',
+        start: 86441144,
+        end: 86441858,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5QBXZK',
+        feature_type: 'ctcf',
+        start: 86441800,
+        end: 86441821,
+        strand: 'forward'
+      },
+      {
+        id: 'ENSR00001517930',
+        feature_type: 'emar',
+        start: 86451570,
+        end: 86452137,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM68H',
+        feature_type: 'enhancer',
+        start: 86451570,
+        end: 86452137,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM68P',
+        feature_type: 'promoter',
+        start: 86453065,
+        end: 86453926,
+        strand: 'independent',
+        extended_start: 86453066,
+        extended_end: 86454143
+      },
+      {
+        id: 'ENSR00001517931',
+        feature_type: 'emar',
+        start: 86453118,
+        end: 86454143,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517933',
+        feature_type: 'emar',
+        start: 86482709,
+        end: 86483359,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM6F2',
+        feature_type: 'enhancer',
+        start: 86482709,
+        end: 86483359,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517935',
+        feature_type: 'emar',
+        start: 86484301,
+        end: 86484570,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_939BSF',
+        feature_type: 'enhancer',
+        start: 86484301,
+        end: 86484570,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JMT7',
+        feature_type: 'enhancer',
+        start: 86493554,
+        end: 86493787,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517938',
+        feature_type: 'emar',
+        start: 86496162,
+        end: 86497596,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_CBKQ2',
+        feature_type: 'enhancer',
+        start: 86496162,
+        end: 86497596,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5QCBBR',
+        feature_type: 'ctcf',
+        start: 86496283,
+        end: 86496304,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR00001517940',
+        feature_type: 'emar',
+        start: 86497984,
+        end: 86499019,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_CBKQ5',
+        feature_type: 'enhancer',
+        start: 86497984,
+        end: 86499019,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_772SKT',
+        feature_type: 'enhancer',
+        start: 85557411,
+        end: 85557534,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517769',
+        feature_type: 'emar',
+        start: 85566146,
+        end: 85566445,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q67S2',
+        feature_type: 'ctcf',
+        start: 85694318,
+        end: 85694339,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR4_84J3GJ',
+        feature_type: 'enhancer',
+        start: 85728603,
+        end: 85728825,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_BM2JH',
+        feature_type: 'enhancer',
+        start: 85760349,
+        end: 85760879,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_5Q6QDK',
+        feature_type: 'ctcf',
+        start: 85779329,
+        end: 85779350,
+        strand: 'reverse'
+      },
+      {
+        id: 'ENSR00001517832',
+        feature_type: 'emar',
+        start: 85780566,
+        end: 85781066,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517834',
+        feature_type: 'emar',
+        start: 85783469,
+        end: 85783954,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517856',
+        feature_type: 'emar',
+        start: 85827264,
+        end: 85828850,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517859',
+        feature_type: 'emar',
+        start: 85837331,
+        end: 85837613,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517869',
+        feature_type: 'emar',
+        start: 85869317,
+        end: 85869450,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517870',
+        feature_type: 'emar',
+        start: 85901552,
+        end: 85901817,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9394KR',
+        feature_type: 'enhancer',
+        start: 85901552,
+        end: 85901817,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9395BG',
+        feature_type: 'enhancer',
+        start: 85969475,
+        end: 85969751,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517909',
+        feature_type: 'emar',
+        start: 86220149,
+        end: 86220485,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_84JHTK',
+        feature_type: 'enhancer',
+        start: 86307576,
+        end: 86307732,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517917',
+        feature_type: 'emar',
+        start: 86338692,
+        end: 86339392,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517936',
+        feature_type: 'emar',
+        start: 86493554,
+        end: 86493787,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_93925F',
+        feature_type: 'enhancer',
+        start: 85672144,
+        end: 85672455,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9392HP',
+        feature_type: 'enhancer',
+        start: 85707689,
+        end: 85708040,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR4_9393X3',
+        feature_type: 'enhancer',
+        start: 85840143,
+        end: 85840449,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517865',
+        feature_type: 'emar',
+        start: 85860091,
+        end: 85860557,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517891',
+        feature_type: 'emar',
+        start: 86032470,
+        end: 86033816,
+        strand: 'independent'
+      },
+      {
+        id: 'ENSR00001517910',
+        feature_type: 'emar',
+        start: 86233635,
+        end: 86234149,
+        strand: 'independent'
+      }
+    ]
+  },
   motif_features: [
     {
       id: 'ENSM00000693604',

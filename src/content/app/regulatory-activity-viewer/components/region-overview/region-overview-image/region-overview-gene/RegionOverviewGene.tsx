@@ -31,11 +31,11 @@ import type {
  */
 
 const GENE_HEIGHT = 6;
-const GENE_TRACK_HEIGHT = 12; // TODO: Extract into a constants file
 
 type Props = {
   scale: ScaleLinear<number, number>;
   gene: GeneInTrack;
+  offsetTop: number;
   trackIndex: number;
 };
 
@@ -45,10 +45,10 @@ type Intron = {
 };
 
 const RegionOverviewGene = (props: Props) => {
-  const { gene, scale, trackIndex } = props;
+  const { gene, scale, offsetTop } = props;
   const transcript = gene.data.representative_transcript;
 
-  const trackY = trackIndex * GENE_TRACK_HEIGHT;
+  const trackY = offsetTop;
 
   const introns: Intron[] = [];
 
