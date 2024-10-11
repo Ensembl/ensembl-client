@@ -36,7 +36,6 @@ const ListedVepSubmission = (props: Props) => {
   if (submission.status === 'SUBMITTING') {
     return <SubmissionInProgress {...props} />;
   } else {
-    return <SubmissionInProgress {...props} />;
     return <SubmissionAccepted {...props} />;
   }
 };
