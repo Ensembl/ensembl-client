@@ -22,7 +22,7 @@ import { useAppSelector } from 'src/store';
 
 import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
-import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import { VepSpeciesName } from '../../../components/vep-species-name/VepSpeciesName';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
@@ -37,7 +37,7 @@ export const VepFormSpecies = (props: { className?: string }) => {
 
   return (
     <div className={props.className}>
-      <SpeciesName species={selectedSpecies} />
+      <VepSpeciesName selectedSpecies={selectedSpecies} />
     </div>
   );
 };
