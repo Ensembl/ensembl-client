@@ -19,7 +19,7 @@ import classNames from 'classnames';
 import { isFailedVepSubmission } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
-import { VepSpeciesName } from '../../../components/vep-species-name/VepSpeciesName';
+import { VepSpeciesName } from 'src/content/app/tools/vep/components/vep-species-name/VepSpeciesName';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { CircleLoader } from 'src/shared/components/loader';
 

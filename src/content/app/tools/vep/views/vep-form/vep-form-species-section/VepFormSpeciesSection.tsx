@@ -22,7 +22,7 @@ import { useAppSelector } from 'src/store';
 
 import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
-import { VepSpeciesName } from '../../../components/vep-species-name/VepSpeciesName';
+import { VepSpeciesName } from 'src/content/app/tools/vep/components/vep-species-name/VepSpeciesName';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
