@@ -20,9 +20,9 @@ import { scaleLinear, type ScaleLinear } from 'd3';
 import prepareRegionOverviewGeneTracks, {
   type GeneTrack
 } from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewGeneTracks';
-import prepareRegionOverviewRegulatoryTracks from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewRegulatoryTracks';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
+import TranscriptionStartSite from './transcription-start-site/TranscriptionStartSite';
 
 import type {
   OverviewRegion,
@@ -76,6 +76,14 @@ const RegionOverviewImage = (props: Props) => {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className={styles.viewport}>
       <GeneTracks tracks={geneTracks} scale={scale} width={width} />
+      <TranscriptionStartSite
+        yStart={40}
+        yEnd={20}
+        strand="forward"
+        scale={scale}
+        tss={data.genes[6].tss}
+      />
+
       <RegulatoryFeatureTracks
         offsetTop={REGULATORY_FEATURE_TRACKS_TOP_OFFSET}
         features={data.regulatory_features.data}
@@ -233,9 +241,7 @@ const RegulatoryFeatureTracks = (props: {
 };
 
 const RegulatoryFeatureTrack = (props: {
-  track: ReturnType<
-    typeof prepareRegionOverviewRegulatoryTracks
-  >['regulatoryFeatureTracks'][number];
+  track: RegulatoryFeature[];
   featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
   offsetTop: number;
   scale: ScaleLinear<number, number>;
