@@ -30,6 +30,7 @@ import SpeciesManagerIndicator from 'src/shared/components/species-manager-indic
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import { AppName as AppNameText } from 'src/global/globalConfig';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -39,6 +40,7 @@ const VepAppBar = () => {
       mainContent={<SpeciesTabs />}
       topRight={<SpeciesManagerIndicator />}
       topLeft={<AppName>{AppNameText.TOOLS}</AppName>}
+      aside={<HelpPopupButton slug="vep" />}
     />
   );
 };
