@@ -39,6 +39,8 @@ import styles from './RegionOverview.module.css';
 
 const RegionOverview = () => {
   const [width, setWidth] = useState(0);
+  // FIXME: this is temporary; focus can also be a regulatory feature; should probably be reflected in url, and should be set via redux
+  const [focusGeneId, setFocusGeneId] = useState<string | null>(null);
   const { currentData } = useRegionOverviewQuery();
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -51,12 +53,34 @@ const RegionOverview = () => {
     setWidth(imageContainerWidth);
   }, []);
 
+  useEffect(() => {
+    if (!currentData) {
+      return;
+    }
+
+    const focusGeneIndex = currentData.selected_gene_index;
+    const focusGeneId = currentData.genes[focusGeneIndex]?.stable_id;
+
+    if (focusGeneId) {
+      setFocusGeneId(focusGeneId);
+    }
+  }, [currentData]);
+
+  const onFocusGeneChange = (geneId: string) => {
+    setFocusGeneId(geneId);
+  };
+
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>Left</div>
       <div className={styles.middleColumn} ref={imageContainerRef}>
-        {currentData && (
-          <RegionOverviewImage width={width} data={currentData} />
+        {currentData && width && (
+          <RegionOverviewImage
+            data={currentData}
+            focusGeneId={focusGeneId}
+            onFocusGeneChange={onFocusGeneChange}
+            width={width}
+          />
         )}
       </div>
       <div className={styles.rightColumn}>Right</div>

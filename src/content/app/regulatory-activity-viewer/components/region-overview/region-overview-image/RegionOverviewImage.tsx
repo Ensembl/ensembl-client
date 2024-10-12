@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
 
 import prepareRegionOverviewGeneTracks, {
@@ -34,6 +34,8 @@ import styles from './RegionOverviewImage.module.css';
 type Props = {
   width: number;
   data: OverviewRegion;
+  focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
+  onFocusGeneChange: (geneId: string) => void; // TODO: this will need to evolve; for same reasons as focusGeneId prop
 };
 
 // TODO: Extract image constants into a constants file
@@ -58,7 +60,7 @@ const GENE_TRACK_HEIGHT = 8;
  */
 
 const RegionOverviewImage = (props: Props) => {
-  const { width, data } = props;
+  const { width, data, focusGeneId } = props;
   // FIXME: height should be calculated from data (the number of tracks)
   const height = 150;
 
@@ -75,15 +77,13 @@ const RegionOverviewImage = (props: Props) => {
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className={styles.viewport}>
-      <GeneTracks tracks={geneTracks} scale={scale} width={width} />
-      <TranscriptionStartSite
-        yStart={40}
-        yEnd={20}
-        strand="forward"
+      <GeneTracks
+        tracks={geneTracks}
         scale={scale}
-        tss={data.genes[6].tss}
+        width={width}
+        focusGeneId={focusGeneId}
+        onFocusGeneChange={props.onFocusGeneChange}
       />
-
       <RegulatoryFeatureTracks
         offsetTop={REGULATORY_FEATURE_TRACKS_TOP_OFFSET}
         features={data.regulatory_features.data}
@@ -98,6 +98,8 @@ const GeneTracks = (props: {
   tracks: ReturnType<typeof prepareRegionOverviewGeneTracks>['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
+  focusGeneId: string | null;
+  onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
   let tempY = PADDING_TOP;
@@ -122,6 +124,9 @@ const GeneTracks = (props: {
 
   // === by this point, tempY should be the y-coordinate of the bottom gene track
 
+  const totalGeneTracksCount =
+    forwardStrandTracks.length + reverseStrandTracks.length;
+
   const [forwardStrandTrackElements, reverseStrandTrackElements] = [
     props.tracks.forwardStrandTracks,
     props.tracks.reverseStrandTracks
@@ -134,9 +139,11 @@ const GeneTracks = (props: {
     return tracks.map((track, index) => (
       <GeneTrack
         track={track}
-        trackIndex={index}
+        totalGeneTracksCount={totalGeneTracksCount}
         offsetTop={yCoordLookup[index]}
         scale={props.scale}
+        focusGeneId={props.focusGeneId}
+        onFocusGeneChange={props.onFocusGeneChange}
         key={index}
       />
     ));
@@ -153,21 +160,43 @@ const GeneTracks = (props: {
 
 const GeneTrack = (props: {
   track: GeneTrack;
-  trackIndex: number;
+  totalGeneTracksCount: number;
   offsetTop: number;
   scale: ScaleLinear<number, number>;
+  focusGeneId: string | null;
+  onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
-  const { track, trackIndex, offsetTop, scale } = props;
+  const { track, offsetTop, scale, focusGeneId, totalGeneTracksCount } = props;
 
-  const geneElements = track.map((gene) => (
-    <RegionOverviewGene
-      gene={gene}
-      offsetTop={offsetTop}
-      trackIndex={trackIndex}
-      scale={scale}
-      key={gene.data.stable_id}
-    />
-  ));
+  const geneElements = track.map((gene) => {
+    const tssYStart = offsetTop + 6; // <-- GENE_HEIGHT constant; should be imported
+    const tssYEnd =
+      gene.data.strand === 'forward'
+        ? PADDING_TOP - 10
+        : PADDING_TOP + totalGeneTracksCount * 6 + 20; // <-- GENE_HEIGHT constant and TSS_FONT_SIZE constant; should be imported
+    const isFocusGene = focusGeneId === gene.data.stable_id;
+
+    return (
+      <Fragment key={gene.data.stable_id}>
+        <RegionOverviewGene
+          gene={gene}
+          offsetTop={offsetTop}
+          scale={scale}
+          isFocused={isFocusGene}
+          onClick={props.onFocusGeneChange}
+        />
+        {isFocusGene && (
+          <TranscriptionStartSite
+            yStart={tssYStart}
+            yEnd={tssYEnd}
+            strand={gene.data.strand}
+            scale={scale}
+            tss={gene.data.tss}
+          />
+        )}
+      </Fragment>
+    );
+  });
 
   return <g>{geneElements}</g>;
 };

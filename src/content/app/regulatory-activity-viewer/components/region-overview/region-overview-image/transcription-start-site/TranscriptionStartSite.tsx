@@ -60,6 +60,11 @@ const TranscriptionStartSite = (props: Props) => {
   const arrowheadBaseTopCoords = `${armEndX}, ${yEnd + ARROWHEAD_BASE_LENGTH / 2}`;
   const arrowheadPointCoords = `${arrowheadPointX}, ${yEnd}`;
 
+  const labelX =
+    strand === 'forward' ? arrowheadPointX + 8 : arrowheadPointX - 8;
+  const labelY = yEnd;
+  const textAnchor = strand === 'forward' ? 'start' : 'end';
+
   return (
     <g data-name="transcription start site">
       <line
@@ -81,6 +86,21 @@ const TranscriptionStartSite = (props: Props) => {
       <polygon
         points={`${arrowheadBaseBottomCoords} ${arrowheadPointCoords} ${arrowheadBaseTopCoords}`}
       />
+      <text
+        x={labelX}
+        y={labelY}
+        textAnchor={textAnchor}
+        alignmentBaseline="middle"
+        style={{
+          fontSize: '11px',
+          fontStyle: 'italic',
+          fontWeight: 300,
+          fontFamily:
+            'Lato, "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif'
+        }}
+      >
+        Transcription start
+      </text>
     </g>
   );
 };

@@ -22,6 +22,8 @@ import type {
   CDSFragment
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
+import styles from './RegionOverviewGene.module.css';
+
 /**
  * The transcript diagram is visually similar to a transcript diagram in EntityViewer.
  * However:
@@ -36,7 +38,8 @@ type Props = {
   scale: ScaleLinear<number, number>;
   gene: GeneInTrack;
   offsetTop: number;
-  trackIndex: number;
+  isFocused: boolean;
+  onClick: (geneId: string) => void;
 };
 
 type Intron = {
@@ -45,11 +48,14 @@ type Intron = {
 };
 
 const RegionOverviewGene = (props: Props) => {
-  const { gene, scale, offsetTop } = props;
+  const { gene, scale, offsetTop, isFocused } = props;
   const transcript = gene.data.representative_transcript;
+  const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
 
   const trackY = offsetTop;
 
+  let transcriptStart: number | null = null;
+  let transcriptEnd: number | null = null;
   const introns: Intron[] = [];
 
   for (let i = 1; i < transcript.exons.length; i++) {
@@ -61,11 +67,37 @@ const RegionOverviewGene = (props: Props) => {
     introns.push({ start, end });
   }
 
+  // FIXME: this is an extra loop, which is probably unnecessary
+  // Perhaps sort exons by start location at the beginning? Though this is also a loop, of course
+  for (const exon of transcript.exons) {
+    if (!transcriptStart || exon.start < transcriptStart) {
+      transcriptStart = exon.start;
+    }
+    if (!transcriptEnd || exon.end > transcriptEnd) {
+      transcriptEnd = exon.end;
+    }
+  }
+
   return (
     <g data-name="gene" data-symbol={gene.data.symbol}>
-      <Exons exons={transcript.exons} trackY={trackY} scale={scale} />
-      <CDSBlocks cdsFragments={transcript.cds} trackY={trackY} scale={scale} />
-      <Introns introns={introns} trackY={trackY} scale={scale} />
+      <Exons
+        exons={transcript.exons}
+        trackY={trackY}
+        scale={scale}
+        color={color}
+      />
+      <CDSBlocks
+        cdsFragments={transcript.cds}
+        trackY={trackY}
+        scale={scale}
+        color={color}
+      />
+      <Introns introns={introns} trackY={trackY} scale={scale} color={color} />
+      <InteractiveArea
+        {...props}
+        start={transcriptStart as number}
+        end={transcriptEnd as number}
+      />
     </g>
   );
 };
@@ -74,8 +106,9 @@ const Exons = (props: {
   exons: ExonInRegionOverview[];
   trackY: number;
   scale: ScaleLinear<number, number>;
+  color: string;
 }) => {
-  const { exons, trackY, scale } = props;
+  const { exons, trackY, scale, color } = props;
 
   return exons.map((exon) => {
     const left = scale(exon.start);
@@ -89,7 +122,7 @@ const Exons = (props: {
         width={width}
         height={GENE_HEIGHT}
         fill="none"
-        stroke="black"
+        stroke={color}
         data-start={exon.start}
         data-end={exon.end}
         data-start-scaled={scale(exon.start)}
@@ -104,8 +137,9 @@ const CDSBlocks = (props: {
   cdsFragments: CDSFragment[];
   trackY: number;
   scale: ScaleLinear<number, number>;
+  color: string;
 }) => {
-  const { cdsFragments, trackY, scale } = props;
+  const { cdsFragments, trackY, scale, color } = props;
 
   return cdsFragments.map((fragment) => {
     const left = scale(fragment.start);
@@ -122,7 +156,7 @@ const CDSBlocks = (props: {
         y={trackY}
         width={width}
         height={GENE_HEIGHT}
-        fill="black"
+        fill={color}
         data-start={fragment.start}
         data-end={fragment.end}
         data-start-scaled={scale(fragment.start)}
@@ -137,8 +171,9 @@ const Introns = (props: {
   introns: Intron[];
   trackY: number;
   scale: ScaleLinear<number, number>;
+  color: string;
 }) => {
-  const { introns, trackY, scale } = props;
+  const { introns, trackY, scale, color } = props;
 
   return introns.map((intron) => {
     const y = trackY + GENE_HEIGHT / 2;
@@ -152,12 +187,41 @@ const Introns = (props: {
         x2={x2}
         y1={y}
         y2={y}
-        stroke="black"
+        stroke={color}
         strokeWidth="1"
         key={intron.start}
       />
     );
   });
+};
+
+const InteractiveArea = (
+  props: Props & {
+    start: number; // <-- in genomic coordinates
+    end: number; // <-- in genomic coordinates
+  }
+) => {
+  const { gene, offsetTop, start, end, scale } = props;
+  const x = scale(start);
+  const width = scale(end) - scale(start);
+  const y = offsetTop;
+  const height = GENE_HEIGHT;
+
+  const onClick = () => {
+    props.onClick(gene.data.stable_id);
+  };
+
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={'transparent'}
+      onClick={onClick}
+      className={styles.interactiveArea}
+    />
+  );
 };
 
 export default RegionOverviewGene;
