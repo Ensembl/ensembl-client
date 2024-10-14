@@ -56,7 +56,7 @@ type TranscriptionStartSite = {
  * that are within the coding sequence of that transcript.
  * The `count` field tells how many exons within a CDS are intersecting in this location.
  */
-type OverlappingCDSFragment = {
+export type OverlappingCDSFragment = {
   start: number;
   end: number;
   count: number;

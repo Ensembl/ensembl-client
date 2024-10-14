@@ -229,6 +229,8 @@ const RegulatoryFeatureTracks = (props: {
 }) => {
   const { features, featureTypesMap, offsetTop, scale } = props;
 
+  // TODO: distribution of regulatory features across tracks should be done in a separate function;
+  // and the result should inform the height of the image
   let featureTracks: RegulatoryFeature[][] = [];
 
   for (const feature of features) {
@@ -249,12 +251,6 @@ const RegulatoryFeatureTracks = (props: {
   }
 
   featureTracks = featureTracks.filter((item) => !!item); // just to make sure there are no empty indexes in the tracks array
-
-  // const trackTopOffsets = [offsetTop];
-
-  // for (let i = 1; i < featureTracks.length; i++) {
-  //   const nextOffset =
-  // }
 
   const trackElements = featureTracks.map((track, index) => (
     <RegulatoryFeatureTrack
