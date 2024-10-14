@@ -40,7 +40,7 @@ const MainContent = () => {
     <div>
       Hello activity viewer
       <RegionOverview />
-      <div style={{ margin: '2rem 0' }} />
+      <div style={{ margin: '3rem 0' }} />
       <RegionActivitySection />
     </div>
   );
