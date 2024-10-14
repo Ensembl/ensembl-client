@@ -28,7 +28,7 @@
   grid-template-columns: [species-name] 300px [input-summary] 1fr [status] auto;
   column-gap: var(--standard-gutter);
   align-items: center;
-  line-height: 30px;
+  min-height: 60px;
 }
 
 .bodyAccepted:has(.submissionName) {
@@ -40,7 +40,6 @@
   justify-self: center;
   transform: translateX(calc(50% - 150px));
   display: grid;
-
 }
 
 .labelLeft {

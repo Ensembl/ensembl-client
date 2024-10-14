@@ -62,8 +62,7 @@
   column-gap: var(--column-gap);
   align-items: start;
   min-height: var(--form-section-min-height);
-  padding-top: 20px;
-  padding-bottom: 20px;
+  align-items: center;
 }
 
 .topFormSectionName {
