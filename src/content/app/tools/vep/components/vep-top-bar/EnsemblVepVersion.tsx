@@ -23,7 +23,7 @@ const EnsemblVepVersion = () => {
     <div className={styles.vepVersion}>
       <Logotype />
       <span>Variant effect predictor </span>
-      v111
+      v110
     </div>
   );
 };
