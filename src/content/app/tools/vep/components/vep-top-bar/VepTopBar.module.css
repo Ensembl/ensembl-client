@@ -29,11 +29,6 @@
 }
 
 /* Style overrides for some of the ToolsTopBar styles */
-.vepGenericTopBar {
-  padding-top: 0;
-  padding-bottom: 0;
-  justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
-}
 
 .vepGenericGrid {
   display: grid;
@@ -66,6 +61,12 @@
       'vep-logo new-job-button vep-version job-lists-navigation'
       'results-availability results-availability results-availability .';
     row-gap: 3px;
+  }
+
+  .vepGenericTopBar {
+    padding-top: 0;
+    padding-bottom: 0;
+    justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
   }
 
   .resultsAvailabilityNotice {
