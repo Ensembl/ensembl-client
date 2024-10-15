@@ -76,6 +76,7 @@
 .logo {
   grid-area: vep-logo;
   width: 130px;
+  aspect-ratio: 10/1;
 }
 
 .runAJob {
