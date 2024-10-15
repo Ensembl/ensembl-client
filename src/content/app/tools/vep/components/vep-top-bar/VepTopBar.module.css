@@ -75,7 +75,7 @@
 
 .logo {
   grid-area: vep-logo;
-  height: 16px;
+  width: 130px;
 }
 
 .runAJob {
@@ -90,6 +90,10 @@
   display: flex;
   column-gap: var(--standard-gutter);
   padding-right: 80px;
+}
+.transcriptSetWrapper {
+  display: flex;
+  align-items: baseline;
 }
 
 @media (width <= 1440px) {
@@ -118,6 +122,7 @@
   align-items: baseline;
   white-space: pre;
   color: var(--color-medium-dark-grey);
+  line-height: 1px;
 }
 
 .vepVersion svg {

@@ -28,9 +28,7 @@ const VepGenericTopBar = () => {
   return (
     <ToolsTopBar className={styles.vepGenericTopBar}>
       <div className={styles.vepGenericGrid}>
-        <div className={styles.ensemblLogo}>
-          <EnsemblVepLogo />
-        </div>
+        <EnsemblVepLogo />
         <ButtonLink to={urlFor.vepForm()} className={styles.newJobButton}>
           New job
         </ButtonLink>

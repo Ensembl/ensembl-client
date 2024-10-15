@@ -78,7 +78,7 @@ const TranscriptSetSelector = () => {
   const selectedValue = (vepFormParameters.transcript_set as string) ?? 'none';
 
   return (
-    <div>
+    <div className={styles.transcriptSetWrapper}>
       <span>Transcript set</span>
       <SimpleSelect
         options={options}
