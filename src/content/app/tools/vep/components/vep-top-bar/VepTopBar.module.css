@@ -12,23 +12,15 @@
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
-}
 
-@media (width <= 1440px) {
-  .vepFormGrid {
-    grid-template-columns:
-      [vep-logo] max-content
-      [form-title] 1fr
-      [vep-version] max-content
-      [job-lists-navigation] auto;
-    grid-template-areas:
-      'vep-logo form-title vep-version job-lists-navigation'
-      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
-    row-gap: 16px;
-  }
 }
 
 /* Style overrides for some of the ToolsTopBar styles */
+.vepFormTopBar, .vepGenericTopBar {
+padding-top: 0;
+  padding-bottom: 0;
+  justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
+}
 
 .vepGenericGrid {
   display: grid;
@@ -63,12 +55,6 @@
     row-gap: 3px;
   }
 
-  .vepGenericTopBar {
-    padding-top: 0;
-    padding-bottom: 0;
-    justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
-  }
-
   .resultsAvailabilityNotice {
       justify-self: end;
   }
@@ -96,20 +82,6 @@
 .transcriptSetWrapper {
   display: flex;
   align-items: baseline;
-}
-
-@media (width <= 1440px) {
-  .transcriptSetAndSubmit {
-    padding-left: var(--standard-gutter);
-    justify-self: start;
-  }
-}
-
-@media (width <= 1530px) {
-  .transcriptSetAndSubmit {
-    padding-left: var(--standard-gutter);
-    padding-right: clamp(0px, 18% - 80px, 80px);
-  }
 }
 
 .transcriptSetSelector {
@@ -154,4 +126,44 @@
   display: flex;
   font-weight: var(--font-weight-light);
   white-space: normal;
+}
+
+@media (width > 1440px) {
+  .vepFormGrid {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (width <= 1440px) {
+  .vepFormGrid {
+    grid-template-columns:
+      [vep-logo] max-content
+      [form-title] 1fr
+      [vep-version] max-content
+      [job-lists-navigation] auto;
+    grid-template-areas:
+      'vep-logo form-title vep-version job-lists-navigation'
+      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
+    row-gap: 8px;
+  }
+
+  .vepFormTopBar {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (width <= 1440px) {
+  .transcriptSetAndSubmit {
+    padding-left: var(--standard-gutter);
+    justify-self: start;
+  }
+}
+
+@media (width <= 1530px) {
+  .transcriptSetAndSubmit {
+    padding-left: var(--standard-gutter);
+    padding-right: clamp(0px, 18% - 80px, 80px);
+  }
 }
