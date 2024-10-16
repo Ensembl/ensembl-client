@@ -111,9 +111,9 @@ const VepSubmissionResults = () => {
     // so it is possible for this component to render before VEP submissions stored in IndexedDB have been read
     return null;
   } else if (!submission || isFailedVepSubmission(submission)) {
-    return <VepSubmissionError cause="missing-submission" />;
+    return <VepSubmissionError type="missing-submission" />;
   } else if (areVepSubmissionResultsExpired(submission)) {
-    return <VepSubmissionError cause="expired-submission" />;
+    return <VepSubmissionError type="expired-submission" />;
   } else if (isLoading) {
     // fetching data for the first time
     return (
@@ -122,7 +122,7 @@ const VepSubmissionResults = () => {
       </div>
     );
   } else if (!vepResults || isError) {
-    return <VepSubmissionError cause="generic-error" />;
+    return <VepSubmissionError type="generic-error" />;
   }
 
   const {

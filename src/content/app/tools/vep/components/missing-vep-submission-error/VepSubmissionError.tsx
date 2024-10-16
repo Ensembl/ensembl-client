@@ -27,10 +27,10 @@ import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
 import styles from './VepSubmissionError.module.css';
 
-type ErrorCause = 'expired-submission' | 'missing-submission' | 'generic-error';
+type ErrorType = 'expired-submission' | 'missing-submission' | 'generic-error';
 
 type Props = {
-  cause: ErrorCause;
+  type: ErrorType;
 };
 
 const VepSubmissionError = (props: Props) => {
@@ -61,9 +61,9 @@ const VepSubmissionError = (props: Props) => {
 };
 
 const ErrorMessage = (props: Props) => {
-  if (props.cause === 'expired-submission') {
+  if (props.type === 'expired-submission') {
     return <ExpiredSubmissionMessage />;
-  } else if (props.cause === 'missing-submission') {
+  } else if (props.type === 'missing-submission') {
     return <MissingSubmissionMessage />;
   } else {
     return <GenericErrorMessage />;
