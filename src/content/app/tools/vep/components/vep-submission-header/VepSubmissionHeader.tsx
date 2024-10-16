@@ -77,7 +77,7 @@ const VepSubmissionHeader = (props: Props) => {
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.light}>Vep analysis</div>
+        <div className={styles.light}>Ensembl VEP analysis</div>
         <div className={styles.submissionId}>
           {hasServerSideSubmissionId(submission) && (
             <>

@@ -38,7 +38,7 @@ import styles from './VepTopBar.module.css';
 
 const VepFormTopBar = () => {
   return (
-    <ToolsTopBar>
+    <ToolsTopBar className={styles.vepFormTopBar}>
       <div className={styles.vepFormGrid}>
         <EnsemblVepLogo />
         <div className={styles.runAJob}>Run a job</div>
@@ -78,7 +78,7 @@ const TranscriptSetSelector = () => {
   const selectedValue = (vepFormParameters.transcript_set as string) ?? 'none';
 
   return (
-    <div>
+    <div className={styles.transcriptSetWrapper}>
       <span>Transcript set</span>
       <SimpleSelect
         options={options}

@@ -19,7 +19,7 @@ import classNames from 'classnames';
 import { isFailedVepSubmission } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
-import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import { VepSpeciesName } from 'src/content/app/tools/vep/components/vep-species-name/VepSpeciesName';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import { CircleLoader } from 'src/shared/components/loader';
 
@@ -33,7 +33,6 @@ type Props = {
 
 const ListedVepSubmission = (props: Props) => {
   const { submission } = props;
-
   if (submission.status === 'SUBMITTING') {
     return <SubmissionInProgress {...props} />;
   } else {
@@ -47,11 +46,13 @@ const SubmissionInProgress = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.head}>
-        <div className={styles.light}>Vep analysis</div>
+        <div className={styles.light}>Ensembl VEP analysis</div>
       </div>
       <div className={classNames(styles.body, styles.bodyLoading)}>
         <div>
-          {submission.species && <SpeciesName species={submission.species} />}
+          {submission.species && (
+            <VepSpeciesName selectedSpecies={submission.species} />
+          )}
         </div>
         <span className={styles.spinner}>
           <CircleLoader size="small" />
@@ -70,7 +71,9 @@ const SubmissionAccepted = (props: Props) => {
       <VepSubmissionHeader {...props} />
       <div className={classNames(styles.body, styles.bodyAccepted)}>
         <div>
-          {submission.species && <SpeciesName species={submission.species} />}
+          {submission.species && (
+            <VepSpeciesName selectedSpecies={submission.species} />
+          )}
         </div>
         <VepInputSummary submission={submission} />
         <SubmissionName submission={submission} />

@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import Logotype from 'static/img/brand/logotype.svg';
+import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './VepTopBar.module.css';
+import styles from './VepSpeciesName.module.css';
 
-const EnsemblVepVersion = () => {
+type SelectedSpeciesProps = Pick<
+  CommittedItem,
+  'common_name' | 'scientific_name' | 'assembly' | 'type' | 'is_reference'
+>;
+export const VepSpeciesName = (props: {
+  selectedSpecies: SelectedSpeciesProps;
+}) => {
   return (
-    <div className={styles.vepVersion}>
-      <Logotype />
-      <span>Variant effect predictor </span>
-      v110
-    </div>
+    <SpeciesName
+      species={props.selectedSpecies}
+      className={styles.speciesName}
+    />
   );
 };
-
-export default EnsemblVepVersion;

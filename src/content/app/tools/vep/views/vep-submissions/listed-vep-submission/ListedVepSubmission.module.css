@@ -13,8 +13,8 @@
   border: 1px solid var(--color-grey);
   padding-left: var(--standard-gutter);
   padding-right: var(--standard-gutter);
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 .bodyLoading {
@@ -28,6 +28,7 @@
   grid-template-columns: [species-name] 300px [input-summary] 1fr [status] auto;
   column-gap: var(--standard-gutter);
   align-items: center;
+  min-height: 60px;
 }
 
 .bodyAccepted:has(.submissionName) {
@@ -38,6 +39,7 @@
   grid-column: spinner;
   justify-self: center;
   transform: translateX(calc(50% - 150px));
+  display: grid;
 }
 
 .labelLeft {
