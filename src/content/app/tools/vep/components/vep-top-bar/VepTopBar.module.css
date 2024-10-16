@@ -42,24 +42,6 @@
   width: 130px;
 }
 
-@media (width <= 1210px) {
-  .vepGenericGrid {
-    grid-template-columns:
-      [vep-logo] max-content
-      [new-job-button] 1fr
-      [vep-version] auto
-      [job-lists-navigation] auto;
-    grid-template-areas:
-      'vep-logo new-job-button vep-version job-lists-navigation'
-      'results-availability results-availability results-availability .';
-    row-gap: 3px;
-  }
-
-  .resultsAvailabilityNotice {
-      justify-self: end;
-  }
-}
-
 .logo {
   grid-area: vep-logo;
   width: 130px;
@@ -152,9 +134,7 @@
     padding-top: 8px;
     padding-bottom: 8px;
   }
-}
 
-@media (width <= 1440px) {
   .transcriptSetAndSubmit {
     padding-left: var(--standard-gutter);
     justify-self: start;
@@ -165,5 +145,23 @@
   .transcriptSetAndSubmit {
     padding-left: var(--standard-gutter);
     padding-right: clamp(0px, 18% - 80px, 80px);
+  }
+}
+
+@media (width <= 1210px) {
+  .vepGenericGrid {
+    grid-template-columns:
+      [vep-logo] max-content
+      [new-job-button] 1fr
+      [vep-version] auto
+      [job-lists-navigation] auto;
+    grid-template-areas:
+      'vep-logo new-job-button vep-version job-lists-navigation'
+      'results-availability results-availability results-availability .';
+    row-gap: 3px;
+  }
+
+  .resultsAvailabilityNotice {
+      justify-self: end;
   }
 }
