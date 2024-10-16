@@ -17,7 +17,7 @@
 
 /* Style overrides for some of the ToolsTopBar styles */
 .vepFormTopBar, .vepGenericTopBar {
-padding-top: 0;
+  padding-top: 0;
   padding-bottom: 0;
   justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
 }
