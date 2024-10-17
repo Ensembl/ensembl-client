@@ -20,6 +20,15 @@ import { scaleLinear, type ScaleLinear } from 'd3';
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
 import TranscriptionStartSite from './transcription-start-site/TranscriptionStartSite';
 
+import {
+  GENE_TRACKS_TOP_OFFSET,
+  GENE_TRACK_HEIGHT,
+  GENE_HEIGHT,
+  REGULATORY_FEATURE_TRACKS_TOP_OFFSET,
+  REGULATORY_FEATURE_RADIUS,
+  REGULATORY_FEATURE_TRACK_HEIGHT
+} from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
+
 import type {
   FeatureTracks,
   GeneTrack
@@ -38,16 +47,6 @@ type Props = {
   focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
   onFocusGeneChange: (geneId: string) => void; // TODO: this will need to evolve; for same reasons as focusGeneId prop
 };
-
-// TODO: Extract image constants into a constants file
-
-// const REGULATION_TRACKS_TOP_OFFSET = 28;
-const REGULATORY_FEATURE_TRACKS_TOP_OFFSET = 110;
-const REGULATORY_FEATURE_RADIUS = 4;
-const REGULATORY_FEATURE_TRACK_HEIGHT = 20;
-
-const PADDING_TOP = 40;
-const GENE_TRACK_HEIGHT = 8;
 
 /**
  * Q: what do "gaps" of "boring regions" mean for the creation of scales?
@@ -99,7 +98,7 @@ const GeneTracks = (props: {
   onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
-  let tempY = PADDING_TOP;
+  let tempY = GENE_TRACKS_TOP_OFFSET;
 
   // calculate y-coordinates for gene tracks
   const forwardStrandTrackYs: number[] = [];
@@ -166,11 +165,11 @@ const GeneTrack = (props: {
   const { track, offsetTop, scale, focusGeneId, totalGeneTracksCount } = props;
 
   const geneElements = track.map((gene) => {
-    const tssYStart = offsetTop + 6; // <-- GENE_HEIGHT constant; should be imported
+    const tssYStart = offsetTop + GENE_HEIGHT;
     const tssYEnd =
       gene.data.strand === 'forward'
-        ? PADDING_TOP - 10
-        : PADDING_TOP + totalGeneTracksCount * 6 + 20; // <-- GENE_HEIGHT constant and TSS_FONT_SIZE constant; should be imported
+        ? GENE_TRACKS_TOP_OFFSET - 10
+        : GENE_TRACKS_TOP_OFFSET + totalGeneTracksCount * GENE_HEIGHT + 20; // <-- TSS_FONT_SIZE constant; this is probably getting removed
     const isFocusGene = focusGeneId === gene.data.stable_id;
 
     return (

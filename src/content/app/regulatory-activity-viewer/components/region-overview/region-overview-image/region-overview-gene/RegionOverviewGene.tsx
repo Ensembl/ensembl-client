@@ -16,6 +16,8 @@
 
 import type { ScaleLinear } from 'd3';
 
+import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
+
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
@@ -31,8 +33,6 @@ import styles from './RegionOverviewGene.module.css';
  *  - Transcript might need to be cropped if it intersects a gap in the image
  *    - Consider svg clipPath
  */
-
-const GENE_HEIGHT = 6;
 
 type Props = {
   scale: ScaleLinear<number, number>;

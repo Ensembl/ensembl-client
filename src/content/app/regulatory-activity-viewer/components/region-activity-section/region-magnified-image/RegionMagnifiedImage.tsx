@@ -16,6 +16,11 @@
 
 import type { ScaleLinear } from 'd3';
 
+import {
+  GENE_TRACKS_TOP_OFFSET,
+  GENE_TRACK_HEIGHT
+} from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-magnified-image/regionDetailConstants';
+
 import ActivitySectionGene from './activity-section-gene/ActivitySectionGene';
 
 import type {
@@ -32,11 +37,6 @@ type Props = {
   start: number;
   end: number;
 };
-
-// TODO: move to a constants file?
-const PADDING_TOP = 32;
-const GENE_HEIGHT = 8;
-const GENE_TRACK_HEIGHT = GENE_HEIGHT + 3;
 
 const RegionMagnifiedImage = (props: Props) => {
   const { scale, width, featureTracks } = props;
@@ -58,7 +58,7 @@ const GeneTracks = (props: {
   width: number; // full svg width
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
-  let tempY = PADDING_TOP;
+  let tempY = GENE_TRACKS_TOP_OFFSET;
 
   // calculate y-coordinates for gene tracks
   const forwardStrandTrackYs: number[] = [];

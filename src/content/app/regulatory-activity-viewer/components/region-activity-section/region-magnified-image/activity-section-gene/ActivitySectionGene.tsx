@@ -16,6 +16,8 @@
 
 import type { ScaleLinear } from 'd3';
 
+import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-magnified-image/regionDetailConstants';
+
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
@@ -26,9 +28,6 @@ import type {
  * This gene diagram combines all exons from all transcripts of a gene
  * (the regulation api calls them "merged_exons" and "cds_counts")
  */
-
-// TODO: move to a constants file?
-const GENE_HEIGHT = 8;
 
 type Props = {
   scale: ScaleLinear<number, number>;
@@ -109,8 +108,6 @@ const CDSBlocks = (props: {
   scale: ScaleLinear<number, number>;
 }) => {
   const { cdsFragments, trackY, scale } = props;
-
-  // const color = '#d3d5d9';
 
   return cdsFragments.map((fragment) => {
     const left = scale(fragment.start);
