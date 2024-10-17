@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+
+import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
@@ -70,13 +72,18 @@ const RegionOverview = () => {
     setFocusGeneId(geneId);
   };
 
+  const featureTracks = useMemo(() => {
+    return currentData ? prepareFeatureTracks({ data: currentData }) : null;
+  }, [currentData]);
+
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>Left</div>
       <div className={styles.middleColumn} ref={imageContainerRef}>
-        {currentData && width && (
+        {currentData && featureTracks && width && (
           <RegionOverviewImage
             data={currentData}
+            featureTracks={featureTracks}
             focusGeneId={focusGeneId}
             onFocusGeneChange={onFocusGeneChange}
             width={width}

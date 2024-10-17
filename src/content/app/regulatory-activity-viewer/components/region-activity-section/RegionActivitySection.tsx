@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import classNames from 'classnames';
+
+import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
@@ -51,6 +53,32 @@ const RegionActivitySection = () => {
     setWidth(imageContainerWidth);
   }, []);
 
+  const preparedData = useMemo(() => {
+    if (!currentData) {
+      return null;
+    }
+
+    // let's consider just a single contiguous slice without "boring" intervals
+    const location = currentData.locations[0];
+
+    // TODO: below are hard-coded start and end of the selected segment of the region.
+    // When the selection element is implemented, the selected start and end will come from user selection, probably via redux
+    const locationLength = location.end - location.start + 1;
+    const selectedStart = location.start + Math.round(0.2 * locationLength);
+    const selectedEnd = location.start + Math.round(0.4 * locationLength);
+
+    const featureTracks = prepareFeatureTracks({
+      data: currentData,
+      start: selectedStart,
+      end: selectedEnd
+    });
+    return {
+      featureTracks,
+      start: selectedStart,
+      end: selectedEnd
+    };
+  }, [currentData]);
+
   const componentClasses = classNames(
     styles.section,
     regionOverviewStyles.grid
@@ -62,10 +90,13 @@ const RegionActivitySection = () => {
         className={regionOverviewStyles.middleColumn}
         ref={imageContainerRef}
       >
-        {currentData && width && (
+        {currentData && preparedData && width && (
           <RegionActivitySectionImage
             width={width}
             regionOverviewData={currentData}
+            featureTracks={preparedData.featureTracks}
+            start={preparedData.start}
+            end={preparedData.end}
           />
         )}
       </div>

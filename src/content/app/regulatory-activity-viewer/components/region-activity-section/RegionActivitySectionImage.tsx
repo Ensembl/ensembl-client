@@ -18,6 +18,7 @@ import { scaleLinear } from 'd3';
 
 import RegionMagnifiedImage from './region-magnified-image/RegionMagnifiedImage';
 
+import type { FeatureTracks } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './RegionActivitySection.module.css';
@@ -30,20 +31,16 @@ import styles from './RegionActivitySection.module.css';
 type Props = {
   width: number;
   regionOverviewData: OverviewRegion;
+  featureTracks: FeatureTracks;
+  start: number;
+  end: number;
 };
 
 const RegionActivitySectionImage = (props: Props) => {
-  const { width, regionOverviewData } = props;
-
-  const location = regionOverviewData.locations[0]; // let's consider just a single contiguous slice without "boring" intervals
-
-  // TODO: selected start and end will later come from user selection, probably via redux
-  const locationLength = location.end - location.start + 1;
-  const selectedStart = location.start + Math.round(0.2 * locationLength);
-  const selectedEnd = location.start + Math.round(0.4 * locationLength);
+  const { width, regionOverviewData, featureTracks, start, end } = props;
 
   const scale = scaleLinear()
-    .domain([selectedStart, selectedEnd])
+    .domain([start, end])
     .rangeRound([0, Math.floor(width)]);
 
   // FIXME: height should be calculated from data (the number of tracks)
@@ -57,10 +54,11 @@ const RegionActivitySectionImage = (props: Props) => {
     >
       <RegionMagnifiedImage
         data={regionOverviewData}
+        featureTracks={featureTracks}
         scale={scale}
         width={width}
-        start={selectedStart}
-        end={selectedEnd}
+        start={start}
+        end={end}
       />
     </svg>
   );

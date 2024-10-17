@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
-
-import prepareRegionOverviewGeneTracks, {
-  type GeneTrack
-} from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewGeneTracks';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
 import TranscriptionStartSite from './transcription-start-site/TranscriptionStartSite';
 
+import type {
+  FeatureTracks,
+  GeneTrack
+} from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   OverviewRegion,
   RegulatoryFeature
@@ -34,6 +34,7 @@ import styles from './RegionOverviewImage.module.css';
 type Props = {
   width: number;
   data: OverviewRegion;
+  featureTracks: FeatureTracks;
   focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
   onFocusGeneChange: (geneId: string) => void; // TODO: this will need to evolve; for same reasons as focusGeneId prop
 };
@@ -51,7 +52,6 @@ const GENE_TRACK_HEIGHT = 8;
 /**
  * Q: what do "gaps" of "boring regions" mean for the creation of scales?
  *
- *
  * Ideas:
  *  - onTracksSettled callback? It will contain the logic for distributing features (especially transcripts)
  *    into tracks inside of the image component. The logic will have to account for the "bumping",
@@ -60,7 +60,7 @@ const GENE_TRACK_HEIGHT = 8;
  */
 
 const RegionOverviewImage = (props: Props) => {
-  const { width, data, focusGeneId } = props;
+  const { width, featureTracks, data, focusGeneId } = props;
   // FIXME: height should be calculated from data (the number of tracks)
   const height = 150;
 
@@ -70,10 +70,7 @@ const RegionOverviewImage = (props: Props) => {
     .domain([location.start, location.end])
     .rangeRound([0, Math.floor(width)]);
 
-  const { geneTracks } = useMemo(
-    () => prepareRegionOverviewGeneTracks({ data, scale }),
-    [data, scale]
-  );
+  const { geneTracks } = featureTracks;
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className={styles.viewport}>
@@ -95,7 +92,7 @@ const RegionOverviewImage = (props: Props) => {
 };
 
 const GeneTracks = (props: {
-  tracks: ReturnType<typeof prepareRegionOverviewGeneTracks>['geneTracks'];
+  tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
   focusGeneId: string | null;

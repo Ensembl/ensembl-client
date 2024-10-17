@@ -16,7 +16,7 @@
 
 import type { ScaleLinear } from 'd3';
 
-import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewGeneTracks';
+import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
   OverlappingCDSFragment
@@ -121,7 +121,7 @@ const CDSBlocks = (props: {
       return null;
     }
 
-    const alpha = Math.max(0.2, Math.min(fragment.count / 10), 1);
+    const alpha = Math.max(0.2, Math.min(fragment.count / 5, 1));
 
     const color = `rgba(85, 85, 85, ${alpha})`;
 
@@ -132,6 +132,7 @@ const CDSBlocks = (props: {
         width={width}
         height={GENE_HEIGHT}
         fill={color}
+        data-original-count={fragment.count}
         data-start={fragment.start}
         data-end={fragment.end}
         data-start-scaled={scale(fragment.start)}

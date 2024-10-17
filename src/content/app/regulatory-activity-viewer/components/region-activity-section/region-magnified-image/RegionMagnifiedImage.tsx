@@ -16,15 +16,17 @@
 
 import type { ScaleLinear } from 'd3';
 
-import prepareMagnifiedImageTracks from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-magnified-image/prepareMagnifiedImageTracks';
-
 import ActivitySectionGene from './activity-section-gene/ActivitySectionGene';
 
-import type { GeneTrack } from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewGeneTracks';
+import type {
+  FeatureTracks,
+  GeneTrack
+} from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 type Props = {
   data: OverviewRegion;
+  featureTracks: FeatureTracks;
   width: number;
   scale: ScaleLinear<number, number>;
   start: number;
@@ -37,18 +39,21 @@ const GENE_HEIGHT = 8;
 const GENE_TRACK_HEIGHT = GENE_HEIGHT + 3;
 
 const RegionMagnifiedImage = (props: Props) => {
-  const { scale, width } = props;
-  const { geneTracks } = prepareMagnifiedImageTracks(props);
+  const { scale, width, featureTracks } = props;
 
   return (
     <g>
-      <GeneTracks tracks={geneTracks} scale={scale} width={width} />
+      <GeneTracks
+        tracks={featureTracks.geneTracks}
+        scale={scale}
+        width={width}
+      />
     </g>
   );
 };
 
 const GeneTracks = (props: {
-  tracks: ReturnType<typeof prepareMagnifiedImageTracks>['geneTracks'];
+  tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
 }) => {

@@ -16,7 +16,7 @@
 
 import type { ScaleLinear } from 'd3';
 
-import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/components/region-overview/prepareRegionOverviewGeneTracks';
+import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
   CDSFragment
