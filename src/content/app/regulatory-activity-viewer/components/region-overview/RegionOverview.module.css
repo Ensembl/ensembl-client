@@ -1,0 +1,18 @@
+.grid {
+  display: grid;
+  grid-template-columns: [left] 150px [middle] 1fr [right] 150px;
+}
+
+.leftColumn {
+  grid-column: left;
+  position: relative;
+  text-align: right;
+}
+
+.middleColumn {
+  grid-column: middle;
+}
+
+.rightColumn {
+  grid-column: right;
+}

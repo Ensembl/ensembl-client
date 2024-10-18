@@ -1,0 +1,5 @@
+.viewport {
+  border-color: var(--color-dark-grey);
+  border-style: dashed;
+  border-width: 1px;
+}

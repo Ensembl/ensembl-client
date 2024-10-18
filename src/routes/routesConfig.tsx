@@ -31,6 +31,7 @@ import GenomeBrowserPage, {
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
+import ActivityViewerPage from 'src/content/app/regulatory-activity-viewer/RegulatoryActivityViewerPage';
 import BlastPage, {
   serverFetch as blastServerFetch
 } from 'src/content/app/tools/blast/BlastPage';
@@ -82,6 +83,10 @@ const routes: RouteConfig[] = [
     path: '/entity-viewer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
+  },
+  {
+    path: '/activity-viewer/*',
+    element: <ActivityViewerPage />
   },
   {
     path: '/blast/*',
