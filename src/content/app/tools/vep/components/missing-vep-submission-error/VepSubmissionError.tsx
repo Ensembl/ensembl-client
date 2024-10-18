@@ -25,13 +25,15 @@ import {
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './MissingVepSubmissionError.module.css';
+import styles from './VepSubmissionError.module.css';
+
+type ErrorType = 'expired-submission' | 'missing-submission' | 'generic-error';
 
 type Props = {
-  isExpiredSubmission: boolean;
+  type: ErrorType;
 };
 
-const MissingVepSubmissionError = (props: Props) => {
+const VepSubmissionError = (props: Props) => {
   const viewedVepSubmissions = useAppSelector(getViewedVepSubmissions);
   const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
   const hasUnviewedVepSubmissions = unviewedVepSubmissions.length > 0;
@@ -59,14 +61,28 @@ const MissingVepSubmissionError = (props: Props) => {
 };
 
 const ErrorMessage = (props: Props) => {
-  return props.isExpiredSubmission ? (
+  if (props.type === 'expired-submission') {
+    return <ExpiredSubmissionMessage />;
+  } else if (props.type === 'missing-submission') {
+    return <MissingSubmissionMessage />;
+  } else {
+    return <GenericErrorMessage />;
+  }
+};
+
+const ExpiredSubmissionMessage = () => {
+  return (
     <>
       <p className={styles.errorText}>
         The results for this submission are no longer available
       </p>
       <p>It may be possible to rerun this submission from your Jobs list</p>
     </>
-  ) : (
+  );
+};
+
+const MissingSubmissionMessage = () => {
+  return (
     <>
       <p className={styles.errorText}>
         There are no results for this VEP submission
@@ -78,4 +94,10 @@ const ErrorMessage = (props: Props) => {
   );
 };
 
-export default MissingVepSubmissionError;
+const GenericErrorMessage = () => {
+  return (
+    <p className={styles.errorText}>Unable to display results at this time</p>
+  );
+};
+
+export default VepSubmissionError;

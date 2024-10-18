@@ -55,7 +55,7 @@ import Pagination from 'src/shared/components/pagination/Pagination';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { CircleLoader } from 'src/shared/components/loader';
-import MissingVepSubmissionError from 'src/content/app/tools/vep/components/missing-vep-submission-error/MissingVepSubmissionError';
+import VepSubmissionError from 'src/content/app/tools/vep/components/missing-vep-submission-error/VepSubmissionError';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
@@ -77,7 +77,8 @@ const VepSubmissionResults = () => {
   const {
     data: vepResults,
     isLoading,
-    isFetching
+    isFetching,
+    isError
   } = useVepResultsQuery({
     submission_id: submissionId,
     page,
@@ -110,9 +111,9 @@ const VepSubmissionResults = () => {
     // so it is possible for this component to render before VEP submissions stored in IndexedDB have been read
     return null;
   } else if (!submission || isFailedVepSubmission(submission)) {
-    return <MissingVepSubmissionError isExpiredSubmission={false} />;
+    return <VepSubmissionError type="missing-submission" />;
   } else if (areVepSubmissionResultsExpired(submission)) {
-    return <MissingVepSubmissionError isExpiredSubmission={true} />;
+    return <VepSubmissionError type="expired-submission" />;
   } else if (isLoading) {
     // fetching data for the first time
     return (
@@ -120,9 +121,8 @@ const VepSubmissionResults = () => {
         <CircleLoader />
       </div>
     );
-  } else if (!vepResults) {
-    // TODO: handle errors
-    return null;
+  } else if (!vepResults || isError) {
+    return <VepSubmissionError type="generic-error" />;
   }
 
   const {
