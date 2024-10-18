@@ -299,7 +299,7 @@ const RegulatoryFeatureTrack = (props: {
   return <g>{featureElements}</g>;
 };
 
-const getImageHeightAndTopOffsets = (featureTracks: FeatureTracks) => {
+export const getImageHeightAndTopOffsets = (featureTracks: FeatureTracks) => {
   const { geneTracks, regulatoryFeatureTracks } = featureTracks;
   const { forwardStrandTracks, reverseStrandTracks } = geneTracks;
 

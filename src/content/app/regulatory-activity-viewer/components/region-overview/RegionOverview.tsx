@@ -20,7 +20,11 @@ import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/hel
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
-import RegionOverviewImage from './region-overview-image/RegionOverviewImage';
+import RegionOverviewImage, {
+  getImageHeightAndTopOffsets
+} from './region-overview-image/RegionOverviewImage';
+
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './RegionOverview.module.css';
 
@@ -76,9 +80,17 @@ const RegionOverview = () => {
     return currentData ? prepareFeatureTracks({ data: currentData }) : null;
   }, [currentData]);
 
+  const topOffsets = featureTracks
+    ? getImageHeightAndTopOffsets(featureTracks)
+    : null;
+
   return (
     <div className={styles.grid}>
-      <div className={styles.leftColumn}>Left</div>
+      <div className={styles.leftColumn}>
+        {currentData && topOffsets && (
+          <LeftColumn data={currentData} topOffsets={topOffsets} />
+        )}
+      </div>
       <div className={styles.middleColumn} ref={imageContainerRef}>
         {currentData && featureTracks && width && (
           <RegionOverviewImage
@@ -92,6 +104,42 @@ const RegionOverview = () => {
       </div>
       <div className={styles.rightColumn}>Right</div>
     </div>
+  );
+};
+
+const LeftColumn = (props: {
+  data: OverviewRegion;
+  topOffsets: ReturnType<typeof getImageHeightAndTopOffsets>;
+}) => {
+  const { data, topOffsets } = props;
+  const { strandDividerTopOffset, regulatoryFeatureTracksTopOffset } =
+    topOffsets;
+
+  const { region_name, coordinate_system } = data;
+
+  return (
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          top: `${strandDividerTopOffset}px`,
+          right: '10px',
+          transform: 'translateY(-50%)'
+        }}
+      >
+        {coordinate_system} {region_name}
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          top: `${regulatoryFeatureTracksTopOffset}px`,
+          right: '10px',
+          transform: 'translateY(-50%)'
+        }}
+      >
+        Regulatory features
+      </div>
+    </>
   );
 };
 

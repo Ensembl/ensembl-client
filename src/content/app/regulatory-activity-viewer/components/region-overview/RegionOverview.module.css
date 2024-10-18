@@ -5,6 +5,7 @@
 
 .leftColumn {
   grid-column: left;
+  position: relative;
   text-align: right;
 }
 
