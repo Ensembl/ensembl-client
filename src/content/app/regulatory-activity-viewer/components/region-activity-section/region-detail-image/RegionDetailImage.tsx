@@ -19,9 +19,9 @@ import type { ScaleLinear } from 'd3';
 import {
   GENE_TRACKS_TOP_OFFSET,
   GENE_TRACK_HEIGHT
-} from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-magnified-image/regionDetailConstants';
+} from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-detail-image/regionDetailConstants';
 
-import ActivitySectionGene from './activity-section-gene/ActivitySectionGene';
+import RegionDetailGene from './region-detail-gene/RegionDetailGene';
 
 import type {
   FeatureTracks,
@@ -38,7 +38,7 @@ type Props = {
   end: number;
 };
 
-const RegionMagnifiedImage = (props: Props) => {
+const RegionDetailImage = (props: Props) => {
   const { scale, width, featureTracks } = props;
 
   return (
@@ -116,7 +116,7 @@ const GeneTrack = (props: {
 
   const geneElements = track.map((gene) => {
     return (
-      <ActivitySectionGene
+      <RegionDetailGene
         gene={gene}
         offsetTop={offsetTop}
         scale={scale}
@@ -128,4 +128,4 @@ const GeneTrack = (props: {
   return <g>{geneElements}</g>;
 };
 
-export default RegionMagnifiedImage;
+export default RegionDetailImage;

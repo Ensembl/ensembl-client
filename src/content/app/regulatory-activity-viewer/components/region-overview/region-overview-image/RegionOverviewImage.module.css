@@ -1,7 +1,5 @@
 .viewport {
-  height: 165px; /* TODO: change this to allow dynamic height */
   border-color: var(--color-dark-grey);
   border-style: dashed;
   border-width: 1px;
-  width: 100%;
 }

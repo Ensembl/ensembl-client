@@ -16,7 +16,7 @@
 
 import { scaleLinear } from 'd3';
 
-import RegionMagnifiedImage from './region-magnified-image/RegionMagnifiedImage';
+import RegionDetailImage from './region-detail-image/RegionDetailImage';
 
 import type { FeatureTracks } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
@@ -52,7 +52,7 @@ const RegionActivitySectionImage = (props: Props) => {
       className={styles.middleColumnImage}
       style={{ border: '1px dotted black' }}
     >
-      <RegionMagnifiedImage
+      <RegionDetailImage
         data={regionOverviewData}
         featureTracks={featureTracks}
         scale={scale}

@@ -60,8 +60,8 @@ type Props = {
 
 const RegionOverviewImage = (props: Props) => {
   const { width, featureTracks, data, focusGeneId } = props;
-  // FIXME: height should be calculated from data (the number of tracks)
-  const height = 150;
+  const { imageHeight, regulatoryFeatureTracksTopOffset } =
+    getImageHeightAndTopOffsets(featureTracks);
 
   const location = data.locations[0]; // let's consider just a single contiguous slice without "boring" intervals
 
@@ -72,7 +72,16 @@ const RegionOverviewImage = (props: Props) => {
   const { geneTracks } = featureTracks;
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className={styles.viewport}>
+    <svg
+      viewBox={`0 0 ${width} ${imageHeight}`}
+      style={{
+        width: `${width}px`,
+        height: `${imageHeight}px`,
+        borderStyle: 'dashed',
+        borderWidth: '1px',
+        borderColor: 'var(--color-dark-grey)'
+      }}
+    >
       <GeneTracks
         tracks={geneTracks}
         scale={scale}
@@ -81,7 +90,7 @@ const RegionOverviewImage = (props: Props) => {
         onFocusGeneChange={props.onFocusGeneChange}
       />
       <RegulatoryFeatureTracks
-        offsetTop={REGULATORY_FEATURE_TRACKS_TOP_OFFSET}
+        offsetTop={regulatoryFeatureTracksTopOffset}
         features={data.regulatory_features.data}
         featureTypesMap={data.regulatory_features.feature_types}
         scale={scale}
@@ -110,7 +119,7 @@ const GeneTracks = (props: {
   }
 
   const strandDividerY = tempY + 0.5 * GENE_TRACK_HEIGHT;
-  tempY = strandDividerY + 0.5 * GENE_TRACK_HEIGHT;
+  tempY = strandDividerY + GENE_TRACK_HEIGHT;
 
   for (let i = 0; i < reverseStrandTracks.length; i++) {
     reverseStrandTrackYs.push(tempY);
@@ -288,6 +297,32 @@ const RegulatoryFeatureTrack = (props: {
   });
 
   return <g>{featureElements}</g>;
+};
+
+const getImageHeightAndTopOffsets = (featureTracks: FeatureTracks) => {
+  const { geneTracks, regulatoryFeatureTracks } = featureTracks;
+  const { forwardStrandTracks, reverseStrandTracks } = geneTracks;
+
+  const strandDividerTopOffset =
+    GENE_TRACKS_TOP_OFFSET +
+    forwardStrandTracks.length * GENE_TRACK_HEIGHT +
+    0.5 * GENE_TRACK_HEIGHT;
+
+  const regulatoryFeatureTracksTopOffset =
+    strandDividerTopOffset +
+    GENE_TRACK_HEIGHT +
+    reverseStrandTracks.length * GENE_TRACK_HEIGHT +
+    REGULATORY_FEATURE_TRACKS_TOP_OFFSET;
+
+  const imageHeight =
+    regulatoryFeatureTracksTopOffset +
+    regulatoryFeatureTracks.length * REGULATORY_FEATURE_TRACK_HEIGHT;
+
+  return {
+    strandDividerTopOffset,
+    regulatoryFeatureTracksTopOffset,
+    imageHeight
+  };
 };
 
 export default RegionOverviewImage;

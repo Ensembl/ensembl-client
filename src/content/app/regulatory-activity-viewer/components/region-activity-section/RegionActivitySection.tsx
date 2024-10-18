@@ -63,6 +63,7 @@ const RegionActivitySection = () => {
 
     // TODO: below are hard-coded start and end of the selected segment of the region.
     // When the selection element is implemented, the selected start and end will come from user selection, probably via redux
+    // REMEMBER to add selectionStart and selectionEnd to the list of dependencies of useMemo, when they start coming from user selection
     const locationLength = location.end - location.start + 1;
     const selectedStart = location.start + Math.round(0.2 * locationLength);
     const selectedEnd = location.start + Math.round(0.4 * locationLength);

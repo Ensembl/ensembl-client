@@ -16,7 +16,7 @@
 
 import type { ScaleLinear } from 'd3';
 
-import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-magnified-image/regionDetailConstants';
+import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-detail-image/regionDetailConstants';
 
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
@@ -40,7 +40,7 @@ type Intron = {
   end: number;
 };
 
-const ActivitySectionGene = (props: Props) => {
+const RegionDetailGene = (props: Props) => {
   const { gene, scale, offsetTop } = props;
 
   const trackY = offsetTop;
@@ -169,4 +169,4 @@ const Introns = (props: {
   });
 };
 
-export default ActivitySectionGene;
+export default RegionDetailGene;

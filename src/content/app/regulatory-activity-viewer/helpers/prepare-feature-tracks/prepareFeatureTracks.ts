@@ -32,8 +32,6 @@ import type {
  * When distributing features, such as genes, across tracks,
  * the helper needs to make sure that features, or their labels,
  * do not overlap with each other.
- *
- * NOTE: the Params
  */
 
 type Params = {
