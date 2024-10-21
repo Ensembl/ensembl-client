@@ -17,7 +17,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'src/store';
+
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
+
+import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
@@ -37,9 +41,18 @@ import styles from './RegionActivitySection.module.css';
  * or (more likely) from redux
  */
 
-const RegionActivitySection = () => {
+type Props = {
+  activeGenomeId: string;
+};
+
+const RegionActivitySection = (props: Props) => {
+  const { activeGenomeId } = props;
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
+  const regionDetailLocation = useAppSelector((state) =>
+    getRegionDetailSelectedLocation(state, activeGenomeId)
+  );
+
   const { currentData } = useRegionOverviewQuery();
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -64,21 +77,25 @@ const RegionActivitySection = () => {
     // TODO: below are hard-coded start and end of the selected segment of the region.
     // When the selection element is implemented, the selected start and end will come from user selection, probably via redux
     // REMEMBER to add selectionStart and selectionEnd to the list of dependencies of useMemo, when they start coming from user selection
-    const locationLength = location.end - location.start + 1;
-    const selectedStart = location.start + Math.round(0.2 * locationLength);
-    const selectedEnd = location.start + Math.round(0.4 * locationLength);
+    // const locationLength = location.end - location.start + 1;
+    // const selectedStart = location.start + Math.round(0.2 * locationLength);
+    // const selectedEnd = location.start + Math.round(0.4 * locationLength);
+
+    const selectedStart = regionDetailLocation?.start ?? location.start;
+    const selectedEnd = regionDetailLocation?.end ?? location.end;
 
     const featureTracks = prepareFeatureTracks({
       data: currentData,
       start: selectedStart,
       end: selectedEnd
     });
+
     return {
       featureTracks,
       start: selectedStart,
       end: selectedEnd
     };
-  }, [currentData]);
+  }, [currentData, regionDetailLocation]);
 
   const componentClasses = classNames(
     styles.section,

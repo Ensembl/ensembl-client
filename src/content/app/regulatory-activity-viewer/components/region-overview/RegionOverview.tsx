@@ -43,7 +43,12 @@ import styles from './RegionOverview.module.css';
  *    => This means that the toggling of the sidebar will result in re-rendering of everything
  */
 
-const RegionOverview = () => {
+type Props = {
+  activeGenomeId: string;
+};
+
+const RegionOverview = (props: Props) => {
+  const { activeGenomeId } = props;
   const [width, setWidth] = useState(0);
   // FIXME: this is temporary; focus can also be a regulatory feature; should probably be reflected in url, and should be set via redux
   const [focusGeneId, setFocusGeneId] = useState<string | null>(null);
@@ -94,6 +99,7 @@ const RegionOverview = () => {
       <div className={styles.middleColumn} ref={imageContainerRef}>
         {currentData && featureTracks && width && (
           <RegionOverviewImage
+            activeGenomeId={activeGenomeId}
             data={currentData}
             featureTracks={featureTracks}
             focusGeneId={focusGeneId}

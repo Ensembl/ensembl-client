@@ -17,8 +17,11 @@
 import { Fragment } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
 
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
 import TranscriptionStartSite from './transcription-start-site/TranscriptionStartSite';
+import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
 
 import {
   GENE_TRACKS_TOP_OFFSET,
@@ -41,6 +44,7 @@ import type {
 import styles from './RegionOverviewImage.module.css';
 
 type Props = {
+  activeGenomeId: string;
   width: number;
   data: OverviewRegion;
   featureTracks: FeatureTracks;
@@ -59,7 +63,9 @@ type Props = {
  */
 
 const RegionOverviewImage = (props: Props) => {
-  const { width, featureTracks, data, focusGeneId } = props;
+  const { activeGenomeId, width, featureTracks, data, focusGeneId } = props;
+  const [imageRef, setImageRef] = useRefWithRerender<SVGSVGElement>(null);
+
   const { imageHeight, regulatoryFeatureTracksTopOffset } =
     getImageHeightAndTopOffsets(featureTracks);
 
@@ -74,6 +80,8 @@ const RegionOverviewImage = (props: Props) => {
   return (
     <svg
       viewBox={`0 0 ${width} ${imageHeight}`}
+      ref={setImageRef}
+      className={styles.image}
       style={{
         width: `${width}px`,
         height: `${imageHeight}px`,
@@ -82,19 +90,27 @@ const RegionOverviewImage = (props: Props) => {
         borderColor: 'var(--color-dark-grey)'
       }}
     >
-      <GeneTracks
-        tracks={geneTracks}
-        scale={scale}
+      <RegionOverviewLocationSelector
+        activeGenomeId={activeGenomeId}
+        imageRef={imageRef}
+        height={imageHeight}
         width={width}
-        focusGeneId={focusGeneId}
-        onFocusGeneChange={props.onFocusGeneChange}
-      />
-      <RegulatoryFeatureTracks
-        offsetTop={regulatoryFeatureTracksTopOffset}
-        features={data.regulatory_features.data}
-        featureTypesMap={data.regulatory_features.feature_types}
         scale={scale}
-      />
+      >
+        <GeneTracks
+          tracks={geneTracks}
+          scale={scale}
+          width={width}
+          focusGeneId={focusGeneId}
+          onFocusGeneChange={props.onFocusGeneChange}
+        />
+        <RegulatoryFeatureTracks
+          offsetTop={regulatoryFeatureTracksTopOffset}
+          features={data.regulatory_features.data}
+          featureTypesMap={data.regulatory_features.feature_types}
+          scale={scale}
+        />
+      </RegionOverviewLocationSelector>
     </svg>
   );
 };
@@ -107,14 +123,16 @@ const GeneTracks = (props: {
   onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
-  let tempY = GENE_TRACKS_TOP_OFFSET;
+  let tempY = GENE_TRACKS_TOP_OFFSET; // keep track of the y coordinate for subsequent shapes to be drawn
 
   // calculate y-coordinates for gene tracks
   const forwardStrandTrackYs: number[] = [];
   const reverseStrandTrackYs: number[] = [];
 
-  for (let i = 0; i < forwardStrandTracks.length; i++) {
-    forwardStrandTrackYs.push(tempY);
+  // Andrea: forward strand genes above the central line should stack upwards
+  for (let i = forwardStrandTracks.length; i > 0; i--) {
+    const y = GENE_TRACKS_TOP_OFFSET + GENE_TRACK_HEIGHT * (i - 1);
+    forwardStrandTrackYs.push(y);
     tempY += GENE_TRACK_HEIGHT;
   }
 

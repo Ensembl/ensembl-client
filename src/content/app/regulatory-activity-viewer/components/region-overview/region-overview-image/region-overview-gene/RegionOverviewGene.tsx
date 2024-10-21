@@ -80,6 +80,13 @@ const RegionOverviewGene = (props: Props) => {
 
   return (
     <g data-name="gene" data-symbol={gene.data.symbol}>
+      <GeneExtent
+        {...props}
+        transcriptStart={transcriptStart as number}
+        transcriptEnd={transcriptEnd as number}
+        color={color}
+        direction="left"
+      />
       <Exons
         exons={transcript.exons}
         trackY={trackY}
@@ -93,6 +100,13 @@ const RegionOverviewGene = (props: Props) => {
         color={color}
       />
       <Introns introns={introns} trackY={trackY} scale={scale} color={color} />
+      <GeneExtent
+        {...props}
+        transcriptStart={transcriptStart as number}
+        transcriptEnd={transcriptEnd as number}
+        color={color}
+        direction="right"
+      />
       <InteractiveArea
         {...props}
         start={transcriptStart as number}
@@ -195,13 +209,81 @@ const Introns = (props: {
   });
 };
 
+const GeneExtent = (
+  props: Props & {
+    transcriptStart: number;
+    transcriptEnd: number;
+    color: string;
+    direction: 'left' | 'right';
+  }
+) => {
+  const {
+    scale,
+    gene,
+    transcriptStart,
+    transcriptEnd,
+    direction,
+    offsetTop,
+    color
+  } = props;
+
+  const width =
+    direction === 'left'
+      ? scale(transcriptStart) - scale(gene.data.start)
+      : scale(gene.data.end) - scale(transcriptEnd);
+
+  if (width < 2) {
+    return null;
+  }
+
+  const x1 =
+    direction === 'left' ? scale(gene.data.start) : scale(transcriptEnd);
+  const x2 =
+    direction === 'left' ? scale(transcriptStart) : scale(gene.data.end);
+
+  const lineY = offsetTop + +GENE_HEIGHT / 2;
+  const endpointX = direction === 'left' ? x1 : x2;
+
+  // horizontal line
+  const line = (
+    <line
+      x1={x1}
+      x2={x2}
+      y1={lineY}
+      y2={lineY}
+      stroke={color}
+      strokeDasharray={2}
+      strokeWidth="1"
+    />
+  );
+
+  const endpoint = (
+    <line
+      x1={endpointX}
+      x2={endpointX}
+      y1={offsetTop}
+      y2={offsetTop + GENE_HEIGHT}
+      stroke={color}
+      strokeWidth="1"
+    />
+  );
+
+  return (
+    <>
+      {line}
+      {endpoint}
+    </>
+  );
+};
+
 const InteractiveArea = (
   props: Props & {
     start: number; // <-- in genomic coordinates
     end: number; // <-- in genomic coordinates
   }
 ) => {
-  const { gene, offsetTop, start, end, scale } = props;
+  const { gene, offsetTop, scale } = props;
+  const { start, end } = gene.data;
   const x = scale(start);
   const width = scale(end) - scale(start);
   const y = offsetTop;
