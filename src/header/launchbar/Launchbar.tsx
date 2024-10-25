@@ -26,6 +26,7 @@ import {
 import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
+import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
 
@@ -61,6 +62,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
+            <RegulatoryActivityViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
             <BlastLaunchbarButton />
