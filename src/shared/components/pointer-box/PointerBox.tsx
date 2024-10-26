@@ -52,7 +52,7 @@ type PointerProps = {
 
 export type PointerBoxProps = {
   position?: Position;
-  anchor: HTMLElement;
+  anchor: Element;
   container?: HTMLElement | null; // area within which the box should try to position itself; defaults to window if null
   autoAdjust?: boolean; // whether to adjust pointer box position so as not to extend beyond screen bounds
   renderInsideAnchor?: boolean; // whether to render PointerBox inside the anchor (which should have position: relative to display it properly); renders to body if false
@@ -129,7 +129,10 @@ const PointerBox = (props: PointerBoxProps) => {
     }
   };
 
-  const adjustPosition = (pointerBox: HTMLDivElement, anchor: HTMLElement) => {
+  const adjustPosition = (
+    pointerBox: HTMLDivElement,
+    anchor: PointerBoxProps['anchor']
+  ) => {
     const pointerBoxBoundingRect = pointerBox.getBoundingClientRect();
     const rootBoundingRect = props.container
       ? props.container.getBoundingClientRect()

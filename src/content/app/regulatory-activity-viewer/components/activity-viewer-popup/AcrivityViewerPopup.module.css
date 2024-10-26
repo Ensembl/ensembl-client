@@ -1,0 +1,15 @@
+.regularRow span + span {
+  margin-left: 1ch;
+}
+
+.strand {
+  margin-right: 2.5ch;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}
