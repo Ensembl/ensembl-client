@@ -24,12 +24,6 @@ import useLocationSelector from './useLocationSelector';
 import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
 
 /**
- * Somehow enter the selection mode
- *  - Maybe long mousedown / long touch?
- *    - Be careful though, because who knows how a long touch would work
- *      if there is something to scroll
- *    - Consider the implication that this has for clicking to select a gene
- *
  * RULES:
  *  - Do not let the selection continue outside of the svg
  *  - There should probably be a minimum possible selection
@@ -116,10 +110,10 @@ const Filter = ({
   width
 }: {
   id: string;
-  positionLeft: number;
-  positionRight: number;
-  width: number;
-  height: number;
+  height: number; // <-- total height of the image
+  width: number; // <-- total width of the image
+  positionLeft: number; // <-- left coordinate of the selection area
+  positionRight: number; // <-- right coordinate of the selection area
 }) => {
   const rightFilterWidth = width - positionRight;
 
@@ -131,7 +125,7 @@ const Filter = ({
         x="0"
         y="0"
         height={height}
-        width={positionLeft}
+        width={Math.max(positionLeft, 1)}
         result="A"
       />
       <feFlood
@@ -140,7 +134,7 @@ const Filter = ({
         x={positionRight}
         y="0"
         height={height}
-        width={rightFilterWidth}
+        width={Math.max(rightFilterWidth, 1)}
         result="D"
       />
       <feComposite operator="in" in2="SourceGraphic" in="D" result="C" />
@@ -164,10 +158,10 @@ const InertAreas = ({
   positionLeft,
   positionRight
 }: {
-  height: number;
-  width: number;
-  positionLeft: number;
-  positionRight: number;
+  height: number; // <-- total height of the image
+  width: number; // <-- total width of the image
+  positionLeft: number; // <-- left coordinate of the selection area
+  positionRight: number; // <-- right coordinate of the selection area
 }) => {
   return (
     <g>

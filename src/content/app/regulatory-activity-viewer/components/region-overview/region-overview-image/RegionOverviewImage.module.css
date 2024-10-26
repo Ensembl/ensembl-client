@@ -1,3 +1,4 @@
 .image {
   cursor: crosshair;
+  user-select: none;
 }

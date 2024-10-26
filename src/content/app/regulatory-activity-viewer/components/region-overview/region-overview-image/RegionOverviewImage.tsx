@@ -98,6 +98,7 @@ const RegionOverviewImage = (props: Props) => {
         scale={scale}
       >
         <GeneTracks
+          regionData={data}
           tracks={geneTracks}
           scale={scale}
           width={width}
@@ -116,6 +117,7 @@ const RegionOverviewImage = (props: Props) => {
 };
 
 const GeneTracks = (props: {
+  regionData: Props['data'];
   tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
@@ -161,6 +163,7 @@ const GeneTracks = (props: {
 
     return tracks.map((track, index) => (
       <GeneTrack
+        regionData={props.regionData}
         track={track}
         totalGeneTracksCount={totalGeneTracksCount}
         offsetTop={yCoordLookup[index]}
@@ -182,6 +185,7 @@ const GeneTracks = (props: {
 };
 
 const GeneTrack = (props: {
+  regionData: Props['data'];
   track: GeneTrack;
   totalGeneTracksCount: number;
   offsetTop: number;
@@ -203,6 +207,7 @@ const GeneTrack = (props: {
       <Fragment key={gene.data.stable_id}>
         <RegionOverviewGene
           gene={gene}
+          regionData={props.regionData}
           offsetTop={offsetTop}
           scale={scale}
           isFocused={isFocusGene}

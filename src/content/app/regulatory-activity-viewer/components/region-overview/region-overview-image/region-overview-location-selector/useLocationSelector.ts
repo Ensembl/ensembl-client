@@ -16,8 +16,6 @@
 
 import { useEffect, useReducer, useRef, type MutableRefObject } from 'react';
 
-import useLongPress from './useLongPress';
-
 /**
  * TODO:
  * - consider how this selection will be reconciled with selection start and end
@@ -33,20 +31,21 @@ import useLongPress from './useLongPress';
  */
 
 type State = {
-  start: number;
-  end: number;
+  originX: number;
+  latestX: number;
 } | null;
 
 type SelectionStartAction = {
   type: 'selection-start';
-  position: {
-    x: number;
+  payload: {
+    originX: number;
+    latestX: number;
   };
 };
 
 type SelectionUpdateAction = {
   type: 'selection-update';
-  position: {
+  payload: {
     x: number;
   };
 };
@@ -60,23 +59,21 @@ type Action =
   | SelectionUpdateAction
   | SelectionClearAction;
 
-const selectionStateReducer = (state: State, action: Action) => {
+const selectionStateReducer = (state: State, action: Action): State => {
   if (action.type === 'selection-start') {
     return {
-      start: action.position.x,
-      end: action.position.x
+      originX: action.payload.originX,
+      latestX: action.payload.latestX
     };
   } else if (action.type === 'selection-update') {
     if (!state) {
       // this should not happen
       return null;
     }
-    const xMin = Math.min(state.start, action.position.x);
-    const xMax = Math.max(state.start, action.position.x);
 
     return {
-      start: xMin,
-      end: xMax
+      ...state,
+      latestX: action.payload.x
     };
   } else {
     return null;
@@ -88,21 +85,18 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   onSelectionCompleted
 }: {
   ref: MutableRefObject<T | null>;
-  onSelectionCompleted: (state: NonNullable<State>) => void;
+  onSelectionCompleted: (coords: { start: number; end: number }) => void;
 }) => {
   const [state, dispatch] = useReducer(selectionStateReducer, null);
   const stateRef = useRef(state);
-
+  const selectionOriginXRef = useRef<number | null>(null);
   const containerBoundingClientRef = useRef<DOMRect | null>(null);
 
   useEffect(() => {
     if (ref.current) {
       containerBoundingClientRef.current = ref.current.getBoundingClientRect();
 
-      ref.current.addEventListener(
-        'mousedown',
-        onSelectionStart as EventListener
-      );
+      ref.current.addEventListener('mousedown', onMouseDown as EventListener);
       // ref.current.addEventListener('touchstart', onSelectionStart as EventListener);
     }
 
@@ -112,7 +106,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
       }
       ref.current.removeEventListener(
         'mousedown',
-        onSelectionStart as EventListener
+        onMouseDown as EventListener
       );
       // ref.current.removeEventListener('touchstart', onSelectionStart as EventListener);
     };
@@ -123,12 +117,37 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     stateRef.current = state;
   }, [state]);
 
+  const onMouseDown = (event: MouseEvent) => {
+    const targetElement = event.target;
+    if (targetElement !== ref.current) {
+      return;
+    }
+    selectionOriginXRef.current = event.offsetX;
+    document.addEventListener('mousemove', detectSelectionStart);
+  };
+
+  const detectSelectionStart = (event: MouseEvent) => {
+    const currentX = event.offsetX;
+    const distance = Math.abs(
+      currentX - (selectionOriginXRef.current as number)
+    );
+
+    // start the selection after a minimum distance from the origin has been reached
+    if (distance > 5) {
+      onSelectionStart(event);
+      document.removeEventListener('mousemove', detectSelectionStart);
+    }
+  };
+
   const onSelectionStart = (event: MouseEvent | TouchEvent) => {
     if (event instanceof MouseEvent) {
       const startPosition = event.offsetX;
       dispatch({
         type: 'selection-start',
-        position: { x: startPosition }
+        payload: {
+          originX: selectionOriginXRef.current as number,
+          latestX: startPosition
+        }
       });
 
       document.addEventListener('mousemove', onSelectionChange);
@@ -136,29 +155,40 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     }
   };
 
-  useLongPress({ ref, callback: onSelectionStart });
-
   const onSelectionChange = (event: MouseEvent | TouchEvent) => {
     if (event instanceof MouseEvent) {
+      const newX = event.clientX - containerBoundingClientRef.current!.x;
+      if (newX < 0 || newX > containerBoundingClientRef.current!.width) {
+        return;
+      }
+
       dispatch({
         type: 'selection-update',
-        position: { x: event.offsetX }
+        payload: { x: newX }
       });
     }
   };
 
   const onSelectionEnd = () => {
     if (stateRef.current) {
-      onSelectionCompleted(stateRef.current);
+      onSelectionCompleted(stateToRectCoordinates(stateRef.current));
     }
     removeAllListeners();
   };
 
   const removeAllListeners = () => {
     document.removeEventListener('mousemove', onSelectionChange);
+    document.removeEventListener('mousemove', detectSelectionStart);
   };
 
-  return state;
+  return state ? stateToRectCoordinates(state) : null;
+};
+
+const stateToRectCoordinates = (state: NonNullable<State>) => {
+  return {
+    start: Math.min(state.originX, state.latestX),
+    end: Math.max(state.originX, state.latestX)
+  };
 };
 
 export default useLocationSelector;

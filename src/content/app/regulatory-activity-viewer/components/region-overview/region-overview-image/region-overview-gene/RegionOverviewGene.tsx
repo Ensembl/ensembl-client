@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { useState, type MouseEvent } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
 
+import ActivityViewerPopup from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/ActivityViewerPopup';
+import GenePopupContent from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/GenePopupContent';
+
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
@@ -37,6 +42,7 @@ import styles from './RegionOverviewGene.module.css';
 type Props = {
   scale: ScaleLinear<number, number>;
   gene: GeneInTrack;
+  regionData: Pick<OverviewRegion, 'region_name'>;
   offsetTop: number;
   isFocused: boolean;
   onClick: (geneId: string) => void;
@@ -47,10 +53,33 @@ type Intron = {
   end: number;
 };
 
+type PopupCoordinates = {
+  x: number;
+  y: number;
+};
+
 const RegionOverviewGene = (props: Props) => {
-  const { gene, scale, offsetTop, isFocused } = props;
+  const { gene, regionData, scale, offsetTop, isFocused } = props;
+  const [popupCoordinates, setPopupCoordinates] =
+    useState<PopupCoordinates | null>(null);
   const transcript = gene.data.representative_transcript;
   const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
+
+  const onClick = (event: MouseEvent<Element>) => {
+    // props.onClick(gene.data.stable_id);
+    const x = event.nativeEvent.offsetX;
+    const y = event.nativeEvent.offsetY;
+    setPopupCoordinates({ x, y });
+  };
+
+  const closePopup = () => {
+    setPopupCoordinates(null);
+  };
+
+  const onGeneFocus = () => {
+    props.onClick(gene.data.stable_id);
+    closePopup();
+  };
 
   const trackY = offsetTop;
 
@@ -109,9 +138,25 @@ const RegionOverviewGene = (props: Props) => {
       />
       <InteractiveArea
         {...props}
+        onClick={onClick}
         start={transcriptStart as number}
         end={transcriptEnd as number}
       />
+      {popupCoordinates && (
+        <ActivityViewerPopup
+          x={popupCoordinates.x}
+          y={popupCoordinates.y}
+          onClose={closePopup}
+        >
+          <GenePopupContent
+            gene={{
+              ...gene.data,
+              region_name: regionData.region_name
+            }}
+            onFocus={onGeneFocus}
+          />
+        </ActivityViewerPopup>
+      )}
     </g>
   );
 };
@@ -276,22 +321,20 @@ const GeneExtent = (
   );
 };
 
-const InteractiveArea = (
-  props: Props & {
-    start: number; // <-- in genomic coordinates
-    end: number; // <-- in genomic coordinates
-  }
-) => {
+const InteractiveArea = (props: {
+  gene: Props['gene'];
+  offsetTop: Props['offsetTop'];
+  scale: Props['scale'];
+  start: number;
+  end: number;
+  onClick: (event: MouseEvent<Element>) => void;
+}) => {
   const { gene, offsetTop, scale } = props;
   const { start, end } = gene.data;
   const x = scale(start);
   const width = scale(end) - scale(start);
   const y = offsetTop;
   const height = GENE_HEIGHT;
-
-  const onClick = () => {
-    props.onClick(gene.data.stable_id);
-  };
 
   return (
     <rect
@@ -300,7 +343,7 @@ const InteractiveArea = (
       width={width}
       height={height}
       fill={'transparent'}
-      onClick={onClick}
+      onClick={props.onClick}
       className={styles.interactiveArea}
     />
   );

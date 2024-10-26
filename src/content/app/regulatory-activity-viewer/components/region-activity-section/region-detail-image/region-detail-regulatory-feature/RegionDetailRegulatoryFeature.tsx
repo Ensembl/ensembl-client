@@ -85,8 +85,12 @@ const BoundsRegion = (props: Props & { side: 'left' | 'right' }) => {
     side === 'left'
       ? scale(feature.start) - extentX
       : extentX - scale(feature.end);
-  const start = side === 'left' ? extentX : feature.end;
+  const start = side === 'left' ? extentX : scale(feature.end);
   const color = featureTypesMap[feature.feature_type].color;
+
+  if (width <= 0) {
+    return null;
+  }
 
   return (
     <rect
