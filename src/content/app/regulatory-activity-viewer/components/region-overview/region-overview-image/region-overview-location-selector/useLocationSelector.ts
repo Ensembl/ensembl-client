@@ -118,8 +118,13 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   }, [state]);
 
   const onMouseDown = (event: MouseEvent) => {
-    const targetElement = event.target;
-    if (targetElement !== ref.current) {
+    const targetElement = event.target as HTMLElement | SVGSVGElement;
+    if (
+      !(
+        targetElement === ref.current ||
+        targetElement.dataset.name === 'inert-area'
+      )
+    ) {
       return;
     }
     selectionOriginXRef.current = event.offsetX;

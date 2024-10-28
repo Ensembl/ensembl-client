@@ -171,6 +171,7 @@ const InertAreas = ({
         y={0}
         height={height}
         fill="transparent"
+        data-name="inert-area"
       />
       <rect
         x={positionRight}
@@ -178,6 +179,7 @@ const InertAreas = ({
         y={0}
         height={height}
         fill="transparent"
+        data-name="inert-area"
       />
     </g>
   );
