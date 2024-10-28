@@ -40,7 +40,7 @@ const VepAppBar = () => {
       mainContent={<SpeciesTabs />}
       topRight={<SpeciesManagerIndicator />}
       topLeft={<AppName>{AppNameText.TOOLS}</AppName>}
-      aside={<HelpPopupButton slug="vep" />}
+      aside={<HelpPopupButton slug="how-to-use-ensembl-vep" />}
     />
   );
 };
