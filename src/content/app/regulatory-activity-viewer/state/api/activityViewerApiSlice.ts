@@ -17,6 +17,8 @@
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
+import type { MetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -32,8 +34,32 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
 
         return { data };
       }
+    }),
+    baseEpigenomes: builder.query<Epigenome[], void>({
+      queryFn: async () => {
+        const module = await import(
+          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanBaseEpigenomes'
+        );
+        const data = module.default;
+
+        return { data };
+      }
+    }),
+    epigenomesMetadataDimensions: builder.query<MetadataDimensions, void>({
+      queryFn: async () => {
+        const module = await import(
+          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanEpigenomeMetadataDimensions'
+        );
+        const data = module.default;
+
+        return { data };
+      }
     })
   })
 });
 
-export const { useRegionOverviewQuery } = activityViewerApiSlice;
+export const {
+  useRegionOverviewQuery,
+  useEpigenomesMetadataDimensionsQuery,
+  useBaseEpigenomesQuery
+} = activityViewerApiSlice;

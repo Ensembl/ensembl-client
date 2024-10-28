@@ -22,8 +22,10 @@ import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/st
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
-import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
+// import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
+import EpigenomeSelectionPanel from './components/epigenome-selection-panel/EpigenomeSelectionPanel';
+import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
 
 const ActivityViewer = () => {
   return (
@@ -52,7 +54,11 @@ const MainContent = () => {
       Hello activity viewer
       <RegionOverview activeGenomeId={activeGenomeId} />
       <div style={{ margin: '3rem 0' }} />
-      <RegionActivitySection activeGenomeId={activeGenomeId} />
+      {/* <RegionActivitySection activeGenomeId={activeGenomeId} /> */}
+      <EpigenomeSelectionPanel />
+      <div style={{ margin: '2rem 0' }} />
+      <SelectedEpigenomes />
+      <div style={{ margin: '4rem 0' }} />
     </div>
   );
 };

@@ -1,0 +1,10 @@
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-color: var(--color-dark-grey);
+  border-style: dashed;
+  border-width: 1px;
+  border-radius: 4px;
+  padding: 20px 15px;
+}

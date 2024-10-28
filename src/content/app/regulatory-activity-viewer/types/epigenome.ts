@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
-
-import generalSlice from './general/generalSlice';
-import regionDetailReducer from './region-detail/regionDetailSlice';
-import epigenomeSelectionReducer from './epigenome-selection/epigenomeSelectionSlice';
-
-export default combineReducers({
-  general: generalSlice,
-  regionDetail: regionDetailReducer,
-  epigenomeSelection: epigenomeSelectionReducer
-});
+export type Epigenome = {
+  name: string;
+  material: string;
+  life_stage: string;
+  age: string;
+  age_unit: string | null;
+  sex: string;
+  term: string;
+  organ_slims: string[];
+  system_slims: string[];
+  assays: string[];
+  assay_types: string[];
+  assay_target_types: string[];
+  assay_targets: string[];
+};
