@@ -131,7 +131,7 @@ const GeneTracks = (props: {
   const forwardStrandTrackYs: number[] = [];
   const reverseStrandTrackYs: number[] = [];
 
-  // Andrea: forward strand genes above the central line should stack upwards
+  // Designer's instruction: forward strand genes above the central line should stack upwards
   for (let i = forwardStrandTracks.length; i > 0; i--) {
     const y = GENE_TRACKS_TOP_OFFSET + GENE_TRACK_HEIGHT * (i - 1);
     forwardStrandTrackYs.push(y);

@@ -23,12 +23,6 @@ import useLocationSelector from './useLocationSelector';
 
 import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
 
-/**
- * RULES:
- *  - Do not let the selection continue outside of the svg
- *  - There should probably be a minimum possible selection
- */
-
 type Props = {
   activeGenomeId: string;
   imageRef: MutableRefObject<SVGSVGElement | null>;
@@ -74,8 +68,8 @@ const RegionOverviewLocationSelector = (props: Props) => {
           id={filterId}
           height={props.height}
           width={props.width}
-          positionLeft={selectedLocation.start}
-          positionRight={selectedLocation.end}
+          selectionStart={selectedLocation.start}
+          selectionEnd={selectedLocation.end}
         />
       )}
       <g filter={`url(#${filterId})`}>{children}</g>
@@ -93,8 +87,8 @@ const RegionOverviewLocationSelector = (props: Props) => {
           <InertAreas
             width={props.width}
             height={props.height}
-            positionLeft={selectedLocation.start}
-            positionRight={selectedLocation.end}
+            selectionStart={selectedLocation.start}
+            selectionEnd={selectedLocation.end}
           />
         </>
       )}
@@ -102,20 +96,25 @@ const RegionOverviewLocationSelector = (props: Props) => {
   );
 };
 
+/**
+ * This component applies an svg filter that changes the colour of all the shapes
+ * (both full shapes and their fragments) that are outside the selected area
+ * to grey
+ */
 const Filter = ({
   id,
-  positionLeft,
-  positionRight,
+  selectionStart,
+  selectionEnd,
   height,
   width
 }: {
   id: string;
   height: number; // <-- total height of the image
   width: number; // <-- total width of the image
-  positionLeft: number; // <-- left coordinate of the selection area
-  positionRight: number; // <-- right coordinate of the selection area
+  selectionStart: number; // <-- left coordinate of the selection area
+  selectionEnd: number; // <-- right coordinate of the selection area
 }) => {
-  const rightFilterWidth = width - positionRight;
+  const rightFilterWidth = width - selectionEnd;
 
   return (
     <filter id={id}>
@@ -125,13 +124,13 @@ const Filter = ({
         x="0"
         y="0"
         height={height}
-        width={Math.max(positionLeft, 1)}
+        width={Math.max(selectionStart, 1)}
         result="A"
       />
       <feFlood
         floodColor="#e5eaf0"
         floodOpacity="1"
-        x={positionRight}
+        x={selectionEnd}
         y="0"
         height={height}
         width={Math.max(rightFilterWidth, 1)}
@@ -149,33 +148,33 @@ const Filter = ({
 };
 
 /**
- * The purpose of this component is to act as a shield from user's clicks
- * over the area outside the selection
+ * The purpose of this component is to cover the elements that are outside of the selection
+ * and to prevent them from receiving user events, such as clicks or mouseovers
  */
 const InertAreas = ({
   height,
   width,
-  positionLeft,
-  positionRight
+  selectionStart,
+  selectionEnd
 }: {
   height: number; // <-- total height of the image
   width: number; // <-- total width of the image
-  positionLeft: number; // <-- left coordinate of the selection area
-  positionRight: number; // <-- right coordinate of the selection area
+  selectionStart: number; // <-- left coordinate of the selection area
+  selectionEnd: number; // <-- right coordinate of the selection area
 }) => {
   return (
     <g>
       <rect
         x={0}
-        width={positionLeft}
+        width={selectionStart}
         y={0}
         height={height}
         fill="transparent"
         data-name="inert-area"
       />
       <rect
-        x={positionRight}
-        width={width - positionRight}
+        x={selectionEnd}
+        width={width - selectionEnd}
         y={0}
         height={height}
         fill="transparent"

@@ -66,7 +66,6 @@ const RegionOverviewGene = (props: Props) => {
   const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
 
   const onClick = (event: MouseEvent<Element>) => {
-    // props.onClick(gene.data.stable_id);
     const x = event.nativeEvent.offsetX;
     const y = event.nativeEvent.offsetY;
     setPopupCoordinates({ x, y });

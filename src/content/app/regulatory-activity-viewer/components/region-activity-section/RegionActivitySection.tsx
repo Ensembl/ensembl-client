@@ -31,16 +31,6 @@ import RegionActivitySectionImage from './RegionActivitySectionImage';
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
-/**
- * TODO: the name of this component should probably change.
- * It will contain the "magnified region image", but also
- * the actual activity heatmap.
- *
- * TODO: This component will need to know the start and the end locations
- * of the magnified segment. It will receive those either from the parent,
- * or (more likely) from redux
- */
-
 type Props = {
   activeGenomeId: string;
 };
@@ -73,13 +63,6 @@ const RegionActivitySection = (props: Props) => {
 
     // let's consider just a single contiguous slice without "boring" intervals
     const location = currentData.locations[0];
-
-    // TODO: below are hard-coded start and end of the selected segment of the region.
-    // When the selection element is implemented, the selected start and end will come from user selection, probably via redux
-    // REMEMBER to add selectionStart and selectionEnd to the list of dependencies of useMemo, when they start coming from user selection
-    // const locationLength = location.end - location.start + 1;
-    // const selectedStart = location.start + Math.round(0.2 * locationLength);
-    // const selectedEnd = location.start + Math.round(0.4 * locationLength);
 
     const selectedStart = regionDetailLocation?.start ?? location.start;
     const selectedEnd = regionDetailLocation?.end ?? location.end;
