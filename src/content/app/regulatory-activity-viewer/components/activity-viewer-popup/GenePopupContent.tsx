@@ -19,6 +19,7 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
+import { Strand } from 'src/shared/types/core-api/strand';
 import type { GeneInRegionOverview } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './AcrivityViewerPopup.module.css';
@@ -61,7 +62,7 @@ const GenePopupContent = (props: Props) => {
       <div className={styles.light}>
         <span className={styles.strand}>
           {/* TODO: Change Strand enum into a union type */}
-          {getStrandDisplayName(gene.strand as any)}{' '}
+          {getStrandDisplayName(gene.strand as Strand)}{' '}
         </span>
         <span>
           {getFormattedLocation({
