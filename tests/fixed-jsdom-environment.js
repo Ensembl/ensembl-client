@@ -21,6 +21,8 @@ class FixedJSDOMEnvironment extends JSDOMEnvironment {
     this.global.Response = Response;
     this.global.TextEncoder = TextEncoder;
     this.global.TextDecoder = TextDecoder;
+    this.global.BroadcastChannel = BroadcastChannel;
+    this.global.TransformStream = TransformStream;
     this.global.Headers = Headers;
     this.global.FormData = FormData;
     this.global.fetch = fetch;
