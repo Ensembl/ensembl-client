@@ -28,7 +28,7 @@ variables:
 # Template to build static assets
 .build-static:
   stage: test_build_static
-  image: node:20.9.0
+  image: node:22.11.0
 
   before_script:
   - npm install --global npm@8.1.0
