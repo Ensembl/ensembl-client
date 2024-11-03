@@ -16,6 +16,10 @@
 
 import noop from 'lodash/noop';
 
+import { useAppSelector } from 'src/store';
+
+import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
+
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
@@ -36,12 +40,19 @@ const ActivityViewer = () => {
 };
 
 const MainContent = () => {
+  const activeGenomeId = useAppSelector(getActiveGenomeId);
+
+  if (!activeGenomeId) {
+    // this will be an interstitial in the future
+    return null;
+  }
+
   return (
     <div>
       Hello activity viewer
-      <RegionOverview />
+      <RegionOverview activeGenomeId={activeGenomeId} />
       <div style={{ margin: '3rem 0' }} />
-      <RegionActivitySection />
+      <RegionActivitySection activeGenomeId={activeGenomeId} />
     </div>
   );
 };

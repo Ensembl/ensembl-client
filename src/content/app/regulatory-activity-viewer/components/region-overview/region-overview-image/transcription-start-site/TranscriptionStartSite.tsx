@@ -43,10 +43,43 @@ type Props = {
   scale: ScaleLinear<number, number>;
 };
 
-const TranscriptionStartSite = (props: Props) => {
-  const { yStart, yEnd, tss, strand, scale } = props;
+/**
+  Design guidelines from Andrea:
 
-  const stemX = scale(tss[0].position);
+  shorter arrow
+  height: 12
+  horizontal: 6
+
+  arrowhead:
+  base 6
+  height: 6.75
+
+
+
+  longer arrow
+  height: 19
+
+
+  distance between: 1?
+
+
+  distance from gene: 5
+ */
+
+const TranscriptionStartSites = (props: Props) => {
+  const { tss } = props;
+
+  return tss.map((site) => (
+    <TranscriptionStartSite {...props} site={site} key={site.position} />
+  ));
+};
+
+const TranscriptionStartSite = (
+  props: Props & { site: GeneInRegionOverview['tss'][number] }
+) => {
+  const { yStart, yEnd, strand, scale, site } = props;
+
+  const stemX = scale(site.position);
   const armEndX =
     strand === 'forward'
       ? stemX + HORIZONTAL_ARM_LENGTH
@@ -59,11 +92,6 @@ const TranscriptionStartSite = (props: Props) => {
   const arrowheadBaseBottomCoords = `${armEndX}, ${yEnd - ARROWHEAD_BASE_LENGTH / 2}`;
   const arrowheadBaseTopCoords = `${armEndX}, ${yEnd + ARROWHEAD_BASE_LENGTH / 2}`;
   const arrowheadPointCoords = `${arrowheadPointX}, ${yEnd}`;
-
-  const labelX =
-    strand === 'forward' ? arrowheadPointX + 8 : arrowheadPointX - 8;
-  const labelY = yEnd;
-  const textAnchor = strand === 'forward' ? 'start' : 'end';
 
   return (
     <g data-name="transcription start site">
@@ -86,23 +114,8 @@ const TranscriptionStartSite = (props: Props) => {
       <polygon
         points={`${arrowheadBaseBottomCoords} ${arrowheadPointCoords} ${arrowheadBaseTopCoords}`}
       />
-      <text
-        x={labelX}
-        y={labelY}
-        textAnchor={textAnchor}
-        alignmentBaseline="middle"
-        style={{
-          fontSize: '11px',
-          fontStyle: 'italic',
-          fontWeight: 300,
-          fontFamily:
-            'Lato, "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif'
-        }}
-      >
-        Transcription start
-      </text>
     </g>
   );
 };
 
-export default TranscriptionStartSite;
+export default TranscriptionStartSites;

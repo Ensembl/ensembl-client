@@ -24,6 +24,7 @@ import inAppSearch from 'src/shared/state/in-app-search/inAppSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
+import regionActivityViewer from 'src/content/app/regulatory-activity-viewer/state/regulatoryActivityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
 import vep from 'src/content/app/tools/vep/state/vepReducer';
@@ -42,6 +43,7 @@ const createRootReducer = () =>
     speciesSelector,
     speciesPage,
     entityViewer,
+    regionActivityViewer,
     blast,
     vep,
     [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,

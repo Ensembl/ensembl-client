@@ -17,7 +17,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'src/store';
+
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
+
+import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
@@ -27,19 +31,18 @@ import RegionActivitySectionImage from './RegionActivitySectionImage';
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
-/**
- * TODO: the name of this component should probably change.
- * It will contain the "magnified region image", but also
- * the actual activity heatmap.
- *
- * TODO: This component will need to know the start and the end locations
- * of the magnified segment. It will receive those either from the parent,
- * or (more likely) from redux
- */
+type Props = {
+  activeGenomeId: string;
+};
 
-const RegionActivitySection = () => {
+const RegionActivitySection = (props: Props) => {
+  const { activeGenomeId } = props;
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
+  const regionDetailLocation = useAppSelector((state) =>
+    getRegionDetailSelectedLocation(state, activeGenomeId)
+  );
+
   const { currentData } = useRegionOverviewQuery();
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -61,24 +64,21 @@ const RegionActivitySection = () => {
     // let's consider just a single contiguous slice without "boring" intervals
     const location = currentData.locations[0];
 
-    // TODO: below are hard-coded start and end of the selected segment of the region.
-    // When the selection element is implemented, the selected start and end will come from user selection, probably via redux
-    // REMEMBER to add selectionStart and selectionEnd to the list of dependencies of useMemo, when they start coming from user selection
-    const locationLength = location.end - location.start + 1;
-    const selectedStart = location.start + Math.round(0.2 * locationLength);
-    const selectedEnd = location.start + Math.round(0.4 * locationLength);
+    const selectedStart = regionDetailLocation?.start ?? location.start;
+    const selectedEnd = regionDetailLocation?.end ?? location.end;
 
     const featureTracks = prepareFeatureTracks({
       data: currentData,
       start: selectedStart,
       end: selectedEnd
     });
+
     return {
       featureTracks,
       start: selectedStart,
       end: selectedEnd
     };
-  }, [currentData]);
+  }, [currentData, regionDetailLocation]);
 
   const componentClasses = classNames(
     styles.section,

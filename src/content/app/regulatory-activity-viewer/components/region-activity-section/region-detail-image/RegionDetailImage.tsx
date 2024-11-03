@@ -18,16 +18,22 @@ import type { ScaleLinear } from 'd3';
 
 import {
   GENE_TRACKS_TOP_OFFSET,
-  GENE_TRACK_HEIGHT
+  GENE_TRACK_HEIGHT,
+  REGULATORY_FEATURE_TRACKS_TOP_OFFSET,
+  REGULATORY_FEATURE_TRACK_HEIGHT
 } from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-detail-image/regionDetailConstants';
 
 import RegionDetailGene from './region-detail-gene/RegionDetailGene';
+import RegionDetailRegulatoryFeature from './region-detail-regulatory-feature/RegionDetailRegulatoryFeature';
 
 import type {
   FeatureTracks,
   GeneTrack
 } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type {
+  OverviewRegion,
+  RegulatoryFeature
+} from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 type Props = {
   data: OverviewRegion;
@@ -39,7 +45,15 @@ type Props = {
 };
 
 const RegionDetailImage = (props: Props) => {
-  const { scale, width, featureTracks } = props;
+  const { data, scale, width, featureTracks } = props;
+  const geneForwardStrandTracks = featureTracks.geneTracks.forwardStrandTracks;
+  const geneReverseStrandTracks = featureTracks.geneTracks.reverseStrandTracks;
+
+  const regulatoryTracksOffsetTop =
+    GENE_TRACKS_TOP_OFFSET +
+    (geneForwardStrandTracks.length + geneReverseStrandTracks.length) *
+      GENE_TRACK_HEIGHT +
+    REGULATORY_FEATURE_TRACKS_TOP_OFFSET;
 
   return (
     <g>
@@ -47,6 +61,12 @@ const RegionDetailImage = (props: Props) => {
         tracks={featureTracks.geneTracks}
         scale={scale}
         width={width}
+      />
+      <RegulatoryFeatureTracks
+        featureTracks={featureTracks.regulatoryFeatureTracks}
+        featureTypesMap={data.regulatory_features.feature_types}
+        offsetTop={regulatoryTracksOffsetTop}
+        scale={scale}
       />
     </g>
   );
@@ -126,6 +146,49 @@ const GeneTrack = (props: {
   });
 
   return <g>{geneElements}</g>;
+};
+
+const RegulatoryFeatureTracks = (props: {
+  featureTracks: RegulatoryFeature[][];
+  featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
+  offsetTop: number;
+  scale: ScaleLinear<number, number>;
+}) => {
+  const { featureTracks, featureTypesMap, offsetTop, scale } = props;
+
+  const trackElements = featureTracks.map((track, index) => (
+    <RegulatoryFeatureTrack
+      features={track}
+      featureTypesMap={featureTypesMap}
+      offsetTop={offsetTop + index * REGULATORY_FEATURE_TRACK_HEIGHT}
+      scale={scale}
+      key={index}
+    />
+  ));
+
+  return <g>{trackElements}</g>;
+};
+
+const RegulatoryFeatureTrack = ({
+  features,
+  featureTypesMap,
+  offsetTop,
+  scale
+}: {
+  features: RegulatoryFeature[];
+  featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
+  offsetTop: number;
+  scale: ScaleLinear<number, number>;
+}) => {
+  return features.map((feature) => (
+    <RegionDetailRegulatoryFeature
+      feature={feature}
+      featureTypesMap={featureTypesMap}
+      offsetTop={offsetTop}
+      scale={scale}
+      key={feature.id}
+    />
+  ));
 };
 
 export default RegionDetailImage;

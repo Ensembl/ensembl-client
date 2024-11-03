@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export const GENE_TRACKS_TOP_OFFSET = 32;
-export const GENE_HEIGHT = 8;
-export const GENE_TRACK_HEIGHT = GENE_HEIGHT + 3;
+import { combineReducers } from 'redux';
 
-export const REGULATORY_FEATURE_TRACKS_TOP_OFFSET = 50;
-export const REGULATORY_FEATURE_HEIGHT = 8;
-export const REGULATORY_FEATURE_CORE_HEIGHT = 8;
-export const REGULATORY_FEATURE_EXTENT_HEIGHT = 4;
-export const REGULATORY_FEATURE_TRACK_HEIGHT = REGULATORY_FEATURE_HEIGHT + 10;
+import generalSlice from './general/generalSlice';
+import regionDetailReducer from './region-detail/regionDetailSlice';
+
+export default combineReducers({
+  general: generalSlice,
+  regionDetail: regionDetailReducer
+});

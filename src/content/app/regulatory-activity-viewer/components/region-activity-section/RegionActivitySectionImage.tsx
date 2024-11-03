@@ -18,6 +18,13 @@ import { scaleLinear } from 'd3';
 
 import RegionDetailImage from './region-detail-image/RegionDetailImage';
 
+import {
+  GENE_TRACKS_TOP_OFFSET,
+  GENE_TRACK_HEIGHT,
+  REGULATORY_FEATURE_TRACKS_TOP_OFFSET,
+  REGULATORY_FEATURE_TRACK_HEIGHT
+} from './region-detail-image/regionDetailConstants';
+
 import type { FeatureTracks } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
@@ -43,8 +50,15 @@ const RegionActivitySectionImage = (props: Props) => {
     .domain([start, end])
     .rangeRound([0, Math.floor(width)]);
 
-  // FIXME: height should be calculated from data (the number of tracks)
-  const height = 500;
+  const height =
+    GENE_TRACKS_TOP_OFFSET +
+    (featureTracks.geneTracks.forwardStrandTracks.length +
+      featureTracks.geneTracks.reverseStrandTracks.length) *
+      GENE_TRACK_HEIGHT +
+    REGULATORY_FEATURE_TRACKS_TOP_OFFSET +
+    featureTracks.regulatoryFeatureTracks.length *
+      REGULATORY_FEATURE_TRACK_HEIGHT +
+    50;
 
   return (
     <svg

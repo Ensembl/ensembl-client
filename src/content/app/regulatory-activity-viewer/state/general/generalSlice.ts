@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-export const GENE_TRACKS_TOP_OFFSET = 32;
-export const GENE_HEIGHT = 8;
-export const GENE_TRACK_HEIGHT = GENE_HEIGHT + 3;
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export const REGULATORY_FEATURE_TRACKS_TOP_OFFSET = 50;
-export const REGULATORY_FEATURE_HEIGHT = 8;
-export const REGULATORY_FEATURE_CORE_HEIGHT = 8;
-export const REGULATORY_FEATURE_EXTENT_HEIGHT = 4;
-export const REGULATORY_FEATURE_TRACK_HEIGHT = REGULATORY_FEATURE_HEIGHT + 10;
+type State = {
+  activeGenomeId: string | null;
+};
+
+const initialState: State = {
+  activeGenomeId: 'test-id'
+};
+
+const generalSlice = createSlice({
+  name: 'regulatory-activity-viewer-general',
+  initialState,
+  reducers: {
+    setActiveGenomeId(state, action: PayloadAction<string>) {
+      state.activeGenomeId = action.payload;
+    }
+  }
+});
+
+export default generalSlice.reducer;

@@ -195,11 +195,27 @@ const isFeatureInsideSelection = (params: {
     return true;
   }
 
+  const isExtendedStartInsideSelection = feature.extended_start
+    ? feature.extended_start > start && feature.extended_start < end
+    : false;
+  const isExtendedEndInsideSelection = feature.extended_end
+    ? feature.extended_end > start && feature.extended_end < end
+    : false;
+  const isFeatureStartInsideSelection =
+    feature.start > start && feature.start < end;
+  const isFeatureEndInsideSelection = feature.end > start && feature.end < end;
+  // for features that fill the viewport and have start/end hanging outside
+  const isOverhangingFeature =
+    ((feature.extended_start && feature.extended_start < start) ||
+      feature.start < start) &&
+    ((feature.extended_end && feature.extended_end > end) || feature.end > end);
+
   return (
-    (feature.extended_start && feature.extended_start < end) ||
-    (feature.extended_end && feature.extended_end > start) ||
-    feature.start < end ||
-    feature.end > start
+    isExtendedStartInsideSelection ||
+    isExtendedEndInsideSelection ||
+    isFeatureStartInsideSelection ||
+    isFeatureEndInsideSelection ||
+    isOverhangingFeature
   );
 };
 
