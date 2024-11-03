@@ -31,7 +31,6 @@ variables:
   image: node:22.11.0
 
   before_script:
-  - npm install --global npm@8.1.0
   - npm ci --loglevel warn
 
   script:

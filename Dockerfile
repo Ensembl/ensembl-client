@@ -8,8 +8,7 @@ COPY ${SOURCE_DIR} /srv/ensembl-client/
 
 WORKDIR /srv/ensembl-client/
 
-RUN npm install --global npm@8.1.0 && \
-    npm ci --loglevel warn && \
+RUN npm ci --loglevel warn && \
     npm run test && \
     npm run build
 
