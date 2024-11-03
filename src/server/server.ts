@@ -45,6 +45,6 @@ app.use(redirectMiddleware);
 
 app.get('/unsupported-browser', unsupportedBrowserRouter);
 // All GET requests not covered by the middleware above will be handled by the viewsRouter
-app.get('*', viewsRouter);
+app.get('*splat', viewsRouter);
 
 export default app;
