@@ -187,19 +187,6 @@
   margin-left: auto;
 }
 
-.footerRight .link {
-  margin-right: 12px;
-  margin-bottom: 10px;
-  white-space: nowrap;
-  color: var(--color-blue);
-}
-
-.footerRight .mediaIcon {
-  width: 24px;
-  height: 24px;
-  margin: 0 12px 10px;
-}
-
 .footerRight .gbcLogo {
   height: 40px;
   margin-left: clamp(30px, 3vw, 90px);

@@ -1,0 +1,16 @@
+.container {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 24px;
+}
+
+.blog {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.mediaIcon {
+  height: 24px;
+}
