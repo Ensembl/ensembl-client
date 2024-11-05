@@ -20,10 +20,7 @@ import { ContactUsInitialForm } from './contact-us-form';
 import { Invitation, Header } from './preform-header/PreformHeader';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-
-import BlogIcon from 'static/icons/icon_blog.svg';
-import FacebookIcon from 'static/icons/icon_facebook.svg';
-import TwitterIcon from 'static/icons/icon_twitter.svg';
+import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
 import styles from './ContactUs.module.css';
 
@@ -78,30 +75,7 @@ const ContactUs = () => {
           Visit Facebook or Twitter for the latest breaking Ensembl news and
           service status updates.
         </p>
-        <p>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.ensembl.info/"
-          >
-            <span className={styles.socialMediaLinkText}>Ensembl Blog</span>{' '}
-            <BlogIcon className={styles.icon} />{' '}
-          </a>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.facebook.com/Ensembl.org/"
-          >
-            <FacebookIcon className={styles.icon} />{' '}
-          </a>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://twitter.com/ensembl"
-          >
-            <TwitterIcon className={styles.icon} />
-          </a>
-        </p>
+        <SocialMediaLinks />
       </section>
       <section>
         <h2>Online Help</h2>
