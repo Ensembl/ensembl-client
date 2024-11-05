@@ -1,4 +1,4 @@
-FROM node:20.9.0 AS builder
+FROM node:22.11.0 AS builder
 
 ARG SOURCE_DIR="./"
 
@@ -8,14 +8,13 @@ COPY ${SOURCE_DIR} /srv/ensembl-client/
 
 WORKDIR /srv/ensembl-client/
 
-RUN npm install --global npm@8.1.0 && \
-    npm ci --loglevel warn && \
+RUN npm ci --loglevel warn && \
     npm run test && \
     npm run build
 
 
 # PRODUCTION IMAGE
-FROM node:20.9.0-alpine AS runner
+FROM node:22.11.0-alpine AS runner
 
 WORKDIR /srv/ensembl-client/
 
