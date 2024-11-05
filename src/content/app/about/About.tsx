@@ -43,6 +43,7 @@ import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import { CircleLoader } from 'src/shared/components/loader';
 import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
+import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
 import helpStyles from '../help/Help.module.css';
 import styles from './About.module.css';
@@ -105,6 +106,7 @@ const About = () => {
                   highlightActiveArticle={true}
                 />
               )}
+              <SocialMediaLinks className={styles.socialMediaLinks} />
             </aside>
           </HelpArticleGrid>
         </div>

@@ -38,7 +38,11 @@ const SocialMediaLinks = (props: Props) => {
         rel="noopener noreferrer"
       >
         <span>Ensembl blog</span>
-        <img src={blogIconUrl} className={styles.mediaIcon} />
+        <img
+          data-part="blog-icon"
+          src={blogIconUrl}
+          className={styles.mediaIcon}
+        />
       </a>
       <a
         href="https://www.facebook.com/Ensembl.org"
@@ -46,6 +50,7 @@ const SocialMediaLinks = (props: Props) => {
         rel="noopener noreferrer"
       >
         <img
+          data-part="facebook-icon"
           src={facebookIconUrl}
           className={styles.mediaIcon}
           alt="Ensembl profile on Facebook"
@@ -53,6 +58,7 @@ const SocialMediaLinks = (props: Props) => {
       </a>
       <a href="https://x.com/ensembl" target="_blank" rel="noopener noreferrer">
         <img
+          data-part="twitter-icon"
           src={twitterIconUrl}
           className={styles.mediaIcon}
           alt="Ensembl profile on X"

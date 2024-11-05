@@ -75,7 +75,7 @@ const ContactUs = () => {
           Visit Facebook or Twitter for the latest breaking Ensembl news and
           service status updates.
         </p>
-        <SocialMediaLinks />
+        <SocialMediaLinks className={styles.socialMediaLinks} />
       </section>
       <section>
         <h2>Online Help</h2>

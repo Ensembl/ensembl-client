@@ -140,7 +140,7 @@ const Home = () => {
         </div>
 
         <div className={styles.footerRight}>
-          <SocialMediaLinks />
+          <SocialMediaLinks className={styles.socialMediaLinks} />
           <a
             href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
             target="_blank"
