@@ -1,2 +1,2 @@
-@import './layers.css';
-@import './base.css' layer(base);
+@import url('./layers.css');
+@import url('./base.css') layer(base);
