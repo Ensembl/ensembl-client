@@ -1,0 +1,6 @@
+/* The 'components' layer is defined in some of the shared components
+ * such that their styles can be easily overridden from parents if necessary.
+ * 
+ * For other layers, see the main.css file, in which they are assigned to imports 
+ */
+@layer base, components;

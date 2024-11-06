@@ -1,0 +1,29 @@
+/* 
+  To style individual icons, use the following selectors:
+  - [data-part="blog-icon"] for the blog icon
+  - [data-part="facebook-icon"] for Facebook icon
+  - [data-part="twitter-icon"] for Twitter/X icon
+ */
+
+@layer components {
+  .container {
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    column-gap: 24px;
+  }
+  
+  .blog {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    white-space: nowrap;
+  }
+  
+  .mediaIcon {
+    height: 24px;
+  }
+
+  .mediaIcon[data-part="twitter-icon"] {
+    height: 22px;
+  }
+}

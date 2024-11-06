@@ -25,6 +25,7 @@ import {
   SpeciesSelectorIcon,
   EntityViewerIcon
 } from 'src/shared/components/app-icon';
+import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
@@ -32,9 +33,6 @@ import speciesStripUrl from 'static/img/home/species-strip.svg?url';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg?url';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg?url';
 import gbcLogoUrl from 'static/img/home/gbc-logo.svg?url';
-import facebookIconUrl from 'static/icons/icon_facebook.svg?url';
-import twitterIconUrl from 'static/icons/icon_twitter.svg?url';
-import blogIconUrl from 'static/icons/icon_blog.svg?url';
 
 import styles from './Home.module.css';
 
@@ -142,34 +140,7 @@ const Home = () => {
         </div>
 
         <div className={styles.footerRight}>
-          <a
-            href="https://www.ensembl.info"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div className={styles.link}>Ensembl blog</div>
-          </a>
-          <a
-            href="https://www.ensembl.info"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src={blogIconUrl} className={styles.mediaIcon} />
-          </a>
-          <a
-            href="https://www.facebook.com/Ensembl.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src={facebookIconUrl} className={styles.mediaIcon} />
-          </a>
-          <a
-            href="https://twitter.com/ensembl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src={twitterIconUrl} className={styles.mediaIcon} />
-          </a>
+          <SocialMediaLinks className={styles.socialMediaLinks} />
           <a
             href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
             target="_blank"

@@ -20,14 +20,8 @@
   margin-top: 50px;
 }
 
-.socialMediaInfo a {
-  display: inline-block;
-  margin-right: 20px;
-}
-
-.socialMediaLinkText {
-  display: inline-block;
-  margin-right: 10px;
+.socialMediaLinks {
+  margin-top: 10px;
 }
 
 .icon {

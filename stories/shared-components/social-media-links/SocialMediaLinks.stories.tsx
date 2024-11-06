@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import Logotype from 'static/img/brand/logotype.svg';
+import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
-import styles from './VepTopBar.module.css';
-
-const EnsemblVepVersion = () => {
-  return (
-    <div className={styles.vepVersion}>
-      <Logotype />
-      <span>Variant Effect Predictor </span>
-      v110
-    </div>
-  );
+export default {
+  title: 'Components/Shared Components/SocialMediaLinks'
 };
 
-export default EnsemblVepVersion;
+export const DefaultSocialMediaLinksStory = {
+  name: 'default',
+  render: () => (
+    <div>
+      <SocialMediaLinks />
+    </div>
+  )
+};

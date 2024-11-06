@@ -21,14 +21,17 @@
 }
 
 .aside {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-self: start;
+  display: grid;
+  grid-template-rows: 1fr [social-media-links] auto;
 }
 
 .asideTitle {
   font-weight: var(--font-weight-light);
   margin-bottom: 1rem;
+}
+
+.socialMediaLinks {
+  align-self: start;
+  grid-row: social-media-links;
+  margin-bottom: 60px;
 }

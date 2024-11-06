@@ -61,6 +61,7 @@
   column-gap: var(--standard-gutter);
   padding-right: 80px;
 }
+
 .transcriptSetWrapper {
   display: flex;
   align-items: baseline;
