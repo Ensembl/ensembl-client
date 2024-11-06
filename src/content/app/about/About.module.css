@@ -22,7 +22,7 @@
 
 .aside {
   display: grid;
-  grid-template-rows: minmax(calc(100% - 84px), auto) [social-media-links] auto;
+  grid-template-rows: 1fr [social-media-links] auto;
 }
 
 .asideTitle {
@@ -33,4 +33,5 @@
 .socialMediaLinks {
   align-self: start;
   grid-row: social-media-links;
+  margin-bottom: 60px;
 }
