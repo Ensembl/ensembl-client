@@ -56,6 +56,13 @@ get used when AppIcon is placed inside of the ImageButton component */
   height: 95%;
 }
 
+.biomart svg {
+  --image-button-svg-width: 59.375%;
+  --image-button-svg-height: 59.375%;
+  width: 59.375%;
+  height: 59.375%;
+}
+
 .help svg {
   --image-button-svg-width: 70%;
   --image-button-svg-height: 70%;

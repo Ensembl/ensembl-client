@@ -45,6 +45,7 @@ import HelpPage, {
   serverFetch as helpPageServerFetch
 } from 'src/content/app/help/HelpPage';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
+import BiomartPage from 'src/content/app/tools/biomart/BiomartPage';
 
 type ServerFetchParams = {
   store: any; // FIXME: should be ServerSideReduxStore, but needs tweaking
@@ -96,6 +97,11 @@ const routes: RouteConfig[] = [
   {
     path: '/vep/*',
     element: <VepPage />,
+    serverFetch: vepServerFetch
+  },
+  {
+    path: '/biomart/*',
+    element: <BiomartPage />,
     serverFetch: vepServerFetch
   },
   {

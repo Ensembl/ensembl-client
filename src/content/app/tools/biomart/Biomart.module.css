@@ -1,0 +1,46 @@
+.biomartPage {
+    --blast-container-max-width: 1800px;
+    --blast-page-standard-padding: 0
+      calc(var(--standard-gutter) - var(--scrollbar-width))
+      var(--global-padding-bottom)
+      var(--double-standard-gutter);
+    height: 100%;
+}
+  
+.appBar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(250px, auto);
+    row-gap: 8px;
+    align-content: start;
+    grid-template-areas:
+      'top-left top-right top-right'
+      'main main bottom-right';
+    align-items: center;
+    padding: 8px var(--standard-gutter) 0 var(--standard-gutter);
+    min-height: 80px;
+    width: 100%;
+}
+
+.appBarTopLeft {
+  grid-area: top-left;
+}
+
+.appBarMain {
+  grid-area: main;
+  max-width: 100%;
+}
+
+.appBarAside {
+  grid-area: bottom-right;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+  top: 2px;
+}
+
+.appBarAside .conversationIcon {
+  width: 40px;
+  margin-left: 20px;
+  height: 25px;
+}

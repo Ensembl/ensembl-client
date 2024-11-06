@@ -1,0 +1,20 @@
+/* stylelint-disable no-descending-specificity */
+
+.topLevelContainer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 20px;
+  max-width: var(--blast-container-max-width);
+}
+
+.topLevel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.title {
+  margin: 0 25px 3px 0;
+  font-size: 16px;
+}

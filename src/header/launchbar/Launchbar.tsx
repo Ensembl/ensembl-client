@@ -29,6 +29,7 @@ import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
+import BiomartLaunchbarButton from './BiomartLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
@@ -67,6 +68,7 @@ const Launchbar = () => {
           <div className={styles.category}>
             <BlastLaunchbarButton />
             <VepLaunchbarButton />
+            <BiomartLaunchbarButton />
           </div>
           <div className={styles.category}>
             <LaunchbarButton

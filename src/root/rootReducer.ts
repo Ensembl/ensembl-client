@@ -28,6 +28,7 @@ import regionActivityViewer from 'src/content/app/regulatory-activity-viewer/sta
 import speciesPage from 'src/content/app/species/state/index';
 import blast from 'src/content/app/tools/blast/state/blastReducer';
 import vep from 'src/content/app/tools/vep/state/vepReducer';
+import biomart from 'src/content/app/tools/biomart/state/biomartReducer';
 
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
@@ -46,6 +47,7 @@ const createRootReducer = () =>
     regionActivityViewer,
     blast,
     vep,
+    biomart,
     [graphqlApiSlice.reducerPath]: graphqlApiSlice.reducer,
     [restApiSlice.reducerPath]: restApiSlice.reducer
   });
