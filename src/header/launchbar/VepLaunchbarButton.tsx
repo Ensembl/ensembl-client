@@ -19,8 +19,6 @@ import { useLocation } from 'react-router';
 
 import { useAppSelector } from 'src/store';
 
-import { isProductionEnvironment } from 'src/shared/helpers/environment';
-
 import { getUnviewedVepSubmissions } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
@@ -37,10 +35,6 @@ const VEP_APP_ROOT_PATH = '/vep';
 const VepLaunchbarButton = () => {
   const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
   const vepPath = usePathForVepNavigationButton();
-
-  if (isProductionEnvironment()) {
-    return null;
-  }
 
   const notification = getNotification(unviewedVepSubmissions);
 
