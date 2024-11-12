@@ -1,0 +1,107 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, min-content);
+  column-gap: 45px;
+  padding: var(--biomart-page-standard-padding);
+  overflow: auto;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  height: 100%;
+}
+
+.smallScreenGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: var(--biomart-page-standard-padding);
+  overflow: auto;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  height: 100%;
+}
+
+.biomartTabButton {
+  margin-left: 18px;
+}
+
+.biomartFormTabToggle {
+  display: flex;
+  gap: 10px;
+  padding-top: 20px;
+  background-color: var(--color-white);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.buttonActive {
+  background-color: var(--color-black);
+  border-color: var(--color-black);
+}
+
+.sectionTitleContainer {
+  --padding-side: 40px;
+  display: flex;
+  align-items: center;
+  height: var(--form-section-min-height);
+  padding-left: var(--padding-side);
+  padding-right: var(--padding-side);
+}
+
+.sectionContainer {
+  --form-section-min-height: 62px;
+  width: 862px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(
+    --form-section-border-color,
+    var(--color-medium-light-grey)
+  );
+  min-height: var(--form-section-min-height);
+}
+
+.sectionContainer + .sectionContainer {
+  border-top: none;
+}
+
+.sectionFilterContainer {
+  --form-section-min-height: 40px;
+  width: 862px;
+  min-height: var(--form-section-min-height);
+  background-color: var(--color-light-grey);
+}
+
+.sectionFilterContainer + .sectionFilterContainer {
+  border-top: none;
+}
+
+.sectionSelectionContainer {
+  --padding-side: 42px;
+  display: grid;
+  width: 862px;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  column-gap: 1.5rem;
+  background-color: var(--color-light-grey);
+  padding-left: var(--padding-side);
+  padding-right: var(--padding-side);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.sectionSelectionContainer:empty {
+  display: none;
+}
+
+.biomartInput label {
+  display: inline-flex;
+  column-gap: 11px;
+  align-items: center;
+  white-space: nowrap;
+  width: 150px;
+}
+
+.biomartInput label span,
+.select label span {
+  font-weight: var(--font-weight-light);
+  line-height: 27px;
+  justify-self: end;
+}

@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   column-gap: 20px;
-  max-width: var(--blast-container-max-width);
+  max-width: var(--biomart-container-max-width);
 }
 
 .topLevel {

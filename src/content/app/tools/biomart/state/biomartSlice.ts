@@ -17,38 +17,93 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
+type BiomartColumn = {
+  label: string;
+  name: string;
+  checked: boolean;
+};
+
+export type BiomartTable = {
+  label: string;
+  options: BiomartColumn[];
+  expanded: boolean;
+};
+
+type BiomartFilterStringType = {
+  input: string[];
+  bm_backend_key: string;
+  checked: boolean;
+  output: string[];
+  expanded: boolean;
+};
+
+type BiomartFilterNumberType = {
+  input: number[];
+  bm_backend_key: string;
+  checked: boolean;
+  output: number[];
+  expanded: boolean;
+};
+
+type BiomartRegionFilter = {
+  chromosomes: BiomartFilterStringType;
+  coordinates: BiomartFilterNumberType;
+  expanded: boolean;
+};
+
+type BiomartGeneFilter = {
+  gene_types: BiomartFilterStringType;
+  gene_sources: BiomartFilterStringType;
+  transcript_types: BiomartFilterStringType;
+  transcript_sources: BiomartFilterStringType;
+  expanded: boolean;
+};
+
+export type BiomartFilter = {
+  region: BiomartRegionFilter;
+  gene: BiomartGeneFilter;
+};
+
 export type BiomartState = {
-  modalView: 'species-search' | null;
   selectedSpecies: CommittedItem | null;
+  tab: 'tables' | 'filters';
+  columnSelectionData: BiomartTable[];
+  filterData: BiomartFilter;
 };
 
 export const initialState: BiomartState = {
-  modalView: null,
-  selectedSpecies: null
+  selectedSpecies: null,
+  tab: 'tables',
+  columnSelectionData: [],
+  filterData: {} as BiomartFilter
 };
 
 const biomartSlice = createSlice({
   name: 'biomart',
   initialState,
   reducers: {
-    openSpeciesSearchModal: (state) => {
-      state.modalView = 'species-search';
-    },
-    closeSpeciesSearchModal: (state) => {
-      state.modalView = null;
-    },
     setSelectedSpecies: (
       state,
       action: PayloadAction<CommittedItem | null>
     ) => {
       state.selectedSpecies = action.payload;
+    },
+    setTab: (state, action: PayloadAction<'tables' | 'filters'>) => {
+      state.tab = action.payload;
+    },
+    setColumnSelectionData: (state, action: PayloadAction<BiomartTable[]>) => {
+      state.columnSelectionData = action.payload;
+    },
+    setFilterData: (state, action: PayloadAction<BiomartFilter>) => {
+      state.filterData = action.payload;
     }
   }
 });
 
 export const {
-  openSpeciesSearchModal,
-  closeSpeciesSearchModal,
-  setSelectedSpecies
+  setSelectedSpecies,
+  setTab,
+  setColumnSelectionData,
+  setFilterData
 } = biomartSlice.actions;
 export default biomartSlice.reducer;

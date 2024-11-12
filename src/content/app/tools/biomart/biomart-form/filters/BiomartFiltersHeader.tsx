@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-import styles from './BiomartSettings.module.css';
+import styles from './BiomartFiltersHeader.module.css';
 
-const BiomartSettings = () => {
+const BiomartFiltersHeader = () => {
+  const onReset = () => {
+    // todo
+  };
+
   return (
-    <div className={styles.topLevelContainer}>
-      <div className={styles.topLevel}>
-        <h1 className={styles.title}>Biomart</h1>
+    <div className={styles.columnsHeader}>
+      <div className={styles.headerTitle}>
+        <span>Filter</span>
+        <span className={styles.filtersCounterClass}>0</span>
+      </div>
+      <div className={styles.headerSettings}>
+        <span className={styles.reset} onClick={onReset}>
+          Reset
+        </span>
       </div>
     </div>
   );
 };
 
-export default BiomartSettings;
+export default BiomartFiltersHeader;

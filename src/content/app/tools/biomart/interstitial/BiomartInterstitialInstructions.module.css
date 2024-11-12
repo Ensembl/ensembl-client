@@ -4,10 +4,8 @@
   --row-gap: 60px;
 
   display: flex;
-  /* background-color: var(--color-light-grey); */
   min-height: 235px;
   padding: 29px var(--global-padding-left);
-  /* box-shadow: 0 3px 5px var(--global-box-shadow-color); */
 }
 
 .instructionsWrapper {

@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import styles from './BiomartSettings.module.css';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-const BiomartSettings = () => {
-  return (
-    <div className={styles.topLevelContainer}>
-      <div className={styles.topLevel}>
-        <h1 className={styles.title}>Biomart</h1>
-      </div>
-    </div>
-  );
-};
+const biomartApiSlice = restApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    biomartColumnSelection: builder.query({
+      query: () => ({
+        url: 'http://127.0.0.1:5500/biomart_columns.json'
+      }),
+      keepUnusedDataFor: 60 * 60
+    }),
+    biomartFilters: builder.query({
+      query: () => ({
+        url: 'http://127.0.0.1:5500/biomart_filters.json'
+      }),
+      keepUnusedDataFor: 60 * 60
+    })
+  })
+});
 
-export default BiomartSettings;
+export const { useBiomartColumnSelectionQuery, useBiomartFiltersQuery } =
+  biomartApiSlice;
