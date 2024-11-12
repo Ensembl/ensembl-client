@@ -102,7 +102,7 @@ const TranscriptionStartSite = (
   props: Props & { site: ReturnType<typeof prepareTssData>[number] }
 ) => {
   const { strand, site } = props;
-  const { yStart, yEnd, x, count } = site;
+  const { yStart, yEnd, x, isOverlapping } = site;
 
   const stemX = x;
   const armEndX =
@@ -117,12 +117,6 @@ const TranscriptionStartSite = (
   const arrowheadBaseBottomCoords = `${armEndX}, ${yEnd - ARROWHEAD_BASE_LENGTH / 2}`;
   const arrowheadBaseTopCoords = `${armEndX}, ${yEnd + ARROWHEAD_BASE_LENGTH / 2}`;
   const arrowheadPointCoords = `${arrowheadPointX}, ${yEnd}`;
-
-  const countLabelX =
-    strand === 'forward' ? arrowheadPointX + 1 : arrowheadPointX - 1;
-  const countLabelY = yEnd;
-  const countLabelTextAnchor = strand === 'forward' ? 'start' : 'end';
-  const countLabelAlignmentBaseline = strand === 'forward' ? 'auto' : 'hanging';
 
   return (
     <g data-name="transcription start site">
@@ -142,21 +136,19 @@ const TranscriptionStartSite = (
         stroke={COLOR}
         strokeWidth="1"
       />
-      <polygon
-        points={`${arrowheadBaseBottomCoords} ${arrowheadPointCoords} ${arrowheadBaseTopCoords}`}
-      />
-      {count > 1 && (
-        <text
-          x={countLabelX}
-          y={countLabelY}
-          textAnchor={countLabelTextAnchor}
-          alignmentBaseline={countLabelAlignmentBaseline}
-          fontSize={12}
-          fontWeight="lighter"
-          fontStyle="italic"
-        >
-          ({count})
-        </text>
+      {isOverlapping ? (
+        <line
+          x1={armEndX}
+          x2={arrowheadPointX}
+          y1={yEnd}
+          y2={yEnd}
+          stroke={COLOR}
+          strokeWidth="1"
+        />
+      ) : (
+        <polygon
+          points={`${arrowheadBaseBottomCoords} ${arrowheadPointCoords} ${arrowheadBaseTopCoords}`}
+        />
       )}
     </g>
   );
@@ -185,6 +177,7 @@ const prepareTssData = ({
           x,
           count: 1
         });
+        lastX = x;
       } else {
         lastPreparedTss.count += 1;
       }
@@ -194,8 +187,8 @@ const prepareTssData = ({
         x,
         count: 1
       });
+      lastX = x;
     }
-    lastX = x;
   }
 
   const yStart = getYStart({
@@ -213,6 +206,7 @@ const prepareTssData = ({
     yStart: number;
     yEnd: number;
     count: number;
+    isOverlapping: boolean;
   }> = [];
   if (strand === 'forward') {
     mergedTss = mergedTss.reverse();
@@ -228,16 +222,14 @@ const prepareTssData = ({
         yEnd:
           strand === 'forward'
             ? yStart - VERTICAL_ARM_LENGTH
-            : yStart + VERTICAL_ARM_LENGTH
+            : yStart + VERTICAL_ARM_LENGTH,
+        isOverlapping: false
       });
 
       continue;
     }
 
-    const expectedWidth =
-      site.count > 1
-        ? HORIZONTAL_ARM_LENGTH + ARROWHEAD_HEIGHT + 5
-        : HORIZONTAL_ARM_LENGTH + ARROWHEAD_HEIGHT;
+    const expectedWidth = HORIZONTAL_ARM_LENGTH + ARROWHEAD_HEIGHT + 1;
     const expectedXEnd =
       strand === 'forward' ? site.x + expectedWidth : site.x - expectedWidth;
     const isOperlappingWithPreviousSite =
@@ -251,20 +243,21 @@ const prepareTssData = ({
       yEnd:
         strand === 'forward'
           ? yStart - VERTICAL_ARM_LENGTH
-          : yStart + VERTICAL_ARM_LENGTH
+          : yStart + VERTICAL_ARM_LENGTH,
+      isOverlapping: isOperlappingWithPreviousSite
     };
 
-    if (isOperlappingWithPreviousSite) {
-      const yEndPrevious = previousTss.yEnd;
-      // FIXME: use a named constant for added y distance
-      const overshootDistance = 7;
-      const yEndCurrent =
-        strand === 'forward'
-          ? yEndPrevious - overshootDistance
-          : yEndPrevious + overshootDistance;
+    // if (isOperlappingWithPreviousSite) {
+    //   const yEndPrevious = previousTss.yEnd;
+    //   // FIXME: use a named constant for added y distance
+    //   const overshootDistance = 7;
+    //   const yEndCurrent =
+    //     strand === 'forward'
+    //       ? yEndPrevious - overshootDistance
+    //       : yEndPrevious + overshootDistance;
 
-      newTss.yEnd = yEndCurrent;
-    }
+    //   newTss.yEnd = yEndCurrent;
+    // }
 
     preparedTss.push(newTss);
   }
