@@ -20,7 +20,7 @@ import { scaleLinear, type ScaleLinear } from 'd3';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
-import TranscriptionStartSite from './transcription-start-site/TranscriptionStartSite';
+import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
 
 import {
@@ -207,7 +207,7 @@ const GeneTrack = (props: {
           onClick={props.onFocusGeneChange}
         />
         {isFocusGene && (
-          <TranscriptionStartSite
+          <TranscriptionStartSites
             tss={gene.data.tss}
             strand={gene.data.strand}
             scale={scale}

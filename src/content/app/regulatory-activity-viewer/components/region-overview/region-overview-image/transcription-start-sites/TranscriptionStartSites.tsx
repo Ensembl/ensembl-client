@@ -49,47 +49,6 @@ type Props = {
   trackOffsetsTop: number[];
 };
 
-/**
-  Design guidelines from Andrea:
-
-  shorter arrow
-  height: 12
-  horizontal: 6
-
-  arrowhead:
-  base 6
-  height: 6.75
-
-
-
-  longer arrow
-  height: 19
-
-
-  distance between: 1?
-
-
-  distance from gene: 5
-
-
-(1)  where no genes, bottom of down stroke at same level as intron stroke for lane 1 of genes
-(2)  where any part of arrow or down stroke sits over a gene, bottom of down stroke 3px above equivalent of top edge of exons for the the gene directly below
-(3)  multiple tss site count, align bottom of brackets with bottom of arrow
-below the line, invert the above
-
-
-Plan:
-- Make a single pass over all TSSs, and calculate their start coordinate (scaled to image coordinates)
-  - Merge TSSs that are less than a minimum distance apart (say, 1px), recording the count of merged TSSs
-- There will be a difference in the positioning depending on whether this is a forward or a reverse strand
-  - For forward strand, start from the TSS closest to the end, and go backwards
-  - For reverse strand, start from the TSS closest to the start, and go forwards
-- Keep track of the x coordinate of the "end" of the previous TSS
-  - On forward strand, this is closer to the end of the gene
-  - On reverse strand, this is closer to the start of the gene
-  - TSS end is the coordinate of the tip of the arrow, plus the width of the number (merged TSS count) if present
- */
-
 const TranscriptionStartSites = (props: Props) => {
   const preparedTss = prepareTssData(props);
 
@@ -164,6 +123,8 @@ const prepareTssData = ({
 }: Props) => {
   const minDistanceBetweenTss = 2;
 
+  // Iterate over transcript start sites, and merge together the ones whose genomic coordinates
+  //  are too close together to be resolved at the given scale
   let mergedTss: Array<{ position: number; x: number; count: number }> = [];
   let lastX = -Infinity;
 
@@ -200,6 +161,10 @@ const prepareTssData = ({
     scale
   });
 
+  // Take another pass over the TSSs, and check whether the drawing of one TSS
+  // will overlap with the neighbour TSS.
+  // If they overlap, then do not draw the arrowhead on the earlier TSS
+  // (the one on the left if on the forward strand, and the one on the right if on the reverse strand)
   const preparedTss: Array<{
     position: number;
     x: number;
@@ -247,24 +212,17 @@ const prepareTssData = ({
       isOverlapping: isOperlappingWithPreviousSite
     };
 
-    // if (isOperlappingWithPreviousSite) {
-    //   const yEndPrevious = previousTss.yEnd;
-    //   // FIXME: use a named constant for added y distance
-    //   const overshootDistance = 7;
-    //   const yEndCurrent =
-    //     strand === 'forward'
-    //       ? yEndPrevious - overshootDistance
-    //       : yEndPrevious + overshootDistance;
-
-    //   newTss.yEnd = yEndCurrent;
-    // }
-
     preparedTss.push(newTss);
   }
 
   return preparedTss;
 };
 
+// A TSS is to be drawn slightly above the gene (if on the forward stand)
+// or slightly below the gene (if on the reverse strand).
+// If several genes are competing for the same space (and drawn on top of one another, in separate tracks)
+// then TSS should be drawn slightly above the last gene track on the forward strand
+// or slightly below the last gene track on the reverse strand.
 const getYStart = ({
   geneTracks,
   trackIndex,

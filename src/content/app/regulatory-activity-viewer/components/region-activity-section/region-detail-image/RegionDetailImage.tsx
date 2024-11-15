@@ -26,7 +26,7 @@ import {
 
 import RegionDetailGene from './region-detail-gene/RegionDetailGene';
 import RegionDetailRegulatoryFeature from './region-detail-regulatory-feature/RegionDetailRegulatoryFeature';
-import TranscriptionStartSite from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/transcription-start-site/TranscriptionStartSite';
+import TranscriptionStartSites from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/transcription-start-sites/TranscriptionStartSites';
 
 import type {
   FeatureTracks,
@@ -146,7 +146,7 @@ const GeneTrack = (props: {
     return (
       <Fragment key={gene.data.stable_id}>
         <RegionDetailGene gene={gene} offsetTop={offsetTop} scale={scale} />
-        <TranscriptionStartSite
+        <TranscriptionStartSites
           tss={gene.data.tss}
           strand={gene.data.strand}
           scale={scale}
