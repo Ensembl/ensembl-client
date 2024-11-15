@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import {
@@ -25,6 +26,7 @@ import {
 
 import RegionDetailGene from './region-detail-gene/RegionDetailGene';
 import RegionDetailRegulatoryFeature from './region-detail-regulatory-feature/RegionDetailRegulatoryFeature';
+import TranscriptionStartSites from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/transcription-start-sites/TranscriptionStartSites';
 
 import type {
   FeatureTracks,
@@ -84,8 +86,10 @@ const GeneTracks = (props: {
   const forwardStrandTrackYs: number[] = [];
   const reverseStrandTrackYs: number[] = [];
 
-  for (let i = 0; i < forwardStrandTracks.length; i++) {
-    forwardStrandTrackYs.push(tempY);
+  // Designer's instruction: forward strand genes above the central line should stack upwards
+  for (let i = forwardStrandTracks.length; i > 0; i--) {
+    const y = GENE_TRACKS_TOP_OFFSET + GENE_TRACK_HEIGHT * (i - 1);
+    forwardStrandTrackYs.push(y);
     tempY += GENE_TRACK_HEIGHT;
   }
 
@@ -111,8 +115,9 @@ const GeneTracks = (props: {
 
     return tracks.map((track, index) => (
       <GeneTrack
-        track={track}
-        offsetTop={yCoordLookup[index]}
+        tracks={tracks}
+        trackIndex={index}
+        trackOffsetsTop={yCoordLookup}
         scale={props.scale}
         key={index}
       />
@@ -128,20 +133,28 @@ const GeneTracks = (props: {
 };
 
 const GeneTrack = (props: {
-  track: GeneTrack;
-  offsetTop: number;
+  tracks: GeneTrack[];
+  trackIndex: number;
+  trackOffsetsTop: number[];
   scale: ScaleLinear<number, number>;
 }) => {
-  const { track, offsetTop, scale } = props;
+  const { tracks, trackIndex, trackOffsetsTop, scale } = props;
+  const track = tracks[trackIndex];
+  const offsetTop = trackOffsetsTop[trackIndex];
 
   const geneElements = track.map((gene) => {
     return (
-      <RegionDetailGene
-        gene={gene}
-        offsetTop={offsetTop}
-        scale={scale}
-        key={gene.data.stable_id}
-      />
+      <Fragment key={gene.data.stable_id}>
+        <RegionDetailGene gene={gene} offsetTop={offsetTop} scale={scale} />
+        <TranscriptionStartSites
+          tss={gene.data.tss}
+          strand={gene.data.strand}
+          scale={scale}
+          geneTracks={tracks}
+          trackIndex={trackIndex}
+          trackOffsetsTop={trackOffsetsTop}
+        />
+      </Fragment>
     );
   });
 
