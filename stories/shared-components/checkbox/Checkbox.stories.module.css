@@ -16,3 +16,14 @@
   padding: 0.6rem;
   background-color: var(--color-black);
 }
+
+.controlledCheckboxesStory {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 0.6rem;
+}
+
+.controlledCheckboxesStory button {
+  margin-top: 0.6rem;
+}

@@ -15,27 +15,16 @@
  */
 
 import classNames from 'classnames';
+import type { ComponentProps } from 'react';
 
 import styles from './Checkbox.module.css';
 
 type Theme = 'lighter' | 'light' | 'dark';
 
-type WithoutLabelProps = {
-  onChange: (status: boolean) => void;
-  disabled?: boolean;
-  checked: boolean;
+type InputPropsWithoutType = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
+
+export type CheckboxProps = InputPropsWithoutType & {
   theme?: Theme;
-  className?: string; // will only apply to the outermost element of the component
-};
-
-type WithLabelProps = WithoutLabelProps & {
-  label: string;
-};
-
-export type CheckboxProps = WithLabelProps | WithoutLabelProps;
-
-const hasLabel = (props: CheckboxProps): props is WithLabelProps => {
-  return 'label' in props;
 };
 
 const getThemeClasses = (theme: Theme = 'light') => {
@@ -49,11 +38,7 @@ const getThemeClasses = (theme: Theme = 'light') => {
 };
 
 const Checkbox = (props: CheckboxProps) => {
-  const onChange = () => {
-    if (!props.disabled) {
-      props.onChange(!props.checked);
-    }
-  };
+  const { children, ...inputProps } = props;
 
   const themeClass = getThemeClasses(props.theme);
 
@@ -63,30 +48,17 @@ const Checkbox = (props: CheckboxProps) => {
     props.className
   );
 
-  const checkboxClasses = classNames(
-    styles.checkboxDefault,
-    props.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
-    props.disabled && styles.checkboxDisabled
-  );
+  const checkboxClasses = classNames(styles.checkbox, styles.checkboxDefault);
 
   const checkboxElement = (
-    <>
-      <input
-        type="checkbox"
-        className={styles.hiddenInput}
-        checked={props.checked}
-        disabled={props.disabled}
-        onChange={onChange}
-      />
-      <span className={checkboxClasses} />
-    </>
+    <input {...inputProps} type="checkbox" className={checkboxClasses} />
   );
 
-  return hasLabel(props) ? (
+  return children ? (
     <div className={wrapperClasses}>
       <label className={styles.grid} data-test-id="checkbox-label-grid">
         {checkboxElement}
-        <span className={styles.label}>{props.label}</span>
+        <span className={styles.label}>{children}</span>
       </label>
     </div>
   ) : (

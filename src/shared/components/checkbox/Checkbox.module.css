@@ -1,3 +1,13 @@
+.checkbox {
+  appearance: none;
+  background-color: var(--checkbox-background-color, var(--color-white));
+  border: 1px solid var(--checkbox-border-color, var(--color-grey));
+  cursor: pointer;
+  height: var(--checkbox-side-size, 13px);
+  width: var(--checkbox-side-size, 13px);
+  transition: background-color 0.1s ease-in-out;
+}
+
 .wrapper {
   display: inline-block;
 }
@@ -8,30 +18,19 @@
   font-size: 0;
 }
 
-.checkboxDefault {
-  display: inline-block;
-  cursor: pointer;
-  justify-self: center;
-  background-color: var(--checkbox-background-color, var(--color-white));
-  border: 1px solid var(--checkbox-border-color, var(--color-grey));
-  height: var(--checkbox-side-size, 13px);
-  width: var(--checkbox-side-size, 13px);
-  transition: background-color 0.1s ease-in-out;
-}
-
-.grid .checkboxDefault {
+.grid .checkbox {
   margin-top: var(--checkbox-margin-top, 8px);
 }
 
-.checkboxChecked {
+.checkbox:checked:not(:disabled) {
   background-color: var(--checkbox-checked-background-color, var(--color-green));
 }
 
-.checkboxUnchecked {
+.checkbox:not(:checked) {
   background-color: var(--checkbox-unchecked-background-color, var(--color-white));
 }
 
-.checkboxDisabled {
+.checkbox:disabled {
   border-color: var(--checkbox-disabled-border-color, var(--color-medium-light-grey));
   background-color: var(--checkbox-disabled-background-color, var(--color-light-grey));
   cursor: default;
@@ -49,7 +48,7 @@
   word-wrap: break-word;
 }
 
-.checkboxDisabled + .label {
+.checkbox:disabled + .label {
   cursor: default;
 }
 
