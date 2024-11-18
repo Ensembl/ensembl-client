@@ -26,7 +26,7 @@ import { PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME } from 'src/shared/services/previo
 import { NOTIFICATIONS_STORE_NAME } from 'src/shared/services/notificationsStorageConstants';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
