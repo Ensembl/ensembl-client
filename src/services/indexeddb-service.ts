@@ -23,9 +23,10 @@ import { GB_FOCUS_OBJECTS_STORE_NAME } from 'src/content/app/genome-browser/serv
 import { BLAST_SUBMISSIONS_STORE_NAME } from 'src/content/app/tools/blast/services/blastStorageServiceConstants';
 import { VEP_SUBMISSIONS_STORE_NAME } from 'src/content/app/tools/vep/services/vepStorageServiceConstants';
 import { PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME } from 'src/shared/services/previouslyViewedObjectsStorageConstants';
+import { NOTIFICATIONS_STORE_NAME } from 'src/shared/services/notificationsStorageConstants';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
@@ -48,6 +49,9 @@ const getDbPromise = () => {
       }
       if (!db.objectStoreNames.contains(PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME)) {
         db.createObjectStore(PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME);
+      }
+      if (!db.objectStoreNames.contains(NOTIFICATIONS_STORE_NAME)) {
+        db.createObjectStore(NOTIFICATIONS_STORE_NAME);
       }
       if (!db.objectStoreNames.contains(GB_TRACK_SETTINGS_STORE_NAME)) {
         const trackSettingsObjectStore = db.createObjectStore(

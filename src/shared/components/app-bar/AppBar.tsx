@@ -16,7 +16,7 @@
 
 import type { ReactNode } from 'react';
 
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 
 import styles from './AppBar.module.css';
 
@@ -39,7 +39,7 @@ export const AppBar = (props: AppBarProps) => (
     <div className={styles.appBarAside}>
       {props.aside}
       <div className={styles.conversationIcon}>
-        <ConversationIcon />
+        <CommunicationPanelButton />
       </div>
     </div>
   </section>

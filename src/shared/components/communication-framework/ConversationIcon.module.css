@@ -1,10 +1,28 @@
-.conversationIcon {
+.conversationIconWrapper {
+  display: inline-flex; /* using inline-flex to avoid extra white space inside if display: inline-block */
+  position: relative;
   width: 40px;
+  aspect-ratio: 32/22; /* same as the viewport of the svg icon */
 }
 
-.communicationPanelToggle {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  color: var(--color-blue);
+.conversationIcon {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* The notification circle is similar one in LaunchbarButton; but note that the transform is different */
+
+.notification {
+  border-radius: 10px;
+  height: var(--conversation-icon-notification-size, 18px);
+  width: var(--conversation-icon-notification-size, 18px);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(40%, -40%);
+}
+
+.notificationGreen {
+  background-color: var(--color-green);
 }

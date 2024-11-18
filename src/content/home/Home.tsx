@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
 
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
+import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
@@ -120,7 +120,7 @@ const Home = () => {
               labelClass={styles.helpLabel}
             />
             <div className={styles.conversationIcon}>
-              <ConversationIcon />
+              <CommunicationPanelButton />
             </div>
           </div>
         </div>
