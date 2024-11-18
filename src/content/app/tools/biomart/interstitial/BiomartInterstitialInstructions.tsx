@@ -23,8 +23,9 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
-import styles from './BiomartInterstitialInstructions.module.css';
 import BiomartIcon from 'src/shared/components/app-icon/BiomartIcon';
+
+import styles from './BiomartInterstitialInstructions.module.css';
 
 const BiomartInterstitialInstructions = () => {
   const navigate = useNavigate();

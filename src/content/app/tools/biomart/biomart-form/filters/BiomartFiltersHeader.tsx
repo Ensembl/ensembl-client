@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import styles from './BiomartFiltersHeader.module.css';
+import styles from '../BiomartForm.module.css';
 
 const BiomartFiltersHeader = () => {
   const onReset = () => {
@@ -25,7 +25,7 @@ const BiomartFiltersHeader = () => {
     <div className={styles.columnsHeader}>
       <div className={styles.headerTitle}>
         <span>Filter</span>
-        <span className={styles.filtersCounterClass}>0</span>
+        <span className={styles.counterClass}>0</span>
       </div>
       <div className={styles.headerSettings}>
         <span className={styles.reset} onClick={onReset}>

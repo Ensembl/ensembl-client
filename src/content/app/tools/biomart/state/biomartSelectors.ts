@@ -16,7 +16,7 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'src/store';
-import { BiomartTable } from './biomartSlice';
+import { BiomartTable } from 'src/content/app/tools/biomart/state/biomartSlice';
 
 export const selectSelectedColumnsCount = createSelector(
   (state: RootState) => state.biomart.general.columnSelectionData,

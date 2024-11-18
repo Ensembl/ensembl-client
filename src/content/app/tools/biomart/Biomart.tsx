@@ -15,14 +15,14 @@
  */
 
 import { useEffect } from 'react';
-import ToolsTopBar from '../shared/components/tools-top-bar/ToolsTopBar';
-import BiomartAppBar from './biomart-appbar/BiomartAppBar';
-import BiomartSettings from './biomart-settings/BiomartSettings';
-import { setSelectedSpecies } from './state/biomartSlice';
+import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
+import BiomartAppBar from 'src/content/app/tools/biomart/biomart-appbar/BiomartAppBar';
+import BiomartSettings from 'src/content/app/tools/biomart/biomart-settings/BiomartSettings';
+import { setSelectedSpecies } from 'src/content/app/tools/biomart/state/biomartSlice';
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { getEnabledCommittedSpecies } from '../../species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import BiomartInterstitialInstructions from './interstitial/BiomartInterstitialInstructions';
-import BiomartForm from './biomart-form/BiomartForm';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import BiomartInterstitialInstructions from 'src/content/app/tools/biomart/interstitial/BiomartInterstitialInstructions';
+import BiomartForm from 'src/content/app/tools/biomart/biomart-form/BiomartForm';
 
 const Biomart = () => {
   const dispatch = useAppDispatch();

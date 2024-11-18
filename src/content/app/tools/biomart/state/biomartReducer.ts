@@ -16,7 +16,7 @@
 
 import { combineReducers } from 'redux';
 
-import biomartReducer from './biomartSlice';
+import biomartReducer from 'src/content/app/tools/biomart/state/biomartSlice';
 
 export default combineReducers({
   general: biomartReducer

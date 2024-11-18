@@ -23,8 +23,9 @@ import { Route, Routes } from 'react-router-dom';
 
 import NotFoundErrorScreen from 'src/shared/components/error-screen/NotFoundError';
 
+import Biomart from 'src/content/app/tools/biomart/Biomart';
+
 import styles from './Biomart.module.css';
-import Biomart from './Biomart';
 
 const pageTitle = 'BioMart';
 const pageDescription = `

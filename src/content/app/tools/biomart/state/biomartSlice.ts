@@ -29,7 +29,7 @@ export type BiomartTable = {
   expanded: boolean;
 };
 
-type BiomartFilterStringType = {
+export type BiomartFilterStringType = {
   input: string[];
   bm_backend_key: string;
   checked: boolean;
@@ -37,7 +37,7 @@ type BiomartFilterStringType = {
   expanded: boolean;
 };
 
-type BiomartFilterNumberType = {
+export type BiomartFilterNumberType = {
   input: number[];
   bm_backend_key: string;
   checked: boolean;
@@ -51,6 +51,8 @@ type BiomartRegionFilter = {
   expanded: boolean;
 };
 
+export type BiomartRegionFilters = 'chromosomes' | 'coordinates';
+
 type BiomartGeneFilter = {
   gene_types: BiomartFilterStringType;
   gene_sources: BiomartFilterStringType;
@@ -59,10 +61,18 @@ type BiomartGeneFilter = {
   expanded: boolean;
 };
 
+export type BiomartGeneFilters =
+  | 'gene_types'
+  | 'gene_sources'
+  | 'transcript_types'
+  | 'transcript_sources';
+
 export type BiomartFilter = {
   region: BiomartRegionFilter;
   gene: BiomartGeneFilter;
 };
+
+export type BiomartFilterKey = keyof BiomartFilter;
 
 export type BiomartState = {
   selectedSpecies: CommittedItem | null;

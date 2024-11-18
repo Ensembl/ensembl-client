@@ -18,9 +18,10 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   columnSelectionData,
   selectSelectedColumnsCount
-} from '../../state/biomartSelectors';
-import styles from './BiomartColumnsHeader.module.css';
-import { setColumnSelectionData } from '../../state/biomartSlice';
+} from 'src/content/app/tools/biomart/state/biomartSelectors';
+import { setColumnSelectionData } from 'src/content/app/tools/biomart/state/biomartSlice';
+
+import styles from '../BiomartForm.module.css';
 
 const BiomartColumnsHeader = () => {
   const dispatch = useAppDispatch();
@@ -50,7 +51,7 @@ const BiomartColumnsHeader = () => {
     <div className={styles.columnsHeader}>
       <div className={styles.headerTitle}>
         <span>Data to download</span>
-        <span className={styles.columnsSelectedCounterClass}>{count}</span>
+        <span className={styles.counterClass}>{count}</span>
       </div>
       <div className={styles.headerSettings}>
         <span className={styles.reset} onClick={onReset}>
