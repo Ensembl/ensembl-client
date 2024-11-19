@@ -77,13 +77,15 @@ export type BiomartState = {
   tab: 'tables' | 'filters';
   columnSelectionData: BiomartTable[];
   filterData: BiomartFilter;
+  previewRunOpen: boolean;
 };
 
 export const initialState: BiomartState = {
   selectedSpecies: null,
   tab: 'tables',
   columnSelectionData: [],
-  filterData: {} as BiomartFilter
+  filterData: {} as BiomartFilter,
+  previewRunOpen: false
 };
 
 const biomartSlice = createSlice({
@@ -104,6 +106,9 @@ const biomartSlice = createSlice({
     },
     setFilterData: (state, action: PayloadAction<BiomartFilter>) => {
       state.filterData = action.payload;
+    },
+    setPreviewRunOpen: (state, action: PayloadAction<boolean>) => {
+      state.previewRunOpen = action.payload;
     }
   }
 });
@@ -112,6 +117,7 @@ export const {
   setSelectedSpecies,
   setTab,
   setColumnSelectionData,
-  setFilterData
+  setFilterData,
+  setPreviewRunOpen
 } = biomartSlice.actions;
 export default biomartSlice.reducer;

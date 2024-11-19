@@ -16,19 +16,25 @@
 
 import { useEffect } from 'react';
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
-import BiomartAppBar from 'src/content/app/tools/biomart/biomart-appbar/BiomartAppBar';
+import BiomartAppBar from 'src/content/app/tools/biomart/biomart-app-bar/BiomartAppBar';
 import BiomartSettings from 'src/content/app/tools/biomart/biomart-settings/BiomartSettings';
 import { setSelectedSpecies } from 'src/content/app/tools/biomart/state/biomartSlice';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import BiomartInterstitialInstructions from 'src/content/app/tools/biomart/interstitial/BiomartInterstitialInstructions';
+import BiomartInterstitialInstructions from 'src/content/app/tools/biomart/biomart-interstitial/BiomartInterstitialInstructions';
 import BiomartForm from 'src/content/app/tools/biomart/biomart-form/BiomartForm';
+import BiomartPreviewRun from 'src/content/app/tools/biomart/biomart-preview-run/BiomartPreviewRun';
+
+import styles from './Biomart.module.css';
 
 const Biomart = () => {
   const dispatch = useAppDispatch();
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const selectedSpecies = useAppSelector(
     (state) => state.biomart.general.selectedSpecies
+  );
+  const previewRunOpen = useAppSelector(
+    (state) => state.biomart.general.previewRunOpen
   );
 
   useEffect(() => {
@@ -45,7 +51,18 @@ const Biomart = () => {
       <ToolsTopBar>
         <BiomartSettings />
       </ToolsTopBar>
-      {selectedSpecies ? <BiomartForm /> : <BiomartInterstitialInstructions />}
+      {selectedSpecies ? (
+        <div>
+          <div className={previewRunOpen ? styles.hidden : ''}>
+            <BiomartForm />
+          </div>
+          <div className={!previewRunOpen ? styles.hidden : ''}>
+            <BiomartPreviewRun />
+          </div>
+        </div>
+      ) : (
+        <BiomartInterstitialInstructions />
+      )}
     </div>
   );
 };

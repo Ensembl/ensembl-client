@@ -1,0 +1,7 @@
+.biomartPreviewTable {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  padding: 10px 45px 10px 45px;
+}
