@@ -31,6 +31,9 @@ type BiomartRegionPanelProps = {
   toggle: () => void;
 };
 
+const CHROMOSOMES = 'chromosomes';
+const COORDINATES = 'coordinates';
+
 const BiomartRegionPanel = (props: BiomartRegionPanelProps) => {
   const dispatch = useAppDispatch();
   const data = useAppSelector(filterData);
@@ -54,6 +57,93 @@ const BiomartRegionPanel = (props: BiomartRegionPanelProps) => {
     dispatch(setFilterData(newData));
   };
 
+  // TODO - reuse for all multi select filters
+  const handleSelect = (
+    filter: BiomartRegionFilters,
+    value: string,
+    isChecked: boolean
+  ) => {
+    if (!data) {
+      return;
+    }
+
+    let output = data.region[filter]?.output || [];
+    if (isChecked) {
+      output = output.filter((val) => val !== value) as string[];
+    } else {
+      output = [...output, value] as string[];
+    }
+
+    const newData = {
+      ...data,
+      region: {
+        ...data.region,
+        [filter]: {
+          ...data.region[filter],
+          output
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
+  const onStartChange = (value: string) => {
+    if (!data) {
+      return;
+    }
+
+    let [, end] = data.region.coordinates.input;
+
+    if (
+      data.region.coordinates.output &&
+      data.region.coordinates.output.length > 0
+    ) {
+      end = data.region.coordinates.output[1];
+    }
+
+    const newData = {
+      ...data,
+      region: {
+        ...data.region,
+        coordinates: {
+          ...data.region.coordinates,
+          output: [Number(value), end]
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
+  const onEndChange = (value: string) => {
+    if (!data) {
+      return;
+    }
+
+    let [start] = data.region.coordinates.input;
+
+    if (
+      data.region.coordinates.output &&
+      data.region.coordinates.output.length > 0
+    ) {
+      start = data.region.coordinates.output[0];
+    }
+
+    const newData = {
+      ...data,
+      region: {
+        ...data.region,
+        coordinates: {
+          ...data.region.coordinates,
+          output: [start, Number(value)]
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
   return (
     <div className={styles.sectionContainer}>
       <div className={styles.sectionTitleContainer}>
@@ -67,13 +157,18 @@ const BiomartRegionPanel = (props: BiomartRegionPanelProps) => {
         <div>
           <BiomartMultiSelectFilter
             data={data?.region?.chromosomes}
-            toggle={() => toggleRegionSection('chromosomes')}
+            toggle={() => toggleRegionSection(CHROMOSOMES)}
             label={'Chromosome'}
+            handleSelect={(value, isChecked) =>
+              handleSelect(CHROMOSOMES, value, isChecked)
+            }
           />
           <BiomartCoodinatesFilter
             data={data?.region?.coordinates}
-            toggle={() => toggleRegionSection('coordinates')}
+            toggle={() => toggleRegionSection(COORDINATES)}
             label={'Coordinates'}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
           />
         </div>
       )}

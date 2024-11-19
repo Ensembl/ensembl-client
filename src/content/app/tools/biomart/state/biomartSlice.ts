@@ -32,7 +32,6 @@ export type BiomartTable = {
 export type BiomartFilterStringType = {
   input: string[];
   bm_backend_key: string;
-  checked: boolean;
   output: string[];
   expanded: boolean;
 };
@@ -40,7 +39,6 @@ export type BiomartFilterStringType = {
 export type BiomartFilterNumberType = {
   input: number[];
   bm_backend_key: string;
-  checked: boolean;
   output: number[];
   expanded: boolean;
 };

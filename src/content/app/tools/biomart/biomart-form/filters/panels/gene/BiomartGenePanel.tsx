@@ -30,6 +30,11 @@ type BiomartGenePanelProps = {
   toggle: () => void;
 };
 
+const GENE_SOURCES = 'gene_sources';
+const GENE_TYPES = 'gene_types';
+const TRANSCRIPT_SOURCES = 'transcript_sources';
+const TRANSCRIPT_TYPES = 'transcript_types';
+
 const BiomartGenePanel = (props: BiomartGenePanelProps) => {
   const dispatch = useAppDispatch();
   const data = useAppSelector(filterData);
@@ -53,6 +58,37 @@ const BiomartGenePanel = (props: BiomartGenePanelProps) => {
     dispatch(setFilterData(newData));
   };
 
+  // TODO - reuse for all multi select filters
+  const handleSelect = (
+    filter: BiomartGeneFilters,
+    value: string,
+    isChecked: boolean
+  ) => {
+    if (!data) {
+      return;
+    }
+
+    let output = data.gene[filter]?.output || [];
+    if (isChecked) {
+      output = output.filter((val) => val !== value);
+    } else {
+      output = [...output, value];
+    }
+
+    const newData = {
+      ...data,
+      gene: {
+        ...data.gene,
+        [filter]: {
+          ...data.gene[filter],
+          output
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
   return (
     <div className={styles.sectionContainer}>
       <div className={styles.sectionTitleContainer}>
@@ -66,23 +102,35 @@ const BiomartGenePanel = (props: BiomartGenePanelProps) => {
         <div>
           <BiomartMultiSelectFilter
             data={data.gene?.gene_types}
-            toggle={() => toggleGeneSection('gene_types')}
+            toggle={() => toggleGeneSection(GENE_TYPES)}
             label={'Gene types'}
+            handleSelect={(value, isChecked) =>
+              handleSelect(GENE_TYPES, value, isChecked)
+            }
           />
           <BiomartMultiSelectFilter
             data={data.gene?.transcript_types}
-            toggle={() => toggleGeneSection('transcript_types')}
+            toggle={() => toggleGeneSection(TRANSCRIPT_TYPES)}
             label={'Transcript types'}
+            handleSelect={(value, isChecked) =>
+              handleSelect(TRANSCRIPT_TYPES, value, isChecked)
+            }
           />
           <BiomartMultiSelectFilter
             data={data.gene?.gene_sources}
-            toggle={() => toggleGeneSection('gene_sources')}
+            toggle={() => toggleGeneSection(GENE_SOURCES)}
             label={'Gene sources'}
+            handleSelect={(value, isChecked) =>
+              handleSelect(GENE_SOURCES, value, isChecked)
+            }
           />
           <BiomartMultiSelectFilter
             data={data.gene?.transcript_sources}
-            toggle={() => toggleGeneSection('transcript_sources')}
+            toggle={() => toggleGeneSection(TRANSCRIPT_SOURCES)}
             label={'Transcript sources'}
+            handleSelect={(value, isChecked) =>
+              handleSelect(TRANSCRIPT_SOURCES, value, isChecked)
+            }
           />
         </div>
       )}

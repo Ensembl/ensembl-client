@@ -25,6 +25,7 @@ type BiomartMultiSelectFilterProps = {
   label: string;
   data: BiomartFilterStringType;
   toggle: () => void;
+  handleSelect: (value: string, isChecked: boolean) => void;
 };
 
 const BiomartMultiSelectFilter = (props: BiomartMultiSelectFilterProps) => {
@@ -40,12 +41,13 @@ const BiomartMultiSelectFilter = (props: BiomartMultiSelectFilterProps) => {
       {props.data?.expanded && (
         <div className={styles.sectionSelectionContainer}>
           {props.data?.input?.map((val, i) => {
+            const isChecked = props.data.output?.includes(val) || false;
             return (
               <Checkbox
                 key={i}
                 label={val}
-                checked={false}
-                onChange={() => {}}
+                checked={isChecked}
+                onChange={() => props.handleSelect(val, isChecked)}
               />
             );
           })}

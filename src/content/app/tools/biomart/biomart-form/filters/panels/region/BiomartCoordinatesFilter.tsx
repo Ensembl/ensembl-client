@@ -25,9 +25,18 @@ type BiomartCoordinatesFilterProps = {
   label: string;
   data: BiomartFilterNumberType;
   toggle: () => void;
+  onStartChange: (value: string) => void;
+  onEndChange: (value: string) => void;
 };
 
 const BiomartCoodinatesFilter = (props: BiomartCoordinatesFilterProps) => {
+  let [start, end] = props.data.input;
+
+  if (props.data.output && props.data.output.length > 0) {
+    start = props.data.output[0];
+    end = props.data.output[1];
+  }
+
   return (
     <div className={styles.sectionFilterContainer}>
       <div className={styles.sectionTitleContainer}>
@@ -43,8 +52,9 @@ const BiomartCoodinatesFilter = (props: BiomartCoordinatesFilterProps) => {
             <label>
               <span>Start</span>
               <ShadedInput
-                value={props.data.input[0] || ''}
-                onChange={() => {}}
+                type="number"
+                value={start || ''}
+                onChange={(e) => props.onStartChange(e.target.value)}
                 placeholder="Start"
               />
             </label>
@@ -53,8 +63,9 @@ const BiomartCoodinatesFilter = (props: BiomartCoordinatesFilterProps) => {
             <label>
               <span>End</span>
               <ShadedInput
-                value={props.data.input[1] || ''}
-                onChange={() => {}}
+                type="number"
+                value={end || ''}
+                onChange={(e) => props.onEndChange(e.target.value)}
                 placeholder="End"
               />
             </label>

@@ -17,7 +17,7 @@
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   columnSelectionData,
-  selectSelectedColumnsCount
+  selectedColumnsCount
 } from 'src/content/app/tools/biomart/state/biomartSelectors';
 import { setColumnSelectionData } from 'src/content/app/tools/biomart/state/biomartSlice';
 
@@ -26,7 +26,7 @@ import styles from '../BiomartForm.module.css';
 const BiomartColumnsHeader = () => {
   const dispatch = useAppDispatch();
   const data = useAppSelector(columnSelectionData);
-  const count = useAppSelector(selectSelectedColumnsCount);
+  const count = useAppSelector(selectedColumnsCount);
 
   const onReset = () => {
     if (!data) {
