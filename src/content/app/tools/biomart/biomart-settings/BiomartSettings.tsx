@@ -19,8 +19,14 @@ import {
   SecondaryButton
 } from 'src/shared/components/button/Button';
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { setPreviewRunOpen } from 'src/content/app/tools/biomart/state/biomartSlice';
 import {
+  BiomartJob,
+  setJob,
+  setPreviewRunOpen
+} from 'src/content/app/tools/biomart/state/biomartSlice';
+import {
+  columnSelectionData,
+  filterData,
   selectedColumnsCount,
   selectedFiltersCount
 } from 'src/content/app/tools/biomart/state/biomartSelectors';
@@ -56,12 +62,34 @@ const BiomartSettings = () => {
   );
   const columnsSelectedCount = useAppSelector(selectedColumnsCount);
   const filtersSelectedCount = useAppSelector(selectedFiltersCount);
+  const columnsData = useAppSelector(columnSelectionData);
+  const filtersData = useAppSelector(filterData);
+  const jobs = useAppSelector((state) => state.biomart.general.jobs);
 
   const openPreviewRun = () => {
     dispatch(setPreviewRunOpen(true));
   };
 
   const onBiomartRun = () => {
+    if (!selectedSpecies) {
+      return;
+    }
+
+    const job: BiomartJob = {
+      id: Math.random().toString(36).substring(0, 10),
+      status: 'running',
+      format: DOWNLOAD_FORMATS[0].value,
+      species: selectedSpecies,
+      columns: columnsData,
+      filters: filtersData,
+      timestamp: new Date().toISOString()
+    };
+
+    dispatch(setJob(job));
+    navigate(urlFor.biomartJobs());
+  };
+
+  const navigateToJobsPage = () => {
     navigate(urlFor.biomartJobs());
   };
 
@@ -77,17 +105,32 @@ const BiomartSettings = () => {
       </div>
       <div>
         {selectedSpecies && !previewRunOpen && (
-          <SecondaryButton
-            onClick={openPreviewRun}
-            className={!isPreviewRunButtonActive ? styles.buttonDisabled : ''}
-            disabled={!isPreviewRunButtonActive}
-          >
-            Preview Run
-          </SecondaryButton>
+          <div className={styles.biomartToolbarButtons}>
+            <div>
+              <SecondaryButton
+                onClick={openPreviewRun}
+                className={
+                  !isPreviewRunButtonActive ? styles.buttonDisabled : ''
+                }
+                disabled={!isPreviewRunButtonActive}
+              >
+                Preview Run
+              </SecondaryButton>
+            </div>
+            <div>
+              <SecondaryButton
+                onClick={navigateToJobsPage}
+                className={jobs.length === 0 ? styles.buttonDisabled : ''}
+                disabled={jobs.length === 0}
+              >
+                Jobs
+              </SecondaryButton>
+            </div>
+          </div>
         )}
         {previewRunOpen && (
           <div className={styles.previewRunButton}>
-            <div className={styles.biomartRunMode}>
+            <div className={styles.biomartToolbarOptions}>
               <label>
                 <span>Run mode</span>
                 <SimpleSelect
@@ -97,7 +140,7 @@ const BiomartSettings = () => {
                 />
               </label>
             </div>
-            <div className={styles.biomartRunMode}>
+            <div className={styles.biomartToolbarOptions}>
               <label>
                 <span>Download as</span>
                 <SimpleSelect

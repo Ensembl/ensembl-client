@@ -33,15 +33,20 @@
   gap: 10px;
 }
 
-.biomartRunMode label {
+.biomartToolbarOptions label {
   display: inline-flex;
   column-gap: 11px;
   align-items: center;
   white-space: nowrap;
 }
 
-.biomartRunMode label span {
+.biomartToolbarOptions label span {
   font-weight: var(--font-weight-light);
   line-height: 27px;
   justify-self: end;
+}
+
+.biomartToolbarButtons {
+  display: flex;
+  gap: 10px;
 }

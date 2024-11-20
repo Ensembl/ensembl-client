@@ -16,3 +16,43 @@
   margin: 0 25px 3px 0;
   font-size: 16px;
 }
+
+.biomartJobContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: var(--biomart-container-max-width);
+  margin: 20px 45px;
+}
+
+.biomartJobsGrid {
+  display: grid;
+  grid-template-columns: [title] minmax(auto, 300px) [job-id] 200px [rerun] auto [submission-date] auto [controls] 1fr;
+  align-items: center;
+  column-gap: var(--standard-gutter);
+  padding-left: var(--standard-gutter);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.body {
+  border: 1px solid var(--color-grey);
+  padding-left: var(--standard-gutter);
+  padding-right: var(--standard-gutter);
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.bodyAccepted {
+  display: grid;
+  grid-template-columns: [species-name] 300px [input-summary] 1fr [status] auto;
+  column-gap: var(--standard-gutter);
+  align-items: center;
+  min-height: 60px;
+}
+
+.rerun {
+    color: #0099ff;
+    cursor: pointer;
+}

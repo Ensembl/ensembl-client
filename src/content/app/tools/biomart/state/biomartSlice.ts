@@ -72,12 +72,23 @@ export type BiomartFilter = {
 
 export type BiomartFilterKey = keyof BiomartFilter;
 
+export type BiomartJob = {
+  id: string;
+  status: string;
+  format: string;
+  species: CommittedItem;
+  filters: BiomartFilter;
+  columns: BiomartTable[];
+  timestamp: string;
+};
+
 export type BiomartState = {
   selectedSpecies: CommittedItem | null;
   tab: 'tables' | 'filters';
   columnSelectionData: BiomartTable[];
   filterData: BiomartFilter;
   previewRunOpen: boolean;
+  jobs: BiomartJob[];
 };
 
 export const initialState: BiomartState = {
@@ -85,7 +96,8 @@ export const initialState: BiomartState = {
   tab: 'tables',
   columnSelectionData: [],
   filterData: {} as BiomartFilter,
-  previewRunOpen: false
+  previewRunOpen: false,
+  jobs: []
 };
 
 const biomartSlice = createSlice({
@@ -169,6 +181,9 @@ const biomartSlice = createSlice({
         }
       };
       state.filterData = newData;
+    },
+    setJob: (state, action: PayloadAction<BiomartJob>) => {
+      state.jobs.push(action.payload);
     }
   }
 });
@@ -180,6 +195,7 @@ export const {
   setFilterData,
   setPreviewRunOpen,
   resetColumnSelectionData,
-  resetFilterData
+  resetFilterData,
+  setJob
 } = biomartSlice.actions;
 export default biomartSlice.reducer;
