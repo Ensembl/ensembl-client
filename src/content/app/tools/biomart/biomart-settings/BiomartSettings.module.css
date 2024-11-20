@@ -27,3 +27,21 @@
   background-color: #b7c0c8;
   border-color: #b7c0c8;
 }
+
+.previewRunButton {
+  display: flex;
+  gap: 10px;
+}
+
+.biomartRunMode label {
+  display: inline-flex;
+  column-gap: 11px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.biomartRunMode label span {
+  font-weight: var(--font-weight-light);
+  line-height: 27px;
+  justify-self: end;
+}

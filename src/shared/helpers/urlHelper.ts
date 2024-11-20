@@ -187,6 +187,10 @@ export const vepSubmissionsList = () => '/vep/submissions';
 export const vepResults = ({ submissionId }: { submissionId: string }) =>
   `/vep/submissions/${submissionId}`;
 
+export const biomartForm = () => '/biomart';
+
+export const biomartJobs = () => '/biomart/jobs';
+
 type RefgetUrlParams = {
   checksum: string;
   start?: number;

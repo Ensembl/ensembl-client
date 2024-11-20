@@ -14,35 +14,46 @@
  * limitations under the License.
  */
 
+import { useAppDispatch, useAppSelector } from 'src/store';
+import {
+  columnSelectionData,
+  filterData
+} from 'src/content/app/tools/biomart/state/biomartSelectors';
+
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+import { setPreviewRunOpen } from 'src/content/app/tools/biomart/state/biomartSlice';
+
 import styles from './BiomartPreviewRun.module.css';
-import { useAppSelector } from 'src/store';
-import { ColumnHead, Table } from 'src/shared/components/table';
-import { columnSelectionData, filterData } from '../state/biomartSelectors';
 
 const BiomartPreviewRun = () => {
+  const dispatch = useAppDispatch();
   const selectedSpecies = useAppSelector(
     (state) => state.biomart.general.selectedSpecies
   );
   const columnsData = useAppSelector(columnSelectionData);
   const filtersData = useAppSelector(filterData);
 
+  const closePreviewRun = () => {
+    dispatch(setPreviewRunOpen(false));
+  };
+
   return (
-    <div className={styles.biomartPreviewTable}>
-      <Table stickyHeader={true} className={styles.biomartPreviewTable}>
-        <thead>
-          <tr>
-            <ColumnHead>Species</ColumnHead>
-            <ColumnHead>Data to download</ColumnHead>
-            <ColumnHead>Filters</ColumnHead>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
+    <div className={styles.biomartPreviewTableGrid}>
+      <div className={styles.biomartPreviewTableContainer}>
+        <div className={styles.biomartPreviewTable}>
+          <div className={styles.biomartPreviewTableHeaderRow}>
+            <div className={styles.biomartPreviewTableCell}>Species</div>
+            <div className={styles.biomartPreviewTableCell}>
+              Data to download
+            </div>
+            <div className={styles.biomartPreviewTableCell}>Filters</div>
+          </div>
+          <div className={styles.biomartPreviewTableRow}>
+            <div className={styles.biomartPreviewTableCell}>
               {selectedSpecies?.common_name} ({selectedSpecies?.scientific_name}
               )
-            </td>
-            <td>
+            </div>
+            <div className={styles.biomartPreviewTableCell}>
               {columnsData &&
                 columnsData.map((column) => {
                   if (!column.options) {
@@ -63,8 +74,8 @@ const BiomartPreviewRun = () => {
                     </div>
                   );
                 })}
-            </td>
-            <td>
+            </div>
+            <div className={styles.biomartPreviewTableCell}>
               {filtersData && (
                 <div>
                   <div>
@@ -124,10 +135,13 @@ const BiomartPreviewRun = () => {
                   </div>
                 </div>
               )}
-            </td>
-          </tr>
-        </tbody>
-      </Table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={styles.biomartCloseButtonContainer}>
+        <CloseButton onClick={closePreviewRun} />
+      </div>
     </div>
   );
 };

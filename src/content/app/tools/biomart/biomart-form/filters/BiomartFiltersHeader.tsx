@@ -15,59 +15,17 @@
  */
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import {
-  filterData,
-  selectedFiltersCount
-} from 'src/content/app/tools/biomart/state/biomartSelectors';
-import { setFilterData } from 'src/content/app/tools/biomart/state/biomartSlice';
+import { selectedFiltersCount } from 'src/content/app/tools/biomart/state/biomartSelectors';
+import { resetFilterData } from 'src/content/app/tools/biomart/state/biomartSlice';
 
 import styles from '../BiomartForm.module.css';
 
 const BiomartFiltersHeader = () => {
   const dispatch = useAppDispatch();
-  const data = useAppSelector(filterData);
   const count = useAppSelector(selectedFiltersCount);
 
   const onReset = () => {
-    if (!data) {
-      return;
-    }
-
-    const newData = {
-      ...data,
-      region: {
-        ...data.region,
-        chromosomes: {
-          ...data.region.chromosomes,
-          output: []
-        },
-        coordinates: {
-          ...data.region.coordinates,
-          output: []
-        }
-      },
-      gene: {
-        ...data.gene,
-        gene_sources: {
-          ...data.gene.gene_sources,
-          output: []
-        },
-        gene_types: {
-          ...data.gene.gene_types,
-          output: []
-        },
-        transcript_sources: {
-          ...data.gene.transcript_sources,
-          output: []
-        },
-        transcript_types: {
-          ...data.gene.transcript_types,
-          output: []
-        }
-      }
-    };
-
-    dispatch(setFilterData(newData));
+    dispatch(resetFilterData());
   };
 
   return (

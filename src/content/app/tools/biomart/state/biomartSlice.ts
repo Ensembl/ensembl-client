@@ -109,6 +109,66 @@ const biomartSlice = createSlice({
     },
     setPreviewRunOpen: (state, action: PayloadAction<boolean>) => {
       state.previewRunOpen = action.payload;
+    },
+    resetColumnSelectionData: (state) => {
+      const newData = state.columnSelectionData.map((item) => {
+        return {
+          ...item,
+          expanded: false,
+          options: item.options.map((option) => {
+            return {
+              ...option,
+              checked: false
+            };
+          })
+        };
+      });
+      state.columnSelectionData = newData;
+    },
+    resetFilterData: (state) => {
+      const data = state.filterData;
+      const newData = {
+        ...data,
+        region: {
+          ...data.region,
+          expanded: false,
+          chromosomes: {
+            ...data.region.chromosomes,
+            expanded: false,
+            output: []
+          },
+          coordinates: {
+            ...data.region.coordinates,
+            expanded: false,
+            output: []
+          }
+        },
+        gene: {
+          ...data.gene,
+          expanded: false,
+          gene_sources: {
+            ...data.gene.gene_sources,
+            expanded: false,
+            output: []
+          },
+          gene_types: {
+            ...data.gene.gene_types,
+            expanded: false,
+            output: []
+          },
+          transcript_sources: {
+            ...data.gene.transcript_sources,
+            expanded: false,
+            output: []
+          },
+          transcript_types: {
+            ...data.gene.transcript_types,
+            expanded: false,
+            output: []
+          }
+        }
+      };
+      state.filterData = newData;
     }
   }
 });
@@ -118,6 +178,8 @@ export const {
   setTab,
   setColumnSelectionData,
   setFilterData,
-  setPreviewRunOpen
+  setPreviewRunOpen,
+  resetColumnSelectionData,
+  resetFilterData
 } = biomartSlice.actions;
 export default biomartSlice.reducer;

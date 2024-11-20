@@ -13,35 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useEffect } from 'react';
+
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import BiomartAppBar from 'src/content/app/tools/biomart/biomart-app-bar/BiomartAppBar';
 import BiomartSettings from 'src/content/app/tools/biomart/biomart-settings/BiomartSettings';
-import { setSelectedSpecies } from 'src/content/app/tools/biomart/state/biomartSlice';
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import BiomartInterstitialInstructions from 'src/content/app/tools/biomart/biomart-interstitial/BiomartInterstitialInstructions';
 import BiomartForm from 'src/content/app/tools/biomart/biomart-form/BiomartForm';
 import BiomartPreviewRun from 'src/content/app/tools/biomart/biomart-preview-run/BiomartPreviewRun';
+
+import { setSelectedSpecies } from 'src/content/app/tools/biomart/state/biomartSlice';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import styles from './Biomart.module.css';
 
 const Biomart = () => {
   const dispatch = useAppDispatch();
+
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
-  const selectedSpecies = useAppSelector(
-    (state) => state.biomart.general.selectedSpecies
-  );
   const previewRunOpen = useAppSelector(
     (state) => state.biomart.general.previewRunOpen
   );
+  const selectedSpecies = useAppSelector(
+    (state) => state.biomart.general.selectedSpecies
+  );
 
   useEffect(() => {
-    if (speciesList.length > 0) {
-      dispatch(setSelectedSpecies(speciesList[0]));
-    } else {
+    if (speciesList.length === 0) {
       dispatch(setSelectedSpecies(null));
+    }
+    if (!selectedSpecies && speciesList.length > 0) {
+      dispatch(setSelectedSpecies(speciesList[0]));
     }
   }, []);
 

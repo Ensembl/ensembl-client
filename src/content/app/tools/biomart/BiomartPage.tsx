@@ -25,6 +25,8 @@ import NotFoundErrorScreen from 'src/shared/components/error-screen/NotFoundErro
 
 import Biomart from 'src/content/app/tools/biomart/Biomart';
 
+import BiomartJobs from 'src/content/app/tools/biomart/biomart-jobs/BiomartJobs';
+
 import styles from './Biomart.module.css';
 
 const pageTitle = 'BioMart';
@@ -50,6 +52,7 @@ const BiomartPage = () => {
     <div className={styles.biomartPage}>
       <Routes>
         <Route index element={<Biomart />} />
+        <Route path="jobs" element={<BiomartJobs />} />
         <Route path="*" element={<NotFoundErrorScreen />} />
       </Routes>
     </div>

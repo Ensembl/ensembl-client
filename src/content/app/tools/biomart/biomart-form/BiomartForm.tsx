@@ -52,19 +52,43 @@ const BiomartForm = () => {
   const selectedSpecies = useAppSelector(
     (state) => state.biomart.general.selectedSpecies
   );
-  const { data } = useBiomartColumnSelectionQuery({
-    speciesId: selectedSpecies?.genome_id
-  });
-  const { data: filtersData } = useBiomartFiltersQuery({
-    speciesId: selectedSpecies?.genome_id
-  });
+  const columnsStateData = useAppSelector(
+    (state) => state.biomart.general.columnSelectionData
+  );
+  const filtersStateData = useAppSelector(
+    (state) => state.biomart.general.filterData
+  );
+  const { data: columnsData } = useBiomartColumnSelectionQuery(
+    {
+      speciesId: selectedSpecies?.genome_id
+    },
+    {
+      skip: !!columnsStateData.length
+    }
+  );
+
+  // TODO: FIXME: refactor
+  const { data: filtersData } = useBiomartFiltersQuery(
+    {
+      speciesId: selectedSpecies?.genome_id
+    },
+    {
+      skip:
+        !!filtersStateData.region?.chromosomes.input.length ||
+        !!filtersStateData.region?.coordinates.input.length ||
+        !!filtersStateData.gene?.gene_sources.input.length ||
+        !!filtersStateData.gene?.gene_types.input.length ||
+        !!filtersStateData.gene?.transcript_sources.input.length ||
+        !!filtersStateData.gene?.transcript_types.input.length
+    }
+  );
   const isSmallViewport = useMediaQuery(smallViewportMediaQuery);
 
   useEffect(() => {
-    if (data) {
-      dispatch(setColumnSelectionData(data));
+    if (columnsData) {
+      dispatch(setColumnSelectionData(columnsData));
     }
-  }, [data]);
+  }, [columnsData]);
 
   useEffect(() => {
     if (filtersData) {
