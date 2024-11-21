@@ -19,7 +19,7 @@ import { wrap } from 'comlink';
 
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
 
 import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
@@ -94,13 +94,13 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
 
   return (
     <div className={styles.inputGroup}>
-      <Checkbox
+      <CheckboxWithLabel
         label={proteinOptionLabels.protein}
         checked={isProteinSeqSelected}
         onChange={onProteinCheckboxChange}
         theme="lighter"
       />
-      <Checkbox
+      <CheckboxWithLabel
         label={proteinOptionLabels.cds}
         checked={isCdsSeqSelected}
         onChange={onCdsCheckboxChange}

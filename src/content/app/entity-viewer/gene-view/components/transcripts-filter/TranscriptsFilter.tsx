@@ -38,7 +38,7 @@ import RadioGroup, {
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -152,7 +152,7 @@ const TranscriptsFilter = (props: Props) => {
     filtersForColumn.sort(sortFilters);
 
     const checkboxes = filtersForColumn.map(([key, filter]) => (
-      <Checkbox
+      <CheckboxWithLabel
         key={key}
         theme="dark"
         className={styles.checkbox}

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
+
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import PopupPanel from '../popup-panel/PopupPanel';
 
 import styles from './ShowHideColumns.module.css';
@@ -43,7 +44,7 @@ const ShowHideColumns = () => {
         ?.filter((column) => column.isHideable !== false)
         .map((column, key) => {
           return (
-            <Checkbox
+            <CheckboxWithLabel
               key={key}
               label={column.title}
               checked={!updatedHiddenColumnIds.has(column.columnId)}

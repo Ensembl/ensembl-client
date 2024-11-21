@@ -30,52 +30,6 @@ const CheckboxesWithoutLabel = () => (
   </div>
 );
 
-const CheckboxesWithLabel = () => (
-  <div className={styles.wrapper}>
-    <Checkbox>I am label, you can click me</Checkbox>
-    <Checkbox disabled={true}>I am label of disabled checkbox</Checkbox>
-  </div>
-);
-
-const ThemedCheckboxes = () => (
-  <div className={styles.wrapper}>
-    <div className={styles.lightThemeWrapper}>
-      <Checkbox>Light theme (default)</Checkbox>
-    </div>
-    <div className={styles.lightThemeWrapper}>
-      <Checkbox theme="lighter">Lighter theme</Checkbox>
-    </div>
-    <div className={styles.darkThemeWrapper}>
-      <Checkbox theme="dark">Dark theme</Checkbox>
-    </div>
-  </div>
-);
-
-const CheckboxesWithLongLabels = () => (
-  <div className={styles.gridWrapper}>
-    <div>
-      <Checkbox>I am label</Checkbox>
-      <Checkbox disabled={true}>I am label of disabled checkbox</Checkbox>
-      <Checkbox>
-        I am a very long long label that wraps to another line
-      </Checkbox>
-    </div>
-
-    <div>
-      <Checkbox>I am label</Checkbox>
-      <Checkbox>
-        I am another very long long label that wraps to another line
-      </Checkbox>
-      <Checkbox>I am label</Checkbox>
-    </div>
-
-    <div>
-      <Checkbox>I am label</Checkbox>
-      <Checkbox>I am label</Checkbox>
-    </div>
-  </div>
-);
-
 const ControlledCheckboxes = () => {
   const [firstChecked, setFirtsChecked] = useState(false);
   const [secondChecked, setSecondChecked] = useState(false);
@@ -99,7 +53,11 @@ const ControlledCheckboxes = () => {
         Making sure that checkboxes can be toggled both in isolation, and via
         the props from the parent.
       </p>
-      <Checkbox checked={firstChecked} onChange={handleFirstCheckboxChange} />
+      <Checkbox
+        aria-label="first"
+        checked={firstChecked}
+        onChange={handleFirstCheckboxChange}
+      />
       <Checkbox checked={secondChecked} onChange={handleSecondCheckboxChange} />
       <PrimaryButton onClick={onToggleAll}>Toggle all</PrimaryButton>
     </div>
@@ -107,23 +65,8 @@ const ControlledCheckboxes = () => {
 };
 
 export const DefaultCheckboxStory = {
-  name: 'without label',
+  name: 'default',
   render: () => <CheckboxesWithoutLabel />
-};
-
-export const CheckboxWithLabelStory = {
-  name: 'with label',
-  render: () => <CheckboxesWithLabel />
-};
-
-export const ThemedCheckboxesStory = {
-  name: 'themes',
-  render: () => <ThemedCheckboxes />
-};
-
-export const CheckboxesWithLongLabelsStory = {
-  name: 'grid with long labels',
-  render: () => <CheckboxesWithLongLabels />
 };
 
 export const ControlledCheckboxesStory = {

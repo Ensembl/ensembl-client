@@ -1,0 +1,29 @@
+.wrapper {
+  padding: 20px;
+}
+
+.gridWrapper {
+  display: grid;
+  grid-template-columns: 210px 210px 210px;
+  column-gap: 1rem;
+}
+
+.lightThemeWrapper {
+  padding: 0.6rem;
+}
+
+.darkThemeWrapper {
+  padding: 0.6rem;
+  background-color: var(--color-black);
+}
+
+.controlledCheckboxesStory {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 0.6rem;
+}
+
+.controlledCheckboxesStory button {
+  margin-top: 0.6rem;
+}

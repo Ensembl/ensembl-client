@@ -166,6 +166,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
                 disabled={shouldDisableRow(searchMatch, canAddToStaged)}
                 checked={searchMatch.isStaged}
                 onChange={() => onSpeciesPreselect(searchMatch)}
+                aria-label={getAriaLabelForRowSelector(searchMatch)}
               />
             </td>
             <td>
@@ -236,6 +237,15 @@ const shouldDisableRow = (
   canAddToStaged: boolean
 ) => {
   return searchMatch.isSelected || (!searchMatch.isStaged && !canAddToStaged);
+};
+
+const getAriaLabelForRowSelector = (searchMatch: SelectableGenome) => {
+  const {
+    common_name,
+    scientific_name,
+    assembly: { name: assemblyName }
+  } = searchMatch;
+  return `${common_name ?? scientific_name} ${assemblyName}`;
 };
 
 export default SpeciesSearchResultsTable;

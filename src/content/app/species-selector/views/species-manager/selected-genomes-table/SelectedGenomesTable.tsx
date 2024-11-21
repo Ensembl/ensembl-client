@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useReducer } from 'react';
+import { Fragment, useReducer, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -305,7 +305,8 @@ const DeleteButtonOrCheckbox = ({
   addGenomeToDeleteList: (species: CommittedItem) => void;
   removeGenomeFromDeleteList: (species: CommittedItem) => void;
 }) => {
-  const onCheckboxChange = (isChecked: boolean) => {
+  const onCheckboxChange = (event: FormEvent<HTMLInputElement>) => {
+    const isChecked = event.currentTarget.checked;
     if (isChecked) {
       addGenomeToDeleteList(species);
     } else {
@@ -316,8 +317,14 @@ const DeleteButtonOrCheckbox = ({
   if (!isInDeletionMode) {
     return <DeleteButton onClick={() => enterDeletionMode(species)} />;
   } else {
+    const genomeLabel = `${species.common_name ?? species.scientific_name} (${species.assembly.name})`;
+    const ariaLabel = `Mark ${genomeLabel} for deletion`;
     return (
-      <Checkbox checked={!!isMarkedForDeletion} onChange={onCheckboxChange} />
+      <Checkbox
+        checked={!!isMarkedForDeletion}
+        onChange={onCheckboxChange}
+        aria-label={ariaLabel}
+      />
     );
   }
 };

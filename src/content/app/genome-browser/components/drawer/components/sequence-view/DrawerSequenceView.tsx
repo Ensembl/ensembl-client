@@ -25,7 +25,7 @@ import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/
 
 import BlastSequenceButton from 'src/shared/components/blast-sequence-button/BlastSequenceButton';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -150,7 +150,7 @@ const DrawerSequenceView = (props: Props) => {
               />
               {canHaveReverseComplement && (
                 <div className={styles.reverseComplement}>
-                  <Checkbox
+                  <CheckboxWithLabel
                     label="Reverse complement"
                     checked={isReverseComplement}
                     onChange={onReverseComplementChange}

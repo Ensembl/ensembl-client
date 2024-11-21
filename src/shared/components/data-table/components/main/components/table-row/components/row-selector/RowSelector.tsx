@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { FormEvent } from 'react';
+
 import useDataTable from 'src/shared/components/data-table/hooks/useDataTable';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -43,6 +45,11 @@ const RowSelector = (props: RowSelectorProps) => {
     hiddenRowIds.has(props.rowId) || hiddenRowIdsInDraft.has(props.rowId)
   );
 
+  const onRowSelected = (event: FormEvent<HTMLInputElement>) => {
+    const isChecked = event.currentTarget.checked;
+    props.onChange({ checked: isChecked, rowId: props.rowId });
+  };
+
   const onVisibilityChange = (params: {
     status: boolean;
     rowId: string | number;
@@ -64,9 +71,7 @@ const RowSelector = (props: RowSelectorProps) => {
     <div className={styles.rowSelector}>
       {selectedAction !== TableAction.SHOW_HIDE_ROWS && (
         <Checkbox
-          onChange={(checked: boolean) =>
-            props.onChange({ checked, rowId: props.rowId })
-          }
+          onChange={onRowSelected}
           disabled={
             true /* at the moment, there is no use case for working checkboxes */
           }

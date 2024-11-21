@@ -19,53 +19,22 @@ import type { ComponentProps } from 'react';
 
 import styles from './Checkbox.module.css';
 
-type Theme = 'lighter' | 'light' | 'dark';
+/**
+ * NOTE: the purpose of this component is to style the native browser input element.
+ * Apart from the styling, it keeps the same api as the native input.
+ *
+ * If you need a component that pre-styles a checkbox combined with a label,
+ * please use the CheckboxWithLabel component.
+ */
 
-type InputPropsWithoutType = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
+type Props = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
 
-export type CheckboxProps = InputPropsWithoutType & {
-  theme?: Theme;
-};
+const Checkbox = (props: Props) => {
+  const { className: classNameFromProps, ...otherProps } = props;
 
-const getThemeClasses = (theme: Theme = 'light') => {
-  if (theme === 'lighter') {
-    return styles.themeLighter;
-  }
+  const checkboxClasses = classNames(styles.checkbox, classNameFromProps);
 
-  if (theme === 'dark') {
-    return styles.themeDark;
-  }
-};
-
-const Checkbox = (props: CheckboxProps) => {
-  const { children, ...inputProps } = props;
-
-  const themeClass = getThemeClasses(props.theme);
-
-  const wrapperClasses = classNames(
-    styles.wrapper,
-    themeClass,
-    props.className
-  );
-
-  const checkboxClasses = classNames(styles.checkbox, styles.checkboxDefault);
-
-  const checkboxElement = (
-    <input {...inputProps} type="checkbox" className={checkboxClasses} />
-  );
-
-  return children ? (
-    <div className={wrapperClasses}>
-      <label className={styles.grid} data-test-id="checkbox-label-grid">
-        {checkboxElement}
-        <span className={styles.label}>{children}</span>
-      </label>
-    </div>
-  ) : (
-    <label data-test-id="checkbox" className={wrapperClasses}>
-      {checkboxElement}
-    </label>
-  );
+  return <input {...otherProps} type="checkbox" className={checkboxClasses} />;
 };
 
 export default Checkbox;
