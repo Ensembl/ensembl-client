@@ -1,5 +1,4 @@
 @layer components {
-
   .checkbox {
     appearance: none;
     background-color: var(--checkbox-background-color, var(--color-white));
@@ -24,5 +23,4 @@
     cursor: default;
     pointer-events: none;
   }
-
 }
