@@ -49,14 +49,8 @@ const CheckboxWithLabel = (props: Props) => {
     props.className
   );
 
-  // const checkboxClasses = classNames(
-  //   styles.checkboxDefault,
-  //   props.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
-  //   props.disabled && styles.checkboxDisabled
-  // );
-
   return (
-    <label className={componentClasses} data-test-id="checkbox-label-grid">
+    <label className={componentClasses}>
       <Checkbox
         checked={props.checked}
         disabled={props.disabled}
