@@ -21,6 +21,13 @@ import Checkbox from '../checkbox/Checkbox';
 
 import styles from './CheckboxWithLabel.module.css';
 
+/**
+ * The purpose of this component is to combine a checkbox with a label
+ * and style this composition in a way that is most commonly used on our website.
+ * If you need custom behaviour from the checkbox, or if you want to use a checkbox without the label,
+ * please use the Checkbox component.
+ */
+
 type Theme = 'lighter' | 'light' | 'dark';
 
 type Props = {
