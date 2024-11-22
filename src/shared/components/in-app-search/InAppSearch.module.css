@@ -1,3 +1,14 @@
+.inAppSearch {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 30px;
+}
+
+.inAppSearchInInterstitial {
+  justify-content: start;
+}
+
 .inAppSearchTopInterstitial {
   display: inline-grid;
   grid-template-areas:
@@ -55,25 +66,23 @@
 
 .searchMatches {
   display: flex;
-  padding-left: 20px;
   flex-direction: column;
+  padding-left: 20px;
+  row-gap: 1rem;
   align-items: flex-start;
-  margin-top: 30px;
+}
+
+.searchMatchesInSidebar {
+  height: 100%;
+  overflow-y: auto;
 }
 
 .searchMatch {
   position: relative;
-  display: inline-block;
-  color: var(--color-blue);
-  cursor: pointer;
   line-height: 1;
 }
 
-.searchMatch:not(:last-child) {
-  margin-bottom: 1rem;
-}
-
-.searchMatch > span:nth-child(2) {
+.searchMatchButton > span:nth-child(2) {
   margin-left: 0.6rem;
 }
 
@@ -96,25 +105,21 @@
 
 .tooltipContent {
   font-weight: var(--font-weight-light);
-  max-width: 260px;
-}
-
-.tooltipContent > div:first-child span:first-child {
-  margin-right: 28px;
-}
-
-.tooltipContent > div:nth-child(3) span:first-child {
-  font-weight: var(--font-weight-bold);
+  width: 225px;
 }
 
 .tooltipContent > div:not(:last-child) {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .tooltipContent > div:last-child {
   margin-top: 28px;
 }
 
-.transcriptsCount {
-  margin-right: 1ch;
+.tooltipContent .withExtraSpaceRight {
+  margin-right: 0.6ch;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
 }

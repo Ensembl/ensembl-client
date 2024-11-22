@@ -5,7 +5,7 @@
     'content content';
   grid-template-columns: 1fr 20px;
   grid-template-rows: 38px 1fr;
-  min-height: 100%;
+  height: 100%;
   overflow: auto;
   padding: 21px calc(18px - var(--scrollbar-width)) 90px 20px;
   scrollbar-gutter: stable;
@@ -27,6 +27,7 @@
 
 .content {
   grid-area: content;
+  height: 100%;
   overflow: auto;
 }
 

@@ -30,21 +30,15 @@ const EntityViewerSidebarSearch = () => {
     dispatch(closeSidebarModal());
   };
 
-  return (
-    <section>
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="entityViewer"
-            genomeId={activeGenomeId}
-            genomeIdForUrl={genomeIdForUrl as string}
-            mode="sidebar"
-            onMatchNavigation={onSearchMatchNavigation}
-          />
-        )}
-      </div>
-    </section>
-  );
+  return activeGenomeId ? (
+    <InAppSearch
+      app="entityViewer"
+      genomeId={activeGenomeId}
+      genomeIdForUrl={genomeIdForUrl as string}
+      mode="sidebar"
+      onMatchNavigation={onSearchMatchNavigation}
+    />
+  ) : null;
 };
 
 export default EntityViewerSidebarSearch;

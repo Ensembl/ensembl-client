@@ -34,6 +34,7 @@ import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
@@ -51,8 +52,12 @@ type InAppSearchMatchesProps = SearchResults & {
 };
 
 const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
+  const componentClasses = classNames(styles.searchMatches, {
+    [styles.searchMatchesInSidebar]: props.mode === 'sidebar'
+  });
+
   return (
-    <div className={styles.searchMatches}>
+    <div className={componentClasses}>
       {props.matches.map((match, index) => (
         <InAppSearchMatch
           key={match.stable_id}
@@ -126,8 +131,10 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
   return (
     <>
       <div className={styles.searchMatch} onClick={onMatchClick}>
-        {symbolElement}
-        {stableIdElement}
+        <TextButton className={styles.searchMatchButton}>
+          {symbolElement}
+          {stableIdElement}
+        </TextButton>
         <span
           className={getSearchMatchAnchorClasses(props.mode)}
           ref={anchorRef}
@@ -141,11 +148,13 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
               ? PointerBoxPosition.RIGHT_BOTTOM
               : PointerBoxPosition.BOTTOM_RIGHT
           }
+          autoAdjust={true}
           className={classNames(
             styles.tooltip,
             pointerBoxStyles.pointerBoxShadow
           )}
           onOutsideClick={hideTooltip}
+          onClose={hideTooltip}
         >
           <MatchDetails {...props} onClick={onAppClick} />
         </PointerBox>
@@ -195,15 +204,19 @@ const MatchDetails = (
   return (
     <div className={styles.tooltipContent}>
       <div>
-        <span>{match.biotype}</span>
+        <span className={styles.withExtraSpaceRight}>Biotype </span>
+        <span className={styles.strong}>{match.biotype}</span>
+      </div>
+
+      <div>
         <span>{getStrandDisplayName(match.slice.strand.code)}</span>
       </div>
 
       <div>{formattedLocation}</div>
 
       <div>
-        <span className={styles.transcriptsCount}>
-          {match.transcript_count}
+        <span className={classNames(styles.strong, styles.withExtraSpaceRight)}>
+          {match.transcript_count}{' '}
         </span>
         {pluralise('transcript', match.transcript_count)}
       </div>

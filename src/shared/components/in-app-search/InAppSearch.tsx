@@ -16,8 +16,8 @@
 
 import { FormEvent, useState } from 'react';
 import { useSelector } from 'react-redux';
+import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
-import noop from 'lodash/noop';
 
 import { useAppDispatch } from 'src/store';
 
@@ -112,7 +112,11 @@ const InAppSearch = (props: Props) => {
     'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym; wildcards are also supported';
 
   return (
-    <div>
+    <div
+      className={classNames(styles.inAppSearch, {
+        [styles.inAppSearchInInterstitial]: mode === 'interstitial'
+      })}
+    >
       <form
         className={getInAppSearchTopStyles(mode)}
         onSubmit={onSearchSubmit}
@@ -129,7 +133,6 @@ const InAppSearch = (props: Props) => {
           size={mode === 'interstitial' ? 'large' : 'small'}
         />
         <PrimaryButton
-          onClick={noop}
           className={styles.searchButton}
           disabled={!query || isLoading}
         >
