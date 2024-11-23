@@ -42,9 +42,9 @@ const start = async () => {
     (webpackClientConfig.entry as EntryObject).client as string
   ];
   webpackClientConfig.output.hotUpdateMainFilename =
-    'updates/[hash].hot-update.json';
+    'updates/[fullhash].hot-update.json';
   webpackClientConfig.output.hotUpdateChunkFilename =
-    'updates/[id].[hash].hot-update.js';
+    'updates/[id].[fullhash].hot-update.js';
 
   console.log('ABOUT TO COMPILE'); // eslint-disable-line no-console
 
