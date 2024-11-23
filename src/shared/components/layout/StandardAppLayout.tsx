@@ -105,6 +105,18 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     elementRef.current?.dispatchEvent(event);
   };
 
+  // TODO: update the below after migration to React 19.
+  // React 19 will update type definitions of HTMLAnchorElement to allow inert: boolean.
+  // For react versions below 19, typescript will complain about the `inert` attribute;
+  // and the inertProps object below (as well as the empty string value of the 'inert' field)
+  // is an attempt to trick typescript.
+  // IMPORTANT: in React 19, inert="" will be treated as false instead of true;
+  // so we will need to change the below during migration.
+  // (see https://github.com/facebook/react/issues/17157#issuecomment-2003750544)
+  const inertProps = {
+    inert: ''
+  };
+
   return (
     <div className={styles.standardAppLayout} ref={elementRef}>
       <div className={topbarClassnames}>
@@ -112,7 +124,9 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
         {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
       <div className={styles.mainWrapper}>
-        <div className={mainClassNames}>{props.mainContent}</div>
+        <div className={mainClassNames} {...(isDrawerOpen ? inertProps : {})}>
+          {props.mainContent}
+        </div>
         <div className={sidebarWrapperClassnames}>
           {isDrawerOpen && <DrawerWindow onClick={handleDrawerClose} />}
           <div className={styles.sidebarToolstrip}>
@@ -129,7 +143,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
             </div>
           </div>
           <div className={styles.sidebar}>{props.sidebarContent}</div>
-          <div className={styles.drawer}>
+          <div className={styles.drawer} {...(!isDrawerOpen ? inertProps : {})}>
             <CloseButton
               className={styles.drawerClose}
               onClick={handleDrawerClose}
