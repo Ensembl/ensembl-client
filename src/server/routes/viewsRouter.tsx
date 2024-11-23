@@ -16,8 +16,7 @@
 
 import { Request, Response } from 'express';
 import { renderToPipeableStream } from 'react-dom/server';
-import { matchPath } from 'react-router-dom';
-import { StaticRouter } from 'react-router-dom/server';
+import { matchPath, StaticRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import pick from 'lodash/pick';
 
@@ -56,7 +55,7 @@ const viewRouter = async (req: Request, res: Response) => {
       if ('status' in (fetchResult as { status?: number })) {
         statusCode = (fetchResult as { status: number }).status;
       }
-    } catch (error) {
+    } catch {
       // TODO: this would be a good place to log out the error when we set up loggers
       statusCode = 500;
     }

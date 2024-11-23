@@ -81,7 +81,7 @@ export default (): Configuration => {
               issuer: /\.css$/,
               type: 'asset/resource',
               generator: {
-                filename: 'images/[name].[hash][ext]',
+                filename: 'images/[name].[fullhash][ext]',
                 publicPath: '/static/',
                 emit: false
               }
@@ -90,7 +90,7 @@ export default (): Configuration => {
               resourceQuery: /url/, // will match all imports that end in `.svg?url`
               type: 'asset/resource',
               generator: {
-                filename: 'images/[name].[hash][ext]',
+                filename: 'images/[name].[fullhash][ext]',
                 publicPath: '/static/',
                 emit: false
               }
