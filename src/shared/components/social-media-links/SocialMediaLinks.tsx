@@ -42,6 +42,7 @@ const SocialMediaLinks = (props: Props) => {
           data-part="blog-icon"
           src={blogIconUrl}
           className={styles.mediaIcon}
+          alt=""
         />
       </a>
       <a

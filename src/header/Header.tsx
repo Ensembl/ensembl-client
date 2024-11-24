@@ -37,7 +37,7 @@ export const Copyright = () => (
 
 export const HomeLink = () => (
   <div className={styles.homeLink}>
-    <Link to="/">
+    <Link to="/" aria-label="Ensembl home page">
       <HomeIcon />
     </Link>
   </div>

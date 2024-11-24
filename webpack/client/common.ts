@@ -80,14 +80,14 @@ export default (env: Record<string, unknown>): Configuration => {
               issuer: /\.css$/,
               type: 'asset/resource',
               generator: {
-                filename: 'images/[name].[fullhash][ext]'
+                filename: 'images/[name].[hash][ext]'
               }
             },
             {
               resourceQuery: /url/, // will match all imports that end in `.svg?url`
               type: 'asset/resource',
               generator: {
-                filename: 'images/[name].[fullhash][ext]'
+                filename: 'images/[name].[hash][ext]'
               }
             },
             {

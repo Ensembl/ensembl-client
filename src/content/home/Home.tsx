@@ -126,14 +126,14 @@ const Home = () => {
         </div>
 
         <div className={styles.speciesContainer}>
-          <span className={styles.platform}></span>
-          <img src={speciesStripUrl} className={styles.speciesStrip} />
+          <span className={styles.platform} />
+          <img src={speciesStripUrl} className={styles.speciesStrip} alt="" />
         </div>
       </div>
       <footer>
         <div className={styles.footerLeft}>
           <Logotype className={styles.logotype} />
-          <img src={ebiLogoUrl} className={styles.ebiLogo} />
+          <img src={ebiLogoUrl} className={styles.ebiLogo} alt="" />
           <div className={styles.text}>
             Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
           </div>
@@ -146,14 +146,22 @@ const Home = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={gbcLogoUrl} className={styles.gbcLogo} />
+            <img
+              src={gbcLogoUrl}
+              className={styles.gbcLogo}
+              alt="Global biodata coalition"
+            />
           </a>
           <a
             href="https://elixir-europe.org/platforms/data/core-data-resources"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={elixirLogoUrl} className={styles.elixirLogo} />
+            <img
+              src={elixirLogoUrl}
+              className={styles.elixirLogo}
+              alt="ELIXIR Core Data Resources"
+            />
           </a>
         </div>
       </footer>
