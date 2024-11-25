@@ -8,6 +8,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
+  justify-items: start;
   line-height: 1;
   max-width: 1380px;
   padding-left: 30px;
