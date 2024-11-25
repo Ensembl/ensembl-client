@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { openDB, IDBPDatabase } from 'idb';
+import { openDB, IDBPDatabase, type OpenDBCallbacks } from 'idb';
 
 import { GENERAL_UI_STORE_NAME } from 'src/shared/services/generalUIStorageConstants';
 import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/services/speciesSelectorStorageConstants';
@@ -28,7 +28,9 @@ import { NOTIFICATIONS_STORE_NAME } from 'src/shared/services/notificationsStora
 const DB_NAME = 'ensembl-website';
 const DB_VERSION = 6;
 
-const getDbPromise = () => {
+const getDbPromise = (params?: {
+  onBlocking?: OpenDBCallbacks<unknown>['blocking'];
+}) => {
   return openDB(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // FIXME use constants for object store names
@@ -70,6 +72,9 @@ const getDbPromise = () => {
           unique: false
         });
       }
+    },
+    blocking(...args) {
+      params?.onBlocking?.(...args);
     }
   });
 };
@@ -79,7 +84,23 @@ class IndexedDB {
 
   static async getDB() {
     if (!this.db) {
-      this.db = await getDbPromise();
+      this.db = await getDbPromise({
+        onBlocking: () => {
+          if (!this.db) {
+            return;
+          }
+          /**
+           * When this callback is executed, it means that
+           * the tab in which this code is running has a connection to IndexedDB
+           * that is blocking another tab from upgrading IndexedDB to the latest version.
+           * Upon receiving this event, the current tab should close its connection to IndexedDB,
+           * and reload to get the latest version of the software.
+           */
+          this.db.close();
+          this.db = null;
+          window.location.reload();
+        }
+      });
     }
     return this.db;
   }
