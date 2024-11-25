@@ -11,6 +11,8 @@ module.exports = {
     'selector-pseudo-class-no-unknown': [true, {
       ignorePseudoClasses: ['global']
     }],
-    'string-no-newline': null
+    'string-no-newline': null,
+    'no-descending-specificity': null,
+    'rule-empty-line-before': null
   }
 };

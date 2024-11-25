@@ -19,7 +19,7 @@ import { wrap } from 'comlink';
 
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
 import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
@@ -65,7 +65,7 @@ const InstantDownloadRegFeature = (props: Props) => {
         <span>{props.id}</span>
       </div>
       <div className={styles.checkboxContainer}>
-        <Checkbox
+        <CheckboxWithLabel
           theme="dark"
           checked={isCoreSequenceSelected}
           onChange={setIsCoreSequenceSelected}

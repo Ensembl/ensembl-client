@@ -25,7 +25,7 @@ import { updateParameters } from 'src/content/app/tools/vep/state/vep-form/vepFo
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import type {
   VepFormConfig,
@@ -77,14 +77,14 @@ const VepFormGeneOptions = (props: Props) => {
       <div className={optionsContainerClasses}>
         {/* show only the selected options in the collapsed view */}
         {shouldShowOptionCheckbox('symbol') && (
-          <Checkbox
+          <CheckboxWithLabel
             label={config.parameters.symbol.label}
             checked={vepFormParameters.symbol as boolean}
             onChange={() => onCheckboxChange('symbol')}
           />
         )}
         {shouldShowOptionCheckbox('biotype') && (
-          <Checkbox
+          <CheckboxWithLabel
             label={config.parameters.biotype.label}
             checked={vepFormParameters.biotype as boolean}
             onChange={() => onCheckboxChange('biotype')}

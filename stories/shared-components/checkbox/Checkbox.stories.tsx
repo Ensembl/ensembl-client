@@ -14,104 +14,65 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 
-import Checkbox, {
-  CheckboxProps
-} from 'src/shared/components/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+
 import styles from './Checkbox.stories.module.css';
 
-type DefaultArgs = {
-  onChange: (...args: any) => void;
-};
+const CheckboxesWithoutLabel = () => (
+  <div className={styles.wrapper}>
+    <p>Enabled</p>
+    <Checkbox />
+    <p>Disabled</p>
+    <Checkbox disabled={true} />
+  </div>
+);
 
-const StatefulCheckbox = (props: Partial<CheckboxProps> & DefaultArgs) => {
-  const [checked, setChecked] = useState(false);
+const ControlledCheckboxes = () => {
+  const [firstChecked, setFirtsChecked] = useState(false);
+  const [secondChecked, setSecondChecked] = useState(false);
 
-  const handleChange = (isChecked: boolean) => {
-    setChecked(isChecked);
-    props.onChange(isChecked);
+  const handleFirstCheckboxChange = (event: FormEvent<HTMLInputElement>) => {
+    setFirtsChecked(event.currentTarget.checked);
+  };
+
+  const handleSecondCheckboxChange = (event: FormEvent<HTMLInputElement>) => {
+    setSecondChecked(event.currentTarget.checked);
+  };
+
+  const onToggleAll = () => {
+    setFirtsChecked(!firstChecked);
+    setSecondChecked(!firstChecked);
   };
 
   return (
-    <div>
-      <Checkbox {...props} checked={checked} onChange={handleChange} />
+    <div className={styles.controlledCheckboxesStory}>
+      <p>
+        Making sure that checkboxes can be toggled both in isolation, and via
+        the props from the parent.
+      </p>
+      <Checkbox
+        aria-label="first"
+        checked={firstChecked}
+        onChange={handleFirstCheckboxChange}
+      />
+      <Checkbox checked={secondChecked} onChange={handleSecondCheckboxChange} />
+      <PrimaryButton onClick={onToggleAll}>Toggle all</PrimaryButton>
     </div>
   );
 };
 
-export const CheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
-    <p>Enabled</p>
-    <StatefulCheckbox {...args} />
-    <p>Disabled</p>
-    <StatefulCheckbox disabled={true} {...args} />
-  </div>
-);
+export const DefaultCheckboxStory = {
+  name: 'default',
+  render: () => <CheckboxesWithoutLabel />
+};
 
-CheckboxStory.storyName = 'without label';
-
-export const LabelledCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
-    <StatefulCheckbox label="I am label, you can click me" {...args} />
-    <StatefulCheckbox
-      disabled={true}
-      label="I am label of disabled checkbox"
-      {...args}
-    />
-  </div>
-);
-
-LabelledCheckboxStory.storyName = 'with label';
-
-export const ThemesStory = (args: DefaultArgs) => (
-  <div className={styles.wrapper}>
-    <div className={styles.lightThemeWrapper}>
-      <StatefulCheckbox {...args} label="Light theme (default)" />
-    </div>
-    <div className={styles.lightThemeWrapper}>
-      <StatefulCheckbox theme="lighter" label="Lighter theme" {...args} />
-    </div>
-    <div className={styles.darkThemeWrapper}>
-      <StatefulCheckbox theme="dark" label="Dark theme" {...args} />
-    </div>
-  </div>
-);
-
-ThemesStory.storyName = 'themes';
-
-export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
-  <div className={styles.gridWrapper}>
-    <div>
-      <StatefulCheckbox label="I am label" {...args} />
-      <StatefulCheckbox
-        disabled={true}
-        label="I am label of disabled checkbox"
-        {...args}
-      />
-      <StatefulCheckbox
-        label="I am a very long long label that wraps to another line"
-        {...args}
-      />
-    </div>
-
-    <div>
-      <StatefulCheckbox label="I am label" {...args} />
-      <StatefulCheckbox
-        label="I am another very long long label that wraps to another line"
-        {...args}
-      />
-      <StatefulCheckbox label="I am label" {...args} />
-    </div>
-
-    <div>
-      <StatefulCheckbox label="I am label" {...args} />
-      <StatefulCheckbox label="I am label" {...args} />
-    </div>
-  </div>
-);
-
-LongLabelledCheckboxStory.storyName = 'grid with long labels';
+export const ControlledCheckboxesStory = {
+  name: 'controlled checkboxes',
+  render: () => <ControlledCheckboxes />
+};
 
 export default {
   title: 'Components/Shared Components/Checkbox',

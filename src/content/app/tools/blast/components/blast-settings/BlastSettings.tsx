@@ -23,7 +23,7 @@ import useHover from 'src/shared/hooks/useHover';
 import useBlastForm from 'src/content/app/tools/blast/hooks/useBlastForm';
 
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
@@ -469,7 +469,7 @@ const buildCheckbox = (params: {
   };
 
   return (
-    <Checkbox
+    <CheckboxWithLabel
       label={label}
       checked={isSelected}
       onChange={onCheckboxChange}

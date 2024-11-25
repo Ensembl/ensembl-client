@@ -61,8 +61,9 @@ describe('<ShowHideColumns />', () => {
 
   it('displays the correct set of options', () => {
     container = renderShowHideColumns().container;
-    const totalOptions =
-      container.getElementsByClassName('checkboxDefault').length;
+    const totalOptions = container.querySelectorAll(
+      'input[type="checkbox"]'
+    ).length;
 
     expect(totalOptions).toBe(columns.length);
   });
@@ -84,11 +85,9 @@ describe('<ShowHideColumns />', () => {
     }).container;
     const checkboxLabels: string[] = [];
 
-    container
-      .querySelectorAll('.checkboxDefault + .label')
-      .forEach((element) => {
-        checkboxLabels.push(element.textContent as string);
-      });
+    container.querySelectorAll('label').forEach((element) => {
+      checkboxLabels.push(element.textContent as string);
+    });
 
     // expect two options to be removed
     expect(checkboxLabels.length).toBe(columns.length - 2);

@@ -22,7 +22,7 @@ import classNames from 'classnames';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
 import type { WorkerApi } from 'src/shared/workers/feature-sequence-download/featureSequenceDownload.worker';
@@ -201,14 +201,14 @@ const GeneSection = (props: GeneSectionProps) => (
       Gene
       <span className={styles.featureId}>{props.gene.id}</span>
     </div>
-    <Checkbox
+    <CheckboxWithLabel
       theme={getCheckboxTheme(props.theme)}
       label="Genomic sequence"
       checked={!!props.options.genomic}
       onChange={() => props.onChange('genomic')}
       className={styles.checkbox}
     />
-    <Checkbox
+    <CheckboxWithLabel
       theme={getCheckboxTheme(props.theme)}
       label="Exons"
       checked={!!props.options.exons}
@@ -225,7 +225,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
     Object.keys(options)
   );
   const checkboxes = orderedOptionKeys.map((key) => (
-    <Checkbox
+    <CheckboxWithLabel
       key={key}
       theme={getCheckboxTheme(props.theme)}
       label={transcriptOptionLabels[key as TranscriptOption]}

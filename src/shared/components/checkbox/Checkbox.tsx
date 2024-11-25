@@ -15,85 +15,26 @@
  */
 
 import classNames from 'classnames';
+import type { ComponentProps } from 'react';
 
 import styles from './Checkbox.module.css';
 
-type Theme = 'lighter' | 'light' | 'dark';
+/**
+ * NOTE: the purpose of this component is to style the native browser input element.
+ * Apart from the styling, it keeps the same api as the native input.
+ *
+ * If you need a component that pre-styles a checkbox combined with a label,
+ * please use the CheckboxWithLabel component.
+ */
 
-type WithoutLabelProps = {
-  onChange: (status: boolean) => void;
-  disabled?: boolean;
-  checked: boolean;
-  theme?: Theme;
-  className?: string; // will only apply to the outermost element of the component
-};
+type Props = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
 
-type WithLabelProps = WithoutLabelProps & {
-  label: string;
-};
+const Checkbox = (props: Props) => {
+  const { className: classNameFromProps, ...otherProps } = props;
 
-export type CheckboxProps = WithLabelProps | WithoutLabelProps;
+  const checkboxClasses = classNames(styles.checkbox, classNameFromProps);
 
-const hasLabel = (props: CheckboxProps): props is WithLabelProps => {
-  return 'label' in props;
-};
-
-const getThemeClasses = (theme: Theme = 'light') => {
-  if (theme === 'lighter') {
-    return styles.themeLighter;
-  }
-
-  if (theme === 'dark') {
-    return styles.themeDark;
-  }
-};
-
-const Checkbox = (props: CheckboxProps) => {
-  const onChange = () => {
-    if (!props.disabled) {
-      props.onChange(!props.checked);
-    }
-  };
-
-  const themeClass = getThemeClasses(props.theme);
-
-  const wrapperClasses = classNames(
-    styles.wrapper,
-    themeClass,
-    props.className
-  );
-
-  const checkboxClasses = classNames(
-    styles.checkboxDefault,
-    props.checked ? styles.checkboxChecked : styles.checkboxUnchecked,
-    props.disabled && styles.checkboxDisabled
-  );
-
-  const checkboxElement = (
-    <>
-      <input
-        type="checkbox"
-        className={styles.hiddenInput}
-        checked={props.checked}
-        disabled={props.disabled}
-        onChange={onChange}
-      />
-      <span className={checkboxClasses} />
-    </>
-  );
-
-  return hasLabel(props) ? (
-    <div className={wrapperClasses}>
-      <label className={styles.grid} data-test-id="checkbox-label-grid">
-        {checkboxElement}
-        <span className={styles.label}>{props.label}</span>
-      </label>
-    </div>
-  ) : (
-    <label data-test-id="checkbox" className={wrapperClasses}>
-      {checkboxElement}
-    </label>
-  );
+  return <input {...otherProps} type="checkbox" className={checkboxClasses} />;
 };
 
 export default Checkbox;

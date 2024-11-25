@@ -22,7 +22,7 @@ import LoadingButton, {
 import RadioGroup, {
   OptionValue
 } from 'src/shared/components/radio-group/RadioGroup';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
@@ -158,7 +158,7 @@ export const ControlledLoadingButtonStory = (args: DefaultArgs) => {
         />
       </div>
       <div className={styles.buttonDisableControlWrapper}>
-        <Checkbox
+        <CheckboxWithLabel
           checked={isDisabled}
           onChange={onDisabledChange}
           label="Disabled"

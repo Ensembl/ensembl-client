@@ -60,7 +60,6 @@
     [section-main-content] 1fr
     [section-toggle] auto;
   column-gap: var(--column-gap);
-  align-items: start;
   min-height: var(--form-section-min-height);
   align-items: center;
 }
