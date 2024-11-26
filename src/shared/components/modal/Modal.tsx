@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { useRef, type ReactNode, type SyntheticEvent } from 'react';
 import classNames from 'classnames';
-import { type ReactNode, type SyntheticEvent } from 'react';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -24,36 +24,60 @@ import styles from './Modal.module.css';
 type Props = {
   onClose: () => void;
   children: ReactNode;
-  classNames?: {
-    background?: string;
-    body?: string;
-  };
+  className?: string;
 };
 
 const Modal = (props: Props) => {
-  const preventEventBubbling = (event: SyntheticEvent) => {
-    event.stopPropagation();
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+
+  /**
+   * React 19 warning:
+   * In React 19, callback refs will no longer return a null.
+   */
+  const dialogCallbackRef = (element: HTMLDialogElement | null) => {
+    element?.showModal();
+    element?.addEventListener('cancel', handleClose);
+    element?.addEventListener('close', handleClose);
+
+    dialogRef.current = element;
   };
 
-  const backgroundClasses = classNames(
-    styles.background,
-    props.classNames?.background
-  );
+  const handleClick = (event: SyntheticEvent<HTMLElement>) => {
+    const element = event.target;
+    if (element === dialogRef.current) {
+      // user clicked on the dialog backdrop
+      handleClose();
+    }
+  };
 
-  const bodyClasses = classNames(styles.body, props.classNames?.body);
+  const handleClose = () => {
+    // setTimeout gives the closing dialog the opportunity to set focus
+    // back to the element that opened it
+    setTimeout(() => {
+      props.onClose();
+    }, 0);
+  };
 
-  const modal = (
-    <div className={backgroundClasses} onClick={props.onClose}>
-      <div className={bodyClasses} onClick={preventEventBubbling}>
+  const onCloseButtonPress = () => {
+    dialogRef.current?.close();
+  };
+
+  const componentClasses = classNames(styles.dialog, props.className);
+
+  return (
+    <dialog
+      ref={dialogCallbackRef}
+      className={componentClasses}
+      onClick={handleClick}
+    >
+      <div className={styles.contentWrapper}>
         <div className={styles.close}>
-          <CloseButton onClick={props.onClose} />
+          <CloseButton onClick={onCloseButtonPress} />
         </div>
         {props.children}
       </div>
-    </div>
+    </dialog>
   );
-
-  return modal;
 };
 
 export default Modal;
