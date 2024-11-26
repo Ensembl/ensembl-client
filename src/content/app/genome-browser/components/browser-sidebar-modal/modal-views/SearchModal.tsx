@@ -35,22 +35,16 @@ const SearchModal = () => {
     dispatch(closeBrowserSidebarModal());
   };
 
-  return (
-    <section className="searchModal">
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="genomeBrowser"
-            genomeId={activeGenomeId}
-            genomeIdForUrl={genomeIdForUrl as string}
-            mode="sidebar"
-            onSearchSubmit={trackSidebarSearch}
-            onMatchNavigation={onSearchMatchNavigation}
-          />
-        )}
-      </div>
-    </section>
-  );
+  return activeGenomeId ? (
+    <InAppSearch
+      app="genomeBrowser"
+      genomeId={activeGenomeId}
+      genomeIdForUrl={genomeIdForUrl as string}
+      mode="sidebar"
+      onSearchSubmit={trackSidebarSearch}
+      onMatchNavigation={onSearchMatchNavigation}
+    />
+  ) : null;
 };
 
 export default SearchModal;

@@ -43,21 +43,15 @@ const SpeciesSidebarSearch = () => {
     );
   };
 
-  return (
-    <section className="searchModal">
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="speciesHome"
-            genomeId={activeGenomeId}
-            genomeIdForUrl={genomeIdForUrl as string}
-            mode="sidebar"
-            onMatchNavigation={onSearchMatchNavigation}
-          />
-        )}
-      </div>
-    </section>
-  );
+  return activeGenomeId ? (
+    <InAppSearch
+      app="speciesHome"
+      genomeId={activeGenomeId}
+      genomeIdForUrl={genomeIdForUrl as string}
+      mode="sidebar"
+      onMatchNavigation={onSearchMatchNavigation}
+    />
+  ) : null;
 };
 
 export default SpeciesSidebarSearch;
