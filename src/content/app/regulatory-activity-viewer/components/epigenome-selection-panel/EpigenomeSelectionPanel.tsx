@@ -21,7 +21,7 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import { getEpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import {
-  useEpigenomesMetadataDimensionsQuery,
+  useEpigenomeMetadataDimensionsQuery,
   useBaseEpigenomesQuery
 } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import {
@@ -34,13 +34,13 @@ import { getMetadataItems } from './getEpigenomeCounts';
 import EpigenomeMetadataDimensionPanel from './epigenome-metadata-dimension-panel/EpigenomeMetadataDimensionPanel';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
-import type { MetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
+import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 import styles from './EpigenomeSelectionPanel.module.css';
 
 const EpigenomeSelectionPanel = () => {
-  const { currentData: epigenomesMetadataDimensions } =
-    useEpigenomesMetadataDimensionsQuery();
+  const { currentData: epigenomeMetadataDimensionsResponse } =
+    useEpigenomeMetadataDimensionsQuery();
   const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
   const epigenomeSelectionCriteria = useAppSelector(
     getEpigenomeSelectionCriteria
@@ -61,32 +61,35 @@ const EpigenomeSelectionPanel = () => {
     []
   );
 
-  if (!epigenomesMetadataDimensions || !baseEpigenomes) {
+  if (!epigenomeMetadataDimensionsResponse || !baseEpigenomes) {
     return null;
   }
+
+  const epigenomeMetadataDimensions =
+    epigenomeMetadataDimensionsResponse.dimensions;
 
   return (
     <div className={styles.panel}>
       <EpigenomeMetadataDimensionPanelWithData
         dimensionName={'term'}
         selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomesMetadataDimensions}
+        metadataDimensions={epigenomeMetadataDimensions}
         epigenomes={baseEpigenomes}
         onSelectionCriterionAdded={onSelectionCriterionAdded}
         onSelectionCriterionRemoved={onSelectionCriterionRemoved}
       />
       <EpigenomeMetadataDimensionPanelWithData
-        dimensionName={'organ_slims'}
+        dimensionName={'organs'}
         selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomesMetadataDimensions}
+        metadataDimensions={epigenomeMetadataDimensions}
         epigenomes={baseEpigenomes}
         onSelectionCriterionAdded={onSelectionCriterionAdded}
         onSelectionCriterionRemoved={onSelectionCriterionRemoved}
       />
       <EpigenomeMetadataDimensionPanelWithData
-        dimensionName={'system_slims'}
+        dimensionName={'systems'}
         selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomesMetadataDimensions}
+        metadataDimensions={epigenomeMetadataDimensions}
         epigenomes={baseEpigenomes}
         onSelectionCriterionAdded={onSelectionCriterionAdded}
         onSelectionCriterionRemoved={onSelectionCriterionRemoved}
@@ -103,7 +106,7 @@ const EpigenomeMetadataDimensionPanelWithData = (
     | 'onSelectionCriterionRemoved'
   > & {
     selectionCriteria: Record<string, Set<string>>;
-    metadataDimensions: MetadataDimensions;
+    metadataDimensions: EpigenomeMetadataDimensions;
     epigenomes: Epigenome[];
   }
 ) => {

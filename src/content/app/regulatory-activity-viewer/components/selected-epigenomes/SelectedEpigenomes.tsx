@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/combineEpigenomes';
 
@@ -24,30 +24,36 @@ import {
   type EpigenomeSelectionCriteria
 } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
-import { addCombiningDimension } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
+// import { addCombiningDimension } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
 
-import { useBaseEpigenomesQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import {
+  useBaseEpigenomesQuery,
+  useEpigenomeMetadataDimensionsQuery
+} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
-import TextButton from 'src/shared/components/text-button/TextButton';
+// import TextButton from 'src/shared/components/text-button/TextButton';
 
+import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 
 const SelectedEpigenomes = () => {
   const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
+  const { currentData: epigenomeMetadataDimensionsResponse } =
+    useEpigenomeMetadataDimensionsQuery();
   const epigenomeSelectionCriteria = useAppSelector(
     getEpigenomeSelectionCriteria
   );
   const epigenomeCombiningDimensions = useAppSelector(
     getEpigenomeCombiningDimensions
   );
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
-  const onCombiningDimensionAdded = (dimension: string) => {
-    dispatch(addCombiningDimension(dimension));
-  };
+  // const onCombiningDimensionAdded = (dimension: string) => {
+  //   dispatch(addCombiningDimension(dimension));
+  // };
 
-  if (!baseEpigenomes) {
+  if (!baseEpigenomes || !epigenomeMetadataDimensionsResponse) {
     return null;
   }
 
@@ -65,6 +71,12 @@ const SelectedEpigenomes = () => {
     ? combinedEpigenomes
     : filteredEpigenomes;
 
+  const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
+
+  // <TextButton onClick={() => onCombiningDimensionAdded('sex')}>
+  //   boop
+  // </TextButton>
+
   return (
     <>
       <EnabledFilters filters={epigenomeSelectionCriteria} />
@@ -76,49 +88,25 @@ const SelectedEpigenomes = () => {
         <Table>
           <thead>
             <tr>
-              <ColumnHead>Name</ColumnHead>
-              <ColumnHead>Biosample</ColumnHead>
-              <ColumnHead>Organ(s)</ColumnHead>
-              <ColumnHead>System(s)</ColumnHead>
-
-              {!epigenomeCombiningDimensions.includes('sex') && (
-                <ColumnHead>
-                  Sex
-                  {' — '}
-                  <TextButton onClick={() => onCombiningDimensionAdded('sex')}>
-                    boop
-                  </TextButton>
+              {tableColumns.map((tableColumn) => (
+                <ColumnHead key={tableColumn.dimensionName}>
+                  {tableColumn.columnHeading}
                 </ColumnHead>
-              )}
-
-              {!epigenomeCombiningDimensions.includes('life_stage') && (
-                <ColumnHead>
-                  Life stage
-                  {' — '}
-                  <TextButton
-                    onClick={() => onCombiningDimensionAdded('life_stage')}
-                  >
-                    boop
-                  </TextButton>
-                </ColumnHead>
-              )}
+              ))}
             </tr>
           </thead>
           <tbody>
             {epigenomesForDisplay.map((epigenome, index) => (
               <tr key={index}>
-                <td>{epigenome.name}</td>
-                <td>{epigenome.term}</td>
-                <td>{epigenome.organ_slims?.join(', ')}</td>
-                <td>{epigenome.system_slims?.join(', ')}</td>
-
-                {!epigenomeCombiningDimensions.includes('sex') && (
-                  <td>{epigenome.sex}</td>
-                )}
-
-                {!epigenomeCombiningDimensions.includes('life_stage') && (
-                  <td>{epigenome.life_stage}</td>
-                )}
+                {tableColumns.map((tableColumn) => (
+                  <td key={tableColumn.dimensionName}>
+                    {
+                      epigenome[
+                        tableColumn.dimensionName as keyof typeof epigenome
+                      ]
+                    }
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -164,6 +152,15 @@ const EpigenomesCount = ({ epigenomes }: { epigenomes: Epigenome[] }) => {
   const count = epigenomes.length;
 
   return <div>Selected: {count} base epigenomes</div>;
+};
+
+const getTableColumns = (params: EpigenomeMetadataDimensionsResponse) => {
+  const { table_header_order, dimensions } = params;
+
+  return table_header_order.map((dimensionName) => ({
+    dimensionName,
+    columnHeading: dimensions[dimensionName].name
+  }));
 };
 
 // TODO: this function can probably be re-used with what is in getEpigenomeCounts

@@ -16,13 +16,13 @@
 
 import EpigenomeSelectableMetadataItem from '../epigenome-selectable-metadata-item/EpigenomeSelectableMetadataItem';
 
-import type { MetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
+import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 import styles from './EpigenomeMetadataDimensionPanel.module.css';
 
-type Props<T extends keyof MetadataDimensions> = {
+type Props<T extends keyof EpigenomeMetadataDimensions> = {
   dimensionName: T;
-  dimensionData: MetadataDimensions[T];
+  dimensionData: EpigenomeMetadataDimensions[T];
   counts: Record<string, number>;
   selectedValues: Set<string>;
   onSelectionCriterionAdded: (payload: {
@@ -35,7 +35,9 @@ type Props<T extends keyof MetadataDimensions> = {
   }) => void;
 };
 
-const EpigenomeMetadataDimensionPanel = <T extends keyof MetadataDimensions>(
+const EpigenomeMetadataDimensionPanel = <
+  T extends keyof EpigenomeMetadataDimensions
+>(
   props: Props<T>
 ) => {
   const selectableItems = props.dimensionData.values.map((dataItem) => {

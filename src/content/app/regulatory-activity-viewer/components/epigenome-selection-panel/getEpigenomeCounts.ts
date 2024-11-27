@@ -15,7 +15,7 @@
  */
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
-import type { MetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
+import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { EpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 type Params = {
@@ -41,25 +41,28 @@ const getEpigenomeCounts = (params: Params) => {
     : params.epigenomes;
   const counts: Counts = {};
 
+  if (!epigenomes.length) {
+    return counts;
+  }
+
+  // out of the fields that an epigenome may have, the 'id' field is unique per epigenome,
+  // and makes no sense to count
+  const epigenomeCountableFields = Object.keys(epigenomes[0]).filter(
+    (fieldName) => fieldName !== 'id'
+  );
+
   for (const epigenome of epigenomes) {
-    for (const field of stringFields) {
+    for (const field of epigenomeCountableFields) {
       if (!counts[field]) {
         counts[field] = {};
       }
-      const valueForField = epigenome[field];
-      if (!counts[field][valueForField]) {
-        counts[field][valueForField] = 1;
-      } else {
-        counts[field][valueForField] += 1;
-      }
-    }
+      const valueForField = epigenome[field as keyof Epigenome];
+      // Since epigenome field values can be either strings or arrays of strings,
+      // turn all values into arrays of strings
+      const values =
+        typeof valueForField === 'string' ? [valueForField] : valueForField;
 
-    for (const field of arrayFields) {
-      if (!counts[field]) {
-        counts[field] = {};
-      }
-
-      for (const value of epigenome[field]) {
+      for (const value of values) {
         if (!counts[field][value]) {
           counts[field][value] = 1;
         } else {
@@ -82,8 +85,8 @@ const hasAppliedFilters = (selectionCriteria: Params['selectionCriteria']) => {
 };
 
 export const getMetadataItems = (params: {
-  dimensionName: keyof MetadataDimensions;
-  metadataItems: MetadataDimensions[keyof MetadataDimensions];
+  dimensionName: keyof EpigenomeMetadataDimensions;
+  metadataItems: EpigenomeMetadataDimensions[keyof EpigenomeMetadataDimensions];
   selectionCriteria: EpigenomeSelectionCriteria;
   epigenomes: Epigenome[];
 }) => {
@@ -130,7 +133,7 @@ export const getMetadataItems = (params: {
     metadataItems: {
       name: params.metadataItems.name,
       values: metadataItems
-    } as MetadataDimensions[keyof MetadataDimensions],
+    } as EpigenomeMetadataDimensions[keyof EpigenomeMetadataDimensions],
     counts
   };
 };
@@ -168,9 +171,5 @@ const filterEpigenomes = (params: Params) => {
 
   return filteredEpigenomes;
 };
-
-const stringFields = ['term', 'life_stage', 'material'] as const;
-
-const arrayFields = ['organ_slims', 'system_slims'] as const;
 
 export default getEpigenomeCounts;

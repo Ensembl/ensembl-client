@@ -66,8 +66,8 @@ const createCombinedEpigenomeKey = (
 
 const createCombinedEpigenome = ({
   epigenome,
-  combiningDimensions,
-  existingCombinedEpigenome
+  combiningDimensions
+  // existingCombinedEpigenome
 }: {
   epigenome: Epigenome;
   combiningDimensions: string[];
@@ -78,14 +78,18 @@ const createCombinedEpigenome = ({
   for (const key of Object.keys(epigenome) as Array<keyof Epigenome>) {
     if (combiningDimensions.includes(key)) {
       continue;
-    } else if (key === 'name') {
-      combinedEpigenome.name = existingCombinedEpigenome
-        ? `${existingCombinedEpigenome.name} AND ${epigenome.name}`
-        : epigenome.name;
     } else {
       combinedEpigenome[key] = epigenome[key] as any; // shut up typescript
     }
   }
+
+  // FIXME: the fragment below is from the loop above;
+  // need to come up with display label for combined epigenome
+  // else if (key === 'name') {
+  //   combinedEpigenome.name = existingCombinedEpigenome
+  //     ? `${existingCombinedEpigenome.name} AND ${epigenome.name}`
+  //     : epigenome.name;
+  // }
 
   return combinedEpigenome;
 };

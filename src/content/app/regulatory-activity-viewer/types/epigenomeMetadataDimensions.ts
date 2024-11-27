@@ -14,80 +14,56 @@
  * limitations under the License.
  */
 
-type AgeDimension = {
+type CommonMetadataDimensionFields = {
   name: string;
-  values: {
-    unit: string;
-    max_value: string;
-    min_value: string;
-  }[];
+  collapsible: boolean;
+  filterable: boolean;
+  zero_counts_visible: boolean;
 };
 
-type SexDimension = {
-  name: string;
-  values: string[];
+type DimensionWithCategoricalData = CommonMetadataDimensionFields & {
+  type: 'categorical';
+  values: string[]; // <-- this is what makes the dimension "categorical"
+  default_values: string[];
 };
 
-type TermDimension = {
-  name: string;
-  values: {
-    name: string;
-    ontology: string;
-  }[];
-};
-
-type MaterialDimension = {
-  name: string;
-  values: string[];
-};
-
-type LifeStageDimension = {
-  name: string;
-  values: string[];
-};
-
-type OrganDimension = {
-  name: string;
+type DimensionWithCategoricalDataAndOntology = CommonMetadataDimensionFields & {
+  type: 'categorical_with_ontology';
   values: {
     name: string;
-    terms: string[];
-    ontology: string;
+    ontology: {
+      curie: string;
+      url: string;
+    };
   }[];
+  default_values: string[];
 };
 
-type OrgansSystemDimension = {
-  name: string;
-  values: {
-    name: string;
-    terms: string[];
-    ontology: string;
-  }[];
-};
+// the only member of this type currently is age, which is still very uncertain
+type DimensionWithCategoricalDataAndDescription =
+  CommonMetadataDimensionFields & {
+    type: 'categorical_with_description';
+    values: {
+      name: string;
+      description: string;
+    }[];
+    default_values: string[];
+  };
 
-type AssayTypeDimension = {
-  name: string;
-  values: string[];
-};
+type EpigenomeMetadataDimension =
+  | DimensionWithCategoricalData
+  | DimensionWithCategoricalDataAndOntology
+  | DimensionWithCategoricalDataAndDescription;
 
-type AssayTargetDimension = {
-  name: string;
-  values: string[];
-};
+export type EpigenomeMetadataDimensions = Record<
+  string,
+  EpigenomeMetadataDimension
+>;
 
-type AssayTargetTypeDimension = {
-  name: string;
-  values: string[];
-};
-
-export type MetadataDimensions = {
-  age: AgeDimension;
-  sex: SexDimension;
-  term: TermDimension;
-  material: MaterialDimension;
-  life_stage: LifeStageDimension;
-  organ_slims: OrganDimension;
-  system_slims: OrgansSystemDimension;
-  assay_type: AssayTypeDimension;
-  assay_target: AssayTargetDimension;
-  assay_target_type: AssayTargetTypeDimension;
+export type EpigenomeMetadataDimensionsResponse = {
+  species_name: string;
+  assemblies: string[]; // <-- why array of strings?
+  filter_layout: string[][];
+  table_header_order: string[];
+  dimensions: EpigenomeMetadataDimensions;
 };

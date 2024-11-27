@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
+// Question: how to model the Epigenome type considering the agnosticism of the client?
 export type Epigenome = {
-  name: string;
+  id: string;
   material: string;
+  term: string;
+  sex: string;
   life_stage: string;
   age: string;
-  age_unit: string | null;
-  sex: string;
-  term: string;
-  organ_slims: string[];
-  system_slims: string[];
-  assays: string[];
-  assay_types: string[];
-  assay_target_types: string[];
-  assay_targets: string[];
+  organs: string[];
+  systems: string[];
 };
