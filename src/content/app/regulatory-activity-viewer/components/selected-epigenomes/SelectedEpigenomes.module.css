@@ -1,0 +1,16 @@
+.outerGrid {
+  display: grid;
+  grid-template-columns: 150px [main] 1fr [right] 150px;
+}
+
+.mainColumn {
+  grid-column: main;
+}
+
+.rightColumn {
+  grid-column: right;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold); 
+}

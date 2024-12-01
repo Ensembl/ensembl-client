@@ -67,33 +67,60 @@ const EpigenomeSelectionPanel = () => {
 
   const epigenomeMetadataDimensions =
     epigenomeMetadataDimensionsResponse.dimensions;
+  const epigenomeMetadataColumns =
+    epigenomeMetadataDimensionsResponse.filter_layout;
 
   return (
     <div className={styles.panel}>
-      <EpigenomeMetadataDimensionPanelWithData
-        dimensionName={'term'}
-        selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomeMetadataDimensions}
-        epigenomes={baseEpigenomes}
-        onSelectionCriterionAdded={onSelectionCriterionAdded}
-        onSelectionCriterionRemoved={onSelectionCriterionRemoved}
-      />
-      <EpigenomeMetadataDimensionPanelWithData
-        dimensionName={'organs'}
-        selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomeMetadataDimensions}
-        epigenomes={baseEpigenomes}
-        onSelectionCriterionAdded={onSelectionCriterionAdded}
-        onSelectionCriterionRemoved={onSelectionCriterionRemoved}
-      />
-      <EpigenomeMetadataDimensionPanelWithData
-        dimensionName={'systems'}
-        selectionCriteria={epigenomeSelectionCriteria}
-        metadataDimensions={epigenomeMetadataDimensions}
-        epigenomes={baseEpigenomes}
-        onSelectionCriterionAdded={onSelectionCriterionAdded}
-        onSelectionCriterionRemoved={onSelectionCriterionRemoved}
-      />
+      {epigenomeMetadataColumns.map((column) => (
+        <EpigenomeMetadataColumn
+          key={column[0]}
+          dimensionsInColumn={column}
+          selectionCriteria={epigenomeSelectionCriteria}
+          metadataDimensions={epigenomeMetadataDimensions}
+          epigenomes={baseEpigenomes}
+          onSelectionCriterionAdded={onSelectionCriterionAdded}
+          onSelectionCriterionRemoved={onSelectionCriterionRemoved}
+        />
+      ))}
+    </div>
+  );
+};
+
+const EpigenomeMetadataColumn = ({
+  dimensionsInColumn,
+  selectionCriteria,
+  metadataDimensions,
+  epigenomes,
+  onSelectionCriterionAdded,
+  onSelectionCriterionRemoved
+}: {
+  dimensionsInColumn: string[];
+  selectionCriteria: Record<string, Set<string>>;
+  metadataDimensions: EpigenomeMetadataDimensions;
+  epigenomes: Epigenome[];
+  onSelectionCriterionAdded: (payload: {
+    dimensionName: string;
+    value: string;
+  }) => void;
+  onSelectionCriterionRemoved: (payload: {
+    dimensionName: string;
+    value: string;
+  }) => void;
+}) => {
+  return (
+    <div className={styles.column}>
+      {dimensionsInColumn.map((dimensionName) => (
+        <EpigenomeMetadataDimensionPanelWithData
+          key={dimensionName}
+          dimensionName={dimensionName}
+          selectionCriteria={selectionCriteria}
+          metadataDimensions={metadataDimensions}
+          epigenomes={epigenomes}
+          onSelectionCriterionAdded={onSelectionCriterionAdded}
+          onSelectionCriterionRemoved={onSelectionCriterionRemoved}
+        />
+      ))}
     </div>
   );
 };

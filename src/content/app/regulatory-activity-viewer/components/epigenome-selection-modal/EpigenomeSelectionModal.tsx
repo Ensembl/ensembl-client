@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch } from 'src/store';
 
-import { getSidebarView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
+import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
-import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
-import SidebarDefaultView from './sidebar-default-view/SidebarDefaultView';
-import EpigenomeFiltersView from './epigenome-filters-view/EpigenomeFiltersView';
+import EpigenomeSelectionPanel from '../epigenome-selection-panel/EpigenomeSelectionPanel';
+import Modal from 'src/shared/components/modal/Modal';
 
 type Props = {
-  genomeId: string | null;
+  genomeId: string;
 };
 
-const ActivityViewerSidebar = (props: Props) => {
+const EpigenomeSelectionModal = (props: Props) => {
   const { genomeId } = props;
-  const sidebarView = useAppSelector((state) =>
-    getSidebarView(state, genomeId ?? '')
-  );
+  const dispatch = useAppDispatch();
+
+  const onClose = () => {
+    dispatch(
+      setMainContentBottomView({
+        genomeId,
+        view: 'epigenomes-list'
+      })
+    );
+  };
 
   return (
-    <Sidebar>
-      {sidebarView === 'default' && <SidebarDefaultView />}
-      {sidebarView === 'epigenome-filters' && <EpigenomeFiltersView />}
-    </Sidebar>
+    <Modal onClose={onClose}>
+      <EpigenomeSelectionPanel />
+    </Modal>
   );
 };
 
-export default ActivityViewerSidebar;
+export default EpigenomeSelectionModal;

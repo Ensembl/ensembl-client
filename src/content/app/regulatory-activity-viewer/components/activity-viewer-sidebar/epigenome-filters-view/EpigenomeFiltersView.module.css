@@ -1,0 +1,25 @@
+.epigenomeFilter {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  padding: 0 20px;
+}
+
+.epigenomeFilter + .epigenomeFilter {
+  margin-top: 10px;
+}
+
+.epigenomeFilterRight {
+  display: flex;
+  align-items: end;
+  column-gap: 10px;
+}
+
+.epigenomeFilterRight button {
+  margin-top: 2px;
+}
+
+.epigenomesCount {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}

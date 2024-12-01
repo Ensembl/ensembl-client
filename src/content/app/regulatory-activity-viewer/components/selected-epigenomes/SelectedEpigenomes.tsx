@@ -20,8 +20,8 @@ import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewe
 
 import {
   getEpigenomeSelectionCriteria,
-  getEpigenomeCombiningDimensions,
-  type EpigenomeSelectionCriteria
+  getEpigenomeCombiningDimensions
+  // type EpigenomeSelectionCriteria
 } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 // import { addCombiningDimension } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
@@ -36,6 +36,8 @@ import { Table, ColumnHead } from 'src/shared/components/table/';
 
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
+
+import styles from './SelectedEpigenomes.module.css';
 
 const SelectedEpigenomes = () => {
   const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
@@ -73,18 +75,14 @@ const SelectedEpigenomes = () => {
 
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
 
+  // <EnabledFilters filters={epigenomeSelectionCriteria} />
   // <TextButton onClick={() => onCombiningDimensionAdded('sex')}>
   //   boop
   // </TextButton>
 
   return (
-    <>
-      <EnabledFilters filters={epigenomeSelectionCriteria} />
-      <EpigenomesCount epigenomes={filteredEpigenomes} />
-
-      {!epigenomesForDisplay.length && <div>No epigenomes selected</div>}
-
-      {epigenomesForDisplay.length > 0 && (
+    <div className={styles.outerGrid}>
+      <div className={styles.mainColumn}>
         <Table>
           <thead>
             <tr>
@@ -111,8 +109,12 @@ const SelectedEpigenomes = () => {
             ))}
           </tbody>
         </Table>
-      )}
-    </>
+        {!epigenomesForDisplay.length && (
+          <div>Use 'Configure' to select the data to display</div>
+        )}
+      </div>
+      <EpigenomesCount epigenomes={filteredEpigenomes} />
+    </div>
   );
 };
 
@@ -120,38 +122,42 @@ const SelectedEpigenomes = () => {
  * This component currently serves to output debug information;
  * but is quite likely to be transformed into something more user-friendly in the future.
  */
-const EnabledFilters = ({
-  filters
-}: {
-  filters: EpigenomeSelectionCriteria;
-}) => {
-  const filterDimensions = Object.keys(filters);
+// const EnabledFilters = ({
+//   filters
+// }: {
+//   filters: EpigenomeSelectionCriteria;
+// }) => {
+//   const filterDimensions = Object.keys(filters);
 
-  if (!filterDimensions.length) {
-    return null;
-  }
+//   if (!filterDimensions.length) {
+//     return null;
+//   }
 
-  const appliedFilters = Object.entries(filters).map(
-    ([dimensionName, filters], index) => (
-      <span key={dimensionName}>
-        <span>{dimensionName}: </span>
-        <span>
-          {'['}
-          {[...filters].join(' OR ')}
-          {']'}
-        </span>
-        {index < filterDimensions.length - 1 && ' AND '}
-      </span>
-    )
-  );
+//   const appliedFilters = Object.entries(filters).map(
+//     ([dimensionName, filters], index) => (
+//       <span key={dimensionName}>
+//         <span>{dimensionName}: </span>
+//         <span>
+//           {'['}
+//           {[...filters].join(' OR ')}
+//           {']'}
+//         </span>
+//         {index < filterDimensions.length - 1 && ' AND '}
+//       </span>
+//     )
+//   );
 
-  return <div>Applied filters: {appliedFilters}</div>;
-};
+//   return <div>Applied filters: {appliedFilters}</div>;
+// };
 
 const EpigenomesCount = ({ epigenomes }: { epigenomes: Epigenome[] }) => {
   const count = epigenomes.length;
 
-  return <div>Selected: {count} base epigenomes</div>;
+  return (
+    <div className={styles.rightColumn}>
+      <span className={styles.strong}>{count}</span> epigenomes
+    </div>
+  );
 };
 
 const getTableColumns = (params: EpigenomeMetadataDimensionsResponse) => {
