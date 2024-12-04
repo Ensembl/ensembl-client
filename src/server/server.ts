@@ -24,6 +24,7 @@ import getConfigForServer from './helpers/getConfigForServer';
 
 import viewsRouter from './routes/viewsRouter';
 import unsupportedBrowserRouter from './routes/unsupportedBrowserRouter';
+import seoRouter from './routes/seoRouter';
 
 const app = express();
 const serverConfig = getConfigForServer();
@@ -42,6 +43,7 @@ if (!serverConfig.isEnsemblDeployment) {
 }
 
 app.use(redirectMiddleware);
+app.use(seoRouter);
 
 app.get('/unsupported-browser', unsupportedBrowserRouter);
 // All GET requests not covered by the middleware above will be handled by the viewsRouter

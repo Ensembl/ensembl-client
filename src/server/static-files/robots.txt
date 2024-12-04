@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /genome-browser/
+Disallow: /blast/
+Disallow: /vep/

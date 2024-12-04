@@ -33,8 +33,14 @@ export const getPaths = (env = 'development') => {
     buildPath,
     staticPath,
     serverEntryPath: path.resolve(rootPath, 'src/server/index.ts'),
+    serverStaticFilesPath: path.resolve(rootPath, 'src/server/static-files'),
     nodeModulesPath: path.resolve(rootPath, 'node_modules'),
     buildServerDir: path.resolve(buildPath, 'server'),
+    buildServerStaticFilesPath: path.resolve(
+      buildPath,
+      'server',
+      'static-files'
+    ),
     buildStaticPath: path.resolve(buildPath, 'static'),
     htmlFileName: isDev ? 'index.html' : '../index.html',
     htmlTemplatePath: path.resolve(staticPath, 'html/template.html'),
