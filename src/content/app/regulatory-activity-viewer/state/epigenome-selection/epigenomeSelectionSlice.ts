@@ -68,6 +68,9 @@ const epigenomeSelectionSlice = createSlice({
     },
     addCombiningDimension(state, action: PayloadAction<string>) {
       state.combiningDimensions.push(action.payload);
+    },
+    removeAllCombiningDimensions(state) {
+      state.combiningDimensions = [];
     }
   }
 });
@@ -75,7 +78,8 @@ const epigenomeSelectionSlice = createSlice({
 export const {
   addSelectionCriterion,
   removeSelectionCriterion,
-  addCombiningDimension
+  addCombiningDimension,
+  removeAllCombiningDimensions
 } = epigenomeSelectionSlice.actions;
 
 export default epigenomeSelectionSlice.reducer;
