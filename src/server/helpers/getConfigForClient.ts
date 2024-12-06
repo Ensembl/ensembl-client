@@ -49,7 +49,7 @@ const getKeys = () => {
   };
 };
 
-const shouldReportAnalytics = () =>
+export const shouldReportAnalytics = () =>
   `${process.env.REPORT_ANALYTICS}`.toLowerCase() === 'true';
 
 const shouldReportErrors = () =>

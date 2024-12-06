@@ -19,14 +19,22 @@ import { Router } from 'express';
 
 import { getPaths } from 'webpackDir/paths';
 
+import getConfigForServer from 'src/server/helpers/getConfigForServer';
+
 const router = Router();
 const paths = getPaths();
+const serverConfig = getConfigForServer();
 
 router.get('/robots.txt', (_, res) => {
-  const pathToFile = path.resolve(
-    paths.buildServerStaticFilesPath,
-    'robots.txt'
-  );
+  // Abusing the REPORT_ANALYTICS environment variable slightly
+  // to decide which robots file to respond with.
+  // REPORT_ANALYTICS allows us to distinguish the real production deployment,
+  // which it makes sense to index, from the staging deployment,
+  // which otherwise is identical to production, but should not be indexed.
+  const fileName = serverConfig.shouldReportAnalytics
+    ? 'robots.txt'
+    : 'restrictive-robots.txt';
+  const pathToFile = path.resolve(paths.buildServerStaticFilesPath, fileName);
   res.sendFile(pathToFile);
 });
 

@@ -63,10 +63,6 @@ export default (): Configuration => {
           {
             from: path.join(paths.staticPath, 'favicons/*'),
             to: path.join(paths.buildStaticPath, 'favicons', '[name][ext]')
-          },
-          {
-            from: path.join(paths.staticPath, 'robots.txt'),
-            to: paths.buildPath
           }
         ]
       }),
@@ -92,7 +88,6 @@ export default (): Configuration => {
         skipWaiting: true,
         exclude: [
           /index.html$/,
-          /robots.txt$/,
           /\.gz$/,
           /\.br$/,
           /\.js\.map$/,

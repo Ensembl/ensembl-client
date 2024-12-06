@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { shouldReportAnalytics } from './getConfigForClient';
+
 // To distinguish between Ensembl deployments (production, staging, internal, development),
 // we use an environment variable called "ENVIRONMENT". When this variable is not set,
 // we can assume that the code is running in local development mode, where the locally running server
@@ -24,7 +26,8 @@ const isProductionBuild = process.env.NODE_ENV === 'production';
 
 const getConfigForServer = () => ({
   isEnsemblDeployment,
-  isProductionBuild
+  isProductionBuild,
+  shouldReportAnalytics: shouldReportAnalytics()
 });
 
 export default getConfigForServer;
