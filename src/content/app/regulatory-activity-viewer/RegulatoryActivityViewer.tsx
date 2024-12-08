@@ -73,7 +73,7 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   return (
     <>
       {['epigenomes-list', 'epigenomes-selection'].includes(activeView) && (
-        <SelectedEpigenomes />
+        <SelectedEpigenomes genomeId={genomeId} />
       )}
       {activeView === 'epigenomes-selection' && (
         <EpigenomeSelectionModal genomeId={genomeId} />

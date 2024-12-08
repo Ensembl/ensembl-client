@@ -21,56 +21,73 @@ type SelectionCriterion = {
   value: string;
 };
 
-type State = {
+type SelectionCriterionForGenome = SelectionCriterion & {
+  genomeId: string;
+};
+
+type StatePerGenome = {
   selectionCriteria: {
     [dimensionName: string]: string[];
   };
   combiningDimensions: string[]; // Dimensions used to combine epigenomes out of base epigenomes
 };
 
-/**
- 
-  // example
-  [
-    {
-      dimension: 'term',
-      value: 'small intestine'
-    },
-    {
-      dimension: 'organ_slims',
-      value: 'adrenal gland'
-    },
-  ]
+type EpigenomeSelectionState = Record<string, StatePerGenome>;
 
- */
-
-const initialState: State = {
+const initialStateForGenome: StatePerGenome = {
   selectionCriteria: {},
   combiningDimensions: []
 };
 
+const ensureStateForGenome = (
+  state: EpigenomeSelectionState,
+  genomeId: string
+) => {
+  if (!(genomeId in state)) {
+    state[genomeId] = structuredClone(initialStateForGenome);
+  }
+};
+
 const epigenomeSelectionSlice = createSlice({
   name: 'regulatory-activity-viewer-epigenome-selection',
-  initialState,
+  initialState: {} as EpigenomeSelectionState,
   reducers: {
-    addSelectionCriterion(state, action: PayloadAction<SelectionCriterion>) {
-      const { dimensionName, value } = action.payload;
-      if (!state.selectionCriteria[dimensionName]) {
-        state.selectionCriteria[dimensionName] = [];
+    addSelectionCriterion(
+      state,
+      action: PayloadAction<SelectionCriterionForGenome>
+    ) {
+      const { dimensionName, value, genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      if (!state[genomeId].selectionCriteria[dimensionName]) {
+        state[genomeId].selectionCriteria[dimensionName] = [];
       }
-      state.selectionCriteria[dimensionName].push(value);
+      state[genomeId].selectionCriteria[dimensionName].push(value);
     },
-    removeSelectionCriterion(state, action: PayloadAction<SelectionCriterion>) {
-      const { dimensionName, value } = action.payload;
-      state.selectionCriteria[dimensionName] = state.selectionCriteria[
-        dimensionName
-      ].filter((item) => item !== value);
+    removeSelectionCriterion(
+      state,
+      action: PayloadAction<SelectionCriterionForGenome>
+    ) {
+      const { dimensionName, value, genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].selectionCriteria[dimensionName] = state[
+        genomeId
+      ].selectionCriteria[dimensionName].filter((item) => item !== value);
     },
-    addCombiningDimension(state, action: PayloadAction<string>) {
-      state.combiningDimensions.push(action.payload);
+    addCombiningDimension(
+      state,
+      action: PayloadAction<{ genomeId: string; dimensionName: string }>
+    ) {
+      const { dimensionName, genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].combiningDimensions.push(dimensionName);
     },
-    removeAllCombiningDimensions(state) {
-      state.combiningDimensions = [];
+    removeAllCombiningDimensions(
+      state,
+      action: PayloadAction<{ genomeId: string }>
+    ) {
+      const { genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].combiningDimensions = [];
     }
   }
 });

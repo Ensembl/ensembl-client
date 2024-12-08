@@ -35,7 +35,9 @@ const ActivityViewerSidebar = (props: Props) => {
   return (
     <Sidebar>
       {sidebarView === 'default' && <SidebarDefaultView />}
-      {sidebarView === 'epigenome-filters' && <EpigenomeFiltersView />}
+      {sidebarView === 'epigenome-filters' && (
+        <EpigenomeFiltersView genomeId={genomeId} />
+      )}
     </Sidebar>
   );
 };

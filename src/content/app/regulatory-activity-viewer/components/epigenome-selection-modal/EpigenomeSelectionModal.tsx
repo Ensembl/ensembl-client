@@ -40,7 +40,7 @@ const EpigenomeSelectionModal = (props: Props) => {
 
   return (
     <Modal onClose={onClose}>
-      <EpigenomeSelectionPanel />
+      <EpigenomeSelectionPanel genomeId={genomeId} />
     </Modal>
   );
 };

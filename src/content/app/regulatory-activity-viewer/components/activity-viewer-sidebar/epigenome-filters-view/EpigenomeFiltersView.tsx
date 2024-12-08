@@ -40,18 +40,28 @@ import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-act
 
 import styles from './EpigenomeFiltersView.module.css';
 
-const EpigenomeFiltersView = () => {
+type Props = {
+  genomeId: string | null;
+};
+
+const EpigenomeFiltersView = (props: Props) => {
+  const { genomeId } = props;
   const { currentData: epigenomeMetadataDimensionsResponse } =
     useEpigenomeMetadataDimensionsQuery();
   const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
-  const epigenomeSelectionCriteria = useAppSelector(
-    getEpigenomeSelectionCriteria
+  const epigenomeSelectionCriteria = useAppSelector((state) =>
+    getEpigenomeSelectionCriteria(state, genomeId ?? '')
   );
   const dispatch = useAppDispatch();
 
   const onFilterRemove = useCallback(
     (payload: { dimensionName: string; value: string }) => {
-      dispatch(removeSelectionCriterion(payload));
+      dispatch(
+        removeSelectionCriterion({
+          ...payload,
+          genomeId: genomeId as string
+        })
+      );
     },
     []
   );

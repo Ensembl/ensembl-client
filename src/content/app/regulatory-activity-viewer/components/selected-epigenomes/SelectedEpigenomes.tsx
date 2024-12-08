@@ -42,24 +42,34 @@ import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types
 
 import styles from './SelectedEpigenomes.module.css';
 
-const SelectedEpigenomes = () => {
+type Props = {
+  genomeId: string;
+};
+
+const SelectedEpigenomes = (props: Props) => {
+  const { genomeId } = props;
   const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
   const { currentData: epigenomeMetadataDimensionsResponse } =
     useEpigenomeMetadataDimensionsQuery();
-  const epigenomeSelectionCriteria = useAppSelector(
-    getEpigenomeSelectionCriteria
+  const epigenomeSelectionCriteria = useAppSelector((state) =>
+    getEpigenomeSelectionCriteria(state, genomeId)
   );
-  const epigenomeCombiningDimensions = useAppSelector(
-    getEpigenomeCombiningDimensions
+  const epigenomeCombiningDimensions = useAppSelector((state) =>
+    getEpigenomeCombiningDimensions(state, genomeId)
   );
   const dispatch = useAppDispatch();
 
   const onCombiningDimensionAdded = (dimension: string) => {
-    dispatch(addCombiningDimension(dimension));
+    dispatch(
+      addCombiningDimension({
+        genomeId,
+        dimensionName: dimension
+      })
+    );
   };
 
   const onRemoveAllCombiningDimensions = () => {
-    dispatch(removeAllCombiningDimensions());
+    dispatch(removeAllCombiningDimensions({ genomeId }));
   };
 
   if (!baseEpigenomes || !epigenomeMetadataDimensionsResponse) {

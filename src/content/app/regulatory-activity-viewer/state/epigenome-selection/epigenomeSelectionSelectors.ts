@@ -23,11 +23,16 @@ const getEpigenomeSelectionState = (state: RootState) =>
 
 // Transform arrays of selected values into sets: they will be accessed a lot
 export const getEpigenomeSelectionCriteria = createSelector(
-  [getEpigenomeSelectionState],
-  (slice) => {
+  [getEpigenomeSelectionState, (_, genomeId: string) => genomeId],
+  (epigenomeSelectionSlice, genomeId) => {
     const result: Record<string, Set<string>> = {};
+    const slicePerGenome = epigenomeSelectionSlice[genomeId];
+    if (!slicePerGenome) {
+      return result;
+    }
+
     for (const [dimensionName, selectedValues] of Object.entries(
-      slice.selectionCriteria
+      slicePerGenome.selectionCriteria
     )) {
       if (selectedValues.length) {
         result[dimensionName] = new Set(selectedValues);
@@ -37,8 +42,11 @@ export const getEpigenomeSelectionCriteria = createSelector(
   }
 );
 
-export const getEpigenomeCombiningDimensions = (state: RootState) => {
-  return getEpigenomeSelectionState(state).combiningDimensions;
+export const getEpigenomeCombiningDimensions = (
+  state: RootState,
+  genomeId: string
+) => {
+  return getEpigenomeSelectionState(state)[genomeId]?.combiningDimensions ?? [];
 };
 
 export type EpigenomeSelectionCriteria = ReturnType<
