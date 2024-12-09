@@ -1,0 +1,20 @@
+.outerGrid {
+  display: grid;
+  grid-template-columns: 150px [main] 1fr 150px;  
+}
+
+.grid {
+  display: grid;
+  grid-column: main;
+  grid-template-columns: 1fr [view-buttons] auto;
+}
+
+.viewButtons {
+  grid-column: view-buttons;
+  display: flex;
+  column-gap: 16px;
+}
+
+.viewButtonActive {
+  --secondary-button-color: var(--color-black);
+}

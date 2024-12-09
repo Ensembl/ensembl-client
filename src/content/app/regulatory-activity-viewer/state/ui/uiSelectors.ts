@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import type { RootState } from 'src/store';
 
-import generalSlice from './general/generalSlice';
-import uiSlice from './ui/uiSlice';
-import regionDetailReducer from './region-detail/regionDetailSlice';
-import epigenomeSelectionReducer from './epigenome-selection/epigenomeSelectionSlice';
+export const getMainContentBottomView = (state: RootState, genomeId: string) =>
+  state.regionActivityViewer.ui[genomeId]?.mainContentBottomView ??
+  'epigenomes-list';
 
-export default combineReducers({
-  general: generalSlice,
-  ui: uiSlice,
-  regionDetail: regionDetailReducer,
-  epigenomeSelection: epigenomeSelectionReducer
-});
+export const getSidebarView = (state: RootState, genomeId: string) =>
+  state.regionActivityViewer.ui[genomeId]?.sidebarView ?? 'default';
