@@ -42,12 +42,12 @@ export const getEpigenomeSelectionCriteria = createSelector(
   }
 );
 
-export const getEpigenomeCombiningDimensions = (
-  state: RootState,
-  genomeId: string
-) => {
-  return getEpigenomeSelectionState(state)[genomeId]?.combiningDimensions ?? [];
-};
+export const getEpigenomeCombiningDimensions = createSelector(
+  [getEpigenomeSelectionState, (_, genomeId: string) => genomeId],
+  (epigenomeSelectionSlice, genomeId) => {
+    return epigenomeSelectionSlice[genomeId]?.combiningDimensions ?? [];
+  }
+);
 
 export type EpigenomeSelectionCriteria = ReturnType<
   typeof getEpigenomeSelectionCriteria

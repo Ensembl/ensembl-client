@@ -21,6 +21,8 @@ import { useAppSelector } from 'src/store';
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
+import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
+
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
@@ -32,6 +34,7 @@ import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigeno
 
 const ActivityViewer = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
+  usePreselectedEpigenomes();
 
   return (
     <StandardAppLayout
@@ -56,6 +59,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
     <div>
       Hello activity viewer
       <RegionOverview activeGenomeId={genomeId} />
+      {/* The spacer divs below are temporary */}
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottomViewControls genomeId={genomeId} />
       <div style={{ margin: '0.6rem 0' }} />

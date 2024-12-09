@@ -19,12 +19,12 @@ type CommonMetadataDimensionFields = {
   collapsible: boolean;
   filterable: boolean;
   zero_counts_visible: boolean;
+  default_values: string[];
 };
 
 type DimensionWithCategoricalData = CommonMetadataDimensionFields & {
   type: 'categorical';
   values: string[]; // <-- this is what makes the dimension "categorical"
-  default_values: string[];
 };
 
 type DimensionWithCategoricalDataAndOntology = CommonMetadataDimensionFields & {
@@ -36,7 +36,6 @@ type DimensionWithCategoricalDataAndOntology = CommonMetadataDimensionFields & {
       url: string;
     };
   }[];
-  default_values: string[];
 };
 
 // the only member of this type currently is age, which is still very uncertain
@@ -47,7 +46,6 @@ type DimensionWithCategoricalDataAndDescription =
       name: string;
       description: string;
     }[];
-    default_values: string[];
   };
 
 type EpigenomeMetadataDimension =
