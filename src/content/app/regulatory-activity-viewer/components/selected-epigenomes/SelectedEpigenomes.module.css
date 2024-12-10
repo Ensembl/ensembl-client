@@ -1,0 +1,31 @@
+.outerGrid {
+  display: grid;
+  grid-template-columns: 150px [main] 1fr [right] 150px;
+}
+
+.mainColumn {
+  grid-column: main;
+}
+
+.rightColumn {
+  grid-column: right;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 0.4rem;
+  padding-top: 1lh;
+  padding-left: 1rem;
+}
+
+.epigenomesTable {
+  width: 100%;
+}
+
+.noEpigenomesMessage {
+  padding-left: 2rem;
+  margin-top: 2rem;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold); 
+}

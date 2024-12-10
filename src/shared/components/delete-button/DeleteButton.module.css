@@ -2,6 +2,7 @@
   height: var(--delete-button-size, 18px);
   width: var(--delete-button-size, 18px);
   fill: var(--delete-button-color, var(--color-blue));
+  font-size: 0;
 }
 
 .deleteButtonDisabled {

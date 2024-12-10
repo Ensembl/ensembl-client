@@ -14,59 +14,31 @@
  * limitations under the License.
  */
 
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import { useAppSelector } from 'src/store';
+
+import { getSidebarView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
-import RegulatoryFeatureLegend from './regulatory-feature-legend/RegulatoryFeatureLegend';
+import SidebarDefaultView from './sidebar-default-view/SidebarDefaultView';
+import EpigenomeFiltersView from './epigenome-filters-view/EpigenomeFiltersView';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+type Props = {
+  genomeId: string | null;
+};
 
-const ActivityViewerSidebar = () => {
-  const { currentData } = useRegionOverviewQuery();
-
-  if (!currentData) {
-    return null;
-  }
+const ActivityViewerSidebar = (props: Props) => {
+  const { genomeId } = props;
+  const sidebarView = useAppSelector((state) =>
+    getSidebarView(state, genomeId ?? '')
+  );
 
   return (
     <Sidebar>
-      <div>
-        <Genes genes={currentData.genes} />
-        <RegulatoryFeatureLegendSection
-          featureTypes={currentData.regulatory_features.feature_types}
-        />
-      </div>
+      {sidebarView === 'default' && <SidebarDefaultView />}
+      {sidebarView === 'epigenome-filters' && (
+        <EpigenomeFiltersView genomeId={genomeId} />
+      )}
     </Sidebar>
-  );
-};
-
-const Genes = (props: { genes: OverviewRegion['genes'] }) => {
-  const genes = props.genes.map((gene) => (
-    <div key={gene.stable_id}>
-      {gene.symbol}
-      {'  '}
-      {gene.stable_id}
-    </div>
-  ));
-
-  // TODO: change this into an accordion
-  return (
-    <div>
-      <div style={{ fontWeight: 'bold' }}>Genes</div>
-      {genes}
-    </div>
-  );
-};
-
-const RegulatoryFeatureLegendSection = (props: {
-  featureTypes: OverviewRegion['regulatory_features']['feature_types'];
-}) => {
-  // TODO: change this into an accordion
-  return (
-    <div style={{ marginTop: '1.5rem' }}>
-      <div style={{ fontWeight: 'bold' }}>Regulatory features</div>
-      <RegulatoryFeatureLegend featureTypes={props.featureTypes} />
-    </div>
   );
 };
 
