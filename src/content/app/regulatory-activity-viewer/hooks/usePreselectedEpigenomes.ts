@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getEpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
+import { getEpigenomeSelectionStatePerGenome } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 
 import { useEpigenomeMetadataDimensionsQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
@@ -39,8 +39,8 @@ const usePreselectedEpigenomes = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) ?? '';
   const { currentData: epigenomeMetadataDimensionsResponse } =
     useEpigenomeMetadataDimensionsQuery();
-  const epigenomeSelectionCriteria = useAppSelector((state) =>
-    getEpigenomeSelectionCriteria(state, activeGenomeId)
+  const epigenomeSelectionState = useAppSelector((state) =>
+    getEpigenomeSelectionStatePerGenome(state, activeGenomeId)
   );
   const dispatch = useAppDispatch();
 
@@ -49,16 +49,11 @@ const usePreselectedEpigenomes = () => {
       // can't do anything until epigenomeMetadataDimensionsResponse is available
       return;
     }
-    if (Object.keys(epigenomeSelectionCriteria).length) {
-      // some epigenomes have already been selected; bail out
-      return;
-    }
 
-    const initialEpigenomeFilters = getPreselectedDimensions(
-      epigenomeMetadataDimensionsResponse.dimensions
-    );
-
-    if (initialEpigenomeFilters.length) {
+    if (!epigenomeSelectionState) {
+      const initialEpigenomeFilters = getPreselectedDimensions(
+        epigenomeMetadataDimensionsResponse.dimensions
+      );
       for (const { dimensionName, value } of initialEpigenomeFilters) {
         dispatch(
           addSelectionCriterion({
@@ -71,7 +66,7 @@ const usePreselectedEpigenomes = () => {
     }
   }, [
     epigenomeMetadataDimensionsResponse,
-    epigenomeSelectionCriteria,
+    epigenomeSelectionState,
     activeGenomeId
   ]);
 };

@@ -21,6 +21,11 @@ import type { RootState } from 'src/store';
 const getEpigenomeSelectionState = (state: RootState) =>
   state.regionActivityViewer.epigenomeSelection;
 
+export const getEpigenomeSelectionStatePerGenome = (
+  state: RootState,
+  genomeId: string
+) => state.regionActivityViewer.epigenomeSelection[genomeId] ?? null;
+
 // Transform arrays of selected values into sets: they will be accessed a lot
 export const getEpigenomeSelectionCriteria = createSelector(
   [getEpigenomeSelectionState, (_, genomeId: string) => genomeId],
