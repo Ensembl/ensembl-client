@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
-
-import generalSlice from './general/generalSlice';
-import uiSlice from './ui/uiSlice';
-import regionDetailReducer from './region-detail/regionDetailSlice';
-import epigenomeSelectionReducer from './epigenome-selection/epigenomeSelectionSlice';
-
-export default combineReducers({
-  general: generalSlice,
-  ui: uiSlice,
-  regionDetail: regionDetailReducer,
-  epigenomeSelection: epigenomeSelectionReducer
-});
+// Question: how to model the Epigenome type considering the agnosticism of the client?
+export type Epigenome = {
+  id: string;
+  material: string;
+  term: string;
+  sex: string;
+  life_stage: string;
+  age: string;
+  organs: string[];
+  systems: string[];
+};

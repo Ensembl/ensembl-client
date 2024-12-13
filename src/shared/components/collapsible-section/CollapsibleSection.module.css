@@ -1,0 +1,36 @@
+@layer components {
+
+  .section + .section {
+    margin-top: 2px;
+  }
+
+  .sectionHead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: start;
+    column-gap: 0.6rem;
+    color: var(--color-blue);
+    background-color: var(--color-light-grey);
+    border-radius: 5px;
+    padding: 5px 15px 5px 17px;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .sectionBody {
+    padding: 10px 0 20px;
+    animation: collapsible-section-body-fadein 0.2s ease-in;
+  }
+  
+  @keyframes collapsible-section-body-fadein {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+
+}

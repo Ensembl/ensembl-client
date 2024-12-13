@@ -1,0 +1,9 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  column-gap: 1ch;
+}
+
+.count {
+  font-weight: var(--font-weight-light);
+}
