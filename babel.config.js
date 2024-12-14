@@ -2,11 +2,16 @@ const isTargetWeb = api =>
   api.caller((caller) => caller && caller.target === 'web');
 
 module.exports = (api) => {
-  const targets = isTargetWeb(api) ? {
-    esmodules: true
-  } : {
-    node: 'current'
+  const babelPresetEnvOptions = {
+    // debug: true, // <-- Enable if you want to debug what babel is doing
+    useBuiltIns: 'usage',
+    corejs: 3.39,
+    modules: false
   };
+  if (!isTargetWeb(api)) {
+    // change babel compile target for node
+    babelPresetEnvOptions.targets = { node: 'current' };
+  }
 
   return {
     presets: [
@@ -15,23 +20,18 @@ module.exports = (api) => {
       }],
       '@babel/typescript',
       [
-        '@babel/env',
-        {
-          useBuiltIns: 'usage',
-          corejs: 3.26,
-          modules: false,
-          targets
-        }
+        '@babel/preset-env',
+        babelPresetEnvOptions
       ]
     ],
     env: {
       test: {
         presets: [
           [
-            '@babel/env',
+            '@babel/preset-env',
             {
               useBuiltIns: 'usage',
-              corejs: 3.26
+              corejs: 3.39
             }
           ]
         ]
