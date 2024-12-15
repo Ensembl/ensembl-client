@@ -21,7 +21,6 @@ import {
   useRef,
   type RefObject
 } from 'react';
-import { useSpring, animated } from '@react-spring/web';
 import classNames from 'classnames';
 import clamp from 'lodash/clamp';
 
@@ -37,6 +36,7 @@ type Props = {
 
 const SubmitSlider = (props: Props) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isSnappingBack, setIsSnappingBack] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -46,13 +46,19 @@ const SubmitSlider = (props: Props) => {
 
   const handleRelease = () => {
     setIsDragging(false);
+    setIsSnappingBack(true);
   };
 
-  const springStyles = useDraggableSlider({
+  const handleSnapBack = () => {
+    setIsSnappingBack(false);
+  };
+
+  useDraggableSlider({
     trackRef,
     sliderRef,
     isDisabled: props.isDisabled,
     onRelease: handleRelease,
+    onSnappedBack: handleSnapBack,
     onSlideCompleted: props.onSlideCompleted
   });
 
@@ -60,21 +66,21 @@ const SubmitSlider = (props: Props) => {
 
   const sliderClasses = classNames(styles.slider, {
     [styles.sliderDisabled]: props.isDisabled,
-    [styles.sliderDragged]: isDragging
+    [styles.sliderDragged]: isDragging,
+    [styles.sliderSnappingBack]: isSnappingBack
   });
 
   return (
     <div className={containerClasses}>
       <div className={styles.track} ref={trackRef}></div>
-      <animated.div
+      <div
         ref={sliderRef}
         className={sliderClasses}
-        style={springStyles}
         onMouseDown={handlePress}
         onTouchStart={handlePress}
       >
         <Chevron direction="right" className={styles.chevron} />
-      </animated.div>
+      </div>
     </div>
   );
 };
@@ -84,6 +90,7 @@ type UseDraggableSliderParams = {
   sliderRef: RefObject<HTMLDivElement>;
   isDisabled: boolean;
   onRelease: () => void;
+  onSnappedBack: () => void;
   onSlideCompleted: () => void;
 };
 
@@ -95,12 +102,12 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
   } | null>(null);
   const pressRef = useRef(false);
 
-  const [springStyles, api] = useSpring(() => ({
-    config: { clamp: true },
-    to: {
-      transform: 'translateX(0)'
-    }
-  }));
+  // const [springStyles, api] = useSpring(() => ({
+  //   config: { clamp: true },
+  //   to: {
+  //     transform: 'translateX(0)'
+  //   }
+  // }));
 
   useEffect(() => {
     return () => {
@@ -111,17 +118,24 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     };
   }, []);
 
+  // TODO: For React 19, change this to callback ref
   useEffect(() => {
     if (params.isDisabled) {
       return;
     }
+    const slider = params.sliderRef.current;
+    if (!slider) {
+      return;
+    }
 
-    params.sliderRef.current?.addEventListener('mousedown', handlePress);
-    params.sliderRef.current?.addEventListener('touchstart', handlePress);
+    slider.addEventListener('mousedown', handlePress);
+    slider.addEventListener('touchstart', handlePress);
+    slider.addEventListener('transitionend', handleTransitionEnd);
 
     return () => {
-      params.sliderRef.current?.removeEventListener('mousedown', handlePress);
-      params.sliderRef.current?.removeEventListener('touchstart', handlePress);
+      slider.removeEventListener('mousedown', handlePress);
+      slider.removeEventListener('touchstart', handlePress);
+      slider.removeEventListener('transitionend', handleTransitionEnd);
     };
   }, [params.isDisabled, params.sliderRef.current]);
 
@@ -166,6 +180,10 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     }
   }, []);
 
+  const handleTransitionEnd = useCallback(() => {
+    params.onSnappedBack();
+  }, []);
+
   const setGrabbingCursor = (isGrabbing: boolean) => {
     if (isGrabbing) {
       document.body.style.cursor = 'grabbing';
@@ -208,11 +226,13 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
   };
 
   const updateTranslateX = (distance: number) => {
-    api.start({
-      to: { transform: `translateX(${distance}px)` },
-      config: { mass: 1, tension: 380, friction: 1, velocity: 0.01 },
-      immediate: pressRef.current
-    });
+    const sliderElement = params.sliderRef.current;
+    if (!sliderElement) {
+      // shouldn't happen
+      return;
+    }
+
+    sliderElement.style.transform = `translateX(${distance}px)`;
   };
 
   const getCurrentPointerX = (event: TouchEvent | MouseEvent) => {
@@ -222,8 +242,6 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
       return event.clientX;
     }
   };
-
-  return springStyles;
 };
 
 export default SubmitSlider;

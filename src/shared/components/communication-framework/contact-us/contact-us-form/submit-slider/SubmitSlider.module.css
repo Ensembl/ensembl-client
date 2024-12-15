@@ -35,6 +35,10 @@
   cursor: grabbing;
 }
 
+.sliderSnappingBack {
+  transition: transform 0.08s ease-in;
+}
+
 .sliderDisabled {
   background-color: var(--color-grey);
   cursor: default;

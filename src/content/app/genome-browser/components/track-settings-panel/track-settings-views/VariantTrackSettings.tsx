@@ -15,6 +15,7 @@
  */
 
 import { forwardRef, type ForwardedRef } from 'react';
+import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -34,6 +35,7 @@ import styles from '../TrackSettingsPanel.module.css';
 
 type Props = {
   trackId: string;
+  className?: string;
 };
 
 const VariantTrackSettings = (
@@ -67,8 +69,13 @@ const VariantTrackSettings = (
     );
   };
 
+  const componentStyles = classNames(
+    styles.trackSettingsPanel,
+    props.className
+  );
+
   return (
-    <div className={styles.trackSettingsPanel} ref={ref}>
+    <div className={componentStyles} ref={ref}>
       <div className={styles.section}>
         <div className={styles.subLabel}>SNVs</div>
         <div>
