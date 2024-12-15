@@ -24,7 +24,7 @@ import PointerBox, {
 import styles from './PointerBox.stories.module.css';
 
 type ItemsProps = {
-  container: RefObject<HTMLElement>;
+  container: RefObject<HTMLElement | null>;
   position: Position;
 };
 

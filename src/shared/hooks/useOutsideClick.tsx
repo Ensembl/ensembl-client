@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react';
 
-export default function useOutsideClick<T extends HTMLElement>(
+export default function useOutsideClick<T extends HTMLElement | null>(
   refOrRefs: React.RefObject<T> | React.RefObject<T>[],
   callback: (() => void) | ((event: Event) => void)
 ) {

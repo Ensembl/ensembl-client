@@ -61,8 +61,8 @@ describe('Accordion', () => {
   describe('expanding and collapsing: ', () => {
     it('permits multiple items to be expanded when allowMultipleExpanded is true', async () => {
       const [FooHeader, BarHeader] = [
-        (): JSX.Element => <AccordionItemButton className="foo" />,
-        (): JSX.Element => <AccordionItemButton className="bar" />
+        () => <AccordionItemButton className="foo" />,
+        () => <AccordionItemButton className="bar" />
       ];
 
       const { container } = render(
@@ -104,8 +104,8 @@ describe('Accordion', () => {
 
     it('does not permit multiple items to be expanded when allowMultipleExpanded is false', async () => {
       const [FooHeader, BarHeader] = [
-        (): JSX.Element => <AccordionItemButton className="foo" />,
-        (): JSX.Element => <AccordionItemButton className="bar" />
+        () => <AccordionItemButton className="foo" />,
+        () => <AccordionItemButton className="bar" />
       ];
 
       const { container } = render(

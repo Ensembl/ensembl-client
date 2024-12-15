@@ -26,7 +26,7 @@ type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'children'>> & {
 const AccordionItemState = (props: Props) => {
   return (
     <ItemConsumer>
-      {(itemContext: ItemContext): JSX.Element => {
+      {(itemContext: ItemContext) => {
         const { expanded, disabled } = itemContext;
         return <>{props.children({ expanded, disabled })}</>;
       }}

@@ -15,6 +15,7 @@
  */
 
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import Chevron from '../chevron/Chevron';
 
@@ -29,7 +30,7 @@ import styles from './ShowHide.module.css';
  */
 
 type Props = {
-  label?: string | JSX.Element;
+  label?: ReactNode;
   isExpanded: boolean;
   onClick: () => void;
   className?: string;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
+import { forwardRef, type RefObject } from 'react';
 
 import GeneSummaryStrip from './GeneSummaryStrip';
 import LocationSummaryStrip from './LocationSummaryStrip';
@@ -26,13 +26,11 @@ export type FeatureSummaryStripProps = {
   focusObject: FocusObject;
   className?: string;
   isGhosted?: boolean;
+  ref?: RefObject<HTMLDivElement>;
 };
 
-export const FeatureSummaryStrip = (
-  props: FeatureSummaryStripProps,
-  ref: ForwardedRef<HTMLDivElement>
-) => {
-  const { focusObject, isGhosted } = props;
+export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
+  const { focusObject, isGhosted, ref } = props;
 
   switch (focusObject.type) {
     case 'gene':

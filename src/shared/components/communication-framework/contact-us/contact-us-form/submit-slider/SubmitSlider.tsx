@@ -86,8 +86,8 @@ const SubmitSlider = (props: Props) => {
 };
 
 type UseDraggableSliderParams = {
-  trackRef: RefObject<HTMLDivElement>;
-  sliderRef: RefObject<HTMLDivElement>;
+  trackRef: RefObject<HTMLElement | null>;
+  sliderRef: RefObject<HTMLElement | null>;
   isDisabled: boolean;
   onRelease: () => void;
   onSnappedBack: () => void;
@@ -101,13 +101,6 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     sliderRect: DOMRect;
   } | null>(null);
   const pressRef = useRef(false);
-
-  // const [springStyles, api] = useSpring(() => ({
-  //   config: { clamp: true },
-  //   to: {
-  //     transform: 'translateX(0)'
-  //   }
-  // }));
 
   useEffect(() => {
     return () => {

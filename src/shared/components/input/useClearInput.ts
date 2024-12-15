@@ -22,7 +22,7 @@ const useClearInput = ({
   help,
   minLength
 }: {
-  ref: RefObject<HTMLInputElement>;
+  ref: RefObject<HTMLInputElement | null>;
   inputType: string;
   help?: ReactNode;
   minLength?: number;

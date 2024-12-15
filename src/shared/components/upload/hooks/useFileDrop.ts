@@ -22,7 +22,7 @@ import type { Options, Result, FileUploadParams } from '../types';
 
 const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
-  const elementRef = useRef<HTMLElement | null>();
+  const elementRef = useRef<HTMLElement | null>(null);
   const paramsRef = useRef(params); // to be able to get to the params from within a callback's closure
 
   // keep count of all dragenter and dragleave events from the component and its children

@@ -29,7 +29,7 @@ import type { TrackLegendHotspotPayload } from 'src/content/app/genome-browser/s
 import styles from './BrowserTrackLegend.module.css';
 
 type Props = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 type Position = {

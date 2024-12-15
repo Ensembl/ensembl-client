@@ -24,7 +24,7 @@ import type { ZmenuPayload } from 'src/content/app/genome-browser/services/genom
 import type { HotspotMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
 
 type Props = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -53,11 +53,10 @@ const ZmenuController = (props: Props) => {
     const payload = message.payload;
     const zmenuId = Object.keys(zmenus).length + 1;
 
-    setZmenus &&
-      setZmenus({
-        ...zmenus,
-        [zmenuId]: payload
-      });
+    setZmenus({
+      ...zmenus,
+      [zmenuId]: payload
+    });
   };
 
   if (!zmenus) {

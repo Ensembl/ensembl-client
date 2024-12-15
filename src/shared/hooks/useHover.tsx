@@ -16,9 +16,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-type UseHoverType<T extends HTMLElement> = [React.RefObject<T>, boolean];
-
-export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
+export default function useHover<T extends HTMLElement | null>() {
   const [isHovering, setIsHovering] = useState(false);
   let isTouched = false;
 
@@ -59,5 +57,5 @@ export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
     };
   }, [ref.current]);
 
-  return [ref, isHovering];
+  return [ref, isHovering] as const;
 }
