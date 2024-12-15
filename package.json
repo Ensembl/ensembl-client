@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@ensembl/ensembl-genome-browser": "0.6.11",
-    "@react-spring/web": "9.7.5",
     "@reduxjs/toolkit": "2.3.0",
     "@sentry/browser": "8.40.0",
     "@storybook/addon-essentials": "8.4.5",
