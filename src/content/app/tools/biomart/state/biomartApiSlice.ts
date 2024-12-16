@@ -15,13 +15,53 @@
  */
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import { BiomartTable } from './biomartSlice';
+
+type BiomartColumnBackend = {
+  label: string;
+  name: string;
+  heading: string;
+};
 
 const biomartApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     biomartColumnSelection: builder.query({
       query: () => ({
-        url: 'http://127.0.0.1:5500/biomart_columns.json'
+        url: 'http://ec2-18-134-246-34.eu-west-2.compute.amazonaws.com:54301/query_attribs/core'
       }),
+      transformResponse: (response: BiomartColumnBackend[]) => {
+        const columns: BiomartTable[] = [];
+        response.forEach((data) => {
+          let existingColumn;
+          for (const column of columns) {
+            if (column.label === data.heading) {
+              existingColumn = column;
+              break;
+            }
+          }
+
+          if (existingColumn) {
+            existingColumn.options.push({
+              label: data.label,
+              name: data.name,
+              checked: false
+            });
+          } else {
+            columns.push({
+              label: data.heading,
+              options: [
+                {
+                  label: data.label,
+                  name: data.name,
+                  checked: false
+                }
+              ],
+              expanded: false
+            });
+          }
+        });
+        return columns;
+      },
       keepUnusedDataFor: 60 * 60
     }),
     biomartFilters: builder.query({
