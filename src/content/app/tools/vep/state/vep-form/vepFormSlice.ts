@@ -240,24 +240,16 @@ export const onVepFormSubmission = createAsyncThunk(
     const inputText = vepFormState.inputText;
     const parameters = vepFormState.parameters;
 
-    const requestPayload = await prepareRequestPayload({
-      submissionId,
-      species,
-      inputText,
-      parameters
-    });
-
     // "Detach" the submission from the VEP form by assigning it another temporary id.
     // The id will be eventually finalized to a permanent one after the server response
     const updatedSubmissionId = createInFlightSubmissionId();
-    requestPayload.submission_id = updatedSubmissionId;
 
     await updateVepSubmission(submissionId, {
       id: submissionId,
-      species: vepFormState.selectedSpecies,
       submissionName: vepFormState.submissionName,
-      inputText: vepFormState.inputText,
-      parameters: vepFormState.parameters,
+      species,
+      inputText,
+      parameters,
       submittedAt: Date.now(),
       status: 'SUBMITTING'
     });
@@ -270,6 +262,13 @@ export const onVepFormSubmission = createAsyncThunk(
     dispatch(
       addSubmission(updatedStoredSubmission as VepSubmissionWithoutInputFile)
     );
+
+    const requestPayload = await prepareRequestPayload({
+      submissionId: updatedSubmissionId,
+      species,
+      inputText,
+      parameters
+    });
 
     dispatch(vepFormSubmit.initiate(requestPayload, { track: false }));
   }
