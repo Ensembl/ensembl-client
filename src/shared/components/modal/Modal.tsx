@@ -30,16 +30,16 @@ type Props = {
 const Modal = (props: Props) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
-  /**
-   * React 19 warning:
-   * In React 19, callback refs will no longer return a null.
-   */
-  const dialogCallbackRef = (element: HTMLDialogElement | null) => {
-    element?.showModal();
-    element?.addEventListener('cancel', handleClose);
-    element?.addEventListener('close', handleClose);
+  const dialogCallbackRef = (element: HTMLDialogElement) => {
+    element.showModal();
+    element.addEventListener('cancel', handleClose);
+    element.addEventListener('close', handleClose);
 
     dialogRef.current = element;
+    return () => {
+      element.removeEventListener('cancel', handleClose);
+      element.removeEventListener('close', handleClose);
+    };
   };
 
   const handleClick = (event: SyntheticEvent<HTMLElement>) => {
