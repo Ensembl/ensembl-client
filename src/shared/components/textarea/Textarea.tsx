@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  forwardRef,
-  type TextareaHTMLAttributes,
-  type ForwardedRef
-} from 'react';
 import classNames from 'classnames';
+import type { ComponentPropsWithRef } from 'react';
 
 import styles from './Textarea.module.css';
 
-export type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+export type Props = ComponentPropsWithRef<'textarea'> & {
   resizable?: boolean;
 };
 
-const Textarea = (props: Props, ref: ForwardedRef<HTMLTextAreaElement>) => {
+const Textarea = (props: Props) => {
   const {
     className: classNameFromProps,
     resizable = true,
@@ -38,7 +34,7 @@ const Textarea = (props: Props, ref: ForwardedRef<HTMLTextAreaElement>) => {
     [styles.disableResize]: !resizable
   });
 
-  return <textarea ref={ref} className={className} {...otherProps} />;
+  return <textarea className={className} {...otherProps} />;
 };
 
-export default forwardRef(Textarea);
+export default Textarea;

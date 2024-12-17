@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
+import type { RefObject } from 'react';
 
 import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -38,9 +38,10 @@ type Props = {
   gene: Gene;
   isGhosted?: boolean;
   className?: string;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-const GeneSummaryStrip = (props: Props, ref: ForwardedRef<HTMLDivElement>) => {
+const GeneSummaryStrip = (props: Props) => {
   const { gene, isGhosted } = props;
 
   const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
@@ -48,7 +49,7 @@ const GeneSummaryStrip = (props: Props, ref: ForwardedRef<HTMLDivElement>) => {
   });
 
   return (
-    <div className={stripClasses} ref={ref}>
+    <div className={stripClasses} ref={props.ref}>
       <GeneName {...props} />
       <Biotype {...props} />
       {gene.strand && (
@@ -63,7 +64,7 @@ const GeneSummaryStrip = (props: Props, ref: ForwardedRef<HTMLDivElement>) => {
   );
 };
 
-const GeneName = ({ gene }: Props) => {
+const GeneName = ({ gene }: Pick<Props, 'gene'>) => {
   const stableId = getDisplayStableId(gene);
 
   return (
@@ -77,7 +78,7 @@ const GeneName = ({ gene }: Props) => {
   );
 };
 
-const Biotype = ({ gene }: Props) => {
+const Biotype = ({ gene }: Pick<Props, 'gene'>) => {
   return (
     gene.bio_type && (
       <div className={styles.section}>
@@ -88,4 +89,4 @@ const Biotype = ({ gene }: Props) => {
   );
 };
 
-export default forwardRef(GeneSummaryStrip);
+export default GeneSummaryStrip;

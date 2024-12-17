@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
+import { type RefObject } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -36,12 +36,10 @@ import styles from '../TrackSettingsPanel.module.css';
 type Props = {
   trackId: string;
   className?: string;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-const VariantTrackSettings = (
-  props: Props,
-  ref: ForwardedRef<HTMLDivElement>
-) => {
+const VariantTrackSettings = (props: Props) => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
   const allTrackSettings = useAppSelector((state) =>
     getAllTrackSettingsForGenome(state, activeGenomeId)
@@ -75,7 +73,7 @@ const VariantTrackSettings = (
   );
 
   return (
-    <div className={componentStyles} ref={ref}>
+    <div className={componentStyles} ref={props.ref}>
       <div className={styles.section}>
         <div className={styles.subLabel}>SNVs</div>
         <div>
@@ -143,4 +141,4 @@ const VariantTrackSettings = (
   );
 };
 
-export default forwardRef(VariantTrackSettings);
+export default VariantTrackSettings;
