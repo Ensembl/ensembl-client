@@ -375,6 +375,7 @@ CleanUpReview:
     name: development
     action: stop
   variables:
+    GIT_STRATEGY: none
     AGENT: ${DEV_AGENT}
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
