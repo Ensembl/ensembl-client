@@ -22,7 +22,6 @@ import {
   type RefObject
 } from 'react';
 import classNames from 'classnames';
-import clamp from 'lodash/clamp';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 
@@ -72,14 +71,15 @@ const SubmitSlider = (props: Props) => {
 
   return (
     <div className={containerClasses}>
-      <div className={styles.track} ref={trackRef}></div>
-      <div
-        ref={sliderRef}
-        className={sliderClasses}
-        onMouseDown={handlePress}
-        onTouchStart={handlePress}
-      >
-        <Chevron direction="right" className={styles.chevron} />
+      <div className={styles.track} ref={trackRef}>
+        <div
+          ref={sliderRef}
+          className={sliderClasses}
+          onMouseDown={handlePress}
+          onTouchStart={handlePress}
+        >
+          <Chevron direction="right" className={styles.chevron} />
+        </div>
       </div>
     </div>
   );
@@ -103,16 +103,6 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
   const pressRef = useRef(false);
 
   useEffect(() => {
-    return () => {
-      if (pressRef.current) {
-        // shouldn't happen, but being cautious
-        removeMovementListeners();
-      }
-    };
-  }, []);
-
-  // TODO: For React 19, change this to callback ref
-  useEffect(() => {
     if (params.isDisabled) {
       return;
     }
@@ -123,14 +113,12 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
 
     slider.addEventListener('mousedown', handlePress);
     slider.addEventListener('touchstart', handlePress);
-    slider.addEventListener('transitionend', handleTransitionEnd);
 
     return () => {
       slider.removeEventListener('mousedown', handlePress);
       slider.removeEventListener('touchstart', handlePress);
-      slider.removeEventListener('transitionend', handleTransitionEnd);
     };
-  }, [params.isDisabled, params.sliderRef.current]);
+  }, [params.isDisabled]);
 
   const addMovementListeners = useCallback(() => {
     window.addEventListener('mousemove', handleDrag);
@@ -160,21 +148,22 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     setGrabbingCursor(false);
     removeMovementListeners();
     params.onRelease();
+
+    setTimeout(() => {
+      params.onSnappedBack();
+    }, 80); // <-- 80ms; to align with transition time
   }, []);
 
   const handleDrag = useCallback((event: TouchEvent | MouseEvent) => {
     const distance = getDistance(event);
+    updateTranslateX(distance);
 
-    if (hasNotReachedTrackEnd(distance)) {
-      updateTranslateX(distance);
-    } else {
-      handleRelease();
-      params.onSlideCompleted();
+    if (hasReachedTrackEnd(distance)) {
+      setTimeout(() => {
+        handleRelease();
+        params.onSlideCompleted();
+      }, 10);
     }
-  }, []);
-
-  const handleTransitionEnd = useCallback(() => {
-    params.onSnappedBack();
   }, []);
 
   const setGrabbingCursor = (isGrabbing: boolean) => {
@@ -205,17 +194,17 @@ const useDraggableSlider = (params: UseDraggableSliderParams) => {
     const maxValue = trackRect.width - sliderRect.width;
     const currentValue = currentPointerX - (initialPointerX.current as number);
 
-    return clamp(minValue, currentValue, maxValue);
+    return Math.max(minValue, Math.min(currentValue, maxValue));
   };
 
-  const hasNotReachedTrackEnd = (distance: number) => {
+  const hasReachedTrackEnd = (distance: number) => {
     if (!sliderRectsRef.current) {
       return;
     }
     const { trackRect, sliderRect } = sliderRectsRef.current;
     const { right: trackRight } = trackRect;
     const { right: initialSliderRight } = sliderRect;
-    return initialSliderRight + distance < trackRight;
+    return initialSliderRight + distance >= trackRight;
   };
 
   const updateTranslateX = (distance: number) => {
