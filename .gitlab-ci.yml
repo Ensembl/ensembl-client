@@ -113,7 +113,6 @@ variables:
 # Template for deployment to "stable" (non-review) environments that have static assets on a mounted drive
 # (therefore, does not need to deploy a static assets container)
 .deploy:
-  stage: deploy-live # is overwritten in some of the jobs that are extending this template
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -126,7 +125,6 @@ variables:
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
-  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -143,23 +141,21 @@ variables:
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
-  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - kubectl config use-context ${AGENT}
     - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
-  when: manual
   script:
     - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-web-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi || true
-    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo || true
+    - kubectl delete ingress genome-browser-server-hi-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress genome-browser-server-hi-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-refget-file-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete namespace ${NAMESPACE}
 
@@ -217,6 +213,7 @@ Node:review:
 # Deploy the Node server
 Live:
   extends: .deploy
+  stage: deploy-live
   variables:
     AGENT: ${PROD_AGENT}
     NAMESPACE: ${PROD_NS}
@@ -249,6 +246,7 @@ Pub:Live:
 # Deploy the Node server
 LiveFallback:
   extends: .deploy
+  stage: deploy-live
   variables:
     AGENT: ${FALLBACK_AGENT}
     NAMESPACE: ${FALLBACK_NS}
@@ -263,6 +261,7 @@ LiveFallback:
 # Publish static assets
 Pub::LiveFallback:
   extends: .publish_assets
+  stage: deploy-live
   environment:
     name: fallback
   variables:
@@ -349,6 +348,7 @@ Pub:Dev:
 # Job to deploy Node server and a dedicated Nginx container with embedded static assets
 Review:
   extends: .deploy-review
+  stage: deploy-preview
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
@@ -357,6 +357,7 @@ Review:
   environment:
     name: development
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: CleanUpReview
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
   rules:
@@ -369,6 +370,7 @@ Review:
 # Clean up the review app resources
 CleanUpReview:
   extends: .stop-review
+  stage: deploy-preview
   environment:
     name: development
     action: stop
@@ -376,6 +378,7 @@ CleanUpReview:
     AGENT: ${DEV_AGENT}
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
+  when: manual
   except:
     - dev # keep temporarily until we delete the dev branch
     - master # keep temporarily until we delete the master branch
