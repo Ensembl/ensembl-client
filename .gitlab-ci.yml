@@ -368,10 +368,8 @@ CleanUpReview:
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
   when: manual
-  except:
-    - dev # keep temporarily until we delete the dev branch
-    - master # keep temporarily until we delete the master branch
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
 
 
 # Create a review deployment (runs once per new branch)
