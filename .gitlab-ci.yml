@@ -153,7 +153,7 @@ variables:
     - kubectl delete ingress ensembl-web-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress genome-browser-server-hi-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress genome-browser-server-hi-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress genome-browser-server-lo-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-refget-file-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
