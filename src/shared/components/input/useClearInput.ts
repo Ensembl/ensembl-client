@@ -43,7 +43,7 @@ const useClearInput = ({
     }
 
     return () => inputElement.removeEventListener('input', onInput);
-  }, [ref.current, inputType, minLength]);
+  }, [inputType, minLength]);
 
   const onInput = (event: Event) => {
     const inputElement = event.currentTarget as HTMLInputElement;

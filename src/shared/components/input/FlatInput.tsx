@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { useRef, type ComponentPropsWithRef, type ReactNode } from 'react';
+import {
+  useRef,
+  useCallback,
+  type ComponentPropsWithRef,
+  type ReactNode
+} from 'react';
 import classNames from 'classnames';
 
 import useClearInput from './useClearInput';
@@ -51,19 +56,22 @@ const FlatInput = (props: Props) => {
   });
   const placeholder = useInputPlaceholder(innerRef, placeholderFromProps);
 
-  const callbackInputRef = (el: HTMLInputElement) => {
-    innerRef.current = el;
-    if (props.ref) {
-      if (props.ref instanceof Function) {
-        props.ref(el);
-      } else {
-        props.ref.current = el;
+  const callbackInputRef = useCallback(
+    (el: HTMLInputElement) => {
+      innerRef.current = el;
+      if (props.ref) {
+        if (props.ref instanceof Function) {
+          props.ref(el);
+        } else {
+          props.ref.current = el;
+        }
       }
-    }
-    return () => {
-      innerRef.current = null;
-    };
-  };
+      return () => {
+        innerRef.current = null;
+      };
+    },
+    [props.ref]
+  );
 
   const wrapperClasses = classNames(
     styles.flatInputWrapper,
