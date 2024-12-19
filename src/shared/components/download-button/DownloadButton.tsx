@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  forwardRef,
-  type ComponentProps,
-  type ForwardedRef
-} from 'react';
+import { useState, type ComponentPropsWithRef } from 'react';
 import classNames from 'classnames';
 
 import { CircleLoader } from 'src/shared/components/loader';
@@ -32,11 +27,11 @@ import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './DownloadButton.module.css';
 
-type Props = Omit<ComponentProps<'button'>, 'children' | 'onClick'> & {
+type Props = Omit<ComponentPropsWithRef<'button'>, 'children' | 'onClick'> & {
   onClick: () => unknown;
 };
 
-const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+const DownloadButton = (props: Props) => {
   const [status, setStatus] = useState(LoadingState.NOT_REQUESTED);
   const { onClick, ...otherProps } = props;
 
@@ -55,9 +50,8 @@ const DownloadButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
   };
 
   return (
-    <ControlledDownloadButtonWithForwardedRef
+    <ControlledDownloadButton
       {...otherProps}
-      ref={ref}
       status={status}
       onClick={clickHandler}
     />
@@ -68,10 +62,7 @@ type ControlledProps = Props & {
   status: LoadingState;
 };
 
-const ControlledDownloadButton = (
-  props: ControlledProps,
-  ref: ForwardedRef<HTMLButtonElement>
-) => {
+const ControlledDownloadButton = (props: ControlledProps) => {
   const { className, status, ...otherProps } = props;
 
   const elementClasses = classNames(
@@ -88,12 +79,7 @@ const ControlledDownloadButton = (
   const isDisabled = status !== LoadingState.NOT_REQUESTED || props.disabled;
 
   return (
-    <button
-      {...otherProps}
-      ref={ref}
-      className={elementClasses}
-      disabled={isDisabled}
-    >
+    <button {...otherProps} className={elementClasses} disabled={isDisabled}>
       {getButtonContent(status)}
     </button>
   );
@@ -112,9 +98,5 @@ const getButtonContent = (status: LoadingState) => {
   }
 };
 
-const ControlledDownloadButtonWithForwardedRef = forwardRef(
-  ControlledDownloadButton
-);
-
-export { ControlledDownloadButtonWithForwardedRef as ControlledDownloadButton };
-export default forwardRef(DownloadButton);
+export { ControlledDownloadButton };
+export default DownloadButton;

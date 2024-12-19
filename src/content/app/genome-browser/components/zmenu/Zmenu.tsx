@@ -48,7 +48,7 @@ enum Direction {
 export type ZmenuProps = {
   zmenuId: string;
   payload: ZmenuPayload;
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
 };
 
 const Zmenu = (props: ZmenuProps) => {
@@ -70,7 +70,7 @@ const Zmenu = (props: ZmenuProps) => {
 
   const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
-    setZmenus && setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
+    setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
   };
 
   const direction = chooseDirection(props);

@@ -56,7 +56,7 @@ const Provider = (props: ProviderProps) => {
     props.accordionContext.toggleExpanded(props.uuid);
   };
 
-  const renderChildren = (accordionContext: AccordionContext): JSX.Element => {
+  const renderChildren = (accordionContext: AccordionContext) => {
     const { uuid } = props;
 
     const expanded = accordionContext.isItemExpanded(uuid);

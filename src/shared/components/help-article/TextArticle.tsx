@@ -47,7 +47,7 @@ const TextArticle = (props: Props) => {
   );
 };
 
-const useRoutingRules = <T extends HTMLElement>(
+const useRoutingRules = <T extends HTMLElement | null>(
   ref: RefObject<T>,
   onInternalLinkClick?: (link: string) => void
 ) => {
@@ -64,7 +64,11 @@ const useRoutingRules = <T extends HTMLElement>(
     const href = target.getAttribute('href') as string;
     if (href.startsWith('/')) {
       // This is an internal link
-      onInternalLinkClick ? onInternalLinkClick(href) : navigate(href);
+      if (onInternalLinkClick) {
+        onInternalLinkClick(href);
+      } else {
+        navigate(href);
+      }
     } else {
       // A href containing an absolute urls, with a protocol and a hostname
       // is treated as a link to an external resource; open it in a new tab

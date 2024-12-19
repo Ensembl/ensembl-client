@@ -22,7 +22,7 @@ const useClearInput = ({
   help,
   minLength
 }: {
-  ref: RefObject<HTMLInputElement>;
+  ref: RefObject<HTMLInputElement | null>;
   inputType: string;
   help?: ReactNode;
   minLength?: number;
@@ -43,7 +43,7 @@ const useClearInput = ({
     }
 
     return () => inputElement.removeEventListener('input', onInput);
-  }, [ref.current, inputType, minLength]);
+  }, [inputType, minLength]);
 
   const onInput = (event: Event) => {
     const inputElement = event.currentTarget as HTMLInputElement;

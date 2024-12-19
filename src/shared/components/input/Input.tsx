@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  forwardRef,
-  memo,
-  type InputHTMLAttributes,
-  type ForwardedRef
-} from 'react';
+import { memo, type ComponentPropsWithRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Input.module.css';
 
-export type Props = InputHTMLAttributes<HTMLInputElement>;
+export type Props = ComponentPropsWithRef<'input'>;
 
-const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => (
+const Input = (props: Props) => (
   <input
     className={classNames(styles.input, props.className)}
-    ref={ref}
     spellCheck={false}
     {...props}
   />
 );
 
-export default memo(forwardRef(Input));
+export default memo(Input);

@@ -17,7 +17,7 @@
 import { useEffect, useReducer, type ReactNode, type RefObject } from 'react';
 
 type Params = {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
   children: ReactNode;
 };
 

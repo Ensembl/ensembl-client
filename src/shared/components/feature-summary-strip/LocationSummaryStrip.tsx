@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
+import type { RefObject } from 'react';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
@@ -27,18 +27,16 @@ type Props = {
   location: FocusLocation;
   isGhosted?: boolean;
   className?: string;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-const LocationSummaryStrip = (
-  props: Props,
-  ref: ForwardedRef<HTMLDivElement>
-) => {
+const LocationSummaryStrip = (props: Props) => {
   const { location, isGhosted } = props;
   const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
     [styles.featureSummaryStripGhosted]: isGhosted
   });
   return (
-    <div className={stripClasses} ref={ref}>
+    <div className={stripClasses} ref={props.ref}>
       <span className={styles.featureSummaryStripLabel}>Location</span>
       <span className={styles.featureDisplayName}>
         {getFormattedLocation(location.location)}
@@ -47,4 +45,4 @@ const LocationSummaryStrip = (
   );
 };
 
-export default forwardRef(LocationSummaryStrip);
+export default LocationSummaryStrip;

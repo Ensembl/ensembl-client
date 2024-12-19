@@ -23,7 +23,7 @@ type Params<T> = {
   ref?: RefObject<T> | null;
 };
 
-export default function <T extends HTMLElement>(params: Params<T> = {}) {
+export default function <T extends HTMLElement | null>(params: Params<T> = {}) {
   const defaultRef = useRef(null);
   const ref = params.ref || defaultRef;
   const [size, setSize] = useState({ width: 0, height: 0 });

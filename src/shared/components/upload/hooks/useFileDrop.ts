@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  type RefCallback
+} from 'react';
 
 import { transformFiles, transformFile } from '../helpers/uploadHelpers';
 
@@ -22,7 +28,6 @@ import type { Options, Result, FileUploadParams } from '../types';
 
 const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
-  const elementRef = useRef<HTMLElement | null>();
   const paramsRef = useRef(params); // to be able to get to the params from within a callback's closure
 
   // keep count of all dragenter and dragleave events from the component and its children
@@ -76,26 +81,20 @@ const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
     }
   };
 
-  // FIXME: starting from React 19, callback refs return a cleanup function
-  // whereas at some point thereafter, React will stop passing null to the ref function
-  const ref = useCallback((element: HTMLElement | null) => {
-    if (element === null) {
-      // a function ref is called with null when a component that it is referencing unmounts
-      elementRef.current?.removeEventListener('dragenter', onDragEnter);
-      elementRef.current?.removeEventListener('dragleave', onDragLeave);
-      elementRef.current?.removeEventListener('drop', onFileDrop);
-      return;
-    }
-
-    elementRef.current = element;
-
+  const ref = useCallback(<T extends HTMLElement>(element: T) => {
     element.addEventListener('dragenter', onDragEnter);
     element.addEventListener('dragleave', onDragLeave);
     element.addEventListener('drop', onFileDrop);
+
+    return () => {
+      element.removeEventListener('dragenter', onDragEnter);
+      element.removeEventListener('dragleave', onDragLeave);
+      element.removeEventListener('drop', onFileDrop);
+    };
   }, []);
 
   return {
-    ref,
+    ref: ref as RefCallback<HTMLElement>,
     isDraggedOver
   };
 };

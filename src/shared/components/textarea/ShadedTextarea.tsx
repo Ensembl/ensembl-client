@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import Textarea, { Props as TextareaProps } from './Textarea';
 
 import styles from './Textarea.module.css';
 
-const ShadedTextarea = (
-  props: TextareaProps,
-  ref: ForwardedRef<HTMLTextAreaElement>
-) => {
+const ShadedTextarea = (props: TextareaProps) => {
   const { className, ...otherProps } = props;
 
   const inputClasses = classNames(styles.shadedTextarea, className);
 
-  return <Textarea ref={ref} className={inputClasses} {...otherProps} />;
+  return <Textarea className={inputClasses} {...otherProps} />;
 };
 
-export default forwardRef(ShadedTextarea);
+export default ShadedTextarea;

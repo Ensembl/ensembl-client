@@ -26,7 +26,7 @@ import { DivAttributes } from '../helpers/types';
 
 import defaultStyles from '../css/Accordion.module.css';
 
-type Props = DivAttributes & {
+type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'onToggle'>> & {
   extendDefaultStyles?: boolean;
   toggleExpanded: () => void;
   disabled?: boolean;
@@ -39,6 +39,7 @@ export const AccordionItemButton = (props: Props) => {
     extendDefaultStyles = true,
     toggleExpanded,
     disabled,
+    onToggle,
     children,
     ...rest
   } = props;
@@ -56,8 +57,8 @@ export const AccordionItemButton = (props: Props) => {
   }
 
   const onClick = () => {
-    if (props && props.onToggle) {
-      props.onToggle(!isExpanded);
+    if (onToggle) {
+      onToggle(!isExpanded);
     }
 
     toggleExpanded();
@@ -85,7 +86,7 @@ type WrapperProps = {
   onToggle?: (isExpanded: boolean) => void;
 } & Pick<
   DivAttributes,
-  Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
+  Exclude<keyof DivAttributes, keyof InjectedButtonAttributes | 'onToggle'>
 >;
 
 const AccordionItemButtonWrapper = (props: WrapperProps) => (

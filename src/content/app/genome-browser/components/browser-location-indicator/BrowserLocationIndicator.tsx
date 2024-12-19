@@ -29,8 +29,8 @@ import styles from './BrowserLocationIndicator.module.css';
 
 type Props = {
   className?: string;
-  containerRef?: RefObject<HTMLElement>;
-  nonOverlapElementRef?: RefObject<HTMLElement>;
+  containerRef?: RefObject<HTMLElement | null>;
+  nonOverlapElementRef?: RefObject<HTMLElement | null>;
 };
 
 export const BrowserLocationIndicator = (props: Props) => {
@@ -100,8 +100,8 @@ const ProximitySensor = ({
   onRegionNameVisibilityChange
 }: {
   regionName: string;
-  containerRef: RefObject<HTMLElement>;
-  nonOverlapElementRef: RefObject<HTMLElement>;
+  containerRef: RefObject<HTMLElement | null>;
+  nonOverlapElementRef: RefObject<HTMLElement | null>;
   isRegionNameVisible: boolean;
   onRegionNameVisibilityChange: (x: boolean) => void;
 }) => {

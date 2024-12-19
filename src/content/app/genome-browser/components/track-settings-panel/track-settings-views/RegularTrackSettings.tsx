@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ForwardedRef } from 'react';
+import classNames from 'classnames';
+import { type RefObject } from 'react';
 
 import { useAppSelector } from 'src/store';
 import useTrackSettings from '../useTrackSettings';
@@ -31,12 +32,11 @@ import styles from '../TrackSettingsPanel.module.css';
 
 type Props = {
   trackId: string;
+  className?: string;
+  ref?: RefObject<HTMLDivElement | null>;
 };
 
-export const RegularTrackSettings = (
-  props: Props,
-  ref: ForwardedRef<HTMLDivElement>
-) => {
+export const RegularTrackSettings = (props: Props) => {
   const { trackId } = props;
   const trackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, trackId)
@@ -52,8 +52,13 @@ export const RegularTrackSettings = (
     updateTrackSetting('name', !shouldShowTrackName);
   };
 
+  const componentStyles = classNames(
+    styles.trackSettingsPanel,
+    props.className
+  );
+
   return (
-    <div className={styles.trackSettingsPanel} ref={ref}>
+    <div className={componentStyles} ref={props.ref}>
       <div className={styles.section}>
         <div className={styles.subLabel}>All tracks</div>
         <div>
@@ -76,4 +81,4 @@ export const RegularTrackSettings = (
   );
 };
 
-export default forwardRef(RegularTrackSettings);
+export default RegularTrackSettings;
