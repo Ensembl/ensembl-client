@@ -42,22 +42,13 @@ const DownloadLink = (props: Props) => {
     classNameFromProps
   );
 
-  // TODO: update the below after migration to React 19.
-  // React 19 will update type definitions of HTMLAnchorElement to allow inert: boolean.
-  // For react versions below 19, typescript will complain about the `inert` attribute;
-  // and the componentProps object below (as well as the empty string value) is an attempt to trick typescript.
-  // IMPORTANT: in React 19, inert="" will be treated as false instead of true;
-  // so we will need to change the below during migration.
-  // (see https://github.com/facebook/react/issues/17157#issuecomment-2003750544)
-  const componentProps = {
-    className: componentClasses,
-    download: true,
-    inert: disabled ? '' : undefined,
-    ...otherProps
-  };
-
   return (
-    <a {...componentProps}>
+    <a
+      className={componentClasses}
+      download={true}
+      inert={disabled || undefined}
+      {...otherProps}
+    >
       <DownloadIcon />
     </a>
   );

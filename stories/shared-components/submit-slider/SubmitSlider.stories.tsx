@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-import { useRef, useEffect, type ForwardedRef } from 'react';
+import noop from 'lodash/noop';
 
-/**
- * Based on https://non-traditional.dev/how-to-use-the-forwarded-ref-in-react-1fb108f4e6af
- * and https://stackoverflow.com/questions/73015696/whats-the-difference-between-reacts-forwardedref-and-refobject
- *
- * React refs are a pain.
- */
+import SubmitSlider from 'src/shared/components/communication-framework/contact-us/contact-us-form/submit-slider/SubmitSlider';
 
-const useForwardedRef = <T>(ref: ForwardedRef<T>) => {
-  const innerRef = useRef<T>(null);
-
-  useEffect(() => {
-    if (!ref) return;
-
-    if (typeof ref === 'function') {
-      ref(innerRef.current);
-    } else {
-      ref.current = innerRef.current;
-    }
-  });
-
-  return innerRef;
+const DefaultStoryComponent = () => {
+  return <SubmitSlider isDisabled={false} onSlideCompleted={noop} />;
 };
 
-export default useForwardedRef;
+export const DefaultStory = {
+  name: 'default',
+  render: DefaultStoryComponent
+};
+
+export default {
+  title: 'Components/Shared Components/SubmitSlider'
+};

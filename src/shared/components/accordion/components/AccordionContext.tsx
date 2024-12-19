@@ -127,7 +127,7 @@ export class Consumer extends PureComponent<{
     return container ? this.props.children(container) : null;
   };
 
-  public render(): JSX.Element {
+  public render() {
     return <Context.Consumer>{this.renderChildren}</Context.Consumer>;
   }
 }

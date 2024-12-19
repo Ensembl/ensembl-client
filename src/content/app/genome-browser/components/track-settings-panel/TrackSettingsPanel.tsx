@@ -28,6 +28,7 @@ type Props = {
   trackId: string;
   trackType: TrackType;
   onOutsideClick: () => void;
+  className?: string;
 };
 
 const getTrackSettingsPanelComponent = (trackType: TrackType) => {
@@ -56,7 +57,13 @@ export const TrackSettingsPanel = (props: Props) => {
 
   const Track = getTrackSettingsPanelComponent(trackType);
 
-  return <Track trackId={trackId} ref={trackSettingsRef} />;
+  return (
+    <Track
+      trackId={trackId}
+      className={props.className}
+      ref={trackSettingsRef}
+    />
+  );
 };
 
 export default TrackSettingsPanel;

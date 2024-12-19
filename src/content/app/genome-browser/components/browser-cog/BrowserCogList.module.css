@@ -16,3 +16,17 @@
   height: 18px;
   padding: 1px;
 }
+
+.trackPanel {
+  animation: appearing-track-panel 0.1s ease-in;
+}
+
+@keyframes appearing-track-panel {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 100%;
+  }
+}

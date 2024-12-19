@@ -15,11 +15,10 @@
  */
 
 import {
-  forwardRef,
   useRef,
   useImperativeHandle,
   type SelectHTMLAttributes,
-  type ForwardedRef,
+  type RefObject,
   type ReactNode
 } from 'react';
 import classNames from 'classnames';
@@ -63,25 +62,25 @@ type OptionsSelectProps = CommonProps & OptionsSpecificProps;
 type OptionGroupsSelectProps = CommonProps & OptionGroupsSpecificProps;
 
 export type SimpleSelectProps = HTMLSelectProps &
-  (OptionsSelectProps | OptionGroupsSelectProps);
+  (OptionsSelectProps | OptionGroupsSelectProps) & {
+    ref?: RefObject<SimpleSelectMethods | null>;
+  };
 
 export type SimpleSelectMethods = {
   clear: () => void;
 };
 
-const SimpleSelect = (
-  props: SimpleSelectProps,
-  ref: ForwardedRef<{ clear: () => void }>
-) => {
+const SimpleSelect = (props: SimpleSelectProps) => {
   const {
     className: classNameFromProps,
     placeholder,
     disabled,
+    ref: refFromProps,
     ...otherProps
   } = props;
   const selectRef = useRef<HTMLSelectElement | null>(null);
 
-  useImperativeHandle(ref, () => ({
+  useImperativeHandle(refFromProps, () => ({
     clear: () => {
       if (selectRef.current) {
         // Find the index of either the placeholder option or the default option
@@ -131,10 +130,10 @@ const SimpleSelect = (
   return (
     <div className={selectClassnames}>
       <select
+        {...selectProps}
         ref={selectRef}
         className={styles.selectResetDefaults}
         disabled={disabled}
-        {...selectProps}
       >
         {placeholder && renderPlaceholder(placeholder)}
         {selectChildren}
@@ -149,4 +148,4 @@ const renderPlaceholder = (text: string) => (
   </option>
 );
 
-export default forwardRef(SimpleSelect);
+export default SimpleSelect;

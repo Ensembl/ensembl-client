@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentProps, type ForwardedRef } from 'react';
 import classNames from 'classnames';
+import type { ComponentProps, RefObject } from 'react';
 
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
@@ -39,14 +39,12 @@ export type VariantForSummaryStrip = ComponentProps<
     alleles: ComponentProps<typeof VariantAllelesSequences>['alleles'];
   };
 
-const VariantSummaryStrip = (
-  props: {
-    variant: FocusVariant;
-    isGhosted?: boolean;
-    className?: string;
-  },
-  ref: ForwardedRef<HTMLDivElement>
-) => {
+const VariantSummaryStrip = (props: {
+  variant: FocusVariant;
+  isGhosted?: boolean;
+  className?: string;
+  ref?: RefObject<HTMLDivElement | null>;
+}) => {
   const { variant, isGhosted } = props;
   const { genome_id: genomeId, variant_id: variantId } = variant;
   const { currentData: variantData } = useGbVariantQuery({
@@ -67,7 +65,7 @@ const VariantSummaryStrip = (
   );
 
   return (
-    <div className={stripClasses} ref={ref}>
+    <div className={stripClasses} ref={props.ref}>
       <FullContent variant={variantData?.variant} />
     </div>
   );
@@ -107,4 +105,4 @@ const FullContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
   );
 };
 
-export default forwardRef(VariantSummaryStrip);
+export default VariantSummaryStrip;

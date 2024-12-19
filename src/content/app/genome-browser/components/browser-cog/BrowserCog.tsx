@@ -15,7 +15,6 @@
  */
 
 import { useState } from 'react';
-import { useTransition, animated } from '@react-spring/web';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
@@ -44,13 +43,6 @@ const BrowserCog = (props: BrowserCogProps) => {
     icon: CogIcon
   };
 
-  const transition = useTransition(isPanelOpen, {
-    config: { duration: 100 },
-    enter: { opacity: 1 },
-    from: { opacity: 0 },
-    leave: { opacity: 0 }
-  });
-
   const openTrackSettingsPanel = () => {
     if (!isPanelOpen) {
       setIsPanelOpen(true);
@@ -59,13 +51,23 @@ const BrowserCog = (props: BrowserCogProps) => {
   };
 
   const closeTrackSettingsPanel = () => {
-    isPanelOpen && setIsPanelOpen(false);
+    if (isPanelOpen) {
+      setIsPanelOpen(false);
+    }
   };
 
   return (
     <>
       {isPanelOpen ? (
-        <CloseButton onClick={closeTrackSettingsPanel} />
+        <>
+          <CloseButton onClick={closeTrackSettingsPanel} />
+          <TrackSettingsPanel
+            trackId={trackId}
+            trackType={props.trackType}
+            onOutsideClick={closeTrackSettingsPanel}
+            className={styles.trackPanel}
+          />
+        </>
       ) : (
         <ImageButton
           className={styles.browserCog}
@@ -74,19 +76,6 @@ const BrowserCog = (props: BrowserCogProps) => {
           image={cogIconConfig.icon}
         />
       )}
-      {transition((style, item) => {
-        return (
-          item && (
-            <animated.div key="trackSettingsPanel" style={style}>
-              <TrackSettingsPanel
-                trackId={trackId}
-                trackType={props.trackType}
-                onOutsideClick={closeTrackSettingsPanel}
-              />
-            </animated.div>
-          )
-        );
-      })}
     </>
   );
 };

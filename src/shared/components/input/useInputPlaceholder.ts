@@ -19,7 +19,7 @@ import { type RefObject } from 'react';
 import useInputFocus from './useInputFocus';
 
 const useInputPlaceholder = (
-  ref: RefObject<HTMLInputElement>,
+  ref: RefObject<HTMLInputElement | null>,
   placeholder?: string
 ) => {
   const isFocused = useInputFocus(ref);
