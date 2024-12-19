@@ -152,3 +152,11 @@
   cursor: pointer;
   user-select: none;
 }
+
+.textarea {
+  font-family: var(--font-family-monospace);
+  font-size: 12px;
+  letter-spacing: 0.1rem;
+  white-space: nowrap;
+  width: 220px;
+}

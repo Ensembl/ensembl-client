@@ -108,6 +108,14 @@ export const selectedFiltersCount = createSelector(
       count++;
     }
 
+    if (isGeneFilterActive('gene_stable_id', filterData)) {
+      count++;
+    }
+
+    if (isGeneFilterActive('transcript_stable_id', filterData)) {
+      count++;
+    }
+
     return count;
   }
 );

@@ -133,6 +133,27 @@ const BiomartPreviewRun = () => {
                       </span>
                     ) : null}
                   </div>
+                  <div>
+                    {filtersData.gene?.gene_stable_id?.output &&
+                    filtersData.gene?.gene_stable_id?.output.length > 0 ? (
+                      <span>
+                        <b>Gene stable ID</b>:{' '}
+                        {filtersData.gene.gene_stable_id.output.join(', ')}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div>
+                    {filtersData.gene?.transcript_stable_id?.output &&
+                    filtersData.gene?.transcript_stable_id?.output.length >
+                      0 ? (
+                      <span>
+                        <b>Transcript stable ID</b>:{' '}
+                        {filtersData.gene.transcript_stable_id.output.join(
+                          ', '
+                        )}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               )}
             </div>

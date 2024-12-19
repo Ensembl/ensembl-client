@@ -56,6 +56,7 @@ const BiomartCoodinatesFilter = (props: BiomartCoordinatesFilterProps) => {
                 value={start || ''}
                 onChange={(e) => props.onStartChange(e.target.value)}
                 placeholder="Start"
+                disabled={true}
               />
             </label>
           </div>
@@ -67,6 +68,7 @@ const BiomartCoodinatesFilter = (props: BiomartCoordinatesFilterProps) => {
                 value={end || ''}
                 onChange={(e) => props.onEndChange(e.target.value)}
                 placeholder="End"
+                disabled={true}
               />
             </label>
           </div>

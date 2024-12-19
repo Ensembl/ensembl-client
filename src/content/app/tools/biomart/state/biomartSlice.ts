@@ -43,7 +43,7 @@ export type BiomartFilterNumberType = {
   expanded: boolean;
 };
 
-type BiomartRegionFilter = {
+export type BiomartRegionFilter = {
   chromosomes: BiomartFilterStringType;
   coordinates: BiomartFilterNumberType;
   expanded: boolean;
@@ -51,11 +51,13 @@ type BiomartRegionFilter = {
 
 export type BiomartRegionFilters = 'chromosomes' | 'coordinates';
 
-type BiomartGeneFilter = {
+export type BiomartGeneFilter = {
   gene_types: BiomartFilterStringType;
   gene_sources: BiomartFilterStringType;
   transcript_types: BiomartFilterStringType;
   transcript_sources: BiomartFilterStringType;
+  gene_stable_id: BiomartFilterStringType;
+  transcript_stable_id: BiomartFilterStringType;
   expanded: boolean;
 };
 
@@ -63,7 +65,9 @@ export type BiomartGeneFilters =
   | 'gene_types'
   | 'gene_sources'
   | 'transcript_types'
-  | 'transcript_sources';
+  | 'transcript_sources'
+  | 'gene_stable_id'
+  | 'transcript_stable_id';
 
 export type BiomartFilter = {
   region: BiomartRegionFilter;
@@ -80,6 +84,7 @@ export type BiomartJob = {
   filters: BiomartFilter;
   columns: BiomartTable[];
   timestamp: string;
+  result_location: string;
 };
 
 export type BiomartState = {
@@ -184,6 +189,13 @@ const biomartSlice = createSlice({
     },
     setJob: (state, action: PayloadAction<BiomartJob>) => {
       state.jobs.push(action.payload);
+    },
+    updateJobData: (state, action: PayloadAction<BiomartJob>) => {
+      const updatedJob = action.payload;
+      const jobIndex = state.jobs.findIndex((job) => job.id === updatedJob.id);
+      if (jobIndex !== -1) {
+        state.jobs[jobIndex] = updatedJob;
+      }
     }
   }
 });
@@ -196,6 +208,7 @@ export const {
   setPreviewRunOpen,
   resetColumnSelectionData,
   resetFilterData,
-  setJob
+  setJob,
+  updateJobData
 } = biomartSlice.actions;
 export default biomartSlice.reducer;

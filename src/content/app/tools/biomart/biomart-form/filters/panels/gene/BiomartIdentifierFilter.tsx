@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-
 import { BiomartFilterStringType } from 'src/content/app/tools/biomart/state/biomartSlice';
 
-import styles from '../../BiomartForm.module.css';
+import styles from '../../../BiomartForm.module.css';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 
-type BiomartMultiSelectFilterProps = {
+type BiomartIdentifierFilterProps = {
   label: string;
   data: BiomartFilterStringType;
   toggle: () => void;
-  handleSelect: (value: string, isChecked: boolean) => void;
+  onStableIdChange: (value: string) => void;
 };
 
-const BiomartMultiSelectFilter = (props: BiomartMultiSelectFilterProps) => {
+const BiomartIdentifierFilter = (props: BiomartIdentifierFilterProps) => {
   return (
     <div className={styles.sectionFilterContainer}>
       <div className={styles.sectionTitleContainer}>
@@ -38,24 +37,20 @@ const BiomartMultiSelectFilter = (props: BiomartMultiSelectFilterProps) => {
           onClick={props.toggle}
         />
       </div>
-      {props.data?.expanded && (
+      {props.data.expanded && (
         <div className={styles.sectionSelectionContainer}>
-          {props.data?.input?.map((val, i) => {
-            const isChecked = props.data.output?.includes(val) || false;
-            return (
-              <Checkbox
-                key={i}
-                label={val}
-                checked={isChecked}
-                onChange={() => props.handleSelect(val, isChecked)}
-                disabled={true}
-              />
-            );
-          })}
+          <div className={styles.biomartInput}>
+            <ShadedInput
+              type="string"
+              value={props.data.input[0] || ''}
+              onChange={(e) => props.onStableIdChange(e.target.value)}
+              placeholder={props.label}
+            />
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default BiomartMultiSelectFilter;
+export default BiomartIdentifierFilter;

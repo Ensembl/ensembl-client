@@ -31,20 +31,49 @@ import {
   setFilterData,
   setPreviewRunOpen,
   setSelectedSpecies,
-  setTab
-} from '../state/biomartSlice';
+  setTab,
+  updateJobData
+} from 'src/content/app/tools/biomart/state/biomartSlice';
 import { useEffect } from 'react';
+import { useLazyBiomartJobQuery } from 'src/content/app/tools/biomart/state/biomartApiSlice';
+import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 
 const BiomartJobs = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const jobs = useAppSelector((state) => state.biomart.general.jobs);
+  const [fetchJobStatus] = useLazyBiomartJobQuery();
 
   useEffect(() => {
     if (jobs.length === 0) {
       navigate(urlFor.biomartForm());
     }
-  }, []);
+
+    const pollSubmittedJobs = async () => {
+      for (const job of jobs) {
+        if (job.status !== 'SUBMITTED') {
+          continue;
+        }
+
+        const result = await fetchJobStatus(job.id).unwrap();
+
+        if (result && result.result_location) {
+          const updatedJob = { ...job };
+          updatedJob.status = 'COMPLETED';
+          updatedJob.result_location = result.result_location;
+          dispatch(updateJobData(updatedJob));
+        }
+      }
+    };
+
+    const intervalId = setInterval(pollSubmittedJobs, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId);
+  }, [jobs]);
+
+  const onDownload = (job: BiomartJob) => {
+    window.open(job.result_location, '_blank');
+  };
 
   const biomartRerun = (job: BiomartJob) => {
     dispatch(setColumnSelectionData(job.columns));
@@ -90,6 +119,12 @@ const BiomartJobs = () => {
                   {job.species.common_name} {job.species.genome_tag}
                 </div>
                 <div>{job.status}</div>
+                <div>
+                  <DownloadButton
+                    onClick={() => onDownload(job)}
+                    disabled={job.status !== 'COMPLETED'}
+                  />
+                </div>
               </div>
             </div>
           </div>

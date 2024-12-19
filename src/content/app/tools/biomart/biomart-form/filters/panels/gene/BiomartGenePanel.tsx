@@ -25,6 +25,7 @@ import {
 } from 'src/content/app/tools/biomart/state/biomartSlice';
 
 import styles from '../../../BiomartForm.module.css';
+import BiomartIdentifierFilter from './BiomartIdentifierFilter';
 
 type BiomartGenePanelProps = {
   toggle: () => void;
@@ -34,6 +35,8 @@ const GENE_SOURCES = 'gene_sources';
 const GENE_TYPES = 'gene_types';
 const TRANSCRIPT_SOURCES = 'transcript_sources';
 const TRANSCRIPT_TYPES = 'transcript_types';
+const GENE_STABLE_ID = 'gene_stable_id';
+const TRANSCRIPT_STABLE_ID = 'transcript_stable_id';
 
 const BiomartGenePanel = (props: BiomartGenePanelProps) => {
   const dispatch = useAppDispatch();
@@ -89,6 +92,48 @@ const BiomartGenePanel = (props: BiomartGenePanelProps) => {
     dispatch(setFilterData(newData));
   };
 
+  const onGeneStableIdChange = (value: string) => {
+    if (!data) {
+      return;
+    }
+
+    const val = value ? [value.trim()] : [];
+    const newData = {
+      ...data,
+      gene: {
+        ...data.gene,
+        gene_stable_id: {
+          ...data.gene.gene_stable_id,
+          input: val,
+          output: val
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
+  const onTranscriptStableIdChange = (value: string) => {
+    if (!data) {
+      return;
+    }
+
+    const val = value ? [value.trim()] : [];
+    const newData = {
+      ...data,
+      gene: {
+        ...data.gene,
+        transcript_stable_id: {
+          ...data.gene.transcript_stable_id,
+          input: val,
+          output: val
+        }
+      }
+    };
+
+    dispatch(setFilterData(newData));
+  };
+
   return (
     <div className={styles.sectionContainer}>
       <div className={styles.sectionTitleContainer}>
@@ -100,6 +145,18 @@ const BiomartGenePanel = (props: BiomartGenePanelProps) => {
       </div>
       {data.gene.expanded && (
         <div>
+          <BiomartIdentifierFilter
+            data={data.gene?.gene_stable_id}
+            toggle={() => toggleGeneSection(GENE_STABLE_ID)}
+            label={'Gene Stable ID'}
+            onStableIdChange={onGeneStableIdChange}
+          />
+          <BiomartIdentifierFilter
+            data={data.gene?.transcript_stable_id}
+            toggle={() => toggleGeneSection(TRANSCRIPT_STABLE_ID)}
+            label={'Transcript Stable ID'}
+            onStableIdChange={onTranscriptStableIdChange}
+          />
           <BiomartMultiSelectFilter
             data={data.gene?.gene_types}
             toggle={() => toggleGeneSection(GENE_TYPES)}

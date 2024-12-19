@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { FormEvent, useState } from 'react';
 import {
   PrimaryButton,
   SecondaryButton
@@ -27,31 +28,40 @@ import {
 import {
   columnSelectionData,
   filterData,
-  selectedColumnsCount,
-  selectedFiltersCount
+  selectedColumnsCount
+  // selectedFiltersCount
 } from 'src/content/app/tools/biomart/state/biomartSelectors';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { useBiomartRunMutation } from 'src/content/app/tools/biomart/state/biomartApiSlice';
+
 import styles from './BiomartSettings.module.css';
 
-const RUN_MODES = [
-  {
-    value: 'local',
-    label: 'local'
-  }
-];
+// const RUN_MODES = [
+//   {
+//     value: 'local',
+//     label: 'local'
+//   }
+// ];
 
 const DOWNLOAD_FORMATS = [
   {
-    value: 'CSV',
-    label: 'CSV'
+    value: 'output_csv_gz',
+    label: 'CSV gzip compressed'
+  },
+  {
+    value: 'output_csv_zst',
+    label: 'CSV Zstandard compressed'
   }
 ];
 
 const BiomartSettings = () => {
+  const [downloadFormat, setDownloadFormat] = useState(
+    DOWNLOAD_FORMATS[0].value
+  );
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const selectedSpecies = useAppSelector(
@@ -61,28 +71,75 @@ const BiomartSettings = () => {
     (state) => state.biomart.general.previewRunOpen
   );
   const columnsSelectedCount = useAppSelector(selectedColumnsCount);
-  const filtersSelectedCount = useAppSelector(selectedFiltersCount);
+  // const filtersSelectedCount = useAppSelector(selectedFiltersCount);
   const columnsData = useAppSelector(columnSelectionData);
   const filtersData = useAppSelector(filterData);
   const jobs = useAppSelector((state) => state.biomart.general.jobs);
+
+  const [biomartRun] = useBiomartRunMutation();
 
   const openPreviewRun = () => {
     dispatch(setPreviewRunOpen(true));
   };
 
-  const onBiomartRun = () => {
+  const getSelectedColumnAttributes = () => {
+    return columnsData
+      .flatMap((column) => column.options)
+      .filter((option) => option.checked)
+      .map((option) => option.name);
+  };
+
+  const getProvidedFilters = () => {
+    const filters = [];
+
+    if (
+      filtersData.gene.gene_stable_id &&
+      filtersData.gene.gene_stable_id.output.length > 0
+    ) {
+      filters.push({
+        filter_gene_stable_id: filtersData.gene.gene_stable_id.output[0]
+      });
+    }
+
+    if (
+      filtersData.gene.transcript_stable_id &&
+      filtersData.gene.transcript_stable_id.output.length > 0
+    ) {
+      filters.push({
+        filter_transcript_stable_id:
+          filtersData.gene.transcript_stable_id.output[0]
+      });
+    }
+
+    return filters;
+  };
+
+  const onBiomartRun = async () => {
     if (!selectedSpecies) {
       return;
     }
 
+    const payload = {
+      attribs: getSelectedColumnAttributes(),
+      filters: getProvidedFilters(),
+      genome_uuid: selectedSpecies.genome_id,
+      limit: 0,
+      output: {
+        name: downloadFormat
+      }
+    };
+
+    const result = await biomartRun(payload).unwrap();
+
     const job: BiomartJob = {
-      id: Math.random().toString(36).substring(0, 10),
-      status: 'running',
-      format: DOWNLOAD_FORMATS[0].value,
+      id: result.taskid,
+      status: 'SUBMITTED',
+      format: downloadFormat,
       species: selectedSpecies,
       columns: columnsData,
       filters: filtersData,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      result_location: ''
     };
 
     dispatch(setJob(job));
@@ -93,8 +150,12 @@ const BiomartSettings = () => {
     navigate(urlFor.biomartJobs());
   };
 
-  const isPreviewRunButtonActive =
-    columnsSelectedCount !== 0 && filtersSelectedCount !== 0;
+  const changeDownloadFormat = (event: FormEvent<HTMLSelectElement>) => {
+    setDownloadFormat(event.currentTarget.value);
+  };
+
+  // const isPreviewRunButtonActive = columnsSelectedCount !== 0 && filtersSelectedCount !== 0;
+  const isPreviewRunButtonActive = columnsSelectedCount !== 0;
 
   return (
     <div className={styles.topLevelContainer}>
@@ -130,7 +191,7 @@ const BiomartSettings = () => {
         )}
         {previewRunOpen && (
           <div className={styles.previewRunButton}>
-            <div className={styles.biomartToolbarOptions}>
+            {/* <div className={styles.biomartToolbarOptions}>
               <label>
                 <span>Run mode</span>
                 <SimpleSelect
@@ -139,14 +200,14 @@ const BiomartSettings = () => {
                   options={RUN_MODES}
                 />
               </label>
-            </div>
+            </div> */}
             <div className={styles.biomartToolbarOptions}>
               <label>
                 <span>Download as</span>
                 <SimpleSelect
-                  value={DOWNLOAD_FORMATS[0].label}
-                  onInput={() => {}}
+                  value={downloadFormat}
                   options={DOWNLOAD_FORMATS}
+                  onChange={changeDownloadFormat}
                 />
               </label>
             </div>
