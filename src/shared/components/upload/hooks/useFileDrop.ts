@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-  type RefCallback
-} from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { transformFiles, transformFile } from '../helpers/uploadHelpers';
 
@@ -94,7 +88,7 @@ const useFileDrop = <O extends Options>(params: FileUploadParams<O>) => {
   }, []);
 
   return {
-    ref: ref as RefCallback<HTMLElement>,
+    ref: ref as <T extends HTMLElement>(element: T) => () => void,
     isDraggedOver
   };
 };

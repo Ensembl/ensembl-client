@@ -167,7 +167,8 @@ const ContactUsInitialForm = () => {
   const callbackElementRef = useCallback((element: HTMLDivElement) => {
     // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
     elementRef.current = element;
-    dropAreaRef(element);
+    const dropAreaRefCleanup = dropAreaRef(element);
+    return dropAreaRefCleanup();
   }, []);
 
   const { clearSavedForm } = useSavedForm({
