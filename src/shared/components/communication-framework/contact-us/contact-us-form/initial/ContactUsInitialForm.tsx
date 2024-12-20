@@ -116,10 +116,11 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, message: action.payload };
     case 'add-file':
       return { ...state, files: [...state.files, action.payload] };
-    case 'remove-file':
+    case 'remove-file': {
       const newFiles = [...state.files];
       newFiles.splice(action.payload, 1);
       return { ...state, files: newFiles };
+    }
     case 'replace-state':
       return action.payload;
     case 'clear-form':
@@ -142,8 +143,7 @@ const ContactUsInitialForm = () => {
 
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const stateRef = useRef<typeof state>();
-  stateRef.current = state;
+  const stateRef = useRef<typeof state>(state);
 
   const isFormValid = validate(state) && emailFieldValid;
 
@@ -167,7 +167,8 @@ const ContactUsInitialForm = () => {
   const callbackElementRef = useCallback((element: HTMLDivElement) => {
     // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
     elementRef.current = element;
-    dropAreaRef(element);
+    const dropAreaRefCleanup = dropAreaRef(element) as () => void;
+    return () => dropAreaRefCleanup();
   }, []);
 
   const { clearSavedForm } = useSavedForm({

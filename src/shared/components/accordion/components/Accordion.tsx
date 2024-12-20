@@ -42,7 +42,7 @@ const Accordion = (props: AccordionProps) => {
     ...rest
   } = props;
 
-  const renderAccordion = (): JSX.Element => {
+  const renderAccordion = () => {
     let styles = className;
 
     if (extendDefaultStyles) {

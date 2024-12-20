@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { forwardRef, type HTMLAttributes, type ForwardedRef } from 'react';
 import classNames from 'classnames';
+import type { ComponentPropsWithRef } from 'react';
 
 import TrashcanIcon from 'static/icons/icon_delete.svg';
 
 import styles from './DeleteButton.module.css';
 
-type Props = Omit<HTMLAttributes<HTMLButtonElement>, 'children'> & {
+type Props = Omit<ComponentPropsWithRef<'button'>, 'children'> & {
   disabled?: boolean;
 };
 
-const DeleteButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+const DeleteButton = (props: Props) => {
   const iconClasses = classNames(styles.deleteButton, {
     [styles.deleteButtonDisabled]: props.disabled
   });
 
   return (
-    <button {...props} ref={ref}>
+    <button {...props}>
       <TrashcanIcon className={iconClasses} />
     </button>
   );
@@ -93,4 +93,4 @@ export const DeleteButtonWithLabel = (
   );
 };
 
-export default forwardRef(DeleteButton);
+export default DeleteButton;

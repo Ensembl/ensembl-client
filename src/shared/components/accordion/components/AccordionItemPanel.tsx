@@ -34,7 +34,7 @@ const AccordionItemPanel = (props: Props) => {
 
   return (
     <ItemConsumer>
-      {({ panelAttributes }: ItemContext): JSX.Element => {
+      {({ panelAttributes }: ItemContext) => {
         return (
           <div
             data-accordion-component="AccordionItemPanel"

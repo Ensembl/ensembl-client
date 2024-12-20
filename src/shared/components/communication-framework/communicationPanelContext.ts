@@ -17,7 +17,7 @@
 import { createContext, RefObject } from 'react';
 
 type CommunicationPanelContextType = {
-  panelBody: RefObject<HTMLDivElement> | null;
+  panelBody: RefObject<HTMLDivElement | null> | null;
 };
 
 const initialContext: CommunicationPanelContextType = {

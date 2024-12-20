@@ -12,7 +12,7 @@
   height: var(--slider-height);
   background-color: white;
   border: 1px solid var(--color-grey);
-  border-radius: 4px;
+  border-radius: 5px;
   z-index: 1;
 }
 
@@ -25,7 +25,7 @@
   left: 0;
   z-index: 2;
   width: 90px;
-  height: 30px;
+  height: 100%;
   background-color: var(--color-blue);
   border-radius: 4px;
   cursor: grab;
@@ -33,6 +33,10 @@
 
 .sliderDragged {
   cursor: grabbing;
+}
+
+.sliderSnappingBack {
+  transition: transform 0.08s ease-in;
 }
 
 .sliderDisabled {

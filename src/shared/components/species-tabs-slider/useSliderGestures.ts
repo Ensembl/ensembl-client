@@ -25,7 +25,7 @@ import { useEffect, useRef, type RefObject } from 'react';
  * - user should be able to scroll trough species tabs by using the mouse wheel
  */
 
-const useSliderGestures = (ref: RefObject<Element>) => {
+const useSliderGestures = (ref: RefObject<Element | null>) => {
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
   const currentXRef = useRef(0);

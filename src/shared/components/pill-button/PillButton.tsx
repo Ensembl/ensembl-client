@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { forwardRef, type ComponentProps, type ForwardedRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './PillButton.module.css';
 
-type Props = ComponentProps<'button'>;
+type Props = ComponentPropsWithRef<'button'>;
 
-const PillButton = (props: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+const PillButton = (props: Props) => {
   const { className, ...otherProps } = props;
 
   const buttonClass = classNames(styles.pillButton, className);
 
-  return <button className={buttonClass} ref={ref} {...otherProps} />;
+  return <button className={buttonClass} {...otherProps} />;
 };
 
-export default forwardRef(PillButton);
+export default PillButton;

@@ -15,14 +15,13 @@
  */
 
 import {
-  forwardRef,
-  type InputHTMLAttributes,
-  type ForwardedRef,
+  useRef,
+  useCallback,
+  type ComponentPropsWithRef,
   type ReactNode
 } from 'react';
 import classNames from 'classnames';
 
-import useForwardedRef from 'src/shared/hooks/useForwardedRef';
 import useClearInput from './useClearInput';
 import useInputPlaceholder from './useInputPlaceholder';
 
@@ -34,7 +33,7 @@ import styles from './Input.module.css';
 
 export type InputSize = 'large' | 'small';
 
-export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
+export type Props = Omit<ComponentPropsWithRef<'input'>, 'size'> & {
   size?: InputSize;
   help?: ReactNode;
 };
@@ -42,7 +41,7 @@ export type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
 // In accordance with the most common default browser behaviour,
 // input of type search will show a button for clearing the text in the input
 
-const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
+const ShadedInput = (props: Props) => {
   const {
     className: classNameFromProps,
     disabled = false,
@@ -52,7 +51,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     placeholder: placeholderFromProps,
     ...otherProps
   } = props;
-  const innerRef = useForwardedRef<HTMLInputElement>(ref);
+  const innerRef = useRef<HTMLInputElement>(null);
   const { canClearInput, clearInput } = useClearInput({
     ref: innerRef,
     inputType: type,
@@ -60,6 +59,22 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
     minLength: props.minLength
   });
   const placeholder = useInputPlaceholder(innerRef, placeholderFromProps);
+  const callbackInputRef = useCallback(
+    (el: HTMLInputElement) => {
+      innerRef.current = el;
+      if (props.ref) {
+        if (props.ref instanceof Function) {
+          props.ref(el);
+        } else {
+          props.ref.current = el;
+        }
+      }
+      return () => {
+        innerRef.current = null;
+      };
+    },
+    [props.ref]
+  );
 
   const wrapperClasses = classNames(
     styles.shadedInputWrapper,
@@ -84,7 +99,7 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   return (
     <div className={wrapperClasses}>
       <Input
-        ref={innerRef}
+        ref={callbackInputRef}
         disabled={disabled}
         type={type === 'search' ? undefined : props.type}
         placeholder={placeholder}
@@ -97,4 +112,4 @@ const ShadedInput = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
   );
 };
 
-export default forwardRef(ShadedInput);
+export default ShadedInput;

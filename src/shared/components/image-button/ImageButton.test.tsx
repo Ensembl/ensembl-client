@@ -31,7 +31,7 @@ jest.mock(
 );
 
 const defaultProps = {
-  image: ''
+  image: '/image.svg'
 };
 
 describe('<ImageButton />', () => {

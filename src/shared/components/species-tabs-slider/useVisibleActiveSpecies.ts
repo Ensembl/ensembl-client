@@ -24,7 +24,7 @@ import { useEffect, type RefObject } from 'react';
  * then it is scrolled to the nearest visible side of the container.
  */
 
-const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement>) => {
+const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
     if (!ref.current) {
       return;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useReducer, type Reducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 import apiService, {
   type FetchOptions,
@@ -106,10 +106,7 @@ const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
 };
 
 const useApiService = <T>(params: Params): State<T> => {
-  const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(
-    reducer,
-    initialState
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (params.skip) {
@@ -139,11 +136,13 @@ const useApiService = <T>(params: Params): State<T> => {
 
     return () => {
       canUpdate = false;
-      isAbortable && abortController.abort();
+      if (isAbortable) {
+        abortController.abort();
+      }
     };
   }, [params.endpoint, params.host, params.skip]);
 
-  return state;
+  return state as State<T>;
 };
 
 export default useApiService;
