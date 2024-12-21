@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, memo } from 'react';
+import { Suspense, useEffect, memo } from 'react';
 import { useLocation, useRoutes } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -68,10 +68,10 @@ const useLocationReporting = () => {
 const App = memo(() => {
   const routes = useRoutes(routesConfig);
   return (
-    <>
+    <Suspense fallback={<Header />}>
       <Header />
       {routes}
-    </>
+    </Suspense>
   );
 });
 

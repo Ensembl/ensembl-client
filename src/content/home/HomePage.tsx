@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { lazy, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
-import type { ServerFetch } from 'src/routes/routesConfig';
+import Home from './Home';
 
-const LazilyLoadedHome = lazy(() => import('./Home'));
+import type { ServerFetch } from 'src/routes/routesConfig';
 
 const pageTitle = 'Ensembl';
 const pageDescription = 'The new website of the Ensembl project';
@@ -42,7 +42,7 @@ const HomePage = () => {
     );
   }, []);
 
-  return hasMounted ? <LazilyLoadedHome /> : null;
+  return hasMounted ? <Home /> : null;
 };
 
 export default HomePage;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 
 const useHasMounted = () => {
   const [hasMounted, setHasMounted] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     setHasMounted(true);
   }, []);
   return hasMounted;
