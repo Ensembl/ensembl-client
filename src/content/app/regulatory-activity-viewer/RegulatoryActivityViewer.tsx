@@ -19,18 +19,19 @@ import noop from 'lodash/noop';
 import { useAppSelector } from 'src/store';
 
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
-import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
+// import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
-import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
+// import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
 import SidebarNavigation from './components/activity-viewer-sidebar/sidebar-navigation/SidebarNavigation';
 import MainContentBottomViewControls from './components/main-content-bottom-view-controls/MainContentBottomViewControls';
-import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
-import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
+// import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
+// import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
+import EpigenomesActivity from './components/epigenomes-activity/EpigenomesActivity';
 
 const ActivityViewer = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -70,23 +71,25 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
 };
 
 const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
-  const activeView = useAppSelector((state) =>
-    getMainContentBottomView(state, genomeId)
-  );
+  // const activeView = useAppSelector((state) =>
+  //   getMainContentBottomView(state, genomeId)
+  // );
 
-  return (
-    <>
-      {['epigenomes-list', 'epigenomes-selection'].includes(activeView) && (
-        <SelectedEpigenomes genomeId={genomeId} />
-      )}
-      {activeView === 'epigenomes-selection' && (
-        <EpigenomeSelectionModal genomeId={genomeId} />
-      )}
-      {activeView === 'dataviz' && (
-        <RegionActivitySection activeGenomeId={genomeId} />
-      )}
-    </>
-  );
+  return <EpigenomesActivity genomeId={genomeId} />;
+
+  // return (
+  //   <>
+  //     {['epigenomes-list', 'epigenomes-selection'].includes(activeView) && (
+  //       <SelectedEpigenomes genomeId={genomeId} />
+  //     )}
+  //     {activeView === 'epigenomes-selection' && (
+  //       <EpigenomeSelectionModal genomeId={genomeId} />
+  //     )}
+  //     {activeView === 'dataviz' && (
+  //       <RegionActivitySection activeGenomeId={genomeId} />
+  //     )}
+  //   </>
+  // );
 };
 
 export default ActivityViewer;

@@ -27,7 +27,7 @@ type EpigenomeActivityMetadata = {
   histone: HistoneMetadata;
 };
 
-type TrackData = {
+export type TrackData = {
   open_chromatin: {
     signal: Array<SignalData>;
     peaks: Array<OpenChromatinPeakData>;
