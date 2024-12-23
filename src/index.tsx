@@ -25,14 +25,18 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
 import configureStore from './store';
 
+// NOTE: importing global CSS before any of the components here is actually significant,
+// because the bundler (at least webpack in dev mode) will load modules in the order they are declared,
+// and since the global styles define the order of CSS layers (see main.css),
+// they have to be registered in the browser before any other CSS
+import './styles/globalStyles';
+
 import Html from 'src/content/html/Html';
 import Root from './root/Root';
 
 import { registerSW } from './registerServiceWorker';
 
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
-
-import './styles/globalStyles';
 
 ensureBrowserSupport();
 
