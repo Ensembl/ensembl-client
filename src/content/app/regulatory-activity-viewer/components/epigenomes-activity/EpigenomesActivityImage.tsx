@@ -16,6 +16,16 @@
 
 import { scaleLinear, interpolateHcl, type ScaleLinear } from 'd3';
 
+import {
+  TRACK_HEIGHT,
+  OPEN_CHROMATIN_SIGNAL_HEIGHT,
+  OPEN_CHROMATIN_SIGNAL_OFFSET_TOP,
+  OPEN_CHROMATIN_PEAK_HEIGHT,
+  OPEN_CHROMATIN_PEAK_OFFSET_TOP,
+  HISTONE_NARROW_PEAK_OFFSET_TOP,
+  HISTONE_NARROW_PEAK_HEIGHT
+} from './epigenomeActivityImageConstants';
+
 import type {
   EpigenomicActivityForDisplay,
   TrackDataForDisplay
@@ -26,10 +36,6 @@ type Props = {
   scale: ScaleLinear<number, number>;
   width: number;
 };
-
-// TODO: import as constant
-const TRACK_HEIGHT = 12;
-const OPEN_CHROMATIN_SIGNAL_HEIGHT = 8;
 
 const EpigenomeActivityImage = (props: Props) => {
   const width = props.width;
@@ -54,7 +60,20 @@ const ActivityTracks = ({ data }: { data: Props['data'] }) => {
   ));
 };
 
-const ActivityTrack = ({
+const ActivityTrack = (props: {
+  data: TrackDataForDisplay;
+  offsetTop: number;
+}) => {
+  return (
+    <>
+      <OpenChromatinSignals {...props} />
+      <OpenChromatinPeaks {...props} />
+      <HistoneNarrowPeaks {...props} />
+    </>
+  );
+};
+
+const OpenChromatinSignals = ({
   data,
   offsetTop
 }: {
@@ -65,12 +84,65 @@ const ActivityTrack = ({
     <rect
       key={signal.x}
       x={signal.x}
-      y={offsetTop}
+      y={offsetTop + OPEN_CHROMATIN_SIGNAL_OFFSET_TOP}
       width={signal.width}
       height={OPEN_CHROMATIN_SIGNAL_HEIGHT}
       fill={getSignalColor(signal.value)}
     />
   ));
+};
+
+const OpenChromatinPeaks = ({
+  data,
+  offsetTop
+}: {
+  data: TrackDataForDisplay;
+  offsetTop: number;
+}) => {
+  return data.openChromatin.peaks.map((peak) => (
+    <rect
+      key={peak.x}
+      x={peak.x}
+      y={offsetTop + OPEN_CHROMATIN_PEAK_OFFSET_TOP}
+      width={peak.width}
+      height={OPEN_CHROMATIN_PEAK_HEIGHT}
+      data-type="open-chromatin-peak"
+      stroke="black"
+      fill="none"
+    />
+  ));
+};
+
+const HistoneNarrowPeaks = ({
+  data,
+  offsetTop
+}: {
+  data: TrackDataForDisplay;
+  offsetTop: number;
+}) => {
+  return data.histones.narrowPeaks.map((peak) => {
+    const order = peak.order;
+    const trackOffsetTop = offsetTop;
+    const peakOffsetTop =
+      trackOffsetTop +
+      OPEN_CHROMATIN_PEAK_HEIGHT +
+      HISTONE_NARROW_PEAK_OFFSET_TOP +
+      order * (HISTONE_NARROW_PEAK_HEIGHT + HISTONE_NARROW_PEAK_OFFSET_TOP);
+
+    return (
+      <rect
+        key={`${peak.label}-${peak.x}`}
+        x={peak.x}
+        y={peakOffsetTop}
+        width={peak.width}
+        height={HISTONE_NARROW_PEAK_HEIGHT}
+        data-type="histone-narrow-peak"
+        data-order={order}
+        data-track-offset-top={trackOffsetTop}
+        fill={peak.color}
+      />
+    );
+  });
 };
 
 const getImageHeight = ({ data }: EpigenomicActivityForDisplay) => {

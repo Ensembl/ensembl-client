@@ -23,7 +23,7 @@ type HistoneMetadata = Record<
   }
 >;
 
-type EpigenomeActivityMetadata = {
+export type EpigenomeActivityMetadata = {
   histone: HistoneMetadata;
 };
 
@@ -33,7 +33,7 @@ export type TrackData = {
     peaks: Array<OpenChromatinPeakData>;
   };
   histone: {
-    [key: string]: HistoneNarrowPeakData | HistoneGappedPeakData;
+    [key: string]: HistoneNarrowPeakData[] | HistoneGappedPeakData[];
   };
 };
 
@@ -58,7 +58,7 @@ type HistoneNarrowPeakData = {
  * They describe data to draw rectangles whose left x coordinate corresponds to a block start,
  * and whose width corresponds to a block end.
  */
-type HistoneGappedPeakData = {
+export type HistoneGappedPeakData = {
   s: number;
   e: number;
   block_count: number; // this is kinda superfluous; it is the same as the length of 'block_starts' or 'block_sizes'
