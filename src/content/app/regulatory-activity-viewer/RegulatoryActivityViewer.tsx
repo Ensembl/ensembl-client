@@ -25,7 +25,7 @@ import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import RegionOverview from './components/region-overview/RegionOverview';
-// import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
+import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
 import SidebarNavigation from './components/activity-viewer-sidebar/sidebar-navigation/SidebarNavigation';
 import MainContentBottomViewControls from './components/main-content-bottom-view-controls/MainContentBottomViewControls';
@@ -75,7 +75,12 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   //   getMainContentBottomView(state, genomeId)
   // );
 
-  return <EpigenomesActivity genomeId={genomeId} />;
+  return (
+    <>
+      <RegionActivitySection activeGenomeId={genomeId} />
+      <EpigenomesActivity genomeId={genomeId} />
+    </>
+  );
 
   // return (
   //   <>

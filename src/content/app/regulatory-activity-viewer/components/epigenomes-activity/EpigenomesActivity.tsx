@@ -22,6 +22,8 @@ import { useEpigenomesActivityQuery } from 'src/content/app/regulatory-activity-
 
 import EpigenomeActivityImage from './EpigenomesActivityImage';
 
+import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
+
 type Props = {
   genomeId: string;
 };
@@ -61,8 +63,14 @@ const EpigenomesActivity = (props: Props) => {
   });
 
   return (
-    <div>
-      <EpigenomeActivityImage data={preparedData} scale={scale} width={800} />
+    <div className={regionOverviewStyles.grid}>
+      <div className={regionOverviewStyles.middleColumn}>
+        <EpigenomeActivityImage
+          data={preparedData}
+          scale={scale}
+          width={width}
+        />
+      </div>
     </div>
   );
 };
