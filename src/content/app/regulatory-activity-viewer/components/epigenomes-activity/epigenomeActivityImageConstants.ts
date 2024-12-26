@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export const TRACK_HEIGHT = 40;
+export const TRACK_HEIGHT = 50;
 
 export const OPEN_CHROMATIN_SIGNAL_HEIGHT = 8;
 export const OPEN_CHROMATIN_SIGNAL_OFFSET_TOP = 2;
@@ -24,3 +24,7 @@ export const OPEN_CHROMATIN_PEAK_OFFSET_TOP = 1;
 
 export const HISTONE_NARROW_PEAK_OFFSET_TOP = 5;
 export const HISTONE_NARROW_PEAK_HEIGHT = 5;
+
+export const HISTONE_GAPPED_PEAK_OFFSET_TOP = 8;
+export const HISTONE_GAPPED_PEAK_BLOCK_HEIGHT = 8;
+export const HISTONE_GAPPED_PEAK_CONNECTOR_HEIGHT = 2;

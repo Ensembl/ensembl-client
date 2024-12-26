@@ -23,7 +23,10 @@ import {
   OPEN_CHROMATIN_PEAK_HEIGHT,
   OPEN_CHROMATIN_PEAK_OFFSET_TOP,
   HISTONE_NARROW_PEAK_OFFSET_TOP,
-  HISTONE_NARROW_PEAK_HEIGHT
+  HISTONE_NARROW_PEAK_HEIGHT,
+  HISTONE_GAPPED_PEAK_OFFSET_TOP,
+  HISTONE_GAPPED_PEAK_BLOCK_HEIGHT,
+  HISTONE_GAPPED_PEAK_CONNECTOR_HEIGHT
 } from './epigenomeActivityImageConstants';
 
 import type {
@@ -69,6 +72,7 @@ const ActivityTrack = (props: {
       <OpenChromatinSignals {...props} />
       <OpenChromatinPeaks {...props} />
       <HistoneNarrowPeaks {...props} />
+      <HistoneGappedPeaks {...props} />
     </>
   );
 };
@@ -143,6 +147,83 @@ const HistoneNarrowPeaks = ({
       />
     );
   });
+};
+
+const HistoneGappedPeaks = ({
+  data,
+  offsetTop
+}: {
+  data: TrackDataForDisplay;
+  offsetTop: number;
+}) => {
+  const narrowPeakTracksCount = data.histones.narrowPeaks.reduce(
+    (acc, peak) => {
+      return Math.max(acc, peak.order);
+    },
+    0
+  );
+
+  return data.histones.gappedPeaks.map((peak) => (
+    <HistoneGappedPeak
+      key={`${peak.label}-${peak.blocks[0].x}`}
+      peakData={peak}
+      trackOffsetTop={offsetTop}
+      narrowPeakTracksCount={narrowPeakTracksCount}
+    />
+  ));
+};
+
+const HistoneGappedPeak = ({
+  peakData,
+  trackOffsetTop,
+  narrowPeakTracksCount
+}: {
+  peakData: TrackDataForDisplay['histones']['gappedPeaks'][number];
+  trackOffsetTop: number;
+  narrowPeakTracksCount: number;
+}) => {
+  const offsetTop =
+    trackOffsetTop +
+    OPEN_CHROMATIN_PEAK_HEIGHT +
+    HISTONE_NARROW_PEAK_OFFSET_TOP +
+    narrowPeakTracksCount *
+      (HISTONE_NARROW_PEAK_HEIGHT + HISTONE_NARROW_PEAK_OFFSET_TOP) +
+    HISTONE_GAPPED_PEAK_OFFSET_TOP +
+    peakData.order *
+      (HISTONE_GAPPED_PEAK_BLOCK_HEIGHT + HISTONE_GAPPED_PEAK_OFFSET_TOP);
+
+  const connectorOffsetTop = offsetTop + HISTONE_GAPPED_PEAK_BLOCK_HEIGHT / 2;
+
+  const blocks = peakData.blocks.map((block) => (
+    <rect
+      key={block.x}
+      x={block.x}
+      y={offsetTop}
+      width={block.width}
+      height={HISTONE_GAPPED_PEAK_BLOCK_HEIGHT}
+      data-type="histone-gapped-peak-block"
+      fill={peakData.color}
+    />
+  ));
+
+  const connectors = peakData.connectors.map((connector) => (
+    <line
+      key={connector.x}
+      x1={connector.x}
+      x2={connector.x + connector.width}
+      y1={connectorOffsetTop}
+      y2={connectorOffsetTop}
+      strokeWidth={HISTONE_GAPPED_PEAK_CONNECTOR_HEIGHT}
+      stroke={peakData.color}
+    />
+  ));
+
+  return (
+    <>
+      {blocks}
+      {connectors}
+    </>
+  );
 };
 
 const getImageHeight = ({ data }: EpigenomicActivityForDisplay) => {
