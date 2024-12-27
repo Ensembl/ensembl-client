@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import { useState, useEffect, useTransition } from 'react';
 import { scaleLinear } from 'd3';
 
-import { prepareActivityDataForDisplay } from './prepareActivityDataForDisplay';
+import {
+  prepareActivityDataForDisplay,
+  type EpigenomicActivityForDisplay
+} from './prepareActivityDataForDisplay';
 
 import { useEpigenomesActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import EpigenomeActivityImage from './EpigenomesActivityImage';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 
@@ -45,6 +50,9 @@ const testGenomicLocation = {
 // eslint-disable-next-line   -- FIXME: remove this comment when props start being used
 const EpigenomesActivity = (props: Props) => {
   const { currentData } = useEpigenomesActivityQuery();
+  const [preparedData, setPreparedData] =
+    useState<EpigenomicActivityForDisplay | null>(null);
+  const [isPending, startTransition] = useTransition();
   const location = testGenomicLocation;
   const width = 800;
 
@@ -52,24 +60,38 @@ const EpigenomesActivity = (props: Props) => {
     .domain([location.start, location.end])
     .rangeRound([0, Math.floor(width)]);
 
+  useEffect(() => {
+    if (!currentData) {
+      return;
+    }
+
+    const preparedData = prepareActivityDataForDisplay({
+      data: currentData,
+      location,
+      scale
+    });
+
+    startTransition(() => {
+      setPreparedData(preparedData);
+    });
+  }, [currentData]);
+
   if (!currentData) {
     return null;
   }
 
-  const preparedData = prepareActivityDataForDisplay({
-    data: currentData,
-    location,
-    scale
-  });
-
   return (
     <div className={regionOverviewStyles.grid}>
       <div className={regionOverviewStyles.middleColumn}>
-        <EpigenomeActivityImage
-          data={preparedData}
-          scale={scale}
-          width={width}
-        />
+        {preparedData && !isPending ? (
+          <EpigenomeActivityImage
+            data={preparedData}
+            scale={scale}
+            width={width}
+          />
+        ) : (
+          <CircleLoader />
+        )}
       </div>
     </div>
   );
