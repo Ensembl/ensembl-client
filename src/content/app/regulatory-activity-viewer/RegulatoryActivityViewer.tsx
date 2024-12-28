@@ -31,7 +31,6 @@ import SidebarNavigation from './components/activity-viewer-sidebar/sidebar-navi
 import MainContentBottomViewControls from './components/main-content-bottom-view-controls/MainContentBottomViewControls';
 // import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
 // import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
-import EpigenomesActivity from './components/epigenomes-activity/EpigenomesActivity';
 
 const ActivityViewer = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -78,7 +77,6 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   return (
     <>
       <RegionActivitySection activeGenomeId={genomeId} />
-      <EpigenomesActivity genomeId={genomeId} />
     </>
   );
 

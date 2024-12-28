@@ -251,6 +251,10 @@ const prepareHistoneNarrowPeaksForTrack = ({
     const histonePeaks = allHistoneData[hisoneName];
 
     for (const histonePeak of histonePeaks) {
+      if (histonePeak.e < location.start || histonePeak.s > location.end) {
+        continue;
+      }
+
       const peakStart = Math.max(histonePeak.s, location.start);
       const peakEnd = Math.min(histonePeak.e, location.end);
 

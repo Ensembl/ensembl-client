@@ -86,7 +86,7 @@ const OpenChromatinSignals = ({
 }) => {
   return data.openChromatin.signals.map((signal) => (
     <rect
-      key={signal.x}
+      key={`${signal.value}-${signal.x}-${signal.width}`}
       x={signal.x}
       y={offsetTop + OPEN_CHROMATIN_SIGNAL_OFFSET_TOP}
       width={signal.width}
@@ -105,7 +105,7 @@ const OpenChromatinPeaks = ({
 }) => {
   return data.openChromatin.peaks.map((peak) => (
     <rect
-      key={peak.x}
+      key={`${peak.x}-${peak.width}`}
       x={peak.x}
       y={offsetTop + OPEN_CHROMATIN_PEAK_OFFSET_TOP}
       width={peak.width}
@@ -135,7 +135,7 @@ const HistoneNarrowPeaks = ({
 
     return (
       <rect
-        key={`${peak.label}-${peak.x}`}
+        key={`${peak.label}-${peak.x}-${peak.width}`}
         x={peak.x}
         y={peakOffsetTop}
         width={peak.width}
@@ -165,7 +165,7 @@ const HistoneGappedPeaks = ({
 
   return data.histones.gappedPeaks.map((peak) => (
     <HistoneGappedPeak
-      key={`${peak.label}-${peak.blocks[0].x}`}
+      key={`${peak.label}-${peak.blocks[0].x}-${peak.blocks[0].width}`}
       peakData={peak}
       trackOffsetTop={offsetTop}
       narrowPeakTracksCount={narrowPeakTracksCount}
@@ -196,7 +196,7 @@ const HistoneGappedPeak = ({
 
   const blocks = peakData.blocks.map((block) => (
     <rect
-      key={block.x}
+      key={`${block.x}-${block.width}`}
       x={block.x}
       y={offsetTop}
       width={block.width}
@@ -208,7 +208,7 @@ const HistoneGappedPeak = ({
 
   const connectors = peakData.connectors.map((connector) => (
     <line
-      key={connector.x}
+      key={`${connector.x}-${connector.width}`}
       x1={connector.x}
       x2={connector.x + connector.width}
       y1={connectorOffsetTop}
