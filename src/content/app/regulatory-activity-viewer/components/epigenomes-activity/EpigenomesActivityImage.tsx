@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
 import { scaleLinear, interpolateHcl, type ScaleLinear } from 'd3';
 
 import {
@@ -215,6 +216,7 @@ const HistoneGappedPeak = ({
       y2={connectorOffsetTop}
       strokeWidth={HISTONE_GAPPED_PEAK_CONNECTOR_HEIGHT}
       stroke={peakData.color}
+      strokeDasharray="1"
     />
   ));
 
@@ -241,4 +243,4 @@ const getSignalColor = (value: number) => {
   return signalColorScale(value);
 };
 
-export default EpigenomeActivityImage;
+export default memo(EpigenomeActivityImage);
