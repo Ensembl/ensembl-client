@@ -1,7 +1,6 @@
 # Template to setup review app
 # Create Service, Apply Ingress rules etc
 .setup-review-newk8s:
-  stage: setup
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - kubectl config use-context ${AGENT}

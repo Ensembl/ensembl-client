@@ -27,19 +27,14 @@ variables:
 
 # Template to build static assets
 .build-static:
-  stage: test_build_static
   image: node:22.11.0
-
   before_script:
   - npm ci --loglevel warn
-
   script:
   - npm run test
   - npm run build
-
   after_script:
     - echo "BUILD_JOB_ID=${CI_JOB_ID}" >> build_static.env
-
   artifacts:
     name: build_artifacts
     paths:
@@ -53,15 +48,10 @@ variables:
 # WP k8s cluster uses ingress
 .build-nginx:
   image: docker
-
   services:
     - docker:dind
-
-  stage: build_docker_images
-
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
   script:
     - apk update && apk add git
     - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
@@ -75,16 +65,13 @@ variables:
 # Template for publishing static assets for the new kubernetes cluster
 .publish_assets:
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
-  stage: deploy-live
   environment:
     name: jobs/k8s-job
-
   before_script:
     - *gitlab-agent-setup-commands
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout k8s123-migration
     - cd ensembl-k8s-manifests/ensembl-client/static-assets
-
   script:
     - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" copy_job.yaml
     - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" copy_job.yaml
@@ -95,15 +82,10 @@ variables:
 # WP k8s cluster uses ingress
 .build-node:
   image: docker
-
   services:
     - docker:dind
-
-  stage: build_docker_images
-
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
   script:
     - docker build -t ${CONTAINER_NODE_IMAGE} -f Dockerfile.node --no-cache .
     - docker push ${CONTAINER_NODE_IMAGE}
@@ -113,7 +95,6 @@ variables:
 # Template for deployment to "stable" (non-review) environments that have static assets on a mounted drive
 # (therefore, does not need to deploy a static assets container)
 .deploy:
-  stage: deploy-live # is overwritten in some of the jobs that are extending this template
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -126,7 +107,6 @@ variables:
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
-  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - *gitlab-agent-setup-commands
@@ -143,23 +123,21 @@ variables:
 
 # Template for stopping review app - Do cleanup here 
 .stop-review:
-  stage: deploy-preview
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:latest
   before_script:
     - kubectl config use-context ${AGENT}
     - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
-  when: manual
   script:
     - kubectl delete ingress compara-server-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-help-docs-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-in-app-search-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-thoas-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress ensembl-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-web-tools-api-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress ensembl-track-api-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-hi || true
-    - kubectl delete ingress genome-browser-server-${CI_COMMIT_REF_SLUG}-lo || true
+    - kubectl delete ingress genome-browser-server-hi-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress genome-browser-server-lo-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress metadata-api-ingress-${CI_COMMIT_REF_SLUG} || true
-    - kubectl delete ingress refget-proxy-ingress-${CI_COMMIT_REF_SLUG} || true
+    - kubectl delete ingress ensembl-refget-file-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete ingress variation-graphql-ingress-${CI_COMMIT_REF_SLUG} || true
     - kubectl delete namespace ${NAMESPACE}
 
@@ -167,6 +145,7 @@ variables:
 # from the main branch
 Test_N_Build:
   extends: .build-static
+  stage: test_build_static
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
@@ -174,6 +153,7 @@ Test_N_Build:
 # Should run after commits to feature branches.
 Test_N_Build:review:
   extends: .build-static
+  stage: test_build_static
   rules:
     - if: $CI_COMMIT_BRANCH != "main"
 
@@ -181,6 +161,7 @@ Test_N_Build:review:
 # main branch -> Staging, Live
 Node:Live:
   extends: .build-node
+  stage: build_docker_images
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
   needs:
@@ -190,6 +171,7 @@ Node:Live:
 # Runs after commits to feature branches
 Nginx:review:
   extends: .build-nginx
+  stage: build_docker_images
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
@@ -201,6 +183,7 @@ Nginx:review:
 # Runs after commits to feature branches
 Node:review:
   extends: .build-node
+  stage: build_docker_images
   variables:
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   rules:
@@ -217,6 +200,7 @@ Node:review:
 # Deploy the Node server
 Live:
   extends: .deploy
+  stage: deploy-live
   variables:
     AGENT: ${PROD_AGENT}
     NAMESPACE: ${PROD_NS}
@@ -231,6 +215,7 @@ Live:
 # Publish static assets
 Pub:Live:
   extends: .publish_assets
+  stage: deploy-live
   environment:
     name: production
   variables:
@@ -249,6 +234,7 @@ Pub:Live:
 # Deploy the Node server
 LiveFallback:
   extends: .deploy
+  stage: deploy-live
   variables:
     AGENT: ${FALLBACK_AGENT}
     NAMESPACE: ${FALLBACK_NS}
@@ -263,6 +249,7 @@ LiveFallback:
 # Publish static assets
 Pub::LiveFallback:
   extends: .publish_assets
+  stage: deploy-live
   environment:
     name: fallback
   variables:
@@ -349,6 +336,7 @@ Pub:Dev:
 # Job to deploy Node server and a dedicated Nginx container with embedded static assets
 Review:
   extends: .deploy-review
+  stage: deploy-preview
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
@@ -357,6 +345,7 @@ Review:
   environment:
     name: development
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: CleanUpReview
     kubernetes:
       namespace: ${CI_COMMIT_REF_SLUG}
   rules:
@@ -369,22 +358,24 @@ Review:
 # Clean up the review app resources
 CleanUpReview:
   extends: .stop-review
+  stage: deploy-preview
   environment:
     name: development
     action: stop
   variables:
+    GIT_STRATEGY: none
     AGENT: ${DEV_AGENT}
     DEV_NAMESPACE: ${DEV_NS}
     NAMESPACE: ${CI_COMMIT_REF_SLUG}
-  except:
-    - dev # keep temporarily until we delete the dev branch
-    - master # keep temporarily until we delete the master branch
-    - main
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main"
 
 
 # Create a review deployment (runs once per new branch)
 SetupReview:
   extends: .setup-review-newk8s
+  stage: setup
   environment:
     name: development
   variables:
