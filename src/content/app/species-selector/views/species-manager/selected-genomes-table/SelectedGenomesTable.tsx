@@ -39,7 +39,7 @@ import {
   SpeciesType
 } from 'src/shared/components/species-name-parts-for-table';
 
-import HomeIcon from 'static/icons/icon_home.svg';
+import SpeciesSelectorIcon from 'static/icons/icon_launchbar_species_selector.svg';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -231,8 +231,8 @@ const SelectedGenomesTable = (props: {
             >
               <td className={styles.alignCenter}>
                 <Link to={getLinkToSpeciesPage(genome)}>
-                  <HomeIcon
-                    className={styles.homeIcon}
+                  <SpeciesSelectorIcon
+                    className={styles.speciesHomeIcon}
                     role="img"
                     aria-label={getSpeciesLinkAriaLabel(genome)}
                   />

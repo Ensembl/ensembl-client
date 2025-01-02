@@ -47,10 +47,12 @@
   text-align: center;
 }
 
-.homeIcon {
-  fill: var(--color-blue);
-  width: 19px;
+.speciesHomeIcon {
+  fill: white;
+  background-color: var(--color-blue);
+  width: 20px;
   aspect-ratio: 1;
+  padding: 2px;
   font-size: 0; /* to remove the empty vertical space around the home icon and better center it vertically */
 }
 
