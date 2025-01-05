@@ -24,6 +24,7 @@ import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/st
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
+import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -32,20 +33,25 @@ import MainContentBottomViewControls from './components/main-content-bottom-view
 // import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
 // import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
 
+import styles from './RegulatoryActivityViewer.module.css';
+
 const ActivityViewer = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   usePreselectedEpigenomes();
 
   return (
-    <StandardAppLayout
-      mainContent={<MainContent genomeId={activeGenomeId} />}
-      sidebarContent={<ActivityViewerSidebar genomeId={activeGenomeId} />}
-      isSidebarOpen={true}
-      topbarContent={<div />}
-      sidebarNavigation={<SidebarNavigation genomeId={activeGenomeId} />}
-      onSidebarToggle={noop}
-      viewportWidth={1800}
-    />
+    <div className={styles.container}>
+      <ActivityViewerAppBar />
+      <StandardAppLayout
+        mainContent={<MainContent genomeId={activeGenomeId} />}
+        sidebarContent={<ActivityViewerSidebar genomeId={activeGenomeId} />}
+        isSidebarOpen={true}
+        topbarContent={<div />}
+        sidebarNavigation={<SidebarNavigation genomeId={activeGenomeId} />}
+        onSidebarToggle={noop}
+        viewportWidth={1800}
+      />
+    </div>
   );
 };
 
@@ -57,7 +63,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
 
   return (
     <div>
-      Hello activity viewer
+      Placeholder for focus feature information
       <RegionOverview activeGenomeId={genomeId} />
       {/* The spacer divs below are temporary */}
       <div style={{ margin: '0.6rem 0' }} />
