@@ -47,6 +47,10 @@
   text-align: center;
 }
 
+.speciesHomeLink {
+  display: inline-flex;
+}
+
 .speciesHomeIcon {
   fill: white;
   background-color: var(--color-blue);

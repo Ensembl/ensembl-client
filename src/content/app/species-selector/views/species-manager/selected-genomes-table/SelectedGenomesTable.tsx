@@ -24,7 +24,11 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
-import { Table, ColumnHead } from 'src/shared/components/table';
+import {
+  Table,
+  ColumnHead,
+  VerticallyCenteredCellContent
+} from 'src/shared/components/table';
 
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 
@@ -230,13 +234,18 @@ const SelectedGenomesTable = (props: {
               className={isInDeletionMode ? styles.disabledRow : undefined}
             >
               <td className={styles.alignCenter}>
-                <Link to={getLinkToSpeciesPage(genome)}>
-                  <SpeciesSelectorIcon
-                    className={styles.speciesHomeIcon}
-                    role="img"
-                    aria-label={getSpeciesLinkAriaLabel(genome)}
-                  />
-                </Link>
+                <VerticallyCenteredCellContent>
+                  <Link
+                    to={getLinkToSpeciesPage(genome)}
+                    className={styles.speciesHomeLink}
+                  >
+                    <SpeciesSelectorIcon
+                      className={styles.speciesHomeIcon}
+                      role="img"
+                      aria-label={getSpeciesLinkAriaLabel(genome)}
+                    />
+                  </Link>
+                </VerticallyCenteredCellContent>
               </td>
               <td>
                 <CommonName {...genome} />
@@ -254,24 +263,28 @@ const SelectedGenomesTable = (props: {
                 <AssemblyAccessionId {...genome} />
               </td>
               <td className={styles.alignCenter}>
-                <DeleteButtonOrCheckbox
-                  species={genome}
-                  isInDeletionMode={isInDeletionMode}
-                  enterDeletionMode={enterDeletionMode}
-                  addGenomeToDeleteList={addGenomeToDeleteList}
-                  removeGenomeFromDeleteList={removeGenomeFromDeleteList}
-                  isMarkedForDeletion={genomeIdsForDeletion.has(
-                    genome.genome_id
-                  )}
-                />
+                <VerticallyCenteredCellContent>
+                  <DeleteButtonOrCheckbox
+                    species={genome}
+                    isInDeletionMode={isInDeletionMode}
+                    enterDeletionMode={enterDeletionMode}
+                    addGenomeToDeleteList={addGenomeToDeleteList}
+                    removeGenomeFromDeleteList={removeGenomeFromDeleteList}
+                    isMarkedForDeletion={genomeIdsForDeletion.has(
+                      genome.genome_id
+                    )}
+                  />
+                </VerticallyCenteredCellContent>
               </td>
               <td className={styles.alignCenter}>
-                <SlideToggle
-                  className={styles.toggle}
-                  isOn={genome.isEnabled}
-                  onChange={() => toggleGenomeUse(genome)}
-                  disabled={isInDeletionMode}
-                />
+                <VerticallyCenteredCellContent>
+                  <SlideToggle
+                    className={styles.toggle}
+                    isOn={genome.isEnabled}
+                    onChange={() => toggleGenomeUse(genome)}
+                    disabled={isInDeletionMode}
+                  />
+                </VerticallyCenteredCellContent>
               </td>
             </tr>
             {isInDeletionMode &&

@@ -1,0 +1,8 @@
+.verticallyCentered {
+  display: flex;
+  align-items: center;
+}
+
+.horizontallyCentered {
+  justify-content: center;
+}
