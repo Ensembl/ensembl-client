@@ -8,7 +8,7 @@
 }
 
 .appIcon svg {
-  fill: white;
+  fill: var(--app-icon-color, white);
 }
 
 /* The image-button-svg-width and image-button-svg-height variables below
@@ -50,10 +50,8 @@ get used when AppIcon is placed inside of the ImageButton component */
 }
 
 .vep svg {
-  --image-button-svg-width: 95%;
-  --image-button-svg-height: 95%;
-  width: 95%;
-  height: 95%;
+  width: 100%;
+  height: 100%;
 }
 
 .help svg {
