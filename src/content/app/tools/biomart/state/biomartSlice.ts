@@ -182,6 +182,18 @@ const biomartSlice = createSlice({
             ...data.gene.transcript_types,
             expanded: false,
             output: []
+          },
+          gene_stable_id: {
+            input: [],
+            expanded: false,
+            output: [],
+            bm_backend_key: 'filter_gene_stable_id'
+          },
+          transcript_stable_id: {
+            input: [],
+            expanded: false,
+            output: [],
+            bm_backend_key: 'filter_transcript_stable_id'
           }
         }
       };
