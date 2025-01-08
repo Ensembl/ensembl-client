@@ -18,6 +18,8 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/combineEpigenomes';
 
+import useEpigenomesData from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomesData';
+
 import {
   getEpigenomeSelectionCriteria,
   getEpigenomeCombiningDimensions
@@ -27,11 +29,6 @@ import {
   addCombiningDimension,
   removeAllCombiningDimensions
 } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
-
-import {
-  useBaseEpigenomesQuery,
-  useEpigenomeMetadataDimensionsQuery
-} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -47,9 +44,8 @@ type Props = {
 
 const SelectedEpigenomes = (props: Props) => {
   const { genomeId } = props;
-  const { currentData: baseEpigenomes } = useBaseEpigenomesQuery();
-  const { currentData: epigenomeMetadataDimensionsResponse } =
-    useEpigenomeMetadataDimensionsQuery();
+  const { baseEpigenomes, epigenomeMetadataDimensionsResponse } =
+    useEpigenomesData();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
     getEpigenomeSelectionCriteria(state, genomeId)
   );

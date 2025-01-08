@@ -34,12 +34,19 @@ type RegionOverviewRequestParams = {
   location: string; // <-- as formatted by the stringifyLocation function
 };
 
+type BaseEpigenomesRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+};
+
+type EpigenomeMetadataRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+};
+
 export const stringifyLocation = (location: Location) =>
   `${location.regionName}:${location.start}-${location.end}`;
 
 const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // /api/regulation/region-of-interest/v0.1.0/GRCh38?location=17:58190566-58699001
     regionOverview: builder.query<OverviewRegion, RegionOverviewRequestParams>({
       query: (params) => {
         const { assemblyName, location } = params;
@@ -47,37 +54,19 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
           url: `${config.regulationApiBaseUrl}/region-of-interest/v0.1.0/${assemblyName}?location=${location}`
         };
       }
-      // queryFn: async (params) => {
-      //   const module = await import(
-      //     'tests/fixtures/activity-viewer/mockRegionOverviewDense'
-      //   );
-      //   const data = module.default;
-
-      //   return { data };
-      // }
     }),
-    baseEpigenomes: builder.query<Epigenome[], void>({
-      queryFn: async () => {
-        const module = await import(
-          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanBaseEpigenomes'
-        );
-        const data = module.default;
-
-        return { data };
-      }
+    baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
+      query: (params) => ({
+        url: `${config.regulationApiBaseUrl}/metadata/v0.1/base_epigenomes/assembly/${params.assemblyName}`
+      })
     }),
     epigenomeMetadataDimensions: builder.query<
       EpigenomeMetadataDimensionsResponse,
-      void
+      EpigenomeMetadataRequestParams
     >({
-      queryFn: async () => {
-        const module = await import(
-          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanEpigenomeMetadataDimensions'
-        );
-        const data = module.default;
-
-        return { data };
-      }
+      query: (params) => ({
+        url: `${config.regulationApiBaseUrl}/metadata/v0.1/metadata_dimensions/assembly/${params.assemblyName}`
+      })
     }),
     epigenomesActivity: builder.query<EpigenomeActivityResponse, void>({
       queryFn: async () => {

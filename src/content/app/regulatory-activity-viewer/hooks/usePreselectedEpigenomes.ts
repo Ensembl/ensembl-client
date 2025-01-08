@@ -18,10 +18,11 @@ import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
+import useEpigenomesData from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomesData';
+
 import { getEpigenomeSelectionStatePerGenome } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 
-import { useEpigenomeMetadataDimensionsQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { addSelectionCriterion } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
 
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
@@ -37,8 +38,7 @@ import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-act
  */
 const usePreselectedEpigenomes = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId) ?? '';
-  const { currentData: epigenomeMetadataDimensionsResponse } =
-    useEpigenomeMetadataDimensionsQuery();
+  const { epigenomeMetadataDimensionsResponse } = useEpigenomesData();
   const epigenomeSelectionState = useAppSelector((state) =>
     getEpigenomeSelectionStatePerGenome(state, activeGenomeId)
   );
