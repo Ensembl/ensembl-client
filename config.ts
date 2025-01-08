@@ -47,7 +47,7 @@ export const defaultApiUrls: BaseApiUrls = {
   toolsApiBaseUrl: '/api/tools',
   searchApiBaseUrl: '/api/search',
   variationApiUrl: '/api/graphql/variation',
-  regulationApiBaseUrl: '/api/regulation'
+  regulationApiBaseUrl: 'https://dev-2020.ensembl.org/api/regulation' // <-- use full url with hostname for the time being
 };
 
 const defaultKeys = {
