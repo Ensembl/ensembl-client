@@ -21,7 +21,7 @@ type State = {
 };
 
 const initialState: State = {
-  activeGenomeId: 'test-id'
+  activeGenomeId: null
 };
 
 const generalSlice = createSlice({
@@ -33,5 +33,7 @@ const generalSlice = createSlice({
     }
   }
 });
+
+export const { setActiveGenomeId } = generalSlice.actions;
 
 export default generalSlice.reducer;

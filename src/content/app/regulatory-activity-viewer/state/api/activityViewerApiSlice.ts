@@ -16,22 +16,45 @@
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import config from 'config';
+
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
 
+export type Location = {
+  regionName: string;
+  start: number;
+  end: number;
+};
+
+type RegionOverviewRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+  location: string; // <-- as formatted by the stringifyLocation function
+};
+
+export const stringifyLocation = (location: Location) =>
+  `${location.regionName}:${location.start}-${location.end}`;
+
 const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    regionOverview: builder.query<OverviewRegion, void>({
-      queryFn: async () => {
-        const module = await import(
-          'tests/fixtures/activity-viewer/mockRegionOverviewDense'
-        );
-        const data = module.default;
-
-        return { data };
+    // /api/regulation/region-of-interest/v0.1.0/GRCh38?location=17:58190566-58699001
+    regionOverview: builder.query<OverviewRegion, RegionOverviewRequestParams>({
+      query: (params) => {
+        const { assemblyName, location } = params;
+        return {
+          url: `${config.regulationApiBaseUrl}/region-of-interest/v0.1.0/${assemblyName}?location=${location}`
+        };
       }
+      // queryFn: async (params) => {
+      //   const module = await import(
+      //     'tests/fixtures/activity-viewer/mockRegionOverviewDense'
+      //   );
+      //   const data = module.default;
+
+      //   return { data };
+      // }
     }),
     baseEpigenomes: builder.query<Epigenome[], void>({
       queryFn: async () => {

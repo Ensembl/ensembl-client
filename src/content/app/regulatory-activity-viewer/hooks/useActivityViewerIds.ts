@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
+import { useContext } from 'react';
 
-import ActivityViewerContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerIdContextProvider';
+import { ActivityViewerIdContext } from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerIdContext';
 
-const LazilyLoadedActivityViewer = React.lazy(
-  () => import('./RegulatoryActivityViewer')
-);
+const useActivityViewerIds = () => {
+  const context = useContext(ActivityViewerIdContext);
 
-const ActivityViewerPage = () => {
-  const hasMounted = useHasMounted();
+  if (!context) {
+    throw new Error(
+      'useActivityViewerIds must be used within ActivityViewerIdContext'
+    );
+  }
 
-  return hasMounted ? <LazilyLoadedActivityViewer /> : null;
+  return context;
 };
 
-const WrappedActivityViewerPage = () => (
-  <ActivityViewerContextProvider>
-    <ActivityViewerPage />
-  </ActivityViewerContextProvider>
-);
-
-export default WrappedActivityViewerPage;
+export default useActivityViewerIds;

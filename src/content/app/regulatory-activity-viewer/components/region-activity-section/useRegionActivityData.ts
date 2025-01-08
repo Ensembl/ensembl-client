@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useTransition, useMemo } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
 
 import { useAppSelector } from 'src/store';
 
 import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import {
+  useRegionOverviewQuery,
+  stringifyLocation
+} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { useEpigenomesActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import prepareFeatureTracks, {
@@ -31,6 +35,8 @@ import {
   prepareActivityDataForDisplay,
   type EpigenomicActivityForDisplay
 } from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/prepareActivityDataForDisplay';
+
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 /**
  * The purpose of this hook is to combine the preparation of the data
@@ -42,6 +48,7 @@ import {
 
 type RegionActivityData = {
   location: { start: number; end: number };
+  regionOverviewData: OverviewRegion;
   featureTracksData: FeatureTracks;
   epigenomeActivityData: EpigenomicActivityForDisplay;
   scale: ScaleLinear<number, number>;
@@ -49,83 +56,105 @@ type RegionActivityData = {
 
 type Props = {
   width: number;
-  genomeId: string;
 };
 
 const useRegionActivityData = (props: Props) => {
-  const { width, genomeId } = props;
+  const { width } = props;
   const [isTransitionPending, startTransition] = useTransition();
   const [regionActivityData, setRegionActivityData] =
     useState<RegionActivityData | null>(null);
-  const location = useRegionLocation({ genomeId });
+  const { activeGenomeId, assemblyName, location } = useActivityViewerIds();
 
   const {
-    isLoading: isRegionFeatureDataLoading,
-    currentData: regionFeaturesData
-  } = useRegionOverviewQuery();
+    isLoading: isRegionOverviewDataLoading,
+    currentData: regionOverviewData
+  } = useRegionOverviewQuery(
+    {
+      assemblyName: assemblyName || '',
+      location: location ? stringifyLocation(location) : ''
+    },
+    {
+      skip: !assemblyName || !location
+    }
+  );
   const {
     isLoading: isEpigenomeActivityDataLoading,
     currentData: epigenomeActivityData
   } = useEpigenomesActivityQuery();
 
+  const selectedLocation = useRegionLocation({
+    genomeId: activeGenomeId,
+    regionOverviewData
+  });
+
   useEffect(() => {
-    if (!width || !location || !regionFeaturesData || !epigenomeActivityData) {
+    if (
+      !width ||
+      !selectedLocation ||
+      !regionOverviewData ||
+      !epigenomeActivityData
+    ) {
       return;
     }
 
     const scale = scaleLinear()
-      .domain([location.start, location.end])
+      .domain([selectedLocation.start, selectedLocation.end])
       .rangeRound([0, Math.floor(width)]);
 
     const featureTracksData = prepareFeatureTracks({
-      data: regionFeaturesData,
-      start: location.start,
-      end: location.end
+      data: regionOverviewData,
+      start: selectedLocation.start,
+      end: selectedLocation.end
     });
 
     const preparedEpigenomeActivityData = prepareActivityDataForDisplay({
       data: epigenomeActivityData,
-      location,
+      location: selectedLocation,
       scale
     });
 
     startTransition(() => {
       setRegionActivityData({
-        location,
+        location: selectedLocation,
         scale,
+        regionOverviewData,
         featureTracksData,
         epigenomeActivityData: preparedEpigenomeActivityData
       });
     });
-  }, [width, location, regionFeaturesData, epigenomeActivityData]);
+  }, [width, location, regionOverviewData, epigenomeActivityData]);
 
   return {
     data: regionActivityData,
-    isLoading: isRegionFeatureDataLoading || isEpigenomeActivityDataLoading,
+    isLoading: isRegionOverviewDataLoading || isEpigenomeActivityDataLoading,
     isTransitionPending
   };
 };
 
 // If user has narrowed down the location within the region, use that.
 // Otherwise, pick the location from the api response for the region.
-const useRegionLocation = ({ genomeId }: { genomeId: string }) => {
+const useRegionLocation = ({
+  genomeId,
+  regionOverviewData
+}: {
+  genomeId: string | null;
+  regionOverviewData?: OverviewRegion;
+}) => {
   const regionDetailLocation = useAppSelector((state) =>
-    getRegionDetailSelectedLocation(state, genomeId)
+    getRegionDetailSelectedLocation(state, genomeId ?? '')
   );
-  const { currentData } = useRegionOverviewQuery();
 
-  return useMemo(() => {
-    if (!currentData) {
-      return null;
-    }
-    // let's consider just a single contiguous slice without "boring" intervals
-    const location = currentData.locations[0];
+  if (!regionOverviewData) {
+    return null;
+  }
 
-    return {
-      start: regionDetailLocation?.start ?? location.start,
-      end: regionDetailLocation?.end ?? location.end
-    };
-  }, [currentData, regionDetailLocation]);
+  // let's consider just a single contiguous slice without "boring" intervals
+  const location = regionOverviewData.locations[0];
+
+  return {
+    start: regionDetailLocation?.start ?? location.start,
+    end: regionDetailLocation?.end ?? location.end
+  };
 };
 
 export default useRegionActivityData;

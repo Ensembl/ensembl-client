@@ -18,7 +18,6 @@ import { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 import useRegionActivityData from './useRegionActivityData';
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import RegionActivitySectionImage from './RegionActivitySectionImage';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
@@ -28,20 +27,9 @@ import { CircleLoader } from 'src/shared/components/loader';
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
-type Props = {
-  activeGenomeId: string;
-};
-
-const RegionActivitySection = (props: Props) => {
-  const { activeGenomeId } = props;
+const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
-  // const regionDetailLocation = useAppSelector((state) =>
-  //   getRegionDetailSelectedLocation(state, activeGenomeId)
-  // );
-
-  const { currentData: regionOverviewData } = useRegionOverviewQuery();
-
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // TODO: width should be recalculated on resize
@@ -58,7 +46,6 @@ const RegionActivitySection = (props: Props) => {
     isLoading,
     isTransitionPending
   } = useRegionActivityData({
-    genomeId: activeGenomeId,
     width
   });
 
@@ -74,11 +61,11 @@ const RegionActivitySection = (props: Props) => {
         ref={imageContainerRef}
       >
         <div className={styles.container}>
-          {regionOverviewData && preparedData && width && (
+          {preparedData && width && (
             <>
               <RegionActivitySectionImage
                 width={width}
-                regionOverviewData={regionOverviewData}
+                regionOverviewData={preparedData.regionOverviewData}
                 featureTracks={preparedData.featureTracksData}
                 start={preparedData.location.start}
                 end={preparedData.location.end}

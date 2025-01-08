@@ -29,13 +29,14 @@ export type BaseApiUrls = {
   toolsApiBaseUrl: string;
   searchApiBaseUrl: string;
   variationApiUrl: string;
+  regulationApiBaseUrl: string;
 };
 
 export type PublicKeys = {
   googleAnalyticsKey: string;
 };
 
-const defaultApiUrls: BaseApiUrls = {
+export const defaultApiUrls: BaseApiUrls = {
   coreApiUrl: '/api/graphql/core',
   metadataApiBaseUrl: '/api/metadata',
   comparaApiBaseUrl: '/api/graphql/compara',
@@ -45,7 +46,8 @@ const defaultApiUrls: BaseApiUrls = {
   tracksApiBaseUrl: '/api/tracks',
   toolsApiBaseUrl: '/api/tools',
   searchApiBaseUrl: '/api/search',
-  variationApiUrl: '/api/graphql/variation'
+  variationApiUrl: '/api/graphql/variation',
+  regulationApiBaseUrl: '/api/regulation'
 };
 
 const defaultKeys = {
@@ -71,6 +73,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     metadataApiBaseUrl:
       globalThis.process?.env.SSR_METADATA_API_URL ??
       `${defaultServerHost}${defaultApiUrls.metadataApiBaseUrl}`,
+    regulationApiBaseUrl: defaultApiUrls.regulationApiBaseUrl, // irrelevant for server-side rendering
     comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering

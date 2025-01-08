@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import {
+  useRegionOverviewQuery,
+  stringifyLocation
+} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import RegulatoryFeatureLegend from '../regulatory-feature-legend/RegulatoryFeatureLegend';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 const SidebarDefaultView = () => {
-  const { currentData } = useRegionOverviewQuery();
+  const { assemblyName, location } = useActivityViewerIds();
+  const { currentData } = useRegionOverviewQuery(
+    {
+      assemblyName: assemblyName || '',
+      location: location ? stringifyLocation(location) : ''
+    },
+    {
+      skip: !assemblyName || !location
+    }
+  );
 
   if (!currentData) {
     return null;
