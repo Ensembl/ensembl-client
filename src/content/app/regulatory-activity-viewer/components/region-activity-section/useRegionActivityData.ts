@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useMemo } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
 
 import { useAppSelector } from 'src/store';
@@ -122,7 +122,13 @@ const useRegionActivityData = (props: Props) => {
         epigenomeActivityData: preparedEpigenomeActivityData
       });
     });
-  }, [width, location, regionOverviewData, epigenomeActivityData]);
+  }, [
+    width,
+    selectedLocation?.start,
+    selectedLocation?.end,
+    regionOverviewData,
+    epigenomeActivityData
+  ]);
 
   return {
     data: regionActivityData,
@@ -144,17 +150,21 @@ const useRegionLocation = ({
     getRegionDetailSelectedLocation(state, genomeId ?? '')
   );
 
-  if (!regionOverviewData) {
-    return null;
-  }
+  // NOTE: the purpose of this useMemo is not to save on expensive computations,
+  // but to return the same object that will be used as dependency array of useEffect
+  return useMemo(() => {
+    if (!regionOverviewData) {
+      return null;
+    }
 
-  // let's consider just a single contiguous slice without "boring" intervals
-  const location = regionOverviewData.locations[0];
+    // let's consider just a single contiguous slice without "boring" intervals
+    const location = regionOverviewData.locations[0];
 
-  return {
-    start: regionDetailLocation?.start ?? location.start,
-    end: regionDetailLocation?.end ?? location.end
-  };
+    return {
+      start: regionDetailLocation?.start ?? location.start,
+      end: regionDetailLocation?.end ?? location.end
+    };
+  }, [regionOverviewData, regionDetailLocation]);
 };
 
 export default useRegionActivityData;

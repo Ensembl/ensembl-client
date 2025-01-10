@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useReducer, useRef, type MutableRefObject } from 'react';
+import { useEffect, useReducer, useRef, useMemo, type RefObject } from 'react';
 
 /**
  * TODO:
@@ -84,7 +84,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   ref,
   onSelectionCompleted
 }: {
-  ref: MutableRefObject<T | null>;
+  ref: RefObject<T | null>;
   onSelectionCompleted: (coords: { start: number; end: number }) => void;
 }) => {
   const [state, dispatch] = useReducer(selectionStateReducer, null);
@@ -186,7 +186,10 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     document.removeEventListener('mousemove', detectSelectionStart);
   };
 
-  return state ? stateToRectCoordinates(state) : null;
+  // memoize the return value to prevent rerendering of the component consuming this hook
+  return useMemo(() => {
+    return state ? stateToRectCoordinates(state) : null;
+  }, [state]);
 };
 
 const stateToRectCoordinates = (state: NonNullable<State>) => {
