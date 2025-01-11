@@ -56,8 +56,8 @@ const ActivityViewerIdContextProvider = ({
     // test location below
     location: {
       regionName: '17',
-      start: 58490566,
-      end: 58699001
+      start: 58190566,
+      end: 59190566
     }
   };
 

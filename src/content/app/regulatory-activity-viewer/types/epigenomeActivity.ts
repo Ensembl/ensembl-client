@@ -28,29 +28,30 @@ export type EpigenomeActivityMetadata = {
 };
 
 export type TrackData = {
+  epigenome_ids: string[];
   open_chromatin: {
     signal: Array<SignalData>;
     peaks: Array<OpenChromatinPeakData>;
   };
-  histone: {
+  histones: {
     [key: string]: HistoneNarrowPeakData[] | HistoneGappedPeakData[];
   };
 };
 
 type SignalData = {
-  s: number; // start (Ensembl genomic coordinate)
-  e: number; // end (Ensembl genomic coordinate)
-  v: number; // value (an integer between 1 and 9)
+  start: number; // start (Ensembl genomic coordinate)
+  end: number; // end (Ensembl genomic coordinate)
+  value: number; // value (an integer between 1 and 9)
 };
 
 type OpenChromatinPeakData = {
-  s: number; // start (Ensembl genomic coordinate)
-  e: number; // end (Ensembl genomic coordinate)
+  start: number; // start (Ensembl genomic coordinate)
+  end: number; // end (Ensembl genomic coordinate)
 };
 
 type HistoneNarrowPeakData = {
-  s: number; // start (Ensembl genomic coordinate)
-  e: number; // end (Ensembl genomic coordinate)
+  start: number; // start (Ensembl genomic coordinate)
+  end: number; // end (Ensembl genomic coordinate)
 };
 
 /**
@@ -59,16 +60,16 @@ type HistoneNarrowPeakData = {
  * and whose width corresponds to a block end.
  */
 export type HistoneGappedPeakData = {
-  s: number;
-  e: number;
+  start: number;
+  end: number;
   block_count: number; // this is kinda superfluous; it is the same as the length of 'block_starts' or 'block_sizes'
   block_starts: number[];
   block_sizes: number[];
 };
 
 export type EpigenomeActivityResponse = {
-  metadata: EpigenomeActivityMetadata;
-  data: TrackData[];
+  track_metadata: EpigenomeActivityMetadata;
+  track_data: TrackData[];
 };
 
 /**

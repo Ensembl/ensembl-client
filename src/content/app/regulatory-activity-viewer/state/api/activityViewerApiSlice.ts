@@ -71,7 +71,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     epigenomesActivity: builder.query<EpigenomeActivityResponse, void>({
       queryFn: async () => {
         const module = await import(
-          'tests/fixtures/activity-viewer/epigenomes-activity/mockEpigenomeActivityResponse.json'
+          'tests/fixtures/activity-viewer/epigenomes-activity/mockEpigenomeActivityResponse'
         );
         const data = module.default as EpigenomeActivityResponse;
 

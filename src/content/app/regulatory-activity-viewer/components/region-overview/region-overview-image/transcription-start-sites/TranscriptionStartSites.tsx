@@ -273,7 +273,7 @@ const getYStart = ({
 
   const adjustedTrackIndex =
     strand === 'forward'
-      ? Math.min(trackIndex - trackShiftCount, 0)
+      ? Math.max(trackIndex - trackShiftCount, 0)
       : Math.min(trackIndex + trackShiftCount, trackOffsetsTop.length - 1);
   const yStart =
     strand === 'forward'

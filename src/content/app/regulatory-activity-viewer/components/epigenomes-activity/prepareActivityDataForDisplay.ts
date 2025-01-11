@@ -96,9 +96,9 @@ export type EpigenomicActivityForDisplay = {
 export const prepareActivityDataForDisplay = (
   params: Params
 ): EpigenomicActivityForDisplay => {
-  const preparedTracks = params.data.data.map((trackData) =>
+  const preparedTracks = params.data.track_data.map((trackData) =>
     prepareTrackData({
-      metadata: params.data.metadata,
+      metadata: params.data.track_metadata,
       track: trackData,
       location: params.location,
       scale: params.scale
@@ -184,12 +184,12 @@ const prepareOpenChromatinSignalsForTrack = ({
   const result: PreparedOpenChromatinSignal[] = [];
 
   for (const signal of openChromatinSignals) {
-    if (signal.e < location.start || signal.s > location.end) {
+    if (signal.end < location.start || signal.start > location.end) {
       continue;
     }
-    const signalStart = Math.max(location.start, signal.s);
-    const signalEnd = Math.min(location.end, signal.e);
-    const signalValue = signal.v;
+    const signalStart = Math.max(location.start, signal.start);
+    const signalEnd = Math.min(location.end, signal.end);
+    const signalValue = signal.value;
 
     const signalX = scale(signalStart);
     const signalWidth = scale(signalEnd) - signalX;
@@ -233,12 +233,12 @@ const prepareOpenChromatinPeaksForTrack = ({
   const result: PreparedOpenChromatinPeak[] = [];
 
   for (const peak of openChromatinPeaks) {
-    if (peak.e < location.start || peak.s > location.end) {
+    if (peak.end < location.start || peak.start > location.end) {
       continue;
     }
 
-    const peakStart = Math.max(location.start, peak.s);
-    const peakEnd = Math.min(location.end, peak.e);
+    const peakStart = Math.max(location.start, peak.start);
+    const peakEnd = Math.min(location.end, peak.end);
 
     const peakX = scale(peakStart);
     const peakWidth = scale(peakEnd) - peakX;
@@ -274,7 +274,7 @@ const prepareHistoneNarrowPeaksForTrack = ({
     (histoneName) => allHistoneMetadata[histoneName].peak_type === 'narrow'
   );
 
-  const allHistoneData = track.histone;
+  const allHistoneData = track.histones;
 
   const result: PreparedHistoneNarrowPeak[] = [];
 
@@ -288,12 +288,15 @@ const prepareHistoneNarrowPeaksForTrack = ({
     const histonePeaks = allHistoneData[hisoneName];
 
     for (const histonePeak of histonePeaks) {
-      if (histonePeak.e < location.start || histonePeak.s > location.end) {
+      if (
+        histonePeak.end < location.start ||
+        histonePeak.start > location.end
+      ) {
         continue;
       }
 
-      const peakStart = Math.max(histonePeak.s, location.start);
-      const peakEnd = Math.min(histonePeak.e, location.end);
+      const peakStart = Math.max(histonePeak.start, location.start);
+      const peakEnd = Math.min(histonePeak.end, location.end);
 
       const peakX = scale(peakStart);
       const peakWidth = scale(peakEnd) - peakX;
@@ -334,7 +337,7 @@ const prepareHistoneGappedPeaksForTrack = ({
     (histoneName) => allHistoneMetadata[histoneName].peak_type === 'gapped'
   );
 
-  const allHistoneData = track.histone;
+  const allHistoneData = track.histones;
 
   const result: PreparedHistoneGappedPeak[] = [];
 
@@ -348,7 +351,10 @@ const prepareHistoneGappedPeaksForTrack = ({
     const histonePeaks = allHistoneData[hisoneName] as HistoneGappedPeakData[];
 
     for (const histonePeak of histonePeaks) {
-      if (histonePeak.e < location.start || histonePeak.s > location.end) {
+      if (
+        histonePeak.end < location.start ||
+        histonePeak.start > location.end
+      ) {
         continue;
       }
 
@@ -358,7 +364,7 @@ const prepareHistoneGappedPeaksForTrack = ({
       for (let i = 0; i < histonePeak.block_starts.length; i++) {
         const blockRelativeStart = histonePeak.block_starts[i];
         const blockStart = Math.max(
-          histonePeak.s + blockRelativeStart,
+          histonePeak.start + blockRelativeStart,
           location.start
         );
         const blockSize = histonePeak.block_sizes[i];
@@ -392,6 +398,16 @@ const prepareHistoneGappedPeaksForTrack = ({
           }
         }
 
+        blocks.push(block);
+      }
+
+      // if no blocks were added to the blocks array in the for-loop above,
+      // because their width approximates 0, add a single 1px block at the start of the peak
+      if (blocks.length === 0) {
+        const block = {
+          x: scale(histonePeak.start),
+          width: 1
+        };
         blocks.push(block);
       }
 
