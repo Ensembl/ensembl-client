@@ -116,47 +116,10 @@ const prepareTrackData = (params: {
   location: Params['location'];
   scale: Params['scale'];
 }): TrackDataForDisplay => {
-  performance.mark('openChromatinSignals-started');
   const openChromatinSignals = prepareOpenChromatinSignalsForTrack(params);
-  performance.mark('openChromatinSignals-ended');
-  performance.mark('openChromatinPeaks-started');
   const openChromatinPeaks = prepareOpenChromatinPeaksForTrack(params);
-  performance.mark('openChromatinPeaks-ended');
-  performance.mark('histoneNarrowPeaks-started');
   const histoneNarrowPeaks = prepareHistoneNarrowPeaksForTrack(params);
-  performance.mark('histoneNarrowPeaks-ended');
-  performance.mark('histoneGappedPeaks-started');
   const histoneGappedPeaks = prepareHistoneGappedPeaksForTrack(params);
-  performance.mark('histoneGappedPeaks-ended');
-
-  const duration1 = performance.measure(
-    'openChromatinSignals',
-    'openChromatinSignals-started',
-    'openChromatinSignals-ended'
-  );
-  const duration2 = performance.measure(
-    'openChromatinPeaks',
-    'openChromatinPeaks-started',
-    'openChromatinPeaks-ended'
-  );
-  const duration3 = performance.measure(
-    'histoneNarrowPeaks',
-    'histoneNarrowPeaks-started',
-    'histoneNarrowPeaks-ended'
-  );
-  const duration4 = performance.measure(
-    'histoneGappedPeaks',
-    'histoneGappedPeaks-started',
-    'histoneGappedPeaks-ended'
-  );
-
-  // eslint-disable-next-line
-  console.log({
-    duration1: duration1.duration,
-    duration2: duration2.duration,
-    duration3: duration3.duration,
-    duration4: duration4.duration
-  });
 
   return {
     openChromatin: {
