@@ -145,16 +145,16 @@ const TopBar = () => {
 
   return (
     <div className={styles.topbar}>
-      <CloseButtonWithLabel
-        className={styles.closeButton}
-        onClick={returnToSpeciesSelector}
-      />
       <AddButton
         onClick={returnToSpeciesSelector}
         className={styles.addSpeciesButton}
       >
         Add a species
       </AddButton>
+      <CloseButtonWithLabel
+        className={styles.closeButton}
+        onClick={returnToSpeciesSelector}
+      />
     </div>
   );
 };
