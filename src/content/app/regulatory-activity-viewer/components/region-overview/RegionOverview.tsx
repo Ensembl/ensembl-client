@@ -18,7 +18,11 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import {
+  useRegionOverviewQuery,
+  stringifyLocation
+} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
@@ -30,29 +34,25 @@ import styles from './RegionOverview.module.css';
 
 /**
  * NOTES
- * - Provided example spans a distance of 2.6 megabases (start: 84000000, end: 86594625)
- *   Isn't it too much?
- * - Gene does not have full name (comes from xrefs description)
- * - UI data for regulatory features:
- *   - Should the colours of regulatory features be dictated by the api?
- *   - Should the labels for regulatory features be provided by the api? (See sidebar)
- *
- *
  * Distances:
  *  - Distance from the image to the left border and the the right border seems to be 150px
  *    => This means that the toggling of the sidebar will result in re-rendering of everything
  */
 
-type Props = {
-  activeGenomeId: string;
-};
-
-const RegionOverview = (props: Props) => {
-  const { activeGenomeId } = props;
+const RegionOverview = () => {
+  const { activeGenomeId, assemblyName, location } = useActivityViewerIds();
   const [width, setWidth] = useState(0);
   // FIXME: this is temporary; focus can also be a regulatory feature; should probably be reflected in url, and should be set via redux
   const [focusGeneId, setFocusGeneId] = useState<string | null>(null);
-  const { currentData } = useRegionOverviewQuery();
+  const { currentData } = useRegionOverviewQuery(
+    {
+      assemblyName: assemblyName || '',
+      location: location ? stringifyLocation(location) : ''
+    },
+    {
+      skip: !assemblyName || !location
+    }
+  );
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // TODO: width should be recalculated on resize
@@ -88,6 +88,10 @@ const RegionOverview = (props: Props) => {
   const topOffsets = featureTracks
     ? getImageHeightAndTopOffsets(featureTracks)
     : null;
+
+  if (!activeGenomeId) {
+    return null;
+  }
 
   return (
     <div className={styles.grid}>

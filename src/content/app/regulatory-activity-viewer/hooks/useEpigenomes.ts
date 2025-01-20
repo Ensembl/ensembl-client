@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
+import { useContext } from 'react';
 
-import ActivityViewerIdContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerIdContextProvider';
+import { ActivityViewerEpigenomesContext } from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContext';
 
-const LazilyLoadedActivityViewer = React.lazy(
-  () => import('./RegulatoryActivityViewer')
-);
+const useEpigenomes = () => {
+  const context = useContext(ActivityViewerEpigenomesContext);
 
-const ActivityViewerPage = () => {
-  const hasMounted = useHasMounted();
+  if (!context) {
+    throw new Error(
+      'useEpigenomes must be used within ActivityViewerEpigenomesContext'
+    );
+  }
 
-  return hasMounted ? <LazilyLoadedActivityViewer /> : null;
+  return context;
 };
 
-const WrappedActivityViewerPage = () => (
-  <ActivityViewerIdContextProvider>
-    <ActivityViewerPage />
-  </ActivityViewerIdContextProvider>
-);
-
-export default WrappedActivityViewerPage;
+export default useEpigenomes;

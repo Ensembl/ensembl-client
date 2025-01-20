@@ -30,7 +30,7 @@ type DimensionWithCategoricalData = CommonMetadataDimensionFields & {
 type DimensionWithCategoricalDataAndOntology = CommonMetadataDimensionFields & {
   type: 'categorical_with_ontology';
   values: {
-    name: string;
+    value: string;
     ontology: {
       curie: string;
       url: string;
@@ -43,7 +43,7 @@ type DimensionWithCategoricalDataAndDescription =
   CommonMetadataDimensionFields & {
     type: 'categorical_with_description';
     values: {
-      name: string;
+      value: string;
       description: string;
     }[];
   };

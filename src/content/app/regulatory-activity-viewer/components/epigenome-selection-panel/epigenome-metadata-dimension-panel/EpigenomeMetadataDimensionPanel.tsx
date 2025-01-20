@@ -53,16 +53,16 @@ const EpigenomeMetadataDimensionPanel = <
           key={dataItem}
         />
       );
-    } else if ('name' in dataItem) {
+    } else if ('value' in dataItem) {
       return (
         <EpigenomeSelectableMetadataItem
           dimensionName={props.dimensionName}
-          name={dataItem.name}
-          isSelected={props.selectedValues.has(dataItem.name)}
-          count={props.counts[dataItem.name] ?? 0}
+          name={dataItem.value}
+          isSelected={props.selectedValues.has(dataItem.value)}
+          count={props.counts[dataItem.value] ?? 0}
           onAdd={props.onSelectionCriterionAdded}
           onRemove={props.onSelectionCriterionRemoved}
-          key={dataItem.name}
+          key={dataItem.value}
         />
       );
     } else {

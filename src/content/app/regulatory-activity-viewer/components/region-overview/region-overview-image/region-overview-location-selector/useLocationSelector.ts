@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useReducer, useRef, type MutableRefObject } from 'react';
+import { useEffect, useReducer, useRef, type RefObject } from 'react';
 
 /**
  * TODO:
@@ -84,7 +84,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   ref,
   onSelectionCompleted
 }: {
-  ref: MutableRefObject<T | null>;
+  ref: RefObject<T | null>;
   onSelectionCompleted: (coords: { start: number; end: number }) => void;
 }) => {
   const [state, dispatch] = useReducer(selectionStateReducer, null);
@@ -184,6 +184,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   const removeAllListeners = () => {
     document.removeEventListener('mousemove', onSelectionChange);
     document.removeEventListener('mousemove', detectSelectionStart);
+    document.removeEventListener('mouseup', onSelectionEnd);
   };
 
   return state ? stateToRectCoordinates(state) : null;

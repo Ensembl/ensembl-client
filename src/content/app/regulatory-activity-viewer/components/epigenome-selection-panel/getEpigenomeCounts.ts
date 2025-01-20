@@ -123,8 +123,9 @@ export const getMetadataItems = (params: {
       return counts[item] || selectionCriteria[dimensionName]?.has(item);
     } else {
       return (
-        'name' in item &&
-        (counts[item.name] || selectionCriteria[dimensionName]?.has(item.name))
+        'value' in item &&
+        (counts[item.value] ||
+          selectionCriteria[dimensionName]?.has(item.value))
       );
     }
   });

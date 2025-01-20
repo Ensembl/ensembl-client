@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
@@ -41,4 +42,4 @@ const CircleLoader = (props: Props) => {
   );
 };
 
-export default CircleLoader;
+export default memo(CircleLoader);

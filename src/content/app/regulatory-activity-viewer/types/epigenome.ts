@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-// Question: how to model the Epigenome type considering the agnosticism of the client?
-export type Epigenome = {
+// One thing that is certain about an epigenome is that it has an id.
+// The rest is up for grabs.
+export type Epigenome = Record<string, string | string[]> & {
   id: string;
-  material: string;
-  term: string;
-  sex: string;
-  life_stage: string;
-  age: string;
-  organs: string[];
-  systems: string[];
 };

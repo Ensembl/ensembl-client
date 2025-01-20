@@ -21,6 +21,12 @@ export type GeneInRegionOverview = {
   symbol?: string;
   stable_id: string;
   unversioned_stable_id: string;
+  name?: {
+    value: string;
+    source?: string;
+    accession?: string;
+    url?: string;
+  };
   biotype: string;
   start: number;
   end: number;
@@ -70,6 +76,7 @@ export type RegulatoryFeature = {
   strand: Strand;
   extended_start?: number; // <-- may have the same value as start
   extended_end?: number; // <-- may have the same value as end
+  associated_genes: string[];
 };
 
 export type RegulatoryFeatureMetadata = {

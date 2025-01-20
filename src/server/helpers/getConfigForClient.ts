@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
+import { defaultApiUrls } from 'config';
+
 // get base urls for the apis to be used by the client
 import type { BaseApiUrls } from 'config';
 
 const getBaseApiUrls = (): BaseApiUrls => {
   return {
-    coreApiUrl: process.env.BROWSER_CORE_API_BASE_URL ?? '/api/graphql/core',
-    metadataApiBaseUrl: process.env.METADATA_API_BASE_URL ?? '/api/metadata',
-    docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',
-    refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget',
-    tracksApiBaseUrl: '/api/tracks',
+    coreApiUrl:
+      process.env.BROWSER_CORE_API_BASE_URL ?? defaultApiUrls.coreApiUrl,
+    metadataApiBaseUrl:
+      process.env.METADATA_API_BASE_URL ?? defaultApiUrls.metadataApiBaseUrl,
+    docsBaseUrl:
+      process.env.BROWSER_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
+    refgetBaseUrl: process.env.REFGET_BASE_URL ?? defaultApiUrls.refgetBaseUrl,
+    tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl,
     genomeBrowserBackendBaseUrl:
-      process.env.GENOME_BROWSER_BACKEND_BASE_URL ?? '/api/browser/data',
-    toolsApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/tools',
-    searchApiBaseUrl: process.env.TOOLS_API_BASE_URL ?? '/api/search',
+      process.env.GENOME_BROWSER_BACKEND_BASE_URL ??
+      defaultApiUrls.genomeBrowserBackendBaseUrl,
+    toolsApiBaseUrl:
+      process.env.TOOLS_API_BASE_URL ?? defaultApiUrls.toolsApiBaseUrl,
+    searchApiBaseUrl:
+      process.env.TOOLS_API_BASE_URL ?? defaultApiUrls.searchApiBaseUrl,
     variationApiUrl:
-      process.env.VARIATION_GRAPHQL_API_URL ?? '/api/graphql/variation',
-    comparaApiBaseUrl: '/api/graphql/compara'
+      process.env.VARIATION_GRAPHQL_API_URL ?? defaultApiUrls.variationApiUrl,
+    comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl,
+    regulationApiBaseUrl: defaultApiUrls.regulationApiBaseUrl
   };
 };
 
