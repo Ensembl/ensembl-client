@@ -24,6 +24,7 @@ import useActivityViewerIds from './hooks/useActivityViewerIds';
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 import useActivityViewerRouting from './hooks/useActivityViewerRouting';
 
+import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import RegionOverview from './components/region-overview/RegionOverview';
@@ -95,4 +96,10 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   );
 };
 
-export default ActivityViewer;
+const WrappedActivityViewer = () => (
+  <ActivityViewerEpigenomesContextProvider>
+    <ActivityViewer />
+  </ActivityViewerEpigenomesContextProvider>
+);
+
+export default WrappedActivityViewer;

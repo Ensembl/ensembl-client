@@ -22,6 +22,7 @@ import { useAppSelector } from 'src/store';
 import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import {
   useRegionOverviewQuery,
   stringifyLocation
@@ -63,7 +64,13 @@ const useRegionActivityData = (props: Props) => {
   const [isTransitionPending, startTransition] = useTransition();
   const [regionActivityData, setRegionActivityData] =
     useState<RegionActivityData | null>(null);
-  const { activeGenomeId, assemblyName, location } = useActivityViewerIds();
+  const { activeGenomeId, assemblyName, assemblyAccessionId, location } =
+    useActivityViewerIds();
+  const { filteredCombinedEpigenomes } = useEpigenomes();
+
+  const epigenomeIds = filteredCombinedEpigenomes?.map(
+    (epigenome) => epigenome.id
+  );
 
   const {
     isLoading: isRegionOverviewDataLoading,
@@ -80,7 +87,17 @@ const useRegionActivityData = (props: Props) => {
   const {
     isLoading: isEpigenomeActivityDataLoading,
     currentData: epigenomeActivityData
-  } = useEpigenomesActivityQuery();
+  } = useEpigenomesActivityQuery(
+    {
+      assemblyAccessionId: assemblyAccessionId ?? '',
+      epigenomeIds: epigenomeIds ?? [],
+      regionName: location?.regionName ?? '',
+      locations: location ? [{ start: location.start, end: location.end }] : []
+    },
+    {
+      skip: !assemblyAccessionId || !epigenomeIds || !location
+    }
+  );
 
   const selectedLocation = useRegionLocation({
     genomeId: activeGenomeId,

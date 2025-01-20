@@ -16,11 +16,6 @@
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 
-/**
- * NOTE: currently, epigenomes get combined by age no matter whether this dimension is included in the combined dimensions,
- * because it isn't yet clear how to deal with age properly. (Age is going to be tightly linked to life stage.)
- */
-
 export const getCombinedEpigenomes = ({
   baseEpigenomes,
   combiningDimensions
@@ -28,7 +23,7 @@ export const getCombinedEpigenomes = ({
   baseEpigenomes: Epigenome[];
   combiningDimensions: string[];
 }) => {
-  const combinedEpigenomesMap = new Map<string, Partial<Epigenome>>();
+  const combinedEpigenomesMap = new Map<string, Epigenome>();
 
   for (const epigenome of baseEpigenomes) {
     const combinedEpigenomeKey = createCombinedEpigenomeKey(
@@ -71,9 +66,9 @@ const createCombinedEpigenome = ({
 }: {
   epigenome: Epigenome;
   combiningDimensions: string[];
-  existingCombinedEpigenome?: Partial<Epigenome>;
+  existingCombinedEpigenome?: Epigenome;
 }) => {
-  const combinedEpigenome: Partial<Epigenome> = {};
+  const combinedEpigenome: Epigenome = { id: epigenome.id };
 
   for (const key of Object.keys(epigenome) as Array<keyof Epigenome>) {
     if (combiningDimensions.includes(key)) {

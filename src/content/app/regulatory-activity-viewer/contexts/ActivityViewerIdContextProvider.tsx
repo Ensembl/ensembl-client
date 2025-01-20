@@ -53,11 +53,12 @@ const ActivityViewerIdContextProvider = ({
     activeGenomeId,
     assemblyAccessionId: assemblyAccessionId ?? null,
     assemblyName: assemblyName ?? null,
-    // test location below
+    // Below is a test location. Later on, we will read it from the url or from an input element
     location: {
       regionName: '17',
       start: 58190566,
-      end: 59190566
+      end: 58290566 // <-- 100kB slice
+      // end: 59190566 // <-- 1MB slice
     }
   };
 

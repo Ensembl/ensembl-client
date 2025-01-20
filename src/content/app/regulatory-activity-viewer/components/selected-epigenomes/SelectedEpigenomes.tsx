@@ -16,14 +16,9 @@
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/combineEpigenomes';
+import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
-import useEpigenomesData from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomesData';
-
-import {
-  getEpigenomeSelectionCriteria,
-  getEpigenomeCombiningDimensions
-} from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
+import { getEpigenomeCombiningDimensions } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import {
   addCombiningDimension,
@@ -44,11 +39,8 @@ type Props = {
 
 const SelectedEpigenomes = (props: Props) => {
   const { genomeId } = props;
-  const { baseEpigenomes, epigenomeMetadataDimensionsResponse } =
-    useEpigenomesData();
-  const epigenomeSelectionCriteria = useAppSelector((state) =>
-    getEpigenomeSelectionCriteria(state, genomeId)
-  );
+  const { filteredCombinedEpigenomes, epigenomeMetadataDimensionsResponse } =
+    useEpigenomes();
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, genomeId)
   );
@@ -67,23 +59,9 @@ const SelectedEpigenomes = (props: Props) => {
     dispatch(removeAllCombiningDimensions({ genomeId }));
   };
 
-  if (!baseEpigenomes || !epigenomeMetadataDimensionsResponse) {
+  if (!filteredCombinedEpigenomes || !epigenomeMetadataDimensionsResponse) {
     return null;
   }
-
-  const filteredEpigenomes = applyFilters({
-    epigenomes: baseEpigenomes,
-    selectionCriteria: epigenomeSelectionCriteria
-  });
-
-  const combinedEpigenomes = getCombinedEpigenomes({
-    baseEpigenomes: filteredEpigenomes,
-    combiningDimensions: epigenomeCombiningDimensions
-  });
-
-  const epigenomesForDisplay = epigenomeCombiningDimensions.length
-    ? combinedEpigenomes
-    : filteredEpigenomes;
 
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
 
@@ -119,7 +97,7 @@ const SelectedEpigenomes = (props: Props) => {
             </tr>
           </thead>
           <tbody>
-            {epigenomesForDisplay.map((epigenome, index) => (
+            {filteredCombinedEpigenomes.map((epigenome, index) => (
               <tr key={index}>
                 {tableColumns.map(
                   (tableColumn) =>
@@ -140,14 +118,14 @@ const SelectedEpigenomes = (props: Props) => {
             ))}
           </tbody>
         </Table>
-        {!epigenomesForDisplay.length && (
+        {!filteredCombinedEpigenomes.length && (
           <div className={styles.noEpigenomesMessage}>
             Use 'Configure' to select the data to display
           </div>
         )}
       </div>
       <div className={styles.rightColumn}>
-        <EpigenomesCount epigenomes={epigenomesForDisplay} />
+        <EpigenomesCount epigenomes={filteredCombinedEpigenomes} />
         <TextButton onClick={onRemoveAllCombiningDimensions}>
           Reset columns
         </TextButton>
@@ -197,43 +175,6 @@ const getTableColumns = (params: EpigenomeMetadataDimensionsResponse) => {
     dimensionName,
     columnHeading: dimensions[dimensionName].name
   }));
-};
-
-// TODO: this function can probably be re-used with what is in getEpigenomeCounts
-const applyFilters = (params: {
-  epigenomes: Epigenome[];
-  selectionCriteria: Record<string, Set<string>>;
-}) => {
-  const { epigenomes, selectionCriteria } = params;
-  const selectedMetadataDimensions = Object.keys(selectionCriteria);
-
-  if (!selectedMetadataDimensions.length) {
-    return [];
-  }
-
-  let finalFilteredEpigenomes: typeof epigenomes = epigenomes;
-  let currentFilteredEpigenomes: typeof epigenomes = [];
-
-  for (const dimension of selectedMetadataDimensions) {
-    for (const epigenome of finalFilteredEpigenomes) {
-      const metadata = epigenome[dimension as keyof typeof epigenome];
-      if (typeof metadata === 'string') {
-        if (selectionCriteria[dimension].has(metadata)) {
-          currentFilteredEpigenomes.push(epigenome);
-        }
-      } else if (Array.isArray(metadata)) {
-        for (const item of metadata) {
-          if (selectionCriteria[dimension].has(item)) {
-            currentFilteredEpigenomes.push(epigenome);
-          }
-        }
-      }
-    }
-    finalFilteredEpigenomes = currentFilteredEpigenomes;
-    currentFilteredEpigenomes = [];
-  }
-
-  return finalFilteredEpigenomes;
 };
 
 export default SelectedEpigenomes;

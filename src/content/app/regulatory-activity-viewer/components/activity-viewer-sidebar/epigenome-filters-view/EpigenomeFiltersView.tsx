@@ -18,7 +18,7 @@ import { useCallback } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import useEpigenomesData from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomesData';
+import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
 import { getEpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
@@ -45,7 +45,7 @@ type Props = {
 const EpigenomeFiltersView = (props: Props) => {
   const { genomeId } = props;
   const { baseEpigenomes, epigenomeMetadataDimensionsResponse } =
-    useEpigenomesData();
+    useEpigenomes();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
     getEpigenomeSelectionCriteria(state, genomeId ?? '')
   );
