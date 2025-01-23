@@ -73,8 +73,8 @@ const applyFilters = (params: {
   // and gradually narrow down the list of epigenomes by applying filters from each subsequent group
   // to the results of the previous pass
 
-  let finalFilteredEpigenomes: typeof epigenomes = epigenomes;
-  let currentFilteredEpigenomes: typeof epigenomes = [];
+  let finalFilteredEpigenomes = epigenomes;
+  let currentFilteredEpigenomes: Epigenome[] = [];
 
   for (const dimension of selectedMetadataDimensions) {
     for (const epigenome of finalFilteredEpigenomes) {
