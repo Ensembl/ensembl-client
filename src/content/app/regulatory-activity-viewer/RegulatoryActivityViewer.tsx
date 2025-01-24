@@ -18,12 +18,15 @@ import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
 
-import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
+import useActivityViewerIds from './hooks/useActivityViewerIds';
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
+import useActivityViewerRouting from './hooks/useActivityViewerRouting';
 
+import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
+import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -32,20 +35,26 @@ import MainContentBottomViewControls from './components/main-content-bottom-view
 import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
 import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
 
+import styles from './RegulatoryActivityViewer.module.css';
+
 const ActivityViewer = () => {
-  const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const { activeGenomeId } = useActivityViewerIds();
+  useActivityViewerRouting();
   usePreselectedEpigenomes();
 
   return (
-    <StandardAppLayout
-      mainContent={<MainContent genomeId={activeGenomeId} />}
-      sidebarContent={<ActivityViewerSidebar genomeId={activeGenomeId} />}
-      isSidebarOpen={true}
-      topbarContent={<div />}
-      sidebarNavigation={<SidebarNavigation genomeId={activeGenomeId} />}
-      onSidebarToggle={noop}
-      viewportWidth={1800}
-    />
+    <div className={styles.container}>
+      <ActivityViewerAppBar />
+      <StandardAppLayout
+        mainContent={<MainContent genomeId={activeGenomeId} />}
+        sidebarContent={<ActivityViewerSidebar genomeId={activeGenomeId} />}
+        isSidebarOpen={true}
+        topbarContent={<div />}
+        sidebarNavigation={<SidebarNavigation genomeId={activeGenomeId} />}
+        onSidebarToggle={noop}
+        viewportWidth={1800}
+      />
+    </div>
   );
 };
 
@@ -57,8 +66,8 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
 
   return (
     <div>
-      Hello activity viewer
-      <RegionOverview activeGenomeId={genomeId} />
+      Placeholder for focus feature information
+      <RegionOverview />
       {/* The spacer divs below are temporary */}
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottomViewControls genomeId={genomeId} />
@@ -82,11 +91,15 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
       {activeView === 'epigenomes-selection' && (
         <EpigenomeSelectionModal genomeId={genomeId} />
       )}
-      {activeView === 'dataviz' && (
-        <RegionActivitySection activeGenomeId={genomeId} />
-      )}
+      {activeView === 'dataviz' && <RegionActivitySection />}
     </>
   );
 };
 
-export default ActivityViewer;
+const WrappedActivityViewer = () => (
+  <ActivityViewerEpigenomesContextProvider>
+    <ActivityViewer />
+  </ActivityViewerEpigenomesContextProvider>
+);
+
+export default WrappedActivityViewer;

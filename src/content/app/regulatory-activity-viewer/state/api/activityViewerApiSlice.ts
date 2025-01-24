@@ -16,53 +16,109 @@
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import config from 'config';
+
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
+import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
+
+export type Location = {
+  regionName: string;
+  start: number;
+  end: number;
+};
+
+type RegionOverviewRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+  location: string; // <-- as formatted by the stringifyLocation function
+};
+
+type BaseEpigenomesRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+};
+
+type EpigenomeMetadataRequestParams = {
+  assemblyName: string; // <-- this will be replaced by assembly accession id
+};
+
+type EpigenomesActivityRequestParams = {
+  assemblyAccessionId: string;
+  regionName: string;
+  locations: { start: number; end: number }[];
+  epigenomeIds: string[];
+};
+
+export const stringifyLocation = (location: Location) =>
+  `${location.regionName}:${location.start}-${location.end}`;
 
 const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    regionOverview: builder.query<OverviewRegion, void>({
-      queryFn: async () => {
-        // const module = await import(
-        //   'tests/fixtures/activity-viewer/mockRegionOverviewSparse'
-        // );
-        const module = await import(
-          'tests/fixtures/activity-viewer/mockRegionOverviewDense'
-        );
-        const data = module.default;
-
-        return { data };
+    regionOverview: builder.query<OverviewRegion, RegionOverviewRequestParams>({
+      query: (params) => {
+        const { assemblyName, location } = params;
+        return {
+          url: `${config.regulationApiBaseUrl}/region-of-interest/v0.1.0/${assemblyName}?location=${location}`
+        };
       }
     }),
-    baseEpigenomes: builder.query<Epigenome[], void>({
-      queryFn: async () => {
-        const module = await import(
-          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanBaseEpigenomes'
-        );
-        const data = module.default;
-
-        return { data };
-      }
+    baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
+      query: (params) => ({
+        url: `${config.regulationApiBaseUrl}/metadata/v0.1/base_epigenomes/assembly/${params.assemblyName}`
+      })
     }),
     epigenomeMetadataDimensions: builder.query<
       EpigenomeMetadataDimensionsResponse,
-      void
+      EpigenomeMetadataRequestParams
     >({
-      queryFn: async () => {
-        const module = await import(
-          'tests/fixtures/activity-viewer/epigenomes-metadata/mockHumanEpigenomeMetadataDimensions'
-        );
-        const data = module.default;
+      query: (params) => ({
+        url: `${config.regulationApiBaseUrl}/metadata/v0.1/metadata_dimensions/assembly/${params.assemblyName}`
+      })
+    }),
+    epigenomesActivity: builder.query<
+      EpigenomeActivityResponse,
+      EpigenomesActivityRequestParams
+    >({
+      queryFn: async (params, _, __, baseQuery) => {
+        const { assemblyAccessionId, epigenomeIds, locations, regionName } =
+          params;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.1/activity_viewer/assembly/${assemblyAccessionId}`;
+        const requestBody = {
+          region_name: regionName,
+          locations,
+          epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
+        };
 
-        return { data };
+        const { data, error } = await baseQuery({
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(requestBody)
+        });
+
+        if (error) {
+          return {
+            error
+          };
+        } else {
+          return { data: data as EpigenomeActivityResponse };
+        }
       }
     })
   })
 });
 
+// Ids that client generates for combined epigenomes are comma-separated strings
+// consisting of ids of base epigenomes that comprise the combined epigenome.
+// Meanwhile, the api expects arrays of individual epigenome ids.
+const prepareEpigenomeIdsForRequest = (epigenomeIds: string[]) =>
+  epigenomeIds.map((id) => id.split(', '));
+
 export const {
   useRegionOverviewQuery,
   useEpigenomeMetadataDimensionsQuery,
-  useBaseEpigenomesQuery
+  useBaseEpigenomesQuery,
+  useEpigenomesActivityQuery
 } = activityViewerApiSlice;

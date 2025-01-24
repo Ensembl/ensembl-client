@@ -14,37 +14,22 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
-import { useAppSelector } from 'src/store';
-
-import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
-
-import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
-
-import { useRegionOverviewQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useRegionActivityData from './useRegionActivityData';
 
 import RegionActivitySectionImage from './RegionActivitySectionImage';
+import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import { CircleLoader } from 'src/shared/components/loader';
 
 // FIXME: promote these styles to the top level of region activity viewer
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
-type Props = {
-  activeGenomeId: string;
-};
-
-const RegionActivitySection = (props: Props) => {
-  const { activeGenomeId } = props;
+const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
-  const regionDetailLocation = useAppSelector((state) =>
-    getRegionDetailSelectedLocation(state, activeGenomeId)
-  );
-
-  const { currentData } = useRegionOverviewQuery();
-
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // TODO: width should be recalculated on resize
@@ -56,29 +41,13 @@ const RegionActivitySection = (props: Props) => {
     setWidth(imageContainerWidth);
   }, []);
 
-  const preparedData = useMemo(() => {
-    if (!currentData) {
-      return null;
-    }
-
-    // let's consider just a single contiguous slice without "boring" intervals
-    const location = currentData.locations[0];
-
-    const selectedStart = regionDetailLocation?.start ?? location.start;
-    const selectedEnd = regionDetailLocation?.end ?? location.end;
-
-    const featureTracks = prepareFeatureTracks({
-      data: currentData,
-      start: selectedStart,
-      end: selectedEnd
-    });
-
-    return {
-      featureTracks,
-      start: selectedStart,
-      end: selectedEnd
-    };
-  }, [currentData, regionDetailLocation]);
+  const {
+    data: preparedData,
+    isLoading,
+    isTransitionPending
+  } = useRegionActivityData({
+    width
+  });
 
   const componentClasses = classNames(
     styles.section,
@@ -91,15 +60,31 @@ const RegionActivitySection = (props: Props) => {
         className={regionOverviewStyles.middleColumn}
         ref={imageContainerRef}
       >
-        {currentData && preparedData && width && (
-          <RegionActivitySectionImage
-            width={width}
-            regionOverviewData={currentData}
-            featureTracks={preparedData.featureTracks}
-            start={preparedData.start}
-            end={preparedData.end}
-          />
-        )}
+        <div className={styles.container}>
+          {preparedData && width && (
+            <>
+              <RegionActivitySectionImage
+                width={width}
+                regionOverviewData={preparedData.regionOverviewData}
+                featureTracks={preparedData.featureTracksData}
+                start={preparedData.location.start}
+                end={preparedData.location.end}
+              />
+              {/* A temporary vertical separator component below */}
+              <div style={{ margin: '1rem 0' }} />
+              <EpigenomeActivityImage
+                data={preparedData.epigenomeActivityData}
+                scale={preparedData.scale}
+                width={width}
+              />
+            </>
+          )}
+          {(isLoading || isTransitionPending) && (
+            <div className={styles.loader}>
+              <CircleLoader />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

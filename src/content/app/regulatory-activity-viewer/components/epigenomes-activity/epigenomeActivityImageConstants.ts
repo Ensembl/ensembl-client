@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
+export const TRACK_HEIGHT = 40;
 
-import ActivityViewerIdContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerIdContextProvider';
+export const OPEN_CHROMATIN_SIGNAL_HEIGHT = 8;
+export const OPEN_CHROMATIN_SIGNAL_OFFSET_TOP = 2;
 
-const LazilyLoadedActivityViewer = React.lazy(
-  () => import('./RegulatoryActivityViewer')
-);
+export const OPEN_CHROMATIN_PEAK_HEIGHT = 10;
+export const OPEN_CHROMATIN_PEAK_OFFSET_TOP = 1;
 
-const ActivityViewerPage = () => {
-  const hasMounted = useHasMounted();
+export const HISTONE_NARROW_PEAK_OFFSET_TOP = 4;
+export const HISTONE_NARROW_PEAK_HEIGHT = 2;
 
-  return hasMounted ? <LazilyLoadedActivityViewer /> : null;
-};
-
-const WrappedActivityViewerPage = () => (
-  <ActivityViewerIdContextProvider>
-    <ActivityViewerPage />
-  </ActivityViewerIdContextProvider>
-);
-
-export default WrappedActivityViewerPage;
+export const HISTONE_GAPPED_PEAK_OFFSET_TOP = 4;
+export const HISTONE_GAPPED_PEAK_BLOCK_HEIGHT = 2;
+export const HISTONE_GAPPED_PEAK_CONNECTOR_HEIGHT = 1;

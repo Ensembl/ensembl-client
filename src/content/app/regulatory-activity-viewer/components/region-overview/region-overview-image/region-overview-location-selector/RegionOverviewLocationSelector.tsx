@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type MutableRefObject, type ReactNode } from 'react';
+import { type RefObject, type ReactNode } from 'react';
 import { type ScaleLinear } from 'd3';
 
 import { useAppDispatch } from 'src/store';
@@ -25,7 +25,7 @@ import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-vie
 
 type Props = {
   activeGenomeId: string;
-  imageRef: MutableRefObject<SVGSVGElement | null>;
+  imageRef: RefObject<SVGSVGElement | null>;
   height: number;
   width: number;
   scale: ScaleLinear<number, number>;
