@@ -17,6 +17,7 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import {
@@ -48,7 +49,6 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesPage.module.css';
-import classNames from 'classnames';
 
 type SpeciesPageParams = {
   genomeId: string;

@@ -14,9 +14,7 @@
 }
 
 .topbar_withoutSidebarNavigation {
-  display: grid;
-  align-items: center;
-  width: 100%;
+  flex-grow: 1;
   margin-right: 39px;
 }
 
