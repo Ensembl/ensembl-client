@@ -17,11 +17,15 @@
 import type { ReactNode } from 'react';
 
 import { useAppSelector } from 'src/store';
+import { useGenomeSummaryByGenomeSlugQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { ActivityViewerIdContext } from './ActivityViewerIdContext';
+
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 /**
  * NOTE: The regulation team insists that their api endpoints
@@ -45,21 +49,41 @@ const ActivityViewerIdContextProvider = ({
   const species = useAppSelector((state) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
+  const params = useUrlParams<'genomeId'>(['/activity-viewer/:genomeId']);
+  const { genomeId: genomeIdInUrl } = params;
+
+  // TODO: If user does not have this genome selected, it should be added to selected species
+  const { currentData: genomeSummary, error } =
+    useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
+      skip: !genomeIdInUrl
+    });
 
   const assemblyAccessionId = species?.assembly.accession_id;
   const assemblyName = species?.assembly.name.split('.')[0]; // FIXME: assemblyName is used temporarily for some of the endpoints, until they switch to assembly accession id
 
+  const genomeId = genomeSummary?.genome_id;
+  const genomeIdForUrl =
+    genomeIdInUrl ??
+    genomeSummary?.genome_tag ??
+    genomeSummary?.genome_id ??
+    species?.genome_tag ??
+    species?.genome_id;
+
+  // TODO: in the future, read location from the url
+  const location = mockLocation;
+  const locationForUrl = formatLocationForUrl(location);
+
   const contextValue = {
+    genomeIdInUrl,
     activeGenomeId,
+    genomeId,
+    genomeIdForUrl,
     assemblyAccessionId: assemblyAccessionId ?? null,
     assemblyName: assemblyName ?? null,
     // Below is a test location. Later on, we will read it from the url or from an input element
-    location: {
-      regionName: '17',
-      start: 58190566,
-      end: 58290566 // <-- 100kB slice
-      // end: 59190566 // <-- 1MB slice
-    }
+    location: mockLocation,
+    locationForUrl,
+    isMissingGenomeId: isMissingGenomeId(error as FetchBaseQueryError)
   };
 
   return (
@@ -67,6 +91,32 @@ const ActivityViewerIdContextProvider = ({
       {children}
     </ActivityViewerIdContext>
   );
+};
+
+const mockLocation = {
+  regionName: '17',
+  start: 58190566,
+  end: 58290566 // <-- 100kB slice
+  // end: 59190566 // <-- 1MB slice; switch to it when backend apis get faster
+};
+
+// TODO: extract this into a helper
+const formatLocationForUrl = ({
+  regionName,
+  start,
+  end
+}: {
+  regionName: string;
+  start: number;
+  end: number;
+}) => {
+  return `${regionName}:${start}-${end}`;
+};
+
+// TODO: this is copy-pasted from EntityViewerContextProvider. Move this function out (probably best into genome api slice)
+const isMissingGenomeId = (error: FetchBaseQueryError) => {
+  const errorStatus = (error as FetchBaseQueryError)?.status;
+  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME change status to 404 when the backend behaves
 };
 
 export default ActivityViewerIdContextProvider;

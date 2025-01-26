@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction
+} from '@reduxjs/toolkit';
+
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+import type { RootState } from 'src/store';
 
 type State = {
   activeGenomeId: string | null;
@@ -23,6 +31,17 @@ type State = {
 const initialState: State = {
   activeGenomeId: null
 };
+
+export const setDefaultActiveGenomeId = createAsyncThunk(
+  'regulatory-activity-viewer-general/set-default-active-genome-id',
+  (_, { getState, dispatch }) => {
+    const state = getState() as RootState;
+    const [firstCommittedSpecies] = getCommittedSpecies(state);
+    if (firstCommittedSpecies) {
+      dispatch(setActiveGenomeId(firstCommittedSpecies.genome_id));
+    }
+  }
+);
 
 const generalSlice = createSlice({
   name: 'regulatory-activity-viewer-general',

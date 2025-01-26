@@ -19,10 +19,14 @@ import { createContext } from 'react';
 import type { Location } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 type ActivityViewerIdContextType = {
+  genomeIdInUrl?: string;
   activeGenomeId: string | null;
+  genomeId?: string; // <-- disambiguated genome id retrieved from the 'explain' endpoint of the metadata api
+  genomeIdForUrl?: string;
   assemblyAccessionId: string | null;
   assemblyName: string | null; // <-- temporary data; won't be needed when all regulation endpoints switch to using assembly accession id
   location: Location | null; // not quite sure if location belongs here; but provisionally placing it here
+  locationForUrl?: string;
 };
 
 const defaultContext: ActivityViewerIdContextType = {

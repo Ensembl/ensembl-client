@@ -31,6 +31,11 @@ type EntityViewerUrlParams = {
   proteinId?: string | null;
 };
 
+type RegulatoryActivityViewerUrlParams = {
+  genomeId?: string | null;
+  location?: string;
+};
+
 type SpeciesPageUrlParams = {
   genomeId: string;
 };
@@ -163,6 +168,23 @@ export const entityViewerVariant = (params?: {
   }
 
   const query = urlSearchParams.toString();
+
+  return query ? `${path}?${query}` : path;
+};
+
+export const regulatoryActivityViewer = (
+  params?: RegulatoryActivityViewerUrlParams
+) => {
+  const genomeId = params?.genomeId || '';
+  let path = '/activity-viewer';
+  if (genomeId) {
+    path += `/${genomeId}`;
+  }
+  const urlSearchParams = new URLSearchParams('');
+  if (params?.location) {
+    urlSearchParams.append('location', params.location);
+  }
+  const query = decodeURIComponent(urlSearchParams.toString());
 
   return query ? `${path}?${query}` : path;
 };
