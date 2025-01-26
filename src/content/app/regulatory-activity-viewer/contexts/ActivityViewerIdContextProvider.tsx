@@ -17,15 +17,16 @@
 import type { ReactNode } from 'react';
 
 import { useAppSelector } from 'src/store';
-import { useGenomeSummaryByGenomeSlugQuery } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenomeSummaryByGenomeSlugQuery,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { ActivityViewerIdContext } from './ActivityViewerIdContext';
-
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 /**
  * NOTE: The regulation team insists that their api endpoints
@@ -53,7 +54,7 @@ const ActivityViewerIdContextProvider = ({
   const { genomeId: genomeIdInUrl } = params;
 
   // TODO: If user does not have this genome selected, it should be added to selected species
-  const { currentData: genomeSummary, error } =
+  const { currentData: genomeSummary, error: genomeQueryError } =
     useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
       skip: !genomeIdInUrl
     });
@@ -83,7 +84,8 @@ const ActivityViewerIdContextProvider = ({
     // Below is a test location. Later on, we will read it from the url or from an input element
     location: mockLocation,
     locationForUrl,
-    isMissingGenomeId: isMissingGenomeId(error as FetchBaseQueryError)
+    isMissingGenomeId:
+      !!genomeQueryError && isGenomeNotFoundError(genomeQueryError)
   };
 
   return (
@@ -111,12 +113,6 @@ const formatLocationForUrl = ({
   end: number;
 }) => {
   return `${regionName}:${start}-${end}`;
-};
-
-// TODO: this is copy-pasted from EntityViewerContextProvider. Move this function out (probably best into genome api slice)
-const isMissingGenomeId = (error: FetchBaseQueryError) => {
-  const errorStatus = (error as FetchBaseQueryError)?.status;
-  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME change status to 404 when the backend behaves
 };
 
 export default ActivityViewerIdContextProvider;

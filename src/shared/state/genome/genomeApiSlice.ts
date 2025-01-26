@@ -67,5 +67,5 @@ export const isGenomeNotFoundError = (
   }
 
   const errorStatus = error.status;
-  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME: change to 404 when the backend is updated
+  return typeof errorStatus === 'number' && errorStatus === 404;
 };
