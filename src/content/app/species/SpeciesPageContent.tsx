@@ -17,7 +17,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import {
@@ -144,13 +143,13 @@ const TopBar = (props: { isSidebarOpen: boolean }) => {
     navigate(urlFor.speciesSelector());
   };
 
-  const topbarClassnames = classNames({
-    [styles.topbar_withoutSidebarNavigation]: !props.isSidebarOpen
-  });
+  const topbarClassname = !props.isSidebarOpen
+    ? styles.topbarWithSidebarClosed
+    : undefined;
 
   return (
-    <div className={topbarClassnames}>
-      <div className={styles.topbar}>
+    <div className={topbarClassname}>
+      <div className={styles.topbarContents}>
         <AddButton
           onClick={returnToSpeciesSelector}
           className={styles.addSpeciesButton}
