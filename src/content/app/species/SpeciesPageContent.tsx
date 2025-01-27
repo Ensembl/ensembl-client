@@ -124,7 +124,7 @@ const SpeciesPageContent = () => {
         mainContent={<SpeciesMainView />}
         sidebarContent={<SidebarContent />}
         sidebarNavigation={null}
-        topbarContent={<TopBar />}
+        topbarContent={<TopBar isSidebarOpen={sidebarStatus} />}
         isSidebarOpen={sidebarStatus}
         sidebarToolstripContent={<SpeciesSidebarToolstrip />}
         onSidebarToggle={() => {
@@ -136,25 +136,31 @@ const SpeciesPageContent = () => {
   );
 };
 
-const TopBar = () => {
+const TopBar = (props: { isSidebarOpen: boolean }) => {
   const navigate = useNavigate();
 
   const returnToSpeciesSelector = () => {
     navigate(urlFor.speciesSelector());
   };
 
+  const topbarClassname = !props.isSidebarOpen
+    ? styles.topbarWithSidebarClosed
+    : undefined;
+
   return (
-    <div className={styles.topbar}>
-      <CloseButtonWithLabel
-        className={styles.closeButton}
-        onClick={returnToSpeciesSelector}
-      />
-      <AddButton
-        onClick={returnToSpeciesSelector}
-        className={styles.addSpeciesButton}
-      >
-        Add a species
-      </AddButton>
+    <div className={topbarClassname}>
+      <div className={styles.topbarContents}>
+        <AddButton
+          onClick={returnToSpeciesSelector}
+          className={styles.addSpeciesButton}
+        >
+          Add a species
+        </AddButton>
+        <CloseButtonWithLabel
+          className={styles.closeButton}
+          onClick={returnToSpeciesSelector}
+        />
+      </div>
     </div>
   );
 };

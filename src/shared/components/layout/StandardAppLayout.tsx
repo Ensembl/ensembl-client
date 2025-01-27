@@ -68,7 +68,8 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
   );
 
   const shouldShowSidebarNavigation =
-    props.viewportWidth > BreakpointWidth.LAPTOP || props.isSidebarOpen;
+    (props.sidebarNavigation && props.viewportWidth > BreakpointWidth.LAPTOP) ||
+    props.isSidebarOpen;
 
   const topbarClassnames = classNames(
     styles.topbar,

@@ -28,9 +28,6 @@
 .topbar_withoutSidebarNavigation {
   display: flex;
   align-items: center;
-}
-
-.topbar_withoutSidebarNavigation > div {
   padding-right: 1em;
 }
 

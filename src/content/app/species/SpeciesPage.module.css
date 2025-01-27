@@ -4,18 +4,26 @@
   height: 100%;
 }
 
-.topbar {
+.topbarContents {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   justify-items: start;
   line-height: 1;
   max-width: 1380px;
-  padding-left: 30px;
+}
+
+.topbarWithSidebarClosed {
+  flex-grow: 1;
+  margin-right: 39px;
 }
 
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
-  padding-right: 35px;
+  padding-left: var(--double-standard-gutter);
+}
+
+.closeButton {
+  padding-right: 55px;
 }
