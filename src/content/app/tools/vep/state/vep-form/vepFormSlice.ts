@@ -62,7 +62,7 @@ export type VepFormState = {
   inputFileName: string | null;
   isInputCommitted: boolean;
   parameters: VepFormParameters;
-  isSpeciesSelectorModalOpen?: boolean;
+  isSpeciesSelectorModalOpen: boolean;
 };
 
 export const initialState: VepFormState = {
@@ -217,7 +217,8 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
       inputFileName: storedSubmission.inputFile?.name ?? null,
       inputText: storedSubmission.inputText,
       parameters: storedSubmission.parameters,
-      isInputCommitted: true
+      isInputCommitted: true,
+      isSpeciesSelectorModalOpen: false
     };
 
     return newFormState;
