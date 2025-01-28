@@ -20,6 +20,7 @@ import { useAppSelector } from 'src/store';
 
 import { filterEpigenomes } from 'src/content/app/regulatory-activity-viewer/helpers/filter-epigenomes/filterEpigenomes';
 import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewer/helpers/combine-epigenomes/combineEpigenomes';
+import { sortEpigenomes } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/sortEpigenomes';
 
 import {
   getEpigenomeSelectionCriteria,
@@ -99,13 +100,21 @@ const useEpigenomesData = () => {
     });
   }, [filteredEpigenomes]);
 
+  // TODO: allow user to select the dimensions used for the sorting of epigenomes
+  const sortingDimensions = ['sex', 'life_stage', 'organs'];
+  const sortedEpigenomes = sortEpigenomes({
+    epigenomes: combinedEpigenomes,
+    sortingDimensions
+  });
+
   return {
     isLoading: areBaseEpigenomesLoading || areMetadataDimensionsLoading,
     isError: isBaseEpigenomesError || isEpigenomeMetadataError,
     baseEpigenomes: baseEpigenomes ?? null,
     epigenomeMetadataDimensionsResponse:
       epigenomeMetadataDimensionsResponse ?? null,
-    filteredCombinedEpigenomes: combinedEpigenomes
+    filteredCombinedEpigenomes: combinedEpigenomes,
+    sortedCombinedEpigenomes: sortedEpigenomes
   };
 };
 

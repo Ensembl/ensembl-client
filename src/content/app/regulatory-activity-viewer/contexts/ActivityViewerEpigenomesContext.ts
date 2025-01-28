@@ -24,6 +24,7 @@ type ActivityViewerEpigenomesContextType = {
   isError: boolean;
   baseEpigenomes: Epigenome[] | null;
   filteredCombinedEpigenomes: Epigenome[] | null;
+  sortedCombinedEpigenomes: Epigenome[] | null;
   epigenomeMetadataDimensionsResponse: EpigenomeMetadataDimensionsResponse | null;
 };
 
@@ -32,6 +33,7 @@ const defaultContext: ActivityViewerEpigenomesContextType = {
   isError: false,
   baseEpigenomes: null,
   filteredCombinedEpigenomes: null, // these are the epigenomes that are displayed in the table of selected epigenomes, and are used to fetch activity data
+  sortedCombinedEpigenomes: null,
   epigenomeMetadataDimensionsResponse: null
 };
 

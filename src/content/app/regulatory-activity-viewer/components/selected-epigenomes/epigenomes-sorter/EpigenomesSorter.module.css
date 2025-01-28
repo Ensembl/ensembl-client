@@ -1,7 +1,7 @@
 .container {
   display: flex;
   column-gap: 0.3rem;
-  margin-top: 50px;
+  margin-top: 238px; /* FIXME: top offset should be calculated dynamically */
   justify-content: end;
   padding-right: 30px;
 }
@@ -12,6 +12,6 @@
 }
 
 .coloredBlock {
-  width: 12px;
+  width: 6px;
   height: 25px;
 }

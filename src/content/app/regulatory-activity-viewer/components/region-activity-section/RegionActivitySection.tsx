@@ -17,10 +17,12 @@
 import { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
+import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import useRegionActivityData from './useRegionActivityData';
 
 import RegionActivitySectionImage from './RegionActivitySectionImage';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import EpigenomesSorter from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomesSorter';
 import { CircleLoader } from 'src/shared/components/loader';
 
 // FIXME: promote these styles to the top level of region activity viewer
@@ -31,6 +33,7 @@ const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const { sortedCombinedEpigenomes } = useEpigenomes();
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -56,6 +59,9 @@ const RegionActivitySection = () => {
 
   return (
     <div className={componentClasses}>
+      <div>
+        <EpigenomesSorter epigenomes={sortedCombinedEpigenomes ?? []} />
+      </div>
       <div
         className={regionOverviewStyles.middleColumn}
         ref={imageContainerRef}

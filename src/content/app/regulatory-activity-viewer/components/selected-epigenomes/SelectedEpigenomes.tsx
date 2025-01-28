@@ -27,7 +27,7 @@ import {
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
 import TextButton from 'src/shared/components/text-button/TextButton';
-import EpigenomesSorter from './epigenomes-sorter/EpigenomesSorter';
+import { getEpigenomeLabels } from './epigenomes-sorter/EpigenomesSorter';
 
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
@@ -40,7 +40,7 @@ type Props = {
 
 const SelectedEpigenomes = (props: Props) => {
   const { genomeId } = props;
-  const { filteredCombinedEpigenomes, epigenomeMetadataDimensionsResponse } =
+  const { sortedCombinedEpigenomes, epigenomeMetadataDimensionsResponse } =
     useEpigenomes();
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, genomeId)
@@ -60,22 +60,23 @@ const SelectedEpigenomes = (props: Props) => {
     dispatch(removeAllCombiningDimensions({ genomeId }));
   };
 
-  if (!filteredCombinedEpigenomes || !epigenomeMetadataDimensionsResponse) {
+  if (!sortedCombinedEpigenomes || !epigenomeMetadataDimensionsResponse) {
     return null;
   }
 
   const { ui_spec } = epigenomeMetadataDimensionsResponse;
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
+  const epigenomeLabelsData = getEpigenomeLabels({
+    epigenomes: sortedCombinedEpigenomes
+  });
 
   return (
     <div className={styles.outerGrid}>
-      <div>
-        <EpigenomesSorter epigenomes={filteredCombinedEpigenomes} />
-      </div>
       <div className={styles.mainColumn}>
         <Table className={styles.epigenomesTable}>
           <thead>
             <tr>
+              <ColumnHead>Label</ColumnHead>
               {tableColumns.map((tableColumn) =>
                 !isDimensionCollapsed(
                   tableColumn.dimensionName,
@@ -102,8 +103,14 @@ const SelectedEpigenomes = (props: Props) => {
             </tr>
           </thead>
           <tbody>
-            {filteredCombinedEpigenomes.map((epigenome, index) => (
+            {sortedCombinedEpigenomes.map((epigenome, index) => (
               <tr key={index}>
+                <td style={{ position: 'relative' }}>
+                  <EpigenomeLabels
+                    data={epigenomeLabelsData}
+                    rowIndex={index}
+                  />
+                </td>
                 {tableColumns.map(
                   (tableColumn) =>
                     !isDimensionCollapsed(
@@ -123,14 +130,14 @@ const SelectedEpigenomes = (props: Props) => {
             ))}
           </tbody>
         </Table>
-        {!filteredCombinedEpigenomes.length && (
+        {!sortedCombinedEpigenomes.length && (
           <div className={styles.noEpigenomesMessage}>
             Use 'Configure' to select the data to display
           </div>
         )}
       </div>
       <div className={styles.rightColumn}>
-        <EpigenomesCount epigenomes={filteredCombinedEpigenomes} />
+        <EpigenomesCount epigenomes={sortedCombinedEpigenomes} />
         <TextButton onClick={onRemoveAllCombiningDimensions}>
           Reset columns
         </TextButton>
@@ -169,6 +176,35 @@ const EpigenomesCount = ({ epigenomes }: { epigenomes: unknown[] }) => {
   return (
     <div>
       <span className={styles.strong}>{count}</span> epigenomes
+    </div>
+  );
+};
+
+const EpigenomeLabels = ({
+  data,
+  rowIndex
+}: {
+  data: ReturnType<typeof getEpigenomeLabels>;
+  rowIndex: number;
+}) => {
+  const labelData = data.map((arr) => arr[rowIndex]);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        position: 'absolute',
+        top: '2px',
+        bottom: '2px',
+        columnGap: '2px'
+      }}
+    >
+      {labelData.map(({ color }, index) => (
+        <div
+          style={{ width: '5px', height: '100%', backgroundColor: color }}
+          key={index}
+        />
+      ))}
     </div>
   );
 };

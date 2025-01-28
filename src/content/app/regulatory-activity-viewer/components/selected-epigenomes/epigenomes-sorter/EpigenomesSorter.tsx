@@ -83,6 +83,53 @@ const EpigenomesSorter = (props: Props) => {
   );
 };
 
+// FIXME: is this the right function and is it in the right place?
+export const getEpigenomeLabels = ({ epigenomes }: Props) => {
+  const sortedEpigenomes = sortEpigenomes({
+    epigenomes,
+    sortingDimensions
+  });
+
+  const labelData = sortingDimensions.map((dimension, index) => {
+    const counts = getDistinctEpigenomeCountsForDimension(
+      sortedEpigenomes,
+      dimension
+    );
+    const distinctDimensionValues = getDistinctValuesForDimension(
+      sortedEpigenomes,
+      dimension
+    );
+    const colorScale = getColorScaleForValues(distinctDimensionValues, index);
+    const colorMap = createValuesToColorsMap(
+      distinctDimensionValues,
+      colorScale
+    );
+
+    const accumulator: {
+      dimension: string;
+      value: Epigenome[string];
+      stringifiedValue: string;
+      color: string;
+    }[] = [];
+
+    for (const item of counts) {
+      for (let i = 0; i < item.count; i++) {
+        const labelData = {
+          dimension,
+          value: item.value,
+          stringifiedValue: item.stringifiedValue,
+          color: colorMap[item.stringifiedValue]
+        };
+        accumulator.push(labelData);
+      }
+    }
+
+    return accumulator;
+  });
+
+  return labelData;
+};
+
 const DimensionBlocks = ({
   distinctEpigenomeCounts,
   colorMap
@@ -100,7 +147,7 @@ const DimensionBlocks = ({
           className={styles.coloredBlock}
           style={{
             backgroundColor: colorMap[stringifiedValue],
-            height: `calc((1lh * 2 * ${count}) + 18px * ${count} + ${count - 1}px + 1px)`
+            height: `calc(40px * ${count})`
           }}
         />
       ))}
