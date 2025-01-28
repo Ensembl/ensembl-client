@@ -58,10 +58,12 @@ const VepForm = () => {
         <FormSection>
           <div className={styles.topFormSectionRegularGrid}>
             <div className={styles.topFormSectionName}>Species</div>
-            <VepFormSpecies className={styles.topFormSectionMain} />
-            <VepSpeciesSelectorNavButton
-              className={styles.topFormSectionToggle}
-            />
+            <div className={styles.topFormSectionMain}>
+              <VepFormSpecies />
+            </div>
+            <div className={styles.topFormSectionToggle}>
+              <VepSpeciesSelectorNavButton />
+            </div>
           </div>
         </FormSection>
         <VepFormVariantsSection />

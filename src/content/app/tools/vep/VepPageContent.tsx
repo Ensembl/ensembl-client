@@ -24,22 +24,35 @@ import VepSubmissions from './views/vep-submissions/VepSubmissions';
 import VepSubmissionResults from './views/vep-submission-results/VepSubmissionResults';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { updateSpeciesSelectorModalOpenFlag } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
+import { getSpeciesSelectorModalOpenFlag } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
 import styles from './VepPageContent.module.css';
 
 const VepPageContent = () => {
-  return (
-    <Routes>
-      <Route path="species-selector" element={<SpeciesSelectorWrapper />} />
-      <Route path="*" element={<MainWrapper />} />
-    </Routes>
+  const speciesSelectorModalOpenFlag = useAppSelector(
+    getSpeciesSelectorModalOpenFlag
   );
+
+  if (speciesSelectorModalOpenFlag) {
+    return <SpeciesSelectorWrapper />;
+  } else {
+    return <MainWrapper />;
+  }
 };
 
 const SpeciesSelectorWrapper = () => {
+  const dispatch = useAppDispatch();
+
+  const closeSpeciesSelectorModal = () => {
+    dispatch(updateSpeciesSelectorModalOpenFlag(false));
+  };
+
   return (
     <div className={styles.speciesSelectorGrid}>
       <VepAppBar />
-      <VepSpeciesSelector />
+      <VepSpeciesSelector onClose={closeSpeciesSelectorModal} />
     </div>
   );
 };

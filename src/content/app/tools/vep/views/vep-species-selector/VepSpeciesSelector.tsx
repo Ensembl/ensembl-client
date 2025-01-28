@@ -15,7 +15,6 @@
  */
 
 import { useState, useDeferredValue, type FormEvent } from 'react';
-import { useNavigate } from 'react-router';
 
 import { useAppDispatch } from 'src/store';
 
@@ -42,12 +41,11 @@ import styles from './VepSpeciesSelector.module.css';
  * - The view might have a list of popular species if/when we figure out where to get it from
  */
 
-const VepSpeciesSelector = () => {
+const VepSpeciesSelector = (props: { onClose: () => void }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData, isLoading, isError } = result;
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const {
@@ -85,7 +83,7 @@ const VepSpeciesSelector = () => {
   };
 
   const onClose = () => {
-    navigate(-1);
+    props.onClose();
   };
 
   return (

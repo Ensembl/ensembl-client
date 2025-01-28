@@ -38,3 +38,6 @@ export const getVepFormInputFileName = (state: RootState) =>
 
 export const getVepFormInputCommittedFlag = (state: RootState) =>
   state.vep.vepForm.isInputCommitted;
+
+export const getSpeciesSelectorModalOpenFlag = (state: RootState) =>
+  state.vep.vepForm.isSpeciesSelectorModalOpen;

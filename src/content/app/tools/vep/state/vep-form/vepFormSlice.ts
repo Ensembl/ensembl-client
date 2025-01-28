@@ -62,6 +62,7 @@ export type VepFormState = {
   inputFileName: string | null;
   isInputCommitted: boolean;
   parameters: VepFormParameters;
+  isSpeciesSelectorModalOpen?: boolean;
 };
 
 export const initialState: VepFormState = {
@@ -71,7 +72,8 @@ export const initialState: VepFormState = {
   inputText: '',
   inputFileName: null,
   isInputCommitted: false,
-  parameters: {}
+  parameters: {},
+  isSpeciesSelectorModalOpen: false
 };
 
 // Creates an id that is used to identify the submission that is being filled in the form
@@ -352,6 +354,12 @@ const vepFormSlice = createSlice({
     updateInputCommittedFlag: (state, action: PayloadAction<boolean>) => {
       state.isInputCommitted = action.payload;
     },
+    updateSpeciesSelectorModalOpenFlag: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isSpeciesSelectorModalOpen = action.payload;
+    },
     resetForm: (state) => {
       return {
         ...initialState,
@@ -397,6 +405,7 @@ export const {
   updateSubmissionName,
   updateInputText,
   updateInputCommittedFlag,
+  updateSpeciesSelectorModalOpenFlag,
   resetForm
 } = vepFormSlice.actions;
 

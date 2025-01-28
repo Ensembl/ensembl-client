@@ -14,40 +14,45 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import { updateSpeciesSelectorModalOpenFlag } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import { VepSpeciesName } from 'src/content/app/tools/vep/components/vep-species-name/VepSpeciesName';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
-const vepSpeciesSelectorUrl = urlFor.vepSpeciesSelector();
-
-export const VepFormSpecies = (props: { className?: string }) => {
+export const VepFormSpecies = () => {
+  const dispatch = useAppDispatch();
   const selectedSpecies = useAppSelector(getSelectedSpecies);
+
+  const openSpeciesSelectorModal = () => {
+    dispatch(updateSpeciesSelectorModalOpenFlag(true));
+  };
 
   if (!selectedSpecies) {
-    return <Link to={vepSpeciesSelectorUrl}>Select a species / assembly</Link>;
+    return (
+      <TextButton onClick={openSpeciesSelectorModal}>
+        Select a species / assembly
+      </TextButton>
+    );
   }
 
-  return (
-    <div className={props.className}>
-      <VepSpeciesName selectedSpecies={selectedSpecies} />
-    </div>
-  );
+  return <VepSpeciesName selectedSpecies={selectedSpecies} />;
 };
 
-export const VepSpeciesSelectorNavButton = (props: { className?: string }) => {
+export const VepSpeciesSelectorNavButton = () => {
+  const dispatch = useAppDispatch();
   const selectedSpecies = useAppSelector(getSelectedSpecies);
 
-  return (
-    <Link to={vepSpeciesSelectorUrl} className={props.className}>
-      {!selectedSpecies ? <PlusButton /> : <TextButton>Change</TextButton>}
-    </Link>
-  );
+  const openSpeciesSelector = () => {
+    dispatch(updateSpeciesSelectorModalOpenFlag(true));
+  };
+
+  if (!selectedSpecies) {
+    return <PlusButton onClick={openSpeciesSelector} />;
+  } else {
+    return <TextButton onClick={openSpeciesSelector}>Change</TextButton>;
+  }
 };
