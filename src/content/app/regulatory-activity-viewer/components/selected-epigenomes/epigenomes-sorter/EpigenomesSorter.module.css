@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  column-gap: 0.3rem;
+  margin-top: 50px;
+  justify-content: end;
+  padding-right: 30px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.coloredBlock {
+  width: 12px;
+  height: 25px;
+}

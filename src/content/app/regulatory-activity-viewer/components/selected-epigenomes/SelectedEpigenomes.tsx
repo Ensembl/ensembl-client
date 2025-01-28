@@ -27,6 +27,7 @@ import {
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
 import TextButton from 'src/shared/components/text-button/TextButton';
+import EpigenomesSorter from './epigenomes-sorter/EpigenomesSorter';
 
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
@@ -68,6 +69,9 @@ const SelectedEpigenomes = (props: Props) => {
 
   return (
     <div className={styles.outerGrid}>
+      <div>
+        <EpigenomesSorter epigenomes={filteredCombinedEpigenomes} />
+      </div>
       <div className={styles.mainColumn}>
         <Table className={styles.epigenomesTable}>
           <thead>
