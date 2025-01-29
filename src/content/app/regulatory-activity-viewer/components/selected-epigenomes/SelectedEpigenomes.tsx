@@ -40,8 +40,11 @@ type Props = {
 
 const SelectedEpigenomes = (props: Props) => {
   const { genomeId } = props;
-  const { sortedCombinedEpigenomes, epigenomeMetadataDimensionsResponse } =
-    useEpigenomes();
+  const {
+    sortedCombinedEpigenomes,
+    epigenomeSortingDimensions,
+    epigenomeMetadataDimensionsResponse
+  } = useEpigenomes();
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, genomeId)
   );
@@ -60,14 +63,19 @@ const SelectedEpigenomes = (props: Props) => {
     dispatch(removeAllCombiningDimensions({ genomeId }));
   };
 
-  if (!sortedCombinedEpigenomes || !epigenomeMetadataDimensionsResponse) {
+  if (
+    !sortedCombinedEpigenomes ||
+    !epigenomeMetadataDimensionsResponse ||
+    !epigenomeSortingDimensions
+  ) {
     return null;
   }
 
   const { ui_spec } = epigenomeMetadataDimensionsResponse;
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
   const epigenomeLabelsData = getEpigenomeLabels({
-    epigenomes: sortedCombinedEpigenomes
+    epigenomes: sortedCombinedEpigenomes,
+    sortingDimensions: epigenomeSortingDimensions
   });
 
   return (
@@ -187,7 +195,7 @@ const EpigenomeLabels = ({
   data: ReturnType<typeof getEpigenomeLabels>;
   rowIndex: number;
 }) => {
-  const labelData = data.map((arr) => arr[rowIndex]);
+  const labelData = data[rowIndex];
 
   return (
     <div

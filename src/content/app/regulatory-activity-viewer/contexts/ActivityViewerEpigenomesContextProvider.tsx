@@ -49,6 +49,10 @@ const ActivityViewerEpigenomesContextProvider = ({
   );
 };
 
+// NOTE: hard-coding for now; in the future, this will be both provided by the api,
+// and selected by the user
+const epigenomeSortingDimensions = ['sex', 'life_stage', 'organs'];
+
 const useEpigenomesData = () => {
   const { activeGenomeId, assemblyName } = useActivityViewerIds();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
@@ -100,11 +104,9 @@ const useEpigenomesData = () => {
     });
   }, [filteredEpigenomes]);
 
-  // TODO: allow user to select the dimensions used for the sorting of epigenomes
-  const sortingDimensions = ['sex', 'life_stage', 'organs'];
   const sortedEpigenomes = sortEpigenomes({
     epigenomes: combinedEpigenomes,
-    sortingDimensions
+    sortingDimensions: epigenomeSortingDimensions
   });
 
   return {
@@ -114,7 +116,8 @@ const useEpigenomesData = () => {
     epigenomeMetadataDimensionsResponse:
       epigenomeMetadataDimensionsResponse ?? null,
     filteredCombinedEpigenomes: combinedEpigenomes,
-    sortedCombinedEpigenomes: sortedEpigenomes
+    sortedCombinedEpigenomes: sortedEpigenomes,
+    epigenomeSortingDimensions
   };
 };
 

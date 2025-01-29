@@ -16,7 +16,7 @@
 
 import { interpolateLab, quantize } from 'd3';
 
-import { sortEpigenomes, stringifyDimensionValue } from './sortEpigenomes';
+import { stringifyDimensionValue } from './sortEpigenomes';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 
@@ -24,6 +24,7 @@ import styles from './EpigenomesSorter.module.css';
 
 type Props = {
   epigenomes: Epigenome[];
+  sortingDimensions: string[];
   className?: string;
 };
 
@@ -36,19 +37,18 @@ type Props = {
  * join it into a single string and use the whole string
  */
 
-const sortingDimensions = ['sex', 'life_stage', 'organs'];
-
 // colours used as input for generating colour scales
 const colors1 = ['#80ccff', '#fcb6b5'];
 const colors2 = ['#0399ff', '#b6e1ff'];
 const colors3 = ['#024b02', '#cce5cd'];
 
 const EpigenomesSorter = (props: Props) => {
-  const { epigenomes } = props;
+  const { epigenomes, sortingDimensions } = props;
 
-  const epigenomeLabelsData = transformEpigenomeLabelsData(
-    getEpigenomeLabels({ epigenomes })
-  );
+  const epigenomeLabelsData = getEpigenomeLabels({
+    epigenomes,
+    sortingDimensions
+  });
 
   return (
     <div className={styles.container}>
@@ -65,24 +65,19 @@ const EpigenomesSorter = (props: Props) => {
  * where the inner arrays have the same order as the sorting dimensions.
  *
  * TODO:
- *  - pass sorting dimensions as a parameter
- *  - transform the return value such that instead of being an array of three arrays it is an array of triplets
  *  - update function name (getEpigenomeLabelsData)?
  *  - move the function out into its own file?
  */
-export const getEpigenomeLabels = ({ epigenomes }: Props) => {
-  const sortedEpigenomes = sortEpigenomes({
-    epigenomes,
-    sortingDimensions
-  });
-
+export const getEpigenomeLabels = ({
+  epigenomes,
+  sortingDimensions
+}: {
+  epigenomes: Epigenome[];
+  sortingDimensions: string[];
+}) => {
   const labelData = sortingDimensions.map((dimension, index) => {
-    const counts = getDistinctEpigenomeCountsForDimension(
-      sortedEpigenomes,
-      dimension
-    );
     const distinctDimensionValues = getDistinctValuesForDimension(
-      sortedEpigenomes,
+      epigenomes,
       dimension
     );
     const colorScale = getColorScaleForValues(distinctDimensionValues, index);
@@ -90,48 +85,32 @@ export const getEpigenomeLabels = ({ epigenomes }: Props) => {
       distinctDimensionValues,
       colorScale
     );
-
-    const accumulator: {
-      dimension: string;
-      value: Epigenome[string];
-      stringifiedValue: string;
-      color: string;
-    }[] = [];
-
-    for (const item of counts) {
-      for (let i = 0; i < item.count; i++) {
-        const labelData = {
-          dimension,
-          value: item.value,
-          stringifiedValue: item.stringifiedValue,
-          color: colorMap[item.stringifiedValue]
-        };
-        accumulator.push(labelData);
-      }
-    }
-
-    return accumulator;
+    const labelsDataForDimension = buildEpigenomeLabelsDataForDimension({
+      epigenomes,
+      dimension,
+      colorMap
+    });
+    return labelsDataForDimension;
   });
 
-  return labelData;
-};
+  // The above array is created by mapping sorting dimensions
+  // to label data for each of those dimensions.
+  // This means that the length of this array is the same
+  // as the length of the array of sorting dimensions.
+  // It is much more practical to transform it into an array that is as long
+  // as the list of epigenomes instead.
 
-const transformEpigenomeLabelsData = (
-  data: ReturnType<typeof getEpigenomeLabels>
-) => {
-  const result: ReturnType<typeof getEpigenomeLabels>[number][number][][] = []; // FIXME: improve type declaration
-
-  const dataColumn = data[0];
+  const result: typeof labelData = [];
+  const dataColumn = labelData[0];
 
   for (let i = 0; i < dataColumn.length; i++) {
-    const labelData: ReturnType<typeof getEpigenomeLabels>[number][number][] =
-      [];
+    const dataForDimensions: (typeof labelData)[number] = [];
 
-    for (const dataPerDimension of data) {
-      labelData.push(dataPerDimension[i]);
+    for (const dataPerDimension of labelData) {
+      dataForDimensions.push(dataPerDimension[i]);
     }
 
-    result.push(labelData);
+    result.push(dataForDimensions);
   }
 
   return result;
@@ -161,48 +140,27 @@ const EpigenomeLabel = ({
   );
 };
 
-/**
- * The purpose of the below function is to provide data for building the coloured labels.
- *
- * Given a list of epigenomes, and a single metadata dimension,
- * iterate over the epigenomes, and record after how many iterations
- * the value of the dimension changes.
- *
- */
-
-const getDistinctEpigenomeCountsForDimension = (
-  epigenomes: Epigenome[],
-  dimension: string
-) => {
-  const result: {
-    dimension: string;
-    value: Epigenome[string];
-    stringifiedValue: string;
-    count: number;
-  }[] = [];
-
-  for (const epigenome of epigenomes) {
+const buildEpigenomeLabelsDataForDimension = ({
+  epigenomes,
+  dimension,
+  colorMap
+}: {
+  epigenomes: Epigenome[];
+  dimension: string;
+  colorMap: Record<string, string>;
+}) => {
+  return epigenomes.map((epigenome) => {
     const value = epigenome[dimension];
-    if (!value) {
-      continue;
-    }
-
     const stringifiedValue = stringifyDimensionValue(epigenome, dimension);
+    const color = colorMap[stringifiedValue];
 
-    const lastItem = result.at(-1);
-    if (!lastItem || lastItem.stringifiedValue !== stringifiedValue) {
-      result.push({
-        dimension,
-        value,
-        stringifiedValue,
-        count: 1
-      });
-    } else {
-      lastItem.count += 1;
-    }
-  }
-
-  return result;
+    return {
+      dimension,
+      value,
+      stringifiedValue,
+      color
+    };
+  });
 };
 
 const getColorScaleForValues = (values: string[], order: number) => {

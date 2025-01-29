@@ -33,7 +33,8 @@ const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { sortedCombinedEpigenomes } = useEpigenomes();
+  const { sortedCombinedEpigenomes, epigenomeSortingDimensions } =
+    useEpigenomes();
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -60,7 +61,10 @@ const RegionActivitySection = () => {
   return (
     <div className={componentClasses}>
       <div>
-        <EpigenomesSorter epigenomes={sortedCombinedEpigenomes ?? []} />
+        <EpigenomesSorter
+          epigenomes={sortedCombinedEpigenomes ?? []}
+          sortingDimensions={epigenomeSortingDimensions ?? []}
+        />
       </div>
       <div
         className={regionOverviewStyles.middleColumn}
