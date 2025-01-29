@@ -46,44 +46,30 @@ const colors3 = ['#024b02', '#cce5cd'];
 const EpigenomesSorter = (props: Props) => {
   const { epigenomes } = props;
 
-  const sortedEpigenomes = sortEpigenomes({
-    epigenomes,
-    sortingDimensions
-  });
+  const epigenomeLabelsData = transformEpigenomeLabelsData(
+    getEpigenomeLabels({ epigenomes })
+  );
 
   return (
     <div className={styles.container}>
-      {sortingDimensions.map((dimension, index) => {
-        const counts = getDistinctEpigenomeCountsForDimension(
-          sortedEpigenomes,
-          dimension
-        );
-        const distinctDimensionValues = getDistinctValuesForDimension(
-          sortedEpigenomes,
-          dimension
-        );
-        const colorScale = getColorScaleForValues(
-          distinctDimensionValues,
-          index
-        );
-        const colorMap = createValuesToColorsMap(
-          distinctDimensionValues,
-          colorScale
-        );
-
-        return (
-          <DimensionBlocks
-            key={index}
-            distinctEpigenomeCounts={counts}
-            colorMap={colorMap}
-          />
-        );
-      })}
+      {epigenomeLabelsData.map((labelData, index) => (
+        <EpigenomeLabel key={index} data={labelData} />
+      ))}
     </div>
   );
 };
 
-// FIXME: is this the right function and is it in the right place?
+/**
+ * Produces data to render epigenome labels.
+ * Returns an array of arrays of label data,
+ * where the inner arrays have the same order as the sorting dimensions.
+ *
+ * TODO:
+ *  - pass sorting dimensions as a parameter
+ *  - transform the return value such that instead of being an array of three arrays it is an array of triplets
+ *  - update function name (getEpigenomeLabelsData)?
+ *  - move the function out into its own file?
+ */
 export const getEpigenomeLabels = ({ epigenomes }: Props) => {
   const sortedEpigenomes = sortEpigenomes({
     epigenomes,
@@ -130,24 +116,44 @@ export const getEpigenomeLabels = ({ epigenomes }: Props) => {
   return labelData;
 };
 
-const DimensionBlocks = ({
-  distinctEpigenomeCounts,
-  colorMap
+const transformEpigenomeLabelsData = (
+  data: ReturnType<typeof getEpigenomeLabels>
+) => {
+  const result: ReturnType<typeof getEpigenomeLabels>[number][number][][] = []; // FIXME: improve type declaration
+
+  const dataColumn = data[0];
+
+  for (let i = 0; i < dataColumn.length; i++) {
+    const labelData: ReturnType<typeof getEpigenomeLabels>[number][number][] =
+      [];
+
+    for (const dataPerDimension of data) {
+      labelData.push(dataPerDimension[i]);
+    }
+
+    result.push(labelData);
+  }
+
+  return result;
+};
+
+const EpigenomeLabel = ({
+  data
 }: {
-  distinctEpigenomeCounts: ReturnType<
-    typeof getDistinctEpigenomeCountsForDimension
-  >;
-  colorMap: Record<string, string>;
+  data: ReturnType<typeof getEpigenomeLabels>[number];
 }) => {
+  const labelHeight = 40; // FIXME: import the constant
+
   return (
-    <div className={styles.column}>
-      {distinctEpigenomeCounts.map(({ stringifiedValue, count }, index) => (
+    <div className={styles.epigenomeLabel}>
+      {data.map((item, index) => (
         <div
-          key={`${stringifiedValue}-${index}`}
+          key={index}
           className={styles.coloredBlock}
           style={{
-            backgroundColor: colorMap[stringifiedValue],
-            height: `calc(40px * ${count})`
+            backgroundColor: item.color,
+            height: `${labelHeight - 2}px`,
+            margin: '1px 0'
           }}
         />
       ))}
