@@ -28,7 +28,16 @@ const hasNoAbortController = () => {
   return !('AbortController' in window);
 };
 
-const browserChecks = [lacksBigInt64Array, hasNoAbortController];
+// This sets browser threshold at around 2022-2023
+const lacksNewArrayMethods = () => {
+  return !('toSorted' in Array.prototype);
+};
+
+const browserChecks = [
+  lacksBigInt64Array,
+  hasNoAbortController,
+  lacksNewArrayMethods
+];
 
 const ensureBrowserSupport = () => {
   if (browserChecks.some((check) => check())) {
