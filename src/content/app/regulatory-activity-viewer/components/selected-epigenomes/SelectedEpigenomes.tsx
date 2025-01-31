@@ -63,6 +63,7 @@ const SelectedEpigenomes = (props: Props) => {
     return null;
   }
 
+  const { ui_spec } = epigenomeMetadataDimensionsResponse;
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
 
   return (
@@ -79,7 +80,7 @@ const SelectedEpigenomes = (props: Props) => {
                   <ColumnHead key={tableColumn.dimensionName}>
                     {isCollapsibleDimension(
                       tableColumn.dimensionName,
-                      epigenomeMetadataDimensionsResponse.dimensions
+                      ui_spec.collapsible
                     ) ? (
                       <TextButton
                         onClick={() =>
@@ -136,9 +137,9 @@ const SelectedEpigenomes = (props: Props) => {
 
 const isCollapsibleDimension = (
   dimensionName: string,
-  dimensions: EpigenomeMetadataDimensionsResponse['dimensions']
+  dimensions: string[]
 ) => {
-  return dimensions[dimensionName]?.collapsible;
+  return dimensions.includes(dimensionName);
 };
 
 const isDimensionCollapsed = (
@@ -169,9 +170,9 @@ const EpigenomesCount = ({ epigenomes }: { epigenomes: unknown[] }) => {
 };
 
 const getTableColumns = (params: EpigenomeMetadataDimensionsResponse) => {
-  const { table_header_order, dimensions } = params;
+  const { ui_spec, dimensions } = params;
 
-  return table_header_order.map((dimensionName) => ({
+  return ui_spec.table_layout.map((dimensionName) => ({
     dimensionName,
     columnHeading: dimensions[dimensionName].name
   }));

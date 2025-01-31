@@ -64,7 +64,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     }),
     baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/metadata/v0.1/base_epigenomes/assembly/${params.assemblyName}`
+        url: `${config.regulationApiBaseUrl}/metadata/v0.2/base_epigenomes/assembly/${params.assemblyName}`
       })
     }),
     epigenomeMetadataDimensions: builder.query<
@@ -72,7 +72,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       EpigenomeMetadataRequestParams
     >({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/metadata/v0.1/metadata_dimensions/assembly/${params.assemblyName}`
+        url: `${config.regulationApiBaseUrl}/metadata/v0.2/metadata_dimensions/assembly/${params.assemblyName}`
       })
     }),
     epigenomesActivity: builder.query<

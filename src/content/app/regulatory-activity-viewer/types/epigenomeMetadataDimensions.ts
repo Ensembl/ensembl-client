@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+type UISpecs = {
+  filter_layout: string[][]; // <-- tells how to position panels of checkboxes for epigenome selection
+  table_layout: string[]; // <-- order in which to display columns of the selected epigenomes table
+  collapsible: string[]; // <-- metadata dimensions that can be used to combine epigenomes (and make corresponding table columns disappear)
+  filterable: string[]; // <-- metadata dimensions that can be used for selection (filtering) of epigenomes
+  sortable: string[]; // <-- metadata dimensions that can be used to sort epigenomes
+  zero_counts_visible: []; // <-- metadata dimensions whose filter panels will always display full list of filters even if there aren't any epigenomes matching a filter
+};
+
 type CommonMetadataDimensionFields = {
   name: string;
-  collapsible: boolean;
-  filterable: boolean;
-  zero_counts_visible: boolean;
   default_values: string[];
 };
 
@@ -61,7 +67,6 @@ export type EpigenomeMetadataDimensions = Record<
 export type EpigenomeMetadataDimensionsResponse = {
   species_name: string;
   assemblies: string[]; // <-- why array of strings?
-  filter_layout: string[][];
-  table_header_order: string[];
+  ui_spec: UISpecs;
   dimensions: EpigenomeMetadataDimensions;
 };

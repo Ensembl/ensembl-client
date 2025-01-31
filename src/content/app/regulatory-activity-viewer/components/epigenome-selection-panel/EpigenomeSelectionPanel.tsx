@@ -80,7 +80,7 @@ const EpigenomeSelectionPanel = (props: Props) => {
   const epigenomeMetadataDimensions =
     epigenomeMetadataDimensionsResponse.dimensions;
   const epigenomeMetadataColumns =
-    epigenomeMetadataDimensionsResponse.filter_layout;
+    epigenomeMetadataDimensionsResponse.ui_spec.filter_layout;
 
   return (
     <div className={styles.panel}>

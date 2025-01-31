@@ -69,7 +69,7 @@ const EpigenomeFiltersView = (props: Props) => {
 
   const metadataDimensions = epigenomeMetadataDimensionsResponse.dimensions;
   const metadataDimensionNames =
-    epigenomeMetadataDimensionsResponse.filter_layout.flat();
+    epigenomeMetadataDimensionsResponse.ui_spec.filter_layout.flat();
 
   return (
     <div>
