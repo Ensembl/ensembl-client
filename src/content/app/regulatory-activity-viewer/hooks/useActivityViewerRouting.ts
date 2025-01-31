@@ -15,39 +15,58 @@
  */
 
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/store';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { setActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSlice';
+import {
+  setActiveGenomeId,
+  setDefaultActiveGenomeId
+} from 'src/content/app/regulatory-activity-viewer/state/general/generalSlice';
 
 import useActivityViewerIds from './useActivityViewerIds';
 
 /**
- * For starters, just make sure that if there is no active genome id already selected,
- * then the genome id of the first selected species is used.
+ * 1. Genome id
  *
- * TODO:
- * - add actual routing
+ * - If there is no genome id suggested by the url
+ *  - If active genome id exists
+ *    - Update url to reflect active genome id
+ *  - If active genome id does not exist
+ *    - If there are some selected species
+ *      - Make the first selected species' genome id into an active one
+ *      - Update url to reflect new active genome id
+ * - If genome id suggested by url exists and is different from active genome id
+ *  - Update active genome id
  */
 
 const useActivityViewerRouting = () => {
-  const { activeGenomeId } = useActivityViewerIds();
-  const allSelectedSpecies = useAppSelector(getCommittedSpecies);
+  const {
+    activeGenomeId,
+    genomeId,
+    genomeIdInUrl,
+    genomeIdForUrl,
+    locationForUrl
+  } = useActivityViewerIds();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!activeGenomeId) {
-      // A temporary solution; the logic is not correct
-      const firstSelectedSpecies = allSelectedSpecies[0];
-
-      if (firstSelectedSpecies) {
-        const { genome_id } = firstSelectedSpecies;
-        dispatch(setActiveGenomeId(genome_id));
-      }
+    if (genomeIdForUrl && genomeIdForUrl !== genomeIdInUrl) {
+      const newUrl = urlFor.regulatoryActivityViewer({
+        genomeId: genomeIdForUrl,
+        location: locationForUrl
+      });
+      navigate(newUrl, { replace: true });
     }
-  }, [activeGenomeId]);
+    if (genomeId && genomeId !== activeGenomeId) {
+      dispatch(setActiveGenomeId(genomeId));
+    } else if (!activeGenomeId) {
+      dispatch(setDefaultActiveGenomeId());
+    }
+  }, [activeGenomeId, genomeId, genomeIdInUrl, genomeIdForUrl, locationForUrl]);
 };
 
 export default useActivityViewerRouting;

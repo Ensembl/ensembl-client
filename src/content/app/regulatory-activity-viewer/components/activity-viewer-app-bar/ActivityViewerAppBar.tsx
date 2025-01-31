@@ -15,8 +15,11 @@
  */
 
 import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
@@ -28,13 +31,19 @@ import SpeciesManagerIndicator from 'src/shared/components/species-manager-indic
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
 const ActivityViewerAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
+  const navigate = useNavigate();
 
-  const onSpeciesTabClick = () => {
-    // eslint-disable-next-line
-    console.log('what to do?');
+  const onSpeciesTabClick = (species: CommittedItem) => {
+    const genomeIdForUrl = species.genome_tag ?? species.genome_id;
+    const url = urlFor.regulatoryActivityViewer({
+      genomeId: genomeIdForUrl
+    });
+    navigate(url);
   };
 
   const speciesTabs = speciesList.map((species, index) => (

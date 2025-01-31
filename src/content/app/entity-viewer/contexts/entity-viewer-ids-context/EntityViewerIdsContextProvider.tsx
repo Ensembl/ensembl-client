@@ -26,7 +26,10 @@ import {
 import { useAppSelector } from 'src/store';
 import usePrevious from 'src/shared/hooks/usePrevious';
 import { useUrlParams } from 'src/shared/hooks/useUrlParams';
-import { useGenomeSummaryByGenomeSlugQuery } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  useGenomeSummaryByGenomeSlugQuery,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -39,8 +42,6 @@ import {
   EntityViewerIdsContext,
   type EntityViewerIdsContextType
 } from './EntityViewerIdsContext';
-
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const EntityViewerIdsContextProvider = (props: { children: ReactNode }) => {
   const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
@@ -117,7 +118,7 @@ const EntityViewerIdsContextProvider = (props: { children: ReactNode }) => {
     parsedEntityId,
     hasActiveGenomeIdChanged,
     hasActiveEntityIdChanged,
-    isMissingGenomeId: isMissingGenomeId(error as FetchBaseQueryError),
+    isMissingGenomeId: !!error && isGenomeNotFoundError(error),
     isMalformedEntityId
   };
 
@@ -126,11 +127,6 @@ const EntityViewerIdsContextProvider = (props: { children: ReactNode }) => {
       {props.children}
     </EntityViewerIdsContext.Provider>
   );
-};
-
-const isMissingGenomeId = (error: FetchBaseQueryError) => {
-  const errorStatus = (error as FetchBaseQueryError)?.status;
-  return typeof errorStatus === 'number' && errorStatus >= 400; // FIXME change status to 404 when the backend behaves
 };
 
 export default EntityViewerIdsContextProvider;
