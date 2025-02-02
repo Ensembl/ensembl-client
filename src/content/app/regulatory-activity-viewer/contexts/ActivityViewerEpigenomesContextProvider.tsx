@@ -24,7 +24,8 @@ import { sortEpigenomes } from 'src/content/app/regulatory-activity-viewer/compo
 
 import {
   getEpigenomeSelectionCriteria,
-  getEpigenomeCombiningDimensions
+  getEpigenomeCombiningDimensions,
+  getEpigenomeSortingDimensions
 } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks//useActivityViewerIds';
@@ -49,10 +50,6 @@ const ActivityViewerEpigenomesContextProvider = ({
   );
 };
 
-// NOTE: hard-coding for now; in the future, this will be both provided by the api,
-// and selected by the user
-const epigenomeSortingDimensions = ['sex', 'life_stage', 'organs'];
-
 const useEpigenomesData = () => {
   const { activeGenomeId, assemblyName } = useActivityViewerIds();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
@@ -60,6 +57,9 @@ const useEpigenomesData = () => {
   );
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, activeGenomeId ?? '')
+  );
+  const storedEpigenomeSortingDimensions = useAppSelector((state) =>
+    getEpigenomeSortingDimensions(state, activeGenomeId ?? '')
   );
 
   const {
@@ -104,9 +104,17 @@ const useEpigenomesData = () => {
     });
   }, [filteredEpigenomes]);
 
+  // List of dimensions actually used to sort the epigenomes (up to three dimensions)
+  const epigenomeSortableDimensions =
+    storedEpigenomeSortingDimensions ??
+    epigenomeMetadataDimensionsResponse?.ui_spec.sortable ??
+    [];
+
+  const dimensionsForSorting = epigenomeSortableDimensions.slice(0, 3); // use up to three first dimensions for sorting
+
   const sortedEpigenomes = sortEpigenomes({
     epigenomes: combinedEpigenomes,
-    sortingDimensions: epigenomeSortingDimensions
+    sortingDimensions: dimensionsForSorting
   });
 
   return {
@@ -117,7 +125,8 @@ const useEpigenomesData = () => {
       epigenomeMetadataDimensionsResponse ?? null,
     filteredCombinedEpigenomes: combinedEpigenomes,
     sortedCombinedEpigenomes: sortedEpigenomes,
-    epigenomeSortingDimensions
+    epigenomeSortingDimensions: dimensionsForSorting,
+    allEpigenomeSortableDimensions: epigenomeSortableDimensions
   };
 };
 

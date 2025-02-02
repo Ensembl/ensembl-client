@@ -25,18 +25,20 @@ type SelectionCriterionForGenome = SelectionCriterion & {
   genomeId: string;
 };
 
-type StatePerGenome = {
+export type StatePerGenome = {
   selectionCriteria: {
     [dimensionName: string]: string[];
   };
   combiningDimensions: string[]; // Dimensions used to combine epigenomes out of base epigenomes
+  sortingDimensions: string[] | null;
 };
 
 type EpigenomeSelectionState = Record<string, StatePerGenome>;
 
 const initialStateForGenome: StatePerGenome = {
   selectionCriteria: {},
-  combiningDimensions: []
+  combiningDimensions: [],
+  sortingDimensions: null
 };
 
 const ensureStateForGenome = (
@@ -88,6 +90,14 @@ const epigenomeSelectionSlice = createSlice({
       const { genomeId } = action.payload;
       ensureStateForGenome(state, genomeId);
       state[genomeId].combiningDimensions = [];
+    },
+    setSortingDimensionsOrder(
+      state,
+      action: PayloadAction<{ genomeId: string; dimensionNames: string[] }>
+    ) {
+      const { genomeId, dimensionNames } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].sortingDimensions = dimensionNames;
     }
   }
 });
@@ -96,7 +106,8 @@ export const {
   addSelectionCriterion,
   removeSelectionCriterion,
   addCombiningDimension,
-  removeAllCombiningDimensions
+  removeAllCombiningDimensions,
+  setSortingDimensionsOrder
 } = epigenomeSelectionSlice.actions;
 
 export default epigenomeSelectionSlice.reducer;

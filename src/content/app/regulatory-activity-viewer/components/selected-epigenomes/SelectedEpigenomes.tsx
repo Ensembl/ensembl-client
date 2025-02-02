@@ -66,7 +66,7 @@ const SelectedEpigenomes = (props: Props) => {
   if (
     !sortedCombinedEpigenomes ||
     !epigenomeMetadataDimensionsResponse ||
-    !epigenomeSortingDimensions
+    !epigenomeSortingDimensions?.length
   ) {
     return null;
   }

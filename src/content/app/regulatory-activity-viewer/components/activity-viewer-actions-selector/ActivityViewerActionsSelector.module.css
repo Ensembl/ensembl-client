@@ -1,0 +1,52 @@
+.selectContainer {
+  position: relative;
+}
+
+.floatingPanel {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+  background-color: var(--color-light-grey);
+  box-shadow: 2px 3px 6px var(--global-box-shadow-color);
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px 20px 20px 30px;
+  width: 300px;
+  z-index: 1;
+}
+
+.sortableEpigenomeDimension {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.sortableEpigenomeDimension .buttons {
+  display: flex;
+  flex-direction: column;
+  row-gap: 3px;
+}
+
+.sortableEpigenomeDimension .buttons button {
+  font-size: 0;
+}
+
+.sortArrow {
+  height: 8px;
+  width: 8px;
+  fill: var(--color-blue);
+}
+
+.sortArrowDown {
+  transform: rotate(180deg);
+}
+
+.sortableEpigenomeDimension .buttons button[disabled] .sortArrow {
+  fill: var(--color-grey);
+}
+
+.sortableDimensionLabelInactive {
+  color: var(--color-grey);
+}

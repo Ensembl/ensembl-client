@@ -25,7 +25,8 @@ type ActivityViewerEpigenomesContextType = {
   baseEpigenomes: Epigenome[] | null;
   filteredCombinedEpigenomes: Epigenome[] | null;
   sortedCombinedEpigenomes: Epigenome[] | null;
-  epigenomeSortingDimensions: string[] | null;
+  epigenomeSortingDimensions: string[] | null; // List of up to three dimensions actually used to sort epigenomes
+  allEpigenomeSortableDimensions: string[] | null; // List of all dimensions from which the sorting dimensions can be selected
   epigenomeMetadataDimensionsResponse: EpigenomeMetadataDimensionsResponse | null;
 };
 
@@ -36,6 +37,7 @@ const defaultContext: ActivityViewerEpigenomesContextType = {
   filteredCombinedEpigenomes: null, // these are the epigenomes that are displayed in the table of selected epigenomes, and are used to fetch activity data
   sortedCombinedEpigenomes: null,
   epigenomeSortingDimensions: null,
+  allEpigenomeSortableDimensions: null,
   epigenomeMetadataDimensionsResponse: null
 };
 
