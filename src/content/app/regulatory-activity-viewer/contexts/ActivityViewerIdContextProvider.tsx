@@ -71,7 +71,10 @@ const ActivityViewerIdContextProvider = ({
     species?.genome_id;
 
   // TODO: in the future, read location from the url
-  const location = mockLocation;
+  const location =
+    assemblyName?.toLowerCase() === 'grcm39'
+      ? mockMouseLocation
+      : mockHumanLocation;
   const locationForUrl = formatLocationForUrl(location);
 
   const contextValue = {
@@ -82,7 +85,7 @@ const ActivityViewerIdContextProvider = ({
     assemblyAccessionId: assemblyAccessionId ?? null,
     assemblyName: assemblyName ?? null,
     // Below is a test location. Later on, we will read it from the url or from an input element
-    location: mockLocation,
+    location: location,
     locationForUrl,
     isMissingGenomeId:
       !!genomeQueryError && isGenomeNotFoundError(genomeQueryError)
@@ -95,11 +98,17 @@ const ActivityViewerIdContextProvider = ({
   );
 };
 
-const mockLocation = {
+const mockHumanLocation = {
   regionName: '17',
   start: 58190566,
   end: 58290566 // <-- 100kB slice
   // end: 59190566 // <-- 1MB slice; switch to it when backend apis get faster
+};
+
+const mockMouseLocation = {
+  regionName: '5',
+  start: 28645230,
+  end: 29636061
 };
 
 // TODO: extract this into a helper

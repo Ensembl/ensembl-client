@@ -66,7 +66,8 @@ const useRegionActivityData = (props: Props) => {
     useState<RegionActivityData | null>(null);
   const { activeGenomeId, assemblyName, assemblyAccessionId, location } =
     useActivityViewerIds();
-  const { filteredCombinedEpigenomes } = useEpigenomes();
+  const { filteredCombinedEpigenomes, sortedCombinedEpigenomes } =
+    useEpigenomes();
 
   const epigenomeIds = filteredCombinedEpigenomes?.map(
     (epigenome) => epigenome.id
@@ -127,6 +128,7 @@ const useRegionActivityData = (props: Props) => {
     const preparedEpigenomeActivityData = prepareActivityDataForDisplay({
       data: epigenomeActivityData,
       location: selectedLocation,
+      sortedEpigenomes: sortedCombinedEpigenomes ?? [],
       scale
     });
 
@@ -144,7 +146,8 @@ const useRegionActivityData = (props: Props) => {
     selectedLocation?.start,
     selectedLocation?.end,
     regionOverviewData,
-    epigenomeActivityData
+    epigenomeActivityData,
+    sortedCombinedEpigenomes
   ]);
 
   return {

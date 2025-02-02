@@ -16,6 +16,7 @@
 
 import type { ScaleLinear } from 'd3';
 
+import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type {
   EpigenomeActivityResponse,
   EpigenomeActivityMetadata,
@@ -40,6 +41,7 @@ type Params = {
     start: number;
     end: number;
   };
+  sortedEpigenomes: Epigenome[];
   scale: ScaleLinear<number, number>;
 };
 
@@ -96,7 +98,11 @@ export type EpigenomicActivityForDisplay = {
 export const prepareActivityDataForDisplay = (
   params: Params
 ): EpigenomicActivityForDisplay => {
-  const preparedTracks = params.data.track_data.map((trackData) =>
+  const sortedTracks = sortTracks({
+    sortedEpigenomes: params.sortedEpigenomes,
+    tracks: params.data.track_data
+  });
+  const preparedTracks = sortedTracks.map((trackData) =>
     prepareTrackData({
       metadata: params.data.track_metadata,
       track: trackData,
@@ -108,6 +114,22 @@ export const prepareActivityDataForDisplay = (
   return {
     data: preparedTracks
   };
+};
+
+const sortTracks = ({
+  sortedEpigenomes,
+  tracks
+}: {
+  sortedEpigenomes: Epigenome[];
+  tracks: TrackData[];
+}) => {
+  return sortedEpigenomes.map((epigenome) => {
+    // TODO: extract a common function for creating a combined epigenome id
+    const epigenomeTrack = tracks.find(
+      (track) => track.epigenome_ids.join(', ') === epigenome.id
+    );
+    return epigenomeTrack as TrackData;
+  });
 };
 
 const prepareTrackData = (params: {
