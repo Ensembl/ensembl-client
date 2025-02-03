@@ -78,7 +78,10 @@ const usePathForVepNavigationButton = () => {
   const [vepAppPath, setVepAppPath] = useState(VEP_APP_ROOT_PATH);
 
   useEffect(() => {
-    if (location.pathname.startsWith(VEP_APP_ROOT_PATH)) {
+    if (
+      location.pathname.startsWith(VEP_APP_ROOT_PATH) &&
+      !location.pathname.includes('species-selector')
+    ) {
       setVepAppPath(location.pathname);
     }
   }, [[location.pathname]]);
