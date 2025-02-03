@@ -61,10 +61,12 @@ const RegionActivitySection = () => {
   return (
     <div className={componentClasses}>
       <div>
-        <EpigenomesSorter
-          epigenomes={sortedCombinedEpigenomes ?? []}
-          sortingDimensions={epigenomeSortingDimensions ?? []}
-        />
+        {preparedData && (
+          <EpigenomesSorter
+            epigenomes={sortedCombinedEpigenomes ?? []}
+            sortingDimensions={epigenomeSortingDimensions ?? []}
+          />
+        )}
       </div>
       <div
         className={regionOverviewStyles.middleColumn}
