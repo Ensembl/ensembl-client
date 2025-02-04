@@ -27,6 +27,7 @@ type ActivityViewerEpigenomesContextType = {
   sortedCombinedEpigenomes: Epigenome[] | null;
   epigenomeSortingDimensions: string[] | null; // List of up to three dimensions actually used to sort epigenomes
   allEpigenomeSortableDimensions: string[] | null; // List of all dimensions from which the sorting dimensions can be selected
+  epigenomeCombiningDimensions: string[]; // List of dimensions to ignore when distinguishing between epigenomes. Selected by user. Starts as empty list
   epigenomeMetadataDimensionsResponse: EpigenomeMetadataDimensionsResponse | null;
 };
 
@@ -38,6 +39,7 @@ const defaultContext: ActivityViewerEpigenomesContextType = {
   sortedCombinedEpigenomes: null,
   epigenomeSortingDimensions: null,
   allEpigenomeSortableDimensions: null,
+  epigenomeCombiningDimensions: [],
   epigenomeMetadataDimensionsResponse: null
 };
 

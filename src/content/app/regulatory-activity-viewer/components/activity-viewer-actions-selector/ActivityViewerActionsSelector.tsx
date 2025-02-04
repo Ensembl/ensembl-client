@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef, type ChangeEvent } from 'react';
+import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch } from 'src/store';
@@ -24,11 +24,15 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
-import { setSortingDimensionsOrder } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
+import {
+  setSortingDimensionsOrder,
+  setCombiningDimensions
+} from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
 
 import SimpleSelect, {
   type SimpleSelectMethods
 } from 'src/shared/components/simple-select/SimpleSelect';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import ArrowUpIcon from 'static/icons/icon_arrow.svg';
 
@@ -68,7 +72,7 @@ const ActivityViewerActionSelector = () => {
 
   const options = [
     {
-      label: 'Show/hide columns',
+      label: 'Distinguish epigenomes by',
       value: Actions.combineEpigenomes
     },
     {
@@ -100,6 +104,8 @@ const FurtherOptions = ({
 }) => {
   if (mode === 'sorting') {
     return <SortingOrder onClose={onClose} />;
+  } else if (mode === 'combine-epigenomes') {
+    return <DistinctEpigenomeDimensions onClose={onClose} />;
   }
 
   return null;
@@ -172,6 +178,92 @@ const SortingOrder = ({ onClose }: { onClose: () => void }) => {
           >
             {dimensions[dimensionId].name}
           </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const DistinctEpigenomeDimensions = ({ onClose }: { onClose: () => void }) => {
+  const { activeGenomeId } = useActivityViewerIds();
+  const { epigenomeCombiningDimensions, epigenomeMetadataDimensionsResponse } =
+    useEpigenomes();
+  const allCombinableDimensions =
+    epigenomeMetadataDimensionsResponse?.ui_spec.collapsible ?? [];
+  const allDimensions = epigenomeMetadataDimensionsResponse?.dimensions;
+  const dispatch = useAppDispatch();
+
+  // To avoid rerendering large sections of the UI, keep the selection state locally
+  // until user closes this component
+  const [selectedDimensions, setSelectedDimensions] = useState(
+    epigenomeCombiningDimensions
+  );
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const selectedDimensionsRef = useRef(selectedDimensions);
+  const combiningDimensionsRef = useRef(epigenomeCombiningDimensions);
+
+  useOutsideClick(panelRef, onClose);
+
+  // Counterintuitively, 'selecting' in the UI will be the exact opposite of 'selecting' in our code.
+  // When user unticks ('deselects') a dimension, it means for us that we should 'select' this dimension
+  // to use as a combining dimension
+  const onChange = (dimension: string, isSelected: boolean) => {
+    // if the isSelected flag is true, it means that the respective dimension should be treated as distinct.
+    // Therefore, remove it from combined dimensions.
+    const updatedDimensions = isSelected
+      ? selectedDimensions.filter((dim) => dim !== dimension)
+      : selectedDimensions.concat(dimension);
+    setSelectedDimensions(updatedDimensions);
+    selectedDimensionsRef.current = updatedDimensions;
+  };
+
+  useEffect(() => {
+    return () => {
+      const selectedDimensions = selectedDimensionsRef.current;
+      const combiningDimensions = combiningDimensionsRef.current;
+
+      const areDimensionArraysEqual =
+        selectedDimensions.length === combiningDimensions.length &&
+        selectedDimensions
+          .toSorted()
+          .every(
+            (item, index) => item === combiningDimensions.toSorted()[index]
+          );
+
+      if (!areDimensionArraysEqual) {
+        dispatch(
+          setCombiningDimensions({
+            genomeId: activeGenomeId as string,
+            dimensionNames: selectedDimensions
+          })
+        );
+      }
+    };
+  }, []);
+
+  if (!allDimensions) {
+    // this should not happen
+    return null;
+  }
+
+  // Show dimensions in the list in the same order as the backend-directed order of columns in the table
+  const sortedCombinableDimensions =
+    epigenomeMetadataDimensionsResponse.ui_spec.table_layout
+      .map((dimensionName) =>
+        allCombinableDimensions.find((dim) => dim === dimensionName)
+      )
+      .filter((dim) => typeof dim === 'string');
+
+  return (
+    <div className={styles.floatingPanel} ref={panelRef}>
+      {sortedCombinableDimensions.map((dimension) => (
+        <div key={dimension}>
+          <CheckboxWithLabel
+            label={allDimensions[dimension].name}
+            checked={!selectedDimensions.includes(dimension)}
+            onChange={(isSelected) => onChange(dimension, isSelected)}
+          />
         </div>
       ))}
     </div>

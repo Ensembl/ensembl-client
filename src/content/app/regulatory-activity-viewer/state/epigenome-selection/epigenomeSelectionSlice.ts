@@ -75,6 +75,14 @@ const epigenomeSelectionSlice = createSlice({
         genomeId
       ].selectionCriteria[dimensionName].filter((item) => item !== value);
     },
+    setCombiningDimensions(
+      state,
+      action: PayloadAction<{ genomeId: string; dimensionNames: string[] }>
+    ) {
+      const { dimensionNames, genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].combiningDimensions = dimensionNames;
+    },
     addCombiningDimension(
       state,
       action: PayloadAction<{ genomeId: string; dimensionName: string }>
@@ -107,6 +115,7 @@ export const {
   removeSelectionCriterion,
   addCombiningDimension,
   removeAllCombiningDimensions,
+  setCombiningDimensions,
   setSortingDimensionsOrder
 } = epigenomeSelectionSlice.actions;
 

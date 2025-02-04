@@ -126,7 +126,8 @@ const useEpigenomesData = () => {
     filteredCombinedEpigenomes: combinedEpigenomes,
     sortedCombinedEpigenomes: sortedEpigenomes,
     epigenomeSortingDimensions: dimensionsForSorting,
-    allEpigenomeSortableDimensions: epigenomeSortableDimensions
+    allEpigenomeSortableDimensions: epigenomeSortableDimensions,
+    epigenomeCombiningDimensions
   };
 };
 
