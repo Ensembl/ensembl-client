@@ -17,6 +17,8 @@
 import { useState, useDeferredValue, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { useAppDispatch } from 'src/store';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -85,7 +87,7 @@ const VepSpeciesSelector = () => {
   };
 
   const onClose = () => {
-    navigate(-1);
+    navigate(urlFor.vepForm(), { replace: true });
   };
 
   return (
