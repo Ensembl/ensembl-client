@@ -21,7 +21,7 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import { getEpigenomeCombiningDimensions } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
-import { getEpigenomeLabels } from './epigenomes-sorter/EpigenomesSorter';
+import { getEpigenomeLabels } from './epigenomes-sorter/EpigenomeLabels';
 
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';

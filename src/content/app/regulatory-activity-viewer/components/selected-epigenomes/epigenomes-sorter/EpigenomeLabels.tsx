@@ -20,7 +20,7 @@ import { stringifyDimensionValue } from './sortEpigenomes';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 
-import styles from './EpigenomesSorter.module.css';
+import styles from './EpigenomeLabels.module.css';
 
 type Props = {
   epigenomes: Epigenome[];
@@ -28,21 +28,12 @@ type Props = {
   className?: string;
 };
 
-/**
- * Add sorting by:
- *  - sex
- *  - life_stage
- *  - organ
- * If the value of a field is an array,
- * join it into a single string and use the whole string
- */
-
 // colours used as input for generating colour scales
 const colors1 = ['#80ccff', '#fcb6b5'];
 const colors2 = ['#0399ff', '#b6e1ff'];
 const colors3 = ['#024b02', '#cce5cd'];
 
-const EpigenomesSorter = (props: Props) => {
+const EpigenomeLabels = (props: Props) => {
   const { epigenomes, sortingDimensions } = props;
 
   const epigenomeLabelsData = getEpigenomeLabels({
@@ -61,8 +52,6 @@ const EpigenomesSorter = (props: Props) => {
 
 /**
  * Produces data to render epigenome labels.
- * Returns an array of arrays of label data,
- * where the inner arrays have the same order as the sorting dimensions.
  *
  * TODO:
  *  - update function name (getEpigenomeLabelsData)?
@@ -197,4 +186,4 @@ const createValuesToColorsMap = (values: string[], colors: string[]) => {
   return map;
 };
 
-export default EpigenomesSorter;
+export default EpigenomeLabels;

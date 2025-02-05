@@ -22,7 +22,7 @@ import useRegionActivityData from './useRegionActivityData';
 
 import RegionActivitySectionImage from './RegionActivitySectionImage';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
-import EpigenomesSorter from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomesSorter';
+import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
 import { CircleLoader } from 'src/shared/components/loader';
 
 // FIXME: promote these styles to the top level of region activity viewer
@@ -62,7 +62,7 @@ const RegionActivitySection = () => {
     <div className={componentClasses}>
       <div>
         {preparedData && (
-          <EpigenomesSorter
+          <EpigenomeLabels
             epigenomes={sortedCombinedEpigenomes ?? []}
             sortingDimensions={epigenomeSortingDimensions ?? []}
           />
