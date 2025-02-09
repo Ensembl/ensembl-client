@@ -62,7 +62,13 @@ const ActivityViewerActionSelector = () => {
 
   const onActionSelected = (event: ChangeEvent<HTMLSelectElement>) => {
     const action = event.target.value as CurrentAction;
-    setAction(action);
+
+    // To prevent the floating panel from immediately closing,
+    // because interaction with the select element is interpreted as an outside click,
+    // set the action in the next tick
+    setTimeout(() => {
+      setAction(action);
+    }, 0);
   };
 
   const resetAction = () => {
@@ -87,7 +93,8 @@ const ActivityViewerActionSelector = () => {
         options={options}
         placeholder="Actions"
         defaultValue=""
-        onInput={onActionSelected}
+        onChange={onActionSelected}
+        disabled={action !== null}
         ref={selectRef}
       />
       <FurtherOptions mode={action} onClose={resetAction} />
