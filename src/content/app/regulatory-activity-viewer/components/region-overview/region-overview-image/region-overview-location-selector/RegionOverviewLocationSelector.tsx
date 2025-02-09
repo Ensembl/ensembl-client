@@ -72,7 +72,9 @@ const RegionOverviewLocationSelector = (props: Props) => {
           selectionEnd={selectedLocation.end}
         />
       )}
-      <g filter={`url(#${filterId})`}>{children}</g>
+      <g filter={selectedLocation ? `url(#${filterId})` : undefined}>
+        {children}
+      </g>
       {selectedLocation && (
         <>
           <rect
