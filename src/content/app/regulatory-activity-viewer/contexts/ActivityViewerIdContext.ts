@@ -26,14 +26,18 @@ type ActivityViewerIdContextType = {
   assemblyAccessionId: string | null;
   assemblyName: string | null; // <-- temporary data; won't be needed when all regulation endpoints switch to using assembly accession id
   location: Location | null; // not quite sure if location belongs here; but provisionally placing it here
-  locationForUrl?: string;
+  locationForUrl?: string | null;
+  isFetchingGenomeId: boolean;
+  isMissingGenomeId: boolean;
 };
 
 const defaultContext: ActivityViewerIdContextType = {
   activeGenomeId: null,
   assemblyAccessionId: null,
   assemblyName: null,
-  location: null
+  location: null,
+  isFetchingGenomeId: false,
+  isMissingGenomeId: false
 };
 
 export const ActivityViewerIdContext =

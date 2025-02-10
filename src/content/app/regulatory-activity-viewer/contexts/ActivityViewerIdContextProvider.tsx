@@ -15,8 +15,13 @@
  */
 
 import type { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
+
+// Importing this function from the genome browser app section suggests that it should be moved to shared helpers
+import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
+
 import {
   useGenomeSummaryByGenomeSlugQuery,
   isGenomeNotFoundError
@@ -27,6 +32,8 @@ import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/st
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { ActivityViewerIdContext } from './ActivityViewerIdContext';
+
+import type { Location } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 /**
  * NOTE: The regulation team insists that their api endpoints
@@ -52,12 +59,17 @@ const ActivityViewerIdContextProvider = ({
   );
   const params = useUrlParams<'genomeId'>(['/activity-viewer/:genomeId']);
   const { genomeId: genomeIdInUrl } = params;
+  const { search } = useLocation();
+  const urlSearchParams = new URLSearchParams(search);
 
   // TODO: If user does not have this genome selected, it should be added to selected species
-  const { currentData: genomeSummary, error: genomeQueryError } =
-    useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
-      skip: !genomeIdInUrl
-    });
+  const {
+    currentData: genomeSummary,
+    isFetching: isFetchingGenomeSummaryInfo,
+    error: genomeQueryError
+  } = useGenomeSummaryByGenomeSlugQuery(genomeIdInUrl ?? '', {
+    skip: !genomeIdInUrl
+  });
 
   const assemblyAccessionId = species?.assembly.accession_id;
   const assemblyName = species?.assembly.name.split('.')[0]; // FIXME: assemblyName is used temporarily for some of the endpoints, until they switch to assembly accession id
@@ -70,12 +82,17 @@ const ActivityViewerIdContextProvider = ({
     species?.genome_tag ??
     species?.genome_id;
 
-  // TODO: in the future, read location from the url
-  const location =
-    assemblyName?.toLowerCase() === 'grcm39'
-      ? mockMouseLocation
-      : mockHumanLocation;
-  const locationForUrl = formatLocationForUrl(location);
+  const locationInUrl = urlSearchParams.get('location');
+  let location: Location | null = null;
+
+  if (locationInUrl) {
+    const [regionName, start, end] = getChrLocationFromStr(locationInUrl);
+    location = {
+      regionName,
+      start,
+      end
+    };
+  }
 
   const contextValue = {
     genomeIdInUrl,
@@ -84,9 +101,9 @@ const ActivityViewerIdContextProvider = ({
     genomeIdForUrl,
     assemblyAccessionId: assemblyAccessionId ?? null,
     assemblyName: assemblyName ?? null,
-    // Below is a test location. Later on, we will read it from the url or from an input element
-    location: location,
-    locationForUrl,
+    location,
+    locationForUrl: locationInUrl,
+    isFetchingGenomeId: isFetchingGenomeSummaryInfo,
     isMissingGenomeId:
       !!genomeQueryError && isGenomeNotFoundError(genomeQueryError)
   };
@@ -96,32 +113,6 @@ const ActivityViewerIdContextProvider = ({
       {children}
     </ActivityViewerIdContext>
   );
-};
-
-const mockHumanLocation = {
-  regionName: '17',
-  start: 58190566,
-  end: 58290566 // <-- 100kB slice
-  // end: 59190566 // <-- 1MB slice; switch to it when backend apis get faster
-};
-
-const mockMouseLocation = {
-  regionName: '5',
-  start: 28645230,
-  end: 29636061
-};
-
-// TODO: extract this into a helper
-const formatLocationForUrl = ({
-  regionName,
-  start,
-  end
-}: {
-  regionName: string;
-  start: number;
-  end: number;
-}) => {
-  return `${regionName}:${start}-${end}`;
 };
 
 export default ActivityViewerIdContextProvider;
