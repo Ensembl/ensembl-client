@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
 import { getEpigenomeCombiningDimensions } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
-import {
-  addCombiningDimension,
-  removeAllCombiningDimensions
-} from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
-
 import { Table, ColumnHead } from 'src/shared/components/table/';
-import TextButton from 'src/shared/components/text-button/TextButton';
+import { getEpigenomeLabels } from './epigenomes-sorter/EpigenomeLabels';
 
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
@@ -39,32 +34,28 @@ type Props = {
 
 const SelectedEpigenomes = (props: Props) => {
   const { genomeId } = props;
-  const { filteredCombinedEpigenomes, epigenomeMetadataDimensionsResponse } =
-    useEpigenomes();
+  const {
+    sortedCombinedEpigenomes,
+    epigenomeSortingDimensions,
+    epigenomeMetadataDimensionsResponse
+  } = useEpigenomes();
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, genomeId)
   );
-  const dispatch = useAppDispatch();
 
-  const onCombiningDimensionAdded = (dimension: string) => {
-    dispatch(
-      addCombiningDimension({
-        genomeId,
-        dimensionName: dimension
-      })
-    );
-  };
-
-  const onRemoveAllCombiningDimensions = () => {
-    dispatch(removeAllCombiningDimensions({ genomeId }));
-  };
-
-  if (!filteredCombinedEpigenomes || !epigenomeMetadataDimensionsResponse) {
+  if (
+    !sortedCombinedEpigenomes ||
+    !epigenomeMetadataDimensionsResponse ||
+    !epigenomeSortingDimensions?.length
+  ) {
     return null;
   }
 
-  const { ui_spec } = epigenomeMetadataDimensionsResponse;
   const tableColumns = getTableColumns(epigenomeMetadataDimensionsResponse);
+  const epigenomeLabelsData = getEpigenomeLabels({
+    epigenomes: sortedCombinedEpigenomes,
+    sortingDimensions: epigenomeSortingDimensions
+  });
 
   return (
     <div className={styles.outerGrid}>
@@ -72,34 +63,28 @@ const SelectedEpigenomes = (props: Props) => {
         <Table className={styles.epigenomesTable}>
           <thead>
             <tr>
+              <ColumnHead>Label</ColumnHead>
               {tableColumns.map((tableColumn) =>
                 !isDimensionCollapsed(
                   tableColumn.dimensionName,
                   epigenomeCombiningDimensions
                 ) ? (
                   <ColumnHead key={tableColumn.dimensionName}>
-                    {isCollapsibleDimension(
-                      tableColumn.dimensionName,
-                      ui_spec.collapsible
-                    ) ? (
-                      <TextButton
-                        onClick={() =>
-                          onCombiningDimensionAdded(tableColumn.dimensionName)
-                        }
-                      >
-                        {tableColumn.columnHeading}
-                      </TextButton>
-                    ) : (
-                      tableColumn.columnHeading
-                    )}
+                    {tableColumn.columnHeading}
                   </ColumnHead>
                 ) : null
               )}
             </tr>
           </thead>
           <tbody>
-            {filteredCombinedEpigenomes.map((epigenome, index) => (
+            {sortedCombinedEpigenomes.map((epigenome, index) => (
               <tr key={index}>
+                <td style={{ position: 'relative' }}>
+                  <EpigenomeLabels
+                    data={epigenomeLabelsData}
+                    rowIndex={index}
+                  />
+                </td>
                 {tableColumns.map(
                   (tableColumn) =>
                     !isDimensionCollapsed(
@@ -119,27 +104,17 @@ const SelectedEpigenomes = (props: Props) => {
             ))}
           </tbody>
         </Table>
-        {!filteredCombinedEpigenomes.length && (
+        {!sortedCombinedEpigenomes.length && (
           <div className={styles.noEpigenomesMessage}>
             Use 'Configure' to select the data to display
           </div>
         )}
       </div>
       <div className={styles.rightColumn}>
-        <EpigenomesCount epigenomes={filteredCombinedEpigenomes} />
-        <TextButton onClick={onRemoveAllCombiningDimensions}>
-          Reset columns
-        </TextButton>
+        <EpigenomesCount epigenomes={sortedCombinedEpigenomes} />
       </div>
     </div>
   );
-};
-
-const isCollapsibleDimension = (
-  dimensionName: string,
-  dimensions: string[]
-) => {
-  return dimensions.includes(dimensionName);
 };
 
 const isDimensionCollapsed = (
@@ -165,6 +140,35 @@ const EpigenomesCount = ({ epigenomes }: { epigenomes: unknown[] }) => {
   return (
     <div>
       <span className={styles.strong}>{count}</span> epigenomes
+    </div>
+  );
+};
+
+const EpigenomeLabels = ({
+  data,
+  rowIndex
+}: {
+  data: ReturnType<typeof getEpigenomeLabels>;
+  rowIndex: number;
+}) => {
+  const labelData = data[rowIndex];
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        position: 'absolute',
+        top: '2px',
+        bottom: '2px',
+        columnGap: '2px'
+      }}
+    >
+      {labelData.map(({ color }, index) => (
+        <div
+          style={{ width: '5px', height: '100%', backgroundColor: color }}
+          key={index}
+        />
+      ))}
     </div>
   );
 };

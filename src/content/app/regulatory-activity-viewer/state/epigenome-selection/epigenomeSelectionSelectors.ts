@@ -17,6 +17,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import type { RootState } from 'src/store';
+import type { StatePerGenome } from './epigenomeSelectionSlice';
 
 const getEpigenomeSelectionState = (state: RootState) =>
   state.regionActivityViewer.epigenomeSelection;
@@ -24,7 +25,8 @@ const getEpigenomeSelectionState = (state: RootState) =>
 export const getEpigenomeSelectionStatePerGenome = (
   state: RootState,
   genomeId: string
-) => state.regionActivityViewer.epigenomeSelection[genomeId] ?? null;
+): StatePerGenome | null =>
+  state.regionActivityViewer.epigenomeSelection[genomeId] ?? null;
 
 // Transform arrays of selected values into sets: they will be accessed a lot
 export const getEpigenomeSelectionCriteria = createSelector(
@@ -53,6 +55,14 @@ export const getEpigenomeCombiningDimensions = createSelector(
     return epigenomeSelectionSlice[genomeId]?.combiningDimensions ?? [];
   }
 );
+
+export const getEpigenomeSortingDimensions = (
+  state: RootState,
+  genomeId: string
+) => {
+  const stateForGenome = getEpigenomeSelectionStatePerGenome(state, genomeId);
+  return stateForGenome?.sortingDimensions ?? null;
+};
 
 export type EpigenomeSelectionCriteria = ReturnType<
   typeof getEpigenomeSelectionCriteria

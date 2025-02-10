@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 238px; /* FIXME: top offset should be calculated dynamically */
+  align-items: end;
+  padding-right: 30px;
+}
+
+.epigenomeLabel {
+  display: flex;
+  column-gap: 0.3rem;
+}
+
+.coloredBlock {
+  width: 6px;
+  height: 25px;
+}

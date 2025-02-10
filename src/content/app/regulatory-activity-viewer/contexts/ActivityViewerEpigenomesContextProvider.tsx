@@ -20,10 +20,12 @@ import { useAppSelector } from 'src/store';
 
 import { filterEpigenomes } from 'src/content/app/regulatory-activity-viewer/helpers/filter-epigenomes/filterEpigenomes';
 import { getCombinedEpigenomes } from 'src/content/app/regulatory-activity-viewer/helpers/combine-epigenomes/combineEpigenomes';
+import { sortEpigenomes } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/sortEpigenomes';
 
 import {
   getEpigenomeSelectionCriteria,
-  getEpigenomeCombiningDimensions
+  getEpigenomeCombiningDimensions,
+  getEpigenomeSortingDimensions
 } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks//useActivityViewerIds';
@@ -55,6 +57,9 @@ const useEpigenomesData = () => {
   );
   const epigenomeCombiningDimensions = useAppSelector((state) =>
     getEpigenomeCombiningDimensions(state, activeGenomeId ?? '')
+  );
+  const storedEpigenomeSortingDimensions = useAppSelector((state) =>
+    getEpigenomeSortingDimensions(state, activeGenomeId ?? '')
   );
 
   const {
@@ -99,13 +104,30 @@ const useEpigenomesData = () => {
     });
   }, [filteredEpigenomes]);
 
+  // List of dimensions actually used to sort the epigenomes (up to three dimensions)
+  const epigenomeSortableDimensions =
+    storedEpigenomeSortingDimensions ??
+    epigenomeMetadataDimensionsResponse?.ui_spec.sortable ??
+    [];
+
+  const dimensionsForSorting = epigenomeSortableDimensions.slice(0, 3); // use up to three first dimensions for sorting
+
+  const sortedEpigenomes = sortEpigenomes({
+    epigenomes: combinedEpigenomes,
+    sortingDimensions: dimensionsForSorting
+  });
+
   return {
     isLoading: areBaseEpigenomesLoading || areMetadataDimensionsLoading,
     isError: isBaseEpigenomesError || isEpigenomeMetadataError,
     baseEpigenomes: baseEpigenomes ?? null,
     epigenomeMetadataDimensionsResponse:
       epigenomeMetadataDimensionsResponse ?? null,
-    filteredCombinedEpigenomes: combinedEpigenomes
+    filteredCombinedEpigenomes: combinedEpigenomes,
+    sortedCombinedEpigenomes: sortedEpigenomes,
+    epigenomeSortingDimensions: dimensionsForSorting,
+    allEpigenomeSortableDimensions: epigenomeSortableDimensions,
+    epigenomeCombiningDimensions
   };
 };
 

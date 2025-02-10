@@ -25,18 +25,20 @@ type SelectionCriterionForGenome = SelectionCriterion & {
   genomeId: string;
 };
 
-type StatePerGenome = {
+export type StatePerGenome = {
   selectionCriteria: {
     [dimensionName: string]: string[];
   };
   combiningDimensions: string[]; // Dimensions used to combine epigenomes out of base epigenomes
+  sortingDimensions: string[] | null;
 };
 
 type EpigenomeSelectionState = Record<string, StatePerGenome>;
 
 const initialStateForGenome: StatePerGenome = {
   selectionCriteria: {},
-  combiningDimensions: []
+  combiningDimensions: [],
+  sortingDimensions: null
 };
 
 const ensureStateForGenome = (
@@ -73,6 +75,14 @@ const epigenomeSelectionSlice = createSlice({
         genomeId
       ].selectionCriteria[dimensionName].filter((item) => item !== value);
     },
+    setCombiningDimensions(
+      state,
+      action: PayloadAction<{ genomeId: string; dimensionNames: string[] }>
+    ) {
+      const { dimensionNames, genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].combiningDimensions = dimensionNames;
+    },
     addCombiningDimension(
       state,
       action: PayloadAction<{ genomeId: string; dimensionName: string }>
@@ -88,6 +98,14 @@ const epigenomeSelectionSlice = createSlice({
       const { genomeId } = action.payload;
       ensureStateForGenome(state, genomeId);
       state[genomeId].combiningDimensions = [];
+    },
+    setSortingDimensionsOrder(
+      state,
+      action: PayloadAction<{ genomeId: string; dimensionNames: string[] }>
+    ) {
+      const { genomeId, dimensionNames } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].sortingDimensions = dimensionNames;
     }
   }
 });
@@ -96,7 +114,9 @@ export const {
   addSelectionCriterion,
   removeSelectionCriterion,
   addCombiningDimension,
-  removeAllCombiningDimensions
+  removeAllCombiningDimensions,
+  setCombiningDimensions,
+  setSortingDimensionsOrder
 } = epigenomeSelectionSlice.actions;
 
 export default epigenomeSelectionSlice.reducer;

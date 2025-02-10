@@ -25,6 +25,7 @@ import {
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
+import ActivityViewerActionSelector from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-actions-selector/ActivityViewerActionsSelector';
 
 import styles from './MainContentBottomViewControls.module.css';
 
@@ -37,6 +38,7 @@ const MainContentBottomViewControls = (props: Props) => {
   return (
     <div className={styles.outerGrid}>
       <div className={styles.grid}>
+        <ActivityViewerActionSelector />
         <ContentViewButtons genomeId={genomeId} />
       </div>
     </div>
