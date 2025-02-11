@@ -57,7 +57,7 @@ const useActivityViewerRouting = () => {
     if (genomeIdForUrl && genomeIdForUrl !== genomeIdInUrl) {
       const newUrl = urlFor.regulatoryActivityViewer({
         genomeId: genomeIdForUrl,
-        location: locationForUrl ?? undefined
+        location: locationForUrl
       });
       navigate(newUrl, { replace: true });
     }

@@ -20,7 +20,10 @@ import { useLocation } from 'react-router-dom';
 import { useAppSelector } from 'src/store';
 
 // Importing this function from the genome browser app section suggests that it should be moved to shared helpers
-import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
+import {
+  getGenomicLocationFromString,
+  type GenomicLocation
+} from 'src/shared/helpers/genomicLocationHelpers';
 
 import {
   useGenomeSummaryByGenomeSlugQuery,
@@ -32,8 +35,6 @@ import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/st
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { ActivityViewerIdContext } from './ActivityViewerIdContext';
-
-import type { Location } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 /**
  * NOTE: The regulation team insists that their api endpoints
@@ -83,15 +84,14 @@ const ActivityViewerIdContextProvider = ({
     species?.genome_id;
 
   const locationInUrl = urlSearchParams.get('location');
-  let location: Location | null = null;
+  let location: GenomicLocation | null = null;
 
   if (locationInUrl) {
-    const [regionName, start, end] = getChrLocationFromStr(locationInUrl);
-    location = {
-      regionName,
-      start,
-      end
-    };
+    try {
+      location = getGenomicLocationFromString(locationInUrl);
+    } catch {
+      // Failed to parse genomic location string. Proceed as normal.
+    }
   }
 
   const contextValue = {

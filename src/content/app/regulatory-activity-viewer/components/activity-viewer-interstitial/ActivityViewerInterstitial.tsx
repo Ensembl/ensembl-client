@@ -18,6 +18,8 @@ import { Link } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
+
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 
 import styles from './ActivityViewerInterstitial.module.css';
@@ -32,9 +34,9 @@ const ActivityViewerInterstitial = () => {
   let location: string | null = null;
 
   if (assemblyAccessionId === humanAssemblyId) {
-    location = formatLocationForUrl(mockHumanLocation);
+    location = getGenomicLocationString(mockHumanLocation);
   } else if (assemblyAccessionId === mouseAssemblyId) {
-    location = formatLocationForUrl(mockMouseLocation);
+    location = getGenomicLocationString(mockMouseLocation);
   }
 
   if (!location) {
@@ -77,19 +79,6 @@ const mockMouseLocation = {
   regionName: '5',
   start: 28645230,
   end: 29636061
-};
-
-// TODO: extract this into a helper
-const formatLocationForUrl = ({
-  regionName,
-  start,
-  end
-}: {
-  regionName: string;
-  start: number;
-  end: number;
-}) => {
-  return `${regionName}:${start}-${end}`;
 };
 
 export default ActivityViewerInterstitial;

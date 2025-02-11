@@ -33,7 +33,7 @@ type EntityViewerUrlParams = {
 
 type RegulatoryActivityViewerUrlParams = {
   genomeId?: string | null;
-  location?: string;
+  location?: string | null;
 };
 
 type SpeciesPageUrlParams = {
