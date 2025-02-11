@@ -57,15 +57,7 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         activeView={activeView}
         genomeId={genomeId}
       >
-        Epigenomes
-      </ContentViewButton>
-
-      <ContentViewButton
-        view="epigenomes-selection"
-        activeView={activeView}
-        genomeId={genomeId}
-      >
-        Configure
+        Table
       </ContentViewButton>
 
       <ContentViewButton
@@ -74,6 +66,14 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         genomeId={genomeId}
       >
         Visualise
+      </ContentViewButton>
+
+      <ContentViewButton
+        view="epigenomes-selection"
+        activeView={activeView}
+        genomeId={genomeId}
+      >
+        Configure
       </ContentViewButton>
     </div>
   );

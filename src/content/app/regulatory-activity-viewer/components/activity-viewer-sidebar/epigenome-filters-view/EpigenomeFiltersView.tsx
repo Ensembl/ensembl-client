@@ -23,6 +23,7 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import { getEpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import { removeSelectionCriterion } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
+import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import { getMetadataItems } from 'src/content/app/regulatory-activity-viewer/components/epigenome-selection-panel/getEpigenomeCounts';
 
@@ -32,6 +33,8 @@ import {
   CollapsibleSectionBody
 } from 'src/shared/components/collapsible-section/CollapsibleSection';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
+
+import CogIcon from 'static/icons/icon_settings.svg';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
@@ -63,7 +66,7 @@ const EpigenomeFiltersView = (props: Props) => {
     []
   );
 
-  if (!epigenomeMetadataDimensionsResponse || !baseEpigenomes) {
+  if (!genomeId || !epigenomeMetadataDimensionsResponse || !baseEpigenomes) {
     return null;
   }
 
@@ -73,6 +76,7 @@ const EpigenomeFiltersView = (props: Props) => {
 
   return (
     <div>
+      <ConfigureButton genomeId={genomeId} />
       {metadataDimensionNames.map((dimensionName) => (
         <FiltersSection
           key={dimensionName}
@@ -154,6 +158,28 @@ const EpigenomeFilter = ({
         <DeleteButton onClick={onDeleteClick} />
       </div>
     </div>
+  );
+};
+
+const ConfigureButton = ({ genomeId }: { genomeId: string }) => {
+  const dispatch = useAppDispatch();
+
+  const onClick = () => {
+    dispatch(
+      setMainContentBottomView({
+        genomeId,
+        view: 'epigenomes-selection'
+      })
+    );
+  };
+
+  return (
+    <button className={styles.configureButton} onClick={onClick}>
+      <span>Configure </span>
+      <span>
+        <CogIcon />
+      </span>
+    </button>
   );
 };
 
