@@ -20,6 +20,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 
+import styles from './ActivityViewerInterstitial.module.css';
+
 /**
  * Component to display when url does not contain enough data
  * to display regulatory activity
@@ -36,7 +38,14 @@ const ActivityViewerInterstitial = () => {
   }
 
   if (!location) {
-    return 'Please select reference human or reference mouse assembly.';
+    return (
+      <div>
+        <div className={styles.topPanel} />
+        <div className={styles.main}>
+          Please select reference human or reference mouse assembly.
+        </div>
+      </div>
+    );
   }
 
   const url = urlFor.regulatoryActivityViewer({
@@ -44,7 +53,14 @@ const ActivityViewerInterstitial = () => {
     location
   });
 
-  return <Link to={url}>Example location</Link>;
+  return (
+    <div>
+      <div className={styles.topPanel} />
+      <div className={styles.main}>
+        <Link to={url}>Example location</Link>
+      </div>
+    </div>
+  );
 };
 
 const humanAssemblyId = 'GCA_000001405.29';
