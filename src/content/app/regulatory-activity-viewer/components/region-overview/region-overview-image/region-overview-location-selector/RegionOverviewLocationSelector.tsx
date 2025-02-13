@@ -17,10 +17,13 @@
 import { type RefObject, type ReactNode } from 'react';
 import { type ScaleLinear } from 'd3';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import useLocationSelector from './useLocationSelector';
 
+import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
+
+import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
 
 type Props = {
@@ -34,6 +37,9 @@ type Props = {
 
 const RegionOverviewLocationSelector = (props: Props) => {
   const { activeGenomeId, scale, imageRef, children } = props;
+  const mainContentBottomView = useAppSelector((state) =>
+    getMainContentBottomView(state, activeGenomeId)
+  );
   const dispatch = useAppDispatch();
 
   const onSelectionCompleted = (params: { start: number; end: number }) => {
@@ -50,6 +56,15 @@ const RegionOverviewLocationSelector = (props: Props) => {
         }
       })
     );
+
+    if (mainContentBottomView !== 'dataviz') {
+      dispatch(
+        setMainContentBottomView({
+          genomeId: activeGenomeId,
+          view: 'dataviz'
+        })
+      );
+    }
   };
 
   const selectedLocation = useLocationSelector({

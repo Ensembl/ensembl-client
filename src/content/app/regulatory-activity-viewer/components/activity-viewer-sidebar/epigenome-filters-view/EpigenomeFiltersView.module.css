@@ -23,3 +23,17 @@
   font-size: 12px;
   font-weight: var(--font-weight-light);
 }
+
+.configureButton {
+  display: flex;
+  column-gap: 0.6rem;
+  color: var(--color-blue);
+  margin-bottom: 1.4rem;
+  margin-left: 17px;
+}
+
+.configureButton svg {
+  fill: var(--color-blue);
+  height: 14px;
+  width: 14px;
+}

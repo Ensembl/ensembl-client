@@ -22,12 +22,7 @@ import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
-
-export type Location = {
-  regionName: string;
-  start: number;
-  end: number;
-};
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 type RegionOverviewRequestParams = {
   assemblyName: string; // <-- this will be replaced by assembly accession id
@@ -49,7 +44,7 @@ type EpigenomesActivityRequestParams = {
   epigenomeIds: string[];
 };
 
-export const stringifyLocation = (location: Location) =>
+export const stringifyLocation = (location: GenomicLocation) =>
   `${location.regionName}:${location.start}-${location.end}`;
 
 const activityViewerApiSlice = restApiSlice.injectEndpoints({

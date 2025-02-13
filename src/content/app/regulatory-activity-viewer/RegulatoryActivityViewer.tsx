@@ -27,6 +27,7 @@ import useActivityViewerRouting from './hooks/useActivityViewerRouting';
 import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
+import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -38,9 +39,28 @@ import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigeno
 import styles from './RegulatoryActivityViewer.module.css';
 
 const ActivityViewer = () => {
-  const { activeGenomeId } = useActivityViewerIds();
+  const { activeGenomeId, genomeIdInUrl, location } = useActivityViewerIds();
   useActivityViewerRouting();
   usePreselectedEpigenomes();
+
+  if (!genomeIdInUrl) {
+    // TODO: add a proper component for this
+    return (
+      <div className={styles.container}>
+        <ActivityViewerAppBar />
+        <div>Please select species.</div>
+      </div>
+    );
+  } else if (!location) {
+    // NOTE: currently, regulatory activity data is fetched based on location.
+    // In the future, it should be possible to fetch regulatory data based on gene or regulatory feature
+    return (
+      <div className={styles.container}>
+        <ActivityViewerAppBar />
+        <ActivityViewerInterstitial />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
