@@ -22,6 +22,6 @@
 .productStableId {
   word-wrap: break-word;
   justify-self: end;
-  word-break: break-word;
+  word-break: break-all;
   text-align: right;
 }
