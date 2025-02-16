@@ -21,6 +21,7 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 import {
   setMainContentBottomView,
+  setSidebarView,
   type MainContentBottomView
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
@@ -99,6 +100,16 @@ const ContentViewButton = ({
         view
       })
     );
+    // if the 'Configure' button is pressed,
+    // also change the sidebar contents
+    if (view === 'epigenomes-selection') {
+      dispatch(
+        setSidebarView({
+          genomeId,
+          view: 'epigenome-filters'
+        })
+      );
+    }
   };
 
   const isActive = view === activeView;
