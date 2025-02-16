@@ -58,7 +58,9 @@ const ActivityViewerIdContextProvider = ({
   const species = useAppSelector((state) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
-  const params = useUrlParams<'genomeId'>(['/activity-viewer/:genomeId']);
+  const params = useUrlParams<'genomeId'>([
+    '/activity-viewer/genome/:genomeId'
+  ]);
   const { genomeId: genomeIdInUrl } = params;
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
