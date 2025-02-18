@@ -22,6 +22,7 @@ import useRegionActivityData from './useRegionActivityData';
 
 import RegionActivitySectionImage from './RegionActivitySectionImage';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
 import { CircleLoader } from 'src/shared/components/loader';
 
@@ -60,7 +61,26 @@ const RegionActivitySection = () => {
 
   return (
     <div className={componentClasses}>
-      <div>
+      <div
+        className={regionOverviewStyles.middleColumn}
+        ref={imageContainerRef}
+      >
+        {preparedData && width && (
+          <RegionActivitySectionImage
+            width={width}
+            regionOverviewData={preparedData.regionOverviewData}
+            featureTracks={preparedData.featureTracksData}
+            start={preparedData.location.start}
+            end={preparedData.location.end}
+          />
+        )}
+        {(isLoading || isTransitionPending) && (
+          <div className={styles.loader}>
+            <CircleLoader />
+          </div>
+        )}
+      </div>
+      <div className={regionOverviewStyles.leftColumn}>
         {preparedData && (
           <EpigenomeLabels
             epigenomes={sortedCombinedEpigenomes ?? []}
@@ -68,35 +88,17 @@ const RegionActivitySection = () => {
           />
         )}
       </div>
-      <div
-        className={regionOverviewStyles.middleColumn}
-        ref={imageContainerRef}
-      >
-        <div className={styles.container}>
-          {preparedData && width && (
-            <>
-              <RegionActivitySectionImage
-                width={width}
-                regionOverviewData={preparedData.regionOverviewData}
-                featureTracks={preparedData.featureTracksData}
-                start={preparedData.location.start}
-                end={preparedData.location.end}
-              />
-              {/* A temporary vertical separator component below */}
-              <div style={{ margin: '1rem 0' }} />
-              <EpigenomeActivityImage
-                data={preparedData.epigenomeActivityData}
-                scale={preparedData.scale}
-                width={width}
-              />
-            </>
-          )}
-          {(isLoading || isTransitionPending) && (
-            <div className={styles.loader}>
-              <CircleLoader />
-            </div>
-          )}
-        </div>
+      <div className={regionOverviewStyles.middleColumn}>
+        {preparedData && width && (
+          <EpigenomeActivityImage
+            data={preparedData.epigenomeActivityData}
+            scale={preparedData.scale}
+            width={width}
+          />
+        )}
+      </div>
+      <div className={regionOverviewStyles.rightColumn}>
+        {preparedData && <GeneExpressionLevels />}
       </div>
     </div>
   );
