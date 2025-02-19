@@ -1,6 +1,7 @@
 .section {
   margin-top: 2rem;
   position: relative;
+  row-gap: 4rem; /* temporary */
   padding-bottom: var(--global-padding-bottom);
 }
 

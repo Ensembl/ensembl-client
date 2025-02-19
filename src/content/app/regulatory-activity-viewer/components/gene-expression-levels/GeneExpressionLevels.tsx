@@ -49,10 +49,12 @@ const GeneExpressionLevels = () => {
       viewBox={`0 0 ${TOTAL_WIDTH} ${totalHeight}`}
       style={{
         width: `${TOTAL_WIDTH}px`,
-        height: `${totalHeight}px`
+        height: `${totalHeight}px`,
+        overflow: 'visible'
       }}
       width={TOTAL_WIDTH}
     >
+      <Heading medianValue={mockExpressionData.median} />
       {mockExpressionData.per_epigenome.map(({ id, value }, index) => (
         <GeneExpressionIndicator key={id} value={value} trackIndex={index} />
       ))}
@@ -128,6 +130,20 @@ const MedianLine = ({ value, height }: { value: number; height: number }) => {
       stroke="#ff9900"
       strokeDasharray="2"
     />
+  );
+};
+
+const Heading = ({ medianValue }: { medianValue: number }) => {
+  return (
+    <g transform="translate(0, -30)" style={{ fontWeight: 300 }}>
+      <text x={0} y={0}>
+        Expression level
+      </text>
+      <text x={0} y={18} style={{ fontSize: '11px', whiteSpace: 'pre' }}>
+        Median {'  '}
+        <tspan style={{ fontWeight: 400 }}>{medianValue}</tspan>
+      </text>
+    </g>
   );
 };
 
