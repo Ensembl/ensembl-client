@@ -73,7 +73,7 @@ const ZmenuAppLinks = (props: Props) => {
     }
   };
 
-  if (isProductionEnvironment()) {
+  if (!isProductionEnvironment()) {
     // In the future, links to regulatory activity viewer will depend
     // on the presence of regulatory annotation for a given genome
     links.activityViewer = {
