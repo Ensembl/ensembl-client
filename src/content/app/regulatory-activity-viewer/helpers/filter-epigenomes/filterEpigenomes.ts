@@ -66,7 +66,7 @@ const applyFilters = (params: {
   const { epigenomes, selectionCriteria, selectedMetadataDimensions } = params;
 
   if (!selectedMetadataDimensions.length) {
-    return [];
+    return epigenomes;
   }
 
   // Iterate over the groups of enabled filters (the selected metadata dimensions),
