@@ -74,7 +74,9 @@ const GeneAndOneTranscriptZmenu = (props: Props) => {
   }
 
   useEffect(() => {
-    gene && dispatch(changeHighlightedTrackId(gene.metadata.track));
+    if (gene) {
+      dispatch(changeHighlightedTrackId(gene.metadata.track));
+    }
   }, []);
 
   const mainContent = (

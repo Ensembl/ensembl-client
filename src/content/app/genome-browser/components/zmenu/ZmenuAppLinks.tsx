@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 import useGenomeBrowser from '../../hooks/useGenomeBrowser';
@@ -38,6 +39,10 @@ const ZmenuAppLinks = (props: Props) => {
     useGenomeBrowserIds();
   const { changeFocusObject } = useGenomeBrowser();
   const navigate = useNavigate();
+
+  const { search } = useLocation();
+  const urlSearchParams = new URLSearchParams(search);
+  const locationInUrl = urlSearchParams.get('location');
 
   const onGenomeBrowserAppClick = () => {
     if (!(focusObjectIdForUrl && focusObjectId)) {
@@ -67,6 +72,17 @@ const ZmenuAppLinks = (props: Props) => {
       })
     }
   };
+
+  if (isProductionEnvironment()) {
+    // In the future, links to regulatory activity viewer will depend
+    // on the presence of regulatory annotation for a given genome
+    links.activityViewer = {
+      url: urlFor.regulatoryActivityViewer({
+        genomeId: genomeIdForUrl,
+        location: locationInUrl
+      })
+    };
+  }
 
   return (
     <div className={styles.zmenuAppLinks}>
