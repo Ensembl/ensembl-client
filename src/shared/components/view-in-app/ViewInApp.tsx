@@ -36,6 +36,27 @@ export const Apps = {
   entityViewer: {
     tooltip: 'Entity Viewer',
     icon: EntityViewerIcon
+  },
+  activityViewer: {
+    tooltip: 'Regulatory Activity Viewer',
+    // the icon component below is temporary, until we have a proper one
+    icon: () => (
+      <div
+        style={{
+          display: 'flex',
+          height: '25px',
+          width: '25px',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          lineHeight: 1,
+          color: 'white',
+          backgroundColor: 'var(--app-icon-bg-color)'
+        }}
+      >
+        R
+      </div>
+    )
   }
 };
 

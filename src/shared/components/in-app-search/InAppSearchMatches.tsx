@@ -39,6 +39,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
 
 import styles from './InAppSearch.module.css';
@@ -106,7 +107,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
     }
   };
 
-  const onAppClick = (selectedAppName?: AppName) => {
+  const onAppClick = (selectedAppName?: AppNameForViewInApp) => {
     if (app === 'genomeBrowser') {
       dispatch(changeHighlightedTrackId(''));
     }
@@ -165,7 +166,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
 
 const MatchDetails = (
   props: Pick<InAppSearchMatchProps, 'match' | 'mode' | 'genomeIdForUrl'> & {
-    onClick: (appName?: AppName) => void;
+    onClick: (appName?: AppNameForViewInApp) => void;
   }
 ) => {
   const { match, genomeIdForUrl } = props;
