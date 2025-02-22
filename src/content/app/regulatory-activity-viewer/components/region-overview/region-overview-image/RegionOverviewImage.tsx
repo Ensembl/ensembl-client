@@ -22,6 +22,7 @@ import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
 import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
+import TranslateRegionOverviewContents from './TranslateRegionOverviewContents';
 
 import {
   GENE_TRACKS_TOP_OFFSET,
@@ -96,20 +97,22 @@ const RegionOverviewImage = (props: Props) => {
         width={width}
         scale={scale}
       >
-        <GeneTracks
-          regionData={data}
-          tracks={geneTracks}
-          scale={scale}
-          width={width}
-          focusGeneId={focusGeneId}
-          onFocusGeneChange={props.onFocusGeneChange}
-        />
-        <RegulatoryFeatureTracks
-          offsetTop={regulatoryFeatureTracksTopOffset}
-          features={data.regulatory_features.data}
-          featureTypesMap={data.regulatory_features.feature_types}
-          scale={scale}
-        />
+        <TranslateRegionOverviewContents>
+          <GeneTracks
+            regionData={data}
+            tracks={geneTracks}
+            scale={scale}
+            width={width}
+            focusGeneId={focusGeneId}
+            onFocusGeneChange={props.onFocusGeneChange}
+          />
+          <RegulatoryFeatureTracks
+            offsetTop={regulatoryFeatureTracksTopOffset}
+            features={data.regulatory_features.data}
+            featureTypesMap={data.regulatory_features.feature_types}
+            scale={scale}
+          />
+        </TranslateRegionOverviewContents>
       </RegionOverviewLocationSelector>
     </svg>
   );
