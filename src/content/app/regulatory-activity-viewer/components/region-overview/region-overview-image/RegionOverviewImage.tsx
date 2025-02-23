@@ -15,7 +15,12 @@
  */
 
 import { Fragment } from 'react';
-import { scaleLinear, type ScaleLinear } from 'd3';
+import { type ScaleLinear } from 'd3';
+
+import {
+  getScaleForWholeLocation,
+  getScaleForViewport
+} from './regionOverviewImageHelpers';
 
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
@@ -48,13 +53,19 @@ type Props = {
   width: number;
   data: OverviewRegion;
   featureTracks: FeatureTracks;
+  location: {
+    start: number;
+    end: number;
+  };
+  regionDetailLocation: {
+    start: number;
+    end: number;
+  } | null;
   focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
   onFocusGeneChange: (geneId: string) => void; // TODO: this will need to evolve; for same reasons as focusGeneId prop
 };
 
 /**
- * Q: what do "gaps" of "boring regions" mean for the creation of scales?
- *
  * Ideas:
  *  - onTracksSettled callback? It will contain the logic for distributing features (especially transcripts)
  *    into tracks inside of the image component. The logic will have to account for the "bumping",
@@ -62,18 +73,44 @@ type Props = {
  *    within the image component
  */
 
+/**
+ * If we want to always render all elements of the svg
+ *
+ * - viewport width
+ * - total width
+ *  - detail location distance (end - start + 1)
+ *  - location distance (end - start + 1)
+ *  - coefficient = detailLocation ?
+ *        locationDistance / detailLocationDistance
+ *        : 1
+ *  - totalWidth = Math.round(width * coefficient)
+ */
+
 const RegionOverviewImage = (props: Props) => {
-  const { activeGenomeId, width, featureTracks, data, focusGeneId } = props;
+  const {
+    activeGenomeId,
+    width,
+    featureTracks,
+    data,
+    location,
+    regionDetailLocation,
+    focusGeneId
+  } = props;
   const [imageRef, setImageRef] = useRefWithRerender<SVGSVGElement>(null);
 
   const { imageHeight, regulatoryFeatureTracksTopOffset } =
     getImageHeightAndTopOffsets(featureTracks);
 
-  const location = data.locations[0]; // let's consider just a single contiguous slice without "boring" intervals
-
-  const scale = scaleLinear()
-    .domain([location.start, location.end])
-    .rangeRound([0, Math.floor(width)]);
+  const scaleForWholeLocation = getScaleForWholeLocation({
+    location,
+    detailLocation: regionDetailLocation,
+    viewportWidth: width
+  });
+  const scaleForViewport = getScaleForViewport({
+    location,
+    detailLocation: regionDetailLocation,
+    viewportWidth: width
+  });
 
   const { geneTracks } = featureTracks;
 
@@ -95,13 +132,18 @@ const RegionOverviewImage = (props: Props) => {
         imageRef={imageRef}
         height={imageHeight}
         width={width}
-        scale={scale}
+        scale={scaleForViewport}
       >
-        <TranslateRegionOverviewContents>
+        <TranslateRegionOverviewContents
+          genomeId={activeGenomeId}
+          location={location}
+          regionDetailLocation={regionDetailLocation}
+          scale={scaleForWholeLocation}
+        >
           <GeneTracks
             regionData={data}
             tracks={geneTracks}
-            scale={scale}
+            scale={scaleForWholeLocation}
             width={width}
             focusGeneId={focusGeneId}
             onFocusGeneChange={props.onFocusGeneChange}
@@ -110,7 +152,7 @@ const RegionOverviewImage = (props: Props) => {
             offsetTop={regulatoryFeatureTracksTopOffset}
             features={data.regulatory_features.data}
             featureTypesMap={data.regulatory_features.feature_types}
-            scale={scale}
+            scale={scaleForWholeLocation}
           />
         </TranslateRegionOverviewContents>
       </RegionOverviewLocationSelector>
