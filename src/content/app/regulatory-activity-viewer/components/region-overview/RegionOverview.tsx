@@ -16,7 +16,11 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 
+import { useAppSelector } from 'src/store';
+
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
+
+import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import {
@@ -44,6 +48,9 @@ const RegionOverview = () => {
   const [width, setWidth] = useState(0);
   // FIXME: this is temporary; focus can also be a regulatory feature; should probably be reflected in url, and should be set via redux
   const [focusGeneId, setFocusGeneId] = useState<string | null>(null);
+  const regionDetailLocation = useAppSelector((state) =>
+    getRegionDetailSelectedLocation(state, activeGenomeId ?? '')
+  );
   const { currentData } = useRegionOverviewQuery(
     {
       assemblyName: assemblyName || '',
@@ -101,7 +108,7 @@ const RegionOverview = () => {
         )}
       </div>
       <div className={styles.middleColumn} ref={imageContainerRef}>
-        {currentData && featureTracks && width && (
+        {location && currentData && featureTracks && width && (
           <RegionOverviewImage
             activeGenomeId={activeGenomeId}
             data={currentData}
@@ -109,6 +116,8 @@ const RegionOverview = () => {
             focusGeneId={focusGeneId}
             onFocusGeneChange={onFocusGeneChange}
             width={width}
+            location={location}
+            regionDetailLocation={regionDetailLocation}
           />
         )}
       </div>

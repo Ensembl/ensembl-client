@@ -75,8 +75,10 @@ const selectionStateReducer = (state: State, action: Action): State => {
       ...state,
       latestX: action.payload.x
     };
-  } else {
+  } else if (action.type === 'selection-clear') {
     return null;
+  } else {
+    return state;
   }
 };
 
@@ -127,6 +129,15 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     ) {
       return;
     }
+
+    // NOTE: the below condition makes the hook not reusable;
+    // but perhaps it doesn't have to be reusable?
+    const pointerY = event.clientY;
+    const targetBoundingClientRect = targetElement.getBoundingClientRect();
+    if (Math.round(pointerY) - Math.round(targetBoundingClientRect.y) > 15) {
+      return;
+    }
+
     selectionOriginXRef.current = event.offsetX;
     document.addEventListener('mousemove', detectSelectionStart);
   };
@@ -179,6 +190,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
       onSelectionCompleted(stateToRectCoordinates(stateRef.current));
     }
     removeAllListeners();
+    dispatch({ type: 'selection-clear' });
   };
 
   const removeAllListeners = () => {
