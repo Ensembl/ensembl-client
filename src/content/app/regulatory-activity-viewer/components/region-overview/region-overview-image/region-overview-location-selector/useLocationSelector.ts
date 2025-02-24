@@ -93,6 +93,10 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   const stateRef = useRef(state);
   const selectionOriginXRef = useRef<number | null>(null);
   const containerBoundingClientRef = useRef<DOMRect | null>(null);
+  const selectionHandlerRef = useRef(onSelectionCompleted);
+
+  stateRef.current = state;
+  selectionHandlerRef.current = onSelectionCompleted;
 
   useEffect(() => {
     if (ref.current) {
@@ -113,11 +117,6 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
       // ref.current.removeEventListener('touchstart', onSelectionStart as EventListener);
     };
   }, [ref.current]);
-
-  // NOTE: this might become unnecessary when the new useEffectEvent hook is released
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
 
   const onMouseDown = (event: MouseEvent) => {
     const targetElement = event.target as HTMLElement | SVGSVGElement;
@@ -187,7 +186,7 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
 
   const onSelectionEnd = () => {
     if (stateRef.current) {
-      onSelectionCompleted(stateToRectCoordinates(stateRef.current));
+      selectionHandlerRef.current(stateToRectCoordinates(stateRef.current));
     }
     removeAllListeners();
     dispatch({ type: 'selection-clear' });
