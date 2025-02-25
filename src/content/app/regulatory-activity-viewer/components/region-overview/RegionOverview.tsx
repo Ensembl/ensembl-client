@@ -31,6 +31,7 @@ import {
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
 } from './region-overview-image/RegionOverviewImage';
+import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
@@ -121,7 +122,15 @@ const RegionOverview = () => {
           />
         )}
       </div>
-      <div className={styles.rightColumn}>Right</div>
+      <div className={styles.rightColumn}>
+        {location && (
+          <RegionOverviewZoomButtons
+            genomeId={activeGenomeId}
+            location={location}
+            regionDetailLocation={regionDetailLocation}
+          />
+        )}
+      </div>
     </div>
   );
 };
