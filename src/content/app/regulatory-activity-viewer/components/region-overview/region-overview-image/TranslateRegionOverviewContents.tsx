@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLayoutEffect, useRef, useReducer, type ReactNode } from 'react';
+import { useRef, useReducer, type ReactNode } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import { useAppDispatch } from 'src/store';
@@ -98,8 +98,17 @@ const TranslateRegionOverviewContents = (props: Props) => {
   // make sure to update state ref at every rerender
   stateRef.current = state;
 
-  // reset the state after props have updated
-  useLayoutEffect(() => {
+  // Keep track of the props that are used in the calculation of translateX value,
+  // and reset the state if these props update
+  // (running this as part of a render pass rather than in a useEffect as recommended by react docs)
+  const prevLocationRef = useRef(location);
+  const prevRegionDetailLocationRef = useRef(regionDetailLocation);
+  const prevScaleRef = useRef(scale);
+  if (
+    location !== prevLocationRef.current ||
+    regionDetailLocation !== prevRegionDetailLocationRef.current ||
+    scale !== prevScaleRef.current
+  ) {
     const shiftLeft = calculateShiftLeft({
       location,
       detailLocation: regionDetailLocation,
@@ -111,7 +120,11 @@ const TranslateRegionOverviewContents = (props: Props) => {
       type: 'set-initial-state',
       payload: newState
     });
-  }, [location, regionDetailLocation, scale]);
+
+    prevLocationRef.current = location;
+    prevRegionDetailLocationRef.current = regionDetailLocation;
+    prevScaleRef.current = scale;
+  }
 
   const onMount = (element: SVGGElement) => {
     setupDragHandler(element);
