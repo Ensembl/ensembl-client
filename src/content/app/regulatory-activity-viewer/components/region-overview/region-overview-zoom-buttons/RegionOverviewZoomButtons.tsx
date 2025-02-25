@@ -18,6 +18,8 @@ import { useAppDispatch } from 'src/store';
 
 import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
 
+import styles from './RegionOverviewZoomButtons.module.css';
+
 type Props = {
   genomeId: string;
   location: { start: number; end: number };
@@ -48,10 +50,10 @@ const RegionOverviewZoomButtons = (props: Props) => {
   };
 
   return (
-    <>
-      <button onClick={onZoomIn}>-</button>
-      <button onClick={onZoomOut}>+</button>
-    </>
+    <div className={styles.buttons}>
+      <button onClick={onZoomOut}>-</button>
+      <button onClick={onZoomIn}>+</button>
+    </div>
   );
 };
 
