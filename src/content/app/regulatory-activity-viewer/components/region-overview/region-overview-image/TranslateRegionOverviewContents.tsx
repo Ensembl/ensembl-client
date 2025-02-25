@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useReducer, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useReducer, type ReactNode } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import { useAppDispatch } from 'src/store';
@@ -99,7 +99,7 @@ const TranslateRegionOverviewContents = (props: Props) => {
   stateRef.current = state;
 
   // reset the state after props have updated
-  useEffect(() => {
+  useLayoutEffect(() => {
     const shiftLeft = calculateShiftLeft({
       location,
       detailLocation: regionDetailLocation,
