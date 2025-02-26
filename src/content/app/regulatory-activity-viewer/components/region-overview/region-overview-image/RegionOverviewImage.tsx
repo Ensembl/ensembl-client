@@ -25,6 +25,7 @@ import {
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
+import RegionOverviewRegulatoryFeature from './region-overview-regulatory-feature/RegionOverviewRegulatoryFeature';
 import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
 import TranslateRegionOverviewContents from './TranslateRegionOverviewContents';
@@ -33,7 +34,6 @@ import {
   GENE_TRACKS_TOP_OFFSET,
   GENE_TRACK_HEIGHT,
   REGULATORY_FEATURE_TRACKS_TOP_OFFSET,
-  REGULATORY_FEATURE_RADIUS,
   REGULATORY_FEATURE_TRACK_HEIGHT
 } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
 
@@ -341,19 +341,13 @@ const RegulatoryFeatureTrack = (props: {
   const { track, featureTypesMap, offsetTop, scale } = props;
 
   const featureElements = track.map((feature) => {
-    const { start, end } = feature;
-    const middle = end - start;
-    const x = scale(start + middle);
-
     return (
-      <circle
-        data-feature-id={feature.id}
-        cx={x}
-        cy={offsetTop}
-        r={REGULATORY_FEATURE_RADIUS}
-        fill={featureTypesMap[feature.feature_type].color}
-        className={styles.regulatoryFeature}
+      <RegionOverviewRegulatoryFeature
         key={feature.id}
+        feature={feature}
+        featureTypesMap={featureTypesMap}
+        offsetTop={offsetTop}
+        scale={scale}
       />
     );
   });
