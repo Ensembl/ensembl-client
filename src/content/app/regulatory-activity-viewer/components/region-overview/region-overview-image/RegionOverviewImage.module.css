@@ -2,3 +2,7 @@
   cursor: crosshair;
   user-select: none;
 }
+
+.interactiveArea {
+  cursor: pointer;
+}

@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
+import { useRef } from 'react';
+
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 import { Strand } from 'src/shared/types/core-api/strand';
-import type { GeneInRegionOverview } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { GenePopupMessage } from '../activityViewerPopupMessageTypes';
 
-import styles from './AcrivityViewerPopup.module.css';
-
-type GeneField =
-  | 'stable_id'
-  | 'symbol'
-  | 'unversioned_stable_id'
-  | 'biotype'
-  | 'strand'
-  | 'start'
-  | 'end';
+import styles from './AcrivityViewerPopupContent.module.css';
 
 type Props = {
-  gene: Pick<GeneInRegionOverview, GeneField> & { region_name: string };
-  onFocus: () => void;
+  content: GenePopupMessage['content'];
+  onClose: () => void;
 };
 
 const GenePopupContent = (props: Props) => {
-  const { gene } = props;
+  const { content: gene } = props;
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const onFocus = () => {
+    const event = new CustomEvent('focus-gene', {
+      bubbles: true,
+      detail: gene.stable_id
+    });
+    componentRef.current?.dispatchEvent(event);
+
+    props.onClose();
+  };
 
   const geneSymbolAndIdentifier = gene.symbol ? (
     <>
@@ -50,7 +54,7 @@ const GenePopupContent = (props: Props) => {
   );
 
   return (
-    <div>
+    <div ref={componentRef}>
       <div className={styles.regularRow}>
         <span className={styles.light}>Gene </span>
         {geneSymbolAndIdentifier}
@@ -73,7 +77,7 @@ const GenePopupContent = (props: Props) => {
         </span>
       </div>
       <div>
-        <TextButton onClick={props.onFocus}>Make focus</TextButton>
+        <TextButton onClick={onFocus}>Make focus</TextButton>
       </div>
     </div>
   );

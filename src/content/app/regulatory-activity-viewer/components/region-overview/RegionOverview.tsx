@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -61,16 +61,20 @@ const RegionOverview = () => {
       skip: !assemblyName || !location
     }
   );
-  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
-  useEffect(() => {
-    const imageContainer = imageContainerRef.current as HTMLDivElement;
-    const { width: imageContainerWidth } =
-      imageContainer.getBoundingClientRect();
+  const onImageContainerMount = (element: HTMLDivElement) => {
+    const { width: imageContainerWidth } = element.getBoundingClientRect();
     setWidth(imageContainerWidth);
-  }, []);
+
+    // TODO: change to a more appropriate way of changing focus gene id
+    document.addEventListener('focus-gene', onFocusGeneChange);
+
+    return () => {
+      document.removeEventListener('focus-gene', onFocusGeneChange);
+    };
+  };
 
   useEffect(() => {
     if (!currentData) {
@@ -85,8 +89,9 @@ const RegionOverview = () => {
     }
   }, [currentData]);
 
-  const onFocusGeneChange = (geneId: string) => {
-    setFocusGeneId(geneId);
+  const onFocusGeneChange = (event: Event) => {
+    const newFocusGeneId = (event as CustomEvent).detail as string;
+    setFocusGeneId(newFocusGeneId);
   };
 
   const featureTracks = useMemo(() => {
@@ -108,14 +113,13 @@ const RegionOverview = () => {
           <LeftColumn data={currentData} topOffsets={topOffsets} />
         )}
       </div>
-      <div className={styles.middleColumn} ref={imageContainerRef}>
+      <div className={styles.middleColumn} ref={onImageContainerMount}>
         {location && currentData && featureTracks && width && (
           <RegionOverviewImage
             activeGenomeId={activeGenomeId}
             data={currentData}
             featureTracks={featureTracks}
             focusGeneId={focusGeneId}
-            onFocusGeneChange={onFocusGeneChange}
             width={width}
             location={location}
             regionDetailLocation={regionDetailLocation}

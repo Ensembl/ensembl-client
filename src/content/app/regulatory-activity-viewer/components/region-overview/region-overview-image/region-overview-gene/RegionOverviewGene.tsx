@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { useState, type MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
-
-import ActivityViewerPopup from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/ActivityViewerPopup';
-import GenePopupContent from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/GenePopupContent';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
@@ -28,8 +25,9 @@ import type {
   ExonInRegionOverview,
   OverlappingCDSFragment
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
-import styles from './RegionOverviewGene.module.css';
+import commonStyles from '../RegionOverviewImage.module.css';
 
 /**
  * The transcript diagram is visually similar to a transcript diagram in EntityViewer.
@@ -45,7 +43,6 @@ type Props = {
   regionData: Pick<OverviewRegion, 'region_name'>;
   offsetTop: number;
   isFocused: boolean;
-  onClick: (geneId: string) => void;
 };
 
 type Intron = {
@@ -53,30 +50,37 @@ type Intron = {
   end: number;
 };
 
-type PopupCoordinates = {
-  x: number;
-  y: number;
-};
-
 const RegionOverviewGene = (props: Props) => {
   const { gene, regionData, scale, offsetTop, isFocused } = props;
-  const [popupCoordinates, setPopupCoordinates] =
-    useState<PopupCoordinates | null>(null);
   const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
 
   const onClick = (event: MouseEvent<Element>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     const x = event.nativeEvent.offsetX;
     const y = event.nativeEvent.offsetY;
-    setPopupCoordinates({ x, y });
-  };
+    const message: GenePopupMessage = {
+      type: 'gene',
+      coordinates: { x, y },
+      content: {
+        stable_id: gene.data.stable_id,
+        unversioned_stable_id: gene.data.unversioned_stable_id,
+        symbol: gene.data.symbol,
+        biotype: gene.data.biotype,
+        region_name: regionData.region_name,
+        start: gene.data.start,
+        end: gene.data.end,
+        strand: gene.data.strand
+      }
+    };
 
-  const closePopup = () => {
-    setPopupCoordinates(null);
-  };
+    const messageEvent = new CustomEvent('popup-message', {
+      detail: message,
+      bubbles: true
+    });
 
-  const onGeneFocus = () => {
-    props.onClick(gene.data.stable_id);
-    closePopup();
+    event.currentTarget.dispatchEvent(messageEvent);
   };
 
   const trackY = offsetTop;
@@ -109,21 +113,6 @@ const RegionOverviewGene = (props: Props) => {
         start={gene.data.start}
         end={gene.data.end}
       />
-      {popupCoordinates && (
-        <ActivityViewerPopup
-          x={popupCoordinates.x}
-          y={popupCoordinates.y}
-          onClose={closePopup}
-        >
-          <GenePopupContent
-            gene={{
-              ...gene.data,
-              region_name: regionData.region_name
-            }}
-            onFocus={onGeneFocus}
-          />
-        </ActivityViewerPopup>
-      )}
     </g>
   );
 };
@@ -167,8 +156,20 @@ const CDSBlocks = (props: {
 }) => {
   const { cdsFragments, trackY, scale, color } = props;
 
-  return cdsFragments.map((fragment) => {
-    const left = scale(fragment.start);
+  return cdsFragments.map((fragment, index) => {
+    const prevFragment = cdsFragments[index - 1];
+
+    // If a CDS fragment starts at the next nucleotide from previous CDS fragment's end,
+    // subtract 1 from the start position, to make it start on the same nucleotide the previous fragment ends.
+    // This is a hack to avoid empty space between fragments at large zoom-in,
+    // which appears when the width of the imaginary container where the genes are being rendered into
+    // exceeds the length of the region slice
+    const fragmentGenomicStart =
+      prevFragment && fragment.start - prevFragment.end === 1
+        ? prevFragment.end
+        : fragment.start;
+
+    const left = scale(fragmentGenomicStart);
     const right = scale(fragment.end);
     const width = right - left;
 
@@ -247,7 +248,7 @@ const InteractiveArea = (props: {
       height={height}
       fill={'transparent'}
       onClick={props.onClick}
-      className={styles.interactiveArea}
+      className={commonStyles.interactiveArea}
     />
   );
 };
