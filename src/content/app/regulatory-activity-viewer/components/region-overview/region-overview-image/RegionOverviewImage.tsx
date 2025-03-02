@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
 import { type ScaleLinear } from 'd3';
 
 import {
@@ -29,6 +29,9 @@ import RegionOverviewRegulatoryFeature from './region-overview-regulatory-featur
 import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
 import TranslateRegionOverviewContents from './TranslateRegionOverviewContents';
+import ActivityViewerPopup, {
+  type ActivityViewerPopupMethods
+} from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/ActivityViewerPopup';
 
 import {
   GENE_TRACKS_TOP_OFFSET,
@@ -45,6 +48,7 @@ import type {
   OverviewRegion,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { PopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
 import styles from './RegionOverviewImage.module.css';
 
@@ -62,7 +66,6 @@ type Props = {
     end: number;
   } | null;
   focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
-  onFocusGeneChange: (geneId: string) => void; // TODO: this will need to evolve; for same reasons as focusGeneId prop
 };
 
 /**
@@ -97,6 +100,21 @@ const RegionOverviewImage = (props: Props) => {
     focusGeneId
   } = props;
   const [imageRef, setImageRef] = useRefWithRerender<SVGSVGElement>(null);
+  const activityViewerPopupRef = useRef<ActivityViewerPopupMethods>(null);
+
+  const onMount = (element: SVGSVGElement) => {
+    setImageRef(element);
+
+    const handlePopupMessageEvent = (event: Event) => {
+      const message = (event as CustomEvent).detail as PopupMessage;
+      activityViewerPopupRef.current?.showPopup(message);
+    };
+    element.addEventListener('popup-message', handlePopupMessageEvent);
+
+    return () => {
+      element.removeEventListener('popup-message', handlePopupMessageEvent);
+    };
+  };
 
   const { imageHeight, regulatoryFeatureTracksTopOffset } =
     getImageHeightAndTopOffsets(featureTracks);
@@ -117,7 +135,7 @@ const RegionOverviewImage = (props: Props) => {
   return (
     <svg
       viewBox={`0 0 ${width} ${imageHeight}`}
-      ref={setImageRef}
+      ref={onMount}
       className={styles.image}
       style={{
         width: `${width}px`,
@@ -146,16 +164,17 @@ const RegionOverviewImage = (props: Props) => {
             scale={scaleForWholeLocation}
             width={width}
             focusGeneId={focusGeneId}
-            onFocusGeneChange={props.onFocusGeneChange}
           />
           <RegulatoryFeatureTracks
             offsetTop={regulatoryFeatureTracksTopOffset}
             features={data.regulatory_features.data}
             featureTypesMap={data.regulatory_features.feature_types}
+            regionData={data}
             scale={scaleForWholeLocation}
           />
         </TranslateRegionOverviewContents>
       </RegionOverviewLocationSelector>
+      <ActivityViewerPopup ref={activityViewerPopupRef} />
     </svg>
   );
 };
@@ -166,7 +185,6 @@ const GeneTracks = (props: {
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
   focusGeneId: string | null;
-  onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
   let tempY = GENE_TRACKS_TOP_OFFSET; // keep track of the y coordinate for subsequent shapes to be drawn
@@ -210,7 +228,6 @@ const GeneTracks = (props: {
         trackOffsetsTop={yCoordLookup}
         scale={props.scale}
         focusGeneId={props.focusGeneId}
-        onFocusGeneChange={props.onFocusGeneChange}
         key={index}
       />
     ));
@@ -232,7 +249,6 @@ const GeneTrack = (props: {
   trackOffsetsTop: number[];
   scale: ScaleLinear<number, number>;
   focusGeneId: string | null;
-  onFocusGeneChange: Props['onFocusGeneChange'];
 }) => {
   const { tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } = props;
   const track = tracks[trackIndex];
@@ -249,7 +265,6 @@ const GeneTrack = (props: {
           offsetTop={offsetTop}
           scale={scale}
           isFocused={isFocusGene}
-          onClick={props.onFocusGeneChange}
         />
         {isFocusGene && (
           <TranscriptionStartSites
@@ -289,12 +304,13 @@ const StrandDivider = (props: {
 };
 
 const RegulatoryFeatureTracks = (props: {
+  regionData: Props['data'];
   features: RegulatoryFeature[];
   featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
   offsetTop: number;
   scale: ScaleLinear<number, number>;
 }) => {
-  const { features, featureTypesMap, offsetTop, scale } = props;
+  const { features, featureTypesMap, offsetTop, regionData, scale } = props;
 
   // TODO: distribution of regulatory features across tracks should be done in a separate function;
   // and the result should inform the height of the image
@@ -322,6 +338,7 @@ const RegulatoryFeatureTracks = (props: {
   const trackElements = featureTracks.map((track, index) => (
     <RegulatoryFeatureTrack
       track={track}
+      regionData={regionData}
       featureTypesMap={featureTypesMap}
       offsetTop={offsetTop + index * REGULATORY_FEATURE_TRACK_HEIGHT}
       scale={scale}
@@ -334,11 +351,12 @@ const RegulatoryFeatureTracks = (props: {
 
 const RegulatoryFeatureTrack = (props: {
   track: RegulatoryFeature[];
+  regionData: Props['data'];
   featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
   offsetTop: number;
   scale: ScaleLinear<number, number>;
 }) => {
-  const { track, featureTypesMap, offsetTop, scale } = props;
+  const { track, featureTypesMap, offsetTop, scale, regionData } = props;
 
   const featureElements = track.map((feature) => {
     return (
@@ -346,6 +364,7 @@ const RegulatoryFeatureTrack = (props: {
         key={feature.id}
         feature={feature}
         featureTypesMap={featureTypesMap}
+        regionData={regionData}
         offsetTop={offsetTop}
         scale={scale}
       />
