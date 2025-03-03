@@ -20,7 +20,6 @@ import classNames from 'classnames';
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import useRegionActivityData from './useRegionActivityData';
 
-import RegionActivitySectionImage from './RegionActivitySectionImage';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
@@ -65,15 +64,6 @@ const RegionActivitySection = () => {
         className={regionOverviewStyles.middleColumn}
         ref={imageContainerRef}
       >
-        {preparedData && width && (
-          <RegionActivitySectionImage
-            width={width}
-            regionOverviewData={preparedData.regionOverviewData}
-            featureTracks={preparedData.featureTracksData}
-            start={preparedData.location.start}
-            end={preparedData.location.end}
-          />
-        )}
         {(isLoading || isTransitionPending) && (
           <div className={styles.loader}>
             <CircleLoader />
