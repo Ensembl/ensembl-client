@@ -84,26 +84,25 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
     return null;
   }
 
-  return (
-    <div>
-      Placeholder for focus feature information
-      <RegionOverview />
-    </div>
-  );
-
-
   // return (
   //   <div>
   //     Placeholder for focus feature information
   //     <RegionOverview />
-  //     {/* The spacer divs below are temporary */}
-  //     <div style={{ margin: '0.6rem 0' }} />
-  //     <MainContentBottomViewControls genomeId={genomeId} />
-  //     <div style={{ margin: '0.6rem 0' }} />
-  //     <MainContentBottom genomeId={genomeId} />
-  //     <div style={{ margin: '4rem 0' }} />
   //   </div>
   // );
+
+  return (
+    <div>
+      Placeholder for focus feature information
+      <RegionOverview />
+      {/* The spacer divs below are temporary */}
+      <div style={{ margin: '0.6rem 0' }} />
+      <MainContentBottomViewControls genomeId={genomeId} />
+      <div style={{ margin: '0.6rem 0' }} />
+      <MainContentBottom genomeId={genomeId} />
+      <div style={{ margin: '4rem 0' }} />
+    </div>
+  );
 };
 
 const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
