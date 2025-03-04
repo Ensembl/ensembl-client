@@ -266,16 +266,14 @@ const GeneTrack = (props: {
           scale={scale}
           isFocused={isFocusGene}
         />
-        {isFocusGene && (
-          <TranscriptionStartSites
-            tss={gene.data.tss}
-            strand={gene.data.strand}
-            scale={scale}
-            geneTracks={tracks}
-            trackIndex={trackIndex}
-            trackOffsetsTop={trackOffsetsTop}
-          />
-        )}
+        <TranscriptionStartSites
+          tss={gene.data.tss}
+          strand={gene.data.strand}
+          scale={scale}
+          geneTracks={tracks}
+          trackIndex={trackIndex}
+          trackOffsetsTop={trackOffsetsTop}
+        />
       </Fragment>
     );
   });

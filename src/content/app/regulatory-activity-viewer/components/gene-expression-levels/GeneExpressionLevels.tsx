@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
+
 import { TRACK_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomeActivityImageConstants';
 import {
   GENE_EXPRESSION_INDICATOR_HEIGHT,
@@ -172,4 +174,4 @@ const getMockGeneExpressionData = (epigenomes: { id: string }[]) => {
   };
 };
 
-export default GeneExpressionLevels;
+export default memo(GeneExpressionLevels);

@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import LaunchbarButton from './LaunchbarButton';
 
+const activityViewerRootPath = urlFor.regulatoryActivityViewer();
+
 const RegulatoryActivityViewerLaunchbarButton = () => {
+  const location = useLocation();
+  const lastVisitedPath = useLastVisitedPath();
+
   if (isProductionEnvironment()) {
     return null;
   }
 
+  const isActive = location.pathname.startsWith(activityViewerRootPath);
+
   return (
     <LaunchbarButton
-      path="/activity-viewer"
+      path={lastVisitedPath}
       description="Activity viewer"
       icon={() => (
         <div
@@ -42,9 +54,26 @@ const RegulatoryActivityViewerLaunchbarButton = () => {
           R
         </div>
       )}
+      isActive={isActive}
       enabled={true}
     />
   );
+};
+
+const useLastVisitedPath = () => {
+  const location = useLocation();
+  const [lastVisitedPath, setLastVisitedPath] = useState(
+    activityViewerRootPath
+  );
+
+  useEffect(() => {
+    if (location.pathname.startsWith(activityViewerRootPath)) {
+      const path = location.pathname + location.search;
+      setLastVisitedPath(path);
+    }
+  }, [[location]]);
+
+  return lastVisitedPath;
 };
 
 export default RegulatoryActivityViewerLaunchbarButton;
