@@ -84,13 +84,6 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
     return null;
   }
 
-  // return (
-  //   <div>
-  //     Placeholder for focus feature information
-  //     <RegionOverview />
-  //   </div>
-  // );
-
   return (
     <div>
       Placeholder for focus feature information

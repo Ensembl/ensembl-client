@@ -76,19 +76,6 @@ type Props = {
  *    within the image component
  */
 
-/**
- * If we want to always render all elements of the svg
- *
- * - viewport width
- * - total width
- *  - detail location distance (end - start + 1)
- *  - location distance (end - start + 1)
- *  - coefficient = detailLocation ?
- *        locationDistance / detailLocationDistance
- *        : 1
- *  - totalWidth = Math.round(width * coefficient)
- */
-
 const RegionOverviewImage = (props: Props) => {
   const {
     activeGenomeId,

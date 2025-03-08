@@ -18,10 +18,6 @@ export const GENE_TRACKS_TOP_OFFSET = 40;
 export const GENE_HEIGHT = 8;
 export const GENE_TRACK_HEIGHT = GENE_HEIGHT + 3;
 
-// export const GENE_HEIGHT = 6;
-// export const GENE_TRACK_HEIGHT = 8;
-// export const GENE_TRACKS_TOP_OFFSET = 32;
-
 export const REGULATORY_FEATURE_TRACKS_TOP_OFFSET = 38;
 
 export const REGULATORY_FEATURE_HEIGHT = 8;
