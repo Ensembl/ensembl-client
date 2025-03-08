@@ -33,13 +33,6 @@ import toolboxStyles from 'src/shared/components/toolbox/Toolbox.module.css';
  * the component adds a tiny rect element as an anchor for the popup.
  */
 
-// type Props = {
-//   x: number;
-//   y: number;
-//   children: ReactNode;
-//   onClose: () => void;
-// };
-
 type Props = {
   ref?: RefObject<ActivityViewerPopupMethods | null>;
 };
