@@ -75,8 +75,10 @@ const selectionStateReducer = (state: State, action: Action): State => {
       ...state,
       latestX: action.payload.x
     };
-  } else {
+  } else if (action.type === 'selection-clear') {
     return null;
+  } else {
+    return state;
   }
 };
 
@@ -91,6 +93,10 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
   const stateRef = useRef(state);
   const selectionOriginXRef = useRef<number | null>(null);
   const containerBoundingClientRef = useRef<DOMRect | null>(null);
+  const selectionHandlerRef = useRef(onSelectionCompleted);
+
+  stateRef.current = state;
+  selectionHandlerRef.current = onSelectionCompleted;
 
   useEffect(() => {
     if (ref.current) {
@@ -112,11 +118,6 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     };
   }, [ref.current]);
 
-  // NOTE: this might become unnecessary when the new useEffectEvent hook is released
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
-
   const onMouseDown = (event: MouseEvent) => {
     const targetElement = event.target as HTMLElement | SVGSVGElement;
     if (
@@ -127,6 +128,15 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
     ) {
       return;
     }
+
+    // NOTE: the below condition makes the hook not reusable;
+    // but perhaps it doesn't have to be reusable?
+    const pointerY = event.clientY;
+    const targetBoundingClientRect = targetElement.getBoundingClientRect();
+    if (Math.round(pointerY) - Math.round(targetBoundingClientRect.y) > 15) {
+      return;
+    }
+
     selectionOriginXRef.current = event.offsetX;
     document.addEventListener('mousemove', detectSelectionStart);
   };
@@ -176,9 +186,10 @@ const useLocationSelector = <T extends HTMLElement | SVGSVGElement>({
 
   const onSelectionEnd = () => {
     if (stateRef.current) {
-      onSelectionCompleted(stateToRectCoordinates(stateRef.current));
+      selectionHandlerRef.current(stateToRectCoordinates(stateRef.current));
     }
     removeAllListeners();
+    dispatch({ type: 'selection-clear' });
   };
 
   const removeAllListeners = () => {

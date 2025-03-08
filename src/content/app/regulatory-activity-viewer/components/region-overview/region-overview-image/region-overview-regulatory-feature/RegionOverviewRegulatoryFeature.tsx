@@ -14,28 +14,64 @@
  * limitations under the License.
  */
 
+import type { MouseEvent } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import {
   REGULATORY_FEATURE_CORE_HEIGHT,
   REGULATORY_FEATURE_EXTENT_HEIGHT
-} from 'src/content/app/regulatory-activity-viewer/components/region-activity-section/region-detail-image/regionDetailConstants';
+} from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
 
 import type {
   OverviewRegion,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { RegulatoryFeatureMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
+
+import commonStyles from '../RegionOverviewImage.module.css';
 
 type Props = {
   feature: RegulatoryFeature;
   featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
+  regionData: Pick<OverviewRegion, 'region_name'>;
   offsetTop: number;
   scale: ScaleLinear<number, number>;
 };
 
-const RegionDetailRegulatoryFeature = (props: Props) => {
+const RegionOverviewRegulatoryFeature = (props: Props) => {
+  const { feature, regionData } = props;
+
+  const onClick = (event: MouseEvent<Element>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const x = event.nativeEvent.offsetX;
+    const y = event.nativeEvent.offsetY;
+    const message: RegulatoryFeatureMessage = {
+      type: 'regulatory-feature',
+      coordinates: { x, y },
+      content: {
+        id: feature.id,
+        feature_type: feature.feature_type,
+
+        region_name: regionData.region_name,
+        start: feature.start,
+        end: feature.end,
+        extended_start: feature.extended_start,
+        extended_end: feature.extended_end
+      }
+    };
+
+    const messageEvent = new CustomEvent('popup-message', {
+      detail: message,
+      bubbles: true
+    });
+
+    event.currentTarget.dispatchEvent(messageEvent);
+  };
+
   return (
-    <g>
+    <g className={commonStyles.interactiveArea} onClick={onClick}>
       <BoundsRegion {...props} side="left" />
       <CoreRegion {...props} />
       <BoundsRegion {...props} side="right" />
@@ -48,12 +84,8 @@ const CoreRegion = (props: Props) => {
 
   const x1 = scale(feature.start);
   const x2 = scale(feature.end);
-  const width = x2 - x1;
+  const width = Math.max(x2 - x1, 2);
   const color = featureTypesMap[feature.feature_type].color;
-
-  if (!width) {
-    return null;
-  }
 
   return (
     <rect
@@ -103,4 +135,4 @@ const BoundsRegion = (props: Props & { side: 'left' | 'right' }) => {
   );
 };
 
-export default RegionDetailRegulatoryFeature;
+export default RegionOverviewRegulatoryFeature;

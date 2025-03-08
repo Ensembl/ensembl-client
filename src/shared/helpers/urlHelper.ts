@@ -176,9 +176,9 @@ export const regulatoryActivityViewer = (
   params?: RegulatoryActivityViewerUrlParams
 ) => {
   const genomeId = params?.genomeId || '';
-  let path = '/activity-viewer/genome';
+  let path = '/activity-viewer';
   if (genomeId) {
-    path += `/${genomeId}`;
+    path += `/genome/${genomeId}`;
   }
   const urlSearchParams = new URLSearchParams('');
   if (params?.location) {

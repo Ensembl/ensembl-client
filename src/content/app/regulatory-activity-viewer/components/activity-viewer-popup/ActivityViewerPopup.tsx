@@ -14,39 +14,61 @@
  * limitations under the License.
  */
 
-import { useState, type ReactNode } from 'react';
+import { useState, useImperativeHandle, type RefObject } from 'react';
 import classNames from 'classnames';
 
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
+import ActivityViewerPopupContent from './activity-viewer-popup-content/ActivityViewerPopupContent';
+
+import type { PopupMessage } from './activityViewerPopupMessageTypes';
 
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 import toolboxStyles from 'src/shared/components/toolbox/Toolbox.module.css';
 
 /**
  * This component is similar to the "Zmenu" component of the genome browser.
- * Since graphics in the regulatory activity viewer tend to be svgs,
+ * Since the graphics in the regulatory activity viewer are drawn with svgs,
  * the component adds a tiny rect element as an anchor for the popup.
  */
 
 type Props = {
-  x: number;
-  y: number;
-  children: ReactNode;
-  onClose: () => void;
+  ref?: RefObject<ActivityViewerPopupMethods | null>;
+};
+
+export type ActivityViewerPopupMethods = {
+  showPopup: (message: PopupMessage) => void;
 };
 
 const ActivityViewerPopup = (props: Props) => {
-  const { x, y, children, onClose } = props;
+  const [popupMessage, setPopupMessage] = useState<PopupMessage | null>(null);
   const [anchorElement, setAnchorElement] = useState<SVGRectElement | null>(
     null
   );
+
+  useImperativeHandle(props.ref, () => ({
+    showPopup: (message: PopupMessage) => {
+      setPopupMessage(message);
+    }
+  }));
+
+  const onClose = () => {
+    setPopupMessage(null);
+  };
 
   const pointerBoxClasses = classNames(
     toolboxStyles.toolbox,
     pointerBoxStyles.pointerBoxShadow
   );
+
+  if (!popupMessage) {
+    return null;
+  }
+
+  const {
+    coordinates: { x, y }
+  } = popupMessage;
 
   return (
     <>
@@ -54,8 +76,8 @@ const ActivityViewerPopup = (props: Props) => {
         ref={setAnchorElement}
         x={x}
         y={y}
-        width={0}
-        height={0}
+        width={1}
+        height={1}
         fill="transparent"
       />
       {anchorElement && (
@@ -65,7 +87,10 @@ const ActivityViewerPopup = (props: Props) => {
           onOutsideClick={onClose}
           className={pointerBoxClasses}
         >
-          {children}
+          <ActivityViewerPopupContent
+            message={popupMessage}
+            onClose={onClose}
+          />
         </PointerBox>
       )}
     </>

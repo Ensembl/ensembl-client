@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import { useState, type MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import type { ScaleLinear } from 'd3';
 
 import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
-
-import ActivityViewerPopup from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/ActivityViewerPopup';
-import GenePopupContent from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/GenePopupContent';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
-  CDSFragment
+  OverlappingCDSFragment
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
-import styles from './RegionOverviewGene.module.css';
+import commonStyles from '../RegionOverviewImage.module.css';
 
 /**
  * The transcript diagram is visually similar to a transcript diagram in EntityViewer.
@@ -45,7 +43,6 @@ type Props = {
   regionData: Pick<OverviewRegion, 'region_name'>;
   offsetTop: number;
   isFocused: boolean;
-  onClick: (geneId: string) => void;
 };
 
 type Intron = {
@@ -53,109 +50,69 @@ type Intron = {
   end: number;
 };
 
-type PopupCoordinates = {
-  x: number;
-  y: number;
-};
-
 const RegionOverviewGene = (props: Props) => {
   const { gene, regionData, scale, offsetTop, isFocused } = props;
-  const [popupCoordinates, setPopupCoordinates] =
-    useState<PopupCoordinates | null>(null);
-  const transcript = gene.data.representative_transcript;
   const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
 
   const onClick = (event: MouseEvent<Element>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     const x = event.nativeEvent.offsetX;
     const y = event.nativeEvent.offsetY;
-    setPopupCoordinates({ x, y });
-  };
+    const message: GenePopupMessage = {
+      type: 'gene',
+      coordinates: { x, y },
+      content: {
+        stable_id: gene.data.stable_id,
+        unversioned_stable_id: gene.data.unversioned_stable_id,
+        symbol: gene.data.symbol,
+        biotype: gene.data.biotype,
+        region_name: regionData.region_name,
+        start: gene.data.start,
+        end: gene.data.end,
+        strand: gene.data.strand
+      }
+    };
 
-  const closePopup = () => {
-    setPopupCoordinates(null);
-  };
+    const messageEvent = new CustomEvent('popup-message', {
+      detail: message,
+      bubbles: true
+    });
 
-  const onGeneFocus = () => {
-    props.onClick(gene.data.stable_id);
-    closePopup();
+    event.currentTarget.dispatchEvent(messageEvent);
   };
 
   const trackY = offsetTop;
 
-  let transcriptStart: number | null = null;
-  let transcriptEnd: number | null = null;
+  const { merged_exons } = gene.data;
   const introns: Intron[] = [];
 
-  for (let i = 1; i < transcript.exons.length; i++) {
-    const prevExon = transcript.exons[i - 1];
-    const currentExon = transcript.exons[i];
-    const start = prevExon.end + 1;
-    const end = currentExon.start - 1;
+  for (let i = 1; i < merged_exons.length; i++) {
+    const prevExon = merged_exons[i - 1];
+    const currentExon = merged_exons[i];
+    const start = prevExon.end;
+    const end = currentExon.start;
 
     introns.push({ start, end });
   }
 
-  // FIXME: this is an extra loop, which is probably unnecessary
-  // Perhaps sort exons by start location at the beginning? Though this is also a loop, of course
-  for (const exon of transcript.exons) {
-    if (!transcriptStart || exon.start < transcriptStart) {
-      transcriptStart = exon.start;
-    }
-    if (!transcriptEnd || exon.end > transcriptEnd) {
-      transcriptEnd = exon.end;
-    }
-  }
-
   return (
     <g data-name="gene" data-symbol={gene.data.symbol}>
-      <GeneExtent
-        {...props}
-        transcriptStart={transcriptStart as number}
-        transcriptEnd={transcriptEnd as number}
-        color={color}
-        direction="left"
-      />
-      <Exons
-        exons={transcript.exons}
-        trackY={trackY}
-        scale={scale}
-        color={color}
-      />
+      <Exons exons={merged_exons} trackY={trackY} scale={scale} color={color} />
       <CDSBlocks
-        cdsFragments={transcript.cds}
+        cdsFragments={gene.data.cds_counts}
         trackY={trackY}
         scale={scale}
         color={color}
       />
       <Introns introns={introns} trackY={trackY} scale={scale} color={color} />
-      <GeneExtent
-        {...props}
-        transcriptStart={transcriptStart as number}
-        transcriptEnd={transcriptEnd as number}
-        color={color}
-        direction="right"
-      />
       <InteractiveArea
         {...props}
         onClick={onClick}
-        start={transcriptStart as number}
-        end={transcriptEnd as number}
+        start={gene.data.start}
+        end={gene.data.end}
       />
-      {popupCoordinates && (
-        <ActivityViewerPopup
-          x={popupCoordinates.x}
-          y={popupCoordinates.y}
-          onClose={closePopup}
-        >
-          <GenePopupContent
-            gene={{
-              ...gene.data,
-              region_name: regionData.region_name
-            }}
-            onFocus={onGeneFocus}
-          />
-        </ActivityViewerPopup>
-      )}
     </g>
   );
 };
@@ -192,21 +149,35 @@ const Exons = (props: {
 };
 
 const CDSBlocks = (props: {
-  cdsFragments: CDSFragment[];
+  cdsFragments: OverlappingCDSFragment[];
   trackY: number;
   scale: ScaleLinear<number, number>;
   color: string;
 }) => {
   const { cdsFragments, trackY, scale, color } = props;
 
-  return cdsFragments.map((fragment) => {
-    const left = scale(fragment.start);
+  return cdsFragments.map((fragment, index) => {
+    const prevFragment = cdsFragments[index - 1];
+
+    // If a CDS fragment starts at the next nucleotide from previous CDS fragment's end,
+    // subtract 1 from the start position, to make it start on the same nucleotide the previous fragment ends.
+    // This is a hack to avoid empty space between fragments at large zoom-in,
+    // which appears when the width of the imaginary container where the genes are being rendered into
+    // exceeds the length of the region slice
+    const fragmentGenomicStart =
+      prevFragment && fragment.start - prevFragment.end === 1
+        ? prevFragment.end
+        : fragment.start;
+
+    const left = scale(fragmentGenomicStart);
     const right = scale(fragment.end);
     const width = right - left;
 
     if (!width) {
       return null;
     }
+
+    const opacity = fragment.count;
 
     return (
       <rect
@@ -220,6 +191,7 @@ const CDSBlocks = (props: {
         data-start-scaled={scale(fragment.start)}
         data-end-scaled={scale(fragment.end)}
         key={fragment.start}
+        opacity={opacity}
       />
     );
   });
@@ -253,73 +225,6 @@ const Introns = (props: {
   });
 };
 
-const GeneExtent = (
-  props: Props & {
-    transcriptStart: number;
-    transcriptEnd: number;
-    color: string;
-    direction: 'left' | 'right';
-  }
-) => {
-  const {
-    scale,
-    gene,
-    transcriptStart,
-    transcriptEnd,
-    direction,
-    offsetTop,
-    color
-  } = props;
-
-  const width =
-    direction === 'left'
-      ? scale(transcriptStart) - scale(gene.data.start)
-      : scale(gene.data.end) - scale(transcriptEnd);
-
-  if (width < 2) {
-    return null;
-  }
-
-  const x1 =
-    direction === 'left' ? scale(gene.data.start) : scale(transcriptEnd);
-  const x2 =
-    direction === 'left' ? scale(transcriptStart) : scale(gene.data.end);
-
-  const lineY = offsetTop + +GENE_HEIGHT / 2;
-  const endpointX = direction === 'left' ? x1 : x2;
-
-  // horizontal line
-  const line = (
-    <line
-      x1={x1}
-      x2={x2}
-      y1={lineY}
-      y2={lineY}
-      stroke={color}
-      strokeDasharray={2}
-      strokeWidth="1"
-    />
-  );
-
-  const endpoint = (
-    <line
-      x1={endpointX}
-      x2={endpointX}
-      y1={offsetTop}
-      y2={offsetTop + GENE_HEIGHT}
-      stroke={color}
-      strokeWidth="1"
-    />
-  );
-
-  return (
-    <>
-      {line}
-      {endpoint}
-    </>
-  );
-};
-
 const InteractiveArea = (props: {
   gene: Props['gene'];
   offsetTop: Props['offsetTop'];
@@ -343,7 +248,7 @@ const InteractiveArea = (props: {
       height={height}
       fill={'transparent'}
       onClick={props.onClick}
-      className={styles.interactiveArea}
+      className={commonStyles.interactiveArea}
     />
   );
 };
