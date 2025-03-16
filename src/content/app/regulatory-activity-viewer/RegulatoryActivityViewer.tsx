@@ -36,6 +36,8 @@ import MainContentBottomViewControls from './components/main-content-bottom-view
 import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
 import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
 
+import Test from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/Test';
+
 import styles from './RegulatoryActivityViewer.module.css';
 
 const ActivityViewer = () => {
@@ -85,17 +87,23 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
   }
 
   return (
-    <div>
-      Placeholder for focus feature information
-      <RegionOverview />
-      {/* The spacer divs below are temporary */}
-      <div style={{ margin: '0.6rem 0' }} />
-      <MainContentBottomViewControls genomeId={genomeId} />
-      <div style={{ margin: '0.6rem 0' }} />
-      <MainContentBottom genomeId={genomeId} />
-      <div style={{ margin: '4rem 0' }} />
-    </div>
+    <Test />
   );
+
+
+
+  // return (
+  //   <div>
+  //     Placeholder for focus feature information
+  //     <RegionOverview />
+  //     {/* The spacer divs below are temporary */}
+  //     <div style={{ margin: '0.6rem 0' }} />
+  //     <MainContentBottomViewControls genomeId={genomeId} />
+  //     <div style={{ margin: '0.6rem 0' }} />
+  //     <MainContentBottom genomeId={genomeId} />
+  //     <div style={{ margin: '4rem 0' }} />
+  //   </div>
+  // );
 };
 
 const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
