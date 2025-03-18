@@ -1,14 +1,30 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect } from 'react';
 
+import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 import {
-  fetchRegionDetails,
-  BIN_SIZE
-} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
+  getBinStartForPosition,
+  getBinEndForPosition
+} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/binsHelper';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
-
-import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+import useRegionOverviewData from './useRegionOverviewData';
 
 /**
  * - Get the region name from the genomic location object
@@ -18,8 +34,8 @@ import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers'
  *  - Not sure if need left/right
  *  - Should not extend beyond region end
  *  - Request full region immediately after
- * 
- * 
+ *
+ *
  */
 
 const TestComponent = () => {
@@ -29,18 +45,20 @@ const TestComponent = () => {
   });
 
   useEffect(() => {
-    if (!location || !assemblyName || !karyotype ) {
-      return
+    if (!location || !assemblyName || !karyotype) {
+      return;
     }
     // FIXME: also check latest requested location perhaps?
     // or should this be done at the region data service level?
 
     const { regionName, start, end } = location;
-    const regionInKaryotype = karyotype.find((region) => region.name === regionName);
+    const regionInKaryotype = karyotype.find(
+      (region) => region.name === regionName
+    );
 
     if (!regionInKaryotype) {
       // something has gone wrong; bail
-      return
+      return;
     }
 
     const regionLength = regionInKaryotype.length;
@@ -54,26 +72,29 @@ const TestComponent = () => {
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [
-    assemblyName,
-    karyotype,
-    location
-  ]);
+  }, [assemblyName, karyotype, location]);
 
+  const regionOverviewDataParams =
+    assemblyName && location
+      ? {
+          assemblyName,
+          regionName: location.regionName,
+          start: location.start,
+          end: location.end
+        }
+      : null;
 
-  return (
-    <div>
-      Hello?
-    </div>
-  );
+  useRegionOverviewData(regionOverviewDataParams);
+
+  return <div>Hello?</div>;
 };
 
 const calculateLocationToRequest = ({
   assemblyName,
   regionName,
   start,
-  end,
-  regionLength
+  end
+  // regionLength
 }: {
   assemblyName: string;
   regionName: string;
@@ -81,16 +102,16 @@ const calculateLocationToRequest = ({
   end: number;
   regionLength: number;
 }) => {
-  const lowerBinStart = Math.max(Math.floor(start / BIN_SIZE) * BIN_SIZE, 1);
-  const upperBinEnd = Math.min(Math.ceil(end / BIN_SIZE) * BIN_SIZE, regionLength);
-
+  // FIXME:
+  // Question 1 - should this request fetch data for three viewports?
+  // Question 2 - should there be a cutoff of the size of the slice
+  //   at which point we should just request the whole region instead of bothering with requesting a slice?
   return {
     assemblyName,
     regionName,
-    start: lowerBinStart,
-    end: upperBinEnd
+    start: getBinStartForPosition(start),
+    end: getBinEndForPosition(end)
   };
 };
-
 
 export default TestComponent;

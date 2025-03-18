@@ -17,13 +17,11 @@
 import {
   Subject,
   BehaviorSubject,
-  ReplaySubject,
   merge,
   map,
   filter,
   switchMap,
-  tap,
-  combineLatestWith
+  tap
 } from 'rxjs';
 
 import config from 'config';
@@ -37,11 +35,7 @@ import {
   BIN_SIZE
 } from './binsHelper';
 
-import type {
-  OverviewRegion,
-  GeneInRegionOverview,
-  RegulatoryFeature
-} from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 /**
@@ -88,7 +82,7 @@ export const karyotypeState$ = karyotypeStateSubject.asObservable();
 
 // =====
 
-type RegionDetailsData = {
+export type RegionDetailsData = {
   assemblyName: string;
   regionName: string;
   coordinate_system: OverviewRegion['coordinate_system'];
@@ -420,93 +414,6 @@ const regionDetailsStateSubject = new BehaviorSubject(
 );
 
 export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
-
-export const regionDetailsStateQuery$ = new ReplaySubject<
-  RegionDetailsQueryAction['payload']
->(1);
-
-export const dispatchRegionDetailsStateQuery = (
-  params: RegionDetailsQueryAction['payload']
-) => {
-  regionDetailsStateQuery$.next(params);
-};
-
-export const regionDetailsSelection$ = regionDetailsStateQuery$.pipe(
-  combineLatestWith(regionDetailsState$),
-  filter(([query, state]) => {
-    const binKeys = createBins({
-      start: query.start,
-      end: query.end
-    }).map(createBinKey);
-
-    return (
-      !!state.data &&
-      query.assemblyName === state.data.assemblyName &&
-      query.regionName === state.data.regionName &&
-      binKeys.every((key) => !!state.data!.bins[key])
-    );
-  }),
-
-  // FIXME:
-  // pass only those where region and assembly match
-  // pass only those where region and assembly match
-  // and only those that have all bin keys
-
-  map(([query, state]) => {
-    const stateData = state.data as RegionDetailsData;
-    const binKeys: string[] = [];
-
-    const binsStart = Math.max(
-      Math.floor(query.start / BIN_SIZE) * BIN_SIZE,
-      1
-    );
-    const binsEnd = Math.ceil(query.end / BIN_SIZE) * BIN_SIZE;
-
-    for (let i = binsStart; i < binsEnd; i += BIN_SIZE) {
-      const binKey = `${i}-${i + BIN_SIZE - 1}`;
-      binKeys.push(binKey);
-    }
-
-    const genes: GeneInRegionOverview[] = [];
-    const regulatoryFeatures: RegulatoryFeature[] = [];
-
-    for (let i = 0; i < binKeys.length; i++) {
-      const key = binKeys[i];
-      const bin = stateData.bins[key];
-
-      const prevBinKey = i > 0 ? binKeys[i - 1] : null;
-      const prevBinEnd = prevBinKey
-        ? parseInt(prevBinKey.split('-').pop() as string)
-        : null;
-
-      for (const gene of bin.genes) {
-        if (prevBinEnd && gene.start <= prevBinEnd) {
-          continue;
-        } else {
-          genes.push(gene);
-        }
-      }
-
-      for (const regFeature of bin.regulatory_features) {
-        if (prevBinEnd && regFeature.start <= prevBinEnd) {
-          continue;
-        } else {
-          regulatoryFeatures.push(regFeature);
-        }
-      }
-    }
-
-    return {
-      assemblyName: stateData.assemblyName,
-      regionName: stateData.regionName,
-      genes,
-      regulatory_features: {
-        feature_types: stateData.regulatory_feature_types,
-        data: regulatoryFeatures
-      }
-    };
-  })
-);
 
 // =====
 
