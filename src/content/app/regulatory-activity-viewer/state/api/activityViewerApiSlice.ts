@@ -77,7 +77,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyAccessionId, epigenomeIds, locations, regionName } =
           params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.1/activity_viewer/assembly/${assemblyAccessionId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.2/region_activity/assembly/${assemblyAccessionId}`;
         const requestBody = {
           region_name: regionName,
           locations,
