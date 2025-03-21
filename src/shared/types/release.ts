@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-import type { Release } from 'src/shared/types/release';
+export type ReleaseType = 'integrated' | 'partial';
 
-export type CommittedItem = {
-  genome_id: string;
-  genome_tag: string | null;
-  common_name: string | null;
-  scientific_name: string;
-  species_taxonomy_id: string;
-  type: {
-    kind: string; // e.g. "population"
-    value: string; // e.g. "European"
-  } | null;
-  is_reference: boolean;
-  assembly: {
-    accession_id: string;
-    name: string;
-  };
-  release?: Release; // Release is going to be mandatory; but making it optional temporarily for dev purposes
-  isEnabled: boolean;
+export type Release = {
+  name: string;
+  type: ReleaseType;
 };

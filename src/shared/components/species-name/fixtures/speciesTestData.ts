@@ -30,6 +30,10 @@ export const humanGenome = {
     accession_id: 'GCA_000001405.29',
     name: 'GRCh38'
   },
+  release: {
+    name: '2023-10-18',
+    type: 'partial'
+  },
   genome_tag: 'grch38',
   isEnabled: true
 } satisfies CommittedItem;
