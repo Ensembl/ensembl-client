@@ -31,8 +31,7 @@ import {
   createBins,
   createBinKey,
   getBinStartForPosition,
-  getBinEndForPosition,
-  BIN_SIZE
+  getBinEndForPosition
 } from './binsHelper';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
@@ -139,22 +138,26 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
       const { assemblyName, regionName, start, end } = action.payload;
       const currentState = regionDetailsStateSubject.getValue();
 
-      const lowerBinStart = Math.max(
-        Math.floor(start / BIN_SIZE) * BIN_SIZE,
-        1
-      );
-      const upperBinEnd = Math.ceil(end / BIN_SIZE) * BIN_SIZE; // FIXME: need to know region end
+      const binKeys = createBins({ start, end }).map(createBinKey);
 
-      const lowerBinKey = `${lowerBinStart}-${lowerBinStart + BIN_SIZE}`; // FIXME: need to know region end
-      const upperBinKey = `${Math.max(upperBinEnd - BIN_SIZE, 1)}-${upperBinEnd}`;
-
-      // TODO: also, make sure that region details aren't already being loaded
+      // TODO: ideally, should be able to split the request into requesting the lower bins and the higher bins separately
+      const haveAllBinsBeenRequested = binKeys.every((key) => {
+        return (
+          currentState.data?.bins[key] ||
+          currentState.loadingLocations?.some((loc) => {
+            return (
+              loc.assemblyName === assemblyName &&
+              loc.regionName === regionName &&
+              loc.bin === key
+            );
+          })
+        );
+      });
 
       if (
         currentState.data?.assemblyName === assemblyName &&
         currentState.data.regionName === regionName &&
-        currentState.data.bins[lowerBinKey] &&
-        currentState.data.bins[upperBinKey]
+        haveAllBinsBeenRequested
       ) {
         // region data has already been fetched and cached; no need to load again
         return false;

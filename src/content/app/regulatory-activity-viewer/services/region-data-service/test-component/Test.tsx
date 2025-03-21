@@ -15,9 +15,11 @@
  */
 
 import { useEffect } from 'react';
+import { useSearchParams, createSearchParams } from 'react-router';
 
 import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 import {
+  BIN_SIZE,
   getBinStartForPosition,
   getBinEndForPosition
 } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/binsHelper';
@@ -25,6 +27,8 @@ import {
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useRegionOverviewData from './useRegionOverviewData';
+
+import { SecondaryButton } from 'src/shared/components/button/Button';
 
 /**
  * - Get the region name from the genomic location object
@@ -43,6 +47,7 @@ const TestComponent = () => {
   const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
     skip: !activeGenomeId
   });
+  const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (!location || !assemblyName || !karyotype) {
@@ -86,7 +91,33 @@ const TestComponent = () => {
 
   useRegionOverviewData(regionOverviewDataParams);
 
-  return <div>Hello?</div>;
+  const changeLocation = (distance = 10_000) => {
+    if (!location) {
+      return; // shouldn't happen
+    }
+    const { regionName, start, end } = location;
+    const viewportDistance = end - start + 1;
+    const newStart = start + distance;
+    const newEnd = newStart + viewportDistance;
+    const newSearchParams = createSearchParams({
+      location: `${regionName}:${newStart}-${newEnd}`
+    });
+    setSearchParams(newSearchParams);
+  };
+
+  return (
+    <>
+      <div>Hello?</div>
+      <div>
+        <SecondaryButton onClick={() => changeLocation()}>
+          Change location
+        </SecondaryButton>
+        <SecondaryButton onClick={() => changeLocation(BIN_SIZE)}>
+          Change location by much
+        </SecondaryButton>
+      </div>
+    </>
+  );
 };
 
 const calculateLocationToRequest = ({
