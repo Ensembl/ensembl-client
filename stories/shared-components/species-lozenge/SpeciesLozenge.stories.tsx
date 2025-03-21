@@ -163,6 +163,27 @@ const SpeciesLozengeContentFormatting = () => {
   );
 };
 
+const SpeciesLozengeRelease = () => {
+  return (
+    <div className={styles.wrapper}>
+      <p>
+        Species lozenge can show the date when the genome was released (relevant
+        when user has several genomes from the same assembly selected).
+      </p>
+
+      <div className={styles.innerWrapper}>
+        <WrapInRedux speciesNameDisplayOption="common-name_assembly-name">
+          <SpeciesLozenge
+            theme="blue"
+            species={humanGenome}
+            isCurrent={false}
+          />
+        </WrapInRedux>
+      </div>
+    </div>
+  );
+};
+
 export const SpeciesLozengeThemesStory = {
   name: 'Themes',
   render: () => <SpeciesLozengeThemes />
@@ -171,4 +192,9 @@ export const SpeciesLozengeThemesStory = {
 export const SpeciesLozengeContentFormattingStory = {
   name: 'Content formatting',
   render: () => <SpeciesLozengeContentFormatting />
+};
+
+export const SpeciesLozengeReleaseStory = {
+  name: 'Release info',
+  render: () => <SpeciesLozengeRelease />
 };

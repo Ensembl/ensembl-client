@@ -22,6 +22,7 @@ import type { DetailedHTMLProps, ButtonHTMLAttributes } from 'react';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { Release } from 'src/shared/types/release';
 
 import styles from './SpeciesLozenge.module.css';
 
@@ -33,12 +34,14 @@ export type Props = DetailedHTMLProps<
 > & {
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
+  isCurrent?: boolean;
 };
 
 const SpeciesLozenge = (props: Props) => {
   const {
     species,
     theme,
+    isCurrent = true,
     className: classNameFromProps,
     ...otherProps
   } = props;
@@ -54,8 +57,15 @@ const SpeciesLozenge = (props: Props) => {
       <div className={styles.inner}>
         <SpeciesName species={species} />
       </div>
+      {!isCurrent && species.release && (
+        <ReleasePill release={species.release} />
+      )}
     </button>
   );
+};
+
+const ReleasePill = ({ release }: { release: Release }) => {
+  return <div className={styles.releasePill}>{release.name}</div>;
 };
 
 export default SpeciesLozenge;
