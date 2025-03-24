@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -22,14 +22,19 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { useAppSelector } from 'src/store';
 
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
+import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
+
+import calculateRequestLocation from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import {
-  useRegionOverviewQuery,
-  stringifyLocation
-} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+// import {
+//   useRegionOverviewQuery,
+//   stringifyLocation
+// } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
@@ -38,6 +43,7 @@ import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOver
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 
 import styles from './RegionOverview.module.css';
 
@@ -48,10 +54,19 @@ import styles from './RegionOverview.module.css';
  *    => This means that the toggling of the sidebar will result in re-rendering of everything
  */
 
+/**
+ * Locations that we need to consider:
+ *  - Viewport location
+ *  - Should be able to drag viewport contents left and right
+ *    - Render excessively: current viewport, plus full viewport to the left and to the right
+ *    - If data for three viewports hasn't loaded yet, show a spinner?
+ *  - Re-render full image every time user either releases the dragged region, or presses the button?
+ */
+
 const RegionOverview = () => {
   const {
     activeGenomeId,
-    assemblyAccessionId,
+    assemblyName,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -63,15 +78,51 @@ const RegionOverview = () => {
   );
   const navigate = useNavigate();
 
-  const { currentData } = useRegionOverviewQuery(
-    {
-      assemblyId: assemblyAccessionId || '',
-      location: location ? stringifyLocation(location) : ''
-    },
-    {
-      skip: !assemblyAccessionId || !location
+  const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
+    skip: !activeGenomeId
+  });
+
+  const regionOverviewDataParams =
+    assemblyName && location
+      ? {
+          assemblyName,
+          regionName: location.regionName,
+          start: location.start,
+          end: location.end
+        }
+      : null;
+
+  const { data: currentData } = useRegionOverviewData(regionOverviewDataParams);
+
+  useEffect(() => {
+    if (!location || !assemblyName || !karyotype) {
+      return;
     }
-  );
+    // FIXME: also check latest requested location perhaps?
+    // or should this be done at the region data service level?
+
+    const { regionName, start, end } = location;
+    const regionInKaryotype = karyotype.find(
+      (region) => region.name === regionName
+    );
+
+    if (!regionInKaryotype) {
+      // something has gone wrong; bail
+      return;
+    }
+
+    const regionLength = regionInKaryotype.length;
+
+    const regionDataRequestParams = calculateRequestLocation({
+      assemblyName,
+      regionName,
+      start,
+      end,
+      regionLength
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyName, karyotype, location]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -149,7 +200,7 @@ const RegionOverview = () => {
 };
 
 const LeftColumn = (props: {
-  data: OverviewRegion;
+  data: RegionData;
   topOffsets: ReturnType<typeof getImageHeightAndTopOffsets>;
 }) => {
   const { data, topOffsets } = props;

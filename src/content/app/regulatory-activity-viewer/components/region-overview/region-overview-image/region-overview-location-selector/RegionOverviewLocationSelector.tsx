@@ -16,6 +16,7 @@
 
 import { type RefObject, type ReactNode } from 'react';
 import { type ScaleLinear } from 'd3';
+import { useNavigate, useLocation } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -24,10 +25,10 @@ import useLocationSelector from './useLocationSelector';
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
 import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
-import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
 
 type Props = {
   activeGenomeId: string;
+  regionName: string;
   imageRef: RefObject<SVGSVGElement | null>;
   height: number;
   width: number;
@@ -36,10 +37,12 @@ type Props = {
 };
 
 const RegionOverviewLocationSelector = (props: Props) => {
-  const { activeGenomeId, scale, imageRef, children } = props;
+  const { activeGenomeId, regionName, scale, imageRef, children } = props;
   const mainContentBottomView = useAppSelector((state) =>
     getMainContentBottomView(state, activeGenomeId)
   );
+  const urlLocation = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const onSelectionCompleted = (params: { start: number; end: number }) => {
@@ -47,15 +50,18 @@ const RegionOverviewLocationSelector = (props: Props) => {
     const genomicStart = Math.round(scale.invert(start));
     const genomicEnd = Math.round(scale.invert(end));
 
-    dispatch(
-      setRegionDetailLocation({
-        genomeId: activeGenomeId,
-        location: {
-          start: genomicStart,
-          end: genomicEnd
-        }
-      })
+    const { pathname, search } = urlLocation;
+
+    const newLocation = `${regionName}:${genomicStart}-${genomicEnd}`;
+
+    const newSearchParams = new URLSearchParams(search);
+    newSearchParams.set('location', newLocation);
+    // for aesthetic purposes, prevent the colon in location query parameter from being encoded
+    const newSearchParamsString = decodeURIComponent(
+      newSearchParams.toString()
     );
+
+    navigate(`${pathname}?${newSearchParamsString}`, { replace: true });
 
     if (mainContentBottomView !== 'dataviz') {
       dispatch(

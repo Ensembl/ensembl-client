@@ -25,6 +25,7 @@ import {
 } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/binsHelper';
 
 import type {
+  OverviewRegion,
   GeneInRegionOverview,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
@@ -34,6 +35,14 @@ type RegionDetailsQueryPayload = {
   regionName: string;
   start: number;
   end: number;
+};
+
+export type RegionData = {
+  assembly_name: string;
+  region_name: string;
+  coordinate_system: string;
+  genes: OverviewRegion['genes'];
+  regulatory_features: OverviewRegion['regulatory_features'];
 };
 
 const regionDetailsStateQuery$ = new ReplaySubject<RegionDetailsQueryPayload>(
@@ -92,8 +101,9 @@ export const regionDetailsSelection$ = regionDetailsStateQuery$.pipe(
     }
 
     return {
-      assemblyName: stateData.assemblyName,
-      regionName: stateData.regionName,
+      assembly_name: stateData.assemblyName,
+      region_name: stateData.regionName,
+      coordinate_system: stateData.coordinate_system,
       genes,
       regulatory_features: {
         feature_types: stateData.regulatory_feature_types,
@@ -111,7 +121,7 @@ const useRegionOverviewData = (
     end: number;
   } | null
 ) => {
-  const [data, setData] = useState<any>(); // FIXME: declare type
+  const [data, setData] = useState<RegionData | null>(null);
   const prevParams = useRef<typeof params>(null);
 
   useEffect(() => {
@@ -137,8 +147,10 @@ const useRegionOverviewData = (
     prevParams.current = params;
   }, [params]);
 
-  // eslint-disable-next-line
-  console.log('data in useRegionOverviewData', data);
+  // FIXME: should somehow return the loading flag as well
+  return {
+    data
+  };
 };
 
 export default useRegionOverviewData;
