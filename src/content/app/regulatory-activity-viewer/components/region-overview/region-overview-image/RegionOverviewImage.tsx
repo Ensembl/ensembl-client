@@ -48,19 +48,18 @@ import type {
   OverviewRegion,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 import type { PopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 import styles from './RegionOverviewImage.module.css';
 
 type Props = {
   activeGenomeId: string;
   width: number;
-  data: OverviewRegion;
+  data: RegionData;
   featureTracks: FeatureTracks;
-  location: {
-    start: number;
-    end: number;
-  };
+  location: GenomicLocation;
   regionDetailLocation: {
     start: number;
     end: number;
@@ -134,6 +133,7 @@ const RegionOverviewImage = (props: Props) => {
     >
       <RegionOverviewLocationSelector
         activeGenomeId={activeGenomeId}
+        regionName={location.regionName}
         imageRef={imageRef}
         height={imageHeight}
         width={width}
