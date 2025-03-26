@@ -59,12 +59,9 @@ type Props = {
   width: number;
   data: RegionData;
   featureTracks: FeatureTracks;
+  extendedLocation: GenomicLocation;
   location: GenomicLocation;
-  regionDetailLocation: {
-    start: number;
-    end: number;
-  } | null;
-  focusGeneId?: string | null;
+  focusGeneId?: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
 };
 
 /**
@@ -82,7 +79,7 @@ const RegionOverviewImage = (props: Props) => {
     featureTracks,
     data,
     location,
-    regionDetailLocation,
+    extendedLocation,
     focusGeneId
   } = props;
   const [imageRef, setImageRef] = useRefWithRerender<SVGSVGElement>(null);
@@ -106,13 +103,13 @@ const RegionOverviewImage = (props: Props) => {
     getImageHeightAndTopOffsets(featureTracks);
 
   const scaleForWholeLocation = getScaleForWholeLocation({
-    location,
-    detailLocation: regionDetailLocation,
+    location: extendedLocation,
+    detailLocation: location,
     viewportWidth: width
   });
   const scaleForViewport = getScaleForViewport({
-    location,
-    detailLocation: regionDetailLocation,
+    location: extendedLocation,
+    detailLocation: location,
     viewportWidth: width
   });
 
@@ -141,8 +138,8 @@ const RegionOverviewImage = (props: Props) => {
       >
         <TranslateRegionOverviewContents
           genomeId={activeGenomeId}
-          location={location}
-          regionDetailLocation={regionDetailLocation}
+          location={extendedLocation}
+          regionDetailLocation={location}
           scale={scaleForWholeLocation}
         >
           <GeneTracks

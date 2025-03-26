@@ -19,7 +19,9 @@ import {
   getBinEndForPosition
 } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/binsHelper';
 
-const calculateRequestLocation = ({
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+
+export const calculateRequestLocation = ({
   assemblyName,
   regionName,
   start,
@@ -42,8 +44,6 @@ const calculateRequestLocation = ({
     end = regionLength;
   }
 
-  // FIXME:
-  // Question 1 - should this request fetch data for three viewports?
   return {
     assemblyName,
     regionName,
@@ -52,4 +52,53 @@ const calculateRequestLocation = ({
   };
 };
 
-export default calculateRequestLocation;
+/**
+ * Given the start and the end coordinates of a location,
+ * request a larger location that continues upstream and downstream
+ * by the same distance as the provided location itself
+ * (thus, it is three times as large as the provided location).
+ */
+export const getGreedyLocation = ({
+  regionName,
+  start,
+  end,
+  regionLength
+}: GenomicLocation & {
+  regionLength: number;
+}): GenomicLocation => {
+  const sliceLength = end - start + 1;
+  const newStart = Math.max(start - sliceLength, 1);
+  const newEnd = Math.min(end + sliceLength, regionLength);
+
+  return {
+    regionName,
+    start: newStart,
+    end: newEnd
+  };
+};
+
+export const calculateGreedyRequestLocation = ({
+  assemblyName,
+  regionName,
+  start,
+  end,
+  regionLength
+}: {
+  assemblyName: string;
+  regionName: string;
+  start: number;
+  end: number;
+  regionLength: number;
+}) => {
+  const sliceLength = end - start + 1;
+  const newStart = Math.max(start - sliceLength, 1);
+  const newEnd = Math.min(end + sliceLength, regionLength);
+
+  return calculateRequestLocation({
+    assemblyName,
+    regionName,
+    start: newStart,
+    end: newEnd,
+    regionLength
+  });
+};
