@@ -24,7 +24,10 @@ import { useAppSelector } from 'src/store';
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 
-import calculateRequestLocation from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
+import {
+  getGreedyLocation,
+  calculateRequestLocation
+} from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
@@ -82,6 +85,30 @@ const RegionOverview = () => {
     skip: !activeGenomeId
   });
 
+  const regionLength = useMemo(() => {
+    if (!karyotype || !location) {
+      return null;
+    }
+
+    const regionInKaryotype = karyotype.find(
+      (region) => region.name === location.regionName
+    );
+
+    if (!regionInKaryotype) {
+      // something went wrong
+      return null;
+    }
+
+    return regionInKaryotype.length;
+  }, [karyotype]);
+
+  const extendedLocation = useMemo(() => {
+    if (!location || !regionLength) {
+      return null;
+    }
+    return getGreedyLocation({ ...location, regionLength });
+  }, [location, regionLength]);
+
   const regionOverviewDataParams =
     assemblyName && location
       ? {
@@ -95,34 +122,20 @@ const RegionOverview = () => {
   const { data: currentData } = useRegionOverviewData(regionOverviewDataParams);
 
   useEffect(() => {
-    if (!location || !assemblyName || !karyotype) {
+    if (!extendedLocation || !assemblyName || !regionLength) {
       return;
     }
     // FIXME: also check latest requested location perhaps?
     // or should this be done at the region data service level?
 
-    const { regionName, start, end } = location;
-    const regionInKaryotype = karyotype.find(
-      (region) => region.name === regionName
-    );
-
-    if (!regionInKaryotype) {
-      // something has gone wrong; bail
-      return;
-    }
-
-    const regionLength = regionInKaryotype.length;
-
     const regionDataRequestParams = calculateRequestLocation({
+      ...extendedLocation,
       assemblyName,
-      regionName,
-      start,
-      end,
       regionLength
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyName, karyotype, location]);
+  }, [assemblyName, location, regionLength, extendedLocation]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -174,17 +187,21 @@ const RegionOverview = () => {
         )}
       </div>
       <div className={styles.middleColumn} ref={onImageContainerMount}>
-        {location && currentData && featureTracks && width && (
-          <RegionOverviewImage
-            activeGenomeId={activeGenomeId}
-            data={currentData}
-            featureTracks={featureTracks}
-            focusGeneId={focusGeneId}
-            width={width}
-            location={location}
-            regionDetailLocation={regionDetailLocation}
-          />
-        )}
+        {location &&
+          extendedLocation &&
+          currentData &&
+          featureTracks &&
+          width && (
+            <RegionOverviewImage
+              activeGenomeId={activeGenomeId}
+              data={currentData}
+              featureTracks={featureTracks}
+              focusGeneId={focusGeneId}
+              width={width}
+              location={location}
+              extendedLocation={extendedLocation}
+            />
+          )}
       </div>
       <div className={styles.rightColumn}>
         {location && (
