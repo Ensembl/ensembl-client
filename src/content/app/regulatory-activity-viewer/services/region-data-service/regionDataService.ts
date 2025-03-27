@@ -83,8 +83,7 @@ export const karyotypeState$ = karyotypeStateSubject.asObservable();
 
 export type RegionDetailsData = {
   assemblyName: string;
-  regionName: string;
-  coordinate_system: OverviewRegion['coordinate_system'];
+  region: OverviewRegion['region'];
   bins: Record<
     string,
     {
@@ -156,7 +155,7 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
 
       if (
         currentState.data?.assemblyName === assemblyName &&
-        currentState.data.regionName === regionName &&
+        currentState.data.region.name === regionName &&
         haveAllBinsBeenRequested
       ) {
         // region data has already been fetched and cached; no need to load again
@@ -179,12 +178,11 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
             return;
           }
 
-          const { assemblyName, regionName } = action.payload;
+          const { assemblyName } = action.payload;
 
           const payload = {
             assemblyName: assemblyName,
-            regionName: regionName,
-            coordinate_system: data.coordinate_system,
+            region: data.region,
             bins: distributeAcrossBins({
               requestParams: action.payload,
               response: data
@@ -348,7 +346,7 @@ const mergeRegionDetailsState = (
     loadingLocations = loadingLocations.filter((location) => {
       return !(
         location.assemblyName === payload.assemblyName &&
-        location.regionName === payload.regionName &&
+        location.regionName === payload.region.name &&
         location.bin === bin
       );
     });
@@ -366,8 +364,7 @@ const mergeRegionDetailsState = (
     data: {
       ...(currentState.data ?? {}),
       assemblyName: payload.assemblyName,
-      regionName: payload.regionName,
-      coordinate_system: payload.coordinate_system,
+      region: payload.region,
       bins: updatedBins,
       regulatory_feature_types: regulatoryFeatureTypes
     }
@@ -435,7 +432,7 @@ export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
 const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyName, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
-  const endpointUrl = `${config.regulationApiBaseUrl}/region-of-interest/v0.2/assembly/${assemblyName}?location=${locationForUrl}`;
+  const endpointUrl = `${config.regulationApiBaseUrl}/region-of-interest/v0.3/web/assembly/${assemblyName}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };
