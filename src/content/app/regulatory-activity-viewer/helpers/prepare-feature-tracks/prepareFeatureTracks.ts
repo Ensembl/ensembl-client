@@ -36,7 +36,7 @@ import type { RegionData } from 'src/content/app/regulatory-activity-viewer/serv
  */
 
 type Params = {
-  data: RegionData;
+  data: Pick<RegionData, 'genes' | 'regulatory_features'>;
   start?: number;
   end?: number;
 };

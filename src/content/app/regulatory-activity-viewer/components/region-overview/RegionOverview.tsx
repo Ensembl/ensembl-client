@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 
