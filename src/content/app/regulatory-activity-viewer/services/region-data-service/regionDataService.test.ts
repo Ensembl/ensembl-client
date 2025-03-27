@@ -3,10 +3,10 @@ import { setupServer } from 'msw/node';
 
 import {
   fetchRegionDetails,
-  dispatchRegionDetailsStateQuery,
-  regionDetailsState$,
-  regionDetailsStateQuery$,
-  regionDetailsSelection$
+  // dispatchRegionDetailsStateQuery,
+  // regionDetailsState$,
+  // regionDetailsStateQuery$,
+  // regionDetailsSelection$
 } from './regionDataService';
 
 import { getGenomicLocationFromString } from 'src/shared/helpers/genomicLocationHelpers';
@@ -36,7 +36,11 @@ const server = setupServer(
         })
       ];
       const regionOverviewPayload = createOverviewRegionPayload({
-        region_name: genomicLocation.regionName,
+        region: {
+          name: genomicLocation.regionName,
+          coordinate_system: 'chromosome',
+          length: 1_000_000
+        }, 
         genes
       });
 
@@ -92,18 +96,18 @@ describe('fetching data for a detailed slice', () => {
     });
     // regionDetailsStateQuery$.subscribe(q => console.log('q here', q));
 
-    dispatchRegionDetailsStateQuery({
-      assemblyName: 'grch38',
-      regionName: '1',
-      start: 10000,
-      end: 20000
-    });
+    // dispatchRegionDetailsStateQuery({
+    //   assemblyName: 'grch38',
+    //   regionName: '1',
+    //   start: 10000,
+    //   end: 20000
+    // });
 
 
-    regionDetailsSelection$.subscribe(data => {
-      console.log('data', data);
-      resolve(null);
-    })
+    // regionDetailsSelection$.subscribe(data => {
+    //   console.log('data', data);
+    //   resolve(null);
+    // });
 
     await promise;
   });
