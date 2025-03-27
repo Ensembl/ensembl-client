@@ -37,16 +37,16 @@ import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hoo
 //   stringifyLocation
 // } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
-import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
+import useRegionOverviewData, {
+  type RegionData
+} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
 } from './region-overview-image/RegionOverviewImage';
 import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
-import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 
 import styles from './RegionOverview.module.css';
 
@@ -110,12 +110,12 @@ const RegionOverview = () => {
   }, [location, regionLength]);
 
   const regionOverviewDataParams =
-    assemblyName && location
+    assemblyName && location && extendedLocation
       ? {
           assemblyName,
           regionName: location.regionName,
-          start: location.start,
-          end: location.end
+          start: extendedLocation.start,
+          end: extendedLocation.end
         }
       : null;
 
