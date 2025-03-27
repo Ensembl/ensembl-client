@@ -33,13 +33,13 @@ import commonStyles from '../RegionOverviewImage.module.css';
 type Props = {
   feature: RegulatoryFeature;
   featureTypesMap: OverviewRegion['regulatory_features']['feature_types'];
-  regionData: Pick<OverviewRegion, 'region_name'>;
+  region: { name: string };
   offsetTop: number;
   scale: ScaleLinear<number, number>;
 };
 
 const RegionOverviewRegulatoryFeature = (props: Props) => {
-  const { feature, regionData } = props;
+  const { feature, region } = props;
 
   const onClick = (event: MouseEvent<Element>) => {
     event.preventDefault();
@@ -54,7 +54,7 @@ const RegionOverviewRegulatoryFeature = (props: Props) => {
         id: feature.id,
         feature_type: feature.feature_type,
 
-        region_name: regionData.region_name,
+        region_name: region.name,
         start: feature.start,
         end: feature.end,
         extended_start: feature.extended_start,

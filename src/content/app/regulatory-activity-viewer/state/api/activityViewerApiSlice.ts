@@ -53,7 +53,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyName, location } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/region-of-interest/v0.2/assembly/${assemblyName}?location=${location}`
+          url: `${config.regulationApiBaseUrl}/region-of-interest/v0.3/web/assembly/${assemblyName}?location=${location}`
         };
       }
     }),

@@ -17,6 +17,12 @@
 type ForwardOrReverseStrand = 'forward' | 'reverse';
 type Strand = 'forward' | 'reverse' | 'independent'; // <-- ask to remove 'independent'?
 
+type Region = {
+  name: string;
+  length: number;
+  coordinate_system: string; // <-- e.g. 'chromosome'
+};
+
 export type GeneInRegionOverview = {
   symbol?: string;
   stable_id: string;
@@ -92,14 +98,12 @@ export type RegulatoryFeatureMetadata = {
 // };
 
 export type OverviewRegion = {
-  region_name: string;
-  coordinate_system: string; // <-- "chromosome", "contig", etc.; should probably be a union type of possible strings
+  region: Region; // <-- top-level region, such as chromosome
   locations: {
     start: number;
     end: number;
   }[]; // <-- identifies parts of the region that will be included in the diagram
   genes: GeneInRegionOverview[];
-  selected_gene_index: number; // <-- which gene to pick by default in absence of other indicators; 0-based
   regulatory_features: {
     feature_types: Record<string, RegulatoryFeatureMetadata>;
     data: RegulatoryFeature[];

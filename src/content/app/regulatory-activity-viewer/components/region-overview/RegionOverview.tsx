@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -76,19 +76,6 @@ const RegionOverview = () => {
     };
   };
 
-  useEffect(() => {
-    if (!currentData) {
-      return;
-    }
-
-    const focusGeneIndex = currentData.selected_gene_index;
-    const focusGeneId = currentData.genes[focusGeneIndex]?.stable_id;
-
-    if (focusGeneId) {
-      setFocusGeneId(focusGeneId);
-    }
-  }, [currentData]);
-
   const onFocusGeneChange = (event: Event) => {
     const newFocusGeneId = (event as CustomEvent).detail as string;
     setFocusGeneId(newFocusGeneId);
@@ -147,7 +134,9 @@ const LeftColumn = (props: {
   const { strandDividerTopOffset, regulatoryFeatureTracksTopOffset } =
     topOffsets;
 
-  const { region_name, coordinate_system } = data;
+  const {
+    region: { name: regionName, coordinate_system }
+  } = data;
 
   return (
     <>
@@ -159,7 +148,7 @@ const LeftColumn = (props: {
           transform: 'translateY(-50%)'
         }}
       >
-        {coordinate_system} {region_name}
+        {coordinate_system} {regionName}
       </div>
       <div
         style={{

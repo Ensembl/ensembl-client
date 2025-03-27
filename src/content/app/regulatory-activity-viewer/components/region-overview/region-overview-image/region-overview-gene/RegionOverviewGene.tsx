@@ -19,7 +19,6 @@ import type { ScaleLinear } from 'd3';
 
 import { GENE_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/region-overview/region-overview-image/regionOverviewImageConstants';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GeneInTrack } from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import type {
   ExonInRegionOverview,
@@ -40,7 +39,9 @@ import commonStyles from '../RegionOverviewImage.module.css';
 type Props = {
   scale: ScaleLinear<number, number>;
   gene: GeneInTrack;
-  regionData: Pick<OverviewRegion, 'region_name'>;
+  region: {
+    name: string;
+  };
   offsetTop: number;
   isFocused: boolean;
 };
@@ -51,7 +52,7 @@ type Intron = {
 };
 
 const RegionOverviewGene = (props: Props) => {
-  const { gene, regionData, scale, offsetTop, isFocused } = props;
+  const { gene, region, scale, offsetTop, isFocused } = props;
   const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported
 
   const onClick = (event: MouseEvent<Element>) => {
@@ -68,7 +69,7 @@ const RegionOverviewGene = (props: Props) => {
         unversioned_stable_id: gene.data.unversioned_stable_id,
         symbol: gene.data.symbol,
         biotype: gene.data.biotype,
-        region_name: regionData.region_name,
+        region_name: region.name,
         start: gene.data.start,
         end: gene.data.end,
         strand: gene.data.strand

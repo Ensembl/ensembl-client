@@ -248,7 +248,7 @@ const GeneTrack = (props: {
       <Fragment key={gene.data.stable_id}>
         <RegionOverviewGene
           gene={gene}
-          regionData={props.regionData}
+          region={props.regionData.region}
           offsetTop={offsetTop}
           scale={scale}
           isFocused={isFocusGene}
@@ -349,7 +349,7 @@ const RegulatoryFeatureTrack = (props: {
         key={feature.id}
         feature={feature}
         featureTypesMap={featureTypesMap}
-        regionData={regionData}
+        region={regionData.region}
         offsetTop={offsetTop}
         scale={scale}
       />
