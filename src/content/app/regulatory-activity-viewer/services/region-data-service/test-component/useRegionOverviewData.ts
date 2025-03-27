@@ -39,8 +39,7 @@ type RegionDetailsQueryPayload = {
 
 export type RegionData = {
   assembly_name: string;
-  region_name: string;
-  coordinate_system: string;
+  region: OverviewRegion['region'];
   genes: OverviewRegion['genes'];
   regulatory_features: OverviewRegion['regulatory_features'];
 };
@@ -60,7 +59,7 @@ export const regionDetailsSelection$ = regionDetailsStateQuery$.pipe(
     return (
       !!state.data &&
       query.assemblyName === state.data.assemblyName &&
-      query.regionName === state.data.regionName &&
+      query.regionName === state.data.region.name &&
       binKeys.every((key) => !!state.data!.bins[key])
     );
   }),
@@ -102,8 +101,7 @@ export const regionDetailsSelection$ = regionDetailsStateQuery$.pipe(
 
     return {
       assembly_name: stateData.assemblyName,
-      region_name: stateData.regionName,
-      coordinate_system: stateData.coordinate_system,
+      region: stateData.region,
       genes,
       regulatory_features: {
         feature_types: stateData.regulatory_feature_types,
