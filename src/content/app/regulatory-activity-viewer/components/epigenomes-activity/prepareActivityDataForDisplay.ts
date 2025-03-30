@@ -67,6 +67,7 @@ type PreparedHistoneNarrowPeak = {
 
 type PreparedHistoneGappedPeak = {
   type: 'gapped_peak';
+  id: string;
   label: string;
   blocks: {
     x: number;
@@ -318,7 +319,7 @@ const prepareHistoneGappedPeaksForTrack = ({
   scale: Params['scale'];
 }) => {
   const allHistoneMetadata = metadata.histone;
-  const narrowPeakHistoneNames = Object.keys(allHistoneMetadata).filter(
+  const gappedPeakHistoneNames = Object.keys(allHistoneMetadata).filter(
     (histoneName) => allHistoneMetadata[histoneName].peak_type === 'gapped'
   );
 
@@ -327,11 +328,11 @@ const prepareHistoneGappedPeaksForTrack = ({
   const result: PreparedHistoneGappedPeak[] = [];
 
   for (const hisoneName of Object.keys(allHistoneData)) {
-    if (!narrowPeakHistoneNames.includes(hisoneName)) {
+    if (!gappedPeakHistoneNames.includes(hisoneName)) {
       continue;
     }
 
-    const order = narrowPeakHistoneNames.indexOf(hisoneName);
+    const order = gappedPeakHistoneNames.indexOf(hisoneName);
 
     const histonePeaks = allHistoneData[hisoneName] as HistoneGappedPeakData[];
 
@@ -396,11 +397,57 @@ const prepareHistoneGappedPeaksForTrack = ({
         blocks.push(block);
       }
 
+      // Due to conversion from genomic coordinates to image coordinates,
+      // it is possible for some of the blocks or connectors to have identical x and width.
+      // Such identical blocks and connectors are filtered out below.
+      const filteredBlocks = blocks
+        .toSorted((block1, block2) => {
+          if (block1.x === block2.x) {
+            return block1.width - block2.width;
+          } else {
+            return block1.x - block2.x;
+          }
+        })
+        .filter((block, index, arr) => {
+          if (index < arr.length - 1) {
+            const nextBlock = arr[index + 1];
+            if (block.x === nextBlock.x && block.width === nextBlock.width) {
+              return false;
+            }
+          }
+          return true;
+        });
+
+      const filteredConnectors = connectors
+        .toSorted((c1, c2) => {
+          if (c1.x === c2.x) {
+            return c1.width - c2.width;
+          } else {
+            return c1.x - c2.x;
+          }
+        })
+        .filter((connector, index, arr) => {
+          if (index < arr.length - 1) {
+            const nextConnector = arr[index + 1];
+            if (
+              connector.x === nextConnector.x &&
+              connector.width === nextConnector.width
+            ) {
+              return false;
+            }
+          }
+          return true;
+        });
+
+      const peakLabel = allHistoneMetadata[hisoneName].label;
+      const peakId = `gapped-peak-${peakLabel}-${blocks.map((block) => `${block.x}-${block.width}`)}`;
+
       const trackPeakData = {
         type: 'gapped_peak',
-        blocks,
-        connectors,
-        label: allHistoneMetadata[hisoneName].label,
+        id: peakId,
+        blocks: filteredBlocks,
+        connectors: filteredConnectors,
+        label: peakLabel,
         color: allHistoneMetadata[hisoneName].color,
         order
       } as const;
@@ -409,5 +456,16 @@ const prepareHistoneGappedPeaksForTrack = ({
     }
   }
 
-  return result;
+  const cleanedUpPeaks: typeof result = [];
+  const seenGappedPeakIds = new Set<string>();
+
+  for (const peak of result) {
+    if (seenGappedPeakIds.has(peak.id)) {
+      continue;
+    }
+    seenGappedPeakIds.add(peak.id);
+    cleanedUpPeaks.push(peak);
+  }
+
+  return cleanedUpPeaks;
 };

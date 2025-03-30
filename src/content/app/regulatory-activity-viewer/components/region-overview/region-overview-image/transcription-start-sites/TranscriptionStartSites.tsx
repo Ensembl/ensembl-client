@@ -53,7 +53,11 @@ const TranscriptionStartSites = (props: Props) => {
   const preparedTss = prepareTssData(props);
 
   return preparedTss.map((site) => (
-    <TranscriptionStartSite {...props} site={site} key={site.position} />
+    <TranscriptionStartSite
+      {...props}
+      site={site}
+      key={`tss-${site.position}`}
+    />
   ));
 };
 
