@@ -20,7 +20,7 @@ import {
   merge,
   map,
   filter,
-  switchMap,
+  concatMap,
   tap
 } from 'rxjs';
 
@@ -169,7 +169,7 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
 
     // tap to send action to update state observable?
 
-    switchMap((action) => {
+    concatMap((action) => {
       return fetchLocation(action.payload).pipe(
         // tap to send action to update state observable?
         tap((data) => {

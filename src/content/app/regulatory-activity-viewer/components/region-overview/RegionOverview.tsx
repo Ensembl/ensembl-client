@@ -19,8 +19,6 @@ import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { useAppSelector } from 'src/store';
-
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 
@@ -28,8 +26,6 @@ import {
   getGreedyLocation,
   calculateRequestLocation
 } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
-
-import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 // import {
@@ -64,6 +60,11 @@ import styles from './RegionOverview.module.css';
  *    - Render excessively: current viewport, plus full viewport to the left and to the right
  *    - If data for three viewports hasn't loaded yet, show a spinner?
  *  - Re-render full image every time user either releases the dragged region, or presses the button?
+ *
+ * TODO:
+ *  - remove calls for region data
+ *  - fix zoom buttons
+ *  - change gene rendering at 1MB and up
  */
 
 const RegionOverview = () => {
@@ -76,9 +77,6 @@ const RegionOverview = () => {
     focusGeneId
   } = useActivityViewerIds();
   const [width, setWidth] = useState(0);
-  const regionDetailLocation = useAppSelector((state) =>
-    getRegionDetailSelectedLocation(state, activeGenomeId ?? '')
-  );
   const navigate = useNavigate();
 
   const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
@@ -136,6 +134,25 @@ const RegionOverview = () => {
 
     fetchRegionDetails(regionDataRequestParams);
   }, [assemblyName, location, regionLength, extendedLocation]);
+
+  // fetch data for full region data
+  useEffect(() => {
+    if (!location?.regionName || !assemblyName || !regionLength) {
+      return;
+    }
+
+    const { regionName } = location;
+
+    const regionDataRequestParams = calculateRequestLocation({
+      assemblyName,
+      regionLength,
+      regionName,
+      start: 1,
+      end: regionLength
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyName, location?.regionName, regionLength]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -208,7 +225,6 @@ const RegionOverview = () => {
           <RegionOverviewZoomButtons
             genomeId={activeGenomeId}
             location={location}
-            regionDetailLocation={regionDetailLocation}
           />
         )}
       </div>

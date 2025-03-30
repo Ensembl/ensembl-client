@@ -137,7 +137,6 @@ const RegionOverviewImage = (props: Props) => {
         scale={scaleForViewport}
       >
         <TranslateRegionOverviewContents
-          genomeId={activeGenomeId}
           location={extendedLocation}
           regionDetailLocation={location}
           scale={scaleForWholeLocation}
