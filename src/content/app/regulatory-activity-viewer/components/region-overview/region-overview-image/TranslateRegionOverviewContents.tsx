@@ -16,8 +16,7 @@
 
 import { useRef, useReducer, type ReactNode } from 'react';
 import type { ScaleLinear } from 'd3';
-
-import { useAppDispatch } from 'src/store';
+import { useLocation, useNavigate } from 'react-router';
 
 import {
   calculateShiftLeft,
@@ -25,11 +24,8 @@ import {
   getGenomicDistanceDragged
 } from './regionOverviewImageHelpers';
 
-import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
-
 type Props = {
-  genomeId: string;
-  location: { start: number; end: number };
+  location: { regionName: string; start: number; end: number };
   regionDetailLocation: { start: number; end: number } | null;
   scale: ScaleLinear<number, number>; // d3 scale mapping the whole location to the width of an imaginary container
   children: ReactNode;
@@ -80,7 +76,7 @@ const getInitialState = (initialOffset: number): State => {
 };
 
 const TranslateRegionOverviewContents = (props: Props) => {
-  const { genomeId, location, regionDetailLocation, scale, children } = props;
+  const { location, regionDetailLocation, scale, children } = props;
   const initialShiftLeft = calculateShiftLeft({
     location,
     detailLocation: regionDetailLocation,
@@ -89,8 +85,8 @@ const TranslateRegionOverviewContents = (props: Props) => {
   const initialState = getInitialState(initialShiftLeft);
   const [state, dispatch] = useReducer(stateReducer, initialState);
   const translateX = computeTranslateX(state);
-
-  const reduxDispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const urlLocation = useLocation();
 
   const pressStartXRef = useRef<number | null>(null);
   const stateRef = useRef(state);
@@ -198,19 +194,28 @@ const TranslateRegionOverviewContents = (props: Props) => {
 
   const updateLocation = () => {
     const distance = stateRef.current.currentOffset;
-    const newLocation = calculateLocationAfterDrag({
-      location,
-      detailLocation: regionDetailLocation ?? location,
-      scale,
-      distance
-    });
-
-    reduxDispatch(
-      setRegionDetailLocation({
-        genomeId,
-        location: newLocation
-      })
+    const { start: genomicStart, end: genomicEnd } = calculateLocationAfterDrag(
+      {
+        location,
+        detailLocation: regionDetailLocation ?? location,
+        scale,
+        distance
+      }
     );
+
+    const { regionName } = location;
+    const { pathname, search } = urlLocation;
+
+    const newLocation = `${regionName}:${genomicStart}-${genomicEnd}`;
+
+    const newSearchParams = new URLSearchParams(search);
+    newSearchParams.set('location', newLocation);
+    // for aesthetic purposes, prevent the colon in location query parameter from being encoded
+    const newSearchParamsString = decodeURIComponent(
+      newSearchParams.toString()
+    );
+
+    navigate(`${pathname}?${newSearchParamsString}`, { replace: true });
   };
 
   return (
