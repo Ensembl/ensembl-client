@@ -432,7 +432,7 @@ export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
 const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyName, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
-  const endpointUrl = `${config.regulationApiBaseUrl}/region-of-interest/v0.3/web/assembly/${assemblyName}?location=${locationForUrl}`;
+  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.4/assembly/${assemblyName}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };
