@@ -339,7 +339,30 @@ const RegulatoryFeatureTrack = (props: {
 }) => {
   const { track, featureTypesMap, offsetTop, scale, regionData } = props;
 
-  const featureElements = track.map((feature) => {
+  const featureElements = track.map((feature, index) => {
+    const prevFeature = index > 0 ? track[index - 1] : null;
+
+    const featureGenomicStart = feature.extended_start ?? feature.start;
+    const featureGenomicEnd = feature.extended_end ?? feature.end;
+    const featureStart = scale(featureGenomicStart);
+    const featureEnd = scale(featureGenomicEnd);
+
+    const prevFeatureGenomicStart =
+      prevFeature?.extended_start ?? prevFeature?.start;
+    const prevFeatureGenomicEnd = prevFeature?.extended_end ?? prevFeature?.end;
+    const prevFeatureStart = prevFeatureGenomicStart
+      ? scale(prevFeatureGenomicStart)
+      : -1;
+    const prevFeatureEnd = prevFeatureGenomicEnd
+      ? scale(prevFeatureGenomicEnd)
+      : -1;
+
+    if (featureStart === prevFeatureStart && featureEnd === prevFeatureEnd) {
+      // TODO: we may want to apply a smarter strategy here,
+      // wherein 'more important' reg features, such as promoters, will win over less important ones
+      return null;
+    }
+
     return (
       <RegionOverviewRegulatoryFeature
         key={feature.id}
