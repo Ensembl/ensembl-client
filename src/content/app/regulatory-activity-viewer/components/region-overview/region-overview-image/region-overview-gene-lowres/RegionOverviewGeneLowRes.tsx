@@ -35,7 +35,8 @@ type Props = {
  */
 
 const RegionOverviewGeneLowRes = (props: Props) => {
-  const { gene, scale, offsetTop } = props;
+  const { gene, scale, offsetTop, isFocused } = props;
+  const color = isFocused ? 'black' : '#0099ff'; // <-- This is our design system blue; see if it can be imported (TODO)
 
   const {
     data: { start: genomicStart, end: genomicEnd }
@@ -44,7 +45,15 @@ const RegionOverviewGeneLowRes = (props: Props) => {
   const end = scale(genomicEnd);
   const width = Math.max(end - start, 0.2);
 
-  return <rect x={start} width={width} y={offsetTop} height={GENE_HEIGHT} />;
+  return (
+    <rect
+      x={start}
+      width={width}
+      y={offsetTop}
+      height={GENE_HEIGHT}
+      fill={color}
+    />
+  );
 };
 
 export default RegionOverviewGeneLowRes;
