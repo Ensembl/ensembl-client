@@ -25,6 +25,7 @@ import {
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
+import RegionOverviewGeneLowRes from './region-overview-gene-lowres/RegionOverviewGeneLowRes';
 import RegionOverviewRegulatoryFeature from './region-overview-regulatory-feature/RegionOverviewRegulatoryFeature';
 import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
@@ -147,6 +148,7 @@ const RegionOverviewImage = (props: Props) => {
             scale={scaleForWholeLocation}
             width={width}
             focusGeneId={focusGeneId}
+            location={location}
           />
           <RegulatoryFeatureTracks
             offsetTop={regulatoryFeatureTracksTopOffset}
@@ -164,6 +166,7 @@ const RegionOverviewImage = (props: Props) => {
 
 const GeneTracks = (props: {
   regionData: Props['data'];
+  location: Props['location'];
   tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
@@ -206,6 +209,7 @@ const GeneTracks = (props: {
     return tracks.map((_, index) => (
       <GeneTrack
         regionData={props.regionData}
+        location={props.location}
         tracks={tracks}
         trackIndex={index}
         trackOffsetsTop={yCoordLookup}
@@ -227,18 +231,35 @@ const GeneTracks = (props: {
 
 const GeneTrack = (props: {
   regionData: Props['data'];
+  location: Props['location'];
   tracks: GeneTrack[];
   trackIndex: number;
   trackOffsetsTop: number[];
   scale: ScaleLinear<number, number>;
   focusGeneId?: string | null;
 }) => {
-  const { tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } = props;
+  const { location, tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } =
+    props;
   const track = tracks[trackIndex];
   const offsetTop = trackOffsetsTop[trackIndex];
 
+  const shouldDisplayLowResGenes = location.end - location.start > 1_000_000;
+
   const geneElements = track.map((gene) => {
     const isFocusGene = focusGeneId === gene.data.unversioned_stable_id;
+
+    if (shouldDisplayLowResGenes) {
+      return (
+        <RegionOverviewGeneLowRes
+          key={gene.data.stable_id}
+          gene={gene}
+          region={props.regionData.region}
+          scale={scale}
+          offsetTop={offsetTop}
+          isFocused={isFocusGene}
+        />
+      );
+    }
 
     return (
       <Fragment key={gene.data.stable_id}>
