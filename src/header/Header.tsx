@@ -19,13 +19,12 @@ import { Link } from 'react-router-dom';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import Launchbar from './launchbar/Launchbar';
+import EnsemblReleaseVersion from './EnsemblReleaseVersion';
 
 import Logotype from 'static/img/brand/logotype.svg';
 import HomeIcon from 'static/icons/icon_home.svg';
 
 import styles from './Header.module.css';
-
-export const ReleaseVersion = () => <div className={styles.release}>Beta</div>;
 
 export const Copyright = () => (
   <div className={styles.copyright}>
@@ -47,14 +46,12 @@ export const Topbar = () => (
   <div className={styles.topbar}>
     <div className={styles.topbarLeft}>
       <HomeLink />
-      <div className={styles.topbarLeftTextBlock}>
-        <div className={styles.logotypeWrapper}>
-          <Logotype className={styles.logotype} />
-        </div>
-        <div className={styles.logotypeAssociatedText}>
-          <ReleaseVersion />
-          <Copyright />
-        </div>
+      <div className={styles.logotypeWrapper}>
+        <Logotype className={styles.logotype} />
+      </div>
+      <div className={styles.topbarLeftText}>
+        <EnsemblReleaseVersion />
+        <Copyright />
       </div>
     </div>
     <div className={styles.topbarRight}>Genome data & annotation</div>
