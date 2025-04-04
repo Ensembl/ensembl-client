@@ -19,6 +19,7 @@ import classNames from 'classnames';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import useRegionActivityData from './useRegionActivityData';
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
@@ -29,6 +30,30 @@ import { CircleLoader } from 'src/shared/components/loader';
 // FIXME: promote these styles to the top level of region activity viewer
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
+
+/**
+ * The backend api would be too slow, and would also probably return too much data
+ * for excessively large regions; so it makes sense to disable this view for slices larger
+ * than a certain threshold. So far, this threshold is chosen to be 1MB
+ */
+
+const MAX_SLICE_SIZE = 1_000_000; // <-- base pairs
+
+const RegionActivitySectionWrapper = () => {
+  const { location } = useActivityViewerIds();
+
+  if (!location) {
+    return null;
+  }
+
+  const sliceSize = location.end - location.start + 1;
+
+  if (sliceSize > MAX_SLICE_SIZE) {
+    return <div>Please zoom in to view the details</div>;
+  }
+
+  return <RegionActivitySection />;
+};
 
 const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
@@ -108,4 +133,4 @@ const RegionActivitySection = () => {
   );
 };
 
-export default memo(RegionActivitySection);
+export default memo(RegionActivitySectionWrapper);
