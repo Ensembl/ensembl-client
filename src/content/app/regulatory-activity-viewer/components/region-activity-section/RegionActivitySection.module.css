@@ -20,3 +20,7 @@
 .middleColumnImage {
   width: 100%;
 }
+
+.positionRelative {
+  position: relative;
+}
