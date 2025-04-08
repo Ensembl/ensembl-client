@@ -24,6 +24,7 @@ import { displayEpigenomeValue } from 'src/content/app/regulatory-activity-viewe
 
 import { Table, ColumnHead } from 'src/shared/components/table/';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
@@ -39,9 +40,9 @@ const EpigenomesTableContainer = () => {
     setDisplayType('partial');
   };
 
-  // const showFullTable = () => {
-  //   setDisplayType('full');
-  // };
+  const showFullTable = () => {
+    setDisplayType('full');
+  };
 
   const hideTable = () => {
     setDisplayType(null);
@@ -59,7 +60,10 @@ const EpigenomesTableContainer = () => {
         </button>
       ) : (
         <div className={styles.tableContainer}>
-          <EpigenomesTable displayType={displayType} />
+          <EpigenomesTable
+            displayType={displayType}
+            showFullTable={showFullTable}
+          />
           <CloseButton
             className={styles.closeButton}
             onClick={hideTable}
@@ -80,9 +84,11 @@ const EpigenomesTableContainer = () => {
  * to the height of an epigenome activity track
  */
 const EpigenomesTable = ({
-  displayType
+  displayType,
+  showFullTable
 }: {
   displayType: TableDisplayType;
+  showFullTable: () => void;
 }) => {
   const {
     sortedCombinedEpigenomes,
@@ -119,6 +125,11 @@ const EpigenomesTable = ({
               {tableColumn.columnHeading}
             </ColumnHead>
           ))}
+          {displayType === 'partial' && (
+            <ColumnHead>
+              <TextButton onClick={showFullTable}>Show more</TextButton>
+            </ColumnHead>
+          )}
         </tr>
       </thead>
       <tbody>
