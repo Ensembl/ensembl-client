@@ -78,7 +78,7 @@ const useRegionActivityData = (props: Props) => {
     }
   );
   const {
-    isLoading: isEpigenomeActivityDataLoading,
+    isFetching: isEpigenomeActivityDataLoading,
     currentData: epigenomeActivityData
   } = useEpigenomesActivityQuery(
     {
