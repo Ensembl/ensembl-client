@@ -21,7 +21,7 @@ import styles from './RegionOverviewZoomButtons.module.css';
 type Props = {
   genomeId: string;
   location: { regionName: string; start: number; end: number };
-  // FIXME: need region length!
+  regionLength: number;
 };
 
 const RegionOverviewZoomButtons = (props: Props) => {
@@ -78,15 +78,12 @@ const calculateZoomIn = ({ location }: Props) => {
   };
 };
 
-const calculateZoomOut = ({ location }: Props) => {
+const calculateZoomOut = ({ location, regionLength }: Props) => {
   const viewportDistance = location.end - location.start;
   const newViewportDistance = viewportDistance * 2;
   const quarterNewDistance = Math.round(newViewportDistance / 4);
   const newStart = Math.max(location.start - quarterNewDistance, 1);
-  const newEnd = Math.min(
-    location.end + quarterNewDistance,
-    Infinity // FIXME
-  );
+  const newEnd = Math.min(location.end + quarterNewDistance, regionLength);
 
   return {
     start: newStart,
