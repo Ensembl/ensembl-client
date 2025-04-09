@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -41,6 +41,7 @@ import RegionOverviewImage, {
   getImageHeightAndTopOffsets
 } from './region-overview-image/RegionOverviewImage';
 import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
@@ -118,6 +119,7 @@ const RegionOverview = () => {
       : null;
 
   const { data: currentData } = useRegionOverviewData(regionOverviewDataParams);
+  const deferredData = useDeferredValue(currentData);
 
   useEffect(() => {
     if (!extendedLocation || !assemblyName || !regionLength) {
@@ -185,8 +187,8 @@ const RegionOverview = () => {
   };
 
   const featureTracks = useMemo(() => {
-    return currentData ? prepareFeatureTracks({ data: currentData }) : null;
-  }, [currentData]);
+    return deferredData ? prepareFeatureTracks({ data: deferredData }) : null;
+  }, [deferredData]);
 
   const topOffsets = featureTracks
     ? getImageHeightAndTopOffsets(featureTracks)
@@ -196,35 +198,45 @@ const RegionOverview = () => {
     return null;
   }
 
+  const isPending = deferredData !== currentData;
+
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>
-        {currentData && topOffsets && (
-          <LeftColumn data={currentData} topOffsets={topOffsets} />
+        {deferredData && topOffsets && (
+          <LeftColumn data={deferredData} topOffsets={topOffsets} />
         )}
       </div>
       <div className={styles.middleColumn} ref={onImageContainerMount}>
-        {location &&
-          extendedLocation &&
-          currentData &&
-          featureTracks &&
-          width && (
-            <RegionOverviewImage
-              activeGenomeId={activeGenomeId}
-              data={currentData}
-              featureTracks={featureTracks}
-              focusGeneId={focusGeneId}
-              width={width}
-              location={location}
-              extendedLocation={extendedLocation}
-            />
+        <div className={styles.imageContainer}>
+          {location &&
+            extendedLocation &&
+            deferredData &&
+            featureTracks &&
+            width && (
+              <RegionOverviewImage
+                activeGenomeId={activeGenomeId}
+                data={deferredData}
+                featureTracks={featureTracks}
+                focusGeneId={focusGeneId}
+                width={width}
+                location={location}
+                extendedLocation={extendedLocation}
+              />
+            )}
+          {isPending && (
+            <div className={styles.loader}>
+              <CircleLoader />
+            </div>
           )}
+        </div>
       </div>
       <div className={styles.rightColumn}>
-        {location && (
+        {location && regionLength && (
           <RegionOverviewZoomButtons
             genomeId={activeGenomeId}
             location={location}
+            regionLength={regionLength}
           />
         )}
       </div>
