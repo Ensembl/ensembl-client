@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useRef } from 'react';
+import { Fragment, useRef, memo } from 'react';
 import { type ScaleLinear } from 'd3';
 
 import {
@@ -425,4 +425,4 @@ export const getImageHeightAndTopOffsets = (featureTracks: FeatureTracks) => {
   };
 };
 
-export default RegionOverviewImage;
+export default memo(RegionOverviewImage);
