@@ -38,7 +38,6 @@ import RegionOverviewImage, {
   getImageHeightAndTopOffsets
 } from './region-overview-image/RegionOverviewImage';
 import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
-import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './RegionOverview.module.css';
 
@@ -176,8 +175,6 @@ const RegionOverview = () => {
     return null;
   }
 
-  const isPending = deferredData !== currentData;
-
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>
@@ -202,11 +199,6 @@ const RegionOverview = () => {
                 extendedLocation={extendedLocation}
               />
             )}
-          {isPending && (
-            <div className={styles.loader}>
-              <CircleLoader />
-            </div>
-          )}
         </div>
       </div>
       <div className={styles.rightColumn}>
