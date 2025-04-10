@@ -292,10 +292,14 @@ const StrandDivider = (props: {
   const y = props.offsetTop;
   const color = '#ccd3d8';
 
+  // consider that the strand divider should span across not just the viewport,
+  // but also a hidden viewport to the left and to the right
+  const width = props.width * 3;
+
   return (
     <line
       x1="0"
-      x2={props.width}
+      x2={width}
       y1={y}
       y2={y}
       strokeDasharray="2"
