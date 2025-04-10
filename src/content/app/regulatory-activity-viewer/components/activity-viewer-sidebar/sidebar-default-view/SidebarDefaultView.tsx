@@ -26,7 +26,7 @@ import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/
 
 const SidebarDefaultView = () => {
   const { assemblyName, location } = useActivityViewerIds();
-  const { currentData } = useRegionOverviewQuery(
+  const { data } = useRegionOverviewQuery(
     {
       assemblyName: assemblyName || '',
       location: location ? stringifyLocation(location) : ''
@@ -36,7 +36,7 @@ const SidebarDefaultView = () => {
     }
   );
 
-  if (!currentData || !location) {
+  if (!data || !location) {
     return null;
   }
 
@@ -46,13 +46,9 @@ const SidebarDefaultView = () => {
 
   return (
     <div>
-      {isSliceTooLarge ? (
-        <SliceTooLargeNotice />
-      ) : (
-        <Genes genes={currentData.genes} />
-      )}
+      {isSliceTooLarge ? <SliceTooLargeNotice /> : <Genes genes={data.genes} />}
       <RegulatoryFeatureLegendSection
-        featureTypes={currentData.regulatory_features.feature_types}
+        featureTypes={data.regulatory_features.feature_types}
       />
     </div>
   );
