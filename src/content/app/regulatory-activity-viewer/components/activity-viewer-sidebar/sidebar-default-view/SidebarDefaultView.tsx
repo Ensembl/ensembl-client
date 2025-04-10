@@ -55,7 +55,7 @@ const SidebarDefaultView = () => {
     }
   );
 
-  if (!currentData) {
+  if (!currentData || !location) {
     return null;
   }
 
@@ -73,13 +73,21 @@ const SidebarDefaultView = () => {
     navigate(newUrl);
   };
 
+  const { start, end } = location;
+  const sliceLength = end - start + 1;
+  const isSliceTooLarge = sliceLength > 1_000_000; // FIXME: this should be imported as a constant
+
   return (
     <div>
-      <Genes
-        genes={currentData.genes}
-        onGeneFocus={onGeneFocus}
-        focusGeneId={focusGeneId}
-      />
+      {isSliceTooLarge ? (
+        <SliceTooLargeNotice />
+      ) : (
+        <Genes
+          genes={currentData.genes}
+          onGeneFocus={onGeneFocus}
+          focusGeneId={focusGeneId}
+        />
+      )}
       <RegulatoryFeatureLegendSection
         featureTypes={currentData.regulatory_features.feature_types}
       />
@@ -131,6 +139,10 @@ const RegulatoryFeatureLegendSection = (props: {
       <RegulatoryFeatureLegend featureTypes={props.featureTypes} />
     </div>
   );
+};
+
+const SliceTooLargeNotice = () => {
+  return <div>Please zoom in into the region to see the list of genes</div>;
 };
 
 export default SidebarDefaultView;
