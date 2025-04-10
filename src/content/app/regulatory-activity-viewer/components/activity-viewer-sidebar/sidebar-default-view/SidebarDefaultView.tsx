@@ -45,7 +45,7 @@ const SidebarDefaultView = () => {
   } = useActivityViewerIds();
   const navigate = useNavigate();
 
-  const { currentData } = useRegionOverviewQuery(
+  const { data } = useRegionOverviewQuery(
     {
       assemblyId: assemblyAccessionId || '',
       location: location ? stringifyLocation(location) : ''
@@ -55,7 +55,7 @@ const SidebarDefaultView = () => {
     }
   );
 
-  if (!currentData || !location) {
+  if (!data || !location) {
     return null;
   }
 
@@ -83,13 +83,13 @@ const SidebarDefaultView = () => {
         <SliceTooLargeNotice />
       ) : (
         <Genes
-          genes={currentData.genes}
+          genes={data.genes}
           onGeneFocus={onGeneFocus}
           focusGeneId={focusGeneId}
         />
       )}
       <RegulatoryFeatureLegendSection
-        featureTypes={currentData.regulatory_features.feature_types}
+        featureTypes={data.regulatory_features.feature_types}
       />
     </div>
   );
