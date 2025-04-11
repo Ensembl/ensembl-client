@@ -297,6 +297,14 @@ const mergeRegionDetailsStateOnLoading = (
   state: RegionDetailsState,
   payload: RegionDetailsQueryAction['payload'] & { binKeys: string[] }
 ) => {
+  if (
+    state.data?.assemblyName &&
+    state.data.assemblyName !== payload.assemblyName
+  ) {
+    // clean up the state to start loading data for a new assembly
+    state = { ...initialRegionDetailsState };
+  }
+
   const loadingLocations = payload.binKeys.map((binKey) => ({
     assemblyName: payload.assemblyName,
     regionName: payload.regionName,
@@ -327,6 +335,11 @@ const mergeRegionDetailsStateOnLoading = (
   }
 };
 
+/**
+ * TODO: consider a rare but important edge case:
+ * what if response with data for one assembly arrives after request has been sent for another assembly
+ * (i.e. while switching between species)
+ */
 const mergeRegionDetailsState = (
   currentState: RegionDetailsState,
   payload: RegionDetailsResponseAction['payload']
