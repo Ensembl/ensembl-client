@@ -17,10 +17,6 @@
   backdrop-filter: blur(3px);
 }
 
-.middleColumnImage {
-  width: 100%;
-}
-
 .positionRelative {
   position: relative;
 }

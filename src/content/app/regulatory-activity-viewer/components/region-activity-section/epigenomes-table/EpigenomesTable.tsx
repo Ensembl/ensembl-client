@@ -59,11 +59,13 @@ const EpigenomesTableContainer = () => {
           <Chevron direction="right" />
         </button>
       ) : (
-        <div className={styles.tableContainer}>
-          <EpigenomesTable
-            displayType={displayType}
-            showFullTable={showFullTable}
-          />
+        <div className={styles.tableContainerGrid}>
+          <div className={styles.tableContainer}>
+            <EpigenomesTable
+              displayType={displayType}
+              showFullTable={showFullTable}
+            />
+          </div>
           <CloseButton
             className={styles.closeButton}
             onClick={hideTable}
@@ -94,7 +96,8 @@ const EpigenomesTable = ({
     sortedCombinedEpigenomes,
     epigenomeSortingDimensions,
     allEpigenomeSortableDimensions,
-    epigenomeMetadataDimensionsResponse
+    epigenomeMetadataDimensionsResponse,
+    epigenomeCombiningDimensions
   } = useEpigenomes();
 
   if (
@@ -114,17 +117,26 @@ const EpigenomesTable = ({
     getShortList: displayType === 'partial'
   });
 
+  const isCombiningDimension = (dimension: string) => {
+    return epigenomeCombiningDimensions.includes(dimension);
+  };
+
   // FIXME: consider collapsed dimensions
 
   return (
     <Table className={styles.table}>
       <thead>
         <tr>
-          {tableColumns.map((tableColumn) => (
-            <ColumnHead key={tableColumn.dimensionName}>
-              {tableColumn.columnHeading}
-            </ColumnHead>
-          ))}
+          {tableColumns.map((tableColumn) => {
+            if (isCombiningDimension(tableColumn.dimensionName)) {
+              return null;
+            }
+            return (
+              <ColumnHead key={tableColumn.dimensionName}>
+                {tableColumn.columnHeading}
+              </ColumnHead>
+            );
+          })}
           {displayType === 'partial' && (
             <ColumnHead>
               <TextButton onClick={showFullTable}>Show more</TextButton>
@@ -135,21 +147,29 @@ const EpigenomesTable = ({
       <tbody>
         {sortedCombinedEpigenomes.map((epigenome) => (
           <tr key={epigenome.id}>
-            {tableColumns.map((tableColumn) => (
-              <td key={tableColumn.dimensionName}>
-                <div
-                  style={{
-                    height: `calc(${TRACK_HEIGHT}px - 18px - 1px)`,
-                    maxWidth: '150px',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  {displayEpigenomeValue(epigenome[tableColumn.dimensionName])}
-                </div>
-              </td>
-            ))}
+            {tableColumns.map((tableColumn) => {
+              if (isCombiningDimension(tableColumn.dimensionName)) {
+                return null;
+              }
+
+              return (
+                <td key={tableColumn.dimensionName}>
+                  <div
+                    style={{
+                      height: `calc(${TRACK_HEIGHT}px - 18px - 1px)`, // track height minus vertical cell padding, minus table border height
+                      maxWidth: '150px',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
+                    {displayEpigenomeValue(
+                      epigenome[tableColumn.dimensionName]
+                    )}
+                  </div>
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>
