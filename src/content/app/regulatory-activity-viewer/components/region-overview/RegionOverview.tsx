@@ -28,10 +28,6 @@ import {
 } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-// import {
-//   useRegionOverviewQuery,
-//   stringifyLocation
-// } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useRegionOverviewData, {
   type RegionData
@@ -136,7 +132,7 @@ const RegionOverview = () => {
     fetchRegionDetails(regionDataRequestParams);
   }, [assemblyName, location, regionLength, extendedLocation]);
 
-  // fetch data for full region data
+  // fetch data for the whole region
   useEffect(() => {
     if (!location?.regionName || !assemblyName || !regionLength) {
       return;
