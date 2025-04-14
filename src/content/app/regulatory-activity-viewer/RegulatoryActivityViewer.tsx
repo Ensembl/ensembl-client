@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
 import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
@@ -126,9 +127,11 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   );
 };
 
+const MemoizedActivityViewer = memo(ActivityViewer);
+
 const WrappedActivityViewer = () => (
   <ActivityViewerEpigenomesContextProvider>
-    <ActivityViewer />
+    <MemoizedActivityViewer />
   </ActivityViewerEpigenomesContextProvider>
 );
 
