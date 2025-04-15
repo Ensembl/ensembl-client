@@ -15,7 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { ReplaySubject, map, filter, combineLatestWith } from 'rxjs';
+import { map, filter } from 'rxjs';
 
 import { regionDetailsState$ } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 
@@ -30,13 +30,6 @@ import type {
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
-type RegionDetailsQueryPayload = {
-  assemblyName: string;
-  regionName: string;
-  start: number;
-  end: number;
-};
-
 export type RegionData = {
   assembly_name: string;
   region: OverviewRegion['region'];
@@ -44,91 +37,91 @@ export type RegionData = {
   regulatory_features: OverviewRegion['regulatory_features'];
 };
 
-const regionDetailsStateQuery$ = new ReplaySubject<RegionDetailsQueryPayload>(
-  1
-);
-
-export const regionDetailsSelection$ = regionDetailsStateQuery$.pipe(
-  combineLatestWith(regionDetailsState$),
-  filter(([query, state]) => {
-    const binKeys = createBins({
-      start: query.start,
-      end: query.end
-    }).map(createBinKey);
-
-    return (
-      !!state.data &&
-      query.assemblyName === state.data.assemblyName &&
-      query.regionName === state.data.region.name &&
-      binKeys.every((key) => !!state.data!.bins[key])
-    );
-  }),
-  map(([query, state]) => {
-    const stateData = state.data as NonNullable<typeof state.data>;
-    const binKeys = createBins({
-      start: query.start,
-      end: query.end
-    }).map(createBinKey);
-
-    const genes: GeneInRegionOverview[] = [];
-    const regulatoryFeatures: RegulatoryFeature[] = [];
-
-    for (let i = 0; i < binKeys.length; i++) {
-      const key = binKeys[i];
-      const bin = stateData.bins[key];
-
-      const prevBinKey = i > 0 ? binKeys[i - 1] : null;
-      const prevBinEnd = prevBinKey
-        ? parseInt(prevBinKey.split('-').pop() as string)
-        : null;
-
-      for (const gene of bin.genes) {
-        if (prevBinEnd && gene.start <= prevBinEnd) {
-          continue;
-        } else {
-          genes.push(gene);
-        }
-      }
-
-      for (const regFeature of bin.regulatory_features) {
-        if (prevBinEnd && regFeature.start <= prevBinEnd) {
-          continue;
-        } else {
-          regulatoryFeatures.push(regFeature);
-        }
-      }
-    }
-
-    return {
-      assembly_name: stateData.assemblyName,
-      region: stateData.region,
-      genes,
-      regulatory_features: {
-        feature_types: stateData.regulatory_feature_types,
-        data: regulatoryFeatures
-      }
-    };
-  })
-);
-
-const useRegionOverviewData = (
-  params: {
-    assemblyName: string;
-    regionName: string;
-    start: number;
-    end: number;
-  } | null
+const isInQueriedSlice = (
+  feature: { start: number; end: number },
+  query: { start: number; end: number }
 ) => {
+  return feature.end >= query.start && feature.start <= query.end;
+};
+
+type QueryParams = {
+  assemblyName: string;
+  regionName: string;
+  start: number;
+  end: number;
+};
+
+const createDataObservable = (query: QueryParams) => {
+  return regionDetailsState$.pipe(
+    filter((state) => {
+      const binKeys = createBins({
+        start: query.start,
+        end: query.end
+      }).map(createBinKey);
+
+      return (
+        !!state.data &&
+        query.assemblyName === state.data.assemblyName &&
+        query.regionName === state.data.region.name &&
+        binKeys.every((key) => !!state.data!.bins[key])
+      );
+    }),
+    map((state) => {
+      const stateData = state.data as NonNullable<typeof state.data>;
+      const binKeys = createBins({
+        start: query.start,
+        end: query.end
+      }).map(createBinKey);
+
+      const genes: GeneInRegionOverview[] = [];
+      const regulatoryFeatures: RegulatoryFeature[] = [];
+
+      for (let i = 0; i < binKeys.length; i++) {
+        const key = binKeys[i];
+        const bin = stateData.bins[key];
+
+        const prevBinKey = i > 0 ? binKeys[i - 1] : null;
+        const prevBinEnd = prevBinKey
+          ? parseInt(prevBinKey.split('-').pop() as string)
+          : null;
+
+        for (const gene of bin.genes) {
+          if (!isInQueriedSlice(gene, query)) {
+            continue;
+          } else if (prevBinEnd && gene.start <= prevBinEnd) {
+            continue;
+          } else {
+            genes.push(gene);
+          }
+        }
+
+        for (const regFeature of bin.regulatory_features) {
+          if (!isInQueriedSlice(regFeature, query)) {
+            continue;
+          } else if (prevBinEnd && regFeature.start <= prevBinEnd) {
+            continue;
+          } else {
+            regulatoryFeatures.push(regFeature);
+          }
+        }
+      }
+
+      return {
+        assembly_name: stateData.assemblyName,
+        region: stateData.region,
+        genes,
+        regulatory_features: {
+          feature_types: stateData.regulatory_feature_types,
+          data: regulatoryFeatures
+        }
+      };
+    })
+  );
+};
+
+const useRegionOverviewData = (params: QueryParams | null) => {
   const [data, setData] = useState<RegionData | null>(null);
   const prevParams = useRef<typeof params>(null);
-
-  useEffect(() => {
-    const subscription = regionDetailsSelection$.subscribe((data) => {
-      setData(data);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     if (
@@ -141,8 +134,16 @@ const useRegionOverviewData = (
       return;
     }
 
-    regionDetailsStateQuery$.next(params);
+    const data$ = createDataObservable(params);
+    const subscription = data$.subscribe((data) => {
+      setData(data);
+    });
+
     prevParams.current = params;
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [params]);
 
   // FIXME: should somehow return the loading flag as well
